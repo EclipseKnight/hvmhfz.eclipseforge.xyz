@@ -1,10 +1,43 @@
 <!DOCTYPE html>
-<html>
-<head>
-<title>Hunsterverse MHFZ</title>
-</head>
-<body>
-Welcome to Hunsterverse Monster Hunter Frontier Z Server
 
-</body>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>َHunsterverse MHFZ</title>
+
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+
+  <body>
+    <div class="login-box">
+      <h2>HV MHFZ Login</h2>
+      <div id="login-form">
+        <div class="user-box" id="login-warning" hidden="true">
+          Incorrect Username/Password.
+        </div>
+        <div class="user-box" id="username-box">
+          <input type="text" id="username" name="" required="" />
+          <label>Username</label>
+        </div>
+        <div class="user-box" id="password-box">
+          <input type="password" id="password" name="" required="" />
+          <label>Password</label>
+        </div>
+
+        <button class="g-recaptcha" 
+        data-sitekey="reCAPTCHA_site_key" 
+        data-callback='onSubmit' 
+        data-action='submit' id="submit">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          Submit
+        </button>
+      </div>
+    </div>
+  </body>
+  <script src="/js/main.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6Leqx5IhAAAAAFemC2ve-LEU28ZrzKP_Hgb4yCWk"></script>
 </html>
