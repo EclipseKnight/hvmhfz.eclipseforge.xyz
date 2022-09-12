@@ -85,7 +85,7 @@ async function sendLogin(username, password, token) {
     };
     
     try {
-        const response = await fetch('https://api.hvmhfz.eclipseforge.xyz/api/auth/signin', options)
+        const response = await fetch('https://api.hvmhfz.eclipseforge.xyz/api/auth/signinweb', options)
         
         if (!response.ok) {
             displayLoginWarning();
