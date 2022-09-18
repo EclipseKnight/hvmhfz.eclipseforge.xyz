@@ -6,33 +6,33 @@ const PUBLIC_KEY = '6Leqx5IhAAAAAFemC2ve-LEU28ZrzKP_Hgb4yCWk';
 document.getElementById("submit").addEventListener("click", validate);
 
 
-window.onload = async () => {
-    const params = new Proxy(new URLSearchParams(window.location.search), {
-        get: (searchParams, prop) => searchParams.get(prop),
-    });
-    const code = params.code;
-    console.log(code);
+// window.onload = async () => {
+//     const params = new Proxy(new URLSearchParams(window.location.search), {
+//         get: (searchParams, prop) => searchParams.get(prop),
+//     });
+//     const code = params.code;
+//     console.log(code);
 
-    let response = await discordAuth(code);
-    console.log(response);
-    // if (!accessToken) {
-    //     console.log("no token");
-    //     return;
-    //     // return (document.getElementById('login').style.display = 'block');
-    // }
+//     let response = await discordAuth(code);
+//     console.log(response);
+//     // if (!accessToken) {
+//     //     console.log("no token");
+//     //     return;
+//     //     // return (document.getElementById('login').style.display = 'block');
+//     // }
 
-    // fetch('https://discord.com/api/users/@me', {
-    //     headers: {
-    //         authorization: `${tokenType} ${accessToken}`,
-    //     },
-    // })
-    //     .then(result => result.json())
-    //     .then(response => {
-    //         const { username, discriminator } = response;
-    //         document.getElementById('info').innerText += ` ${username}#${discriminator}`;
-    //     })
-    //     .catch(console.error);
-};
+//     // fetch('https://discord.com/api/users/@me', {
+//     //     headers: {
+//     //         authorization: `${tokenType} ${accessToken}`,
+//     //     },
+//     // })
+//     //     .then(result => result.json())
+//     //     .then(response => {
+//     //         const { username, discriminator } = response;
+//     //         document.getElementById('info').innerText += ` ${username}#${discriminator}`;
+//     //     })
+//     //     .catch(console.error);
+// };
 
 async function discordAuth(code) {
 
@@ -85,7 +85,7 @@ async function sendLogin(username, password, token) {
     };
     
     try {
-        const response = await fetch('https://api.hvmhfz.eclipseforge.xyz/api/auth/signinweb', options)
+        const response = await fetch('https://api.hvmhfz.eclipseforge.xyz/api/auth/signin', options)
         
         if (!response.ok) {
             displayLoginWarning();
