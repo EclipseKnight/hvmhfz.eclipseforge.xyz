@@ -19,7 +19,7 @@ guide-linux.html      Linux guide
 css/styles.css        shared guild theme (parchment, gold, leather)
 assets/guide/*.webp   guide screenshots, WebP
 assets/favicon.png    site icon
-js/main.js            login, reCAPTCHA, activation code
+js/main.js            login, Cloudflare Turnstile, activation code
 CNAME                 hvmhfz.eclipseforge.xyz
 ```
 
