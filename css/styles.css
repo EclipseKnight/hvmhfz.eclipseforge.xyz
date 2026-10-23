@@ -39,6 +39,10 @@ a:hover{color:var(--wax);border-bottom-color:var(--wax)}
 .site-nav .navlink:hover,.site-nav .navlink[aria-current="page"]{background:rgba(232,200,119,.12);color:var(--gold-bright)}
 
 /* ---------- login / account linking ---------- */
+/* login page fills the viewport without a stray scrollbar */
+body.link-page{display:flex;flex-direction:column;min-height:100vh}
+body.link-page .login-wrap{flex:1;min-height:0}
+body.link-page .site-foot{margin-top:auto;padding-bottom:24px}
 .login-wrap{min-height:calc(100vh - 62px);display:grid;place-items:center;padding:56px 20px}
 .login-box{
   width:100%;max-width:470px;padding:42px 40px 34px;position:relative;
@@ -70,7 +74,7 @@ a:hover{color:var(--wax);border-bottom-color:var(--wax)}
 }
 .login-box .user-box input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(183,138,51,.16)}
 .login-box .user-box label{
-  position:absolute;left:13px;top:13px;padding:0 4px;font-size:15px;color:#7a6444;
+  position:absolute;left:13px;top:13px;padding:0 4px;font-size:15px;color:#6b5638;
   pointer-events:none;transition:.16s;background:transparent;
 }
 .login-box .user-box input:focus ~ label,
