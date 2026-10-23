@@ -204,56 +204,9 @@ async function displayActivationCode(userData) {
 
     accessToken = userData.accessToken;
     saveSession(accessToken);
-    let user = await fetchUser();
 
-    document.getElementById("login-warning").hidden = true;
-    document.getElementById("username-box").remove();
-    document.getElementById("password-box").remove();
-    document.getElementById("submit").remove();
-    const turnstileSlot = document.getElementById("turnstile-slot");
-    if (turnstileSlot) turnstileSlot.remove();
-
-    if (user == null) {
-        document.getElementById("login-form").innerHTML +=
-        `
-        <div class="user-box" id="activation-code">
-        There was an error when trying to fetch your account.
-        <br/>
-        <br/>
-        <code>RIP</code>
-        </div>
-        `;
-        return;
-    }
-
-   
-
-    if (userData.discordActivationToken == null) {
-
-
-        document.getElementById("login-form").innerHTML +=
-        `
-        <div class="user-box" id="activation-code">
-        Discord account is already linked
-        <br/>
-        <br/>
-        <code>discordId: ${user.discordId}</code>
-        </div>
-        `;
-        appendAccountLink();
-        return;
-    } 
-
-    document.getElementById("login-form").innerHTML +=
-        `
-        <div class="user-box" id="activation-code">
-        Use this command in the #mhfrontier discord channel.
-        <br/>
-        <br/>
-        <code>!f link ${userData.discordActivationToken}</code>
-        </div>
-        `;
-    appendAccountLink();
+    // The account page owns the Discord linking step, so hand over immediately.
+    window.location.replace("/account.html");
 }
 
 function appendAccountLink() {

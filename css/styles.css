@@ -294,3 +294,56 @@ main.sheet footer::before{content:"MHFZ";display:inline-grid;place-items:center;
   border-radius:6px;color:#5e3f16;font-weight:600;text-decoration:none;background:rgba(183,138,51,.12);
   transition:background .2s,border-color .2s}
 .account-link:hover{background:rgba(183,138,51,.24);border-color:var(--gold-bright)}
+
+/* Account portal: tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid rgba(232,200,119,.25);margin:0 0 24px}
+.tab{padding:12px 18px;color:#c9b993;text-decoration:none;font-size:.92rem;letter-spacing:.04em;
+  border:1px solid transparent;border-bottom:none;border-radius:8px 8px 0 0;position:relative;top:1px}
+.tab:hover{color:var(--gold-bright)}
+.tab[aria-selected="true"]{background:var(--parchment);color:var(--ink);border-color:var(--line);font-weight:600}
+.tab-count{font-size:.75rem;opacity:.7}
+
+/* toolbar and search */
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.search{display:flex;align-items:center;gap:10px}
+.search-label{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.search input{font:inherit;font-size:.9rem;padding:9px 12px;border:1px solid var(--line);border-radius:6px;
+  background:#fbf3df;color:var(--ink);min-width:250px}
+.search input:focus{outline:2px solid rgba(183,138,51,.45);outline-offset:1px}
+.toolbar-note{font-size:.78rem;color:var(--ink-soft)}
+
+/* data tables */
+.table-wrap{overflow-x:auto}
+.data-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.data-table th{text-align:left;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+  padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.data-table td{padding:10px;border-bottom:1px solid rgba(189,166,122,.45);color:var(--ink);white-space:nowrap}
+.data-table tbody tr:last-child td{border-bottom:0}
+.data-table tbody tr:hover{background:rgba(183,138,51,.08)}
+.cell-name{display:flex;align-items:center;gap:8px;font-weight:600}
+.empty-cell{text-align:center;color:var(--ink-soft);font-style:italic;padding:18px}
+
+/* discord linking */
+.discord-state{margin:0 0 14px;color:var(--ink);font-size:.92rem}
+.discord-state.good{color:var(--teal);font-weight:600}
+.command-box{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--code);border-radius:8px;
+  padding:14px 16px;margin-bottom:14px}
+.command-box .command{color:#f0dfb6;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.95rem;
+  overflow-wrap:anywhere}
+.ghost-btn.small{padding:7px 12px;font-size:.78rem}
+.ghost-btn.dark{background:var(--ink);color:var(--parchment);border-color:var(--ink)}
+.ghost-btn.dark:hover{background:#3a2c1f;color:var(--gold-bright)}
+.discord-actions{display:flex;gap:10px;margin-bottom:10px}
+.note-text{margin:0;color:var(--ink-soft);font-size:.82rem}
+
+/* account detail list */
+.detail-list{display:grid;grid-template-columns:180px 1fr;gap:10px 18px;margin:0;font-size:.92rem}
+.detail-list dt{color:var(--ink-soft);text-transform:uppercase;font-size:.7rem;letter-spacing:.12em;align-self:center}
+.detail-list dd{margin:0;color:var(--ink)}
+
+/* guild stats */
+.guild-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0 0 16px;
+  padding:14px;background:rgba(183,138,51,.08);border:1px solid rgba(189,166,122,.5);border-radius:6px}
+.guild-stat dt{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.guild-stat dd{margin:2px 0 0;color:var(--ink);font-weight:600;font-size:.9rem}
+.badge-row{display:flex;gap:6px;flex-wrap:wrap}

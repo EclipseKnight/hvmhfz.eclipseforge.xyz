@@ -16,7 +16,6 @@
       <div class="wrap">
         <a class="brand" href="/">Hunsterverse<small>Monster Hunter Frontier Z</small></a>
         <nav>
-          <a class="navlink" href="/">Link account</a>
           <a class="navlink" href="/account.html" aria-current="page">Account</a>
           <a class="navlink" href="/guide-windows.html">Windows guide</a>
           <a class="navlink" href="/guide-linux.html">Linux guide</a>
@@ -36,34 +35,110 @@
         <button type="button" class="ghost-btn" id="signout">Sign out</button>
       </header>
 
-      <section class="stat-grid" id="stat-grid" aria-label="Account summary">
-        <div class="stat-card skeleton" id="stat-discord"><span class="stat-label">Discord</span><span class="stat-value">&nbsp;</span></div>
-        <div class="stat-card skeleton" id="stat-characters"><span class="stat-label">Characters</span><span class="stat-value">&nbsp;</span></div>
-        <div class="stat-card skeleton" id="stat-lastlogin"><span class="stat-label">Last login</span><span class="stat-value">&nbsp;</span></div>
-        <div class="stat-card skeleton" id="stat-roles"><span class="stat-label">Roles</span><span class="stat-value">&nbsp;</span></div>
-      </section>
+      <nav class="tabs" role="tablist" aria-label="Account sections">
+        <a class="tab" id="tab-overview" role="tab" aria-controls="panel-overview" aria-selected="true" href="#overview">Overview</a>
+        <a class="tab" id="tab-characters" role="tab" aria-controls="panel-characters" aria-selected="false" href="#characters">Characters <span class="tab-count" id="count-characters"></span></a>
+        <a class="tab" id="tab-guild" role="tab" aria-controls="panel-guild" aria-selected="false" href="#guild">Guild <span class="tab-count" id="count-guild"></span></a>
+        <a class="tab" id="tab-account" role="tab" aria-controls="panel-account" aria-selected="false" href="#account">Account</a>
+      </nav>
 
-      <section class="panel">
-        <div class="panel-head"><h2>Characters</h2><span class="panel-note" id="characters-note"></span></div>
-        <div class="character-grid" id="characters">
-          <div class="character-card skeleton"><span class="skeleton-line w60"></span><span class="skeleton-line w40"></span><span class="skeleton-line w80"></span></div>
-          <div class="character-card skeleton"><span class="skeleton-line w60"></span><span class="skeleton-line w40"></span><span class="skeleton-line w80"></span></div>
+      <!-- Overview -->
+      <section class="tab-panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+        <div class="stat-grid" aria-label="Account summary">
+          <div class="stat-card skeleton" id="stat-discord"><span class="stat-label">Discord</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton" id="stat-characters"><span class="stat-label">Characters</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton" id="stat-lastlogin"><span class="stat-label">Last login</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton" id="stat-roles"><span class="stat-label">Roles</span><span class="stat-value">&nbsp;</span></div>
         </div>
+
+        <section class="panel" id="discord-panel" aria-live="polite">
+          <div class="panel-head">
+            <h2>Discord</h2>
+            <span class="panel-note" id="discord-note">checking</span>
+          </div>
+          <div id="discord-body">
+            <span class="skeleton-line w60"></span>
+            <span class="skeleton-line w40"></span>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Recent activity</h2></div>
+          <ul class="activity-list" id="activity">
+            <li class="skeleton-line w70"></li>
+            <li class="skeleton-line w50"></li>
+          </ul>
+        </section>
       </section>
 
-      <section class="panel">
-        <div class="panel-head"><h2>Guild</h2><span class="panel-note" id="guild-note"></span></div>
-        <div id="guilds">
-          <div class="guild-card skeleton"><span class="skeleton-line w50"></span><span class="skeleton-line w80"></span></div>
-        </div>
+      <!-- Characters -->
+      <section class="tab-panel" id="panel-characters" role="tabpanel" aria-labelledby="tab-characters" hidden>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Characters</h2>
+            <span class="panel-note" id="characters-note"></span>
+          </div>
+          <div class="toolbar">
+            <label class="search">
+              <span class="search-label">Search</span>
+              <input type="search" id="character-search" placeholder="Name, weapon or guild" autocomplete="off" />
+            </label>
+            <span class="toolbar-note" id="character-results"></span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="characters-table">
+              <thead>
+                <tr>
+                  <th>Hunter</th><th>HR</th><th>GR</th><th>Weapon</th><th>Sex</th>
+                  <th>GCP</th><th>Kouryou</th><th>Daily quests</th><th>Guild</th><th>Last login</th>
+                </tr>
+              </thead>
+              <tbody id="characters-body">
+                <tr><td colspan="10"><span class="skeleton-line w80"></span></td></tr>
+                <tr><td colspan="10"><span class="skeleton-line w60"></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
       </section>
 
-      <section class="panel">
-        <div class="panel-head"><h2>Recent activity</h2></div>
-        <ul class="activity-list" id="activity">
-          <li class="skeleton-line w70"></li>
-          <li class="skeleton-line w50"></li>
-        </ul>
+      <!-- Guild -->
+      <section class="tab-panel" id="panel-guild" role="tabpanel" aria-labelledby="tab-guild" hidden>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Guild</h2>
+            <span class="panel-note" id="guild-note"></span>
+          </div>
+          <div class="toolbar">
+            <label class="search">
+              <span class="search-label">Search members</span>
+              <input type="search" id="guild-search" placeholder="Hunter name or rank" autocomplete="off" />
+            </label>
+            <span class="toolbar-note" id="guild-results"></span>
+          </div>
+          <div id="guilds">
+            <div class="guild-card skeleton"><span class="skeleton-line w50"></span><span class="skeleton-line w80"></span></div>
+          </div>
+        </section>
+      </section>
+
+      <!-- Account -->
+      <section class="tab-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" hidden>
+        <section class="panel">
+          <div class="panel-head"><h2>Account</h2></div>
+          <dl class="detail-list" id="account-details">
+            <dt>Username</dt><dd class="skeleton-line w40"></dd>
+            <dt>Discord</dt><dd class="skeleton-line w30"></dd>
+            <dt>Roles</dt><dd class="skeleton-line w50"></dd>
+            <dt>Last login</dt><dd class="skeleton-line w40"></dd>
+            <dt>Characters</dt><dd class="skeleton-line w20"></dd>
+          </dl>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><h2>Session</h2></div>
+          <p class="note-text">You stay signed in on this device for 7 days. Signing out clears the session immediately.</p>
+          <button type="button" class="ghost-btn dark" id="signout-2">Sign out of this device</button>
+        </section>
       </section>
 
       <p class="account-error" id="account-error" hidden></p>
