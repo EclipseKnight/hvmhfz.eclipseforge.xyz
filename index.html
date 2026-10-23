@@ -1,43 +1,68 @@
 <!DOCTYPE html>
-
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>َHunsterverse MHFZ</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hunsterverse MHFZ: Account Linking</title>
+    <meta name="description" content="Link your Monster Hunter Frontier Z game account to the Hunsterverse Discord server." />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png" />
     <link rel="stylesheet" href="/css/styles.css" />
   </head>
 
   <body>
-    <div class="login-box">
-      <h2>HV MHFZ Login</h2>
-      <div id="login-form">
-        <div class="user-box" id="login-warning" hidden="true">
-          Incorrect Username/Password.
-        </div>
-        <div class="user-box" id="username-box">
-          <input type="text" id="username" name="" required="" />
-          <label>Username</label>
-        </div>
-        <div class="user-box" id="password-box">
-          <input type="password" id="password" name="" required="" />
-          <label>Password</label>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/">Hunsterverse<small>Monster Hunter Frontier Z</small></a>
+        <nav>
+          <a class="navlink" href="/" aria-current="page">Link account</a>
+          <a class="navlink" href="/guide-windows.html">Windows guide</a>
+          <a class="navlink" href="/guide-linux.html">Linux guide</a>
+          <a class="navlink" href="https://hunstermonter.net">Site</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="login-wrap">
+      <div class="login-box">
+        <div class="login-kicker">HV MHFZ · Account linking</div>
+        <h2>Hunsterverse</h2>
+        <p class="login-sub">Sign in with your game account. If your Discord is not linked yet, you will get a code to run in the #mhfrontier channel.</p>
+
+        <div id="login-form">
+          <div class="user-box" id="login-warning" hidden="true">
+            Incorrect Username/Password.
+          </div>
+          <div class="user-box" id="username-box">
+            <input type="text" id="username" name="" required="" />
+            <label for="username">Username</label>
+          </div>
+          <div class="user-box" id="password-box">
+            <input type="password" id="password" name="" required="" />
+            <label for="password">Password</label>
+          </div>
+
+          <button type="button" id="submit">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Submit
+          </button>
         </div>
 
-        <button class="g-recaptcha" 
-        data-sitekey="reCAPTCHA_site_key" 
-        data-callback='onSubmit' 
-        data-action='submit' id="submit">
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          Submit
-        </button>
+        <div class="login-links">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+        </div>
       </div>
     </div>
+
+    <p class="site-foot">Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
   </body>
   <script src="/js/main.js"></script>
-  <script src="https://www.google.com/recaptcha/api.js?render=6Leqx5IhAAAAAFemC2ve-LEU28ZrzKP_Hgb4yCWk"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6Leqx5IhAAAAAFemC2ve-LEU28zrzKP_Hgb4yCWk"></script>
 </html>
