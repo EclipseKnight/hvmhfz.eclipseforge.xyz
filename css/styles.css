@@ -208,3 +208,7 @@ main.sheet footer::before{content:"MHFZ";display:inline-grid;place-items:center;
   main.sheet h2{color:#000;background:none;padding-left:0}
   main.sheet h2::before{display:none}
 }
+
+/* Cloudflare Turnstile widget */
+.turnstile-slot{display:flex;justify-content:center;margin:2px 0 16px;min-height:65px}
+.turnstile-slot iframe{max-width:100%}

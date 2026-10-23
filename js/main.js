@@ -1,9 +1,65 @@
 let accessToken;
 let discordAccessToken;
 
-const PUBLIC_KEY = '6Leqx5IhAAAAAFemC2ve-LEU28ZrzKP_Hgb4yCWk';
+const TURNSTILE_SITEKEY = '0x4AAAAAAFiqTP8B32NFqXS1';
+let turnstileWidgetId = null;
 
 document.getElementById("submit").addEventListener("click", validate);
+
+// Cloudflare Turnstile, rendered explicitly once api.js is available.
+function renderTurnstile() {
+    if (turnstileWidgetId !== null) return;
+    if (!window.turnstile) return;
+    const slot = document.getElementById("turnstile-slot");
+    if (!slot) return;
+    turnstileWidgetId = window.turnstile.render(slot, {
+        sitekey: TURNSTILE_SITEKEY,
+        theme: "light",
+        action: "login",
+        callback: function () {
+            const warning = document.getElementById("login-warning");
+            if (warning) warning.hidden = true;
+        },
+        "expired-callback": function () {
+            resetTurnstile();
+        },
+        "error-callback": function () {
+            showWarning("Verification failed to load. Reload the page and try again.");
+        }
+    });
+}
+
+function resetTurnstile() {
+    if (window.turnstile && turnstileWidgetId !== null) {
+        window.turnstile.reset(turnstileWidgetId);
+    }
+}
+
+function turnstileToken() {
+    if (window.turnstile && turnstileWidgetId !== null) {
+        return window.turnstile.getResponse(turnstileWidgetId) || "";
+    }
+    return "";
+}
+
+function showWarning(message) {
+    const warning = document.getElementById("login-warning");
+    if (!warning) return;
+    if (message) warning.textContent = message;
+    warning.hidden = false;
+}
+
+const turnstileWait = setInterval(function () {
+    if (window.turnstile) {
+        clearInterval(turnstileWait);
+        renderTurnstile();
+    }
+}, 250);
+setTimeout(function () { clearInterval(turnstileWait); }, 20000);
+
+document.getElementById("password").addEventListener("keydown", function (event) {
+    if (event.key === "Enter") validate(event);
+});
 
 
 // window.onload = async () => {
@@ -57,23 +113,39 @@ async function discordAuth(code) {
 
 
 async function validate(event) {
-    
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
+    if (event) event.preventDefault();
 
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+    const button = document.getElementById("submit");
 
-    grecaptcha.ready(async function() {
-        const token = await grecaptcha.execute(PUBLIC_KEY, {action: 'submit'})
+    if (!username || !password) {
+        showWarning("Enter your username and password.");
+        return;
+    }
 
-        let userData;
+    const token = turnstileToken();
+    if (!token) {
+        showWarning("Complete the verification challenge, then press Submit again.");
+        renderTurnstile();
+        return;
+    }
 
-        if (username && password) {
-            userData = await sendLogin(username, password, token);
-            await displayActivationCode(userData);
+    if (button) button.disabled = true;
+    try {
+        const userData = await sendLogin(username, password, token);
+        if (userData === undefined) {
+            showWarning("The login service did not respond. Try again in a moment.");
+            return;
         }
-
-    });
-    
+        if (userData === null) {
+            return;
+        }
+        await displayActivationCode(userData);
+    } finally {
+        if (button) button.disabled = false;
+        resetTurnstile();
+    }
 }
 
 async function sendLogin(username, password, token) {
@@ -88,7 +160,8 @@ async function sendLogin(username, password, token) {
         const response = await fetch('https://api.hvmhfz.eclipseforge.xyz/api/auth/signin', options)
         
         if (!response.ok) {
-            displayLoginWarning();
+            displayLoginWarning(response.status);
+            return null;
         }
 
         return await response.json();
@@ -135,6 +208,8 @@ async function displayActivationCode(userData) {
     document.getElementById("username-box").remove();
     document.getElementById("password-box").remove();
     document.getElementById("submit").remove();
+    const turnstileSlot = document.getElementById("turnstile-slot");
+    if (turnstileSlot) turnstileSlot.remove();
 
     if (user == null) {
         document.getElementById("login-form").innerHTML +=
@@ -177,8 +252,14 @@ async function displayActivationCode(userData) {
         `;
 }
 
-function displayLoginWarning() {
-    document.getElementById("login-warning").hidden = false;
+function displayLoginWarning(status) {
+    if (status === 403) {
+        showWarning("Verification failed. Reload the page and try again.");
+    } else if (status >= 500) {
+        showWarning("The login service had an error. Try again in a moment.");
+    } else {
+        showWarning("Incorrect Username/Password.");
+    }
 }
 
 
