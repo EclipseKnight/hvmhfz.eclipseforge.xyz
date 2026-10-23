@@ -212,3 +212,85 @@ main.sheet footer::before{content:"MHFZ";display:inline-grid;place-items:center;
 /* Cloudflare Turnstile widget */
 .turnstile-slot{display:flex;justify-content:center;margin:2px 0 16px;min-height:65px}
 .turnstile-slot iframe{max-width:100%}
+
+/* Account page */
+.account-page{background:var(--leather)}
+.account-wrap{max-width:1080px;margin:0 auto;padding:34px 20px 60px}
+.account-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;
+  border-bottom:1px solid rgba(232,200,119,.25);padding-bottom:18px;margin-bottom:24px}
+.kicker{margin:0 0 6px;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-bright)}
+.account-head h1{margin:0;font-size:2rem;color:var(--parchment)}
+.account-sub{margin:6px 0 0;color:#c9b993;font-size:.92rem}
+.ghost-btn{background:transparent;border:1px solid var(--line);color:var(--parchment);padding:9px 16px;
+  border-radius:6px;font:inherit;font-size:.85rem;letter-spacing:.04em;cursor:pointer;transition:all .2s}
+.ghost-btn:hover{border-color:var(--gold-bright);color:var(--gold-bright)}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{background:var(--parchment);border:1px solid var(--line);border-radius:8px;padding:16px 18px;
+  display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.stat-label{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.stat-value{font-size:1.15rem;color:var(--ink);font-weight:600}
+.stat-card.good .stat-value{color:var(--teal)}
+.stat-card.muted .stat-value{color:var(--wax)}
+
+.panel{background:var(--parchment);border:1px solid var(--line);border-radius:10px;padding:22px 24px;margin-bottom:22px;
+  box-shadow:0 10px 26px rgba(0,0,0,.28)}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:16px}
+.panel-head h2{margin:0;font-size:1.25rem;color:var(--ink)}
+.panel-note{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+
+.character-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.character-card{background:#fbf3df;border:1px solid var(--line);border-radius:8px;padding:16px}
+.character-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.character-head h3{margin:0;font-size:1.05rem;color:var(--ink)}
+.badge{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border-radius:999px;
+  background:var(--parchment-2);color:var(--ink-soft);border:1px solid var(--line);white-space:nowrap}
+.badge.good{background:rgba(46,91,78,.12);color:var(--teal);border-color:rgba(46,91,78,.35)}
+.rank-row{display:flex;gap:8px;margin-bottom:12px}
+.rank-pill{font-size:.78rem;padding:4px 10px;border-radius:999px;background:var(--parchment-2);
+  border:1px solid var(--line);color:var(--ink)}
+.meta-list{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:.85rem}
+.meta-list dt{color:var(--ink-soft)}
+.meta-list dd{margin:0;color:var(--ink)}
+
+.guild-card{background:#fbf3df;border:1px solid var(--line);border-radius:8px;padding:18px}
+.guild-card + .guild-card{margin-top:14px}
+.guild-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.guild-head h3{margin:0;font-size:1.1rem;color:var(--ink)}
+.guild-comment{margin:0 0 12px;color:var(--ink-soft);font-size:.9rem}
+.guild-facts{display:flex;gap:18px;flex-wrap:wrap;font-size:.82rem;color:var(--ink-soft);margin-bottom:14px}
+.member-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.member-table th{text-align:left;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-soft);padding:8px 10px;border-bottom:1px solid var(--line)}
+.member-table td{padding:9px 10px;border-bottom:1px solid rgba(189,166,122,.45);color:var(--ink)}
+.member-table tr:last-child td{border-bottom:0}
+
+.activity-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.activity-list li{display:flex;justify-content:space-between;gap:14px;font-size:.88rem;color:var(--ink);
+  border-bottom:1px dashed rgba(189,166,122,.6);padding-bottom:9px}
+.activity-list li:last-child{border-bottom:0;padding-bottom:0}
+.activity-when{color:var(--ink-soft);white-space:nowrap;font-size:.8rem}
+
+.empty-state{margin:0;color:var(--ink-soft);font-style:italic;font-size:.9rem}
+.account-error{background:rgba(139,47,39,.1);border:1px solid rgba(139,47,39,.4);color:var(--wax);
+  border-radius:8px;padding:14px 16px;margin:0}
+
+/* loading placeholders */
+.skeleton{position:relative;overflow:hidden}
+.skeleton-line{display:block;height:10px;border-radius:5px;background:rgba(189,166,122,.45);margin:6px 0}
+.skeleton .stat-value,.skeleton .stat-label{opacity:0}
+.w40{width:40%}.w50{width:50%}.w60{width:60%}.w70{width:70%}.w80{width:80%}
+.skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);animation:shimmer 1.4s infinite}
+@keyframes shimmer{100%{transform:translateX(100%)}}
+@media (prefers-reduced-motion:reduce){.skeleton::after{animation:none}}
+
+@media (max-width:640px){
+  .account-head{align-items:flex-start}
+  .member-table{display:block;overflow-x:auto;white-space:nowrap}
+}
+
+.account-link{display:inline-block;margin-top:16px;padding:10px 18px;border:1px solid var(--gold);
+  border-radius:6px;color:#5e3f16;font-weight:600;text-decoration:none;background:rgba(183,138,51,.12);
+  transition:background .2s,border-color .2s}
+.account-link:hover{background:rgba(183,138,51,.24);border-color:var(--gold-bright)}

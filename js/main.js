@@ -2,6 +2,7 @@ let accessToken;
 let discordAccessToken;
 
 const TURNSTILE_SITEKEY = '0x4AAAAAAFiqTP8B32NFqXS1';
+const TOKEN_KEY = "hvmhfz.token";
 let turnstileWidgetId = null;
 
 document.getElementById("submit").addEventListener("click", validate);
@@ -202,6 +203,7 @@ async function displayActivationCode(userData) {
     }
 
     accessToken = userData.accessToken;
+    saveSession(accessToken);
     let user = await fetchUser();
 
     document.getElementById("login-warning").hidden = true;
@@ -238,6 +240,7 @@ async function displayActivationCode(userData) {
         <code>discordId: ${user.discordId}</code>
         </div>
         `;
+        appendAccountLink();
         return;
     } 
 
@@ -250,6 +253,52 @@ async function displayActivationCode(userData) {
         <code>!f link ${userData.discordActivationToken}</code>
         </div>
         `;
+    appendAccountLink();
+}
+
+function appendAccountLink() {
+    if (document.getElementById("account-link")) return;
+    const form = document.getElementById("login-form");
+    if (!form) return;
+    const link = document.createElement("a");
+    link.id = "account-link";
+    link.className = "account-link";
+    link.href = "/account.html";
+    link.textContent = "Open your account";
+    form.appendChild(link);
+}
+
+function saveSession(value) {
+    try {
+        localStorage.setItem(TOKEN_KEY, value);
+    } catch (error) {
+        /* private mode: the session simply will not persist */
+    }
+}
+
+function storedSessionValid() {
+    try {
+        const value = localStorage.getItem(TOKEN_KEY);
+        if (!value) return false;
+        const payload = JSON.parse(atob(value.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+        return payload.exp * 1000 > Date.now() + 30000;
+    } catch (error) {
+        return false;
+    }
+}
+
+if (storedSessionValid()) {
+    fetch("https://api.hvmhfz.eclipseforge.xyz/api/account", {
+        headers: { Authorization: "Bearer " + localStorage.getItem(TOKEN_KEY) }
+    }).then(function (response) {
+        if (response.ok) {
+            window.location.replace("/account.html");
+        } else if (response.status === 401) {
+            localStorage.removeItem(TOKEN_KEY);
+        }
+    }).catch(function () {
+        /* API unreachable: stay on the login form */
+    });
 }
 
 function displayLoginWarning(status) {

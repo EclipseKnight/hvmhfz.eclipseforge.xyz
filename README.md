@@ -7,6 +7,7 @@ Hunsterverse account-linking site and setup guides for Monster Hunter Frontier Z
 | Path | What it does |
 |---|---|
 | `/` | Account linking. Sign in with the game account, then run the `!f link <token>` command in the `#mhfrontier` Discord channel. |
+| `/account.html` | Signed in view: account summary, characters, guild and recent activity. Redirects to `/` without a valid session. |
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
 
@@ -14,12 +15,14 @@ Hunsterverse account-linking site and setup guides for Monster Hunter Frontier Z
 
 ```
 index.html            account linking
+account.html          signed in account view
 guide-windows.html    Windows guide
 guide-linux.html      Linux guide
 css/styles.css        shared guild theme (parchment, gold, leather)
 assets/guide/*.webp   guide screenshots, WebP
 assets/favicon.png    site icon
-js/main.js            login, Cloudflare Turnstile, activation code
+js/main.js            login, Cloudflare Turnstile, activation code, saved session
+js/account.js         account page: fetches /api/account and renders it
 CNAME                 hvmhfz.eclipseforge.xyz
 ```
 
