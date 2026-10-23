@@ -47,7 +47,7 @@
 <li><a href="#trouble">Troubleshooting</a></li>
 <li><a href="#layout">Files and folders</a></li>
 </ol>
-<p class="toc-appendix"><a href="#english">Appendix: English text and language</a></p>
+<p class="toc-appendix"><a href="#english">Appendix: English text and language</a> &nbsp;·&nbsp; <a href="#discord">Appendix: Discord linking and bot commands</a></p>
 </div>
 
 <h2 id="need">1. What you need</h2>
@@ -123,7 +123,7 @@ Expand-Archive -Path $mpZip -DestinationPath &quot;C:\Games\MHFZ&quot; -Force</c
 <p>Double-click <code>Mezeporta.exe</code>. The first window has no server configured yet:</p>
 <figure><img alt="Mezeporta first run" src="/assets/guide/win-firstrun.webp"><figcaption>First run: add a server to get started.</figcaption></figure>
 
-<div class="warn box"><b>Windows may warn about the launcher.</b> It is not code-signed, so SmartScreen can show "Windows protected your PC", and some antivirus products flag the game's DLLs. Only continue if you downloaded from the official releases page. If your antivirus quarantines a file, restore it and add an exclusion for <code>C:\Games\MHFZ</code>. Do not disable your antivirus entirely.</div>
+<div class="warn box"><b>Windows may warn about the launcher.</b> It is not code-signed, so SmartScreen can show "Windows protected your PC", and some antivirus products flag the game's DLLs. Only continue if you downloaded from the official releases page. If your antivirus quarantines a file, restore it and add an exclusion for <code>C:\Games\MHFZ</code>. Do not disable your antivirus entirely. Exclude the game folder before you apply the patch: <code>mhf.exe</code> is the file most often flagged, and a quarantine in the middle of a copy leaves the install half patched.</div>
 
 <p>Open <b>Configure Settings</b> if you want to change the theme or language. On Windows there is no Wine prefix to configure, so the Linux-specific options do not apply.</p>
 <figure><img alt="Settings tabs" src="/assets/guide/win-settings_tabs.webp"><figcaption>Settings tabs. Server Mode is not here, it belongs to each server.</figcaption></figure>
@@ -144,6 +144,7 @@ Expand-Archive -Path $mpZip -DestinationPath &quot;C:\Games\MHFZ&quot; -Force</c
 
 <h2 id="play">7. Log in and play</h2>
 <p>Select Hunsterverse in the <b>Server Selection</b> dropdown, type your own account name and password, and press <b>LOG IN</b>. Choose a character, then launch.</p>
+<p>No account yet? Type the username and password you want and press LOG IN: Hunsterverse creates the account on your first login. You can also register at <a href="https://hunstermonter.net">hunstermonter.net</a> first, which is the safer route if the login is refused.</p>
 <figure><img alt="Login screen" src="/assets/guide/win-login.webp"><figcaption>Login with the server selected. The username is redacted in this screenshot.</figcaption></figure>
 <p>The launcher window closes when the game starts. That is normal. The game window is titled <code>MONSTER HUNTER FRONTIER Z</code>.</p>
 
@@ -188,6 +189,23 @@ Copy-Item "C:\path\to\client pack\mhfz_mhl.dll_custom\mhl.dll" mhl.dll -Force</c
 <p><b>Coverage is partial.</b> Community translation updates do not translate everything. Item names, NPC dialogue and event text often stay Japanese even with the English DLL in place. That is the translation, not a broken install.</p>
 <p><b>Fonts.</b> If Japanese text shows as boxes, install <code>noto-fonts-cjk</code> and start the launcher with <code>LANG=ja_JP.UTF-8</code> on Linux, or add the Japanese language pack on Windows (Settings, Time and language, Language and region, Add a language).</p>
 <div class="warn box"><b>Two warnings from old client guides.</b> Do not apply the hosts-file trick that circulates with the client pack: it points Capcom hostnames at 127.0.0.1, it is meant for self-hosted Erupe servers, and it will break name resolution for Hunsterverse. And Locale Emulator is only needed if the game refuses to start without a Japanese locale: Mezeporta launches the game itself, so try without it first.</div>
+
+<h2 id="discord">Appendix: Discord linking and bot commands</h2>
+<p>Linking your game account to Discord gives you character backups and the bot commands. The account page does the linking:</p>
+<ol>
+<li>Open <a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a>.</li>
+<li>Sign in with the same username and password you use in the game.</li>
+<li>The page shows a command such as <code>!f link &lt;token&gt;</code>. Run it in the <code>#mhfrontier</code> channel of the Hunsterverse Discord.</li>
+</ol>
+<p>Once linked, these commands work through a DM with the bot, except where noted:</p>
+<table>
+<tr><th>Command</th><th>What it does</th></tr>
+<tr><td><code>!f backup</code> or <code>!f backupchar</code></td><td>DMs you a ZIP backup of your current character data.</td></tr>
+<tr><td><code>!f import &lt;files&gt;</code> or <code>!f importchar</code></td><td>Restores a backup: attach the BIN files from the ZIP. Extract the archive first; the bot skips 0 KB files.</td></tr>
+<tr><td><code>!f resetpassword</code> or <code>!f pw</code></td><td>DM the bot <code>&lt;newPassword&gt; &lt;confirmNewPassword&gt;</code> to change your password.</td></tr>
+<tr><td><code>!f worldstats</code> or <code>!f ws</code></td><td>In the Frontier Discord channel: current world status, season and players online.</td></tr>
+</table>
+<div class="note box"><b>Backups are BIN files in a ZIP.</b> Extract the archive before importing, and ignore the 0 KB entries. Command names come from the older guide; if one does not respond, check the pinned messages in <code>#mhfrontier</code> for the current list.</div>
 
 <footer>
 <p><b>Credits:</b> Mezeporta launcher by LilButter. Client patch by EclipseKnight for Hunsterverse. Monster Hunter Frontier Z is a Capcom game; this guide only covers running a private server client.</p>

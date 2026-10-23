@@ -51,7 +51,7 @@
 <li><a href="#layout">Files and folders</a></li>
 <li><a href="#other">Other distributions</a></li>
 </ol>
-<p class="toc-appendix"><a href="#english">Appendix: English text and language</a></p>
+<p class="toc-appendix"><a href="#english">Appendix: English text and language</a> &nbsp;·&nbsp; <a href="#discord">Appendix: Discord linking and bot commands</a></p>
 </div>
 
 <h2 id="need">1. What you need</h2>
@@ -122,11 +122,12 @@ chmod +x ~/Games/MHFZ/run-mezeporta.sh ~/Games/MHFZ/mezeporta-bin</code></pre>
 <h2 id="prefix">6. Create the portable Wine prefix</h2>
 <p>The launcher expects its Wine prefix inside the game folder. The bundled script sets it up and installs DXVK, <code>d3dcompiler_47</code> and the Visual C++ runtime into it:</p>
 <pre><code>cd ~/Games/MHFZ
-bash SetupDeps/install-deps-arch.sh --portable-prefix "$HOME/Games/MHFZ"</code></pre>
+bash SetupDeps/mezeporta-setup-arch.sh --portable-prefix "$HOME/Games/MHFZ"</code></pre>
+<p class="meta" style="border:0;padding:0;margin:-.6em 0 1.2em">The release zip ships this script as <code>mezeporta-setup-arch.sh</code>. If you downloaded the copy from the repository it is called <code>install-deps-arch.sh</code>; they are the same file.</p>
 <p>This creates <code>~/Games/MHFZ/Mezeporta/WinePrefix</code> (about 800 MB). Add <code>--controller-fix</code> if you use a gamepad:</p>
-<pre><code>bash SetupDeps/install-deps-arch.sh --portable-prefix "$HOME/Games/MHFZ" --controller-fix</code></pre>
+<pre><code>bash SetupDeps/mezeporta-setup-arch.sh --portable-prefix "$HOME/Games/MHFZ" --controller-fix</code></pre>
 <p>Verify at the end:</p>
-<pre><code>bash SetupDeps/install-deps-arch.sh --verify</code></pre>
+<pre><code>bash SetupDeps/mezeporta-setup-arch.sh --verify</code></pre>
 
 <h2 id="wrapper">7. Launch wrapper (two Linux fixes)</h2>
 <p>On KDE Wayland with an NVIDIA card, the launcher window needs two environment variables. Create this small wrapper in the game folder:</p>
@@ -173,6 +174,7 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
 
 <h2 id="play">10. Log in and launch</h2>
 <p>Select Hunsterverse in the <b>Server Selection</b> dropdown, type your own account name and password, and press <b>LOG IN</b>. Pick a character, then launch.</p>
+<p>No account yet? Type the username and password you want and press LOG IN: Hunsterverse creates the account on your first login. You can also register at <a href="https://hunstermonter.net">hunstermonter.net</a> first, which is the safer route if the login is refused.</p>
 <figure><img alt="Login screen" src="/assets/guide/linux-login.webp"><figcaption>Login with Hunsterverse selected. The username field is redacted in this screenshot.</figcaption></figure>
 <p>The launcher window closes when the game starts. That is normal, as long as you did not start the launcher inside a systemd unit (see step 7). The game window is titled <code>MONSTER HUNTER FRONTIER Z</code>.</p>
 
@@ -205,30 +207,81 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
     └── WinePrefix/          the portable prefix, DXVK and vcrun inside</div>
 
 <h2 id="other">13. Other distributions</h2>
-<p>The launcher and the game do not care which distribution you use, only that Wine, winetricks and GStreamer are present. On Debian or Ubuntu:</p>
+<p>Everything after the packages is distro independent: the game folder, the patch, the launcher, the wrapper and the server settings are identical everywhere. Only package names and the prefix bootstrap change.</p>
+
+<h3>Debian and Ubuntu</h3>
 <pre><code>sudo dpkg --add-architecture i386
 sudo apt update
 sudo apt install wine wine32:i386 winetricks cabextract p7zip-full \
   gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
   gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
   gstreamer1.0-pipewire vulkan-tools mesa-utils gamemode</code></pre>
-<p>Use <code>scripts/linux/install-deps-ubuntu.sh</code> from the launcher release for the prefix instead of the Arch script, and keep the same two environment variables in the wrapper.</p>
-
-
-<h2 id="english">Appendix: English text and language</h2>
-<p>MHF-Z is a Japanese game. The English translation is not a separate installer: it lives inside <code>mhl.dll</code>, the client's text layer, and that one file decides which language you see.</p>
-<p><b>What the client patch already does.</b> The Hunsterverse patch ships its own <code>mhl.dll</code>, so a normal install from the patch step is already translated. If your menus are English, you are done and should leave this file alone.</p>
-<p><b>If your game is in Japanese.</b> Your source client was untranslated, or something overwrote the patched DLL. Translation packs ship alternate builds of the same file. The pack this guide was written from contains two, <code>mhfz_mhl.dll_custom</code> and <code>mhfz_mhl.dll_og</code>. Swap the custom build in, keeping the server build safe:</p>
+<p>The release zip ships a matching script, so you can skip the manual prefix steps:</p>
 <pre><code>cd ~/Games/MHFZ
-cp -p mhl.dll mhl.dll.server         # keep the server patch build safe
-cp -p "/path/to/client pack/mhfz_mhl.dll_custom/mhl.dll" mhl.dll
-# launch and check the menus; still Japanese?
-cp -p mhl.dll.server mhl.dll        # restore, then try the other variant</code></pre>
-<p>In that pack the <code>_custom</code> folder is the modified build to try first and <code>_og</code> is the untouched original. Folder names vary between packs, so use whichever pair came with yours.</p>
-<p><b>If the game stops connecting after a swap</b>, put <code>mhl.dll.server</code> back. The server patch build is what Hunsterverse expects, and a translation build from a different client version can be rejected.</p>
-<p><b>Coverage is partial.</b> Community translation updates do not translate everything. Item names, NPC dialogue and event text often stay Japanese even with the English DLL in place. That is the translation, not a broken install.</p>
-<p><b>Fonts.</b> If Japanese text shows as boxes, install <code>noto-fonts-cjk</code> and start the launcher with <code>LANG=ja_JP.UTF-8</code> on Linux, or add the Japanese language pack on Windows (Settings, Time and language, Language and region, Add a language).</p>
-<div class="warn box"><b>Two warnings from old client guides.</b> Do not apply the hosts-file trick that circulates with the client pack: it points Capcom hostnames at 127.0.0.1, it is meant for self-hosted Erupe servers, and it will break name resolution for Hunsterverse. And Locale Emulator is only needed if the game refuses to start without a Japanese locale: Mezeporta launches the game itself, so try without it first.</div>
+bash SetupDeps/mezeporta-setup-ubuntu.sh --portable-prefix "$HOME/Games/MHFZ" --controller-fix
+bash SetupDeps/mezeporta-setup-ubuntu.sh --verify</code></pre>
+<p>Drop <code>--controller-fix</code> if you play with mouse and keyboard. The repo copy of this script is named <code>install-deps-ubuntu.sh</code>; it is the same file.</p>
+<div class="note box"><b>Ubuntu Wine version.</b> Ubuntu 24.04 ships Wine 9.0, which is new enough for DXVK. Ubuntu 22.04 ships 6.x, which is too old: use the WineHQ repository or a Kron4ek build. Check with <code>wine --version</code>, you want 9.0 or newer.</div>
+
+<h3>Fedora</h3>
+<pre><code>sudo dnf install wine winetricks cabextract p7zip \
+  gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-bad-free \
+  gstreamer1-plugins-ugly gstreamer1-plugin-pipewire \
+  vulkan-tools glx-utils gamemode</code></pre>
+<p><code>dnf install wine</code> pulls the 32-bit Wine libraries with it. If a 32-bit prefix still refuses to start, add the i686 package explicitly:</p>
+<pre><code>sudo dnf install wine.i686</code></pre>
+<p>Fedora has no bundled setup script, so bootstrap the prefix by hand with the generic steps below.</p>
+
+<h3>openSUSE</h3>
+<pre><code>sudo zypper install wine wine-32bit winetricks cabextract p7zip \
+  gstreamer-plugins-base gstreamer-plugins-good gstreamer-plugins-bad \
+  gstreamer-plugins-ugly gstreamer-plugin-pipewire \
+  vulkan-tools Mesa-demo-x gamemode</code></pre>
+<div class="warn box"><b>Tumbleweed and 32-bit packages.</b> Tumbleweed has been moving 32-bit packages out of the main repositories, so <code>wine-32bit</code> may not resolve. If it does not, follow the openSUSE Wine wiki for the current repository layout, or use the generic path below on a distribution with multilib.</div>
+
+<h3>Any other distribution</h3>
+<p>You need five things: Wine 9.0 or newer with 32-bit support, winetricks, cabextract, p7zip, and GStreamer with the base, good, bad and ugly plugin sets plus a PipeWire, PulseAudio or ALSA sink. With those present, build the prefix yourself:</p>
+<pre><code>cd ~/Games/MHFZ
+export WINEPREFIX="$HOME/Games/MHFZ/Mezeporta/WinePrefix"
+export WINEDEBUG=-all
+
+mkdir -p "$WINEPREFIX"
+wineboot -u
+wineserver -w
+
+WINETRICKS_DISABLE_LNK=1 WINETRICKS_OPT_SHAREDPREFIX=0 \
+  winetricks -q d3dcompiler_47 dxvk vcrun2022
+wineserver -w</code></pre>
+<p>Then the gamepad overrides, if you use a controller:</p>
+<pre><code>for dll in xinput1_3 dinput d8input; do
+  wine reg add 'HKCU\Software\Wine\DllOverrides' /v "$dll" /t REG_SZ /d 'native,builtin' /f
+done
+wineserver -w</code></pre>
+<p>Sanity check before launching:</p>
+<pre><code>wine --version                  # 9.0 or newer
+winetricks --version
+gst-inspect-1.0 appsink &gt;/dev/null &amp;&amp; echo "gstreamer ok"
+gst-inspect-1.0 autoaudiosink &gt;/dev/null &amp;&amp; echo "audio sink ok"</code></pre>
+
+<h3>The wrapper is the same everywhere</h3>
+<p><code>GDK_BACKEND=x11</code> matters on Wayland desktops of any distribution, and <code>WEBKIT_DMABUF_RENDERER_FORCE_SHM=1</code> matters on NVIDIA. On X11, or on AMD and Intel graphics, you can usually leave both out, but keeping them costs nothing.</p>
+
+<h2 id="discord">Appendix: Discord linking and bot commands</h2>
+<p>Linking your game account to Discord gives you character backups and the bot commands. The account page does the linking:</p>
+<ol>
+<li>Open <a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a>.</li>
+<li>Sign in with the same username and password you use in the game.</li>
+<li>The page shows a command such as <code>!f link &lt;token&gt;</code>. Run it in the <code>#mhfrontier</code> channel of the Hunsterverse Discord.</li>
+</ol>
+<p>Once linked, these commands work through a DM with the bot, except where noted:</p>
+<table>
+<tr><th>Command</th><th>What it does</th></tr>
+<tr><td><code>!f backup</code> or <code>!f backupchar</code></td><td>DMs you a ZIP backup of your current character data.</td></tr>
+<tr><td><code>!f import &lt;files&gt;</code> or <code>!f importchar</code></td><td>Restores a backup: attach the BIN files from the ZIP. Extract the archive first; the bot skips 0 KB files.</td></tr>
+<tr><td><code>!f resetpassword</code> or <code>!f pw</code></td><td>DM the bot <code>&lt;newPassword&gt; &lt;confirmNewPassword&gt;</code> to change your password.</td></tr>
+<tr><td><code>!f worldstats</code> or <code>!f ws</code></td><td>In the Frontier Discord channel: current world status, season and players online.</td></tr>
+</table>
+<div class="note box"><b>Backups are BIN files in a ZIP.</b> Extract the archive before importing, and ignore the 0 KB entries. Command names come from the older guide; if one does not respond, check the pinned messages in <code>#mhfrontier</code> for the current list.</div>
 
 <footer>
 <p><b>Credits:</b> Mezeporta launcher by LilButter. Client patch by EclipseKnight for Hunsterverse. Monster Hunter Frontier Z is a Capcom game; this guide only covers running a private server client on Linux.</p>
