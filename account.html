@@ -109,43 +109,54 @@
 
       <!-- Storage -->
       <section class="tab-panel" id="panel-storage" role="tabpanel" aria-labelledby="tab-storage" hidden>
-        <section class="panel">
+        <section class="panel box-panel">
           <div class="panel-head">
-            <h2>Storage</h2>
+            <h2>Item box</h2>
             <span class="panel-note" id="storage-note"></span>
           </div>
-          <div class="toolbar">
+
+          <div class="box-controls">
             <label class="select-wrap">
               <span class="search-label">Character</span>
               <select id="storage-character"></select>
             </label>
-            <span class="toolbar-note" id="storage-summary"></span>
+            <div class="wallet">
+              <div class="wallet-plate"><span class="wallet-label">Zenny</span><span class="wallet-value" id="stat-zenny">-</span></div>
+              <div class="wallet-plate"><span class="wallet-label">G zenny</span><span class="wallet-value" id="stat-gzenny">-</span></div>
+              <div class="wallet-plate"><span class="wallet-label">CP</span><span class="wallet-value" id="stat-cp">-</span></div>
+              <div class="wallet-plate"><span class="wallet-label">Stamps</span><span class="wallet-value" id="stat-stamps">-</span></div>
+            </div>
           </div>
-          <div class="stat-grid" id="storage-money">
-            <div class="stat-card skeleton" id="stat-zenny"><span class="stat-label">Zenny</span><span class="stat-value">&nbsp;</span></div>
-            <div class="stat-card skeleton" id="stat-gzenny"><span class="stat-label">G zenny</span><span class="stat-value">&nbsp;</span></div>
-            <div class="stat-card skeleton" id="stat-cp"><span class="stat-label">CP</span><span class="stat-value">&nbsp;</span></div>
-            <div class="stat-card skeleton" id="stat-stamps"><span class="stat-label">Stamps</span><span class="stat-value">&nbsp;</span></div>
+
+          <div class="mbox">
+            <div class="mbox-bar">
+              <span class="mbox-title">Item box</span>
+              <span class="mbox-cap" id="mbox-cap">0 / 1000</span>
+            </div>
+            <div class="mbox-tabs" id="box-tabs" role="tablist" aria-label="Item box pages"></div>
+            <div class="mbox-main">
+              <div class="mbox-grid" id="box-grid" role="grid" aria-label="Item box slots"></div>
+              <aside class="mbox-side">
+                <div class="preview" id="box-preview" aria-live="polite">
+                  <div class="preview-icon" id="preview-icon"></div>
+                  <p class="preview-name" id="preview-name">No item selected</p>
+                  <p class="preview-meta" id="preview-meta">Click a slot to inspect it</p>
+                </div>
+                <label class="search mbox-search">
+                  <span class="search-label">Search</span>
+                  <input type="search" id="storage-search" placeholder="Item name" autocomplete="off" />
+                </label>
+                <span class="toolbar-note" id="storage-box-note"></span>
+              </aside>
+            </div>
           </div>
+
           <p class="subhead">Pouch</p>
-          <div class="chip-list" id="storage-pouch"><span class="skeleton-line w50"></span></div>
-          <div class="toolbar top-gap">
-            <label class="search">
-              <span class="search-label">Search box</span>
-              <input type="search" id="storage-search" placeholder="Item name" autocomplete="off" />
-            </label>
-            <span class="toolbar-note" id="storage-box-note"></span>
-          </div>
-          <div class="table-wrap">
-            <table class="data-table">
-              <thead><tr><th>Item</th><th>Quantity</th></tr></thead>
-              <tbody id="storage-box">
-                <tr><td colspan="2"><span class="skeleton-line w70"></span></td></tr>
-              </tbody>
-            </table>
-          </div>
+          <div class="mbox-grid pouch-grid" id="pouch-grid"></div>
+
           <p class="subhead">Warehouse</p>
           <div class="chip-list" id="storage-warehouse"><span class="muted">Empty</span></div>
+
           <p class="subhead">House</p>
           <dl class="detail-list" id="storage-house"></dl>
         </section>

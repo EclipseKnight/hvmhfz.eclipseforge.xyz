@@ -431,59 +431,168 @@
     return value === null || value === undefined ? "-" : Number(value).toLocaleString();
   }
 
-  function storageCard(id, label, value) {
-    var card = document.getElementById(id);
-    if (!card) return;
-    card.classList.remove("skeleton");
-    card.querySelector(".stat-label").textContent = label;
-    card.querySelector(".stat-value").textContent = value;
+  var BOX_PAGES = 10;
+  var BOX_SIZE = 100;
+  var box = { page: 0, items: [], bySlot: {}, selected: null, query: "" };
+
+  var ICONS = {
+    flask: { color: "#7fc4e6", d: "M10 3h4v2l-1 1v3.1l3.4 6.6A2.8 2.8 0 0 1 13.8 20h-3.6a2.8 2.8 0 0 1-2.6-4.3L11 9.1V6l-1-1V3z" },
+    leaf: { color: "#86c46e", d: "M20 4C11 4 5 9 4 18c9-1 16-6 16-14z" },
+    book: { color: "#c39a63", d: "M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm1 3v12h9V6H7z" },
+    meat: { color: "#c96f5a", d: "M16.5 5.5a5 5 0 0 0-7 7L6 16a1.8 1.8 0 1 0 2.5 2.5l3.5-3.5a5 5 0 0 0 4.5-9.5z" },
+    gem: { color: "#b98ad8", d: "M12 3l6 6-6 12L6 9l6-6z" },
+    ticket: { color: "#e8c877", d: "M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4V7z" },
+    ore: { color: "#c9a45c", d: "M4 16l4-9 4 3 4-5 4 11-8 4-8-4z" },
+    bone: { color: "#d9cfba", d: "M5.5 8.5a2 2 0 1 1 2.8-2.8l8 8a2 2 0 1 1-2.8 2.8l-8-8z" },
+    sack: { color: "#a9b4c0", d: "M8 8h8l2 5-3 7H9l-3-7 2-5z" }
+  };
+
+  function iconKind(name) {
+    var n = String(name || "").toLowerCase();
+    if (/potion|juice|drink|medicine|antidote|immunizer|nutrient|drug|elixir|extract/.test(n)) return "flask";
+    if (/herb|leaf|mushroom|seed|berry|plant|fruit|nectar|honey|bug|worm|web|moss|grass/.test(n)) return "leaf";
+    if (/book|combo|map|scroll|tome|note/.test(n)) return "book";
+    if (/meat|fish|steak|jerky|sushi/.test(n)) return "meat";
+    if (/gem|jewel|orb|pearl|crystal/.test(n)) return "gem";
+    if (/ticket|tkt|cheque|coin|pass|receipt|coupon|badge/.test(n)) return "ticket";
+    if (/ore|stone|iron|machalite|dragonite|carbalite|mineral/.test(n)) return "ore";
+    if (/bone|fang|claw|scale|shell|carapace|hide|pelt|wing|tail|horn|sacle|fin|tooth/.test(n)) return "bone";
+    return "sack";
   }
 
-  function itemChips(containerId, items, emptyText) {
-    var box = document.getElementById(containerId);
-    clear(box);
-    if (!items || !items.length) {
-      box.appendChild(el("span", "muted", emptyText));
-      return;
-    }
-    items.forEach(function (item) {
-      box.appendChild(el("span", "badge", item.name + " x" + item.quantity));
-    });
+  function iconNode(name) {
+    var kind = ICONS[iconKind(name)];
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", kind.d);
+    path.setAttribute("fill", kind.color);
+    svg.appendChild(path);
+    return svg;
   }
 
-  function renderStorage(data) {
-    storageCard("stat-zenny", "Zenny", money(data.zenny));
-    storageCard("stat-gzenny", "G zenny", money(data.gzenny));
-    storageCard("stat-cp", "CP", money(data.cp));
-    var stamps = data.stamps || {};
-    storageCard("stat-stamps", "Stamps", "HL " + amount(stamps.hlTotal) + " / EX " + amount(stamps.exTotal));
+  function wallet(id, value) {
+    var node = document.getElementById(id);
+    if (node) node.textContent = value;
+  }
 
-    document.getElementById("storage-note").textContent = data.name || "";
-    document.getElementById("storage-summary").textContent =
-      data.itemBox.length + " in the box, " + data.pouch.length + " in the pouch";
-    document.getElementById("storage-box-note").textContent = data.itemBox.length + " item stacks";
-
-    itemChips("storage-pouch", data.pouch, "Empty");
-    itemChips("storage-warehouse", data.warehouse, "Empty");
-
-    var body = document.getElementById("storage-box");
-    clear(body);
-    if (!data.itemBox.length) {
-      var empty = el("tr");
-      var cell = el("td", "empty-cell", "The item box is empty.");
-      cell.colSpan = 2;
-      empty.appendChild(cell);
-      body.appendChild(empty);
+  function pageCount(page) {
+    var count = 0;
+    for (var slot = page * BOX_SIZE; slot < (page + 1) * BOX_SIZE; slot++) {
+      if (box.bySlot[slot]) count++;
     }
-    data.itemBox.forEach(function (item) {
-      var row = el("tr");
-      row.dataset.search = (item.name || "").toLowerCase();
-      row.appendChild(el("td", null, item.name));
-      row.appendChild(el("td", "num", amount(item.quantity)));
-      body.appendChild(row);
-    });
+    return count;
+  }
 
-    var house = data.house;
+  function renderTabs() {
+    var tabs = document.getElementById("box-tabs");
+    clear(tabs);
+    for (var page = 0; page < BOX_PAGES; page++) {
+      var button = el("button", "mbox-tab", String(page + 1));
+      button.type = "button";
+      button.setAttribute("role", "tab");
+      button.setAttribute("aria-pressed", page === box.page ? "true" : "false");
+      var count = pageCount(page);
+      if (count) {
+        button.appendChild(el("span", "tab-dot"));
+        button.title = count + (count === 1 ? " item" : " items");
+      }
+      button.addEventListener("click", (function (target) {
+        return function () {
+          box.page = target;
+          renderTabs();
+          renderGrid();
+        };
+      })(page));
+      tabs.appendChild(button);
+    }
+  }
+
+  function renderGrid() {
+    var grid = document.getElementById("box-grid");
+    clear(grid);
+    var start = box.page * BOX_SIZE;
+    for (var i = 0; i < BOX_SIZE; i++) {
+      var slot = start + i;
+      var item = box.bySlot[slot];
+      var cell = el("div", "slot" + (item ? " filled" : ""));
+      cell.setAttribute("role", "gridcell");
+      if (item) {
+        cell.title = item.name + " x" + item.quantity;
+        if (box.query && item.name.toLowerCase().indexOf(box.query) !== -1) {
+          cell.classList.add("match");
+        } else if (box.query) {
+          cell.classList.add("dim");
+        }
+        if (box.selected === item.slot) cell.classList.add("sel");
+        cell.appendChild(iconNode(item.name));
+        cell.appendChild(el("span", "qty", amount(item.quantity)));
+        cell.addEventListener("click", (function (entry) {
+          return function () { selectItem(entry); };
+        })(item));
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  function showPreview(item, meta) {
+    document.getElementById("preview-name").textContent = item.name;
+    document.getElementById("preview-meta").textContent = meta;
+    var icon = document.getElementById("preview-icon");
+    clear(icon);
+    icon.appendChild(iconNode(item.name));
+  }
+
+  function selectItem(item) {
+    box.selected = item.slot;
+    renderGrid();
+    showPreview(item, "x" + amount(item.quantity) + " · id " + item.id + " · page " +
+      (Math.floor(item.slot / BOX_SIZE) + 1) + ", slot " + ((item.slot % BOX_SIZE) + 1));
+  }
+
+  function searchBox(term) {
+    box.query = term;
+    if (term) {
+      var matches = box.items.filter(function (item) {
+        return item.name.toLowerCase().indexOf(term) !== -1;
+      });
+      if (matches.length) box.page = Math.floor(matches[0].slot / BOX_SIZE);
+      document.getElementById("storage-box-note").textContent =
+        matches.length + (matches.length === 1 ? " match" : " matches");
+    } else {
+      document.getElementById("storage-box-note").textContent = box.items.length + " items";
+    }
+    renderTabs();
+    renderGrid();
+  }
+
+  function renderPouch(pouch) {
+    var grid = document.getElementById("pouch-grid");
+    clear(grid);
+    var bySlot = {};
+    pouch.forEach(function (item) {
+      if (item.slot !== null && item.slot !== undefined) bySlot[item.slot] = item;
+    });
+    for (var i = 0; i < 40; i++) {
+      var item = bySlot[i];
+      var cell = el("div", "slot" + (item ? " filled" : ""));
+      cell.setAttribute("role", "gridcell");
+      if (item) {
+        cell.title = item.name + " x" + item.quantity;
+        cell.appendChild(iconNode(item.name));
+        cell.appendChild(el("span", "qty", amount(item.quantity)));
+        cell.addEventListener("click", (function (entry, index) {
+          return function () {
+            showPreview(entry, "x" + amount(entry.quantity) + " · pouch slot " + (index + 1));
+          };
+        })(item, i));
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  function renderHouse(house) {
     var list = document.getElementById("storage-house");
     clear(list);
     var rows = house
@@ -497,6 +606,48 @@
       list.appendChild(el("dt", null, row[0]));
       list.appendChild(el("dd", null, row[1]));
     });
+  }
+
+  function renderStorage(data) {
+    box.items = data.itemBox || [];
+    box.bySlot = {};
+    box.items.forEach(function (item) {
+      if (item.slot !== null && item.slot !== undefined) box.bySlot[item.slot] = item;
+    });
+    box.page = 0;
+    box.selected = null;
+    box.query = "";
+    var search = document.getElementById("storage-search");
+    if (search) search.value = "";
+
+    document.getElementById("storage-note").textContent = data.name || "";
+    wallet("stat-zenny", money(data.zenny));
+    wallet("stat-gzenny", money(data.gzenny));
+    wallet("stat-cp", money(data.cp));
+    var stamps = data.stamps || {};
+    wallet("stat-stamps", "HL " + amount(stamps.hlTotal) + " / EX " + amount(stamps.exTotal));
+    document.getElementById("mbox-cap").textContent = box.items.length + " / " + (BOX_PAGES * BOX_SIZE);
+
+    document.getElementById("preview-name").textContent = "No item selected";
+    document.getElementById("preview-meta").textContent = "Click a slot to inspect it";
+    clear(document.getElementById("preview-icon"));
+
+    renderTabs();
+    renderGrid();
+    renderPouch(data.pouch || []);
+    renderHouse(data.house);
+
+    var warehouse = document.getElementById("storage-warehouse");
+    clear(warehouse);
+    if (data.warehouse && data.warehouse.length) {
+      data.warehouse.forEach(function (item) {
+        warehouse.appendChild(el("span", "badge", item.name + " x" + item.quantity));
+      });
+    } else {
+      warehouse.appendChild(el("span", "muted", "Empty"));
+    }
+
+    document.getElementById("storage-box-note").textContent = box.items.length + " items";
   }
 
   function loadStorage(characterId) {
@@ -586,9 +737,16 @@
       storageCard("stat-stamps", "Stamps", "-");
     }
 
-    wireSearch("storage-search", "storage-box-note", function (term) {
-      filterRows("#storage-box", term, "storage-box-note", "No items match that search.");
-    });
+    var storageSearch = document.getElementById("storage-search");
+    if (storageSearch) {
+      var timer = null;
+      storageSearch.addEventListener("input", function () {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          searchBox(storageSearch.value.trim().toLowerCase());
+        }, 180);
+      });
+    }
   }
 
   /* ---------- boot ---------- */
