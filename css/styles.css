@@ -454,3 +454,25 @@ select:focus{outline:2px solid rgba(183,138,51,.45)}
 .slot.dim{opacity:.28}
 .slot.dim:hover{opacity:.75}
 .slot .qty{font-size:.68rem}
+
+/* item box refinements */
+.mbox-grid{max-width:760px}
+.mbox-grid.pouch-grid{max-width:760px}
+.mbox-side{display:flex;flex-direction:column;gap:10px;min-height:100%}
+.mbox-side .preview{flex:1;display:flex;flex-direction:column}
+.mbox-side .preview-icon{margin-top:6px}
+.mbox-side .mbox-search{margin-top:auto}
+.slot.match{border-color:#6fb7d8;box-shadow:inset 0 0 0 1px #6fb7d8,0 0 8px rgba(111,183,216,.35)}
+.slot.match.sel{border-color:#e8c877;box-shadow:inset 0 0 0 1px #e8c877,0 0 12px rgba(232,200,119,.45)}
+
+/* keep the box and pouch grids on the same slot size */
+.mbox-main{grid-template-columns:minmax(0,690px) 250px}
+.mbox-grid,.mbox-grid.pouch-grid{max-width:690px}
+@media (max-width:1000px){
+  .mbox-main{grid-template-columns:1fr}
+  .mbox-grid,.mbox-grid.pouch-grid{max-width:100%}
+}
+
+.mbox-pouch{margin-top:14px;padding-top:10px;border-top:1px solid rgba(232,200,119,.14)}
+.mbox-sub-title{display:block;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:#b79a6a;margin:0 0 7px}
+.mbox-pouch .mbox-grid{max-width:690px}

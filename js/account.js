@@ -559,7 +559,7 @@
       });
       if (matches.length) box.page = Math.floor(matches[0].slot / BOX_SIZE);
       document.getElementById("storage-box-note").textContent =
-        matches.length + (matches.length === 1 ? " match" : " matches");
+        matches.length + (matches.length === 1 ? " matching item" : " matching items");
     } else {
       document.getElementById("storage-box-note").textContent = box.items.length + " items";
     }
