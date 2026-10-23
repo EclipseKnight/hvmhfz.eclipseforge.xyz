@@ -16,10 +16,12 @@
       <div class="wrap">
         <a class="brand" href="/">Hunsterverse<small>Monster Hunter Frontier Z</small></a>
         <nav>
+          <a class="navlink" href="/guilds.html">Guilds</a>
+          <a class="navlink" href="/hunters.html">Hunters</a>
+          <a class="navlink" href="/catalog.html">Catalog</a>
+          <a class="navlink" href="/worlds.html">Worlds</a>
+          <a class="navlink" href="/guide-linux.html">Guides</a>
           <a class="navlink" href="/account.html" aria-current="page">Account</a>
-          <a class="navlink" href="/guide-windows.html">Windows guide</a>
-          <a class="navlink" href="/guide-linux.html">Linux guide</a>
-          <a class="navlink" href="https://hunstermonter.net">Site</a>
           <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
         </nav>
       </div>
@@ -38,6 +40,8 @@
       <nav class="tabs" role="tablist" aria-label="Account sections">
         <a class="tab" id="tab-overview" role="tab" aria-controls="panel-overview" aria-selected="true" href="#overview">Overview</a>
         <a class="tab" id="tab-characters" role="tab" aria-controls="panel-characters" aria-selected="false" href="#characters">Characters <span class="tab-count" id="count-characters"></span></a>
+        <a class="tab" id="tab-storage" role="tab" aria-controls="panel-storage" aria-selected="false" href="#storage">Storage</a>
+        <a class="tab" id="tab-hunts" role="tab" aria-controls="panel-hunts" aria-selected="false" href="#hunts">Hunts</a>
         <a class="tab" id="tab-guild" role="tab" aria-controls="panel-guild" aria-selected="false" href="#guild">Guild <span class="tab-count" id="count-guild"></span></a>
         <a class="tab" id="tab-account" role="tab" aria-controls="panel-account" aria-selected="false" href="#account">Account</a>
       </nav>
@@ -99,6 +103,84 @@
               </tbody>
             </table>
           </div>
+        </section>
+      </section>
+
+
+      <!-- Storage -->
+      <section class="tab-panel" id="panel-storage" role="tabpanel" aria-labelledby="tab-storage" hidden>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Storage</h2>
+            <span class="panel-note" id="storage-note"></span>
+          </div>
+          <div class="toolbar">
+            <label class="select-wrap">
+              <span class="search-label">Character</span>
+              <select id="storage-character"></select>
+            </label>
+            <span class="toolbar-note" id="storage-summary"></span>
+          </div>
+          <div class="stat-grid" id="storage-money">
+            <div class="stat-card skeleton" id="stat-zenny"><span class="stat-label">Zenny</span><span class="stat-value">&nbsp;</span></div>
+            <div class="stat-card skeleton" id="stat-gzenny"><span class="stat-label">G zenny</span><span class="stat-value">&nbsp;</span></div>
+            <div class="stat-card skeleton" id="stat-cp"><span class="stat-label">CP</span><span class="stat-value">&nbsp;</span></div>
+            <div class="stat-card skeleton" id="stat-stamps"><span class="stat-label">Stamps</span><span class="stat-value">&nbsp;</span></div>
+          </div>
+          <p class="subhead">Pouch</p>
+          <div class="chip-list" id="storage-pouch"><span class="skeleton-line w50"></span></div>
+          <div class="toolbar top-gap">
+            <label class="search">
+              <span class="search-label">Search box</span>
+              <input type="search" id="storage-search" placeholder="Item name" autocomplete="off" />
+            </label>
+            <span class="toolbar-note" id="storage-box-note"></span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Item</th><th>Quantity</th></tr></thead>
+              <tbody id="storage-box">
+                <tr><td colspan="2"><span class="skeleton-line w70"></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="subhead">Warehouse</p>
+          <div class="chip-list" id="storage-warehouse"><span class="muted">Empty</span></div>
+          <p class="subhead">House</p>
+          <dl class="detail-list" id="storage-house"></dl>
+        </section>
+      </section>
+
+      <!-- Hunts -->
+      <section class="tab-panel" id="panel-hunts" role="tabpanel" aria-labelledby="tab-hunts" hidden>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Hunt log</h2>
+            <span class="panel-note" id="hunts-note"></span>
+          </div>
+          <div class="toolbar">
+            <label class="select-wrap">
+              <span class="search-label">Character</span>
+              <select id="hunts-character"></select>
+            </label>
+            <span class="toolbar-note" id="hunts-summary"></span>
+          </div>
+          <div class="stat-grid" id="hunts-stats">
+            <div class="stat-card skeleton" id="stat-kills"><span class="stat-label">Hunts logged</span><span class="stat-value">&nbsp;</span></div>
+            <div class="stat-card skeleton" id="stat-species"><span class="stat-label">Species hunted</span><span class="stat-value">&nbsp;</span></div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Monster</th><th>Hunts</th></tr></thead>
+              <tbody id="hunts-monsters">
+                <tr><td colspan="2"><span class="skeleton-line w60"></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="subhead">Recent kills</p>
+          <ul class="activity-list" id="hunts-recent">
+            <li class="skeleton-line w70"></li>
+          </ul>
         </section>
       </section>
 

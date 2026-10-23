@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hunsterverse MHFZ: Hunters</title>
+    <meta name="description" content="Hunter rankings for the Hunsterverse Monster Hunter Frontier Z server." />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+
+  <body class="public-page">
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/">Hunsterverse<small>Monster Hunter Frontier Z</small></a>
+        <nav>
+          <a class="navlink" href="/guilds.html">Guilds</a>
+          <a class="navlink" href="/hunters.html" aria-current="page">Hunters</a>
+          <a class="navlink" href="/catalog.html">Catalog</a>
+          <a class="navlink" href="/worlds.html">Worlds</a>
+          <a class="navlink" href="/guide-linux.html">Guides</a>
+          <a class="navlink" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap page">
+      <div id="list-view">
+        <header class="page-head">
+          <p class="kicker">HV MHFZ / Community</p>
+          <h1>Hunters</h1>
+          <p class="page-sub"><span id="hunter-total">Loading</span> ranked hunters. Characters that were never played or hold corrupt records are left out.</p>
+        </header>
+
+        <section class="panel">
+          <div class="toolbar">
+            <label class="search">
+              <span class="search-label">Search</span>
+              <input type="search" id="hunter-search" placeholder="Hunter name" autocomplete="off" />
+            </label>
+            <label class="select-wrap">
+              <span class="search-label">Sort</span>
+              <select id="hunter-sort">
+                <option value="hr">Hunter rank</option>
+                <option value="gr">G rank</option>
+                <option value="recent">Recently seen</option>
+                <option value="name">Name</option>
+              </select>
+            </label>
+            <span class="toolbar-note" id="hunter-results"></span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr><th>#</th><th>Hunter</th><th>HR</th><th>GR</th><th>Weapon</th><th>Guild</th><th>Last seen</th></tr>
+              </thead>
+              <tbody id="hunter-body">
+                <tr><td colspan="7"><span class="skeleton-line w80"></span></td></tr>
+                <tr><td colspan="7"><span class="skeleton-line w60"></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pager" id="hunter-pager" hidden>
+            <button type="button" class="ghost-btn small" id="hunter-prev">Previous</button>
+            <span class="pager-note" id="hunter-page-note"></span>
+            <button type="button" class="ghost-btn small" id="hunter-next">Next</button>
+          </div>
+        </section>
+      </div>
+
+      <div id="detail-view" hidden></div>
+    </main>
+
+    <p class="site-foot">Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+
+    <script src="/js/hunters.js"></script>
+  </body>
+</html>

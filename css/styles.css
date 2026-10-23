@@ -347,3 +347,62 @@ main.sheet footer::before{content:"MHFZ";display:inline-grid;place-items:center;
 .guild-stat dt{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
 .guild-stat dd{margin:2px 0 0;color:var(--ink);font-weight:600;font-size:.9rem}
 .badge-row{display:flex;gap:6px;flex-wrap:wrap}
+
+/* public community pages */
+.page{padding:44px 0 70px}
+.page-head{margin:0 0 24px}
+.back-link{display:inline-block;margin-bottom:18px;color:#5e3f16;font-weight:600;text-decoration:none;font-size:.85rem}
+.back-link:hover{text-decoration:underline}
+.tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.tile{display:block;background:var(--parchment);border:1px solid var(--line);border-radius:8px;padding:16px 18px;text-decoration:none;color:var(--ink);transition:border-color .15s,transform .15s}
+.tile:hover{border-color:rgba(183,138,51,.8);transform:translateY(-1px)}
+.tile h3{margin:0;font-size:1.05rem}
+.tile-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.tile-meta{margin:4px 0 0;font-size:.82rem;color:var(--ink-soft)}
+.tile-stat{margin:8px 0 0;font-weight:700;color:#7a4b12;font-size:.9rem}
+.pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:22px}
+.pager-note{font-size:.8rem;color:var(--ink-soft)}
+.ghost-btn[disabled]{opacity:.45;cursor:not-allowed}
+.select-wrap{display:flex;align-items:center;gap:10px}
+select{font:inherit;font-size:.88rem;padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:#fbf3df;color:var(--ink);max-width:240px}
+select:focus{outline:2px solid rgba(183,138,51,.45)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.chip{font:inherit;font-size:.82rem;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer}
+.chip:hover{border-color:rgba(183,138,51,.8);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--parchment)}
+.rank{color:var(--ink-soft);font-variant-numeric:tabular-nums;width:44px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink-soft)}
+.post{border-top:1px solid rgba(189,166,122,.45);padding:14px 0}
+.post:first-of-type{border-top:0}
+.post-meta{display:flex;justify-content:space-between;gap:12px;font-size:.85rem;margin-bottom:4px;flex-wrap:wrap}
+.post-body{margin:0;color:var(--ink);white-space:pre-wrap;font-size:.9rem}
+.world-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.world-card{background:rgba(183,138,51,.08);border:1px solid rgba(189,166,122,.5);border-radius:8px;padding:14px 16px}
+.world-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.world-head h3{margin:0;font-size:.98rem}
+.world-count{margin:10px 0 0;font-size:1.9rem;font-weight:700;line-height:1;color:var(--ink)}
+.world-meta{margin:4px 0 0;font-size:.78rem;color:var(--ink-soft)}
+.empty-state{color:var(--ink-soft);font-style:italic;padding:16px 0}
+
+/* account storage */
+.subhead{margin:22px 0 8px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.chip-list{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.chip-list .badge{background:rgba(183,138,51,.12)}
+
+.top-gap{margin-top:20px}
+
+/* page shell: the wrap class needs its own rule outside the nav */
+.page.wrap{max-width:1100px;margin:0 auto;padding:44px 20px 70px}
+.page-head h1{margin:0;font-size:2.2rem;line-height:1.15;color:var(--parchment)}
+.page-head .page-sub{color:#c9b993;font-size:.95rem;margin:8px 0 0;max-width:70ch}
+.panel .ghost-btn{color:var(--ink);border-color:var(--line)}
+.panel .ghost-btn:hover{border-color:var(--gold);color:var(--wax)}
+.panel .back-link{margin-bottom:0}
+
+.land-head{grid-column:1 / -1;margin:10px 0 0;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+
+/* badges sitting on the dark page background, not inside a parchment panel */
+.page-head .badge{background:rgba(241,229,200,.14);color:#eadfc6;border-color:rgba(232,200,119,.35)}
+.page-head .badge.good{background:rgba(46,91,78,.55);color:#d3ece0;border-color:rgba(120,180,150,.5)}
+
+.data-table th.num,.data-table td.num{text-align:right;font-variant-numeric:tabular-nums}

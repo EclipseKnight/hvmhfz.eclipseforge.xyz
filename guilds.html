@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hunsterverse MHFZ: Guilds</title>
+    <meta name="description" content="Browse every guild on the Hunsterverse Monster Hunter Frontier Z server: rosters, RP and boards." />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+
+  <body class="public-page">
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/">Hunsterverse<small>Monster Hunter Frontier Z</small></a>
+        <nav>
+          <a class="navlink" href="/guilds.html" aria-current="page">Guilds</a>
+          <a class="navlink" href="/hunters.html">Hunters</a>
+          <a class="navlink" href="/catalog.html">Catalog</a>
+          <a class="navlink" href="/worlds.html">Worlds</a>
+          <a class="navlink" href="/guide-linux.html">Guides</a>
+          <a class="navlink" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap page">
+      <div id="list-view">
+        <header class="page-head">
+          <p class="kicker">HV MHFZ / Community</p>
+          <h1>Guilds</h1>
+          <p class="page-sub"><span id="guild-total">Loading</span> guilds on the server. Search by name, open one for its roster and board.</p>
+        </header>
+
+        <section class="panel">
+          <div class="toolbar">
+            <label class="search">
+              <span class="search-label">Search</span>
+              <input type="search" id="guild-search" placeholder="Guild name" autocomplete="off" />
+            </label>
+            <label class="select-wrap">
+              <span class="search-label">Sort</span>
+              <select id="guild-sort">
+                <option value="rp">Guild RP</option>
+                <option value="members">Members</option>
+                <option value="newest">Newest</option>
+                <option value="name">Name</option>
+              </select>
+            </label>
+            <span class="toolbar-note" id="guild-results"></span>
+          </div>
+          <div class="tile-grid" id="guilds">
+            <div class="tile skeleton"><span class="skeleton-line w50"></span><span class="skeleton-line w80"></span></div>
+            <div class="tile skeleton"><span class="skeleton-line w60"></span><span class="skeleton-line w40"></span></div>
+          </div>
+          <div class="pager" id="guild-pager" hidden>
+            <button type="button" class="ghost-btn small" id="guild-prev">Previous</button>
+            <span class="pager-note" id="guild-page-note"></span>
+            <button type="button" class="ghost-btn small" id="guild-next">Next</button>
+          </div>
+        </section>
+      </div>
+
+      <div id="detail-view" hidden></div>
+    </main>
+
+    <p class="site-foot">Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+
+    <script src="/js/guilds.js"></script>
+  </body>
+</html>

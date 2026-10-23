@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hunsterverse MHFZ: Worlds</title>
+    <meta name="description" content="Live world and player status for the Hunsterverse Monster Hunter Frontier Z server." />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+
+  <body class="public-page">
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/">Hunsterverse<small>Monster Hunter Frontier Z</small></a>
+        <nav>
+          <a class="navlink" href="/guilds.html">Guilds</a>
+          <a class="navlink" href="/hunters.html">Hunters</a>
+          <a class="navlink" href="/catalog.html">Catalog</a>
+          <a class="navlink" href="/worlds.html" aria-current="page">Worlds</a>
+          <a class="navlink" href="/guide-linux.html">Guides</a>
+          <a class="navlink" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap page">
+      <header class="page-head">
+        <p class="kicker">HV MHFZ / Live</p>
+        <h1>Worlds</h1>
+        <p class="page-sub"><span id="worlds-online">Loading</span>. Counts come from the server itself and refresh every 30 seconds.</p>
+      </header>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Server worlds</h2>
+          <span class="panel-note" id="worlds-updated"></span>
+        </div>
+        <div class="world-grid" id="worlds">
+          <div class="world skeleton"><span class="skeleton-line w50"></span><span class="skeleton-line w30"></span></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Most hunted monsters</h2><span class="panel-note">server wide</span></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Monster</th><th>Hunts</th></tr></thead>
+            <tbody id="monster-body"><tr><td colspan="3"><span class="skeleton-line w60"></span></td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <p class="site-foot">Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+
+    <script src="/js/worlds.js"></script>
+  </body>
+</html>

@@ -4,7 +4,7 @@
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
-  var TABS = ["overview", "characters", "guild", "account"];
+  var TABS = ["overview", "characters", "storage", "hunts", "guild", "account"];
 
   var state = {
     account: null,
@@ -420,6 +420,177 @@
     if (results) results.textContent = term ? shown + " matching" : "";
   }
 
+
+  /* ---------- storage and hunts ---------- */
+
+  function money(value) {
+    return Number(value || 0).toLocaleString();
+  }
+
+  function amount(value) {
+    return value === null || value === undefined ? "-" : Number(value).toLocaleString();
+  }
+
+  function storageCard(id, label, value) {
+    var card = document.getElementById(id);
+    if (!card) return;
+    card.classList.remove("skeleton");
+    card.querySelector(".stat-label").textContent = label;
+    card.querySelector(".stat-value").textContent = value;
+  }
+
+  function itemChips(containerId, items, emptyText) {
+    var box = document.getElementById(containerId);
+    clear(box);
+    if (!items || !items.length) {
+      box.appendChild(el("span", "muted", emptyText));
+      return;
+    }
+    items.forEach(function (item) {
+      box.appendChild(el("span", "badge", item.name + " x" + item.quantity));
+    });
+  }
+
+  function renderStorage(data) {
+    storageCard("stat-zenny", "Zenny", money(data.zenny));
+    storageCard("stat-gzenny", "G zenny", money(data.gzenny));
+    storageCard("stat-cp", "CP", money(data.cp));
+    var stamps = data.stamps || {};
+    storageCard("stat-stamps", "Stamps", "HL " + amount(stamps.hlTotal) + " / EX " + amount(stamps.exTotal));
+
+    document.getElementById("storage-note").textContent = data.name || "";
+    document.getElementById("storage-summary").textContent =
+      data.itemBox.length + " in the box, " + data.pouch.length + " in the pouch";
+    document.getElementById("storage-box-note").textContent = data.itemBox.length + " item stacks";
+
+    itemChips("storage-pouch", data.pouch, "Empty");
+    itemChips("storage-warehouse", data.warehouse, "Empty");
+
+    var body = document.getElementById("storage-box");
+    clear(body);
+    if (!data.itemBox.length) {
+      var empty = el("tr");
+      var cell = el("td", "empty-cell", "The item box is empty.");
+      cell.colSpan = 2;
+      empty.appendChild(cell);
+      body.appendChild(empty);
+    }
+    data.itemBox.forEach(function (item) {
+      var row = el("tr");
+      row.dataset.search = (item.name || "").toLowerCase();
+      row.appendChild(el("td", null, item.name));
+      row.appendChild(el("td", "num", amount(item.quantity)));
+      body.appendChild(row);
+    });
+
+    var house = data.house;
+    var list = document.getElementById("storage-house");
+    clear(list);
+    var rows = house
+      ? [["House state", house.state === null || house.state === undefined ? "not set" : String(house.state)],
+         ["Gallery record", house.galleryBytes ? house.galleryBytes + " bytes stored" : "none"],
+         ["Bookshelf", house.bookshelfBytes ? house.bookshelfBytes + " bytes stored" : "none"],
+         ["Tore record", house.toreBytes ? house.toreBytes + " bytes stored" : "none"],
+         ["Garden", house.gardenBytes ? house.gardenBytes + " bytes stored" : "none"]]
+      : [["House", "no house data"]];
+    rows.forEach(function (row) {
+      list.appendChild(el("dt", null, row[0]));
+      list.appendChild(el("dd", null, row[1]));
+    });
+  }
+
+  function loadStorage(characterId) {
+    if (!characterId) return;
+    document.getElementById("storage-note").textContent = "loading";
+    request("/api/account/characters/" + encodeURIComponent(characterId) + "/storage")
+      .then(renderStorage)
+      .catch(function (error) {
+        if (error.message === "unauthenticated") return;
+        showError("Could not read that character's storage.");
+      });
+  }
+
+  function renderHunts(data) {
+    storageCard("stat-kills", "Hunts logged", money(data.totalKills));
+    storageCard("stat-species", "Species hunted", String((data.monsters || []).length));
+
+    var body = document.getElementById("hunts-monsters");
+    clear(body);
+    if (!data.monsters || !data.monsters.length) {
+      var empty = el("tr");
+      var cell = el("td", "empty-cell", "No hunts recorded for this character.");
+      cell.colSpan = 2;
+      empty.appendChild(cell);
+      body.appendChild(empty);
+    } else {
+      data.monsters.forEach(function (monster) {
+        var row = el("tr");
+        row.appendChild(el("td", null, monster.name));
+        row.appendChild(el("td", "num", amount(monster.kills)));
+        body.appendChild(row);
+      });
+    }
+
+    var recent = document.getElementById("hunts-recent");
+    clear(recent);
+    if (!data.recent || !data.recent.length) {
+      recent.appendChild(el("li", "empty-state", "Nothing logged yet."));
+    } else {
+      data.recent.forEach(function (kill) {
+        var item = el("li");
+        item.appendChild(el("span", "activity-text", kill.monster + (kill.quantity > 1 ? " x" + kill.quantity : "")));
+        item.appendChild(el("time", "activity-when", formatDate(kill.at)));
+        recent.appendChild(item);
+      });
+    }
+
+    document.getElementById("hunts-note").textContent = data.totalKills ? "from the server kill log" : "";
+  }
+
+  function loadHunts(characterId) {
+    if (!characterId) return;
+    request("/api/account/characters/" + encodeURIComponent(characterId) + "/hunts")
+      .then(renderHunts)
+      .catch(function (error) {
+        if (error.message === "unauthenticated") return;
+        showError("Could not read that character's hunt log.");
+      });
+  }
+
+  function wireCharacters(characters) {
+    ["storage-character", "hunts-character"].forEach(function (id) {
+      var select = document.getElementById(id);
+      if (!select) return;
+      clear(select);
+      characters.forEach(function (character) {
+        var option = document.createElement("option");
+        option.value = character.id;
+        option.textContent = character.name + (character.hr ? " · HR " + character.hr : "");
+        select.appendChild(option);
+      });
+    });
+
+    var storageSelect = document.getElementById("storage-character");
+    var huntsSelect = document.getElementById("hunts-character");
+    if (storageSelect) storageSelect.addEventListener("change", function () { loadStorage(storageSelect.value); });
+    if (huntsSelect) huntsSelect.addEventListener("change", function () { loadHunts(huntsSelect.value); });
+
+    if (characters.length) {
+      loadStorage(characters[0].id);
+      loadHunts(characters[0].id);
+    } else {
+      document.getElementById("storage-note").textContent = "no characters";
+      storageCard("stat-zenny", "Zenny", "-");
+      storageCard("stat-gzenny", "G zenny", "-");
+      storageCard("stat-cp", "CP", "-");
+      storageCard("stat-stamps", "Stamps", "-");
+    }
+
+    wireSearch("storage-search", "storage-box-note", function (term) {
+      filterRows("#storage-box", term, "storage-box-note", "No items match that search.");
+    });
+  }
+
   /* ---------- boot ---------- */
 
   function signOut() {
@@ -464,6 +635,7 @@
       renderCharacters(state.characters);
       renderGuilds(state.guilds);
       renderActivity(state.characters, state.guilds);
+      wireCharacters(state.characters);
     }).catch(function (error) {
       if (error.message === "unauthenticated") return;
       showError("Could not load your account right now. Try again in a moment.");
