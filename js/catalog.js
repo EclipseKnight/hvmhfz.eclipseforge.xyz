@@ -36,15 +36,23 @@
     if (!data.items.length) {
       var empty = el("tr");
       var cell = el("td", "empty-cell", "Nothing matches that search.");
-      cell.colSpan = 2;
+      cell.colSpan = 3;
       empty.appendChild(cell);
       body.appendChild(empty);
     }
 
     data.items.forEach(function (entry) {
       var row = el("tr");
-      var idCell = el("td", "mono", entry.id);
-      row.appendChild(idCell);
+      var iconCell = el("td", "catalog-icon");
+      if (entry.icon) {
+        var img = document.createElement("img");
+        img.src = "/assets/items/" + entry.icon + ".webp";
+        img.alt = "";
+        img.loading = "lazy";
+        iconCell.appendChild(img);
+      }
+      row.appendChild(iconCell);
+      row.appendChild(el("td", "mono", entry.id));
       row.appendChild(el("td", null, entry.name));
       body.appendChild(row);
     });

@@ -460,7 +460,19 @@
     return "sack";
   }
 
-  function iconNode(name) {
+  function iconNode(item) {
+    var name = typeof item === "string" ? item : (item && item.name);
+    var file = item && typeof item === "object" ? item.icon : null;
+
+    if (file) {
+      var img = document.createElement("img");
+      img.className = "item-img";
+      img.src = "/assets/items/" + file + ".webp";
+      img.alt = "";
+      img.loading = "lazy";
+      return img;
+    }
+
     var kind = ICONS[iconKind(name)];
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 24 24");
@@ -526,7 +538,7 @@
           cell.classList.add("dim");
         }
         if (box.selected === item.slot) cell.classList.add("sel");
-        cell.appendChild(iconNode(item.name));
+        cell.appendChild(iconNode(item));
         cell.appendChild(el("span", "qty", amount(item.quantity)));
         cell.addEventListener("click", (function (entry) {
           return function () { selectItem(entry); };
@@ -541,7 +553,7 @@
     document.getElementById("preview-meta").textContent = meta;
     var icon = document.getElementById("preview-icon");
     clear(icon);
-    icon.appendChild(iconNode(item.name));
+    icon.appendChild(iconNode(item));
   }
 
   function selectItem(item) {
@@ -580,7 +592,7 @@
       cell.setAttribute("role", "gridcell");
       if (item) {
         cell.title = item.name + " x" + item.quantity;
-        cell.appendChild(iconNode(item.name));
+        cell.appendChild(iconNode(item));
         cell.appendChild(el("span", "qty", amount(item.quantity)));
         cell.addEventListener("click", (function (entry, index) {
           return function () {

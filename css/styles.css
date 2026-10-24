@@ -476,3 +476,9 @@ select:focus{outline:2px solid rgba(183,138,51,.45)}
 .mbox-pouch{margin-top:14px;padding-top:10px;border-top:1px solid rgba(232,200,119,.14)}
 .mbox-sub-title{display:block;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:#b79a6a;margin:0 0 7px}
 .mbox-pouch .mbox-grid{max-width:690px}
+
+/* real item icons */
+.slot img.item-img{width:78%;height:78%;object-fit:contain;display:block}
+.catalog-icon{width:34px;padding:4px 6px}
+.catalog-icon img{width:26px;height:26px;object-fit:contain;display:block}
+.icon-col{width:34px}
