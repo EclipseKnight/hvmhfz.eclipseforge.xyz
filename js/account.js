@@ -559,8 +559,8 @@
   function selectItem(item) {
     box.selected = item.slot;
     renderGrid();
-    showPreview(item, "x" + amount(item.quantity) + " · id " + item.id + " · page " +
-      (Math.floor(item.slot / BOX_SIZE) + 1) + ", slot " + ((item.slot % BOX_SIZE) + 1));
+    showPreview(item, "x" + amount(item.quantity) + " · id " + item.id +
+      " · slot " + ((item.slot % BOX_SIZE) + 1));
   }
 
   function searchBox(term) {

@@ -482,3 +482,5 @@ select:focus{outline:2px solid rgba(183,138,51,.45)}
 .catalog-icon{width:34px;padding:4px 6px}
 .catalog-icon img{width:26px;height:26px;object-fit:contain;display:block}
 .icon-col{width:34px}
+
+.preview-meta{overflow-wrap:anywhere}
