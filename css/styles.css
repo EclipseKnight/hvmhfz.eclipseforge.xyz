@@ -484,3 +484,8 @@ select:focus{outline:2px solid rgba(183,138,51,.45)}
 .icon-col{width:34px}
 
 .preview-meta{overflow-wrap:anywhere}
+
+/* animated Hunsterverse Z wordmark in the nav */
+.brand{display:flex;align-items:center;padding:0;border:0}
+.brand-logo{display:block;height:44px;width:auto}
+@media (max-width:700px){.brand-logo{height:36px}}
