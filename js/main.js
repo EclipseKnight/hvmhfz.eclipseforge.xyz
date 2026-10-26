@@ -1,47 +1,21 @@
 let accessToken;
 let discordAccessToken;
 
-const TURNSTILE_SITEKEY = '0x4AAAAAAFiqTP8B32NFqXS1';
 const TOKEN_KEY = "hvmhfz.token";
-let turnstileWidgetId = null;
 
 document.getElementById("submit").addEventListener("click", validate);
 
-// Cloudflare Turnstile, rendered explicitly once api.js is available.
-function renderTurnstile() {
-    if (turnstileWidgetId !== null) return;
-    if (!window.turnstile) return;
-    const slot = document.getElementById("turnstile-slot");
-    if (!slot) return;
-    turnstileWidgetId = window.turnstile.render(slot, {
-        sitekey: TURNSTILE_SITEKEY,
-        theme: "light",
-        action: "login",
-        callback: function () {
-            const warning = document.getElementById("login-warning");
-            if (warning) warning.hidden = true;
-        },
-        "expired-callback": function () {
-            resetTurnstile();
-        },
-        "error-callback": function () {
-            showWarning("Verification failed to load. Reload the page and try again.");
-        }
-    });
-}
-
-function resetTurnstile() {
-    if (window.turnstile && turnstileWidgetId !== null) {
-        window.turnstile.reset(turnstileWidgetId);
+// Cloudflare Turnstile (js/turnstile.js), rendered as soon as api.js is available.
+const loginTurnstile = window.HvTurnstile.mount(document.getElementById("turnstile-slot"), {
+    action: "login",
+    onSolved: function () {
+        const warning = document.getElementById("login-warning");
+        if (warning) warning.hidden = true;
+    },
+    onError: function () {
+        showWarning("Verification failed to load. Reload the page and try again.");
     }
-}
-
-function turnstileToken() {
-    if (window.turnstile && turnstileWidgetId !== null) {
-        return window.turnstile.getResponse(turnstileWidgetId) || "";
-    }
-    return "";
-}
+});
 
 function showWarning(message) {
     const warning = document.getElementById("login-warning");
@@ -49,14 +23,6 @@ function showWarning(message) {
     if (message) warning.textContent = message;
     warning.hidden = false;
 }
-
-const turnstileWait = setInterval(function () {
-    if (window.turnstile) {
-        clearInterval(turnstileWait);
-        renderTurnstile();
-    }
-}, 250);
-setTimeout(function () { clearInterval(turnstileWait); }, 20000);
 
 document.getElementById("password").addEventListener("keydown", function (event) {
     if (event.key === "Enter") validate(event);
@@ -125,10 +91,10 @@ async function validate(event) {
         return;
     }
 
-    const token = turnstileToken();
+    const token = loginTurnstile.token();
     if (!token) {
         showWarning("Complete the verification challenge, then press Submit again.");
-        renderTurnstile();
+        loginTurnstile.render();
         return;
     }
 
@@ -145,7 +111,7 @@ async function validate(event) {
         await displayActivationCode(userData);
     } finally {
         if (button) button.disabled = false;
-        resetTurnstile();
+        loginTurnstile.reset();
     }
 }
 

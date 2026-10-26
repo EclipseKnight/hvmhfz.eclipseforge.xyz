@@ -14,6 +14,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/worlds.html` | Live world status and server wide hunt totals, refreshed every 30 seconds. |
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
+| `/report.html` | Bug report (`#bug`) and feature request (`#feature`) forms. No sign-in. Each report becomes a task on the Kanboard board. |
 
 ## Layout
 
@@ -26,15 +27,19 @@ catalog.html          item and equipment catalog
 worlds.html           world status and hunt totals
 guide-windows.html    Windows guide
 guide-linux.html      Linux guide
+report.html           bug report and feature request forms
 css/styles.css        shared guild theme (parchment, gold, leather)
 assets/guide/*.webp   guide screenshots, WebP
 assets/favicon.png    site icon
-js/main.js            login, Cloudflare Turnstile, saved session
+js/main.js            login, saved session
+js/turnstile.js       Cloudflare Turnstile widget, shared by main.js and report.js
+js/report.js          report forms: send, success, error and Discord fallback
 js/account.js         account page, including storage and hunt log
 js/guilds.js          guild directory and detail
 js/hunters.js         hunter directory and profile
 js/catalog.js         catalog browsing
 js/worlds.js          world status polling
+dev/mock-feedback.py  local stand-in for POST /api/feedback (testing only)
 CNAME                 hvmhfz.eclipseforge.xyz
 ```
 
@@ -47,7 +52,42 @@ All read through `https://api.hvmhfz.eclipseforge.xyz`.
 - Public: `/api/public/summary`, `/guilds`, `/guilds/{id}`, `/hunters`, `/hunters/{id}`, `/catalog/items`, `/catalog/equipment`, `/worlds`, `/monsters`.
 - Account (JWT): `/api/account`, `/characters`, `/guilds`, `/discord`, `/characters/{id}/storage`, `/characters/{id}/hunts`.
 
+- Feedback (no sign-in): `POST /api/feedback`, used by `report.html`.
+
 Character storage and hunt endpoints are scoped to the signed in user; another account's character returns 404. Save data is decoded in memory and never stored or exposed raw.
+
+### Feedback endpoint
+
+`report.html` sends one JSON object per report:
+
+| Field | Bug | Feature | Limit |
+|---|---|---|---|
+| `type` | `"bug"` | `"feature"` | |
+| `title` | required | required | 120 |
+| `description` | required (what happened) | required (the idea) | 4000 |
+| `platform` | required, `"windows"` or `"linux"` | | |
+| `steps` | optional | | 4000 |
+| `expected` | optional | | 2000 |
+| `reason` | | optional (why it helps) | 2000 |
+| `contact` | optional Discord name | optional Discord name | 64 |
+| `website` | honeypot, empty for people | same | |
+| `turnstileToken` | Turnstile response | same | |
+
+Optional fields are sent as empty strings. The page expects `201 {"taskId": n}` (or `200` with no
+body when the honeypot was filled), `400` bad input, `403` Turnstile failed, `429` rate limited.
+Any other answer, a network error or no answer within 15 seconds shows the Discord fallback: the
+report as plain text to copy into #mhfrontier.
+
+### Testing the report page locally
+
+```
+python3 dev/mock-feedback.py 201 8099     # or 400, 403, 429, 502
+python3 -m http.server 8000
+```
+
+Open `http://localhost:8000/report.html?api=http://localhost:8099`. The `?api=` override and
+Cloudflare's always-pass test Turnstile key are only used on `localhost` and `127.0.0.1`; the live
+site always uses the real API and key.
 
 ## Links
 
