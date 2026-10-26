@@ -95,15 +95,26 @@ Character storage and hunt endpoints are scoped to the signed in user; another a
 | `website` | honeypot, empty for people | same | |
 | `turnstileToken` | Turnstile response | same | |
 
-Optional fields are sent as empty strings. The page expects `201 {"taskId": n}` (or `200` with no
-body when the honeypot was filled), `400` bad input, `403` Turnstile failed, `429` rate limited.
-Any other answer, a network error or no answer within 15 seconds shows the Discord fallback: the
-report as plain text to copy into #mhfrontier.
+Optional fields are sent as empty strings.
+
+Attachments (optional, both forms): up to 3 files of 2 MB each, PNG, JPEG or GIF images or `.txt`
+and `.log` files. The page checks count, size and file name before sending. With files, the request
+is `multipart/form-data` instead of JSON: the same JSON object in a `report` part
+(`Content-Type: application/json`) and one `files` part per file. The API checks the content again,
+re-encodes images (drops metadata such as phone GPS) and attaches them to the Kanboard task under
+its own names (`screenshot-1.png`, `log-2.txt`). PDFs, archives and programs are refused.
+
+The page expects `201 {"taskId": n, "attachmentsFailed": 0}` (or `200` with no body when the
+honeypot was filled), `400` bad input or attachment, `403` Turnstile failed, `413` attachments too
+large, `429` rate limited. When `attachmentsFailed` is above 0 the task exists but some files are
+missing from it, and the page asks for them on Discord. Any other answer, a network error or no
+answer within 15 seconds (60 with attachments) shows the Discord fallback: the report as plain text
+to copy into #mhfrontier.
 
 ### Testing the report page locally
 
 ```
-python3 dev/mock-feedback.py 201 8099     # or 400, 403, 429, 502
+python3 dev/mock-feedback.py 201 8099     # or 400, 403, 413, 429, 502
 python3 -m http.server 8000
 ```
 

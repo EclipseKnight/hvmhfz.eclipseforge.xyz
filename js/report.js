@@ -1,12 +1,19 @@
 /* Bug report and feature request forms. Each form posts JSON to POST /api/feedback on the
    REST API, which checks Turnstile and rate limits, then creates a task on the Kanboard board.
-   When the API can't be reached, the player gets their report as text to post on Discord. */
+   With attachments the same JSON goes as the "report" part of a multipart upload, next to the
+   files. When the API can't be reached, the player gets their report as text to post on Discord. */
 (function () {
   "use strict";
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var DISCORD = "https://discord.gg/YuE42eh";
   var TIMEOUT_MS = 15000;
+  // Uploading and storing up to 6 MB on the board takes longer than a plain report.
+  var UPLOAD_TIMEOUT_MS = 60000;
+  // Same limits as the API (README, "Feedback endpoint"). The API also checks the content.
+  var MAX_FILES = 3;
+  var MAX_FILE_BYTES = 2 * 1024 * 1024;
+  var FILE_TYPES = /\.(png|jpe?g|gif|txt|log)$/i;
   var LABELS = {
     title: "Title", platform: "Platform", description: "Details", steps: "Steps to reproduce",
     expected: "Expected", reason: "Why it helps", contact: "Discord name"
@@ -46,6 +53,22 @@
     return body;
   }
 
+  function chosenFiles(form) {
+    var input = form.elements.namedItem("files");
+    return input && input.files ? Array.prototype.slice.call(input.files) : [];
+  }
+
+  /* Returns what is wrong with the chosen files, or null. Checked before the spam check is used up. */
+  function checkFiles(files) {
+    if (files.length > MAX_FILES) return "Attach at most " + MAX_FILES + " files.";
+    for (var i = 0; i < files.length; i++) {
+      if (!FILE_TYPES.test(files[i].name)) return files[i].name + ": only PNG, JPEG or GIF images and .txt or .log files can be attached.";
+      if (files[i].size === 0) return files[i].name + " is empty.";
+      if (files[i].size > MAX_FILE_BYTES) return files[i].name + " is larger than 2 MB. Crop or shrink it, or attach part of the log.";
+    }
+    return null;
+  }
+
   /* The report as plain text, for pasting into Discord when the API is down. */
   function asText(body) {
     var lines = [(body.type === "bug" ? "Bug: " : "Feature request: ") + body.title];
@@ -64,9 +87,18 @@
     status.scrollIntoView({ block: "nearest" });
   }
 
-  function showSuccess(form, taskId) {
+  function showSuccess(form, taskId, attachmentsFailed) {
     var text = taskId ? "Thanks, reported as task #" + taskId + "." : "Thanks, reported.";
-    showStatus(form, "good", [el("p", null, text)]);
+    var nodes = [el("p", null, text)];
+    if (attachmentsFailed > 0) {
+      // The task exists; only some files are missing from it, so don't ask for the whole report again.
+      var missing = el("p", "report-hint", attachmentsFailed + (attachmentsFailed === 1 ? " attachment" : " attachments")
+        + " could not be saved. ");
+      missing.appendChild(discordLink("Post them in #mhfrontier on Discord"));
+      missing.appendChild(document.createTextNode(taskId ? " with the task number." : "."));
+      nodes.push(missing);
+    }
+    showStatus(form, "good", nodes);
   }
 
   // A problem the player can fix (input, spam check, rate limit). The form keeps its contents.
@@ -78,10 +110,10 @@
   }
 
   // The service is down or not deployed: hand the report over for Discord.
-  function showFallback(form, body) {
+  function showFallback(form, body, files) {
     var intro = el("p", null, "The report service isn't reachable right now. Copy your report and post it in #mhfrontier on ");
     intro.appendChild(discordLink("Discord"));
-    intro.appendChild(document.createTextNode("."));
+    intro.appendChild(document.createTextNode(files.length ? ", with your attachments." : "."));
     var text = el("textarea", "report-copy");
     text.readOnly = true;
     text.rows = 6;
@@ -103,21 +135,28 @@
   }
 
   function errorMessage(status) {
-    if (status === 400) return "Some fields were not accepted. Check that the required ones are filled in and not too long.";
+    if (status === 400) return "Some fields or attachments were not accepted. Check that the required fields are filled in and not too long, and that attachments are PNG, JPEG or GIF images or plain text logs.";
+    if (status === 413) return "The attachments are too large: at most 3 files of 2 MB each.";
     if (status === 403) return "The spam check failed. Complete it again, then send.";
     if (status === 429) return "Too many reports from your connection. Wait a few minutes and try again.";
     return null;
   }
 
-  function send(body) {
+  function send(body, files) {
     var controller = new AbortController();
-    var timer = setTimeout(function () { controller.abort(); }, TIMEOUT_MS);
-    return fetch(apiBase() + "/api/feedback", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-      signal: controller.signal
-    }).finally(function () { clearTimeout(timer); });
+    var request = { method: "POST", signal: controller.signal };
+    if (files.length) {
+      // No Content-Type header here: the browser sets it with the multipart boundary.
+      var data = new FormData();
+      data.append("report", new Blob([JSON.stringify(body)], { type: "application/json" }));
+      files.forEach(function (file) { data.append("files", file, file.name); });
+      request.body = data;
+    } else {
+      request.headers = { "Content-Type": "application/json" };
+      request.body = JSON.stringify(body);
+    }
+    var timer = setTimeout(function () { controller.abort(); }, files.length ? UPLOAD_TIMEOUT_MS : TIMEOUT_MS);
+    return fetch(apiBase() + "/api/feedback", request).finally(function () { clearTimeout(timer); });
   }
 
   function setUp(form) {
@@ -135,6 +174,12 @@
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       var body = readForm(form);
+      var files = chosenFiles(form);
+      var fileProblem = checkFiles(files);
+      if (fileProblem) {
+        showError(form, fileProblem);
+        return;
+      }
       body.turnstileToken = widget.token();
       if (!body.turnstileToken) {
         widget.render();
@@ -144,18 +189,18 @@
 
       button.disabled = true;
       button.textContent = "Sending...";
-      send(body).then(function (response) {
+      send(body, files).then(function (response) {
         if (response.ok) {
           return response.json().catch(function () { return {}; }).then(function (data) {
-            showSuccess(form, data.taskId);
+            showSuccess(form, data.taskId, data.attachmentsFailed);
             form.reset();
           });
         }
         var message = errorMessage(response.status);
         if (message) showError(form, message);
-        else showFallback(form, body);
+        else showFallback(form, body, files);
       }).catch(function () {
-        showFallback(form, body);
+        showFallback(form, body, files);
       }).finally(function () {
         button.disabled = false;
         button.textContent = buttonText;
