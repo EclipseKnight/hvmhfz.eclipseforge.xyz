@@ -6,7 +6,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 
 | Path | What it does |
 |---|---|
-| `/` | Sign in. After a successful login it hands over to `/account.html`. |
+| `/` | Home: how to start playing (guides, steps) and sign in. After a successful login it hands over to `/account.html`. |
 | `/account.html` | Signed in view: overview, characters, storage, hunt log, guild and account. Redirects to `/` without a valid session. |
 | `/guilds.html` | Guild directory: search, sort by RP, members, newest or name. `?id=` opens a guild with roster and board. |
 | `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile. |
@@ -19,7 +19,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 ## Layout
 
 ```
-index.html            sign in
+index.html            home and sign in
 account.html          signed in account view (tabs: overview, characters, storage, hunts, guild, account)
 guilds.html           guild directory and detail
 hunters.html          hunter directory and profile
@@ -28,9 +28,10 @@ worlds.html           world status and hunt totals
 guide-windows.html    Windows guide
 guide-linux.html      Linux guide
 report.html           bug report and feature request forms
-css/styles.css        shared guild theme (parchment, gold, leather)
+css/styles.css        shared guild-hall theme (leather page, parchment panels, brass trim, gold buttons)
 assets/guide/*.webp   guide screenshots, WebP
 assets/favicon.png    site icon
+js/nav.js             site nav: folds the links behind a Menu button on narrow screens
 js/main.js            login, saved session
 js/turnstile.js       Cloudflare Turnstile widget, shared by main.js and report.js
 js/report.js          report forms: send, success, error and Discord fallback
@@ -40,10 +41,31 @@ js/hunters.js         hunter directory and profile
 js/catalog.js         catalog browsing
 js/worlds.js          world status polling
 dev/mock-feedback.py  local stand-in for POST /api/feedback (testing only)
+dev/check-site.py     checks that every page has the same nav, footer and skip link
 CNAME                 hvmhfz.eclipseforge.xyz
 ```
 
 Static site, no build step. Push to `main` and GitHub Pages serves it.
+
+## Site shell
+
+There are no templates: every page carries its own copy of the same header nav and footer.
+
+- Nav, same on every page and in this order: Guilds, Hunters, Catalog, Worlds, Guides, Report, Account, Discord.
+  The page's own link has `aria-current="page"`; the guide pages mark Guides, and the home page marks nothing.
+  Guides opens the Windows guide; both guides switch between Windows and Linux at the top.
+- Each page also has the skip link (`<a class="skip-link" href="#content">`), a `main` with `id="content"`,
+  the footer `footer.site-foot`, `/css/styles.css` and `/js/nav.js`.
+- The bar is sticky. Below 980px wide `js/nav.js` folds the links behind a Menu button; without JavaScript
+  they wrap into a grid under the logo.
+
+To change the nav or footer, change it on every page and in `NAV` in `dev/check-site.py`, then run:
+
+```
+python3 dev/check-site.py      # "site shell OK", exit code 0
+```
+
+It also reports local links and images that point at missing files.
 
 ## API
 

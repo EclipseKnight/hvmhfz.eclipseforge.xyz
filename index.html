@@ -3,71 +3,99 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hunsterverse MHFZ: Account Linking</title>
-    <meta name="description" content="Link your Monster Hunter Frontier Z game account to the Hunsterverse Discord server." />
+    <title>Hunsterverse MHFZ: Play Monster Hunter Frontier Z</title>
+    <meta name="description" content="Hunsterverse, a Monster Hunter Frontier Z private server: setup guides, sign in, Discord linking, guilds and hunter rankings." />
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png" />
     <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/nav.js" defer></script>
   </head>
 
-  <body class="link-page">
+  <body class="home-page">
+    <a class="skip-link" href="#content">Skip to content</a>
     <header class="site-nav">
       <div class="wrap">
         <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
-        <nav>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
           <a class="navlink" href="/guilds.html">Guilds</a>
           <a class="navlink" href="/hunters.html">Hunters</a>
           <a class="navlink" href="/catalog.html">Catalog</a>
           <a class="navlink" href="/worlds.html">Worlds</a>
           <a class="navlink" href="/guide-windows.html">Guides</a>
           <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
           <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
         </nav>
       </div>
     </header>
 
-    <div class="login-wrap">
-      <div class="login-box">
-        <div class="login-kicker">HV MHFZ · Account linking</div>
-        <h2>Hunsterverse</h2>
-        <p class="login-sub">Sign in with your game account. If your Discord is not linked yet, you will get a code to run in the #mhfrontier channel.</p>
-
-        <div id="login-form">
-          <div class="user-box" id="login-warning" hidden="true">
-            Incorrect Username/Password.
+    <main id="content">
+      <div class="wrap home">
+        <section class="hero" aria-labelledby="hero-title">
+          <p class="kicker">Monster Hunter Frontier Z private server</p>
+          <h1 id="hero-title">Hunt the Frontier again</h1>
+          <p class="hero-lead">Hunsterverse runs Frontier Z, the last version of Monster Hunter Frontier. Set up the game with the guide, then sign in here to link Discord and keep track of your hunters.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="/guide-windows.html">Start playing</a>
+            <a class="btn btn-secondary" href="/guide-linux.html">Linux guide</a>
           </div>
-          <div class="user-box" id="username-box">
-            <input type="text" id="username" name="" required="" />
-            <label for="username">Username</label>
-          </div>
-          <div class="user-box" id="password-box">
-            <input type="password" id="password" name="" required="" />
-            <label for="password">Password</label>
-          </div>
+          <ol class="steps">
+            <li><span><strong>Register</strong> a game account at <a href="https://hunstermonter.net">hunstermonter.net</a>.</span></li>
+            <li><span><strong>Install</strong> the client, the Hunsterverse patch and the launcher with the setup guide.</span></li>
+            <li><span><strong>Sign in</strong> on this page to link Discord, back up characters and see your item box.</span></li>
+          </ol>
+        </section>
 
-          <div id="turnstile-slot" class="turnstile-slot"></div>
+        <section class="login-box" aria-labelledby="signin-title">
+          <p class="kicker">Account</p>
+          <h2 id="signin-title">Sign in</h2>
+          <p class="login-sub">Use the username and password from the game. If your Discord is not linked yet, the next page gives you a code to run in the #mhfrontier channel.</p>
 
-          <button type="button" id="submit">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            Submit
-          </button>
+          <div id="login-form">
+            <p class="form-alert" id="login-warning" role="alert" hidden>Incorrect Username/Password.</p>
+            <div class="field">
+              <label for="username">Username</label>
+              <input type="text" id="username" autocomplete="username" autocapitalize="none" spellcheck="false" required />
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <input type="password" id="password" autocomplete="current-password" required />
+            </div>
+
+            <div id="turnstile-slot" class="turnstile-slot"></div>
+
+            <button type="button" id="submit" class="btn btn-primary btn-block">Sign in</button>
+          </div>
+        </section>
+      </div>
+
+      <section class="wrap explore" aria-labelledby="explore-title">
+        <h2 id="explore-title">Around the guild hall</h2>
+        <div class="tile-grid">
+          <a class="tile" href="/worlds.html"><h3>Worlds</h3><p class="tile-meta">Who is online right now, and the most hunted monsters.</p></a>
+          <a class="tile" href="/guilds.html"><h3>Guilds</h3><p class="tile-meta">Every guild on the server, with rosters and boards.</p></a>
+          <a class="tile" href="/hunters.html"><h3>Hunters</h3><p class="tile-meta">Rankings by HR and GR, and hunter profiles.</p></a>
+          <a class="tile" href="/catalog.html"><h3>Catalog</h3><p class="tile-meta">Items and equipment, straight from the game data.</p></a>
         </div>
+      </section>
+    </main>
 
-        <div class="login-links">
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
           <a href="/guide-windows.html">Windows guide</a>
           <a href="/guide-linux.html">Linux guide</a>
-          <a href="https://hunstermonter.net">hunstermonter.net</a>
+          <a href="/report.html">Report a problem</a>
           <a href="https://discord.gg/YuE42eh">Discord</a>
-        </div>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
       </div>
-    </div>
+    </footer>
 
-    <p class="site-foot">Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+    <script src="/js/turnstile.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   </body>
-  <script src="/js/turnstile.js"></script>
-  <script src="/js/main.js"></script>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </html>

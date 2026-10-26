@@ -8,28 +8,32 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png" />
     <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/nav.js" defer></script>
   </head>
 
   <body class="public-page">
+    <a class="skip-link" href="#content">Skip to content</a>
     <header class="site-nav">
       <div class="wrap">
         <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
-        <nav>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
           <a class="navlink" href="/guilds.html" aria-current="page">Guilds</a>
           <a class="navlink" href="/hunters.html">Hunters</a>
           <a class="navlink" href="/catalog.html">Catalog</a>
           <a class="navlink" href="/worlds.html">Worlds</a>
-          <a class="navlink" href="/guide-linux.html">Guides</a>
-          <a class="navlink" href="/account.html">Account</a>
+          <a class="navlink" href="/guide-windows.html">Guides</a>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
           <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
         </nav>
       </div>
     </header>
 
-    <main class="wrap page">
+    <main id="content" class="wrap page">
       <div id="list-view">
         <header class="page-head">
-          <p class="kicker">HV MHFZ / Community</p>
+          <p class="kicker">Hunsterverse · Community</p>
           <h1>Guilds</h1>
           <p class="page-sub"><span id="guild-total">Loading</span> guilds on the server. Search by name, open one for its roster and board.</p>
         </header>
@@ -66,7 +70,18 @@
       <div id="detail-view" hidden></div>
     </main>
 
-    <p class="site-foot">Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
 
     <script src="/js/guilds.js"></script>
   </body>

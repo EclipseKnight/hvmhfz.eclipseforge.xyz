@@ -8,17 +8,22 @@
 <meta name="theme-color" content="#150e09" />
 <link rel="icon" href="/assets/favicon.png" />
 <link rel="stylesheet" href="/css/styles.css" />
+<script src="/js/nav.js" defer></script>
 </head>
 <body class="guide guide-linux">
+    <a class="skip-link" href="#content">Skip to content</a>
     <header class="site-nav">
       <div class="wrap">
         <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
-        <nav>
-          <a class="navlink" href="/account.html">Account</a>
-          <a class="navlink" href="/guide-windows.html">Windows guide</a>
-          <a class="navlink" href="/guide-linux.html" aria-current="page">Linux guide</a>
-          <a class="navlink" href="https://hunstermonter.net">Site</a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <a class="navlink" href="/guilds.html">Guilds</a>
+          <a class="navlink" href="/hunters.html">Hunters</a>
+          <a class="navlink" href="/catalog.html">Catalog</a>
+          <a class="navlink" href="/worlds.html">Worlds</a>
+          <a class="navlink" href="/guide-windows.html" aria-current="page">Guides</a>
           <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
           <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
         </nav>
       </div>
@@ -30,7 +35,7 @@
       <a href="/guide-linux.html" aria-current="page">Linux</a>
     </div>
 
-<main class="sheet">
+<main id="content" class="sheet">
 <h1>Monster Hunter Frontier Z on Linux</h1>
 <p class="lead">Mezeporta launcher, portable Wine prefix, and the Hunsterverse private server.</p>
 <p class="meta">Tested on CachyOS (Arch) with KDE Plasma 6 on Wayland, NVIDIA RTX 3060 Ti, Mezeporta v1.5.4. Client patch by EclipseKnight, launcher by LilButter.</p>
@@ -289,6 +294,17 @@ gst-inspect-1.0 autoaudiosink &gt;/dev/null &amp;&amp; echo "audio sink ok"</cod
 <p>Generated for a CachyOS setup. Paths and versions may differ on your machine.</p>
 </footer>
 </main>
-<p class="site-foot">Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
 </body>
 </html>
