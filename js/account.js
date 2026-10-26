@@ -674,8 +674,8 @@
   }
 
   function renderHunts(data) {
-    storageCard("stat-kills", "Hunts logged", money(data.totalKills));
-    storageCard("stat-species", "Species hunted", String((data.monsters || []).length));
+    stat("stat-kills", "Hunts logged", money(data.totalKills));
+    stat("stat-species", "Species hunted", String((data.monsters || []).length));
 
     var body = document.getElementById("hunts-monsters");
     clear(body);
@@ -743,10 +743,10 @@
       loadHunts(characters[0].id);
     } else {
       document.getElementById("storage-note").textContent = "no characters";
-      storageCard("stat-zenny", "Zenny", "-");
-      storageCard("stat-gzenny", "G zenny", "-");
-      storageCard("stat-cp", "CP", "-");
-      storageCard("stat-stamps", "Stamps", "-");
+      wallet("stat-zenny", "-");
+      wallet("stat-gzenny", "-");
+      wallet("stat-cp", "-");
+      wallet("stat-stamps", "-");
     }
 
     var storageSearch = document.getElementById("storage-search");
