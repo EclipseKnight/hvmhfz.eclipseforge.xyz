@@ -110,6 +110,26 @@
     head.appendChild(badges);
     view.appendChild(head);
 
+    var actions = el("div", "badge-row hunter-actions");
+    var copy = el("button", "ghost-btn small", "Copy profile link");
+    copy.type = "button";
+    copy.addEventListener("click", function () {
+      var url = location.origin + "/hunters.html?id=" + hunter.id;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () {
+          copy.textContent = "Copied";
+          setTimeout(function () { copy.textContent = "Copy profile link"; }, 1800);
+        });
+      }
+    });
+    var cardBtn = el("button", "ghost-btn small", "Download hunter card");
+    cardBtn.type = "button";
+    cardBtn.addEventListener("click", function () { downloadCard(hunter); });
+    actions.appendChild(copy);
+    actions.appendChild(cardBtn);
+    view.appendChild(actions);
+
+
     var panel = el("section", "panel");
     panel.appendChild(el("div", "panel-head")).appendChild(el("h2", null, "Record"));
     var stats = el("div", "guild-stats");
@@ -146,7 +166,7 @@
       var table = el("table", "data-table");
       var thead = el("thead");
       var row = el("tr");
-      ["Monster", "Hunts"].forEach(function (label) { row.appendChild(el("th", null, label)); });
+      ["Monster", "Hunts"].forEach(function (label, i) { row.appendChild(el("th", i === 1 ? "num" : null, label)); });
       thead.appendChild(row);
       table.appendChild(thead);
       var tbody = el("tbody");

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /account.html
+
+Sitemap: https://hvmhfz.eclipseforge.xyz/sitemap.xml

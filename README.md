@@ -8,6 +8,9 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 |---|---|
 | `/` | Home: how to start playing (guides, steps) and sign in. After a successful login it hands over to `/account.html`. |
 | `/account.html` | Signed in view: overview, characters, storage, hunt log, guild and account. Redirects to `/` without a valid session. |
+| `/monsters.html` | Monster field guide: search by name or species, cards link to full hitzone, HP and drop pages. |
+| `/monster.html?m=slug` | One monster: hitzones normal and enraged, HP by level, stagger limits, maps, every carve table, Henshu/GR/Zenith forms. |
+| `/events.html` | Live server events, the event quest pool and the Festa prize table. |
 | `/guilds.html` | Guild directory: search, sort by RP, members, newest or name. `?id=` opens a guild with roster and board. |
 | `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile. |
 | `/catalog.html` | Item and equipment catalog with section chips and search. |
