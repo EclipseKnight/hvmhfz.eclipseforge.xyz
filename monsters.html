@@ -21,27 +21,31 @@
     <link rel="icon" href="/assets/favicon.png" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/nav.js" defer></script>
   </head>
 
   <body class="public-page">
+    <a class="skip-link" href="#content">Skip to content</a>
     <header class="site-nav">
       <div class="wrap">
-        <a class="brand" href="/" aria-label="Hunsterverse Z home"><picture><source srcset="/assets/brand/hunsterverse-static.png" media="(prefers-reduced-motion: reduce)" /><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></picture></a>
-        <nav>
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
           <a class="navlink" href="/monsters.html" aria-current="page">Monsters</a>
+          <a class="navlink" href="/events.html">Events</a>
           <a class="navlink" href="/guilds.html">Guilds</a>
           <a class="navlink" href="/hunters.html">Hunters</a>
           <a class="navlink" href="/catalog.html">Catalog</a>
           <a class="navlink" href="/worlds.html">Worlds</a>
-          <a class="navlink" href="/events.html">Events</a>
-          <a class="navlink" href="/guide-linux.html">Guides</a>
-          <a class="navlink" href="/account.html">Account</a>
+          <a class="navlink" href="/guide-windows.html">Guides</a>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
           <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
         </nav>
       </div>
     </header>
 
-    <main class="wrap page">
+    <main id="content" class="wrap page">
       <header class="page-head">
         <p class="kicker">HV MHFZ / Field guide</p>
         <h1>Monsters</h1>
@@ -68,7 +72,18 @@
       </section>
     </main>
 
-    <p class="site-foot">Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
 
     <script src="/js/monsters.js"></script>
     <script src="/js/search.js" defer></script>
