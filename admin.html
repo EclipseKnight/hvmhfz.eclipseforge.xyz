@@ -98,13 +98,14 @@
             </div>
             <div class="field">
               <label for="gift-who">For</label>
-              <select id="gift-who"><option value="all">Every character</option><option value="one">One character (a test)</option></select>
+              <select id="gift-who"><option value="all">Every character</option><option value="chosen">Chosen characters</option></select>
             </div>
             <div class="field" id="gift-character-field" hidden>
-              <label for="gift-character">Character name</label>
+              <label for="gift-character">Add a character</label>
               <input id="gift-character" type="search" autocomplete="off" placeholder="Search a hunter" />
-              <p class="note-text" id="gift-character-note">Pick the hunter from the list.</p>
               <ul class="admin-suggest" id="gift-character-list" hidden></ul>
+              <p class="note-text" id="gift-character-note">Search, then pick from the list. Each chosen character gets their own copy of the gift.</p>
+              <ul class="admin-chips" id="gift-characters" aria-label="Chosen characters"></ul>
             </div>
             <div class="field">
               <label for="gift-times">Times each character can claim it</label>

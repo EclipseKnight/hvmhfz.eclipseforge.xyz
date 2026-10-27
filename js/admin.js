@@ -8,7 +8,7 @@
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
   var options = null;      // gift lists and item types, from the API
-  var chosenCharacter = null;
+  var chosen = [];         // characters picked for the gift: {id, name}
 
   function el(tag, className, text) {
     var node = document.createElement(tag);
@@ -269,7 +269,10 @@
       description: $("gift-description").value.trim(),
       deadline: deadline ? new Date(deadline).toISOString() : null,
       timesAcceptable: Number($("gift-times").value),
-      characterId: $("gift-who").value === "one" && chosenCharacter ? chosenCharacter.id : null,
+      // An API before multiple characters (maxCharacters missing) gets characterId only, never a
+      // list it would ignore (which would turn the gift into one for everyone).
+      characterId: $("gift-who").value === "chosen" && chosen.length ? chosen[0].id : null,
+      characterIds: $("gift-who").value === "chosen" && maxCharacters() > 1 ? chosen.map(function (c) { return c.id; }) : undefined,
       minHr: optionalNumber("gift-minhr"), maxHr: optionalNumber("gift-maxhr"),
       minSr: optionalNumber("gift-minsr"), maxSr: optionalNumber("gift-maxsr"),
       minGr: optionalNumber("gift-mingr"), maxGr: optionalNumber("gift-maxgr"),
@@ -280,7 +283,7 @@
   // Problems the page can see before asking the server (the server checks all of them again).
   function problem(gift) {
     if (!gift.eventName) return "Give the gift a name.";
-    if ($("gift-who").value === "one" && !gift.characterId) return "Pick the character from the search list.";
+    if ($("gift-who").value === "chosen" && !chosen.length) return "Add at least one character from the search list.";
     if (!gift.items.length) return "Add at least one item.";
     for (var i = 0; i < gift.items.length; i++) {
       var item = gift.items[i];
@@ -291,7 +294,9 @@
   }
 
   function summary(gift) {
-    var whom = gift.characterId ? "only " + chosenCharacter.name + " (#" + gift.characterId + ")" : "every character";
+    var whom = $("gift-who").value !== "chosen" ? "every character"
+      : chosen.length === 1 ? "only " + chosen[0].name + " (#" + chosen[0].id + ")"
+      : chosen.length + " characters (" + chosen.map(function (c) { return c.name; }).join(", ") + "), one copy each";
     var items = gift.items.map(function (item) {
       return options.itemTypes[item.itemType] + (item.itemId ? " " + item.itemId : "") + " x" + item.quantity;
     }).join(", ");
@@ -303,19 +308,50 @@
 
   var pending = null;
 
+  function maxCharacters() {
+    return options && options.maxCharacters ? options.maxCharacters : 1;
+  }
+
+  function addCharacter(character) {
+    if (chosen.some(function (c) { return c.id === character.id; })) return;
+    if (chosen.length >= maxCharacters()) {
+      alertBox(maxCharacters() === 1 ? "This API takes one character per gift." : "At most " + maxCharacters() + " characters at once.");
+      return;
+    }
+    alertBox("");
+    chosen.push(character);
+    renderChosen();
+  }
+
+  function renderChosen() {
+    var box = $("gift-characters");
+    clear(box);
+    chosen.forEach(function (c, index) {
+      var chip = el("li", "admin-chip");
+      chip.appendChild(el("span", null, c.name + " #" + c.id));
+      var remove = el("button", null, "\u00d7");
+      remove.type = "button";
+      remove.setAttribute("aria-label", "Remove " + c.name);
+      remove.addEventListener("click", function () { chosen.splice(index, 1); renderChosen(); });
+      chip.appendChild(remove);
+      box.appendChild(chip);
+    });
+    $("gift-character-note").textContent = chosen.length
+      ? chosen.length + (chosen.length === 1 ? " character" : " characters") + " chosen; each gets their own copy of the gift."
+      : "Search, then pick from the list. Each chosen character gets their own copy of the gift.";
+  }
+
   function wireForm() {
     fillSelect($("gift-list"), options.lists, 1);
     addItemRow();
     $("gift-add-item").addEventListener("click", function () { addItemRow(); });
     $("gift-who").addEventListener("change", function () {
-      $("gift-character-field").hidden = $("gift-who").value !== "one";
+      $("gift-character-field").hidden = $("gift-who").value !== "chosen";
     });
 
-    // Character search, from the public hunter list.
+    // Character search, from the public hunter list. Each pick is added to the chosen list.
     var timer = null;
     $("gift-character").addEventListener("input", function () {
-      chosenCharacter = null;
-      $("gift-character-note").textContent = "Pick the hunter from the list.";
       clearTimeout(timer);
       var q = $("gift-character").value.trim();
       var list = $("gift-character-list");
@@ -330,10 +366,10 @@
               var pick = el("button", null, h.name + " · HR " + h.hr + " GR " + h.gr + " · #" + h.id);
               pick.type = "button";
               pick.addEventListener("click", function () {
-                chosenCharacter = { id: h.id, name: h.name };
-                $("gift-character").value = h.name;
-                $("gift-character-note").textContent = "Character #" + h.id;
+                addCharacter({ id: h.id, name: h.name });
+                $("gift-character").value = "";
                 list.hidden = true;
+                $("gift-character").focus();
               });
               li.appendChild(pick);
               list.appendChild(li);
@@ -368,7 +404,9 @@
       request("/api/admin/distributions", { method: "POST", body: JSON.stringify(pending) })
         .then(function (created) {
           alertBox("");
-          $("gift-summary").textContent = "Created gift #" + created.id + ". It is in the game's gift list now.";
+          var ids = created.ids && created.ids.length ? created.ids : [created.id];
+          $("gift-summary").textContent = (ids.length === 1 ? "Created gift #" + ids[0] : "Created " + ids.length + " gifts, #" + ids[0] + " to #" + ids[ids.length - 1]) +
+            ". " + (ids.length === 1 ? "It is" : "They are") + " in the game's gift list now.";
           $("gift-create").hidden = true;
           $("gift-back").textContent = "New gift";
           pending = null;
