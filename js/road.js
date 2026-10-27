@@ -21,6 +21,7 @@
   var problems = [];        // from the rules, for the current edits
   var serverProblems = null;// the server's verdict, after "Check with the server"
   var shownMode = 0;
+  var soloOn = false;       // the "Also change the solo Road" box; off until ticked or the edits change mode 1
   var readOnly = false;
   var refreshers = [];      // one function per drawn row; each updates its row from `road` and `problems`
   var openTables = {};      // "mode:table" -> true while its <details> is open
@@ -144,7 +145,8 @@
     if (!edits.modes.length) delete edits.modes;
   }
 
-  function setFloorTable(m, floor, table) {
+  // field: "table", "points" or "points2". A value equal to the base drops the edit.
+  function setFloorField(m, floor, field, value) {
     var me = modeEdit(m, true);
     me.floors = me.floors || [];
     var i = findIndex(me.floors, function (f) { return f.floor === floor; });
@@ -154,7 +156,7 @@
       me.floors.push(fe);
       me.floors.sort(function (a, b) { return a.floor - b.floor; });
     }
-    if (table === baseMode(m).floors[floor - 1].table) delete fe.table; else fe.table = table;
+    if (value === baseMode(m).floors[floor - 1][field]) delete fe[field]; else fe[field] = value;
     prune();
   }
 
@@ -263,8 +265,12 @@
       list.appendChild(ok);
     }
     $("road-json").textContent = JSON.stringify(edits, null, 2);
-    var changes = (edits.modes || []).reduce(function (n, me) { return n + (me.floors || []).length + (me.entries || []).length; }, 0);
-    $("road-entry-note").textContent = changes ? changes + (changes === 1 ? " change" : " changes") + " from the base" : "same as the base";
+    function count(me) { return me ? (me.floors || []).length + (me.entries || []).length : 0; }
+    var changes = (edits.modes || []).reduce(function (n, me) { return n + count(me); }, 0);
+    var solo = count(modeEdit(1, false));
+    $("road-entry-note").textContent = !changes ? "same as the base" :
+      changes + (changes === 1 ? " change" : " changes") + " from the base" +
+      (solo ? " (open Road " + (changes - solo) + ", solo Road " + solo + ")" : "");
   }
 
   // Called after every edit: re-check, then let every drawn row catch up.
@@ -295,22 +301,65 @@
     return next.floor - 1 > from ? "Floors " + from + " to " + (next.floor - 1) : "Floor " + from;
   }
 
+  // The two Road points multipliers of a floor record. Any number is kept in the edits, so a value over
+  // the rotation's cap (policy maxPoints) shows up as a problem instead of being dropped silently.
+  function pointsInputs(m, number, modeAllowed) {
+    var box = el("div", "road-floor-points");
+    var inputs = [["points", "Points ×"], ["points2", "Second points ×"]].map(function (pair) {
+      var field = pair[0];
+      var label = el("label", null, pair[1] + " ");
+      var input = el("input");
+      input.type = "number";
+      input.min = "0.01";
+      input.max = String(policyList("maxPoints"));
+      input.step = "any";
+      input.setAttribute("aria-label", pair[1].replace(" ×", " multiplier") + " for record " + number);
+      input.disabled = !modeAllowed || policyList("floorFields").indexOf(field) < 0;
+      input.addEventListener("input", function () {
+        var n = Number(input.value);
+        if (input.value === "" || !isFinite(n)) return;
+        setFloorField(m, number, field, n);
+        refreshSoon();
+      });
+      label.appendChild(input);
+      box.appendChild(label);
+      return { field: field, input: input };
+    });
+    return {
+      box: box,
+      // Shows the value in the edits even when the rules refused it (0, or over 100), so it can be fixed.
+      refresh: function (f) {
+        var me = modeEdit(m, false);
+        var fe = me ? (me.floors || []).filter(function (x) { return x.floor === number; })[0] : null;
+        var changed = false;
+        inputs.forEach(function (x) {
+          var value = fe && fe[x.field] !== undefined ? fe[x.field] : f[x.field];
+          if (value !== f[x.field]) changed = true;
+          if (document.activeElement !== x.input) x.input.value = String(value);
+        });
+        return changed;
+      }
+    };
+  }
+
   function renderFloors() {
     var box = $("road-floors");
     clear(box);
     var m = shownMode;
     var mode = baseMode(m);
-    var allowed = policyList("modes").indexOf(m) >= 0 && policyList("floorFields").indexOf("table") >= 0;
+    var modeAllowed = !readOnly && policyList("modes").indexOf(m) >= 0;
+    var allowed = modeAllowed && policyList("floorFields").indexOf("table") >= 0;
     $("road-floors-note").textContent = mode.floors.length + " floor records, " + mode.tables.length + " tables";
+    $("road-points-cap").textContent = String(policyList("maxPoints"));
     mode.floors.forEach(function (base, index) {
       var number = index + 1;
       var row = el("div", "road-floor");
       row.appendChild(el("span", "road-floor-name", "Record " + number + ": " + floorLabel(m, index).toLowerCase()));
       var select = el("select");
       select.setAttribute("aria-label", "Table for record " + number);
-      select.disabled = readOnly || !allowed;
+      select.disabled = !allowed;
       select.addEventListener("change", function () {
-        setFloorTable(m, number, Number(select.value));
+        setFloorField(m, number, "table", Number(select.value));
         refreshSoon();
         // the row's own class and the selected value follow `road` in refresh
       });
@@ -326,6 +375,8 @@
         details.scrollIntoView({ block: "start" });
       });
       row.appendChild(open);
+      var points = pointsInputs(m, number, modeAllowed);
+      row.appendChild(points.box);
       box.appendChild(row);
 
       refreshers.push(function () {
@@ -336,7 +387,8 @@
           for (var t = 0; t < count; t++) select.appendChild(new Option("Table " + t, String(t)));
         }
         select.value = String(f.table);
-        row.classList.toggle("is-changed", f.table !== base.table);
+        var refused = points.refresh(f);
+        row.classList.toggle("is-changed", refused || f.table !== base.table || f.points !== base.points || f.points2 !== base.points2);
         row.classList.toggle("has-problem", problemHere(function (p) { return p.mode === m && p.floor === number; }));
       });
     });
@@ -534,12 +586,51 @@
     refresh();
   }
 
+  // The "Also change the solo Road" box. Off by default, so a Road changes the open Road only; ticking it
+  // shows the solo Road (mode 1) to edit, when the rotation allows it. Unticking drops its changes.
+  function renderSolo() {
+    var box = $("road-solo");
+    var check = $("road-solo-check");
+    var note = $("road-solo-note");
+    var exists = pool.base.modes.length > 1;
+    var allowed = exists && policyList("modes").indexOf(1) >= 0;
+    if (modeEdit(1, false)) soloOn = true;
+    box.hidden = !exists;
+    check.checked = soloOn;
+    check.disabled = readOnly || !allowed;
+    note.textContent = readOnly
+      ? (soloOn ? "This Road changes the solo Road too." : "This Road leaves the solo Road as it is.")
+      : !allowed ? "The solo Road can't be changed in this rotation."
+      : soloOn ? "On: pick \"Mode 1: solo Road\" below to change it. Untick to drop those changes."
+      : "Off: the solo Road stays as it is.";
+  }
+
+  function onSoloChange() {
+    var check = $("road-solo-check");
+    if (!check.checked && modeEdit(1, false) &&
+        !window.confirm("Drop all your changes to the solo Road?")) {
+      check.checked = true;
+      return;
+    }
+    soloOn = check.checked;
+    if (!soloOn) {
+      edits.modes = (edits.modes || []).filter(function (me) { return me.mode !== 1; });
+      prune();
+    }
+    shownMode = soloOn ? 1 : 0;
+    renderModes();
+    renderBuilder();
+  }
+
   function renderModes() {
+    renderSolo();
     var box = $("road-modes");
     clear(box);
     var modes = policyList("modes").slice();
     (edits.modes || []).forEach(function (me) { if (modes.indexOf(me.mode) < 0) modes.push(me.mode); });
-    modes = modes.filter(function (m) { return m < pool.base.modes.length; }).sort(function (a, b) { return a - b; });
+    if (soloOn && modes.indexOf(1) < 0) modes.push(1);
+    modes = modes.filter(function (m) { return m < pool.base.modes.length && (m !== 1 || soloOn); })
+      .sort(function (a, b) { return a - b; });
     if (modes.indexOf(shownMode) < 0) shownMode = modes[0] === undefined ? 0 : modes[0];
     if (modes.length < 2) {
       var only = modes.length ? modes[0] : 0;
@@ -655,10 +746,12 @@
 
   function onSubmit(event) {
     event.preventDefault();
+    recompute(); // an edit from the last 120 ms may not be checked yet (refreshSoon)
     alertBox("");
     notice("");
     var body = readForm();
     var wrong = formProblem(body);
+    if (!wrong && problems.length) wrong = "Fix the problems listed under Checks first.";
     if (wrong) { alertBox(wrong); return; }
     var button = $("road-submit");
     button.disabled = true;
@@ -746,6 +839,7 @@
     }
     $("road-form").addEventListener("submit", onSubmit);
     $("road-check").addEventListener("click", onCheckClick);
+    $("road-solo-check").addEventListener("change", onSoloChange);
     var armed = null;
     $("road-reset").addEventListener("click", function () {
       var button = $("road-reset");
@@ -758,6 +852,7 @@
       armed = null;
       button.textContent = "Reset everything to the base";
       edits = {};
+      soloOn = false;
       renderModes();
       renderBuilder();
     });

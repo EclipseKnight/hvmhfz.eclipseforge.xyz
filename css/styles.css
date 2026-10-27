@@ -856,6 +856,11 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.5)}
 .road-floor-name{font:600 .82rem var(--font-ui);color:var(--ink)}
 .road-floor select{width:auto;min-width:96px}
+.road-floor-points{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 14px;font:.78rem var(--font-ui);color:var(--ink-soft)}
+.road-floor-points input{width:5.5em;min-height:32px;padding:4px 6px;margin-left:4px}
+.road-solo{margin-bottom:10px}
+.road-solo label{display:flex;gap:8px;align-items:center;font:600 .85rem var(--font-ui);color:var(--ink)}
+.road-solo input{width:auto}
 .road-floor.is-changed,.road-entries tr.is-changed td{background:rgba(183,138,51,.16)}
 .road-floor.has-problem,.road-entries tr.has-problem td{background:rgba(139,47,39,.12)}
 .road-table{margin:0 0 8px;border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.4)}

@@ -21,6 +21,10 @@
      modeCount       false                                  may change the mode count
      maxAddedEntries 64                                     entries added over the base, all tables together
      maxWeight       1000                                   a weight may be 0 to this
+     maxPoints       4                                      a floor's points multipliers may be up to this
+                                                            (the crash rule allows 100; the base uses 0.5 to 4,
+                                                            and a higher cap would let one vote inflate
+                                                            everyone's Road points)
 */
 (function (root) {
   "use strict";
@@ -43,7 +47,8 @@
     floorCount: false,
     modeCount: false,
     maxAddedEntries: 64,
-    maxWeight: 1000
+    maxWeight: 1000,
+    maxPoints: 4
   };
 
   function problem(rule, mode, floor, table, entry, message) {
@@ -380,6 +385,7 @@
     var entryFields = policyValue(policy, "entryFields");
     var maxWeight = policyValue(policy, "maxWeight");
     var maxAdded = policyValue(policy, "maxAddedEntries");
+    var maxPoints = policyValue(policy, "maxPoints");
 
     (edits.modes || []).forEach(function (me) {
       var mn = me.mode === undefined ? 0 : me.mode;
@@ -394,6 +400,12 @@
         ["table", "loop", "points", "points2", "bonus"].forEach(function (field) {
           if (fe[field] !== undefined && floorFields.indexOf(field) < 0) {
             problems.push(notAllowed(mn, fe.floor === undefined ? 0 : fe.floor, -1, -1, "the " + field + " of a floor"));
+          }
+        });
+        ["points", "points2"].forEach(function (field) {
+          if (fe[field] !== undefined && fe[field] > maxPoints) {
+            problems.push(notAllowed(mn, fe.floor === undefined ? 0 : fe.floor, -1, -1,
+              "the " + (field === "points" ? "" : "second ") + "points multiplier to more than " + maxPoints + "x"));
           }
         });
       });
@@ -449,6 +461,7 @@
     FLAG_FORCED: FLAG_FORCED,
     FLAG_LOCKED: FLAG_LOCKED,
     MIN_MONSTERS: MIN_MONSTERS,
+    MAX_POINTS: MAX_POINTS,
     parseEdits: parseEdits,
     parseProblem: parseProblem,
     apply: apply,
