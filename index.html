@@ -31,13 +31,37 @@
         <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
         <nav id="site-menu" aria-label="Main">
-          <a class="navlink" href="/monsters.html">Monsters</a>
-          <a class="navlink" href="/events.html">Events</a>
-          <a class="navlink" href="/guilds.html">Guilds</a>
-          <a class="navlink" href="/hunters.html">Hunters</a>
-          <a class="navlink" href="/catalog.html">Catalog</a>
-          <a class="navlink" href="/worlds.html">Worlds</a>
-          <a class="navlink" href="/guide-windows.html">Guides</a>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+            </div>
+          </div>
           <a class="navlink" href="/report.html">Report</a>
           <a class="navlink nav-cta" href="/account.html">Account</a>
           <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
@@ -85,14 +109,27 @@
         </section>
       </div>
 
+      <section class="wrap whats-new" aria-labelledby="news-title">
+        <div class="panel">
+          <div class="panel-head">
+            <h2 id="news-title">What's new</h2>
+            <a class="panel-note" href="/changelog.html">Full changelog</a>
+          </div>
+          <!-- js/whatsnew.js fills this with the newest entry of changelog.html. -->
+          <div id="news-body"><p class="note-text">Every update to the server is listed in the <a href="/changelog.html">changelog</a>.</p></div>
+        </div>
+      </section>
+
       <section class="wrap explore" aria-labelledby="explore-title">
         <h2 id="explore-title">Around the guild hall</h2>
         <div class="tile-grid">
           <a class="tile" href="/monsters.html"><h3>Monsters</h3><p class="tile-meta">Hitzones, HP by level, stagger limits and every carve table for all 158 monsters.</p></a>
+          <a class="tile" href="/leaderboards.html"><h3>Leaderboards</h3><p class="tile-meta">Who hunted the most this week, this month and of all time.</p></a>
+          <a class="tile" href="/set-builder.html"><h3>Set builder</h3><p class="tile-meta">Pick the skills you want and find the armor sets that reach them.</p></a>
           <a class="tile" href="/events.html"><h3>Events</h3><p class="tile-meta">What is running now, the event quest pool and the Festa prize table.</p></a>
-          <a class="tile" href="/worlds.html"><h3>Worlds</h3><p class="tile-meta">Who is online right now, and the most hunted monsters.</p></a>
+          <a class="tile" href="/hunters.html"><h3>Hunters</h3><p class="tile-meta">Every hunter on the server, with profiles and hunt logs.</p></a>
           <a class="tile" href="/guilds.html"><h3>Guilds</h3><p class="tile-meta">Every guild on the server, with rosters and boards.</p></a>
-          <a class="tile" href="/hunters.html"><h3>Hunters</h3><p class="tile-meta">Rankings by HR and GR, and hunter profiles.</p></a>
+          <a class="tile" href="/worlds.html"><h3>Worlds</h3><p class="tile-meta">Who is online right now, and the most hunted monsters.</p></a>
           <a class="tile" href="/catalog.html"><h3>Catalog</h3><p class="tile-meta">Items and equipment, straight from the game data.</p></a>
         </div>
       </section>
@@ -115,6 +152,7 @@
     <script src="/js/turnstile.js"></script>
     <script src="/js/main.js"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <script src="/js/whatsnew.js" defer></script>
     <script src="/js/search.js" defer></script>
   </body>
 </html>

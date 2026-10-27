@@ -25,6 +25,8 @@
       widgetId = window.turnstile.render(slot, {
         sitekey: sitekey(),
         theme: "light",
+        // The normal widget is a fixed 300px; on the narrowest phones use Cloudflare's 150px one.
+        size: window.innerWidth < 360 ? "compact" : "normal",
         action: options.action,
         callback: function () {
           if (options.onSolved) options.onSolved();

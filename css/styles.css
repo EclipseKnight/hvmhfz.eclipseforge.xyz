@@ -508,9 +508,9 @@ main.sheet footer::before{content:"MHFZ";display:inline-grid;place-items:center;
   .mbox-main{grid-template-columns:1fr}
   .mbox-grid{max-width:100%}
 }
-/* Below this width (1340px, with ten links and Search) the nav links no longer fit on one line: they fold behind the Menu button
+/* Below this width (1160px: Search, four menus, Report, Account, Discord) the bar no longer fits on one line: it folds behind the Menu button
    (js/nav.js adds .collapsible). Without JavaScript they wrap into a grid under the logo. */
-@media (max-width:1340px){
+@media (max-width:1160px){
   .site-nav .wrap{flex-wrap:wrap;height:auto;min-height:var(--nav-h)}
   .site-nav nav{width:100%;margin:0 0 10px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
   .site-nav .navlink{text-align:center;padding:10px 4px}
@@ -714,3 +714,75 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   background:rgba(255,250,236,.55);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:3px}
 .report-signer:empty{display:none}
 
+/* ---------- nav menus (Database, Community, Server, Guides) ----------
+   On a wide screen each group is a button with a small menu under it: it opens on hover, and on
+   click or keyboard through js/nav.js. When the bar folds behind the Menu button (or without
+   JavaScript) every group shows its links under a small label instead. */
+.nav-group{position:relative}
+.nav-group-toggle{background:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.nav-group-toggle::after{content:"";width:0;height:0;border:4px solid transparent;border-top-color:currentColor;
+  border-bottom-width:0;opacity:.7}
+.site-nav .nav-group-toggle.is-current{color:var(--gold-bright);background:rgba(232,200,119,.12);box-shadow:inset 0 -2px 0 var(--gold)}
+.nav-menu{display:none;position:absolute;top:100%;left:0;z-index:60;min-width:190px;padding:8px;margin-top:4px;
+  flex-direction:column;gap:2px;background:linear-gradient(#1f140c,#120b07);border:1px solid var(--frame);
+  border-radius:4px;box-shadow:0 14px 28px rgba(0,0,0,.65)}
+/* an invisible bridge over the 4px gap, so the menu stays open while the pointer moves down to it */
+.nav-menu::before{content:"";position:absolute;left:0;right:0;top:-6px;height:6px}
+.nav-group:hover .nav-menu,.nav-group.open .nav-menu{display:flex}
+.nav-group.open .nav-group-toggle{color:var(--gold-bright);background:rgba(232,200,119,.08)}
+.nav-menu .navlink{display:block;padding:11px 12px;letter-spacing:.11em}
+.site-nav .nav-menu .navlink[aria-current="page"]{box-shadow:inset 2px 0 0 var(--gold)}
+@media (max-width:1160px){
+  .site-nav nav{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nav-group{grid-column:span 1}
+  .nav-group-toggle{pointer-events:none;width:100%;padding:8px 4px 4px;border:0;font-size:.64rem;
+    letter-spacing:.2em;color:var(--gold)}
+  .nav-group-toggle::after{display:none}
+  .site-nav .nav-group-toggle.is-current{background:none;box-shadow:none}
+  .nav-menu,.nav-group:hover .nav-menu{display:flex;position:static;min-width:0;margin:0;padding:0;background:none;
+    border:0;box-shadow:none}
+  .nav-menu::before{display:none}
+  .site-nav nav .nav-search{grid-column:1 / -1;text-align:left}
+}
+
+
+
+/* Home page "What's new" (js/whatsnew.js) */
+.whats-new{margin-top:8px}
+.whats-new .panel-note{border:0}
+.news-title{margin:0 0 10px;font-size:1.15rem;color:var(--ink)}
+.news-list{margin:0 0 6px;padding-left:1.2em;display:grid;gap:6px;color:var(--ink);font-size:.95rem;line-height:1.5}
+.news-list ul{margin-top:4px}
+
+/* Monster tiles: the tile link must not get the site-wide dotted underline (it drew a rule under every
+   name), the species line needs the parchment ink colour, and variant labels are small badges. */
+.monster-link{border-bottom:0}
+.monster-tile .tile-meta{color:var(--ink-soft)}
+.monster-tile .chip-list{gap:5px}
+.monster-tile .chip{padding:4px 7px;font-size:.62rem;letter-spacing:.08em;cursor:default}
+/* the count's divider spans the whole tile, not just the numbers */
+.monster-tile{grid-template-columns:minmax(0,1fr)}
+.monster-tile .tile-stat{align-self:stretch}
+
+/* Events: the quest pool's title sits in a row with its filter (js/events.js .panel-head-row). Keep the
+   title as the panel's full-width head bar and put the filter under it. */
+.panel-head-row{display:block}
+.panel-head-row .panel-head{margin:calc(-1 * var(--pad-y)) calc(-1 * var(--pad-x)) 18px}
+.panel-head-row .search{margin:0 0 12px}
+/* A note in a panel's body reads as text (the caps style is for notes inside the head bar). */
+.panel > .panel-note,.panel-body .panel-note{display:block;margin:0 0 14px;font:.86rem/1.5 var(--font-body);
+  letter-spacing:0;text-transform:none;color:var(--ink-soft)}
+
+/* Small phones: the Cloudflare check in the sign-in box is a fixed 300px, so below 380px the page and
+   the box give up some side padding to keep it inside the screen. */
+@media (max-width:1160px){
+  .home{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:380px){
+  .wrap{padding-left:12px;padding-right:12px}
+  .login-box{padding:26px 14px 22px}
+  /* the logo and the Menu button share the bar */
+  .site-nav .wrap{gap:10px}
+  .brand-logo{height:30px}
+  .nav-toggle{padding:8px 10px}
+}

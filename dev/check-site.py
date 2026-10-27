@@ -20,12 +20,16 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 # The one nav, in order. Change it here and on every page together.
 NAV = [
     ("/monsters.html", "Monsters"),
-    ("/events.html", "Events"),
-    ("/guilds.html", "Guilds"),
-    ("/hunters.html", "Hunters"),
     ("/catalog.html", "Catalog"),
+    ("/set-builder.html", "Set builder"),
+    ("/hunters.html", "Hunters"),
+    ("/guilds.html", "Guilds"),
+    ("/leaderboards.html", "Leaderboards"),
     ("/worlds.html", "Worlds"),
-    ("/guide-windows.html", "Guides"),
+    ("/events.html", "Events"),
+    ("/changelog.html", "Changelog"),
+    ("/guide-windows.html", "Windows guide"),
+    ("/guide-linux.html", "Linux guide"),
     ("/report.html", "Report"),
     ("/account.html", "Account"),
     ("https://discord.gg/YuE42eh", "Discord"),
@@ -36,14 +40,6 @@ CURRENT = {
     "404.html": None,
     # One monster's page sits under the Monsters guide.
     "monster.html": "/monsters.html",
-    "guide-windows.html": "/guide-windows.html",
-    "guide-linux.html": "/guide-windows.html",
-    # The changelog is not in the nav; the footer links it.
-    "changelog.html": None,
-    # The set builder is a gear tool, linked from the Catalog page.
-    "set-builder.html": "/catalog.html",
-    # Leaderboards is not in the nav (no room in the bar); it sits under Hunters.
-    "leaderboards.html": "/hunters.html",
 }
 
 

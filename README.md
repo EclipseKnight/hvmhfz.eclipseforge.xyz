@@ -38,7 +38,8 @@ changelog.html        player changelog (rolling, one entry per live update)
 css/styles.css        shared guild-hall theme (leather page, parchment panels, brass trim, gold buttons)
 assets/guide/*.webp   guide screenshots, WebP
 assets/favicon.png    site icon
-js/nav.js             site nav: folds the links behind a Menu button on narrow screens
+js/nav.js             site nav: the four menus, and the Menu button on narrow screens
+js/whatsnew.js        home page "What's new": the newest entry of changelog.html
 js/main.js            login, saved session
 js/turnstile.js       Cloudflare Turnstile widget, shared by main.js and report.js
 js/report.js          report forms: send, success, error and Discord fallback
@@ -59,11 +60,18 @@ Static site, no build step. Push to `main` and GitHub Pages serves it.
 
 There are no templates: every page carries its own copy of the same header nav and footer.
 
-- Nav, same on every page and in this order: Monsters, Events, Guilds, Hunters, Catalog, Worlds, Guides, Report, Account, Discord.
-  The page's own link has `aria-current="page"`; the guide pages mark Guides, the leaderboards page marks Hunters,
-  and the home page marks nothing. The bar is full: the leaderboards page is linked from the Hunters and Guilds
-  pages, and the changelog from the footer.
-  Guides opens the Windows guide; both guides switch between Windows and Linux at the top.
+- Nav, same on every page: four menus and three links.
+  - **Database:** Monsters, Catalog, Set builder.
+  - **Community:** Hunters, Guilds, Leaderboards.
+  - **Server:** Worlds, Events, Changelog.
+  - **Guides:** Windows guide, Linux guide.
+  - Then Report, Account and Discord. `js/search.js` adds the Search button in front.
+
+  Each menu is a `div.nav-group` with a `button.nav-group-toggle` and a `div.nav-menu` of links. The page's
+  own link has `aria-current="page"`, and its group button the class `is-current`; the home page and 404
+  mark nothing, and a monster's page marks Monsters. On a wide screen a menu opens on hover, or on click and
+  keyboard (`js/nav.js`). Below 1160px the bar folds behind the Menu button and lists every group open.
+  Both guides also switch between Windows and Linux at the top.
 - Width: data pages (monsters, monster, catalog, hunters, guilds, events, worlds, account, set builder) add
   `wide` to their `main` and use the screen up to `--wrap-wide` (1760px); reading pages (guides, changelog, report)
   keep `--wrap` (1120px). Below 1340px the nav folds behind the Menu button.
