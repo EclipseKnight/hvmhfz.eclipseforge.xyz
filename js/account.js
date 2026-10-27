@@ -431,8 +431,13 @@
     return value === null || value === undefined ? "-" : Number(value).toLocaleString();
   }
 
-  var BOX_PAGES = 10;
+  /* The item box holds 6,000 slots (60 pages of 100; measured from live saves on 2026-10-27, the API
+     reads them all). Show at least the first 10 pages, and as many more as it takes to reach the last
+     page with an item, so a full box shows every page without 50 empty tabs for everyone else. */
+  var BOX_MAX_PAGES = 60;
+  var BOX_MIN_PAGES = 10;
   var BOX_SIZE = 100;
+  var BOX_PAGES = BOX_MIN_PAGES;
   var box = { page: 0, items: [], bySlot: {}, selected: null, query: "" };
 
   var ICONS = {
@@ -626,6 +631,10 @@
     box.items.forEach(function (item) {
       if (item.slot !== null && item.slot !== undefined) box.bySlot[item.slot] = item;
     });
+    var lastSlot = box.items.reduce(function (max, item) {
+      return item.slot !== null && item.slot !== undefined && item.slot > max ? item.slot : max;
+    }, -1);
+    BOX_PAGES = Math.min(BOX_MAX_PAGES, Math.max(BOX_MIN_PAGES, Math.floor(lastSlot / BOX_SIZE) + 1));
     box.page = 0;
     box.selected = null;
     box.query = "";
@@ -638,7 +647,8 @@
     wallet("stat-cp", money(data.cp));
     var stamps = data.stamps || {};
     wallet("stat-stamps", "HL " + amount(stamps.hlTotal) + " / EX " + amount(stamps.exTotal));
-    document.getElementById("mbox-cap").textContent = box.items.length + " / " + (BOX_PAGES * BOX_SIZE);
+    document.getElementById("mbox-cap").textContent =
+      box.items.length.toLocaleString() + " / " + (BOX_MAX_PAGES * BOX_SIZE).toLocaleString();
 
     document.getElementById("preview-name").textContent = "No item selected";
     document.getElementById("preview-meta").textContent = "Click a slot to inspect it";
