@@ -185,13 +185,13 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
 <tr><th>Field</th><th>Value</th></tr>
 <tr><td>Name</td><td><code>Hunsterverse</code></td></tr>
 <tr><td>Host</td><td><code>129.213.54.221</code></td></tr>
-<tr><td>Launcher Port</td><td><code>53312</code></td></tr>
+<tr><td>Launcher Port</td><td><code>8080</code></td></tr>
 <tr><td>Game Port</td><td><code>53310</code></td></tr>
-<tr><td>Mode</td><td><b>SignV1</b> (not API)</td></tr>
+<tr><td>Mode</td><td><b>API</b> (the default)</td></tr>
 <tr><td>Version</td><td><code>ZZ</code></td></tr>
 </table>
-<figure><img alt="Add a Server dialog" src="/assets/guide/linux-addserver.webp"><figcaption>The Add a Server dialog. Note the API / SignV1 switch: pick SignV1 for Hunsterverse.</figcaption></figure>
-<div class="note box"><b>SignV1 matters.</b> Hunsterverse uses a sign server. API mode can reach the API but then runs the launcher patcher, which fails on Linux when the portable prefix sits inside the game folder (see Troubleshooting). Pick SignV1.</div>
+<figure><img alt="Add a Server dialog" src="/assets/guide/linux-addserver.webp"><figcaption>The Add a Server dialog. Leave the API / SignV1 switch on API.</figcaption></figure>
+<div class="note box"><b>API mode shows the Hunsterverse launcher:</b> news, banners, your mail and unclaimed gifts. If API mode won't log in, use the fallback: Launcher Port <code>53312</code> and Mode <b>SignV1</b>. It logs in and plays the same, without the news and banners.</div>
 
 <h2 id="play">10. Log in and launch</h2>
 <p>Select Hunsterverse in the <b>Server Selection</b> dropdown, type your own account name and password, and press <b>LOG IN</b>. Pick a character, then launch.</p>
