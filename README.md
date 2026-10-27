@@ -24,6 +24,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/road-history.html` | Past Hunting Road winners (number, name, character, votes, live from and until), public, from `/api/public/road/history`. |
 | `/admin.html` | Admin panel: gifts (Erupe distributions) and the Hunting Road rotation (rotations with entries and votes, create, change dates, close now, approve, override the winner, hide/unhide/disqualify, pause). Lists every gift with its items, claims and end, creates a gift (for everyone or one character, with rank limits, a deadline and items picked from the catalog) and ends one. Admin accounts only: the API checks `ROLE_ADMIN` on every `/api/admin/**` request; the account page links here for admins. Not in the nav, `noindex`. |
 | `/report.html` | Bug report (`#bug`) and feature request (`#feature`) forms. No sign-in. Each report becomes a task on the Kanboard board. |
+| `/privacy.html` | Privacy and cookies: what the site, API, game server and bot keep, why and how long, the browser storage it uses (`hvmhfz.token`, `hvmhfz.consent`; no cookies of its own), other services (GitHub Pages, Cloudflare Turnstile, the set builder embed, Discord) and players' rights. Linked from the footer and the cookie banner. Update it when the site starts storing or sending anything new. |
 
 ## Layout
 
@@ -38,6 +39,7 @@ worlds.html           world status and hunt totals
 guide-windows.html    Windows guide
 guide-linux.html      Linux guide
 report.html           bug report and feature request forms
+privacy.html          privacy and cookies policy
 admin.html            admin panel: gifts (distributions) and the Hunting Road rotation
 road.html             Hunting Road builder and entry viewer
 road-vote.html        Hunting Road rotation: entries, vote, results
@@ -45,8 +47,11 @@ road-history.html     past Hunting Road winners (public)
 changelog.html        player changelog (rolling, one entry per live update)
 css/styles.css        shared guild-hall theme (leather page, parchment panels, brass trim, gold buttons)
 assets/guide/*.webp   guide screenshots, WebP
+assets/backgrounds/   page background pictures (rules and sizes in its README.md)
 assets/favicon.png    site icon
 js/nav.js             site nav: the four menus, and the Menu button on narrow screens
+js/background.js      page background: a random picture from assets/backgrounds/ per page load, dark and blurred
+js/consent.js         cookie banner (Accept/Decline, kept in localStorage hvmhfz.consent); runs held-back optional scripts after Accept
 js/whatsnew.js        home page "What's new": the newest entry of changelog.html
 js/main.js            login, saved session
 js/turnstile.js       Cloudflare Turnstile widget, shared by main.js and report.js
@@ -90,7 +95,7 @@ There are no templates: every page carries its own copy of the same header nav a
   `wide` to their `main` and use the screen up to `--wrap-wide` (1760px); reading pages (guides, changelog, report)
   keep `--wrap` (1120px). Below 1340px the nav folds behind the Menu button.
 - Each page also has the skip link (`<a class="skip-link" href="#content">`), a `main` with `id="content"`,
-  the footer `footer.site-foot`, `/css/styles.css` and `/js/nav.js`.
+  the footer `footer.site-foot` (with the Privacy link), `/css/styles.css`, `/js/nav.js`, `/js/background.js` and `/js/consent.js`.
 - The bar is sticky. Below 980px wide `js/nav.js` folds the links behind a Menu button; without JavaScript
   they wrap into a grid under the logo.
 

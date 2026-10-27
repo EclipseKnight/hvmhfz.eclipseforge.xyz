@@ -98,6 +98,23 @@ code{background:#241811;color:#f5e9cb;border:1px solid #4a3722;border-radius:2px
 .foot-links a{color:var(--text-dim);border:0}
 .foot-links a:hover{color:var(--gold-bright)}
 
+/* ---------- page background ---------- */
+/* js/background.js sets --site-bg to one Frontier picture. It sits behind everything, darkened and
+   blurred so text on the leather stays readable. Without one, the leather gradient on body shows. */
+html.has-site-bg body{background:transparent}
+html.has-site-bg body::before{content:"";position:fixed;inset:-24px;z-index:-1;pointer-events:none;
+  background:linear-gradient(rgba(11,7,5,.35),rgba(11,7,5,.65)),var(--site-bg) center/cover no-repeat;
+  filter:blur(6px) brightness(.45);animation:site-bg-in .8s ease-out}
+@keyframes site-bg-in{from{opacity:0}}
+
+/* ---------- cookie banner (js/consent.js) ---------- */
+.consent{position:fixed;left:16px;right:16px;bottom:16px;z-index:90;max-width:720px;margin:0 auto;
+  padding:16px 20px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;
+  background:linear-gradient(#2c1c11,#1a110a);border:1px solid var(--frame);border-radius:4px;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);color:var(--text-light);font:.9rem/1.5 var(--font-ui)}
+.consent p{margin:0;flex:1 1 320px}
+.consent-actions{display:flex;gap:10px}
+
 /* ---------- page shell ---------- */
 .page.wrap,.account-wrap{max-width:var(--wrap);margin:0 auto;padding:40px 20px 64px}
 .page-head{margin:0 0 26px}
@@ -557,7 +574,8 @@ main.sheet footer::before{content:"MHFZ";display:inline-grid;place-items:center;
 }
 @media print{
   body{background:#fff;color:#000;display:block}
-  .site-nav,.guide-switch,.site-foot,.skip-link{display:none}
+  html.has-site-bg body{background:#fff}
+  .site-nav,.guide-switch,.site-foot,.skip-link,.consent,body::before{display:none}
   main.sheet{box-shadow:none;border:0;margin:0;max-width:none;padding:0}
   main.sheet::after{display:none}
   main.sheet h2{color:#000;background:none;padding-left:0;box-shadow:none}

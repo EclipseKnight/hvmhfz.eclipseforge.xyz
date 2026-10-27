@@ -6,12 +6,14 @@ This script keeps those copies in step. For every *.html page in the site root i
   - the header nav has the same links, in the same order, as NAV below;
   - at most one nav link is marked aria-current, and it is the one the page should mark;
   - the footer is identical on every page;
-  - the page has the skip link, a main#content, styles.css and nav.js;
-  - every local href/src points at a file that exists.
+  - the page has the skip link, a main#content, styles.css, nav.js, background.js and consent.js;
+  - the footer links the privacy policy;
+  - every local href/src points at a file that exists, and so does every picture in js/background.js.
 
 Usage: python3 dev/check-site.py   (exit code 0 = all good, 1 = problems, listed)
 """
 import pathlib
+import re
 import sys
 from html.parser import HTMLParser
 
@@ -41,6 +43,8 @@ CURRENT = {
     "404.html": None,
     # The admin page is not in the nav; the account page links it for admins.
     "admin.html": None,
+    # The privacy policy is linked from the footer and the cookie banner, not the nav.
+    "privacy.html": None,
     # One monster's page sits under the Monsters guide.
     "monster.html": "/monsters.html",
     # The Road builder and the winners list sit under the Hunting Road link (the vote page).
@@ -129,8 +133,9 @@ def check(root):
             problems.append(f"{name}: no element with id=content for the skip link")
         if "/css/styles.css" not in page.stylesheets:
             problems.append(f"{name}: does not load /css/styles.css")
-        if "/js/nav.js" not in page.scripts:
-            problems.append(f"{name}: does not load /js/nav.js")
+        for script in ("/js/nav.js", "/js/background.js", "/js/consent.js"):
+            if script not in page.scripts:
+                problems.append(f"{name}: does not load {script}")
         for ref in page.local_refs:
             target = ref.split("#")[0].split("?")[0]
             if target in ("", "/"):
@@ -144,6 +149,17 @@ def check(root):
             problems.append(f"{name}: no footer.site-foot")
         elif footer != footers[first]:
             problems.append(f"{name}: footer differs from {first}")
+    if footers and ("start", "a", (("href", "/privacy.html"),)) not in footers[first]:
+        problems.append(f"{first}: footer has no link to /privacy.html")
+
+    # The background pictures: the quoted names in the IMAGES list of js/background.js.
+    listed = re.search(r"var IMAGES = \[(.*?)\];", (root / "js/background.js").read_text(encoding="utf-8"), re.S)
+    if not listed:
+        problems.append("js/background.js: no IMAGES list")
+    else:
+        for picture in re.findall(r'"([^"]+)"', listed.group(1)):
+            if not (root / "assets/backgrounds" / picture).is_file():
+                problems.append(f"js/background.js: assets/backgrounds/{picture} does not exist")
     return problems
 
 
