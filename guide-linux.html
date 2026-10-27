@@ -191,7 +191,7 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
 <tr><td>Version</td><td><code>ZZ</code></td></tr>
 </table>
 <figure><img alt="Add a Server dialog" src="/assets/guide/linux-addserver.webp"><figcaption>The Add a Server dialog. Note the API / SignV1 switch: pick SignV1 for Hunsterverse.</figcaption></figure>
-<div class="note box"><b>SignV1 matters.</b> Hunsterverse uses a sign server. With the API mode selected the login fails or the game cannot reach the character server.</div>
+<div class="note box"><b>SignV1 matters.</b> Hunsterverse uses a sign server. API mode can reach the API but then runs the launcher patcher, which fails on Linux when the portable prefix sits inside the game folder (see Troubleshooting). Pick SignV1.</div>
 
 <h2 id="play">10. Log in and launch</h2>
 <p>Select Hunsterverse in the <b>Server Selection</b> dropdown, type your own account name and password, and press <b>LOG IN</b>. Pick a character, then launch.</p>
@@ -208,6 +208,7 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
 <tr><td>Game starts then quits after a few seconds</td><td>Check <code>journalctl --user -u &lt;unit&gt;</code> if you used a unit, otherwise run the launcher from a terminal and read the output. A DXVK or Wine error appears there.</td></tr>
 <tr><td>Text in game is boxes or garbage</td><td>Install <code>noto-fonts-cjk</code>, enable <code>ja_JP.UTF-8</code> in <code>/etc/locale.gen</code>, run <code>sudo locale-gen</code>, then start with <code>LANG=ja_JP.UTF-8 ~/Games/MHFZ/run-mezeporta-x11.sh</code>.</td></tr>
 <tr><td>No sound</td><td>Install <code>gst-plugin-pipewire</code> and <code>gst-plugins-good</code>, then re-run the <code>--verify</code> step.</td></tr>
+<tr><td>API mode: <code>patcher failed to manage files in game folder</code></td><td>The launcher patcher walks the game folder for <code>.mezeb</code> backups and follows symlinks. The portable prefix inside the game folder contains <code>dosdevices/z: -&gt; /</code>, so the walk reaches <code>/root</code> and aborts with <code>Permission denied</code>. Hunsterverse does not need API mode: set the server to <b>SignV1</b> with launcher port <code>53312</code>. If you must use API mode, move the prefix out of the game folder first: <code>mv ~/Games/MHFZ/Mezeporta/WinePrefix ~/Games/MHFZ-prefix</code>, then set <b>Advanced, Wine Prefix</b> to Custom and point it at <code>~/Games/MHFZ-prefix</code>.</td></tr>
 <tr><td>Wrong or broken prefix</td><td>Delete <code>~/Games/MHFZ/Mezeporta/WinePrefix</code> and re-run the <code>--portable-prefix</code> step. Your game files are untouched.</td></tr>
 <tr><td>Want vanilla files back</td><td>Copy everything from <code>~/Games/MHFZ/original-files/</code> back over the game folder.</td></tr>
 </table>
