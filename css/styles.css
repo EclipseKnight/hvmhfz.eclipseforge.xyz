@@ -672,3 +672,11 @@ body.cmdk-open{overflow:hidden}
 .tile-stat-label{color:#6a563a}
 .site-nav .navlink{padding:10px 9px}
 .nav-search{padding:10px 5px}
+
+
+/* Set builder: the embedded Frontier Set Searcher fills the rest of the screen below the page head. */
+.tool-page.wrap{max-width:1400px}
+.tool-credit{color:var(--text-dim);font-size:.88rem;margin:10px 0 0;max-width:90ch}
+.tool-frame{display:block;width:100%;height:calc(100vh - var(--nav-h) - 48px);min-height:640px;
+  border:1px solid var(--frame);border-radius:3px;background:#fff;box-shadow:0 0 0 4px var(--frame-dark)}
+

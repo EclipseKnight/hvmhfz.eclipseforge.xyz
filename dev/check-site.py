@@ -40,6 +40,8 @@ CURRENT = {
     "guide-linux.html": "/guide-windows.html",
     # The changelog is not in the nav; the footer links it.
     "changelog.html": None,
+    # The set builder is a gear tool, linked from the Catalog page.
+    "set-builder.html": "/catalog.html",
 }
 
 
