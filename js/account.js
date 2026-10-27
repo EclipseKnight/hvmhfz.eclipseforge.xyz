@@ -156,6 +156,15 @@
 
     document.getElementById("count-characters").textContent = account.characters ? "(" + account.characters + ")" : "";
 
+    // Admins get a link to the admin panel (the API checks the role again on every admin request).
+    if ((account.roles || []).indexOf("ROLE_ADMIN") >= 0 && !document.getElementById("admin-link")) {
+      var link = el("a", "ghost-btn", "Admin panel");
+      link.id = "admin-link";
+      link.href = "/admin.html";
+      var signout = document.getElementById("signout");
+      signout.parentNode.insertBefore(link, signout);
+    }
+
     var details = document.getElementById("account-details");
     clear(details);
     [["Username", account.username],

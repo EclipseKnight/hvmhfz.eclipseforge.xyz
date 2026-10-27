@@ -38,6 +38,8 @@ NAV = [
 CURRENT = {
     "index.html": None,
     "404.html": None,
+    # The admin page is not in the nav; the account page links it for admins.
+    "admin.html": None,
     # One monster's page sits under the Monsters guide.
     "monster.html": "/monsters.html",
 }

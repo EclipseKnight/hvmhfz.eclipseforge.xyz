@@ -19,6 +19,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
 | `/changelog.html` | Rolling player changelog: "Coming next" (finished, not live), then one dated entry per live update, newest first, then known issues. Linked from the footer. Update it at every live deploy (below). |
+| `/admin.html` | Admin panel: gifts (Erupe distributions). Lists every gift with its items, claims and end, creates a gift (for everyone or one character, with rank limits, a deadline and items picked from the catalog) and ends one. Admin accounts only: the API checks `ROLE_ADMIN` on every `/api/admin/**` request; the account page links here for admins. Not in the nav, `noindex`. |
 | `/report.html` | Bug report (`#bug`) and feature request (`#feature`) forms. No sign-in. Each report becomes a task on the Kanboard board. |
 
 ## Layout
@@ -34,6 +35,7 @@ worlds.html           world status and hunt totals
 guide-windows.html    Windows guide
 guide-linux.html      Linux guide
 report.html           bug report and feature request forms
+admin.html            admin panel: gifts (distributions)
 changelog.html        player changelog (rolling, one entry per live update)
 css/styles.css        shared guild-hall theme (leather page, parchment panels, brass trim, gold buttons)
 assets/guide/*.webp   guide screenshots, WebP
@@ -43,6 +45,7 @@ js/whatsnew.js        home page "What's new": the newest entry of changelog.html
 js/main.js            login, saved session
 js/turnstile.js       Cloudflare Turnstile widget, shared by main.js and report.js
 js/report.js          report forms: send, success, error and Discord fallback
+js/admin.js           admin panel: gift list, new gift form, end a gift (/api/admin/distributions)
 js/account.js         account page, including storage and hunt log
 js/guilds.js          guild directory and detail
 js/hunters.js         hunter directory and profile
