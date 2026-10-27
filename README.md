@@ -60,6 +60,9 @@ There are no templates: every page carries its own copy of the same header nav a
   The page's own link has `aria-current="page"`; the guide pages mark Guides, and the home page marks nothing.
   The changelog is not in the nav; the footer links it.
   Guides opens the Windows guide; both guides switch between Windows and Linux at the top.
+- Width: data pages (monsters, monster, catalog, hunters, guilds, events, worlds, account, set builder) add
+  `wide` to their `main` and use the screen up to `--wrap-wide` (1760px); reading pages (guides, changelog, report)
+  keep `--wrap` (1120px). Below 1340px the nav folds behind the Menu button.
 - Each page also has the skip link (`<a class="skip-link" href="#content">`), a `main` with `id="content"`,
   the footer `footer.site-foot`, `/css/styles.css` and `/js/nav.js`.
 - The bar is sticky. Below 980px wide `js/nav.js` folds the links behind a Menu button; without JavaScript
