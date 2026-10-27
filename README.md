@@ -7,7 +7,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | Path | What it does |
 |---|---|
 | `/` | Home: how to start playing (guides, steps) and sign in. After a successful login it hands over to `/account.html`. |
-| `/account.html` | Signed in view: overview, characters, storage, hunt log, guild and account. Redirects to `/` without a valid session. |
+| `/account.html` | Signed in view: overview (with the Hunting Road rewards and a character picker to claim them), characters, storage, hunt log, guild and account. Redirects to `/` without a valid session. |
 | `/monsters.html` | Monster field guide: search by name or species, cards link to full hitzone, HP and drop pages. |
 | `/monster.html?m=slug` | One monster: hitzones normal and enraged, HP by level, stagger limits, maps, every carve table, Henshu/GR/Zenith forms. |
 | `/events.html` | Live server events, the event quest pool and the Festa prize table. |
@@ -19,7 +19,10 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
 | `/changelog.html` | Rolling player changelog: "Coming next" (finished, not live), then one dated entry per live update, newest first, then known issues. Linked from the footer. Update it at every live deploy (below). |
-| `/admin.html` | Admin panel: gifts (Erupe distributions). Lists every gift with its items, claims and end, creates a gift (for everyone or one character, with rank limits, a deadline and items picked from the catalog) and ends one. Admin accounts only: the API checks `ROLE_ADMIN` on every `/api/admin/**` request; the account page links here for admins. Not in the nav, `noindex`. |
+| `/road-vote.html` | Hunting Road rotation: phase and dates, the entries, vote or take a vote back during the vote window, results after it closes. Signed in (shows a sign-in prompt otherwise). The nav's "Hunting Road" link. Needs the saved sign-in; API `/api/road/**`. |
+| `/road.html` | Hunting Road builder: per floor its table, per table its entries (monster, second monster, weight, forced), add an entry, reset to the base. Checks the rules live with `js/road-rules.js`, asks `POST /api/road/check` before submitting (POST) or saving (PUT). `?entry=<id>` opens an entry (yours to edit during submissions, others read-only). Everything about the Road (base, monsters, tables, policy) comes from `GET /api/road/pool` at run time; no game data is in the repo. Signed in only, `noindex`. |
+| `/road-history.html` | Past Hunting Road winners (number, name, character, votes, live from and until), public, from `/api/public/road/history`. |
+| `/admin.html` | Admin panel: gifts (Erupe distributions) and the Hunting Road rotation (rotations with entries and votes, create, change dates, close now, approve, override the winner, hide/unhide/disqualify, pause). Lists every gift with its items, claims and end, creates a gift (for everyone or one character, with rank limits, a deadline and items picked from the catalog) and ends one. Admin accounts only: the API checks `ROLE_ADMIN` on every `/api/admin/**` request; the account page links here for admins. Not in the nav, `noindex`. |
 | `/report.html` | Bug report (`#bug`) and feature request (`#feature`) forms. No sign-in. Each report becomes a task on the Kanboard board. |
 
 ## Layout
@@ -35,7 +38,10 @@ worlds.html           world status and hunt totals
 guide-windows.html    Windows guide
 guide-linux.html      Linux guide
 report.html           bug report and feature request forms
-admin.html            admin panel: gifts (distributions)
+admin.html            admin panel: gifts (distributions) and the Hunting Road rotation
+road.html             Hunting Road builder and entry viewer
+road-vote.html        Hunting Road rotation: entries, vote, results
+road-history.html     past Hunting Road winners (public)
 changelog.html        player changelog (rolling, one entry per live update)
 css/styles.css        shared guild-hall theme (leather page, parchment panels, brass trim, gold buttons)
 assets/guide/*.webp   guide screenshots, WebP
@@ -45,7 +51,11 @@ js/whatsnew.js        home page "What's new": the newest entry of changelog.html
 js/main.js            login, saved session
 js/turnstile.js       Cloudflare Turnstile widget, shared by main.js and report.js
 js/report.js          report forms: send, success, error and Discord fallback
-js/admin.js           admin panel: gift list, new gift form, end a gift (/api/admin/distributions)
+js/admin.js           admin panel: gift list, new gift form, end a gift (/api/admin/distributions); Hunting Road rotations (/api/admin/road)
+js/road-rules.js      Hunting Road rules in the browser (port of the Go road package); also runs under node
+js/road.js            Hunting Road builder
+js/road-vote.js       Hunting Road vote page
+js/road-history.js    Hunting Road past winners
 js/account.js         account page, including storage and hunt log
 js/guilds.js          guild directory and detail
 js/hunters.js         hunter directory and profile
@@ -53,6 +63,7 @@ js/leaderboards.js    leaderboards, from /api/public/leaderboards/hunts and the 
 js/catalog.js         catalog browsing
 js/worlds.js          world status polling
 dev/mock-feedback.py  local stand-in for POST /api/feedback (testing only)
+dev/check-road-rules.js  checks js/road-rules.js against the Go golden outputs (needs the base Road as JSON, see the file)
 dev/check-site.py     checks that every page has the same nav, footer and skip link
 CNAME                 hvmhfz.eclipseforge.xyz
 ```
@@ -65,7 +76,7 @@ There are no templates: every page carries its own copy of the same header nav a
 
 - Nav, same on every page: four menus and three links.
   - **Database:** Monsters, Catalog, Set builder.
-  - **Community:** Hunters, Guilds, Leaderboards.
+  - **Community:** Hunters, Guilds, Leaderboards, Hunting Road.
   - **Server:** Worlds, Events, Changelog.
   - **Guides:** Windows guide, Linux guide.
   - Then Report, Account and Discord. `js/search.js` adds the Search button in front.
@@ -154,6 +165,16 @@ large, `429` rate limited. When `attachmentsFailed` is above 0 the task exists b
 missing from it, and the page asks for them on Discord. Any other answer, a network error or no
 answer within 15 seconds (60 with attachments) shows the Discord fallback: the report as plain text
 to copy into #mhfrontier.
+
+### Testing the Hunting Road rules
+
+`js/road-rules.js` must give the same problems as the Go tool (`rengoku-build check -json`). Decode the live
+base to a file outside the repo, then run the fixtures of the Erupe repo against it (policy off, `too-big` skipped):
+
+```
+rengoku-build decode -in <bin>/rengoku_data.bin > /path/outside/repo/base.json
+node dev/check-road-rules.js /path/outside/repo/base.json <Erupe>/cmd/rengoku-build/testdata/roads
+```
 
 ### Testing the report page locally
 

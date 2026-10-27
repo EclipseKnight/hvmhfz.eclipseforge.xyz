@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hunsterverse MHFZ: Hunting Road vote</title>
+    <meta name="description" content="Vote for the next Hunting Road: this rotation's entries, the phase and the results." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Hunsterverse MHFZ: Hunting Road vote" />
+    <meta property="og:description" content="Vote for the next Hunting Road: this rotation's entries, the phase and the results." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/road-vote.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hunsterverse MHFZ: Hunting Road vote" />
+    <meta name="twitter:description" content="Vote for the next Hunting Road: this rotation's entries, the phase and the results." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/nav.js" defer></script>
+  </head>
+
+  <body class="public-page">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html" aria-current="page">Hunting Road</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+            </div>
+          </div>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="content" class="wrap page wide road-page">
+      <header class="page-head">
+        <p class="kicker">Hunsterverse · Hunting Road</p>
+        <h1>Hunting Road rotation</h1>
+        <p class="page-sub">Players build the next Hunting Road. Submit yours, vote for your favourites, and the winner goes live for everyone.</p>
+        <p class="road-links">
+          <a class="ghost-btn small" href="/road-vote.html">Vote</a>
+          <a class="ghost-btn small" href="/road.html">Build a Road</a>
+          <a class="ghost-btn small" href="/road-history.html">Past winners</a>
+        </p>
+      </header>
+
+      <p class="form-alert" id="vote-alert" hidden></p>
+      <p class="road-ok" id="vote-notice" hidden></p>
+
+      <section class="panel" id="vote-signin" hidden>
+        <div class="panel-head"><h2>Sign in</h2></div>
+        <p class="note-text">Sign in with your Hunsterverse account to see this rotation's entries and to vote.</p>
+        <a class="btn btn-primary" href="/">Sign in</a>
+      </section>
+
+      <section class="panel" id="vote-phase-panel" hidden aria-live="polite">
+        <div class="panel-head"><h2 id="vote-phase-head">This rotation</h2><span class="panel-note" id="vote-phase-note"></span></div>
+        <p id="vote-phase-text"></p>
+        <dl class="road-phase" id="vote-phase"></dl>
+        <p class="note-text" id="vote-limits"></p>
+      </section>
+
+      <section class="panel" id="vote-entries-panel" hidden>
+        <div class="panel-head"><h2 id="vote-entries-head">Entries</h2><span class="panel-note" id="vote-entries-note"></span></div>
+        <div class="table-wrap">
+          <table class="data-table road-table-list">
+            <thead><tr><th class="rank">#</th><th>Road</th><th>Credit</th><th class="num">Votes</th><th></th></tr></thead>
+            <tbody id="vote-rows"><tr><td colspan="5" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+
+    <script src="/js/road-vote.js"></script>
+    <script src="/js/search.js" defer></script>
+  </body>
+</html>

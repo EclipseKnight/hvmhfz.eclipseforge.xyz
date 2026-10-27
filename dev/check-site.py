@@ -25,6 +25,7 @@ NAV = [
     ("/hunters.html", "Hunters"),
     ("/guilds.html", "Guilds"),
     ("/leaderboards.html", "Leaderboards"),
+    ("/road-vote.html", "Hunting Road"),
     ("/worlds.html", "Worlds"),
     ("/events.html", "Events"),
     ("/changelog.html", "Changelog"),
@@ -42,6 +43,9 @@ CURRENT = {
     "admin.html": None,
     # One monster's page sits under the Monsters guide.
     "monster.html": "/monsters.html",
+    # The Road builder and the winners list sit under the Hunting Road link (the vote page).
+    "road.html": "/road-vote.html",
+    "road-history.html": "/road-vote.html",
 }
 
 

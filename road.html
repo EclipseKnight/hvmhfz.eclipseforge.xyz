@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hunsterverse MHFZ: Hunting Road builder</title>
+    <meta name="description" content="Build a Hunting Road for the next rotation: choose the monsters of each floor, check the rules and submit it for the vote." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Hunsterverse MHFZ: Hunting Road builder" />
+    <meta property="og:description" content="Build a Hunting Road for the next rotation: choose the monsters of each floor, check the rules and submit it for the vote." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/road.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hunsterverse MHFZ: Hunting Road builder" />
+    <meta name="twitter:description" content="Build a Hunting Road for the next rotation: choose the monsters of each floor, check the rules and submit it for the vote." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/nav.js" defer></script>
+  </head>
+
+  <body class="public-page">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html" aria-current="page">Hunting Road</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+            </div>
+          </div>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="content" class="wrap page wide road-page">
+      <header class="page-head">
+        <p class="kicker">Hunsterverse · Hunting Road</p>
+        <h1 id="road-title">Road builder</h1>
+        <p class="page-sub" id="road-sub">Change which monsters each Hunting Road floor can pick, then submit your Road for the vote. The page checks the rules as you edit.</p>
+        <p class="road-links">
+          <a class="ghost-btn small" href="/road-vote.html">Vote</a>
+          <a class="ghost-btn small" href="/road.html">Build a Road</a>
+          <a class="ghost-btn small" href="/road-history.html">Past winners</a>
+        </p>
+      </header>
+
+      <p class="form-alert" id="road-alert" hidden></p>
+      <p class="road-ok" id="road-notice" hidden></p>
+
+      <div id="road-app" hidden>
+        <section class="panel" id="road-entry-panel">
+          <div class="panel-head"><h2 id="road-entry-head">Your Road</h2><span class="panel-note" id="road-entry-note"></span></div>
+          <form id="road-form" class="admin-form" novalidate>
+            <div class="admin-grid">
+              <div class="field">
+                <label for="road-name">Name</label>
+                <input id="road-name" type="text" minlength="3" maxlength="40" autocomplete="off" />
+                <p class="note-text">3 to 40 characters.</p>
+              </div>
+              <div class="field">
+                <label for="road-character">Credit character</label>
+                <select id="road-character"></select>
+                <p class="note-text">Its name is shown publicly as the author.</p>
+              </div>
+              <div class="field admin-wide">
+                <label for="road-description">Description <span class="field-optional">up to 300 characters</span></label>
+                <textarea id="road-description" rows="3" maxlength="300"></textarea>
+              </div>
+            </div>
+            <p class="note-text" id="road-window-note"></p>
+            <div class="admin-actions" id="road-actions">
+              <button type="button" class="ghost-btn" id="road-check">Check with the server</button>
+              <button type="submit" class="btn btn-primary" id="road-submit">Submit</button>
+              <button type="button" class="ghost-btn" id="road-reset">Reset everything to the base</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel" id="road-problems-panel" aria-live="polite">
+          <div class="panel-head"><h2>Checks</h2><span class="panel-note" id="road-problems-note"></span></div>
+          <ul class="road-problems" id="road-problems"></ul>
+          <p class="note-text" id="road-server-note"></p>
+          <details class="road-json">
+            <summary>The changes as JSON</summary>
+            <pre id="road-json"></pre>
+          </details>
+        </section>
+
+        <section class="panel" id="road-floors-panel">
+          <div class="panel-head"><h2>Floors</h2><span class="panel-note" id="road-floors-note"></span></div>
+          <div class="chips road-modes" id="road-modes" role="group" aria-label="Road mode"></div>
+          <p class="note-text">Each floor draws its monsters from one table. Pick another table for a floor, or change the tables below.</p>
+          <div class="road-floors" id="road-floors"></div>
+        </section>
+
+        <section class="panel" id="road-tables-panel">
+          <div class="panel-head"><h2>Tables</h2><span class="panel-note" id="road-tables-note"></span></div>
+          <p class="note-text">Open a table to change its entries. A higher weight makes a monster more likely. A forced entry is always picked (at most one per table). A table needs at least 3 different monsters with a weight above 0.</p>
+          <div id="road-tables"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+
+    <script src="/js/road-rules.js"></script>
+    <script src="/js/road.js"></script>
+    <script src="/js/search.js" defer></script>
+  </body>
+</html>

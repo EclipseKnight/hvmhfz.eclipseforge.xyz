@@ -1,4 +1,4 @@
-/* Admin panel: gifts (Erupe "distributions"). Lists every gift and creates new ones through the API's
+/* Admin panel: gifts (Erupe "distributions") and the Hunting Road rotation (end of the file). Lists every gift and creates new ones through the API's
    /api/admin/distributions, which only admin accounts may use (the API checks the role on every
    request; this page only hides itself from others). A new gift is in the game's gift list at once,
    so the form shows a summary and asks again before it creates anything. */
@@ -427,11 +427,285 @@
     else alertBox(error.server ? error.message : "The API did not answer. Try again in a moment.");
   }
 
+
+  /* ---------- Hunting Road ---------- */
+
+  var roadOpen = {};   // cycle id -> true while its block is open
+
+  function roadAlert(text, ok) {
+    var bad = $("road-alert");
+    var good = $("road-ok");
+    bad.textContent = ok ? "" : text || "";
+    bad.hidden = ok || !text;
+    good.textContent = ok ? text : "";
+    good.hidden = !ok;
+  }
+
+  function roadFail(error) {
+    if (error.message === "signin") roadAlert("Your sign-in has expired. Sign in again on the home page.");
+    else if (error.message === "forbidden") roadAlert("This account is not an admin.");
+    else roadAlert(error.server ? error.message : "The API did not answer. Try again in a moment.");
+  }
+
+  function when(value) {
+    if (!value) return "-";
+    var date = new Date(value);
+    return isNaN(date.getTime()) ? "Unknown" : date.toLocaleString();
+  }
+
+  // <input type="datetime-local"> works in local time without a zone; the API wants an ISO instant.
+  function toInput(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    function two(n) { return (n < 10 ? "0" : "") + n; }
+    return d.getFullYear() + "-" + two(d.getMonth() + 1) + "-" + two(d.getDate()) + "T" + two(d.getHours()) + ":" + two(d.getMinutes());
+  }
+
+  function fromInput(id) {
+    var value = $(id).value;
+    return value ? new Date(value).toISOString() : undefined;
+  }
+
+  // A button that needs a second click within 5 seconds, like "End now" for gifts.
+  function twoClicks(button, label, ask, action) {
+    button.addEventListener("click", function () {
+      if (button.getAttribute("data-armed") !== "1") {
+        button.setAttribute("data-armed", "1");
+        button.textContent = ask;
+        setTimeout(function () {
+          button.removeAttribute("data-armed");
+          button.textContent = label;
+        }, 5000);
+        return;
+      }
+      button.disabled = true;
+      action();
+    });
+  }
+
+  function roadAction(path, body, done) {
+    roadAlert("");
+    return request(path, { method: "POST", body: JSON.stringify(body || {}) })
+      .then(function () { roadAlert(done, true); return loadRoad(); })
+      .catch(function (error) { roadFail(error); return loadRoad().catch(function () {}); });
+  }
+
+  function lower(value) { return String(value || "").toLowerCase(); }
+
+  function entryActions(entry, reason) {
+    var cell = el("td");
+    var status = lower(entry.status);
+    function add(label, path, done) {
+      var button = el("button", "ghost-btn small", label);
+      button.type = "button";
+      button.addEventListener("click", function () {
+        button.disabled = true;
+        roadAction("/api/admin/road/entries/" + entry.id + "/" + path, { reason: reason.value.trim() }, done);
+      });
+      cell.appendChild(button);
+      cell.appendChild(document.createTextNode(" "));
+    }
+    if (status === "hidden") add("Unhide", "unhide", "Entry #" + entry.id + " is visible again.");
+    else if (status !== "disqualified") add("Hide", "hide", "Entry #" + entry.id + " is hidden.");
+    if (status !== "disqualified") add("Disqualify", "disqualify", "Entry #" + entry.id + " is disqualified.");
+    return cell;
+  }
+
+  function winnerOf(cycle) {
+    var id = cycle.winnerId !== undefined ? cycle.winnerId : cycle.winnerEntryId;
+    return id === undefined ? null : id;
+  }
+
+  function renderCycle(cycle) {
+    var details = el("details", "road-cycle");
+    details.open = !!roadOpen[cycle.id];
+    details.addEventListener("toggle", function () { roadOpen[cycle.id] = details.open; });
+    var summary = el("summary", null, "Rotation " + cycle.number + " (#" + cycle.id + ")");
+    summary.appendChild(el("span", "muted", cycle.state + " · " + (cycle.entries || []).length + " entries"));
+    details.appendChild(summary);
+    var body = el("div", "road-cycle-body");
+    details.appendChild(body);
+
+    var dates = el("div", "road-cycle-dates");
+    [["Submissions open", "submitOpens"], ["Submissions close", "submitCloses"], ["Voting closes", "voteCloses"]].forEach(function (pair) {
+      var field = el("div", "field");
+      var label = el("label", null, pair[0]);
+      var input = el("input");
+      input.type = "datetime-local";
+      input.id = "road-date-" + cycle.id + "-" + pair[1];
+      label.htmlFor = input.id;
+      input.value = toInput(cycle[pair[1]]);
+      field.appendChild(label);
+      field.appendChild(input);
+      dates.appendChild(field);
+    });
+    body.appendChild(dates);
+    body.appendChild(el("p", "note-text", "Goes live: " + when(cycle.liveFrom || cycle.voteCloses) +
+      (cycle.deployedAt ? " · deployed " + when(cycle.deployedAt) : "") +
+      (winnerOf(cycle) !== null ? " · winner: entry #" + winnerOf(cycle) : "")));
+
+    var actions = el("div", "admin-actions");
+    var save = el("button", "ghost-btn small", "Save dates");
+    save.type = "button";
+    save.addEventListener("click", function () {
+      save.disabled = true;
+      roadAlert("");
+      var payload = {
+        submitOpens: fromInput("road-date-" + cycle.id + "-submitOpens"),
+        submitCloses: fromInput("road-date-" + cycle.id + "-submitCloses"),
+        voteCloses: fromInput("road-date-" + cycle.id + "-voteCloses")
+      };
+      request("/api/admin/road/cycles/" + cycle.id, { method: "PUT", body: JSON.stringify(payload) })
+        .then(function () { roadAlert("Dates of rotation " + cycle.number + " saved.", true); return loadRoad(); })
+        .catch(function (error) { roadFail(error); save.disabled = false; });
+    });
+    actions.appendChild(save);
+    var state = lower(cycle.state);
+    if (state === "submitting" || state === "voting") {
+      var close = el("button", "ghost-btn small", "Close the vote now");
+      close.type = "button";
+      twoClicks(close, "Close the vote now", "Click again: close and pick the winner", function () {
+        roadAction("/api/admin/road/cycles/" + cycle.id + "/close", {}, "Rotation " + cycle.number + " is closed.");
+      });
+      actions.appendChild(close);
+    }
+    if (state === "closed") {
+      var approve = el("button", "btn btn-primary btn-small", "Approve the winner");
+      approve.type = "button";
+      twoClicks(approve, "Approve the winner", "Click again to approve", function () {
+        roadAction("/api/admin/road/cycles/" + cycle.id + "/approve", {}, "The winner of rotation " + cycle.number + " is approved.");
+      });
+      actions.appendChild(approve);
+    }
+    body.appendChild(actions);
+
+    var reasonField = el("div", "field");
+    var reasonLabel = el("label", null, "Reason (for hide, unhide and disqualify)");
+    var reason = el("input");
+    reason.type = "text";
+    reason.maxLength = 200;
+    reason.id = "road-reason-" + cycle.id;
+    reasonLabel.htmlFor = reason.id;
+    reasonField.appendChild(reasonLabel);
+    reasonField.appendChild(reason);
+    body.appendChild(reasonField);
+
+    var wrap = el("div", "table-wrap");
+    var table = el("table", "data-table admin-table");
+    var head = el("thead");
+    var headRow = el("tr");
+    ["#", "Road", "Credit", "Status", "Votes", ""].forEach(function (text, i) {
+      headRow.appendChild(el("th", i === 4 ? "num" : null, text));
+    });
+    head.appendChild(headRow);
+    table.appendChild(head);
+    var rows = el("tbody");
+    var entries = cycle.entries || [];
+    if (!entries.length) {
+      var emptyRow = el("tr");
+      var cell = el("td", "empty-cell", "No entries.");
+      cell.colSpan = 6;
+      emptyRow.appendChild(cell);
+      rows.appendChild(emptyRow);
+    }
+    entries.forEach(function (entry) {
+      var row = el("tr", winnerOf(cycle) === entry.id ? "is-winner" : null);
+      row.appendChild(el("td", "rank", String(entry.id)));
+      var name = el("td", "cell-name");
+      name.appendChild(el("span", null, entry.name));
+      if (entry.description) name.appendChild(el("span", "admin-desc", entry.description));
+      if (entry.reason) name.appendChild(el("span", "admin-desc", "Reason: " + entry.reason));
+      var view = el("a", null, "View edits");
+      view.href = "/road.html?entry=" + encodeURIComponent(entry.id);
+      view.className = "admin-desc";
+      name.appendChild(view);
+      row.appendChild(name);
+      row.appendChild(el("td", null, entry.characterName || "-"));
+      row.appendChild(el("td", null, entry.status || "-"));
+      row.appendChild(el("td", "num", num(entry.votes)));
+      var actionsCell = entryActions(entry, reason);
+      if (winnerOf(cycle) !== entry.id && lower(entry.status) !== "disqualified" && state !== "live") {
+        var make = el("button", "ghost-btn small", "Make winner");
+        make.type = "button";
+        twoClicks(make, "Make winner", "Click again: override the winner", function () {
+          roadAction("/api/admin/road/cycles/" + cycle.id + "/winner", { entryId: entry.id },
+            "Entry #" + entry.id + " is the winner of rotation " + cycle.number + ". It needs approval.");
+        });
+        actionsCell.appendChild(make);
+      }
+      row.appendChild(actionsCell);
+      rows.appendChild(row);
+    });
+    table.appendChild(rows);
+    wrap.appendChild(table);
+    body.appendChild(wrap);
+    return details;
+  }
+
+  function renderRoad(data) {
+    var cycles = Array.isArray(data.cycles) ? data.cycles : [];
+    cycles.sort(function (a, b) { return b.number - a.number; });
+    if (roadOpen.first === undefined && cycles.length) { roadOpen[cycles[0].id] = true; roadOpen.first = true; }
+    $("road-note").textContent = cycles.length + (cycles.length === 1 ? " rotation" : " rotations") + (data.paused ? " · paused" : "");
+    var pause = $("road-pause");
+    pause.textContent = data.paused ? "Resume rotations" : "Pause rotations";
+    pause.disabled = data.paused === null;
+    pause.title = data.paused ? "New rotations and the deploy are paused" : "";
+    pause.onclick = function () {
+      pause.disabled = true;
+      roadAction("/api/admin/road/pause", { paused: !data.paused }, data.paused ? "Rotations resumed." : "Rotations paused.");
+    };
+    var box = $("road-cycles");
+    clear(box);
+    if (!cycles.length) box.appendChild(el("p", "note-text", "No rotation yet. Create the first one above."));
+    cycles.forEach(function (cycle) { box.appendChild(renderCycle(cycle)); });
+  }
+
+  function loadRoad() {
+    return Promise.all([
+      request("/api/admin/road/cycles"),
+      request("/api/road/cycle").catch(function () { return null; })
+    ]).then(function (results) {
+      var list = results[0];
+      var data = Array.isArray(list) ? { cycles: list } : (list || { cycles: [] });
+      if (data.paused === undefined) data.paused = results[1] && results[1].paused !== undefined ? !!results[1].paused : null;
+      renderRoad(data);
+    });
+  }
+
+  function wireRoad() {
+    $("road-create").addEventListener("submit", function (event) {
+      event.preventDefault();
+      roadAlert("");
+      var opens = fromInput("road-start");
+      if (!opens) { roadAlert("Choose when submissions open."); return; }
+      var payload = { submitOpens: opens };
+      var closes = fromInput("road-submit-closes");
+      var votes = fromInput("road-vote-closes");
+      if (closes) payload.submitCloses = closes;
+      if (votes) payload.voteCloses = votes;
+      var button = $("road-create-button");
+      button.disabled = true;
+      request("/api/admin/road/cycles", { method: "POST", body: JSON.stringify(payload) })
+        .then(function () { roadAlert("The rotation is created.", true); return loadRoad(); })
+        .catch(roadFail)
+        .then(function () { button.disabled = false; });
+    });
+  }
+
+  function startRoad() {
+    $("road-panel").hidden = false;
+    wireRoad();
+    loadRoad().catch(roadFail);
+  }
+
   function start() {
     if (!token()) {
       alertBox("Sign in on the home page with an admin account first.");
       return;
     }
+    startRoad();
     request("/api/admin/distributions/options")
       .then(function (data) {
         options = data;

@@ -52,7 +52,13 @@
         throw new Error("unauthenticated");
       }
       if (!response.ok) {
-        throw new Error("HTTP " + response.status);
+        // the API's own message (when it sends one) is kept for blocks that show it, e.g. the Road rewards
+        return response.json().catch(function () { return null; }).then(function (data) {
+          var error = new Error("HTTP " + response.status);
+          error.status = response.status;
+          error.serverMessage = data && data.message;
+          throw error;
+        });
       }
       return response.json();
     });
@@ -780,6 +786,90 @@
     }
   }
 
+  /* ---------- Hunting Road rewards ---------- */
+
+  function roadRewardAlert(text, ok) {
+    var alertNode = document.getElementById("road-rewards-alert");
+    var okNode = document.getElementById("road-rewards-ok");
+    alertNode.textContent = ok ? "" : text || "";
+    alertNode.hidden = ok || !text;
+    okNode.textContent = ok ? text : "";
+    okNode.hidden = !ok;
+  }
+
+  function rewardCard(reward) {
+    var item = el("div", "guild-card");
+    item.appendChild(el("p", "subhead", "Rotation " + reward.number + (reward.entryName ? ": " + reward.entryName : "")));
+    var claimed = reward.claimed;
+    if (claimed) {
+      item.appendChild(el("p", "note-text", "Claimed by " + (claimed.characterName || "a character") + " on " +
+        formatDate(claimed.claimedAt) + ". Look in the gift list in the game."));
+      return item;
+    }
+    if (!reward.claimable) {
+      item.appendChild(el("p", "note-text", reward.reason || "You can't claim this reward."));
+      return item;
+    }
+    var row = el("div", "road-claim");
+    var select = el("select");
+    select.setAttribute("aria-label", "Character that gets the reward for rotation " + reward.number);
+    state.characters.forEach(function (character) {
+      var option = document.createElement("option");
+      option.value = character.id;
+      option.textContent = character.name;
+      select.appendChild(option);
+    });
+    var button = el("button", "btn btn-primary btn-small", "Claim");
+    button.type = "button";
+    button.disabled = !state.characters.length;
+    button.addEventListener("click", function () {
+      button.disabled = true;
+      roadRewardAlert("");
+      request("/api/road/rewards/claim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cycleId: reward.cycleId, characterId: Number(select.value) })
+      }).then(function () {
+        roadRewardAlert("Claimed. It is in the gift list of that character in the game.", true);
+        return loadRoadRewards();
+      }).catch(function (error) {
+        if (error.message === "unauthenticated") return;
+        roadRewardAlert(error.serverMessage || "The reward could not be claimed. Try again in a moment.");
+        button.disabled = false;
+      });
+    });
+    row.appendChild(select);
+    row.appendChild(button);
+    item.appendChild(row);
+    return item;
+  }
+
+  function renderRoadRewards(list) {
+    var body = document.getElementById("road-rewards-body");
+    clear(body);
+    var open = list.filter(function (reward) { return !reward.claimed; });
+    document.getElementById("road-rewards-note").textContent =
+      !list.length ? "none yet" : open.filter(function (r) { return r.claimable; }).length + " to claim";
+    if (!list.length) {
+      body.appendChild(el("p", "note-text", "No Hunting Road rewards yet."));
+      return;
+    }
+    // to claim first, then the ones already claimed
+    open.concat(list.filter(function (reward) { return reward.claimed; })).forEach(function (reward) {
+      body.appendChild(rewardCard(reward));
+    });
+  }
+
+  function loadRoadRewards() {
+    return request("/api/road/rewards").then(renderRoadRewards).catch(function (error) {
+      if (error.message === "unauthenticated") return;
+      // the Road is optional: a server without it just hides the block's content
+      document.getElementById("road-rewards-note").textContent = "unavailable";
+      clear(document.getElementById("road-rewards-body"));
+      document.getElementById("road-rewards-body").appendChild(el("p", "note-text", "The rewards could not be loaded right now."));
+    });
+  }
+
   /* ---------- boot ---------- */
 
   function signOut() {
@@ -825,6 +915,7 @@
       renderGuilds(state.guilds);
       renderActivity(state.characters, state.guilds);
       wireCharacters(state.characters);
+      loadRoadRewards();
     }).catch(function (error) {
       if (error.message === "unauthenticated") return;
       showError("Could not load your account right now. Try again in a moment.");

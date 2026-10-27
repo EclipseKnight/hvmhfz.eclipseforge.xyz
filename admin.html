@@ -3,19 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hunsterverse MHFZ: Admin, gifts</title>
-    <meta name="description" content="Hunsterverse admin panel: gifts (distributions)." />
+    <title>Hunsterverse MHFZ: Admin</title>
+    <meta name="description" content="Hunsterverse admin panel: gifts and the Hunting Road rotation." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Hunsterverse" />
-    <meta property="og:title" content="Hunsterverse MHFZ: Admin, gifts" />
-    <meta property="og:description" content="Hunsterverse admin panel: gifts (distributions)." />
+    <meta property="og:title" content="Hunsterverse MHFZ: Admin" />
+    <meta property="og:description" content="Hunsterverse admin panel: gifts and the Hunting Road rotation." />
     <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/admin.html" />
     <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Hunsterverse MHFZ: Admin, gifts" />
-    <meta name="twitter:description" content="Hunsterverse admin panel: gifts (distributions)." />
+    <meta name="twitter:title" content="Hunsterverse MHFZ: Admin" />
+    <meta name="twitter:description" content="Hunsterverse admin panel: gifts and the Hunting Road rotation." />
     <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
     <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#150e09" />
@@ -46,6 +46,7 @@
               <a class="navlink" href="/hunters.html">Hunters</a>
               <a class="navlink" href="/guilds.html">Guilds</a>
               <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html">Hunting Road</a>
             </div>
           </div>
           <div class="nav-group">
@@ -73,8 +74,8 @@
     <main id="content" class="wrap page wide admin-page">
       <header class="page-head">
         <p class="kicker">Hunsterverse · Admin</p>
-        <h1>Gifts</h1>
-        <p class="page-sub">Create gifts (distributions) and see the ones that exist. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
+        <h1>Admin</h1>
+        <p class="page-sub">Gifts (distributions) and the Hunting Road rotation. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
       </header>
 
       <p class="form-alert" id="admin-alert" hidden></p>
@@ -154,6 +155,38 @@
             <tbody id="gift-rows"><tr><td colspan="8" class="empty-cell">Loading</td></tr></tbody>
           </table>
         </div>
+      </section>
+
+      <section class="panel" id="road-panel" hidden>
+        <div class="panel-head"><h2>Hunting Road</h2><span class="panel-note" id="road-note"></span></div>
+        <p class="form-alert" id="road-alert" hidden></p>
+        <p class="road-ok" id="road-ok" hidden></p>
+
+        <h3 class="subhead">New rotation</h3>
+        <form id="road-create" class="admin-form" novalidate>
+          <div class="admin-grid">
+            <div class="field">
+              <label for="road-start">Submissions open <span class="field-optional">your local time</span></label>
+              <input id="road-start" type="datetime-local" required />
+              <p class="note-text">The first rotation starts on release day. The others follow on their own.</p>
+            </div>
+            <div class="field">
+              <label for="road-submit-closes">Submissions close <span class="field-optional">optional</span></label>
+              <input id="road-submit-closes" type="datetime-local" />
+            </div>
+            <div class="field">
+              <label for="road-vote-closes">Voting closes <span class="field-optional">optional</span></label>
+              <input id="road-vote-closes" type="datetime-local" />
+            </div>
+          </div>
+          <div class="admin-actions">
+            <button type="submit" class="btn btn-primary" id="road-create-button">Create the rotation</button>
+            <button type="button" class="ghost-btn" id="road-pause"></button>
+          </div>
+        </form>
+
+        <h3 class="subhead">Rotations</h3>
+        <div id="road-cycles"><p class="note-text">Loading</p></div>
       </section>
     </main>
 
