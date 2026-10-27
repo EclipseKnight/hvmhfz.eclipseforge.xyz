@@ -62,7 +62,7 @@
     });
 
     var pages = Math.max(1, Math.ceil(data.total / data.size));
-    document.getElementById("hunter-total").textContent = Number(data.total).toLocaleString();
+    if (!state.q) document.getElementById("hunter-total").textContent = Number(data.total).toLocaleString();
     document.getElementById("hunter-results").textContent = data.total + (data.total === 1 ? " hunter" : " hunters");
     var pager = document.getElementById("hunter-pager");
     pager.hidden = pages <= 1;
@@ -71,11 +71,30 @@
     document.getElementById("hunter-next").disabled = state.page >= pages - 1;
   }
 
+  function showError(message) {
+    var body = document.getElementById("hunter-body");
+    clear(body);
+    var row = el("tr");
+    var cell = el("td", "empty-cell", message);
+    cell.colSpan = 7;
+    row.appendChild(cell);
+    body.appendChild(row);
+    document.getElementById("hunter-results").textContent = "Could not load hunters";
+    document.getElementById("hunter-pager").hidden = true;
+  }
+
+  // Only the newest request may draw: a slow answer to an older search must not
+  // overwrite the results of the one typed after it.
+  var latest = 0;
+
   function loadList() {
     var url = "/api/public/hunters?q=" + encodeURIComponent(state.q) + "&sort=" + state.sort +
       "&page=" + state.page + "&size=" + state.size;
-    request(url).then(renderList).catch(function () {
-      document.getElementById("hunter-results").textContent = "Could not load hunters";
+    var ticket = ++latest;
+    request(url).then(function (data) {
+      if (ticket === latest) renderList(data);
+    }).catch(function () {
+      if (ticket === latest) showError("The hunter list could not be loaded right now. Try again in a moment.");
     });
   }
 
@@ -186,8 +205,9 @@
   function debounce(fn, wait) {
     var timer = null;
     return function () {
+      var self = this, args = arguments;
       clearTimeout(timer);
-      timer = setTimeout(fn, wait);
+      timer = setTimeout(function () { fn.apply(self, args); }, wait);
     };
   }
 

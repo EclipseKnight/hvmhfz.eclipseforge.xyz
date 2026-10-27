@@ -182,8 +182,9 @@
   function debounce(fn, wait) {
     var timer = null;
     return function () {
+      var self = this, args = arguments;
       clearTimeout(timer);
-      timer = setTimeout(fn, wait);
+      timer = setTimeout(function () { fn.apply(self, args); }, wait);
     };
   }
 
