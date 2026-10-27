@@ -20,7 +20,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
 | `/changelog.html` | Rolling player changelog: "Coming next" (finished, not live), then one dated entry per live update, newest first, then known issues. Linked from the footer. Update it at every live deploy (below). |
 | `/road-vote.html` | Hunting Road rotation: phase and dates, the entries, vote or take a vote back during the vote window, results after it closes. Signed in (shows a sign-in prompt otherwise). The nav's "Hunting Road" link. Needs the saved sign-in; API `/api/road/**`. |
-| `/road.html` | Hunting Road builder: per floor its table, per table its entries (monster, second monster, weight, forced), add an entry, reset to the base. Checks the rules live with `js/road-rules.js`, asks `POST /api/road/check` before submitting (POST) or saving (PUT). `?entry=<id>` opens an entry (yours to edit during submissions, others read-only). Everything about the Road (base, monsters, tables, policy) comes from `GET /api/road/pool` at run time; no game data is in the repo. Signed in only, `noindex`. |
+| `/road.html` | Hunting Road builder: per floor its table and two Road points multipliers (capped by the policy's `maxPoints`, default 4x), per table its entries (monster, second monster, weight, forced), add an entry, reset to the base. An "Also change the solo Road" box (off by default) shows the solo Road (mode 1) to edit when the policy allows mode 1; unticking it drops those changes. Checks the rules live with `js/road-rules.js`, asks `POST /api/road/check` before submitting (POST) or saving (PUT), and won't submit while the page itself lists a problem. `?entry=<id>` opens an entry (yours to edit during submissions, others read-only). Everything about the Road (base, monsters, tables, policy) comes from `GET /api/road/pool` at run time; no game data is in the repo. Signed in only, `noindex`. |
 | `/road-history.html` | Past Hunting Road winners (number, name, character, votes, live from and until), public, from `/api/public/road/history`. |
 | `/admin.html` | Admin panel: gifts (Erupe distributions) and the Hunting Road rotation (rotations with entries and votes, create, change dates, close now, approve, override the winner, hide/unhide/disqualify, pause). Lists every gift with its items, claims and end, creates a gift (for everyone or one character, with rank limits, a deadline and items picked from the catalog) and ends one. Admin accounts only: the API checks `ROLE_ADMIN` on every `/api/admin/**` request; the account page links here for admins. Not in the nav, `noindex`. |
 | `/report.html` | Bug report (`#bug`) and feature request (`#feature`) forms. No sign-in. Each report becomes a task on the Kanboard board. |
@@ -64,6 +64,7 @@ js/catalog.js         catalog browsing
 js/worlds.js          world status polling
 dev/mock-feedback.py  local stand-in for POST /api/feedback (testing only)
 dev/check-road-rules.js  checks js/road-rules.js against the Go golden outputs (needs the base Road as JSON, see the file)
+dev/check-road-policy.js checks the policy rules the Go outputs don't cover (points cap, solo Road) on a made-up Road
 dev/check-site.py     checks that every page has the same nav, footer and skip link
 CNAME                 hvmhfz.eclipseforge.xyz
 ```
@@ -175,6 +176,12 @@ base to a file outside the repo, then run the fixtures of the Erupe repo against
 rengoku-build decode -in <bin>/rengoku_data.bin > /path/outside/repo/base.json
 node dev/check-road-rules.js /path/outside/repo/base.json <Erupe>/cmd/rengoku-build/testdata/roads
 ```
+
+The policy rules the Go fixtures don't cover (the points cap `maxPoints`, the solo Road) are checked on a
+made-up Road, no game data needed: `node dev/check-road-policy.js`.
+
+`maxPoints` is a site rule for now: the API (`PolicyRules.java`) does not send or check it yet, so keep
+`points` and `points2` out of the API's `road.edit.floor-fields` until it does.
 
 ### Testing the report page locally
 

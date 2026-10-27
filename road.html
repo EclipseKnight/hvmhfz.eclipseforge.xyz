@@ -127,8 +127,12 @@
 
         <section class="panel" id="road-floors-panel">
           <div class="panel-head"><h2>Floors</h2><span class="panel-note" id="road-floors-note"></span></div>
+          <div class="road-solo" id="road-solo" hidden>
+            <label><input type="checkbox" id="road-solo-check" /> Also change the solo Road (the Road you play alone)</label>
+            <p class="note-text" id="road-solo-note"></p>
+          </div>
           <div class="chips road-modes" id="road-modes" role="group" aria-label="Road mode"></div>
-          <p class="note-text">Each floor draws its monsters from one table. Pick another table for a floor, or change the tables below.</p>
+          <p class="note-text">Each floor draws its monsters from one table. Pick another table for a floor, or change the tables below. The points multipliers set how many Road points a floor gives: a higher value gives more, up to <span id="road-points-cap">4</span>x.</p>
           <div class="road-floors" id="road-floors"></div>
         </section>
 
