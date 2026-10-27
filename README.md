@@ -13,7 +13,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/events.html` | Live server events, the event quest pool and the Festa prize table. |
 | `/guilds.html` | Guild directory: search, sort by RP, members, newest or name. `?id=` opens a guild with roster and board. |
 | `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile. |
-| `/leaderboards.html` | Top 100 hunters by HR and by GR, top guilds by RP and the most hunted monsters. `#hr`, `#gr`, `#guilds`, `#monsters` pick the board. Tied scores share a rank. |
+| `/leaderboards.html` | Timed hunt boards: top hunters, top guilds (hunts by current members) and most hunted monsters for this week, last week, this month, last month and all time (UTC; weeks start Monday), from `/api/public/leaderboards/hunts`; plus guild RP. `#<board>-<period>` picks one (`#hunters-week`, `#guilds-month`, `#monsters-all`, `#rp`); the old `#hr`, `#gr` and `#guilds` links still land on a board. Tied scores share a rank. |
 | `/catalog.html` | Item and equipment catalog with section chips and search. |
 | `/worlds.html` | Live world status and server wide hunt totals, refreshed every 30 seconds. |
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
@@ -28,7 +28,7 @@ index.html            home and sign in
 account.html          signed in account view (tabs: overview, characters, storage, hunts, guild, account)
 guilds.html           guild directory and detail
 hunters.html          hunter directory and profile
-leaderboards.html     leaderboards (HR, GR, guild RP, most hunted)
+leaderboards.html     timed hunt leaderboards and guild RP
 catalog.html          item and equipment catalog
 worlds.html           world status and hunt totals
 guide-windows.html    Windows guide
@@ -45,7 +45,7 @@ js/report.js          report forms: send, success, error and Discord fallback
 js/account.js         account page, including storage and hunt log
 js/guilds.js          guild directory and detail
 js/hunters.js         hunter directory and profile
-js/leaderboards.js    leaderboards, from the public hunters, guilds and monsters endpoints
+js/leaderboards.js    leaderboards, from /api/public/leaderboards/hunts and the guild list
 js/catalog.js         catalog browsing
 js/worlds.js          world status polling
 dev/mock-feedback.py  local stand-in for POST /api/feedback (testing only)

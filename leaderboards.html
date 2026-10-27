@@ -49,19 +49,26 @@
       <header class="page-head">
         <p class="kicker">Hunsterverse · Community</p>
         <h1>Leaderboards</h1>
-        <p class="page-sub">The top 100 on the server, straight from the game database. Characters that were never played or hold corrupt records are left out.</p>
+        <p class="page-sub">Who hunted the most this week, this month and of all time, from the server kill log. Weeks start Monday 00:00 UTC and months on the 1st. Characters that were never played or hold corrupt records are left out.</p>
       </header>
 
       <section class="panel">
         <div class="panel-head">
-          <h2 id="board-title">Hunter rank</h2>
+          <h2 id="board-title">Top hunters</h2>
           <span class="panel-note" id="board-note"></span>
         </div>
         <div class="chips" id="board-chips" role="group" aria-label="Leaderboard">
-          <button type="button" class="chip" data-board="hr" aria-pressed="true">Hunter rank</button>
-          <button type="button" class="chip" data-board="gr" aria-pressed="false">G rank</button>
-          <button type="button" class="chip" data-board="guilds" aria-pressed="false">Guild RP</button>
+          <button type="button" class="chip" data-board="hunters" aria-pressed="true">Top hunters</button>
+          <button type="button" class="chip" data-board="guilds" aria-pressed="false">Top guilds</button>
           <button type="button" class="chip" data-board="monsters" aria-pressed="false">Most hunted</button>
+          <button type="button" class="chip" data-board="rp" aria-pressed="false">Guild RP</button>
+        </div>
+        <div class="chips" id="period-chips" role="group" aria-label="Period">
+          <button type="button" class="chip" data-period="week" aria-pressed="true">This week</button>
+          <button type="button" class="chip" data-period="lastweek" aria-pressed="false">Last week</button>
+          <button type="button" class="chip" data-period="month" aria-pressed="false">This month</button>
+          <button type="button" class="chip" data-period="lastmonth" aria-pressed="false">Last month</button>
+          <button type="button" class="chip" data-period="all" aria-pressed="false">All time</button>
         </div>
 
         <div class="table-wrap">
