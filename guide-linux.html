@@ -52,7 +52,7 @@
 
 <main id="content" class="sheet">
 <h1>Monster Hunter Frontier Z on Linux</h1>
-<p class="lead">Mezeporta launcher, portable Wine prefix, and the Hunsterverse private server.</p>
+<p class="lead">Mezeporta launcher, a Wine prefix, and the Hunsterverse private server.</p>
 <p class="meta">Tested on CachyOS (Arch) with KDE Plasma 6 on Wayland, NVIDIA RTX 3060 Ti, Mezeporta v1.5.4. Client patch by EclipseKnight, launcher by LilButter.</p>
 
 <div class="toc">
@@ -63,7 +63,7 @@
 <li><a href="#client">Copy the game client</a></li>
 <li><a href="#patch">Apply the client patch</a></li>
 <li><a href="#launcher">Install the Mezeporta launcher</a></li>
-<li><a href="#prefix">Create the portable Wine prefix</a></li>
+<li><a href="#prefix">Create the Wine prefix</a></li>
 <li><a href="#wrapper">Launch wrapper (two Linux fixes)</a></li>
 <li><a href="#settings">Set the launcher options</a></li>
 <li><a href="#server">Add the Hunsterverse server</a></li>
@@ -140,13 +140,15 @@ unzip -q /tmp/Mezeporta-Linux.zip -d ~/Games/MHFZ
 chmod +x ~/Games/MHFZ/run-mezeporta.sh ~/Games/MHFZ/mezeporta-bin</code></pre>
 <p>Afterwards the folder looks like this: <code>dat/</code>, <code>mhf.ini</code>, <code>mhfo.dll</code>, <code>mezeporta-bin</code>, <code>run-mezeporta.sh</code>, <code>Mezeporta/</code>. Check newer releases before you start; anything v1.5.4 or newer works the same way.</p>
 
-<h2 id="prefix">6. Create the portable Wine prefix</h2>
-<p>The launcher expects its Wine prefix inside the game folder. The bundled script sets it up and installs DXVK, <code>d3dcompiler_47</code> and the Visual C++ runtime into it:</p>
+<h2 id="prefix">6. Create the Wine prefix</h2>
+<p>The bundled script creates a Wine prefix and installs DXVK, <code>d3dcompiler_47</code> and the Visual C++ runtime into it. Put the prefix <b>outside the game folder</b>:</p>
 <pre><code>cd ~/Games/MHFZ
-bash SetupDeps/mezeporta-setup-arch.sh --portable-prefix "$HOME/Games/MHFZ"</code></pre>
+bash SetupDeps/mezeporta-setup-arch.sh --prefix "$HOME/Games/MHFZ-prefix"</code></pre>
+<div class="warn box"><b>Don't use the launcher's portable prefix</b> (<code>--portable-prefix</code>, or <code>Mezeporta/WinePrefix</code> inside the game folder). Before it installs a server update, the launcher searches the whole game folder and follows links. A prefix inside the folder links to your whole disk (its <code>z:</code> drive), so the update fails with "Patcher failed to manage files in game folder". The launcher can also rename unrelated backup files elsewhere on the disk. Already have the portable prefix? Move it out once, then set the Custom Prefix in step 8:
+<pre><code>mv ~/Games/MHFZ/Mezeporta/WinePrefix ~/Games/MHFZ-prefix</code></pre></div>
 <p class="meta" style="border:0;padding:0;margin:-.6em 0 1.2em">The release zip ships this script as <code>mezeporta-setup-arch.sh</code>. If you downloaded the copy from the repository it is called <code>install-deps-arch.sh</code>; they are the same file.</p>
-<p>This creates <code>~/Games/MHFZ/Mezeporta/WinePrefix</code> (about 800 MB). Add <code>--controller-fix</code> if you use a gamepad:</p>
-<pre><code>bash SetupDeps/mezeporta-setup-arch.sh --portable-prefix "$HOME/Games/MHFZ" --controller-fix</code></pre>
+<p>This creates <code>~/Games/MHFZ-prefix</code> (about 800 MB). Add <code>--controller-fix</code> if you use a gamepad:</p>
+<pre><code>bash SetupDeps/mezeporta-setup-arch.sh --prefix "$HOME/Games/MHFZ-prefix" --controller-fix</code></pre>
 <p>Verify at the end:</p>
 <pre><code>bash SetupDeps/mezeporta-setup-arch.sh --verify</code></pre>
 
@@ -173,8 +175,8 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
 <p>On first run it shows the empty state:</p>
 <figure><img alt="Mezeporta first run" src="/assets/guide/linux-firstrun.webp"><figcaption>First run: no server configured yet.</figcaption></figure>
 
-<p>Open <b>Configure Settings</b>, then the <b>Advanced</b> tab, and set <b>Wine Prefix</b> to <b>Portable (Mezoperta)</b>. The prefix path should point at <code>~/Games/MHFZ/Mezeporta/WinePrefix</code>, and the status line should say the prefix is ready.</p>
-<figure><img alt="Settings, Advanced tab" src="/assets/guide/linux-settings_advanced.webp"><figcaption>Settings, Advanced: Wine Prefix set to Portable. The prefix path is your own home directory.</figcaption></figure>
+<p>Open <b>Configure Settings</b>, then the <b>Advanced</b> tab. Set <b>Wine Prefix</b> to <b>Custom Prefix</b> and <b>Custom Prefix Path</b> to <code>~/Games/MHFZ-prefix</code> (not Portable, see the warning in step 6).</p>
+<figure><img alt="Settings, Advanced tab" src="/assets/guide/linux-settings_advanced.webp"><figcaption>Settings, Advanced. This screenshot still shows Portable: choose Custom Prefix instead.</figcaption></figure>
 
 <p>The other tabs hold cosmetic options. <b>Server Mode</b> is not here: it is a property of each server and is chosen when you add or edit one.</p>
 <figure><img alt="Settings tabs" src="/assets/guide/linux-settings_tabs.webp"><figcaption>Settings tabs: Launcher, Version, Screen, Graphics, Audio, Controls, Advanced.</figcaption></figure>
@@ -208,8 +210,8 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
 <tr><td>Game starts then quits after a few seconds</td><td>Check <code>journalctl --user -u &lt;unit&gt;</code> if you used a unit, otherwise run the launcher from a terminal and read the output. A DXVK or Wine error appears there.</td></tr>
 <tr><td>Text in game is boxes or garbage</td><td>Install <code>noto-fonts-cjk</code>, enable <code>ja_JP.UTF-8</code> in <code>/etc/locale.gen</code>, run <code>sudo locale-gen</code>, then start with <code>LANG=ja_JP.UTF-8 ~/Games/MHFZ/run-mezeporta-x11.sh</code>.</td></tr>
 <tr><td>No sound</td><td>Install <code>gst-plugin-pipewire</code> and <code>gst-plugins-good</code>, then re-run the <code>--verify</code> step.</td></tr>
-<tr><td>API mode: <code>patcher failed to manage files in game folder</code></td><td>The launcher patcher walks the game folder for <code>.mezeb</code> backups and follows symlinks. The portable prefix inside the game folder contains <code>dosdevices/z: -&gt; /</code>, so the walk reaches <code>/root</code> and aborts with <code>Permission denied</code>. Hunsterverse does not need API mode: set the server to <b>SignV1</b> with launcher port <code>53312</code>. If you must use API mode, move the prefix out of the game folder first: <code>mv ~/Games/MHFZ/Mezeporta/WinePrefix ~/Games/MHFZ-prefix</code>, then set <b>Advanced, Wine Prefix</b> to Custom and point it at <code>~/Games/MHFZ-prefix</code>.</td></tr>
-<tr><td>Wrong or broken prefix</td><td>Delete <code>~/Games/MHFZ/Mezeporta/WinePrefix</code> and re-run the <code>--portable-prefix</code> step. Your game files are untouched.</td></tr>
+<tr><td><code>Patcher failed to manage files in game folder</code> (API mode)</td><td>The Wine prefix is inside the game folder (<code>Mezeporta/WinePrefix</code>, the launcher's portable prefix). The launcher patcher walks the game folder for <code>.mezeb</code> backups and follows symlinks; the prefix contains <code>dosdevices/z: -&gt; /</code>, so the walk reaches the rest of the disk and aborts with <code>Permission denied</code>. Move the prefix out, <code>mv ~/Games/MHFZ/Mezeporta/WinePrefix ~/Games/MHFZ-prefix</code>, and set a Custom Prefix (step 8). Or use SignV1 (launcher port <code>53312</code>), which skips the patcher.</td></tr>
+<tr><td>Wrong or broken prefix</td><td>Delete <code>~/Games/MHFZ-prefix</code> and re-run the <code>--prefix</code> step. Your game files are untouched.</td></tr>
 <tr><td>Want vanilla files back</td><td>Copy everything from <code>~/Games/MHFZ/original-files/</code> back over the game folder.</td></tr>
 </table>
 
@@ -226,7 +228,7 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
 └── Mezeporta/
     ├── config.json          launcher settings and server list
     ├── fonts/  audio/  WebView/
-    └── WinePrefix/          the portable prefix, DXVK and vcrun inside</div>
+    └── (no WinePrefix here: the prefix lives in ~/Games/MHFZ-prefix)</div>
 
 <h2 id="other">13. Other distributions</h2>
 <p>Everything after the packages is distro independent: the game folder, the patch, the launcher, the wrapper and the server settings are identical everywhere. Only package names and the prefix bootstrap change.</p>
