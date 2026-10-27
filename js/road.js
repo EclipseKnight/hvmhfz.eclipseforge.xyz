@@ -310,7 +310,7 @@
       var label = el("label", null, pair[1] + " ");
       var input = el("input");
       input.type = "number";
-      input.min = "0";
+      input.min = "0.01";
       input.max = String(policyList("maxPoints"));
       input.step = "any";
       input.setAttribute("aria-label", pair[1].replace(" ×", " multiplier") + " for record " + number);
@@ -746,6 +746,7 @@
 
   function onSubmit(event) {
     event.preventDefault();
+    recompute(); // an edit from the last 120 ms may not be checked yet (refreshSoon)
     alertBox("");
     notice("");
     var body = readForm();
