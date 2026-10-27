@@ -703,3 +703,8 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   .drops-body .drop-list{break-inside:avoid}
 }
 
+
+/* Monster list: the signed-in player's own count sits after the server's. */
+.monster-tile .tile-stat{flex-direction:column;align-items:flex-start;gap:2px}
+.tile-stat-line{display:flex;align-items:baseline;gap:6px}
+.tile-stat-mine .tile-stat-value{color:var(--teal)}

@@ -49,7 +49,7 @@
       <header class="page-head">
         <p class="kicker">HV MHFZ / Field guide</p>
         <h1>Monsters</h1>
-        <p class="page-sub"><span id="monster-total">Loading</span> monsters from Monster Hunter Frontier Z. Hitzones, HP tables, stagger limits and every carve table, no login needed.</p>
+        <p class="page-sub"><span id="monster-total">Loading</span> monsters from Monster Hunter Frontier Z. Hitzones, HP tables, stagger limits and every carve table, no login needed. Signed in, each large monster also shows how many you have hunted over all your characters.</p>
       </header>
 
       <section class="panel">
@@ -63,8 +63,12 @@
             <select id="monster-category"><option value="">All species</option></select>
           </label>
           <label class="select-wrap">
+            <span class="search-label">Size</span>
+            <select id="monster-size"><option value="">All sizes</option><option value="large">Large monsters</option><option value="small">Small monsters</option></select>
+          </label>
+          <label class="select-wrap">
             <span class="search-label">Sort</span>
-            <select id="monster-sort"><option value="name">Name</option><option value="kills">Hunts logged</option></select>
+            <select id="monster-sort"><option value="name">Name</option><option value="kills">Hunts on the server</option><option value="mine" id="monster-sort-mine" hidden>Your hunts</option></select>
           </label>
           <span class="toolbar-note" id="monster-results"></span>
         </div>
