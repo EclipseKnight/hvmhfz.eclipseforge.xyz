@@ -458,6 +458,7 @@ main.sheet h1{font-size:2.4rem;line-height:1.12;margin:0 0 .35em;color:#2a1c10}
 main.sheet h1::before{display:block;font:700 .66rem var(--font-ui);letter-spacing:.32em;color:var(--gold-ink);margin-bottom:.9em}
 body.guide-windows main.sheet h1::before{content:"HUNTERS GUILD · WINDOWS FIELD MANUAL"}
 body.guide-linux main.sheet h1::before{content:"HUNTERS GUILD · LINUX FIELD MANUAL"}
+body.changelog main.sheet h1::before{content:"HUNTERS GUILD · NOTICE BOARD"}
 main.sheet h1::after{content:"\2756  \2756  \2756";display:block;color:var(--gold);letter-spacing:.5em;font-size:.72rem;margin-top:.7em}
 main.sheet .lead{color:#4a3a26;font-size:1.1rem;font-style:italic;margin:.2em 0 .6em}
 main.sheet .meta{color:var(--ink-soft);font-size:.85rem;margin:.2em 0 2.2em;border-bottom:1px solid rgba(120,90,50,.35);padding-bottom:1.2em}

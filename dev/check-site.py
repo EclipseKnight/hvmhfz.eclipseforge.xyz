@@ -19,6 +19,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 # The one nav, in order. Change it here and on every page together.
 NAV = [
+    ("/monsters.html", "Monsters"),
+    ("/events.html", "Events"),
     ("/guilds.html", "Guilds"),
     ("/hunters.html", "Hunters"),
     ("/catalog.html", "Catalog"),
@@ -31,8 +33,13 @@ NAV = [
 # Which nav link a page marks as current. Pages not listed mark their own link; None marks nothing.
 CURRENT = {
     "index.html": None,
+    "404.html": None,
+    # One monster's page sits under the Monsters guide.
+    "monster.html": "/monsters.html",
     "guide-windows.html": "/guide-windows.html",
     "guide-linux.html": "/guide-windows.html",
+    # The changelog is not in the nav; the footer links it.
+    "changelog.html": None,
 }
 
 

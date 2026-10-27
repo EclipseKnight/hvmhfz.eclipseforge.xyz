@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hunsterverse MHFZ: Changelog</title>
+<meta name="description" content="What has changed on the Hunsterverse Monster Hunter Frontier Z server: what is live, what comes in the next update, and known issues." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Hunsterverse" />
+<meta property="og:title" content="Hunsterverse MHFZ: Changelog" />
+<meta property="og:description" content="What has changed on the Hunsterverse Monster Hunter Frontier Z server: what is live, what comes in the next update, and known issues." />
+<meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/changelog.html" />
+<meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Hunsterverse MHFZ: Changelog" />
+<meta name="twitter:description" content="What has changed on the Hunsterverse Monster Hunter Frontier Z server: what is live, what comes in the next update, and known issues." />
+<meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
+<meta name="theme-color" content="#150e09" />
+<link rel="icon" href="/assets/favicon.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="/css/styles.css" />
+<script src="/js/nav.js" defer></script>
+</head>
+<body class="guide changelog">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <a class="navlink" href="/monsters.html">Monsters</a>
+          <a class="navlink" href="/events.html">Events</a>
+          <a class="navlink" href="/guilds.html">Guilds</a>
+          <a class="navlink" href="/hunters.html">Hunters</a>
+          <a class="navlink" href="/catalog.html">Catalog</a>
+          <a class="navlink" href="/worlds.html">Worlds</a>
+          <a class="navlink" href="/guide-windows.html">Guides</a>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+<main id="content" class="sheet">
+<h1>Server changelog</h1>
+<p class="lead">Every update to Hunsterverse, newest first. A new entry is added each time an update goes live.</p>
+<p class="meta">Last update listed: 26 October 2026. Page updated 27 October 2026. Found a problem that isn't listed? <a href="/report.html">Report it</a>.</p>
+
+<div class="toc">
+<strong>Contents</strong>
+<ol>
+<li><a href="#next">Coming next (not live yet)</a></li>
+<li><a href="#live">Released updates</a></li>
+<li><a href="#known">Known issues</a></li>
+</ol>
+</div>
+
+<div class="box note">
+<p><b>Released updates</b> are on the server, one dated entry per update. <b>Coming next</b> is finished and tested, but not on the server yet. It goes live at a future server restart.</p>
+<p>Where a fix says "the game waited forever", the game was waiting for an answer the server never sent, or the server answered in a form the game couldn't read. You saw a stuck "communicating" screen, or a list full of junk.</p>
+<p>Most fixes come from checking exactly what the game expects from the server, so we don't have to guess. Only fixes we are sure of go live.</p>
+</div>
+
+<h2 id="next">Coming next (not live yet)</h2>
+<p>Finished and tested on our test setup, but not on the server yet. These move to <a href="#live">Released updates</a> when they go live.</p>
+
+<h3>Saving</h3>
+<ul>
+<li><b>A save the server can't load:</b> the game no longer waits forever. It shows "Failed to transfer data from server. Please relog." instead.</li>
+<li><b>Small save changes</b> are no longer silently lost.</li>
+<li><b>Plates:</b> saving your plate data and plate box after clearing a plate no longer fails and leaves them out of date.</li>
+<li><b>Older characters:</b> Hunter Navi saves (about 4,800 characters have the older, smaller format) and plate saves that grow no longer fail.</li>
+<li><b>A save the server fails to store:</b> the game now keeps your change and tries again at the next autosave, instead of thinking it was saved. This covers your partner, Hunter Navi, Felynes, plates, house decoration sets and Hunting Road progress.</li>
+<li><b>Hunter Navi:</b> a failed read can no longer overwrite your Hunter Navi with a blank one.</li>
+</ul>
+
+<h3>Hunter Festival</h3>
+<ul>
+<li><b>Prize lists:</b> never longer than the game can show, so the prize screens can't freeze, even if the trials and prizes are loaded twice again.</li>
+<li><b>Trials:</b> at most 255 are sent, all the game counts, so every trial you see earns souls.</li>
+<li><b>Signing up:</b> if a vice-leader signs the guild up before the leader, the whole guild no longer shows as guildless. Each guild has one registration.</li>
+<li><b>Voting:</b> after you vote, the vote row greys out as it should.</li>
+<li><b>Delivering souls:</b> when the server can't store your souls, the game keeps them for your next delivery. Before, the server could say they were stored when they weren't.</li>
+<li><b>The final reward</b> is given once per player.</li>
+</ul>
+
+<h3>Raviente (Great Slaying)</h3>
+<ul>
+<li><b>Player limits:</b> the event's player limit now holds, so extra players can't squeeze in past it.</li>
+<li><b>One player at a time</b> on the phase vote and on the support menu, as the game expects.</li>
+<li><b>Coming back after a reset:</b> a player whose save still points at an old Raviente is no longer dropped into the running one. That split the room into two groups that didn't see each other's damage or support. The game now starts that player fresh.</li>
+<li><b>Frozen event fixed:</b> one server error could freeze damage and support for everyone on that channel until a restart.</li>
+</ul>
+
+<h3>Diva Defense</h3>
+<ul>
+<li><b>Event screens</b> answer with empty lists and rankings instead of junk, or instead of waiting forever. This covers the bonus quests, the ranking rewards and the tactics log.</li>
+<li><b>Spending Diva Defense shop coins</b> no longer leaves the exchange screen stuck.</li>
+<li><b>One step of the tactics screens</b> no longer gets stuck.</li>
+</ul>
+<p>Diva Defense itself isn't built on our server yet. These fixes stop the screens from getting stuck and filling with junk.</p>
+
+<h3>Sky Corridor (Tower)</h3>
+<ul>
+<li><b>Resetting your tower skills</b> is now saved. Before, the reset was lost.</li>
+<li><b>When the database fails,</b> the game shows its failure message instead of pretending the change worked.</li>
+</ul>
+
+<h3>Rasta (lending your hunter to others)</h3>
+<ul>
+<li><b>Your Rasta ID:</b> saving can no longer change or take over another player's Rasta ID.</li>
+<li><b>Borrowing a Rasta:</b> contracts stay as they are. Borrowing another Rasta no longer silently replaces someone's current contract.</li>
+<li><b>The 3-borrower limit:</b> a borrower who sends the same contract again no longer counts twice toward it.</li>
+</ul>
+
+<h3>Guilds and alliances</h3>
+<ul>
+<li><b>Server-side permission checks:</b> guild, alliance, festival, gift and shop actions now check that you belong to that guild, hold the needed role, and can afford the action. Normal play is unchanged.</li>
+<li><b>Removed from a guild, then acting in it:</b> leaving, or changing the comment, motto, icon or "avoid leadership" setting, now shows the failure message instead of waiting forever. So do accepting, rejecting or kicking members.</li>
+<li><b>Guild graduation</b> (leaving a rookie or return guild that way) shows the failure message, because it isn't built on our server yet. Before, the game showed you out of the guild while the server kept you in.</li>
+<li><b>Deleted alliances:</b> an alliance whose main or sub guild was deleted no longer breaks guild screens.</li>
+<li><b>Failures shown honestly:</b> disbanding, resigning, applying, creating or disbanding alliances, guild adventures, mail, message board likes and guild points now show the game's failure message when the server couldn't do them. Before, they showed as done.</li>
+<li><b>Guild adventures:</b> they can only be collected after they return, and a failed list no longer lets a guild start a second adventure.</li>
+</ul>
+
+<h3>Gifts, gacha, shops and the cafe</h3>
+<ul>
+<li><b>Gifts (distributions):</b> each one can only be claimed as many times as it allows, and only by players who qualify. Gift RP is added together with the claim.</li>
+<li><b>Gacha without prizes:</b> a gacha whose prizes couldn't be read, or that has none, no longer takes your coins or Frontier Points. The screen closes and the game gives the cost back.</li>
+<li><b>Stored gacha prizes:</b> a server error while you collect them no longer deletes them.</li>
+<li><b>Cafe items</b> that cost more than your cafe points no longer leave your points negative.</li>
+<li><b>Daily cafe bonus:</b>
+<ul>
+<li>The game's check no longer uses up the day's bonus before you claim it, so the claim now gives you the bonus.</li>
+<li>It can't be given twice because of a server error.</li>
+<li>It isn't marked as taken when the points weren't added.</li>
+</ul>
+</li>
+<li><b>Equipment appearances</b> you unlock are no longer lost when the server can't read your list first.</li>
+</ul>
+
+<h3>Signing in, the world list and lobbies</h3>
+<ul>
+<li><b>255 friends or guildmates:</b> signing in with exactly 255 (over all your characters) no longer garbles the rest of the sign-in data.</li>
+<li><b>The world list</b> is no longer dropped by the game for some numbers of worlds and channels.</li>
+<li><b>Friends who disconnected:</b> a friend or guildmate left with an old sign-in session no longer shows as on no server.</li>
+<li><b>Errors while entering a world</b> no longer leave you on the loading screen forever.</li>
+<li><b>Player search:</b> joining a player you found now takes you to the land they're in.</li>
+<li><b>Lobby search</b> shows only the lobby you asked for, and no longer crashes on some lands.</li>
+</ul>
+
+<h3>Quests and parties</h3>
+<ul>
+<li><b>Caravan scores:</b> your caravan score now posts at the end of a quest. Before, it always failed and added 0.</li>
+<li><b>Seibattle score lists</b> show clean names, with no junk at the end.</li>
+<li><b>Party counts:</b> guests in a quest party get the same party counts as the host. Before, guests always got the default, so a quest value split by party size could differ from the host's.</li>
+<li><b>Tournament quests</b> no longer get stuck when you enter one.</li>
+<li><b>Reward songs:</b>
+<ul>
+<li>Using one no longer gets stuck. It has no effect yet.</li>
+<li>The end of a quest no longer gets stuck at the step that counts them.</li>
+</ul>
+</li>
+</ul>
+
+<h3>Houses</h3>
+<ul>
+<li><b>Bookshelf:</b> visitors to your house now see your bookshelf as you do, instead of entries made up from other parts of your save. Display only; your save was never affected.</li>
+</ul>
+
+<h3>Server stability</h3>
+<ul>
+<li><b>A rare crash that could disconnect everyone</b> at once is fixed.</li>
+<li><b>Errors without crashes:</b> dozens of server errors now get a clean failure message, or an empty list, instead of a crash or a screen that waits forever.</li>
+<li><b>Hunting Road:</b> Road data that failed to load can no longer be saved over your real progress.</li>
+</ul>
+
+<h2 id="live">Released updates</h2>
+<!-- Rolling log: add one h3 per live deploy at the top of this section, newest first,
+     titled with the date (and "Game server update" / "Discord bot" / ...). Move the
+     entries that went live out of "Coming next". Steps: docs/how-to.md in the project home. -->
+
+<h3>26 Oct 2026: Hunter Festival data cleaned up</h3>
+<p>The Hunter Festival (Hunter Festa) is the event where guilds are split into two teams (blue and red) and earn souls from festival trials. The winning team gets the prize screens and winner quests.</p>
+<ul>
+<li><b>The problem:</b> the server's festival trials and prizes had been loaded three times over. The prize lists became too long for the game, so every prize screen at the festival counter would have frozen. The game also only counts up to 255 trials, so most of the 369 trials earned no souls.</li>
+<li><b>The fix:</b> we removed the exact duplicates before the prize phase opened. 123 trials and 120 prizes remain, all unique. Votes already cast still count.</li>
+</ul>
+
+<h3>25 Oct 2026: Discord bot back online</h3>
+<p>The FrontierBot was offline: Discord changed its rules for large servers. It's back and now uses slash commands (type <code>/</code> in Discord):</p>
+<table>
+<tr><th>Command</th><th>What it does</th></tr>
+<tr><td><code>/link</code></td><td>Link your game account to Discord, with the code from the account site</td></tr>
+<tr><td><code>/unlink</code></td><td>Unlink a game account from your Discord</td></tr>
+<tr><td><code>/resetpassword</code></td><td>Set a new game password. Only you see the reply</td></tr>
+<tr><td><code>/backup_char</code></td><td>The bot DMs you a backup zip of your characters</td></tr>
+<tr><td><code>/import_char</code></td><td>Load a backup zip into one of your characters</td></tr>
+<tr><td><code>/worldstats</code></td><td>The worlds and who is online</td></tr>
+<tr><td><code>/uinfo</code></td><td>A user's accounts and characters</td></tr>
+</table>
+<p>Also fixed:</p>
+<ul>
+<li><code>/resetpassword</code> with a password the account site doesn't accept no longer gets stuck retrying.</li>
+<li><code>/link</code> with a wrong code now says it failed. Before, it said it had worked.</li>
+</ul>
+
+<h3>23 Oct 2026: Game server upgrade</h3>
+<p>The server software (Erupe, the open-source MHF server) moved to a newer version from August 2025, with our own fixes on top.</p>
+<p><b>From the newer Erupe:</b></p>
+<ul>
+<li><b>Weekly login stamps work again.</b> The stamp card had failed at every check since about 11 October (around 3,300 database errors). There have been none since the upgrade.</li>
+<li><b>Guild Poogie outfits:</b> unlocking an outfit for your guild's Poogie now saves correctly. Before, the outfit could unlock wrongly or not at all.</li>
+<li><b>Joining a party's quest:</b> if the host's data never arrives, the game no longer waits forever. The server now gives up after about 10 seconds.</li>
+<li><b>Stability:</b>
+<ul>
+<li>Fixed a crash when many players loaded quests at the same time.</li>
+<li>Fixed problems in how the server sends data.</li>
+<li>Fixed problems in how it cleans up old logins.</li>
+</ul>
+</li>
+</ul>
+<p><b>Our own fixes:</b></p>
+<ul>
+<li><b>Guild missions:</b> setting, cancelling and counting a guild mission target. The game used to read leftover memory instead of the server's answer.</li>
+<li><b>Guild applications:</b> the game now gets the answer it expects when you apply to a guild.</li>
+<li><b>Guild actions the server doesn't know</b> no longer leave the game waiting with no answer.</li>
+<li><b>Guild scouting:</b> the "refuse scouts" setting and an empty scout list now load properly.</li>
+<li><b>Diva Defense:</b> prayer gems, collecting items and adding Diva points now get answers the game can read.</li>
+<li><b>Big guilds:</b> the guild hunt list holds up to 127 entries, all the game can show. With 128 or more it failed to load at all.</li>
+<li><b>Order rankings and the daily cafe-point check</b> now answer in the form the game reads.</li>
+<li><b>Hidden packet mix-ups (four):</b> prayer gems, Diva Defense items, removing a message board post, and the guild's Sky Corridor (Tower) requests each sent more data than the server read. The leftover bytes scrambled whatever the game sent next. Now all of it is read.</li>
+</ul>
+
+<h3>23 Oct 2026: Poogie Dressup! gift fixed</h3>
+<p>The "Poogie Dressup!" gift in the gift list should give Poogie outfits 1-30, but it had been gifting one empty outfit. Up to about 2,500 characters claimed it and got nothing.</p>
+<ul>
+<li>It now gives all 30 outfits. We tested it: the outfits arrive and can be equipped.</li>
+<li>It can be claimed twice, so anyone who already got the empty gift can claim it again.</li>
+</ul>
+
+<h2 id="known">Known issues</h2>
+<ul>
+<li><b>The launcher in our client patch is broken.</b> Use the Mezeporta launcher: see the <a href="/guide-windows.html">Windows guide</a> or the <a href="/guide-linux.html">Linux guide</a>.</li>
+<li><b>Usernames are case-sensitive.</b> Logging in as <code>eclipse</code> instead of <code>Eclipse</code> creates a new, empty account. Your real save isn't lost: log in again with the exact capitals.</li>
+<li><b>Raviente rewards:</b> if you leave before the phase vote and the event resets, you can come back to "the event is over" with no reward. A fix is planned.</li>
+<li><b>Not built on our server yet:</b> Diva Defense, reward song effects, tournaments and guild graduation. The fixes above stop them from getting stuck, but they don't work yet.</li>
+</ul>
+</main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+<script src="/js/search.js" defer></script>
+</body>
+</html>

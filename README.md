@@ -17,6 +17,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/worlds.html` | Live world status and server wide hunt totals, refreshed every 30 seconds. |
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
+| `/changelog.html` | Rolling player changelog: "Coming next" (finished, not live), then one dated entry per live update, newest first, then known issues. Linked from the footer. Update it at every live deploy (below). |
 | `/report.html` | Bug report (`#bug`) and feature request (`#feature`) forms. No sign-in. Each report becomes a task on the Kanboard board. |
 
 ## Layout
@@ -31,6 +32,7 @@ worlds.html           world status and hunt totals
 guide-windows.html    Windows guide
 guide-linux.html      Linux guide
 report.html           bug report and feature request forms
+changelog.html        player changelog (rolling, one entry per live update)
 css/styles.css        shared guild-hall theme (leather page, parchment panels, brass trim, gold buttons)
 assets/guide/*.webp   guide screenshots, WebP
 assets/favicon.png    site icon
@@ -54,8 +56,9 @@ Static site, no build step. Push to `main` and GitHub Pages serves it.
 
 There are no templates: every page carries its own copy of the same header nav and footer.
 
-- Nav, same on every page and in this order: Guilds, Hunters, Catalog, Worlds, Guides, Report, Account, Discord.
+- Nav, same on every page and in this order: Monsters, Events, Guilds, Hunters, Catalog, Worlds, Guides, Report, Account, Discord.
   The page's own link has `aria-current="page"`; the guide pages mark Guides, and the home page marks nothing.
+  The changelog is not in the nav; the footer links it.
   Guides opens the Windows guide; both guides switch between Windows and Linux at the top.
 - Each page also has the skip link (`<a class="skip-link" href="#content">`), a `main` with `id="content"`,
   the footer `footer.site-foot`, `/css/styles.css` and `/js/nav.js`.
@@ -69,6 +72,19 @@ python3 dev/check-site.py      # "site shell OK", exit code 0
 ```
 
 It also reports local links and images that point at missing files.
+
+## Changelog
+
+`changelog.html` is the players' record of every live update. Whenever an update goes live (a new game
+server build, a database fix players notice, a new Discord bot build), add it in the same change:
+
+1. Add an `<h3>` at the top of "Released updates", titled `<day> <Mon> <year>: <what>`, newest first.
+2. Move the entries that went live out of "Coming next". For a game server build, the source is that
+   build's player notes ("Next build" in Erupe's `docs/hvmhfz-changelog.md`).
+3. Update "Last update listed" in the page's meta line, and "Known issues" if one was fixed or found.
+
+Write for players: what they see in game, no packet names or commit ids. Leave out how to abuse a hole
+that is not fixed on live yet.
 
 ## API
 
