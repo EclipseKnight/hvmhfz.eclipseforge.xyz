@@ -117,11 +117,18 @@ Character storage and hunt endpoints are scoped to the signed in user; another a
 | `steps` | optional | | 4000 |
 | `expected` | optional | | 2000 |
 | `reason` | | optional (why it helps) | 2000 |
-| `contact` | optional Discord name | optional Discord name | 64 |
+| `contact` | not used any more (ignored by the API) | | |
 | `website` | honeypot, empty for people | same | |
 | `turnstileToken` | Turnstile response | same | |
 
 Optional fields are sent as empty strings.
+
+**Who sent it:** when the player is signed in (the home page's token in `localStorage`,
+`hvmhfz.token`), the page sends it as `Authorization: Bearer ...` and the API signs the task
+with that account and its linked Discord ("Reported by"). Nothing the form says about the sender
+is used, so nobody can sign a report as someone else. The form shows who it will be signed as,
+from `/api/account`. Signed out, the task says "Not signed in". Needs API `api-feedback-signed`
+or later (the CORS rule for `/api/feedback` allows the `Authorization` header).
 
 Attachments (optional, both forms): up to 3 files of 2 MB each, PNG, JPEG or GIF images or `.txt`
 and `.log` files. The page checks count, size and file name before sending. With files, the request

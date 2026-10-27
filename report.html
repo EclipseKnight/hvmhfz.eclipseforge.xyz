@@ -94,10 +94,8 @@
               <label for="bug-files">Screenshots or logs <span class="field-optional">optional, up to 3 files of 2 MB each: PNG, JPEG or GIF images, .txt or .log files</span></label>
               <input id="bug-files" name="files" type="file" multiple accept="image/png,image/jpeg,image/gif,.png,.jpg,.jpeg,.gif,.txt,.log" />
             </div>
-            <div class="field">
-              <label for="bug-contact">Discord name <span class="field-optional">optional, so we can ask you questions</span></label>
-              <input id="bug-contact" name="contact" type="text" maxlength="64" autocomplete="off" />
-            </div>
+            <!-- Filled by js/report.js: who the report will be signed as (the API signs it from the sign-in). -->
+            <p class="report-signer" data-signer></p>
             <!-- Honeypot: hidden from people, bots fill it in and the API drops the report. -->
             <div class="report-hp" aria-hidden="true">
               <label for="bug-website">Website</label>
@@ -130,10 +128,8 @@
               <label for="feature-files">Screenshots or logs <span class="field-optional">optional, up to 3 files of 2 MB each: PNG, JPEG or GIF images, .txt or .log files</span></label>
               <input id="feature-files" name="files" type="file" multiple accept="image/png,image/jpeg,image/gif,.png,.jpg,.jpeg,.gif,.txt,.log" />
             </div>
-            <div class="field">
-              <label for="feature-contact">Discord name <span class="field-optional">optional, so we can ask you questions</span></label>
-              <input id="feature-contact" name="contact" type="text" maxlength="64" autocomplete="off" />
-            </div>
+            <!-- Filled by js/report.js: who the report will be signed as (the API signs it from the sign-in). -->
+            <p class="report-signer" data-signer></p>
             <div class="report-hp" aria-hidden="true">
               <label for="feature-website">Website</label>
               <input id="feature-website" name="website" type="text" tabindex="-1" autocomplete="off" />

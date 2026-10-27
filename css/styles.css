@@ -708,3 +708,9 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .monster-tile .tile-stat{flex-direction:column;align-items:flex-start;gap:2px}
 .tile-stat-line{display:flex;align-items:baseline;gap:6px}
 .tile-stat-mine .tile-stat-value{color:var(--teal)}
+
+/* Report forms: who the report will be signed as (from the sign-in, never typed in). */
+.report-signer{margin:4px 0 16px;padding:10px 14px;font-size:.9rem;color:var(--ink-soft);
+  background:rgba(255,250,236,.55);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:3px}
+.report-signer:empty{display:none}
+

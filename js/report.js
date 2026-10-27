@@ -1,7 +1,9 @@
 /* Bug report and feature request forms. Each form posts JSON to POST /api/feedback on the
    REST API, which checks Turnstile and rate limits, then creates a task on the Kanboard board.
    With attachments the same JSON goes as the "report" part of a multipart upload, next to the
-   files. When the API can't be reached, the player gets their report as text to post on Discord. */
+   files. When the API can't be reached, the player gets their report as text to post on Discord.
+   A signed-in player's report carries their sign-in token, and the API signs the task with that
+   account and its linked Discord. Nobody types their own name, so nobody can sign as someone else. */
 (function () {
   "use strict";
 
@@ -16,7 +18,7 @@
   var FILE_TYPES = /\.(png|jpe?g|gif|txt|log)$/i;
   var LABELS = {
     title: "Title", platform: "Platform", description: "Details", steps: "Steps to reproduce",
-    expected: "Expected", reason: "Why it helps", contact: "Discord name"
+    expected: "Expected", reason: "Why it helps"
   };
 
   // For local testing only: on localhost, ?api=http://localhost:8099 points the forms at a mock
@@ -34,6 +36,68 @@
     return node;
   }
 
+  /* The sign-in token from the home page, while it is still valid (the account page uses the same
+     key), and the account name in it. Shown to the player only; the API reads the token itself. */
+  var TOKEN_KEY = "hvmhfz.token";
+  function signIn() {
+    try {
+      var value = localStorage.getItem(TOKEN_KEY) || "";
+      var claims = JSON.parse(atob(value.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+      if (!claims.exp || claims.exp * 1000 < Date.now() + 30000) return null;
+      return { token: value, username: claims.sub || "" };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /* "Signed in as X: this report is signed with your account and your linked Discord." */
+  function showSigner(session) {
+    var notes = document.querySelectorAll("[data-signer]");
+    function fill(build) {
+      Array.prototype.forEach.call(notes, function (note) {
+        while (note.firstChild) note.removeChild(note.firstChild);
+        build(note);
+      });
+    }
+    if (!session) {
+      fill(function (note) {
+        note.appendChild(document.createTextNode("You are not signed in, so this report won't say who sent it. "));
+        var link = el("a", null, "Sign in");
+        link.href = "/";
+        note.appendChild(link);
+        note.appendChild(document.createTextNode(" first to sign it with your account and your linked Discord, so we can follow up."));
+      });
+      return;
+    }
+    function signed(discordText) {
+      fill(function (note) {
+        note.appendChild(document.createTextNode("Signed in as "));
+        note.appendChild(el("b", null, session.username));
+        note.appendChild(document.createTextNode(": this report is signed with your account" + discordText));
+      });
+    }
+    signed(".");
+    fetch(apiBase() + "/api/account", { headers: { Authorization: "Bearer " + session.token }, cache: "no-store" })
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (account) {
+        if (!account) return;
+        if (account.discordLinked) {
+          signed(" and your linked Discord.");
+        } else {
+          fill(function (note) {
+            note.appendChild(document.createTextNode("Signed in as "));
+            note.appendChild(el("b", null, session.username));
+            note.appendChild(document.createTextNode(": this report is signed with your account. Your Discord isn't linked yet; "));
+            var link = el("a", null, "link it");
+            link.href = "/account.html#account";
+            note.appendChild(link);
+            note.appendChild(document.createTextNode(" so we can message you about it."));
+          });
+        }
+      })
+      .catch(function () { /* the account line above stays */ });
+  }
+
   function discordLink(text) {
     var link = el("a", null, text);
     link.href = DISCORD;
@@ -42,7 +106,7 @@
 
   /* The JSON body the API expects; see README.md, "Feedback endpoint". Only named fields are
      sent: Turnstile adds its own hidden input to the form, and its token goes in turnstileToken. */
-  var FIELDS = ["title", "platform", "description", "steps", "expected", "reason", "contact", "website"];
+  var FIELDS = ["title", "platform", "description", "steps", "expected", "reason", "website"];
 
   function readForm(form) {
     var body = { type: form.getAttribute("data-type") };
@@ -72,7 +136,7 @@
   /* The report as plain text, for pasting into Discord when the API is down. */
   function asText(body) {
     var lines = [(body.type === "bug" ? "Bug: " : "Feature request: ") + body.title];
-    ["platform", "description", "steps", "expected", "reason", "contact"].forEach(function (key) {
+    ["platform", "description", "steps", "expected", "reason"].forEach(function (key) {
       if (body[key]) lines.push("", LABELS[key] + ":", body[key]);
     });
     return lines.join("\n");
@@ -144,7 +208,9 @@
 
   function send(body, files) {
     var controller = new AbortController();
-    var request = { method: "POST", signal: controller.signal };
+    var request = { method: "POST", signal: controller.signal, headers: {} };
+    var session = signIn();
+    if (session) request.headers.Authorization = "Bearer " + session.token;
     if (files.length) {
       // No Content-Type header here: the browser sets it with the multipart boundary.
       var data = new FormData();
@@ -152,7 +218,7 @@
       files.forEach(function (file) { data.append("files", file, file.name); });
       request.body = data;
     } else {
-      request.headers = { "Content-Type": "application/json" };
+      request.headers["Content-Type"] = "application/json";
       request.body = JSON.stringify(body);
     }
     var timer = setTimeout(function () { controller.abort(); }, files.length ? UPLOAD_TIMEOUT_MS : TIMEOUT_MS);
@@ -210,4 +276,5 @@
   }
 
   Array.prototype.forEach.call(document.querySelectorAll(".report-form"), setUp);
+  showSigner(signIn());
 })();
