@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hunsterverse MHFZ: Leaderboards</title>
+    <meta name="description" content="Top hunters, guilds and most hunted monsters on the Hunsterverse Monster Hunter Frontier Z server." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Hunsterverse MHFZ: Leaderboards" />
+    <meta property="og:description" content="Top hunters, guilds and most hunted monsters on the Hunsterverse Monster Hunter Frontier Z server." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/leaderboards.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hunsterverse MHFZ: Leaderboards" />
+    <meta name="twitter:description" content="Top hunters, guilds and most hunted monsters on the Hunsterverse Monster Hunter Frontier Z server." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/nav.js" defer></script>
+  </head>
+
+  <body class="public-page">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <a class="navlink" href="/monsters.html">Monsters</a>
+          <a class="navlink" href="/events.html">Events</a>
+          <a class="navlink" href="/guilds.html">Guilds</a>
+          <a class="navlink" href="/hunters.html" aria-current="page">Hunters</a>
+          <a class="navlink" href="/catalog.html">Catalog</a>
+          <a class="navlink" href="/worlds.html">Worlds</a>
+          <a class="navlink" href="/guide-windows.html">Guides</a>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="content" class="wrap page wide">
+      <header class="page-head">
+        <p class="kicker">Hunsterverse · Community</p>
+        <h1>Leaderboards</h1>
+        <p class="page-sub">The top 100 on the server, straight from the game database. Characters that were never played or hold corrupt records are left out.</p>
+      </header>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2 id="board-title">Hunter rank</h2>
+          <span class="panel-note" id="board-note"></span>
+        </div>
+        <div class="chips" id="board-chips" role="group" aria-label="Leaderboard">
+          <button type="button" class="chip" data-board="hr" aria-pressed="true">Hunter rank</button>
+          <button type="button" class="chip" data-board="gr" aria-pressed="false">G rank</button>
+          <button type="button" class="chip" data-board="guilds" aria-pressed="false">Guild RP</button>
+          <button type="button" class="chip" data-board="monsters" aria-pressed="false">Most hunted</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead id="board-head"></thead>
+            <tbody id="board-body">
+              <tr><td colspan="6"><span class="skeleton-line w80"></span></td></tr>
+              <tr><td colspan="6"><span class="skeleton-line w60"></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+
+    <script src="/js/leaderboards.js"></script>
+    <script src="/js/search.js" defer></script>
+  </body>
+</html>

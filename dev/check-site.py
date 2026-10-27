@@ -42,6 +42,8 @@ CURRENT = {
     "changelog.html": None,
     # The set builder is a gear tool, linked from the Catalog page.
     "set-builder.html": "/catalog.html",
+    # Leaderboards is not in the nav (no room in the bar); it sits under Hunters.
+    "leaderboards.html": "/hunters.html",
 }
 
 

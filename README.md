@@ -13,6 +13,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/events.html` | Live server events, the event quest pool and the Festa prize table. |
 | `/guilds.html` | Guild directory: search, sort by RP, members, newest or name. `?id=` opens a guild with roster and board. |
 | `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile. |
+| `/leaderboards.html` | Top 100 hunters by HR and by GR, top guilds by RP and the most hunted monsters. `#hr`, `#gr`, `#guilds`, `#monsters` pick the board. Tied scores share a rank. |
 | `/catalog.html` | Item and equipment catalog with section chips and search. |
 | `/worlds.html` | Live world status and server wide hunt totals, refreshed every 30 seconds. |
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
@@ -27,6 +28,7 @@ index.html            home and sign in
 account.html          signed in account view (tabs: overview, characters, storage, hunts, guild, account)
 guilds.html           guild directory and detail
 hunters.html          hunter directory and profile
+leaderboards.html     leaderboards (HR, GR, guild RP, most hunted)
 catalog.html          item and equipment catalog
 worlds.html           world status and hunt totals
 guide-windows.html    Windows guide
@@ -43,6 +45,7 @@ js/report.js          report forms: send, success, error and Discord fallback
 js/account.js         account page, including storage and hunt log
 js/guilds.js          guild directory and detail
 js/hunters.js         hunter directory and profile
+js/leaderboards.js    leaderboards, from the public hunters, guilds and monsters endpoints
 js/catalog.js         catalog browsing
 js/worlds.js          world status polling
 dev/mock-feedback.py  local stand-in for POST /api/feedback (testing only)
@@ -57,8 +60,9 @@ Static site, no build step. Push to `main` and GitHub Pages serves it.
 There are no templates: every page carries its own copy of the same header nav and footer.
 
 - Nav, same on every page and in this order: Monsters, Events, Guilds, Hunters, Catalog, Worlds, Guides, Report, Account, Discord.
-  The page's own link has `aria-current="page"`; the guide pages mark Guides, and the home page marks nothing.
-  The changelog is not in the nav; the footer links it.
+  The page's own link has `aria-current="page"`; the guide pages mark Guides, the leaderboards page marks Hunters,
+  and the home page marks nothing. The bar is full: the leaderboards page is linked from the Hunters and Guilds
+  pages, and the changelog from the footer.
   Guides opens the Windows guide; both guides switch between Windows and Linux at the top.
 - Width: data pages (monsters, monster, catalog, hunters, guilds, events, worlds, account, set builder) add
   `wide` to their `main` and use the screen up to `--wrap-wide` (1760px); reading pages (guides, changelog, report)
