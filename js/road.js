@@ -1,6 +1,7 @@
 /* Hunting Road builder: edit which monsters each floor can pick, check the rules live (js/road-rules.js),
-   and submit the Road for the vote. Everything about the Road itself (the base, the monsters, the tables,
-   the policy) comes from GET /api/road/pool at run time; nothing about it is stored in this site.
+   and submit the Road for the vote. Everything about the Road itself (the base, the tables, the policy)
+   comes from GET /api/road/pool at run time; nothing about it is stored in this site. The monster lists
+   offer all 176 known monsters, with Erupe's names from js/road-rules.js.
 
    The page keeps one object, `edits`: only what differs from the base, in the format the API stores
    (see js/road-rules.js). The Road shown is the base with those edits applied.
@@ -104,7 +105,9 @@
 
   function policyList(key) { return Rules.policyValue(pool.policy, key); }
 
+  // Erupe's names (js/road-rules.js) for the 176 known ids, so the page names a monster as the server does.
   function monsterName(id) {
+    if (id >= 1 && id <= Rules.KNOWN_MONSTERS) return Rules.MONSTER_NAMES[id];
     var found = pool.monsters.filter(function (m) { return m.id === id; })[0];
     return found ? found.name : "Unknown monster " + id;
   }
@@ -396,12 +399,22 @@
 
   /* ---------- tables ---------- */
 
+  // Any of the 176 known monsters may go on the Road (owner, 2026-10-28). The ones the live Road uses come
+  // first; the others are new to the Road, so they are listed apart.
   function buildMonsterSelect() {
     monsterSelect = el("select");
     monsterSelect.appendChild(new Option("None", "0"));
-    pool.monsters.slice().sort(function (a, b) { return a.name.localeCompare(b.name); }).forEach(function (monster) {
-      monsterSelect.appendChild(new Option(monster.name + " (" + monster.id + ")", String(monster.id)));
+    var onRoad = {};
+    Rules.monsters(pool.base).forEach(function (id) { onRoad[id] = true; });
+    var groups = [el("optgroup"), el("optgroup")];
+    groups[0].label = "On the Road now";
+    groups[1].label = "New to the Road";
+    var ids = [];
+    for (var id = 1; id <= Rules.KNOWN_MONSTERS; id++) ids.push(id);
+    ids.sort(function (a, b) { return monsterName(a).localeCompare(monsterName(b)) || a - b; }).forEach(function (id) {
+      groups[onRoad[id] ? 0 : 1].appendChild(new Option(monsterName(id) + " (" + id + ")", String(id)));
     });
+    groups.forEach(function (group) { if (group.firstChild) monsterSelect.appendChild(group); });
   }
 
   // A copy of the monster list (setMonsterValue picks the value; an id the list does not know stays visible).

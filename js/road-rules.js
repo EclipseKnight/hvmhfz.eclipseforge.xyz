@@ -6,7 +6,12 @@
    Not here: the rule "too-big", which needs the encoded file size. Only the API (POST /api/road/check)
    can say it.
 
-   Nothing in this file is game data. The base Road and the policy come from GET /api/road/pool.
+   No game data is in this file. The base Road and the policy come from GET /api/road/pool. The monster
+   names below are Erupe's own table (common/mhfmon, MIT), not taken from the client.
+
+   Monsters: any of the 176 the game knows (ids 1 to 176) may go on the Road; the owner chose all 176 on
+   2026-10-28. "extra" below is the set of ids allowed besides the base's ({id: true}); checkEdits uses
+   all 176 unless told otherwise, as rengoku-build does without -allow-monsters.
 
    "edits" are a player's Road: only the fields that differ from the base (see edits.go). "base" and
    "road" are whole Roads as `rengoku-build decode` prints them: {modes: [{floors: [...], tables: [[...]]}]}.
@@ -33,6 +38,44 @@
   var FLAG_LOCKED = 8;
   var MIN_MONSTERS = 3;
   var MAX_POINTS = 100;
+
+  // Erupe common/mhfmon Monsters at 05fb945, index = monster id (0 is no monster). Keep the names the
+  // same as there: the API and the game server tool use that table.
+  var MONSTER_NAMES = [
+    "Mon0", "Rathian", "Fatalis", "Kelbi", "Mosswine", "Bullfango", "Yian Kut-Ku", "Lao-Shan Lung",
+    "Cephadrome", "Felyne", "Veggie Elder", "Rathalos", "Aptonoth", "Genprey", "Diablos", "Khezu",
+    "Velociprey", "Gravios", "Mon18", "Vespoid", "Gypceros", "Plesioth", "Basarios", "Melynx", "Hornetaur",
+    "Apceros", "Monoblos", "Velocidrome", "Gendrome", "Mon29", "Ioprey", "Iodrome", "Mon32", "Kirin",
+    "Cephalos", "Giaprey", "Crimson Fatalis", "Pink Rathian", "Blue Yian Kut-Ku", "Purple Gypceros",
+    "Yian Garuga", "Silver Rathalos", "Gold Rathian", "Black Diablos", "White Monoblos", "Red Khezu",
+    "Green Plesioth", "Black Gravios", "Daimyo Hermitaur", "Azure Rathalos", "Ashen Lao-Shan Lung",
+    "Blangonga", "Congalala", "Rajang", "Kushala Daora", "Shen Gaoren", "Great Thunderbug", "Shakalaka",
+    "Yama Tsukami", "Chameleos", "Rusted Kushala Daora", "Blango", "Conga", "Remobra", "Lunastra", "Teostra",
+    "Hermitaur", "Shogun Ceanataur", "Bulldrome", "Anteka", "Popo", "White Fatalis", "Mon72", "Ceanataur",
+    "Hypnocatrice", "Lavasioth", "Tigrex", "Akantor", "Breeding Season Hypnocatrice", "Lavasioth Subspecies",
+    "Espinas", "Flaming Espinas", "Silver Hypnocatrice", "Akura Vashimu", "Akura Jebia", "Berukyurosu",
+    "Mon86", "Mon87", "Mon88", "Pariapuria", "Espinas Rare Species", "Kamu Orugaron", "Nono Orugaron",
+    "Raviente", "Dyuragaua", "Doragyurosu", "Gurenzeburu", "Burukku", "Erupe", "Rukodiora",
+    "Unknown (Black Flying Wyvern)", "Gogomoa", "Kokomoa", "Taikun Zamuza", "Abiorugu", "Kuarusepusu",
+    "Odibatorasu", "Disufiroa", "Rebidiora", "Anorupatisu", "Hyujikiki", "Midogaron", "Giaorugu", "Mi Ru",
+    "Farunokku", "Pokaradon", "Shantien", "Pokara", "Mon118", "Goruganosu", "Aruganosu", "Baruragaru",
+    "Zerureusu", "Gougarf", "Uruki", "Forokururu", "Meraginasu", "Diorekkusu", "Garuba Daora", "Inagami",
+    "Varusaburosu", "Poborubarumu", "1st Block Duremudira", "Mon133", "Mon134", "Mon135", "Mon136", "Mon137",
+    "Mon138", "Gureadomosu", "Harudomerugu", "Toridcless", "Gasurabazura", "Kusubami", "Yama Kurai",
+    "2nd Block Duremudira", "Zinogre", "Deviljho", "Brachydios", "Berserk Raviente", "Toa Tesukatora",
+    "Barioth", "Uragaan", "Stygian Zinogre", "Guanzorumu", "Savage Deviljho", "Mon156", "Egyurasu", "Voljang",
+    "Nargacuga", "Keoaruboru", "Zenaserisu", "Gore Magala", "Blinking Nargacuga", "Shagaru Magala", "Amatsu",
+    "Eruzerion", "Arrogant Duremudira", "Mon168", "Seregios", "Bogabadorumu", "Mon171",
+    "Bombardier Bogabadorumu", "Costumed Uruki", "Sparkling Zerureusu", "Rappy", "King Shakalaka"
+  ];
+  var KNOWN_MONSTERS = MONSTER_NAMES.length - 1; // 176
+
+  // Ids 1 to KNOWN_MONSTERS, as extra: every monster the game knows (Go road.AllMonsters).
+  function allMonsters() {
+    var ids = {};
+    for (var id = 1; id <= KNOWN_MONSTERS; id++) ids[id] = true;
+    return ids;
+  }
 
   var RULES = {
     tableIndex: "table-index", fewMonsters: "few-monsters", noLoop: "no-loop", forcedTwice: "forced-twice",
@@ -150,7 +193,11 @@
 
   // The base entry a new monster's level and other fields are copied from: the same pair in the same
   // table, else in the same mode at the slot's level, else anywhere in the same mode, else in any mode.
-  function copyFrom(base, mode, table, monster, monster2, level) {
+  // A pair the base never uses with a monster from extra copies from the same table: a drawn entry (a
+  // monster and weight above 0) at the slot's level and with a second monster or not, as the pair, else
+  // the table's first drawn entry. Weight-0 fillers (a forced monster 71 starts some live tables) are
+  // skipped. The table's own fields fit the floors that use it, and they pass copied-fields.
+  function copyFrom(base, extra, mode, table, monster, monster2, level) {
     function same(e) { return e.monster === monster && e.monster2 === monster2; }
     if (mode < base.modes.length && table < base.modes[mode].tables.length) {
       var own = base.modes[mode].tables[table];
@@ -173,10 +220,20 @@
       }
       if (first !== null) return first;
     }
-    return null;
+    var allowed = (monster !== 0 && !!extra && !!extra[monster]) || (monster2 !== 0 && !!extra && !!extra[monster2]);
+    if (!allowed || mode >= base.modes.length || table >= base.modes[mode].tables.length) return null;
+    var drawn = null;
+    var entries = base.modes[mode].tables[table];
+    for (var d = 0; d < entries.length; d++) {
+      var c = entries[d];
+      if (c.monster === 0 || c.weight === 0) continue;
+      if (c.level === level && (c.monster2 !== 0) === (monster2 !== 0)) return c;
+      if (drawn === null) drawn = c;
+    }
+    return drawn;
   }
 
-  function applyEntry(base, mode, table, en, ee) {
+  function applyEntry(base, extra, mode, table, en, ee) {
     var newPair = (ee.monster !== undefined && ee.monster !== en.monster) ||
       (ee.monster2 !== undefined && ee.monster2 !== en.monster2);
     if (ee.monster !== undefined) en.monster = ee.monster;
@@ -184,7 +241,7 @@
     var given = ee.level !== undefined || ee.unk04 !== undefined || ee.unk0c !== undefined ||
       ee.unk14 !== undefined || ee.flags !== undefined;
     if (newPair && !given) {
-      var t = copyFrom(base, mode, table, en.monster, en.monster2, en.level);
+      var t = copyFrom(base, extra, mode, table, en.monster, en.monster2, en.level);
       if (t) {
         var forced = (en.flags & FLAG_FORCED) >>> 0;
         en.unk04 = t.unk04;
@@ -207,8 +264,8 @@
   }
 
   // The base with the edits made. Edits that point nowhere are reported with the rule "bad-edit" and
-  // skipped. edits: as parseEdits returns them. Returns {road, problems}.
-  function apply(base, edits) {
+  // skipped. edits: as parseEdits returns them; extra: see copyFrom (null for none). Returns {road, problems}.
+  function apply(base, edits, extra) {
     var road = clone(base);
     var problems = [];
     function bad(message) { problems.push(problem(RULES.badEdit, -1, -1, -1, -1, message)); }
@@ -252,7 +309,7 @@
           }
           table.push({ monster: 0, unk04: 0, monster2: 0, unk0c: 0, level: 0, unk14: -1, weight: 0, flags: 0 });
         }
-        applyEntry(base, mn, tn, table[en], ee);
+        applyEntry(base, extra, mn, tn, table[en], ee);
       });
       if (me.floorCount !== undefined) {
         if (me.floorCount < 0 || me.floorCount > mode.floors.length) {
@@ -292,8 +349,9 @@
     return Object.keys(seen).map(Number).sort(function (a, b) { return a - b; });
   }
 
-  // Every crash rule road breaks except too-big, base being the live file.
-  function check(base, road) {
+  // Every crash rule road breaks except too-big, base being the live file. extra: the monster ids
+  // allowed besides the base's ({id: true}, null for none).
+  function check(base, road, extra) {
     var problems = [];
     function add(rule, mode, floor, table, entry, message) {
       problems.push(problem(rule, mode, floor, table, entry, message));
@@ -301,6 +359,9 @@
     var known = {};
     var knownCount = 0;
     monsters(base).forEach(function (id) { known[id] = true; knownCount++; });
+    Object.keys(extra || {}).forEach(function (id) {
+      if (extra[id] && !known[id]) { known[id] = true; knownCount++; }
+    });
     var copied = {};
     base.modes.forEach(function (mode) {
       mode.tables.forEach(function (entries) {
@@ -341,8 +402,8 @@
             if (id !== 0 && !known[id]) {
               unknown = true;
               add(RULES.unknownMonster, m, -1, t, e,
-                "Mode " + m + " table " + t + " entry " + e + ": monster " + id + " is not one of the Road's " +
-                knownCount + " monsters.");
+                "Mode " + m + " table " + t + " entry " + e + ": monster " + id + " is not one of the " +
+                knownCount + " allowed monsters.");
             }
           });
           if (!unknown && !copied[fieldKey(en)]) {
@@ -444,12 +505,14 @@
   // What the page shows while you edit: the crash rules (except too-big) and the policy, in the order
   // the API lists them (parse and apply problems, crash rules, policy). editsValue: edits as text or as a
   // parsed object. pool: {base, policy}; with no policy (null, or opts.ignorePolicy) all edits are allowed.
+  // opts.extra: the monsters allowed besides the base's (default all 176, allMonsters).
   // Returns {problems, road}; road is null when the edits could not be read.
   function checkEdits(pool, editsValue, opts) {
     var parsed = parseEdits(editsValue);
     if (parsed.problem) return { problems: [parsed.problem], road: null };
-    var applied = apply(pool.base, parsed.edits);
-    var problems = applied.problems.concat(check(pool.base, applied.road));
+    var extra = opts && opts.extra ? opts.extra : allMonsters();
+    var applied = apply(pool.base, parsed.edits, extra);
+    var problems = applied.problems.concat(check(pool.base, applied.road, extra));
     var useful = !(opts && opts.ignorePolicy) && pool.policy;
     if (useful) problems = problems.concat(policyProblems(pool.base, parsed.edits, applied.road, pool.policy));
     return { problems: problems, road: applied.road };
@@ -462,6 +525,9 @@
     FLAG_LOCKED: FLAG_LOCKED,
     MIN_MONSTERS: MIN_MONSTERS,
     MAX_POINTS: MAX_POINTS,
+    MONSTER_NAMES: MONSTER_NAMES,
+    KNOWN_MONSTERS: KNOWN_MONSTERS,
+    allMonsters: allMonsters,
     parseEdits: parseEdits,
     parseProblem: parseProblem,
     apply: apply,
