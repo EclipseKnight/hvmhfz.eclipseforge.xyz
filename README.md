@@ -15,7 +15,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile. |
 | `/leaderboards.html` | Timed hunt boards: top hunters, top guilds (hunts by current members) and most hunted monsters for this week, last week, this month, last month and all time (UTC; weeks start Monday), from `/api/public/leaderboards/hunts`; plus guild RP. `#<board>-<period>` picks one (`#hunters-week`, `#guilds-month`, `#monsters-all`, `#rp`); the old `#hr`, `#gr` and `#guilds` links still land on a board. Tied scores share a rank. |
 | `/catalog.html` | Item and equipment catalog with section chips and search. |
-| `/worlds.html` | Live world status and server wide hunt totals, refreshed every 30 seconds. |
+| `/worlds.html` | Live world status, the live board (who is online, in town or on a quest and which quest, from `/api/public/activity`) and server wide hunt totals, refreshed every 30 seconds. |
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
 | `/changelog.html` | Rolling player changelog: "Coming next" (finished, not live), then one dated entry per live update, newest first, then known issues. Linked from the footer. Update it at every live deploy (below). |
@@ -35,7 +35,7 @@ guilds.html           guild directory and detail
 hunters.html          hunter directory and profile
 leaderboards.html     timed hunt leaderboards and guild RP
 catalog.html          item and equipment catalog
-worlds.html           world status and hunt totals
+worlds.html           world status, live board and hunt totals
 guide-windows.html    Windows guide
 guide-linux.html      Linux guide
 report.html           bug report and feature request forms
@@ -67,7 +67,10 @@ js/hunters.js         hunter directory and profile
 js/leaderboards.js    leaderboards, from /api/public/leaderboards/hunts and the guild list
 js/catalog.js         catalog browsing
 js/worlds.js          world status polling
+js/activity.js        live board on the Worlds page (/api/public/activity); its pure part also runs under node
 dev/mock-feedback.py  local stand-in for POST /api/feedback (testing only)
+dev/mock-activity.py  local stand-in for GET /api/public/activity (testing only)
+dev/check-activity.js checks js/activity.js on the made-up boards in dev/activity-fixtures.json
 dev/check-road-rules.js  checks js/road-rules.js against the Go golden outputs (needs the base Road as JSON, see the file)
 dev/check-road-monsters.js checks the any-of-176 monsters rule and where a new monster's fields come from, on a made-up Road
 dev/check-road-policy.js checks the policy rules the Go outputs don't cover (points cap, solo Road) on a made-up Road
@@ -126,7 +129,7 @@ that is not fixed on live yet.
 
 All read through `https://api.hvmhfz.eclipseforge.xyz`.
 
-- Public: `/api/public/summary`, `/guilds`, `/guilds/{id}`, `/hunters`, `/hunters/{id}`, `/catalog/items`, `/catalog/equipment`, `/worlds`, `/monsters`.
+- Public: `/api/public/summary`, `/guilds`, `/guilds/{id}`, `/hunters`, `/hunters/{id}`, `/catalog/items`, `/catalog/equipment`, `/worlds`, `/monsters`, `/activity`.
 - Account (JWT): `/api/account`, `/characters`, `/guilds`, `/discord`, `/characters/{id}/storage`, `/characters/{id}/hunts`.
 
 - Feedback (no sign-in): `POST /api/feedback`, used by `report.html`.
@@ -188,6 +191,29 @@ made-up Road, no game data needed: `node dev/check-road-policy.js`.
 
 `maxPoints` is a site rule for now: the API (`PolicyRules.java`) does not send or check it yet, so keep
 `points` and `points2` out of the API's `road.edit.floor-fields` until it does.
+
+### Live board
+
+`js/activity.js` reads `GET /api/public/activity` (API `hvmhfz_rest_api`, README "Live activity") every
+30 seconds while the tab is visible: totals, then one row per character (name, world, in town or on a
+quest, quest id). Quest names live in the client, so the id is shown; "Departing" is a quest whose id
+the server doesn't know yet. When the API sends counts only (`hvmhfz.activity.public-names=false`) the
+list says names are hidden; any error shows "unavailable" and the next refresh tries again. A player's
+`discordName` comes from the API (server nickname, else Discord display name; the bot supplies it)
+and may be null (account not linked, or not in our Discord) or missing (an older API); when set it is
+a second, muted line under the character, set as text only. Quest history (`/api/sessions/questtime`,
+`/questhistory`) is staff only, so it is not on
+this page; a public history would be a new panel fed by a new public endpoint.
+Until Erupe `ActivityTracking.Enabled` is on, everyone shows as "In town" with no quest.
+
+```
+node dev/check-activity.js                 # the pure part, on dev/activity-fixtures.json
+python3 dev/mock-activity.py busy 8099     # or empty, hidden, 401, 500
+python3 -m http.server 8000
+```
+
+Open `http://localhost:8000/worlds.html?api=http://localhost:8099` (the override works only on
+`localhost` and `127.0.0.1`).
 
 ### Testing the report page locally
 

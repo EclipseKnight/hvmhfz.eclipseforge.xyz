@@ -89,6 +89,25 @@
         </div>
       </section>
 
+      <section class="panel" id="live-board">
+        <div class="panel-head">
+          <h2>Who's online</h2>
+          <span class="panel-note" id="live-updated"></span>
+        </div>
+        <div class="stat-grid" role="group" aria-label="Online now">
+          <div class="stat-card skeleton" id="live-online"><span class="stat-label">Online</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton" id="live-town"><span class="stat-label">In town</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton" id="live-quest"><span class="stat-label">On a quest</span><span class="stat-value">&nbsp;</span></div>
+        </div>
+        <p class="note-text">Quest names live in the game client, so quests are listed by the id the server sees.</p>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Hunter</th><th>World</th><th>Doing</th><th>Quest</th></tr></thead>
+            <tbody id="live-body"><tr><td colspan="4"><span class="skeleton-line w60"></span></td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-head"><h2>Most hunted monsters</h2><span class="panel-note">server wide</span></div>
         <div class="table-wrap">
@@ -116,6 +135,7 @@
     </footer>
 
     <script src="/js/worlds.js"></script>
+    <script src="/js/activity.js"></script>
     <script src="/js/search.js" defer></script>
   </body>
 </html>
