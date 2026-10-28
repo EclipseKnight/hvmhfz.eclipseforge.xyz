@@ -1,15 +1,16 @@
 {
-  "_comment": "Made-up answers of GET /api/public/activity for dev/check-activity.js and dev/mock-activity.py. No real players.",
+  "_comment": "Made-up answers of GET /api/public/activity for dev/check-activity.js and dev/mock-activity.py. No real players. In busy, Aldra has no discordName key (an API from before it), Bexo is not linked (null), Cyra has a name and Dax has a name with HTML in it, which must show as text.",
   "busy": {
     "generatedAt": "2026-10-27T23:30:00Z",
-    "totals": {"online": 3, "inTown": 1, "inQuest": 2},
+    "totals": {"online": 4, "inTown": 2, "inQuest": 2},
     "worlds": [
       {"serverId": 1, "worldName": "Newbie", "land": 1, "online": 2, "inTown": 1, "inQuest": 1, "players": [
         {"characterName": "Aldra", "status": "quest", "questId": 23051},
-        {"characterName": "Bexo", "status": "town", "questId": null}
+        {"characterName": "Bexo", "discordName": null, "status": "town", "questId": null}
       ]},
-      {"serverId": 2, "worldName": "Normal", "land": 1, "online": 1, "inTown": 0, "inQuest": 1, "players": [
-        {"characterName": "Cyra", "status": "quest", "questId": null, "discordName": "cyra_hunts"}
+      {"serverId": 2, "worldName": "Normal", "land": 1, "online": 2, "inTown": 1, "inQuest": 1, "players": [
+        {"characterName": "Cyra", "discordName": "Cyra the Bold", "status": "quest", "questId": null},
+        {"characterName": "Dax", "discordName": "<img src=x onerror=alert(1)>", "status": "town", "questId": null}
       ]},
       {"serverId": 3, "worldName": null, "land": null, "online": 0, "inTown": 0, "inQuest": 0, "players": []}
     ]

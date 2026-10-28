@@ -6,8 +6,9 @@
     open http://localhost:8000/worlds.html?api=http://localhost:8099
 
 answer is a board from dev/activity-fixtures.json (busy, empty, hidden) or an HTTP status
-(401, 500) to test the error message. Only the board is mocked: the world cards and monster
-list on the page still read the real API. Run it from the repo root. Never used by the live site.
+(401, 500) to test the error message. busy has every Discord name case: no discordName key,
+null, a name, and a name with HTML in it (must show as text, with no image or alert). Only
+the board is mocked: the world cards and monster list on the page still read the real API. Run it from the repo root. Never used by the live site.
 """
 import json
 import pathlib

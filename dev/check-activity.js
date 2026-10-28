@@ -13,13 +13,29 @@ const fixtures = require("./activity-fixtures.json");
 
 const cases = {
   "busy board lists every player, by world": () => {
-    assert.deepStrictEqual(board.totals(fixtures.busy), { online: 3, inTown: 1, inQuest: 2 });
+    assert.deepStrictEqual(board.totals(fixtures.busy), { online: 4, inTown: 2, inQuest: 2 });
     assert.strictEqual(board.listState(fixtures.busy), "");
     assert.deepStrictEqual(board.rows(fixtures.busy), [
       { name: "Aldra", discord: "", world: "Newbie · Land 1", inQuest: true, quest: "Quest 23051" },
       { name: "Bexo", discord: "", world: "Newbie · Land 1", inQuest: false, quest: "" },
-      { name: "Cyra", discord: "cyra_hunts", world: "Normal · Land 1", inQuest: true, quest: "Departing" }
+      { name: "Cyra", discord: "Cyra the Bold", world: "Normal · Land 1", inQuest: true, quest: "Departing" },
+      { name: "Dax", discord: "<img src=x onerror=alert(1)>", world: "Normal · Land 1", inQuest: false, quest: "" }
     ]);
+  },
+  "discordName: shown when set, blank when null, missing or not text": () => {
+    const discord = (player) => board.rows({ worlds: [{ players: [player] }] })[0].discord;
+    assert.strictEqual(discord({ characterName: "A", discordName: "Cyra the Bold" }), "Cyra the Bold");
+    assert.strictEqual(discord({ characterName: "A", discordName: "  padded  " }), "padded");
+    assert.strictEqual(discord({ characterName: "A", discordName: null }), "");
+    assert.strictEqual(discord({ characterName: "A" }), "");
+    assert.strictEqual(discord({ characterName: "A", discordName: "   " }), "");
+    assert.strictEqual(discord({ characterName: "A", discordName: 123456789012345678 }), "");
+  },
+  "names reach the page as text only (no innerHTML in the board)": () => {
+    // A name like Dax's "<img ... onerror>" is passed through unchanged by rows() and must only ever
+    // be set with textContent; any HTML-parsing sink in js/activity.js would turn it into markup.
+    const source = require("fs").readFileSync(require("path").join(__dirname, "../js/activity.js"), "utf8");
+    assert.doesNotMatch(source, /innerHTML|outerHTML|insertAdjacentHTML|document\.write/);
   },
   "a world with no name or land still gets a label": () => {
     assert.strictEqual(board.worldLabel({ worldName: null, land: null }), "World");

@@ -198,8 +198,10 @@ made-up Road, no game data needed: `node dev/check-road-policy.js`.
 quest, quest id). Quest names live in the client, so the id is shown; "Departing" is a quest whose id
 the server doesn't know yet. When the API sends counts only (`hvmhfz.activity.public-names=false`) the
 list says names are hidden; any error shows "unavailable" and the next refresh tries again. A player's
-`discordName` is shown next to the character when the API sends one; the public answer has no Discord
-field yet. Quest history (`/api/sessions/questtime`, `/questhistory`) is staff only, so it is not on
+`discordName` comes from the API (server nickname, else Discord display name; the bot supplies it)
+and may be null (account not linked, or not in our Discord) or missing (an older API); when set it is
+a second, muted line under the character, set as text only. Quest history (`/api/sessions/questtime`,
+`/questhistory`) is staff only, so it is not on
 this page; a public history would be a new panel fed by a new public endpoint.
 Until Erupe `ActivityTracking.Enabled` is on, everyone shows as "In town" with no quest.
 

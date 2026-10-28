@@ -251,6 +251,8 @@ a.badge:hover{border-color:var(--gold)}
 /* stays a table cell (flex on a td breaks the row); badges sit inline next to the name */
 .cell-name{font-weight:600}
 .cell-name > * + *{margin-left:8px;vertical-align:middle}
+/* a second, quieter line under the name (the live board's Discord name) */
+.cell-name > .cell-sub{display:block;margin-left:0;font-weight:400;font-size:.88rem}
 .rank{color:var(--ink-soft);font-variant-numeric:tabular-nums;width:44px}
 .empty-cell{text-align:center;color:var(--ink-soft);font-style:italic;padding:20px}
 .data-table tr.no-results td{text-align:center;color:var(--ink-soft);font-style:italic}

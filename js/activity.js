@@ -2,9 +2,10 @@
    GET /api/public/activity (refreshed every 30 seconds, the API's own cache time).
 
    The answer: {generatedAt, totals{online,inTown,inQuest},
-   worlds[{serverId,worldName,land,online,inTown,inQuest,players[{characterName,status,questId}]}]}.
-   players is [] when the API is set to counts only. A player's optional discordName is shown when
-   the API sends it (the public answer has no Discord field yet).
+   worlds[{serverId,worldName,land,online,inTown,inQuest,players[{characterName,discordName,status,questId}]}]}.
+   players is [] when the API is set to counts only. discordName (server nickname, else Discord display
+   name) is null when the account is not linked, and missing in answers from before the API had it;
+   it is shown as a second line under the character, as text only.
 
    The pure part (rows, totals, labels) also runs under node: dev/check-activity.js tests it. */
 (function (root) {
@@ -43,7 +44,7 @@
       (world.players || []).forEach(function (player) {
         out.push({
           name: player.characterName || "Unknown hunter",
-          discord: player.discordName || "",
+          discord: typeof player.discordName === "string" ? player.discordName.trim() : "",
           world: worldLabel(world),
           inQuest: player.status === "quest",
           quest: questLabel(player)
@@ -122,7 +123,7 @@
         var tr = el("tr");
         var name = el("td", "cell-name");
         name.appendChild(el("span", null, r.name));
-        if (r.discord) name.appendChild(el("span", "muted", r.discord));
+        if (r.discord) name.appendChild(el("span", "cell-sub muted", r.discord));
         tr.appendChild(name);
         tr.appendChild(el("td", null, r.world));
         var doing = el("td");
