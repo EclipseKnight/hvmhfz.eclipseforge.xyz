@@ -220,7 +220,8 @@
     return;
   }
 
-  // ?q= opens the list already searching for a name (the live board on the Worlds page links here).
+  // ?q= opens the list already searching for a name (the live board on the Worlds page links here when
+  // the API gives it no character id).
   var query = (new URLSearchParams(window.location.search).get("q") || "").trim();
   if (query) {
     state.q = query;

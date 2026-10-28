@@ -2,16 +2,17 @@
    GET /api/public/activity (refreshed every 30 seconds, the API's own cache time).
 
    The answer: {generatedAt, totals{online,inTown,inQuest},
-   worlds[{serverId,worldName,land,online,inTown,inQuest,players[{characterName,discordName,status,questId}],
+   worlds[{serverId,worldName,land,online,inTown,inQuest,players[{characterName,charId,discordName,status,questId}],
    parties[{questId,members[characterName]}]}]}.
    players is [] when the API is set to counts only. parties (hunters questing together, 2 or more) is
    missing in answers from before the API had it; the board then shows no parties and no "in party" tags. discordName (server nickname, else Discord display
    name) is null when the account is not linked, and missing in answers from before the API had it;
    it is shown as a second line under the character, as text only.
 
-   Each character name (in the rows and in the parties) links to the Hunters page searching for that
-   name: hunter profiles are addressed by character id (/hunters.html?id=), which the public answer
-   does not carry.
+   Each character name (in the rows and in the parties) links to its hunter profile,
+   /hunters.html?id=<charId>. charId is missing in answers from before the API had it; the name then
+   links to the Hunters page searching for it (/hunters.html?q=) instead. A party lists names only, so
+   a member takes the charId of the player with that name in the same world.
 
    The pure part (rows, totals, labels) also runs under node: dev/check-activity.js tests it. */
 (function (root) {
@@ -43,13 +44,35 @@
     return player.questId === null || player.questId === undefined ? "Departing" : "Quest " + player.questId;
   }
 
+  /** A usable character id: a whole number above 0, else null. */
+  function charIdOf(value) {
+    return typeof value === "number" && isFinite(value) && Math.floor(value) === value && value > 0 ? value : null;
+  }
+
   /**
-   * Where a character name links to: the Hunters page searching for that name, or "" (no link) for a
-   * missing or blank name. Names reach the page only as text and through encodeURIComponent here.
+   * Where a character name links to: the hunter profile when the character id is known, else the
+   * Hunters page searching for the name, else "" (no link) for a missing or blank name. Names reach
+   * the page only as text and through encodeURIComponent here.
    */
-  function hunterHref(name) {
+  function hunterHref(name, charId) {
+    var id = charIdOf(charId);
+    if (id !== null) return "/hunters.html?id=" + id;
     if (typeof name !== "string" || name.trim() === "") return "";
     return "/hunters.html?q=" + encodeURIComponent(name.trim());
+  }
+
+  /**
+   * Character ids of a world's players by name, for the party members (who come as names only). A
+   * name held by two different ids is left out, so it falls back to the name search.
+   */
+  function worldCharIds(world) {
+    var ids = Object.create(null); // no inherited keys: a hunter named "constructor" has no id
+    (world.players || []).forEach(function (player) {
+      var name = player && player.characterName, id = charIdOf(player && player.charId);
+      if (typeof name !== "string" || id === null) return;
+      ids[name] = name in ids && ids[name] !== id ? null : id;
+    });
+    return ids;
   }
 
   /** A party's quest. Quest names live in the client, so the id; null while the quest is still loading. */
@@ -59,18 +82,22 @@
   }
 
   /**
-   * A world's parties, cleaned up: member names as text, and only groups of 2 or more (the API sends
+   * A world's parties, cleaned up: member names as text (hrefs: their links, same order), and only
+   * groups of 2 or more (the API sends
    * only those; a broken entry is skipped rather than shown). None when the world lists no players,
    * so a counts-only API never shows names through its parties.
    */
   function worldParties(world) {
     if (!world || !Array.isArray(world.parties) || !(world.players || []).length) return [];
-    var out = [];
+    var out = [], ids = worldCharIds(world);
     world.parties.forEach(function (party) {
       var members = ((party && Array.isArray(party.members)) ? party.members : []).filter(function (name) {
         return typeof name === "string" && name.trim() !== "";
       });
-      if (members.length >= 2) out.push({ quest: partyQuestLabel(party), members: members });
+      if (members.length >= 2) {
+        out.push({ quest: partyQuestLabel(party), members: members,
+                   hrefs: members.map(function (name) { return hunterHref(name, ids[name]); }) });
+      }
     });
     return out;
   }
@@ -101,7 +128,7 @@
           inQuest: player.status === "quest",
           quest: questLabel(player),
           inParty: partyMembers[player.characterName] === true,
-          href: hunterHref(player.characterName)
+          href: hunterHref(player.characterName, player.charId)
         });
       });
     });
@@ -141,7 +168,7 @@
     return node;
   }
 
-  /** A character name: a link to its hunter search when it has one, else plain text. */
+  /** A character name: a link to its profile or search when it has one, else plain text. */
   function hunterName(name, href) {
     if (!href) return el("span", null, name);
     var link = el("a", null, name);
@@ -220,7 +247,7 @@
         var members = el("span", "party-members");
         party.members.forEach(function (member, i) {
           if (i) members.appendChild(document.createTextNode(", "));
-          members.appendChild(hunterName(member, hunterHref(member)));
+          members.appendChild(hunterName(member, party.hrefs[i]));
         });
         item.appendChild(members);
         list.appendChild(item);

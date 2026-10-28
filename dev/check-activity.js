@@ -19,16 +19,17 @@ const cases = {
       { name: "Aldra", discord: "", world: "Newbie · Land 1", inQuest: true, quest: "Quest 23051", inParty: true,
         href: "/hunters.html?q=Aldra" },
       { name: "Bexo", discord: "", world: "Newbie · Land 1", inQuest: false, quest: "", inParty: true,
-        href: "/hunters.html?q=Bexo" },
+        href: "/hunters.html?id=102" },
       { name: "Cyra", discord: "Cyra the Bold", world: "Normal · Land 1", inQuest: true, quest: "Departing", inParty: false,
-        href: "/hunters.html?q=Cyra" },
+        href: "/hunters.html?id=103" },
       { name: "Dax", discord: "<img src=x onerror=alert(1)>", world: "Normal · Land 1", inQuest: false, quest: "", inParty: false,
-        href: "/hunters.html?q=Dax" }
+        href: "/hunters.html?id=104" }
     ]);
   },
   "parties: one block per world with a party of 2 or more": () => {
     assert.deepStrictEqual(board.parties(fixtures.busy), [
-      { world: "Newbie · Land 1", parties: [{ quest: "Quest #23051", members: ["Aldra", "Bexo"] }] }
+      { world: "Newbie · Land 1", parties: [{ quest: "Quest #23051", members: ["Aldra", "Bexo"],
+        hrefs: ["/hunters.html?q=Aldra", "/hunters.html?id=102"] }] }
     ]);
   },
   "parties: quest by id, loading while the id is null": () => {
@@ -73,6 +74,34 @@ const cases = {
     assert.strictEqual(discord({ characterName: "A" }), "");
     assert.strictEqual(discord({ characterName: "A", discordName: "   " }), "");
     assert.strictEqual(discord({ characterName: "A", discordName: 123456789012345678 }), "");
+  },
+  "names link to the hunter profile by charId": () => {
+    assert.strictEqual(board.hunterHref("Aldra", 42), "/hunters.html?id=42");
+    assert.strictEqual(board.hunterHref(null, 42), "/hunters.html?id=42");
+    const row = board.rows({ worlds: [{ players: [{ characterName: "A&b", charId: 7, status: "town" }] }] })[0];
+    assert.strictEqual(row.href, "/hunters.html?id=7");
+  },
+  "a missing or broken charId falls back to the name search (API before charId)": () => {
+    [undefined, null, 0, -3, 1.5, NaN, Infinity, "42", "1&x=y", {}, true].forEach((id) => {
+      assert.strictEqual(board.hunterHref("Aldra", id), "/hunters.html?q=Aldra", String(id));
+    });
+    assert.strictEqual(board.hunterHref("", null), "");
+  },
+  "party members link by the charId of the same-named player in their world": () => {
+    const b = { worlds: [
+      { worldName: "Newbie", parties: [{ questId: 1, members: ["Aldra", "Bexo", "Cyra", "Gone", "constructor"] }],
+        players: [{ characterName: "Aldra", charId: 11 }, { characterName: "Bexo" },
+                  { characterName: "Cyra", charId: 13 }, { characterName: "Cyra", charId: 14 }] },
+      { worldName: "Normal", parties: [{ questId: 2, members: ["Aldra", "Dax"] }],
+        players: [{ characterName: "Aldra", charId: 21 }, { characterName: "Dax", charId: 22 }] }
+    ] };
+    assert.deepStrictEqual(board.parties(b).map((block) => block.parties[0].hrefs), [
+      // Bexo has no id; Cyra's name has two ids (no way to tell them apart); Gone is not in the
+      // players list; "constructor" must not pick up an inherited key.
+      ["/hunters.html?id=11", "/hunters.html?q=Bexo", "/hunters.html?q=Cyra", "/hunters.html?q=Gone",
+       "/hunters.html?q=constructor"],
+      ["/hunters.html?id=21", "/hunters.html?id=22"]
+    ]);
   },
   "names link to the Hunters page searching for them, URL-encoded; no name, no link": () => {
     assert.strictEqual(board.hunterHref("Aldra"), "/hunters.html?q=Aldra");
