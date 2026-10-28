@@ -12,10 +12,10 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/monster.html?m=slug` | One monster: hitzones normal and enraged, HP by level, stagger limits, maps, every carve table, Henshu/GR/Zenith forms. |
 | `/events.html` | Live server events, the event quest pool and the Festa prize table. |
 | `/guilds.html` | Guild directory: search, sort by RP, members, newest or name. `?id=` opens a guild with roster and board. |
-| `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile. |
+| `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile; `?q=` opens the list searching for a name. |
 | `/leaderboards.html` | Timed hunt boards: top hunters, top guilds (hunts by current members) and most hunted monsters for this week, last week, this month, last month and all time (UTC; weeks start Monday), from `/api/public/leaderboards/hunts`; plus guild RP. `#<board>-<period>` picks one (`#hunters-week`, `#guilds-month`, `#monsters-all`, `#rp`); the old `#hr`, `#gr` and `#guilds` links still land on a board. Tied scores share a rank. |
 | `/catalog.html` | Item and equipment catalog with section chips and search. |
-| `/worlds.html` | Live world status, the live board (who is online, in town or on a quest and which quest, and who is questing together, from `/api/public/activity`) and server wide hunt totals, refreshed every 30 seconds. |
+| `/worlds.html` | Live world status, the live board (who is online, in town or on a quest and which quest, and who is questing together, from `/api/public/activity`; each name links to the Hunters page searching for it, as the public board has no character id) and server wide hunt totals, refreshed every 30 seconds. |
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
 | `/changelog.html` | Rolling player changelog: "Coming next" (finished, not live), then one dated entry per live update, newest first, then known issues. Linked from the footer. Update it at every live deploy (below). |

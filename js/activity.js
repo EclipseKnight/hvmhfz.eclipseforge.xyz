@@ -9,6 +9,10 @@
    name) is null when the account is not linked, and missing in answers from before the API had it;
    it is shown as a second line under the character, as text only.
 
+   Each character name (in the rows and in the parties) links to the Hunters page searching for that
+   name: hunter profiles are addressed by character id (/hunters.html?id=), which the public answer
+   does not carry.
+
    The pure part (rows, totals, labels) also runs under node: dev/check-activity.js tests it. */
 (function (root) {
   "use strict";
@@ -37,6 +41,15 @@
   function questLabel(player) {
     if (player.status !== "quest") return "";
     return player.questId === null || player.questId === undefined ? "Departing" : "Quest " + player.questId;
+  }
+
+  /**
+   * Where a character name links to: the Hunters page searching for that name, or "" (no link) for a
+   * missing or blank name. Names reach the page only as text and through encodeURIComponent here.
+   */
+  function hunterHref(name) {
+    if (typeof name !== "string" || name.trim() === "") return "";
+    return "/hunters.html?q=" + encodeURIComponent(name.trim());
   }
 
   /** A party's quest. Quest names live in the client, so the id; null while the quest is still loading. */
@@ -87,7 +100,8 @@
           world: worldLabel(world),
           inQuest: player.status === "quest",
           quest: questLabel(player),
-          inParty: partyMembers[player.characterName] === true
+          inParty: partyMembers[player.characterName] === true,
+          href: hunterHref(player.characterName)
         });
       });
     });
@@ -105,7 +119,7 @@
 
   var api = {
     totals: totals, rows: rows, listState: listState, questLabel: questLabel, worldLabel: worldLabel,
-    parties: parties, partyQuestLabel: partyQuestLabel
+    parties: parties, partyQuestLabel: partyQuestLabel, hunterHref: hunterHref
   };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   root.ActivityBoard = api;
@@ -125,6 +139,14 @@
     if (className) node.className = className;
     if (text !== undefined && text !== null) node.textContent = text;
     return node;
+  }
+
+  /** A character name: a link to its hunter search when it has one, else plain text. */
+  function hunterName(name, href) {
+    if (!href) return el("span", null, name);
+    var link = el("a", null, name);
+    link.href = href;
+    return link;
   }
 
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
@@ -165,7 +187,7 @@
       rows(board).forEach(function (r) {
         var tr = el("tr");
         var name = el("td", "cell-name");
-        name.appendChild(el("span", null, r.name));
+        name.appendChild(hunterName(r.name, r.href));
         if (r.inParty) name.appendChild(el("span", "badge party-tag", "In party"));
         if (r.discord) name.appendChild(el("span", "cell-sub muted", r.discord));
         tr.appendChild(name);
@@ -195,7 +217,12 @@
       block.parties.forEach(function (party) {
         var item = el("li");
         item.appendChild(el("span", "party-quest", party.quest));
-        item.appendChild(el("span", "party-members", party.members.join(", ")));
+        var members = el("span", "party-members");
+        party.members.forEach(function (member, i) {
+          if (i) members.appendChild(document.createTextNode(", "));
+          members.appendChild(hunterName(member, hunterHref(member)));
+        });
+        item.appendChild(members);
         list.appendChild(item);
       });
       part.appendChild(list);

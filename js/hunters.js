@@ -220,6 +220,13 @@
     return;
   }
 
+  // ?q= opens the list already searching for a name (the live board on the Worlds page links here).
+  var query = (new URLSearchParams(window.location.search).get("q") || "").trim();
+  if (query) {
+    state.q = query;
+    document.getElementById("hunter-search").value = query;
+  }
+
   document.getElementById("hunter-search").addEventListener("input", debounce(function (event) {
     state.q = event.target.value.trim();
     state.page = 0;

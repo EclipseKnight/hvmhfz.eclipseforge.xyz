@@ -16,10 +16,14 @@ const cases = {
     assert.deepStrictEqual(board.totals(fixtures.busy), { online: 4, inTown: 2, inQuest: 2 });
     assert.strictEqual(board.listState(fixtures.busy), "");
     assert.deepStrictEqual(board.rows(fixtures.busy), [
-      { name: "Aldra", discord: "", world: "Newbie · Land 1", inQuest: true, quest: "Quest 23051", inParty: true },
-      { name: "Bexo", discord: "", world: "Newbie · Land 1", inQuest: false, quest: "", inParty: true },
-      { name: "Cyra", discord: "Cyra the Bold", world: "Normal · Land 1", inQuest: true, quest: "Departing", inParty: false },
-      { name: "Dax", discord: "<img src=x onerror=alert(1)>", world: "Normal · Land 1", inQuest: false, quest: "", inParty: false }
+      { name: "Aldra", discord: "", world: "Newbie · Land 1", inQuest: true, quest: "Quest 23051", inParty: true,
+        href: "/hunters.html?q=Aldra" },
+      { name: "Bexo", discord: "", world: "Newbie · Land 1", inQuest: false, quest: "", inParty: true,
+        href: "/hunters.html?q=Bexo" },
+      { name: "Cyra", discord: "Cyra the Bold", world: "Normal · Land 1", inQuest: true, quest: "Departing", inParty: false,
+        href: "/hunters.html?q=Cyra" },
+      { name: "Dax", discord: "<img src=x onerror=alert(1)>", world: "Normal · Land 1", inQuest: false, quest: "", inParty: false,
+        href: "/hunters.html?q=Dax" }
     ]);
   },
   "parties: one block per world with a party of 2 or more": () => {
@@ -69,6 +73,20 @@ const cases = {
     assert.strictEqual(discord({ characterName: "A" }), "");
     assert.strictEqual(discord({ characterName: "A", discordName: "   " }), "");
     assert.strictEqual(discord({ characterName: "A", discordName: 123456789012345678 }), "");
+  },
+  "names link to the Hunters page searching for them, URL-encoded; no name, no link": () => {
+    assert.strictEqual(board.hunterHref("Aldra"), "/hunters.html?q=Aldra");
+    assert.strictEqual(board.hunterHref(" Aldra "), "/hunters.html?q=Aldra");
+    assert.strictEqual(board.hunterHref("A&b=c #?/<x>\"'"),
+      "/hunters.html?q=A%26b%3Dc%20%23%3F%2F%3Cx%3E%22'");
+    assert.strictEqual(board.hunterHref("\u30cf\u30f3\u30bf\u30fc"), "/hunters.html?q=%E3%83%8F%E3%83%B3%E3%82%BF%E3%83%BC");
+    assert.strictEqual(board.hunterHref(""), "");
+    assert.strictEqual(board.hunterHref("   "), "");
+    assert.strictEqual(board.hunterHref(null), "");
+    assert.strictEqual(board.hunterHref(7), "");
+    const row = board.rows({ worlds: [{ players: [{ status: "town" }] }] })[0];
+    assert.strictEqual(row.name, "Unknown hunter");
+    assert.strictEqual(row.href, "");
   },
   "names reach the page as text only (no innerHTML in the board)": () => {
     // A name like Dax's "<img ... onerror>" is passed through unchanged by rows() and must only ever
