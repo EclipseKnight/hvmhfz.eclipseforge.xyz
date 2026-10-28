@@ -7,7 +7,9 @@
 
 answer is a board from dev/activity-fixtures.json (busy, empty, hidden) or an HTTP status
 (401, 500) to test the error message. busy has every Discord name case: no discordName key,
-null, a name, and a name with HTML in it (must show as text, with no image or alert). Only
+null, a name, and a name with HTML in it (must show as text, with no image or alert); its
+Newbie world has a party (Aldra and Bexo, tagged "In party") and Normal a one-hunter party
+that must not show. Only
 the board is mocked: the world cards and monster list on the page still read the real API. Run it from the repo root. Never used by the live site.
 """
 import json

@@ -15,7 +15,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile. |
 | `/leaderboards.html` | Timed hunt boards: top hunters, top guilds (hunts by current members) and most hunted monsters for this week, last week, this month, last month and all time (UTC; weeks start Monday), from `/api/public/leaderboards/hunts`; plus guild RP. `#<board>-<period>` picks one (`#hunters-week`, `#guilds-month`, `#monsters-all`, `#rp`); the old `#hr`, `#gr` and `#guilds` links still land on a board. Tied scores share a rank. |
 | `/catalog.html` | Item and equipment catalog with section chips and search. |
-| `/worlds.html` | Live world status, the live board (who is online, in town or on a quest and which quest, from `/api/public/activity`) and server wide hunt totals, refreshed every 30 seconds. |
+| `/worlds.html` | Live world status, the live board (who is online, in town or on a quest and which quest, and who is questing together, from `/api/public/activity`) and server wide hunt totals, refreshed every 30 seconds. |
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
 | `/changelog.html` | Rolling player changelog: "Coming next" (finished, not live), then one dated entry per live update, newest first, then known issues. Linked from the footer. Update it at every live deploy (below). |
@@ -201,7 +201,11 @@ the server doesn't know yet. When the API sends counts only (`hvmhfz.activity.pu
 list says names are hidden; any error shows "unavailable" and the next refresh tries again. A player's
 `discordName` comes from the API (server nickname, else Discord display name; the bot supplies it)
 and may be null (account not linked, or not in our Discord) or missing (an older API); when set it is
-a second, muted line under the character, set as text only. Quest history (`/api/sessions/questtime`,
+a second, muted line under the character, set as text only. Each world may also send `parties`
+(`[{questId, members: [names]}]`, hunters questing together, groups of 2 or more): the board then lists
+them under the table, one "Parties" part per world (the quest as "Quest #id", "Quest loading…" while the
+id is null), and tags those hunters "In party" in the list. Missing or empty `parties` (an older API)
+shows nothing, and so does a world with no players listed (counts only). Quest history (`/api/sessions/questtime`,
 `/questhistory`) is staff only, so it is not on
 this page; a public history would be a new panel fed by a new public endpoint.
 Until Erupe `ActivityTracking.Enabled` is on, everyone shows as "In town" with no quest.

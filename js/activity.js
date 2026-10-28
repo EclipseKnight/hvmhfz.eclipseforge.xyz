@@ -2,8 +2,10 @@
    GET /api/public/activity (refreshed every 30 seconds, the API's own cache time).
 
    The answer: {generatedAt, totals{online,inTown,inQuest},
-   worlds[{serverId,worldName,land,online,inTown,inQuest,players[{characterName,discordName,status,questId}]}]}.
-   players is [] when the API is set to counts only. discordName (server nickname, else Discord display
+   worlds[{serverId,worldName,land,online,inTown,inQuest,players[{characterName,discordName,status,questId}],
+   parties[{questId,members[characterName]}]}]}.
+   players is [] when the API is set to counts only. parties (hunters questing together, 2 or more) is
+   missing in answers from before the API had it; the board then shows no parties and no "in party" tags. discordName (server nickname, else Discord display
    name) is null when the account is not linked, and missing in answers from before the API had it;
    it is shown as a second line under the character, as text only.
 
@@ -37,17 +39,55 @@
     return player.questId === null || player.questId === undefined ? "Departing" : "Quest " + player.questId;
   }
 
+  /** A party's quest. Quest names live in the client, so the id; null while the quest is still loading. */
+  function partyQuestLabel(party) {
+    var id = party && party.questId;
+    return typeof id === "number" && isFinite(id) ? "Quest #" + id : "Quest loading\u2026";
+  }
+
+  /**
+   * A world's parties, cleaned up: member names as text, and only groups of 2 or more (the API sends
+   * only those; a broken entry is skipped rather than shown). None when the world lists no players,
+   * so a counts-only API never shows names through its parties.
+   */
+  function worldParties(world) {
+    if (!world || !Array.isArray(world.parties) || !(world.players || []).length) return [];
+    var out = [];
+    world.parties.forEach(function (party) {
+      var members = ((party && Array.isArray(party.members)) ? party.members : []).filter(function (name) {
+        return typeof name === "string" && name.trim() !== "";
+      });
+      if (members.length >= 2) out.push({ quest: partyQuestLabel(party), members: members });
+    });
+    return out;
+  }
+
+  /** One block per world that has a party, in the API's world order; [] shows no Parties block. */
+  function parties(board) {
+    var out = [];
+    ((board && board.worlds) || []).forEach(function (world) {
+      var list = worldParties(world);
+      if (list.length) out.push({ world: worldLabel(world), parties: list });
+    });
+    return out;
+  }
+
   /** One row per online character, in the API's order (by world, then name). */
   function rows(board) {
     var out = [];
     ((board && board.worlds) || []).forEach(function (world) {
+      var partyMembers = Object.create(null); // no inherited keys: a hunter named "constructor" is no member
+      worldParties(world).forEach(function (party) {
+        party.members.forEach(function (name) { partyMembers[name] = true; });
+      });
       (world.players || []).forEach(function (player) {
         out.push({
           name: player.characterName || "Unknown hunter",
           discord: typeof player.discordName === "string" ? player.discordName.trim() : "",
           world: worldLabel(world),
           inQuest: player.status === "quest",
-          quest: questLabel(player)
+          quest: questLabel(player),
+          inParty: partyMembers[player.characterName] === true
         });
       });
     });
@@ -63,7 +103,10 @@
     return totals(board).online ? "hidden" : "empty";
   }
 
-  var api = { totals: totals, rows: rows, listState: listState, questLabel: questLabel, worldLabel: worldLabel };
+  var api = {
+    totals: totals, rows: rows, listState: listState, questLabel: questLabel, worldLabel: worldLabel,
+    parties: parties, partyQuestLabel: partyQuestLabel
+  };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   root.ActivityBoard = api;
 
@@ -123,6 +166,7 @@
         var tr = el("tr");
         var name = el("td", "cell-name");
         name.appendChild(el("span", null, r.name));
+        if (r.inParty) name.appendChild(el("span", "badge party-tag", "In party"));
         if (r.discord) name.appendChild(el("span", "cell-sub muted", r.discord));
         tr.appendChild(name);
         tr.appendChild(el("td", null, r.world));
@@ -133,11 +177,35 @@
         body.appendChild(tr);
       });
     }
+    renderParties(parties(board));
     var at = board && board.generatedAt ? new Date(board.generatedAt) : new Date();
     document.getElementById("live-updated").textContent = "updated " + (isNaN(at) ? new Date() : at).toLocaleTimeString();
   }
 
+  /** The Parties block under the list: one part per world with a party, hidden when there are none. */
+  function renderParties(blocks) {
+    var box = document.getElementById("live-parties");
+    if (!box) return;
+    var body = document.getElementById("live-parties-body");
+    clear(body);
+    blocks.forEach(function (block) {
+      var part = el("div", "party-world");
+      part.appendChild(el("h3", null, "Parties · " + block.world));
+      var list = el("ul", "party-list");
+      block.parties.forEach(function (party) {
+        var item = el("li");
+        item.appendChild(el("span", "party-quest", party.quest));
+        item.appendChild(el("span", "party-members", party.members.join(", ")));
+        list.appendChild(item);
+      });
+      part.appendChild(list);
+      body.appendChild(part);
+    });
+    box.hidden = !blocks.length;
+  }
+
   function fail() {
+    renderParties([]);
     ["live-online", "live-town", "live-quest"].forEach(function (id) { setStat(id, "-"); });
     message(document.getElementById("live-body"), MESSAGES.error);
     document.getElementById("live-updated").textContent = "";

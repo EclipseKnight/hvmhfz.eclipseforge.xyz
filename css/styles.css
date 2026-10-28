@@ -253,6 +253,13 @@ a.badge:hover{border-color:var(--gold)}
 .cell-name > * + *{margin-left:8px;vertical-align:middle}
 /* a second, quieter line under the name (the live board's Discord name) */
 .cell-name > .cell-sub{display:block;margin-left:0;font-weight:400;font-size:.88rem}
+/* the live board's Parties block: hunters questing together, one part per world */
+.live-parties{margin-top:18px}
+.party-world + .party-world{margin-top:14px}
+.party-world h3{margin:0 0 8px;font-size:1rem}
+.party-list{list-style:none;margin:0;padding:0}
+.party-list li{display:flex;flex-wrap:wrap;gap:4px 12px;padding:6px 0;border-bottom:1px solid var(--line)}
+.party-quest{font-weight:600;min-width:9em}
 .rank{color:var(--ink-soft);font-variant-numeric:tabular-nums;width:44px}
 .empty-cell{text-align:center;color:var(--ink-soft);font-style:italic;padding:20px}
 .data-table tr.no-results td{text-align:center;color:var(--ink-soft);font-style:italic}

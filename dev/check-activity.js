@@ -16,11 +16,50 @@ const cases = {
     assert.deepStrictEqual(board.totals(fixtures.busy), { online: 4, inTown: 2, inQuest: 2 });
     assert.strictEqual(board.listState(fixtures.busy), "");
     assert.deepStrictEqual(board.rows(fixtures.busy), [
-      { name: "Aldra", discord: "", world: "Newbie · Land 1", inQuest: true, quest: "Quest 23051" },
-      { name: "Bexo", discord: "", world: "Newbie · Land 1", inQuest: false, quest: "" },
-      { name: "Cyra", discord: "Cyra the Bold", world: "Normal · Land 1", inQuest: true, quest: "Departing" },
-      { name: "Dax", discord: "<img src=x onerror=alert(1)>", world: "Normal · Land 1", inQuest: false, quest: "" }
+      { name: "Aldra", discord: "", world: "Newbie · Land 1", inQuest: true, quest: "Quest 23051", inParty: true },
+      { name: "Bexo", discord: "", world: "Newbie · Land 1", inQuest: false, quest: "", inParty: true },
+      { name: "Cyra", discord: "Cyra the Bold", world: "Normal · Land 1", inQuest: true, quest: "Departing", inParty: false },
+      { name: "Dax", discord: "<img src=x onerror=alert(1)>", world: "Normal · Land 1", inQuest: false, quest: "", inParty: false }
     ]);
+  },
+  "parties: one block per world with a party of 2 or more": () => {
+    assert.deepStrictEqual(board.parties(fixtures.busy), [
+      { world: "Newbie · Land 1", parties: [{ quest: "Quest #23051", members: ["Aldra", "Bexo"] }] }
+    ]);
+  },
+  "parties: quest by id, loading while the id is null": () => {
+    assert.strictEqual(board.partyQuestLabel({ questId: 23051 }), "Quest #23051");
+    assert.strictEqual(board.partyQuestLabel({ questId: null }), "Quest loading\u2026");
+    assert.strictEqual(board.partyQuestLabel({}), "Quest loading\u2026");
+    assert.strictEqual(board.partyQuestLabel({ questId: "23051" }), "Quest loading\u2026");
+  },
+  "parties: missing, empty or broken show nothing (works with the API before parties)": () => {
+    const world = (parties) => ({ worlds: [{ worldName: "Newbie", land: 1, parties: parties,
+      players: [{ characterName: "Aldra" }, { characterName: "Bexo" }] }] });
+    const tags = (b) => board.rows(b).map((r) => r.inParty);
+    assert.deepStrictEqual(board.parties(world(undefined)), []);
+    assert.deepStrictEqual(tags(world(undefined)), [false, false]);
+    assert.deepStrictEqual(board.parties(world([])), []);
+    assert.deepStrictEqual(board.parties(world(null)), []);
+    assert.deepStrictEqual(board.parties(world("x")), []);
+    assert.deepStrictEqual(board.parties(world([null, {}, { members: "Aldra" }, { members: ["Aldra", 7, " "] }])), []);
+    assert.deepStrictEqual(tags(world([{ members: ["Aldra", 7, " "] }])), [false, false]);
+    assert.deepStrictEqual(board.parties(fixtures.empty), []);
+    assert.deepStrictEqual(board.parties(null), []);
+  },
+  "parties: a member is tagged only in the world of the party, and by exact name": () => {
+    const b = { worlds: [
+      { worldName: "Newbie", land: 1, parties: [{ questId: 1, members: ["Aldra", "constructor"] }],
+        players: [{ characterName: "Aldra" }, { characterName: "aldra" }, { characterName: "toString" }] },
+      { worldName: "Normal", land: 1, players: [{ characterName: "Aldra" }] }
+    ] };
+    assert.deepStrictEqual(board.rows(b).map((r) => r.inParty), [true, false, false, false]);
+  },
+  "parties: counts-only API (no players) never shows names through parties": () => {
+    const b = { totals: { online: 2 }, worlds: [{ worldName: "Newbie", players: [],
+      parties: [{ questId: 1, members: ["Aldra", "Bexo"] }] }] };
+    assert.deepStrictEqual(board.parties(b), []);
+    assert.strictEqual(board.listState(b), "hidden");
   },
   "discordName: shown when set, blank when null, missing or not text": () => {
     const discord = (player) => board.rows({ worlds: [{ players: [player] }] })[0].discord;
