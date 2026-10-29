@@ -122,70 +122,7 @@
 </section>
 <p class="api-gate" id="api-gate">The account and admin half of this page is for moderators and admins. <a href="/account.html">Sign in</a> with one and reload; the public endpoints above stay readable by everyone. The server enforces every role regardless of what this page shows.</p>
 <div id="private-docs" hidden>
-<section id="account">
-<h2>Your account</h2>
-<p>Send Authorization: Bearer &lt;token&gt;. The account comes from the token; there is no id parameter. No raw save blobs are returned, only decoded numbers.</p>
-<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Parameters</th><th>Returns</th></tr></thead><tbody><tr><td>GET /api/account</td><td>none</td><td>account: id, name, roles, characters</td></tr><tr><td>GET /api/account/characters</td><td>none</td><td>your characters</td></tr><tr><td>GET /api/account/guilds</td><td>none</td><td>guilds your characters belong to</td></tr><tr><td>GET /api/account/discord</td><td>none</td><td>linked Discord id and name, or null</td></tr><tr><td>GET /api/account/distributions</td><td>none</td><td>gift lists: global gifts plus those targeted at your characters, with accepted counts</td></tr><tr><td>GET /api/account/characters/{id}/storage</td><td>id: one of your character ids</td><td>zenny, G zenny, CP, item box, pouch, warehouse, stamps, house</td></tr><tr><td>GET /api/account/characters/{id}/hunts</td><td>id: one of your character ids</td><td>hunt history for that character</td></tr></tbody></table></div>
-<p>A character id that is not yours answers 404 (not another account&#x27;s data). A missing or expired token answers 401.</p>
-<pre><code>TOKEN=$(curl -s https://api.hvmhfz.eclipseforge.xyz/api/auth/signin \
-  -H &#x27;Content-Type: application/json&#x27; \
-  -d &#x27;{&quot;username&quot;:&quot;YourGameName&quot;,&quot;password&quot;:&quot;your-password&quot;,&quot;token&quot;:&quot;&quot;}&#x27; | jq -r .accessToken)
-
-curl -s https://api.hvmhfz.eclipseforge.xyz/api/account/distributions \
-  -H &quot;Authorization: Bearer $TOKEN&quot;</code></pre>
-</section>
-<section id="admin-ops">
-<h2>Server tools (admin and moderator)</h2>
-<p>Bearer token with ROLE_ADMIN or ROLE_MODERATOR. The server checks the role on every call; the buttons on the site are only a convenience. Every action here is written to the audit log with the account that did it.</p>
-<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Parameters</th><th>Does</th></tr></thead><tbody><tr><td>GET /api/admin/ops/services</td><td>none</td><td>state of erupe, api and bot: state, since, restarts, players</td></tr><tr><td>GET /api/admin/ops/services/{service}/logs</td><td>service: erupe, api, bot; lines (200 default, 1 to 500); errors (false default; true filters WARN/ERROR)</td><td>recent log lines, secrets and player IPs masked</td></tr><tr><td>POST /api/admin/ops/services/{service}/restart</td><td>service: erupe, api, bot</td><td>api and bot restart at once. erupe schedules the warned restart: 10 minutes of Discord and in-game messages, the bot status counts down, then the swap and restart. Answers restart=scheduled (...). One restart per service every two minutes (429).</td></tr><tr><td>GET /api/admin/ops/audit</td><td>max (50 default, 1 to 1000)</td><td>newest-first audit entries: at, account, action, target, result</td></tr></tbody></table></div>
-<p>The audit log records every admin action (restarts, roles, chat flags, gifts, Road changes, session cleanups) and every signed-in request that changes something outside the admin pages (Road entries and votes, Discord link and unlink, save imports). Public reads are not logged.</p>
-</section>
-<section id="admin-users">
-<h2>Users, roles and gifts (admin)</h2>
-<p>Users and roles need ROLE_ADMIN. Gifts need ROLE_ADMIN as well.</p>
-<h3>Accounts</h3>
-<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Parameters</th><th>Does</th></tr></thead><tbody><tr><td>GET /api/admin/users</td><td>q (name search), page (0), size (25, max 100)</td><td>paged accounts: id, name, roles, characters, last login, Discord link, chat flags</td></tr><tr><td>POST /api/admin/users/{id}/flags</td><td>id: account id; body {&quot;op&quot;:true,&quot;timer&quot;:false} (either or both; null leaves it)</td><td>sets the in-game chat flags</td></tr><tr><td>GET /api/admin/roles</td><td>none</td><td>role list</td></tr><tr><td>POST /api/admin/roles</td><td>body {&quot;username&quot;:&quot;Name&quot;,&quot;role&quot;:&quot;ROLE_MODERATOR&quot;,&quot;grant&quot;:true}</td><td>grants or removes a role. Nobody can remove their own admin role; the last admin cannot be removed.</td></tr></tbody></table></div>
-<h3>Gift lists (distributions)</h3>
-<p>A gift is one entry in one of the game&#x27;s gift lists. With no characters it goes to every character; with characters, Erupe stores one copy per character. The gift is in the game&#x27;s list as soon as the call returns, so the panel asks for confirmation first.</p>
-<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Parameters</th><th>Does</th></tr></thead><tbody><tr><td>GET /api/admin/distributions</td><td>none</td><td>every gift: id, type, typeName, eventName, description, deadline, ended, timesAcceptable, targets, rank limits, items, accepted, claimants</td></tr><tr><td>GET /api/admin/distributions/options</td><td>none</td><td>lists {}, itemTypes {}, itemTypesWithId [], maxCharacters (100). The panel builds its selects from this, so it always matches the server.</td></tr><tr><td>POST /api/admin/distributions</td><td>body: NewDistribution (see below)</td><td>201 {id, ids[]}; one id per targeted character, or one for all</td></tr><tr><td>POST /api/admin/distributions/{id}/end</td><td>id: gift id</td><td>204; ends the gift early</td></tr></tbody></table></div>
-<h3>NewDistribution fields</h3>
-<div class="table-wrap"><table class="data-table"><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Rules</th></tr></thead><tbody><tr><td>type</td><td>integer</td><td>yes</td><td>gift list: 0 Bought, 1 Event, 2 Compensation, 4 Promo, 7 Event item, 8 Promo item, 9 Subscription item</td></tr><tr><td>eventName</td><td>string</td><td>yes</td><td>1 to 60 characters; the client shows ~C05... colour codes</td></tr><tr><td>description</td><td>string</td><td>no</td><td>up to 600 characters; same colour codes</td></tr><tr><td>deadline</td><td>ISO 8601 instant</td><td>no</td><td>must be in the future; null means no end</td></tr><tr><td>timesAcceptable</td><td>integer</td><td>yes</td><td>1 to 255, how many times each character can claim it</td></tr><tr><td>characterIds</td><td>array of integers</td><td>no</td><td>up to 100 character ids; omit or [] for every character</td></tr><tr><td>characterId</td><td>integer</td><td>no</td><td>single-character form; both fields are merged without repeats</td></tr><tr><td>minHr, maxHr, minSr, maxSr, minGr, maxGr</td><td>integer</td><td>no</td><td>1 to 999; a minimum above its maximum is refused</td></tr><tr><td>items</td><td>array of objects</td><td>yes</td><td>1 to 100 entries; see below</td></tr></tbody></table></div>
-<h3>Each item in items[]</h3>
-<div class="table-wrap"><table class="data-table"><thead><tr><th>Field</th><th>Type</th><th>Rules</th></tr></thead><tbody><tr><td>itemType</td><td>integer 0 to 31</td><td>which kind of thing: 0 Legs, 1 Head, 2 Chest, 3 Arms, 4 Waist, 5 Melee weapon, 6 Ranged weapon, 7 Item, 8 Furniture, 10 Zenny, 14 Tore points, 15 Poogie outfit, 16 Restyle points, 17 N points, 18 Goocoo outfit, 19 Gacha coins, 20 Trial gacha coins, 21 Frontier points, 23 Guild RP, 30 Item box pages, 31 Equipment box pages. Types the client ignores are refused, so a gift cannot silently give nothing.</td></tr><tr><td>itemId</td><td>integer 0 to 65535</td><td>required for types that name a thing (0 to 8, 15, 18): the catalog id (for type 7 the item&#x27;s hex id as a number, for example BF39 -&gt; 14783). Poogie outfits are 1 to 31. Not used by the amount types (10, 14, 16, 17, 19 to 21, 23, 30, 31).</td></tr><tr><td>quantity</td><td>integer 1 to 999999</td><td>how much. For items keep it at 99 or less so the client stacks it the way the game does; Zenny and points accept larger values.</td></tr></tbody></table></div>
-<h3>Example: a gift for everyone</h3>
-<pre><code>curl -s -X POST https://api.hvmhfz.eclipseforge.xyz/api/admin/distributions \
-  -H &quot;Authorization: Bearer $TOKEN&quot; \
-  -H &#x27;Content-Type: application/json&#x27; \
-  -d &#x27;{
-    &quot;type&quot;: 1,
-    &quot;eventName&quot;: &quot;~C07Autumn supply drop&quot;,
-    &quot;description&quot;: &quot;~C05Enjoy the new Hunting Road!&quot;,
-    &quot;deadline&quot;: &quot;2026-11-12T23:59:59Z&quot;,
-    &quot;timesAcceptable&quot;: 1,
-    &quot;minHr&quot;: 1,
-    &quot;maxHr&quot;: 999,
-    &quot;items&quot;: [
-      {&quot;itemType&quot;: 7, &quot;itemId&quot;: 14783, &quot;quantity&quot;: 10},
-      {&quot;itemType&quot;: 10, &quot;quantity&quot;: 100000}
-    ]
-  }&#x27;</code></pre>
-<p>That gives every character 10 of item 14783 and 100,000 Zenny, claimable once, until 12 November. Add characterIds: [12, 44] to target only those characters. The answer is 201 {&quot;id&quot;:123,&quot;ids&quot;:[123,124,...]}.</p>
-<p>Item ids come from GET /api/public/catalog/items (its id is hex; the API wants the same number the game uses) and equipment ids from GET /api/public/catalog/equipment with the matching slot.</p>
-</section>
-<section id="admin-road">
-<h2>Hunting Road admin (admin)</h2>
-<p>One rotation at a time. Times are ISO 8601 instants, UTC.</p>
-<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Body</th><th>Does</th></tr></thead><tbody><tr><td>GET /api/admin/road/cycles</td><td>none</td><td>cycles with state, times, entries and votes</td></tr><tr><td>POST /api/admin/road/cycles</td><td>{&quot;submitOpens&quot;:&quot;2026-11-01T00:00:00Z&quot;,&quot;submitCloses&quot;:&quot;2026-11-08T00:00:00Z&quot;,&quot;voteCloses&quot;:&quot;2026-11-10T00:00:00Z&quot;}</td><td>creates a cycle</td></tr><tr><td>PUT /api/admin/road/cycles/{id}</td><td>same body</td><td>edits the times of an open cycle</td></tr><tr><td>POST /api/admin/road/cycles/{id}/close</td><td>none</td><td>closes submissions and opens voting</td></tr><tr><td>POST /api/admin/road/cycles/{id}/approve</td><td>none</td><td>approves the voted winner for deploy</td></tr><tr><td>POST /api/admin/road/cycles/{id}/winner</td><td>{&quot;entryId&quot;:12}</td><td>overrides the winner</td></tr><tr><td>POST /api/admin/road/entries/{id}/hide</td><td>{&quot;reason&quot;:&quot;...&quot;} (optional)</td><td>hides an entry</td></tr><tr><td>POST /api/admin/road/entries/{id}/unhide</td><td>same</td><td>restores it</td></tr><tr><td>POST /api/admin/road/entries/{id}/disqualify</td><td>same</td><td>disqualifies it</td></tr><tr><td>POST /api/admin/road/pause</td><td>{&quot;paused&quot;:true} or {&quot;paused&quot;:false}</td><td>pauses or resumes the rotation</td></tr></tbody></table></div>
-<h3>Player Road endpoints (any signed-in account)</h3>
-<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Body / query</th><th>Does</th></tr></thead><tbody><tr><td>GET /api/road/pool</td><td>none</td><td>the shared base pool</td></tr><tr><td>GET /api/road/cycle</td><td>none</td><td>the current cycle and your entry</td></tr><tr><td>POST /api/road/check</td><td>{&quot;edits&quot;:{...}}</td><td>validates edits without saving</td></tr><tr><td>GET /api/road/entries</td><td>none</td><td>entries for the open cycle</td></tr><tr><td>GET /api/road/entries/{id}</td><td>none</td><td>one entry</td></tr><tr><td>POST /api/road/entries</td><td>{&quot;name&quot;:&quot;...&quot;,&quot;description&quot;:&quot;...&quot;,&quot;characterId&quot;:12,&quot;edits&quot;:{...}}</td><td>submits an entry</td></tr><tr><td>PUT /api/road/entries/{id}</td><td>same body</td><td>edits your entry while submissions are open</td></tr><tr><td>POST /api/road/votes</td><td>{&quot;entryId&quot;:12}</td><td>votes for an entry</td></tr><tr><td>DELETE /api/road/votes/{entryId}</td><td>none</td><td>removes your vote</td></tr><tr><td>GET /api/road/results?cycle=3</td><td>cycle optional</td><td>results for a closed cycle</td></tr><tr><td>GET /api/road/rewards</td><td>none</td><td>your Road rewards</td></tr></tbody></table></div>
-<p>The rules (what edits are allowed, one entry per account, vote limits) are described on the Hunting Road page and enforced by the server.</p>
-</section>
-<section id="auth-audit">
-<h2>Authentication rules and the audit trail</h2>
-<p>Every endpoint except sign-in, sign-up, password reset, the public reads and the Road deploy hook requires an account token. The deploy hook uses its own X-Road-Deploy-Token header and is only reachable from the game host.</p>
-<div class="table-wrap"><table class="data-table"><thead><tr><th>Area</th><th>Auth</th><th>Audited</th></tr></thead><tbody><tr><td>/api/auth/**</td><td>none (rate limited)</td><td>no</td></tr><tr><td>/api/public/**</td><td>none</td><td>no</td></tr><tr><td>/api/road/deploy/**</td><td>X-Road-Deploy-Token</td><td>deploy result only</td></tr><tr><td>/api/account/**</td><td>account token</td><td>no (reads)</td></tr><tr><td>/api/road (entries, votes)</td><td>account token</td><td>yes, every successful change</td></tr><tr><td>/api/users, /api/characters/import</td><td>account token</td><td>yes, every successful change</td></tr><tr><td>/api/admin/ops/**</td><td>ADMIN or MODERATOR</td><td>yes, with action and target</td></tr><tr><td>/api/admin/users, roles, road, distributions</td><td>ADMIN</td><td>yes, with action and target</td></tr></tbody></table></div>
-<p>Audit entries are one JSON line each: at, account, action, target, result. Admin actions carry a readable action (restart, role grant, gift create, road approve...); other signed-in changes are recorded as api POST/PUT/DELETE with the path. The newest 1000 are served by GET /api/admin/ops/audit and shown under Audit on the admin page.</p>
-</section>
+<p class="note-text" id="private-loading">Loading the private reference...</p>
 </div>
 </main>
     <footer class="site-foot">
