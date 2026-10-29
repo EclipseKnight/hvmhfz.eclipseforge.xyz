@@ -212,7 +212,36 @@
      titled with the date (and "Game server update" / "Discord bot" / ...). Move the
      entries that went live out of "Coming next". Steps: docs/how-to.md in the project home. -->
 
-<h3>29 Oct 2026: New launcher button and dialog art</h3>
+<h3>29 Oct 2026: Quest catalog and English quest text</h3>
+      <ul>
+        <li><b>Quest catalog:</b> every quest on the server, searchable by name, monster, area, rank and type, with monster icons and 40 per page (<a href="/quests.html">/quests.html</a>).</li>
+        <li><b>English quest titles:</b> all 9,157 quest names are translated and written into the game's own quest files, so the quest counter and the site agree. Files were patched in place at the same size, with a full backup taken first.</li>
+        <li><b>Quest pages:</b> each quest has its own page with category, area, objective, time limit, reward money, client and the monsters it names, each linked to its monster page.</li>
+        <li><b>Monster names checked against the wiki:</b> 蛮竜 is Gurenzeburu and Zamuza is Taikun Zamuza; titles that used the wrong name and the game's own "Emporer" spelling are corrected in place.</li>
+      </ul>
+
+      <h3>29 Oct 2026: Quest logs for every hunter</h3>
+      <ul>
+        <li><b>Hunter profile:</b> a quest log under the Profile tab, newest first, 20 per page, with the result, time in the quest and clear time.</li>
+        <li><b>Account Hunts tab:</b> the same log for whichever character you pick.</li>
+        <li><b>Party:</b> each logged quest names the other hunters who were in it at the same time. Quest and hunter names link to their pages.</li>
+      </ul>
+
+      <h3>29 Oct 2026: Worlds page and quest outcomes</h3>
+      <ul>
+        <li><b>Who's online</b> now sits above the player count graph, and each hunter on a quest shows how long they have been in it.</li>
+        <li><b>Quest log panel:</b> clears, fails, average time in quest and average clear time for the last 24 hours, plus the latest quests and the most run.</li>
+        <li><b>Outcomes recorded:</b> the game server now stores whether a quest was cleared or failed and its clear time; older stays stay blank because the server never saw their end.</li>
+      </ul>
+
+      <h3>29 Oct 2026: Admin and security</h3>
+      <ul>
+        <li><b>Audit log in the database:</b> one collapsible block per server run, with its date and time and only the actions from that run; the file stays as a fallback.</li>
+        <li><b>Sign-in limit:</b> 20 attempts per address every 10 minutes on top of Turnstile.</li>
+        <li><b>CORS narrowed</b> on signed-in endpoints to the site origin, and a Discord secret that was being printed to the service log was removed. The bot also no longer lets a player name ping @everyone.</li>
+      </ul>
+
+      <h3>29 Oct 2026: New launcher button and dialog art</h3>
 <ul>
 <li><b>Launcher:</b> the buttons are now a leather band and the popup dialogs a torn parchment with a speech bubble for the message, in both the classic and PS4 styles. The labels and buttons still draw on top, so the "Sign in", "Start game" and dialog buttons read exactly as before.</li>
 <li><b>Classic style:</b> each button has a slightly darker hover state, so a click reads clearly.</li>
