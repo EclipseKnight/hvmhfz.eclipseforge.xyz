@@ -195,9 +195,19 @@
     clear(body);
     var row = el("tr");
     var cell = el("td", "empty-cell", text);
-    cell.colSpan = 4;
+    cell.colSpan = 5;
     row.appendChild(cell);
     body.appendChild(row);
+  }
+
+  /** How long a player has been on the quest, e.g. "12m" or "1h 4m"; "-" off a quest. */
+  function questTime(seconds) {
+    if (seconds === null || seconds === undefined) return "-";
+    var s = Math.max(0, Math.round(seconds));
+    if (s < 60) return s + "s";
+    var m = Math.floor(s / 60);
+    if (m < 60) return m + "m";
+    return Math.floor(m / 60) + "h " + (m % 60) + "m";
   }
 
   function setStat(id, value) {
@@ -230,6 +240,7 @@
         doing.appendChild(el("span", r.inQuest ? "badge good" : "badge", r.inQuest ? "On a quest" : "In town"));
         tr.appendChild(doing);
         tr.appendChild(el("td", null, r.quest || "-"));
+        tr.appendChild(el("td", "num", questTime(r.questSeconds)));
         body.appendChild(tr);
       });
     }

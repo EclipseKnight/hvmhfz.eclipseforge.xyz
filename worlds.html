@@ -24,6 +24,7 @@
     <script src="/js/nav.js" defer></script>
     <script src="/js/tablesort.js" defer></script>
     <script src="/js/background.js" defer></script>
+    <script src="/js/worlds-quests.js" defer></script>
     <script src="/js/consent.js" defer></script>
   </head>
 
@@ -106,8 +107,8 @@
         <p class="note-text">Quest names come from the game's own quest files, so parties show the quest they are in by name.</p>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>Hunter</th><th>World</th><th>Doing</th><th>Quest</th></tr></thead>
-            <tbody id="live-body"><tr><td colspan="4"><span class="skeleton-line w60"></span></td></tr></tbody>
+            <thead><tr><th>Hunter</th><th>World</th><th>Doing</th><th>Quest</th><th class="num">In quest</th></tr></thead>
+            <tbody id="live-body"><tr><td colspan="5"><span class="skeleton-line w60"></span></td></tr></tbody>
           </table>
         </div>
         <div class="live-parties" id="live-parties" hidden>
@@ -156,6 +157,36 @@
         </div>
         <ol class="weapon-bars" id="weapon-bars"><li><span class="skeleton-line w60"></span></li></ol>
         <p class="note-text" id="weapon-note"></p>
+      </section>
+
+
+      <section class="panel" id="quest-log">
+        <div class="panel-head">
+          <h2>Quest log</h2>
+          <span class="panel-note">last 24 hours</span>
+        </div>
+        <div class="stat-grid" role="group" aria-label="Quest outcomes">
+          <div class="stat-card skeleton" id="quest-clears"><span class="stat-label">Cleared</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton" id="quest-fails"><span class="stat-label">Failed</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton" id="quest-avg"><span class="stat-label">Average time in quest</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton" id="quest-clear"><span class="stat-label">Average clear time</span><span class="stat-value">&nbsp;</span></div>
+        </div>
+        <p class="note-text" id="quest-stats-note"></p>
+        <div class="quest-log-grid">
+          <div>
+            <h3 class="subhead">Latest quests</h3>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>Hunter</th><th>Quest</th><th>Result</th><th class="num">In quest</th><th class="num">Clear time</th></tr></thead>
+                <tbody id="quest-recent-body"><tr><td colspan="5"><span class="skeleton-line w60"></span></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h3 class="subhead">Most run</h3>
+            <ol class="quest-top" id="quest-top"><li><span class="skeleton-line w60"></span></li></ol>
+          </div>
+        </div>
       </section>
 
       <section class="panel">
