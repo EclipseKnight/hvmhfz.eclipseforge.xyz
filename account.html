@@ -295,6 +295,19 @@
 
       <!-- Account -->
       <section class="tab-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" hidden>
+        <section class="panel" id="road-pref-panel">
+          <div class="panel-head"><h2>Road you play</h2><span class="panel-note">applies to rooms you open</span></div>
+          <p class="note-text">Erupe pins this Road when you open a quest room. A room can still change it in game with <code>!road</code>, and that choice lasts for that room only.</p>
+          <label class="field">
+            <span class="field-label">Default Road</span>
+            <select id="road-pref-select"><option value="">Follow the live Road</option></select>
+          </label>
+          <div class="row-actions">
+            <button type="button" class="primary-btn small" id="road-pref-save">Save Road</button>
+            <span class="form-note" id="road-pref-note" aria-live="polite"></span>
+          </div>
+        </section>
+
         <section class="panel">
           <div class="panel-head"><h2>Account</h2></div>
           <dl class="detail-list" id="account-details">
@@ -332,6 +345,7 @@
     </footer>
 
     <script src="/js/questlog.js?v=2"></script>
+    <script src="/js/road-preference.js?v=1"></script>
     <script src="/js/account.js"></script>
     <script src="/js/search.js" defer></script>
   </body>
