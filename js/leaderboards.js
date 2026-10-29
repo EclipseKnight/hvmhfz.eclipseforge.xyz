@@ -104,7 +104,10 @@
         ["Hunter", roadHunterLink],
         ["Floor", function (e) { return num(e.floor); }, "num"],
         ["Reached", function (e) { return when(e.reachedAt); }],
-        ["Floors climbed", function (e) { return num(e.floorsClimbed); }, "num"],
+        ["Floors climbed", function (e) {
+          // before tracking began only each hunter's best was saved: no floor count to show
+          return e.floorsClimbed > 0 ? num(e.floorsClimbed) : "-";
+        }, "num"],
         ["Guild", function (e) { return e.guildName || "-"; }]
       ]
     }
