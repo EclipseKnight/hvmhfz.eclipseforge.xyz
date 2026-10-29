@@ -17,6 +17,7 @@
   var cycle = null;         // GET /api/road/cycle (null: none)
   var characters = [];      // the account's characters
   var entry = null;         // the opened entry (GET /api/road/entries/{id}), or null for a new one
+  var currentDraft = null;  // the draft this page is saving into, if it was opened from the workspace
   var edits = {};           // the player's Road, changes only
   var road = null;          // the base with the edits made
   var problems = [];        // from the rules, for the current edits
@@ -804,32 +805,53 @@
 
   /* ---------- boot ---------- */
 
+  // The drafts panel reads the page through this, so a draft always holds exactly what is on screen.
+  window.roadDraftState = function () {
+    return { name: $("road-name").value, edits: edits };
+  };
+  window.roadDraftId = function () { return currentDraft; };
+  window.roadDraftSaved = function (id) {
+    currentDraft = id;
+    if (window.history && history.replaceState) {
+      history.replaceState(null, "", "/road.html?draft=" + encodeURIComponent(id));
+    }
+  };
+
   function sessionOk() {
     return !!token();
   }
 
   function load() {
-    var id = new URLSearchParams(window.location.search).get("entry");
+    var params = new URLSearchParams(window.location.search);
+    var id = params.get("entry");
+    var draftId = params.get("draft");
     var jobs = [
       request("/api/road/pool"),
       request("/api/road/cycle"),
       request("/api/account/characters").catch(function (error) { if (error.message === "signin") throw error; return []; }),
-      id ? request("/api/road/entries/" + encodeURIComponent(id)) : Promise.resolve(null)
+      id ? request("/api/road/entries/" + encodeURIComponent(id)) : Promise.resolve(null),
+      draftId ? request("/api/account/road-drafts/" + encodeURIComponent(draftId)).catch(function () { return null; }) : Promise.resolve(null)
     ];
     return Promise.all(jobs).then(function (data) {
       pool = data[0];
       cycle = data[1];
       characters = data[2] || [];
       entry = data[3];
+      var draft = data[4];
+      currentDraft = draft ? draft.id : null;
       if (!pool || !pool.base || !pool.monsters) throw Object.assign(new Error("The Road data is not available."), { server: true });
 
-      var parsed = Rules.parseEdits(entry ? entry.edits || {} : {});
+      var draftEdits = {};
+      if (draft && draft.data) {
+        try { draftEdits = JSON.parse(draft.data) || {}; } catch (e) { draftEdits = {}; }
+      }
+      var parsed = Rules.parseEdits(entry ? entry.edits || {} : draftEdits);
       edits = parsed.edits || {};
       if (parsed.problem) alertBox("This entry's changes could not be read: " + parsed.problem.message);
       readOnly = !!entry && !(entry.mine && cycle && cycle.state === "submitting" && cycle.id === entry.cycleId);
 
       buildMonsterSelect();
-      $("road-name").value = entry ? entry.name || "" : "";
+      $("road-name").value = entry ? entry.name || "" : (draft ? draft.name || "" : "");
       $("road-description").value = entry ? entry.description || "" : "";
       $("road-name").disabled = readOnly;
       $("road-description").disabled = readOnly;

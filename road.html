@@ -92,6 +92,20 @@
       <p class="road-ok" id="road-notice" hidden></p>
 
       <div id="road-app" hidden>
+        <section class="panel" id="road-drafts-panel">
+          <div class="panel-head"><h2>Your drafts</h2><span class="panel-note" id="road-drafts-note">autosaved on this account</span></div>
+          <p class="note-text">Unfinished Roads live here, not on the vote list. Save at any time; opening a draft restores it exactly, even from another machine.</p>
+          <div class="row-actions">
+            <button type="button" class="primary-btn small" id="road-draft-save">Save draft</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Draft</th><th>Last saved</th><th></th></tr></thead>
+              <tbody id="road-drafts-list"><tr><td colspan="3" class="empty-cell">Loading your drafts.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
         <section class="panel" id="road-entry-panel">
           <div class="panel-head"><h2 id="road-entry-head">Your Road</h2><span class="panel-note" id="road-entry-note"></span></div>
           <form id="road-form" class="admin-form" novalidate>
@@ -168,5 +182,6 @@
     <script src="/js/road-rules.js"></script>
     <script src="/js/road.js"></script>
     <script src="/js/search.js" defer></script>
+      <script src="/js/road-drafts.js?v=1"></script>
   </body>
 </html>
