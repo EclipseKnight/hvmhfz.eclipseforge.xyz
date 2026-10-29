@@ -417,7 +417,6 @@
     var badges = el("div", "badge-row");
     badges.appendChild(el("span", "badge", hunter.weapon || "Unknown weapon"));
     badges.appendChild(el("span", "badge", hunter.female ? "Female" : "Male"));
-    if (hunter.online) badges.appendChild(el("span", "badge good", "Online now"));
     if (hunter.guildName) {
       var guildBadge = el("a", "badge good", hunter.guildName + (hunter.guildRank ? " · " + hunter.guildRank : ""));
       guildBadge.href = "/guilds.html";
@@ -451,7 +450,7 @@
     var stats = el("div", "guild-stats");
     [["Hunter rank", num(hunter.hr)], ["G rank", num(hunter.gr)], ["Play time", playtime(hunter.playtimeSeconds)],
      ["Titles", num(hunter.titles)], ["Hunts logged", num(hunter.totalKills)],
-     ["Last seen", hunter.online ? "Online now" : date(hunter.lastLogin)],
+     ["Last seen", date(hunter.lastLogin)],
      ["Guild joined", hunter.guildJoined ? date(hunter.guildJoined) : "-"]]
       .forEach(function (row) {
         var item = el("div", "guild-stat");
