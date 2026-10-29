@@ -106,7 +106,7 @@
         if (index) partyCell.appendChild(document.createTextNode(", "));
         partyCell.appendChild(document.createTextNode(member));
       });
-      if (!(row.party || []).length) partyCell.textContent = "-";
+      if (!(row.party || []).length) partyCell.textContent = "Solo";
       tr.appendChild(partyCell);
       tr.appendChild(el("td", "num", duration(row.durationSeconds)));
       tr.appendChild(el("td", "num", row.clearSeconds === null || row.clearSeconds === undefined ? "-" : duration(row.clearSeconds)));

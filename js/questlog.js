@@ -106,7 +106,7 @@
           link.href = "/hunters.html?name=" + encodeURIComponent(member);
           party.appendChild(link);
         });
-        if (!(quest.party || []).length) party.textContent = "-";
+        if (!(quest.party || []).length) party.textContent = "Solo";
         row.appendChild(party);
         row.appendChild(el("td", "num", duration(quest.durationSeconds)));
         row.appendChild(el("td", "num", quest.clearSeconds === null || quest.clearSeconds === undefined
