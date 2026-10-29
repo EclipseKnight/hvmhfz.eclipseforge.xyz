@@ -252,16 +252,28 @@
     var r = data.rotation;
     var bits = [];
     if (r.designer) bits.push("designed by " + r.designer);
-    var from = r.from ? day(r.from) : null;
-    var to = r.to ? day(new Date(r.to).getTime() - 1) : "now";
+    // with the year when the rotation is not all in this year
+    var thisYear = new Date().getUTCFullYear();
+    var withYear = (r.from && new Date(r.from).getUTCFullYear() !== thisYear) ||
+      (r.to && new Date(r.to).getUTCFullYear() !== thisYear);
+    function date(time) {
+      return withYear ? new Date(time).toLocaleDateString(undefined,
+        { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : day(time);
+    }
+    var from = r.from ? date(r.from) : null;
+    var to = r.to ? date(new Date(r.to).getTime() - 1) : "now";
     if (from) bits.push(from + " to " + to + " (UTC)");
     else if (r.to) bits.push("until " + to + " (UTC)");
-    if (data.trackingSince && (!r.from || new Date(data.trackingSince) > new Date(r.from))) {
+    var endedBeforeTracking = r.to && data.trackingSince && new Date(r.to) <= new Date(data.trackingSince);
+    if (endedBeforeTracking) {
+      bits.push("ran before floors were tracked");
+    } else if (data.trackingSince && (!r.from || new Date(data.trackingSince) > new Date(r.from))) {
       bits.push("clears tracked since " + day(data.trackingSince));
     }
     if (data.hunters) bits.push(num(data.hunters) + (data.hunters === 1 ? " hunter" : " hunters"));
     if (data.savedBests) {
-      bits.push(num(data.savedBests) + " from saved bests (the game keeps each hunter's best floor and points, with no date)");
+      bits.push(data.savedBests === data.hunters ? "every floor is a saved best (no date)"
+        : num(data.savedBests) + " from saved bests (no date)");
     }
     return bits.join(" · ");
   }
