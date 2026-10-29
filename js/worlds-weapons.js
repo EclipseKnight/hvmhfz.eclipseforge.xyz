@@ -27,7 +27,15 @@
     var top = rows.reduce(function (m, r) { return Math.max(m, r.seconds); }, 0);
     rows.forEach(function (r) {
       var item = el("li", r.seconds ? null : "is-zero");
-      item.appendChild(el("span", "wb-name", r.weapon));
+      var label = el("span", "wb-name");
+      var icon = document.createElement("img");
+      icon.className = "weapon-icon";
+      icon.src = "/assets/weapons/" + r.weapon.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".png";
+      icon.alt = "";
+      icon.loading = "lazy";
+      label.appendChild(icon);
+      label.appendChild(document.createTextNode(r.weapon));
+      item.appendChild(label);
       var track = el("span", "wb-track");
       var fill = el("span", "wb-fill");
       fill.style.width = top ? Math.max(r.seconds ? 1.5 : 0, (r.seconds / top) * 100) + "%" : "0";
