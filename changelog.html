@@ -405,4 +405,13 @@
     </footer>
 <script src="/js/search.js" defer></script>
 </body>
-</html>
+</html>        <article class="entry">
+          <div class="entry-head"><h3>Roads you can choose, and a board that survives a rotation</h3><time datetime="2026-10-29">29 Oct 2026</time></div>
+          <ul>
+            <li>Every Road the server has run is listed on the Road history page with its dates, status and hash.</li>
+            <li>When a Road retires its board is frozen as the original board; anything climbed afterwards goes to a separate revisit board, so going back never overwrites a record.</li>
+            <li>In game, a quest room can pick its Road: type <code>!road</code> to list what is installed, <code>!road 2</code> to choose, <code>!road clear</code> to return to the live Road. Everyone steps back to town once so the client reloads it.</li>
+            <li>A scheduled job freezes the board the moment a rotation is replaced, so nothing depends on remembering to do it by hand.</li>
+          </ul>
+        </article>
+
