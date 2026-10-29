@@ -231,8 +231,10 @@ a.badge:hover{border-color:var(--gold)}
 .chip-list .badge{background:rgba(183,138,51,.12)}
 
 /* account sections: tabs on a brass rail; scroll sideways on phones instead of wrapping */
-.tabs{display:flex;gap:4px;margin:0 0 28px;border-bottom:2px solid var(--frame-2);overflow-x:auto;scrollbar-width:thin}
-.tab{flex:none;position:relative;top:2px;padding:12px 18px;border:1px solid transparent;border-bottom:0;border-radius:3px 3px 0 0;
+/* The baseline is an inset shadow, not a border: the selected tab covers it, and the row needs no
+   downward offset, which made the scroll box overflow and show a stray vertical scrollbar. */
+.tabs{display:flex;gap:4px;margin:0 0 28px;box-shadow:inset 0 -2px 0 var(--frame-2);overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
+.tab{flex:none;position:relative;padding:12px 18px;border:1px solid transparent;border-bottom:0;border-radius:3px 3px 0 0;
   color:var(--text-dim);font:700 .74rem/1 var(--font-ui);letter-spacing:.13em;text-transform:uppercase}
 .tab:hover{color:var(--gold-bright);background:rgba(232,200,119,.06)}
 .tab[aria-selected="true"]{color:var(--gold-bright);background:linear-gradient(var(--bg-3),var(--bg-1));
