@@ -214,20 +214,11 @@
     ctx.fillText("HUNTER CARD", W - 60, 84);
     ctx.textAlign = "left";
 
-    // name, online dot, weapon and guild
+    // name, weapon and guild (no online status: a card is kept and shared long after it is drawn)
     var nameSize = fitText(ctx, hunter.name, 620, 74, serif, "700");
     ctx.fillStyle = "#f4e7c9";
     ctx.font = "700 " + nameSize + "px " + serif;
     ctx.fillText(hunter.name, 60, 190);
-    if (hunter.online) {
-      var nw = ctx.measureText(hunter.name).width;
-      ctx.fillStyle = "#8fd1b4";
-      ctx.beginPath();
-      ctx.arc(60 + nw + 26, 190 - nameSize * 0.33, 10, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.font = "600 16px " + sans;
-      ctx.fillText("ONLINE", 60 + nw + 44, 190 - nameSize * 0.33 + 6);
-    }
     ctx.fillStyle = "#c9b993";
     ctx.font = "500 22px " + sans;
     var sub = [hunter.weapon || "Unknown weapon", hunter.guildName ? hunter.guildName + (hunter.guildRank ? " · " + hunter.guildRank : "") : null]
@@ -241,7 +232,7 @@
       ["PLAY TIME", playtime(hunter.playtimeSeconds)],
       ["HUNTS LOGGED", num(hunter.totalKills)],
       ["TITLES", num(hunter.titles)],
-      ["LAST SEEN", hunter.online ? "Online now" : date(hunter.lastLogin)]
+      ["LAST SEEN", date(hunter.lastLogin)]
     ];
     var tx = 60, ty = 276, tw = 200, th = 92, gap = 14;
     stats.forEach(function (s, i) {
