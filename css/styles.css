@@ -964,8 +964,8 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   .btn,.ghost-btn,.small-btn,.admin-tabs button,.nav-toggle{min-height:40px}
   .toolbar{gap:8px}
   .toolbar .btn{width:100%}
-  .admin-tabs{display:flex;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:thin}
-  .admin-tabs button{white-space:nowrap;flex:0 0 auto}
+  .tabs{display:flex;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:thin}
+  .tabs .tab{white-space:nowrap;flex:0 0 auto}
   .admin-search input{width:100%}
   .panel-head{flex-wrap:wrap;gap:6px}
   .ops-log{font-size:11px}
@@ -992,5 +992,9 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 }
 @media (max-width:720px){
   .chips[role="group"]{-webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 16px),transparent);
+    mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 16px),transparent)}
+}
+@media (max-width:720px){
+  .tabs{-webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 16px),transparent);
     mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 16px),transparent)}
 }
