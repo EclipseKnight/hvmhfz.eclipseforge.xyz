@@ -385,7 +385,11 @@
       if (road === null) return [fallbackName, "...", "loading the boards"];
       if (!s) return [fallbackName, "-", "board not available"];
       var best = s.open && s.solo ? (s.open.rank <= s.solo.rank ? s.open : s.solo) : (s.open || s.solo);
-      return [s.name || fallbackName, best ? "#" + num(best.rank) : "-", best ? standingText(s) : "no clears on this Road"];
+      // compact for the tile: "Open #98/522 (F77) · Solo #120/306 (F9)"
+      var bits = [];
+      if (s.open) bits.push("Open #" + num(s.open.rank) + "/" + num(s.open.of) + " (F" + num(s.open.floor) + ")");
+      if (s.solo) bits.push("Solo #" + num(s.solo.rank) + "/" + num(s.solo.of) + " (F" + num(s.solo.floor) + ")");
+      return [s.name || fallbackName, best ? "#" + num(best.rank) : "-", best ? bits.join(" · ") : "no clears on this Road"];
     }
     var cur = standing(road && road.current, "Live Road");
     var orig = standing(road && road.original, "Original Road");
