@@ -1,3 +1,6 @@
+> Superseded for the port itself by `docs/quest-editor-web.md` (owner, 2026-10-29): the editor is a full
+> web port, the codec lives in the API and the browser never builds bytes.
+
 # Quest editor: drafts, test deploy and sandboxing
 
 Parked for after the Road work (owner, 2026-10-29). Same shape as the Road system on purpose: drafts are
