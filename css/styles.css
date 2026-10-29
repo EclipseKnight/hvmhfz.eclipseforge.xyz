@@ -1105,3 +1105,22 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .monster-title{display:flex;align-items:center;gap:12px}
 .monster-icon-badge{width:40px;height:40px;object-fit:contain;flex:0 0 auto}
 @media(max-width:520px){.monster-icon-badge{width:32px;height:32px}}
+
+/* Phones: two stat cards per row and weapon rows that keep the full name, instead of one tall card per
+   line and a truncated label on a 390 px screen */
+@media(max-width:560px){
+  .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:18px}
+  .stat-card{padding:10px 12px;gap:4px}
+  .stat-label{font-size:.56rem;letter-spacing:.1em}
+  .stat-value{font-size:1.05rem;line-height:1.25}
+  .weapon-bars li{grid-template-columns:minmax(0,1fr) 52px 82px;gap:8px;font-size:.78rem}
+  .weapon-bars .wb-name{white-space:normal;overflow:visible;text-overflow:clip;word-break:break-word}
+  .weapon-bars .wb-name .weapon-icon{width:16px;height:16px;margin-right:4px}
+  .weapon-bars .wb-bar{min-width:0}
+  .panel{padding:14px}
+  .page-head h1{font-size:1.6rem}
+  .panel-head h2{font-size:1rem}
+}
+@media(max-width:380px){
+  .stat-grid{grid-template-columns:1fr}
+}
