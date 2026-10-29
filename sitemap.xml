@@ -172,4 +172,9 @@
   <url><loc>https://hvmhfz.eclipseforge.xyz/monster.html?m=zena</loc><priority>0.6</priority></url>
   <url><loc>https://hvmhfz.eclipseforge.xyz/monster.html?m=zeru</loc><priority>0.6</priority></url>
   <url><loc>https://hvmhfz.eclipseforge.xyz/monster.html?m=zin</loc><priority>0.6</priority></url>
+  <url>
+    <loc>https://hvmhfz.eclipseforge.xyz/quests.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>

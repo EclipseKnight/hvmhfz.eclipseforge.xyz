@@ -23,6 +23,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 NAV = [
     ("/monsters.html", "Monsters"),
     ("/catalog.html", "Catalog"),
+    ("/quests.html", "Quests"),
     ("/set-builder.html", "Set builder"),
     ("/hunters.html", "Hunters"),
     ("/guilds.html", "Guilds"),

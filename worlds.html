@@ -39,6 +39,7 @@
             <div class="nav-menu" id="nav-database">
               <a class="navlink" href="/monsters.html">Monsters</a>
               <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/quests.html">Quests</a>
               <a class="navlink" href="/set-builder.html">Set builder</a>
             </div>
           </div>
@@ -91,6 +92,29 @@
         </div>
       </section>
 
+
+      <section class="panel" id="live-board">
+        <div class="panel-head">
+          <h2>Who's online</h2>
+          <span class="panel-note" id="live-updated"></span>
+        </div>
+        <div class="stat-grid" role="group" aria-label="Online now">
+          <div class="stat-card skeleton" id="live-online"><span class="stat-label">Online</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton" id="live-town"><span class="stat-label">In town</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton" id="live-quest"><span class="stat-label">On a quest</span><span class="stat-value">&nbsp;</span></div>
+        </div>
+        <p class="note-text">Quest names come from the game's own quest files, so parties show the quest they are in by name.</p>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Hunter</th><th>World</th><th>Doing</th><th>Quest</th></tr></thead>
+            <tbody id="live-body"><tr><td colspan="4"><span class="skeleton-line w60"></span></td></tr></tbody>
+          </table>
+        </div>
+        <div class="live-parties" id="live-parties" hidden>
+          <div id="live-parties-body"></div>
+        </div>
+      </section>
+
       <section class="panel" id="history-panel">
         <div class="panel-head">
           <h2>Players over time</h2>
@@ -132,28 +156,6 @@
         </div>
         <ol class="weapon-bars" id="weapon-bars"><li><span class="skeleton-line w60"></span></li></ol>
         <p class="note-text" id="weapon-note"></p>
-      </section>
-
-      <section class="panel" id="live-board">
-        <div class="panel-head">
-          <h2>Who's online</h2>
-          <span class="panel-note" id="live-updated"></span>
-        </div>
-        <div class="stat-grid" role="group" aria-label="Online now">
-          <div class="stat-card skeleton" id="live-online"><span class="stat-label">Online</span><span class="stat-value">&nbsp;</span></div>
-          <div class="stat-card skeleton" id="live-town"><span class="stat-label">In town</span><span class="stat-value">&nbsp;</span></div>
-          <div class="stat-card skeleton" id="live-quest"><span class="stat-label">On a quest</span><span class="stat-value">&nbsp;</span></div>
-        </div>
-        <p class="note-text">Quest names live in the game client, so quests are listed by the id the server sees.</p>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Hunter</th><th>World</th><th>Doing</th><th>Quest</th></tr></thead>
-            <tbody id="live-body"><tr><td colspan="4"><span class="skeleton-line w60"></span></td></tr></tbody>
-          </table>
-        </div>
-        <div class="live-parties" id="live-parties" hidden>
-          <div id="live-parties-body"></div>
-        </div>
       </section>
 
       <section class="panel">
