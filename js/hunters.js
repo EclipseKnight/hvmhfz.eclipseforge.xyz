@@ -233,15 +233,14 @@
     return s;
   }
 
-  // Time on a weapon, down to the second: "12h 04m 09s".
+  // Time on a weapon in hours and minutes: the tracker credits once a minute, so seconds would be
+  // invented precision.
   function hours(seconds) {
-    if (!seconds) return "0s";
+    if (!seconds) return "0m";
     var h = Math.floor(seconds / 3600);
     var m = Math.floor((seconds % 3600) / 60);
-    var sec = Math.floor(seconds % 60);
-    if (h) return h + "h " + (m < 10 ? "0" : "") + m + "m " + (sec < 10 ? "0" : "") + sec + "s";
-    if (m) return m + "m " + (sec < 10 ? "0" : "") + sec + "s";
-    return sec + "s";
+    if (h) return h + "h " + (m < 10 ? "0" : "") + m + "m";
+    return Math.max(1, m) + "m";
   }
 
   // The most played weapon from the tracked hours, or null before any were tracked.

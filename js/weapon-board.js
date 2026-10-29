@@ -23,12 +23,13 @@
     return img;
   }
 
+  // Weapon time is credited once a minute, so it is shown in hours and minutes only: seconds would be
+  // false precision.
   function time(seconds) {
-    if (!seconds) return "0s";
-    var s = Math.round(seconds), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
-    if (h) return h.toLocaleString() + "h " + (m < 10 ? "0" : "") + m + "m " + (sec < 10 ? "0" : "") + sec + "s";
-    if (m) return m + "m " + (sec < 10 ? "0" : "") + sec + "s";
-    return sec + "s";
+    if (!seconds) return "0m";
+    var s = Math.round(seconds), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    if (h) return h.toLocaleString() + "h " + (m < 10 ? "0" : "") + m + "m";
+    return Math.max(1, m) + "m";
   }
 
   fetch(API + "/api/public/weapons/leaderboard", { cache: "no-store" })
