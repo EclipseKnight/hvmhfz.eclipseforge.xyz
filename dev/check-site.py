@@ -167,6 +167,8 @@ def check(root):
     for script in sorted((root / "js").glob("*.js")):
         seen = {}
         for number, line in enumerate(script.read_text(encoding="utf-8").splitlines(), 1):
+            if line.startswith("(function"):
+                seen = {}  # a new top-level wrapper is its own scope
             m = re.match(r"(\s*)function (\w+)\s*\(", line)
             if not m:
                 continue
