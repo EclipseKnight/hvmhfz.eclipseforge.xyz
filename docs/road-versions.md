@@ -42,6 +42,36 @@ road_version(
 - Ranked play stays on `kind = 'official'` roads only. A custom road logs the hunt and shows a personal
   best but does not enter a public board. That is what keeps a crafted easy road from farming points.
 
+
+## Edits, and why the hash is the version
+
+A Road is content addressed, so editing one never changes a row, it produces a **new sha and therefore a
+new version**. That is the intended behaviour and it answers most of the awkward cases for free:
+
+- **A room already playing the old Road** keeps its pin. The blob it loaded is the one it validates
+  against, so an edit mid-session cannot desync the party.
+- **The old boards stay intact.** A new sha has its own original and revisit boards, so an edit cannot
+  overwrite or inherit a record. Custom Roads do not rank anyway, and this is the second reason why.
+- **Re-uploading an unchanged file** produces the same sha, so it dedupes onto the existing row instead of
+  filling the archive with identical versions.
+- **Test tokens are pinned to a sha**, so editing while a test is running does not shift the ground under
+  the testers.
+
+Two pieces make the UI sane around that:
+
+1. **A road family.** `road_family(id, name, owner)` groups versions of the same Road; `road_version.family_id`
+   and `parent_sha` point into it. The archive shows one row per family with its versions nested, instead of
+   a flat list where "Custom Road 12" appears five times with different hashes.
+2. **An account preference that follows the family, not the sha.** Store `road_pref_family`, resolved to the
+   newest version at room creation. When someone edits, their next room uses the new version; a room already
+   open keeps the old one. Storing a raw sha would pin people to a version they have moved past, which reads
+   as a bug even though it is technically consistent.
+
+The builder therefore never "saves over" a Road. It shows "this will create version 3", keeps the previous
+one playable, and the Test button always targets the version currently in the editor. If someone wants to
+withdraw a version, mark it `retired_at` and hide it from the picker; nothing is deleted, because quest rows
+reference the sha.
+
 ## Boards: original and revisit
 
 Each Road therefore has **two boards per mode (open, solo)**:
