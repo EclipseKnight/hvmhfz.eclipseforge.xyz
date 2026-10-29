@@ -736,6 +736,9 @@
   }
 
   function loadHunts(characterId) {
+    var questBox = document.getElementById("hunts-quests");
+    if (questBox) questBox.innerHTML = "";
+    if (questBox && window.QuestLog) window.QuestLog.mount(questBox, characterId);
     if (!characterId) return;
     request("/api/account/characters/" + encodeURIComponent(characterId) + "/hunts")
       .then(renderHunts)

@@ -681,6 +681,8 @@
 
     view.appendChild(weaponPanel(hunter));
 
+    if (window.QuestLog) window.QuestLog.mount(view, hunter.id);
+
     if (hunter.topMonsters && hunter.topMonsters.length) {
       var monsters = el("section", "panel");
       var mh = el("div", "panel-head");
