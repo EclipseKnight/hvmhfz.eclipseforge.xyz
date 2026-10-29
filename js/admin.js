@@ -702,9 +702,11 @@
 
   /* ---------- tabs ---------- */
 
-  var TAB_PANELS = { gifts: "panel-gifts", road: "panel-road", users: "panel-users" };
+  var TAB_PANELS = { gifts: "panel-gifts", road: "panel-road", users: "panel-users", server: "panel-server" };
   var roadStarted = false;
   var usersWired = false;
+  var serverWired = false;
+  var ops = { service: "erupe", errors: false };
   var currentName = "";
 
   function activateTab(name) {
@@ -725,6 +727,14 @@
         wireUsers();
       }
       loadUsers().catch(usersFail);
+    }
+    if (name === "server") {
+      if (!serverWired) {
+        serverWired = true;
+        wireServer();
+      }
+      loadServers().catch(serverFail);
+      loadAudit().catch(serverFail);
     }
   }
 
@@ -882,6 +892,157 @@
         users.page = 0;
         loadUsers().catch(usersFail);
       }, 250);
+    });
+  }
+
+  /* ---------- servers ---------- */
+
+  function serverAlert(text, ok) {
+    var alert = $("server-alert");
+    var good = $("server-ok");
+    alert.textContent = ok ? "" : (text || "");
+    alert.hidden = ok || !text;
+    good.textContent = ok ? (text || "") : "";
+    good.hidden = !ok;
+  }
+
+  function serverFail(error) {
+    if (error.message === "signin") serverAlert("Your sign-in has expired. Sign in again on the home page.");
+    else if (error.message === "forbidden") serverAlert("Only admins and moderators can use the server tools.");
+    else serverAlert(error.message || "The server tools could not be reached.");
+  }
+
+  function since(iso) {
+    if (!iso) return "";
+    return new Date(iso).toLocaleString(undefined, {
+      day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC"
+    }) + " UTC";
+  }
+
+  // "active (running)" from systemd -> "Running"; anything else stays as systemd wrote it.
+  function stateText(service) {
+    if (!service.available) return "not set up";
+    var state = String(service.state || "unknown");
+    if (state.indexOf("active") === 0) return "Running";
+    return state.charAt(0).toUpperCase() + state.slice(1);
+  }
+
+  function serviceCard(service) {
+    var card = el("div", "ops-card");
+    var head = el("div", "ops-card-head");
+    head.appendChild(el("span", "ops-name", service.label));
+    var state = el("span", "ops-state" + (service.available && service.state.indexOf("active") === 0 ? " is-up" : " is-down"),
+      stateText(service));
+    head.appendChild(state);
+    card.appendChild(head);
+    var facts = [];
+    if (service.since) facts.push("up since " + since(service.since));
+    if (service.restarts !== null && service.restarts !== undefined) facts.push(service.restarts + " restarts");
+    if (service.players !== null && service.players !== undefined) facts.push(service.players + " players");
+    if (facts.length) card.appendChild(el("p", "note-text", facts.join(" · ")));
+    (service.notes || []).slice(0, 3).forEach(function (note) {
+      card.appendChild(el("p", "note-text", note));
+    });
+    var actions = el("div", "ops-card-actions");
+    ["logs", "errors"].forEach(function (kind) {
+      var button = el("button", "ghost-btn small", kind === "logs" ? "Logs" : "Errors");
+      button.type = "button";
+      button.addEventListener("click", function () {
+        ops.service = service.service;
+        ops.errors = kind === "errors";
+        loadLog().catch(serverFail);
+      });
+      actions.appendChild(button);
+    });
+    var restart = el("button", "ghost-btn small ops-restart", "Restart");
+    restart.type = "button";
+    restart.disabled = !service.available;
+    restart.addEventListener("click", function () {
+      if (restart.getAttribute("data-armed") !== "1") {
+        restart.setAttribute("data-armed", "1");
+        restart.textContent = "Click again to restart " + service.label;
+        setTimeout(function () {
+          restart.removeAttribute("data-armed");
+          restart.textContent = "Restart";
+        }, 5000);
+        return;
+      }
+      restart.disabled = true;
+      serverAlert("");
+      request("/api/admin/ops/services/" + service.service + "/restart", { method: "POST" })
+        .then(function (data) {
+          serverAlert(((data && data.message) || "restart=ok") + " (they come back by themselves).", true);
+          return loadServers();
+        })
+        .catch(function (error) {
+          restart.disabled = false;
+          serverAlert(error.message || "The restart failed.");
+        });
+    });
+    actions.appendChild(restart);
+    card.appendChild(actions);
+    return card;
+  }
+
+  function renderServers(list) {
+    var body = $("server-services");
+    clear(body);
+    var up = list.filter(function (s) { return s.available && s.state.indexOf("active") === 0; }).length;
+    $("server-note").textContent = up + " of " + list.length + " running";
+    list.forEach(function (service) { body.appendChild(serviceCard(service)); });
+  }
+
+  function loadServers() {
+    return request("/api/admin/ops/services").then(renderServers);
+  }
+
+  function renderLog(data) {
+    var box = $("ops-log");
+    box.textContent = (data.lines && data.lines.length) ? data.lines.join("\n") : "(nothing)";
+    $("ops-log-title").textContent = (data.service || ops.service) + (ops.errors ? " errors" : " log") + ", newest last";
+  }
+
+  function loadLog() {
+    $("ops-log").textContent = "Loading";
+    var path = "/api/admin/ops/services/" + ops.service + "/logs?lines=200"
+      + (ops.errors ? "&errors=true" : "");
+    return request(path).then(renderLog).catch(function (error) {
+      $("ops-log").textContent = ["Could not load the log: " + (error.message || error)].join("");
+      throw error;
+    });
+  }
+
+  function renderAudit(list) {
+    var body = $("ops-audit");
+    clear(body);
+    if (!list.length) {
+      var empty = el("tr");
+      var cell = el("td", "empty-cell", "No actions recorded yet.");
+      cell.colSpan = 5;
+      empty.appendChild(cell);
+      body.appendChild(empty);
+      return;
+    }
+    list.forEach(function (entry) {
+      var row = el("tr");
+      row.appendChild(el("td", null, since(entry.at)));
+      row.appendChild(el("td", null, entry.account || "-"));
+      row.appendChild(el("td", null, entry.action || "-"));
+      row.appendChild(el("td", null, entry.target || "-"));
+      row.appendChild(el("td", null, entry.result || "-"));
+      body.appendChild(row);
+    });
+  }
+
+  function loadAudit() {
+    return request("/api/admin/ops/audit?max=20").then(renderAudit);
+  }
+
+  function wireServer() {
+    $("ops-refresh").addEventListener("click", function () { loadLog().catch(serverFail); });
+    $("ops-errors").addEventListener("click", function () {
+      ops.errors = !ops.errors;
+      loadLog().catch(serverFail);
     });
   }
 

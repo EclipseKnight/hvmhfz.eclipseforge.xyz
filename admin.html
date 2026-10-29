@@ -83,6 +83,7 @@
         <a class="tab" id="tab-gifts" role="tab" aria-controls="panel-gifts" aria-selected="true" href="#gifts">Gifts</a>
         <a class="tab" id="tab-road" role="tab" aria-controls="panel-road" aria-selected="false" href="#road">Hunting Road</a>
         <a class="tab" id="tab-users" role="tab" aria-controls="panel-users" aria-selected="false" href="#users">Users <span class="tab-count" id="count-users"></span></a>
+        <a class="tab" id="tab-server" role="tab" aria-controls="panel-server" aria-selected="false" href="#server">Server</a>
       </nav>
       </header>
 
@@ -220,6 +221,35 @@
           <button type="button" class="ghost-btn small" id="users-next">Next</button>
         </div>
         <p class="note-text">Roles apply at the account's next request. Nobody can remove their own admin role, and the last admin cannot be removed. Search is case-insensitive; account names themselves are case-sensitive. Chat toggles are the in-game <code>op</code> (chat commands) and <code>timer</code> (quest timer) flags.</p>
+      </section>
+      </div>
+
+      <div class="tab-panel" id="panel-server" hidden>
+      <section class="panel" id="server-panel">
+        <div class="panel-head"><h2>Servers</h2><span class="panel-note" id="server-note"></span></div>
+        <p class="form-alert" id="server-alert" hidden></p>
+        <p class="road-ok" id="server-ok" hidden></p>
+        <div class="ops-services" id="server-services">
+          <span class="skeleton-line w60"></span>
+        </div>
+        <p class="note-text">Status, the last <b>restarts</b> counter and how many players the game server reports. Logs hide secrets and mask player IPs. A restart takes two clicks; one restart per service every two minutes. The game server's restart gives players the usual 10-second countdown.</p>
+
+        <div class="ops-log-head">
+          <h3 class="subhead" id="ops-log-title">Log</h3>
+          <div class="ops-log-actions">
+            <button type="button" class="ghost-btn small" id="ops-errors">Errors only</button>
+            <button type="button" class="ghost-btn small" id="ops-refresh">Refresh</button>
+          </div>
+        </div>
+        <pre class="ops-log" id="ops-log" aria-live="polite">Pick a service and press Logs.</pre>
+
+        <h3 class="subhead">Recent actions</h3>
+        <div class="table-wrap">
+          <table class="data-table admin-table">
+            <thead><tr><th>When</th><th>Account</th><th>What</th><th>Target</th><th>Outcome</th></tr></thead>
+            <tbody id="ops-audit"><tr><td colspan="5" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
       </section>
       </div>
     </main>

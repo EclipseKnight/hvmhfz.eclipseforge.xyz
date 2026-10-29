@@ -930,3 +930,17 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .admin-flags{display:flex;gap:6px;flex-wrap:wrap}
 .ghost-btn.is-on{border-color:#8a6a24;color:#6d5318;background:rgba(183,138,51,.16);box-shadow:inset 0 0 0 1px rgba(138,106,36,.35)}
 .admin-table .ghost-btn.small{padding:6px 10px}
+
+/* Admin: Servers tab */
+.ops-services{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:14px}
+.ops-card{border:1px solid var(--frame);border-radius:8px;padding:12px 14px;background:rgba(183,138,51,.06)}
+.ops-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.ops-name{font:700 .95rem var(--font-ui);color:var(--ink)}
+.ops-state{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid #b9a379;color:var(--ink-soft)}
+.ops-state.is-up{border-color:#5f7a4c;color:#3f5530;background:rgba(95,122,76,.12)}
+.ops-state.is-down{border-color:#8a4a3a;color:#6d2f22;background:rgba(138,74,58,.12)}
+.ops-card-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ops-restart{border-color:#8a4a3a;color:#6d2f22}
+.ops-log-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ops-log-actions{display:flex;gap:6px}
+.ops-log{margin:0 0 18px;padding:12px 14px;max-height:340px;overflow:auto;background:#1b130d;color:#e6d8b8;border:1px solid var(--frame);border-radius:8px;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-word}
