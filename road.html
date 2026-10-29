@@ -91,26 +91,23 @@
       <p class="form-alert" id="road-alert" hidden></p>
       <p class="road-ok" id="road-notice" hidden></p>
 
-      <div id="road-app" hidden>
         <section class="panel" id="road-play-panel">
           <div class="panel-head"><h2>Road you play in game</h2><span class="panel-note">saved to your account</span></div>
           <p class="note-text">This is what the server pins when you open a quest room. A room can still change it with <code>!road</code>, and anyone on a different Road is moved back to town automatically so their client loads the new one.</p>
-          <label class="field">
-            <span class="field-label">Default Road</span>
+          <div class="field">
+            <label for="road-pref-select">Default Road</label>
             <select id="road-pref-select"><option value="">Follow the live Road</option></select>
-          </label>
-          <div class="row-actions">
-            <button type="button" class="primary-btn small" id="road-pref-save">Save Road</button>
-            <span class="form-note" id="road-pref-note" aria-live="polite"></span>
           </div>
+          <p class="note-text" id="road-pref-note" aria-live="polite"></p>
+          <button type="button" class="btn btn-primary btn-small" id="road-pref-save">Save Road</button>
         </section>
+
+      <div id="road-app" hidden>
 
         <section class="panel" id="road-drafts-panel">
           <div class="panel-head"><h2>Your drafts</h2><span class="panel-note" id="road-drafts-note">autosaved on this account</span></div>
           <p class="note-text">Unfinished Roads live here, not on the vote list. Save at any time; opening a draft restores it exactly, even from another machine.</p>
-          <div class="row-actions">
-            <button type="button" class="primary-btn small" id="road-draft-save">Save draft</button>
-          </div>
+          <button type="button" class="btn btn-primary btn-small" id="road-draft-save">Save draft</button>
           <div class="table-wrap">
             <table class="data-table">
               <thead><tr><th>Draft</th><th>Last saved</th><th></th></tr></thead>

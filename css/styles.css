@@ -1129,3 +1129,6 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 /* Monster page: the wiki icon beside the older render, both next to the name */
 .monster-render-mini{width:56px;height:56px;object-fit:contain;flex:0 0 auto;opacity:.95}
 @media(max-width:520px){.monster-render-mini{width:44px;height:44px}}
+
+/* Form notes that report a failure (Road preference, drafts). */
+.note-text.bad{color:#8c2f22;font-weight:600}

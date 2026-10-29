@@ -298,14 +298,12 @@
         <section class="panel" id="road-pref-panel">
           <div class="panel-head"><h2>Road you play</h2><span class="panel-note">applies to rooms you open</span></div>
           <p class="note-text">Erupe pins this Road when you open a quest room. A room can still change it in game with <code>!road</code>, and that choice lasts for that room only.</p>
-          <label class="field">
-            <span class="field-label">Default Road</span>
+          <div class="field">
+            <label for="road-pref-select">Default Road</label>
             <select id="road-pref-select"><option value="">Follow the live Road</option></select>
-          </label>
-          <div class="row-actions">
-            <button type="button" class="primary-btn small" id="road-pref-save">Save Road</button>
-            <span class="form-note" id="road-pref-note" aria-live="polite"></span>
           </div>
+          <p class="note-text" id="road-pref-note" aria-live="polite"></p>
+          <button type="button" class="btn btn-primary btn-small" id="road-pref-save">Save Road</button>
         </section>
 
         <section class="panel">
