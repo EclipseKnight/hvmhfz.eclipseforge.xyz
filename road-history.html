@@ -99,6 +99,20 @@
           </table>
         </div>
       </section>
+
+      <section class="panel" id="road-versions">
+        <div class="panel-head">
+          <h2>Every Road the server has run</h2>
+          <span class="panel-note" id="road-versions-note">newest first</span>
+        </div>
+        <p class="note-text">Each Road is its hash. A retired Road keeps its own board: runs from while it was live are the original board, runs after it retired are the revisit board, so going back never overwrites an old record.</p>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Road</th><th>Cycle</th><th>Live from</th><th>Retired</th><th>Status</th><th>Hash</th></tr></thead>
+            <tbody id="road-versions-body"><tr><td colspan="6"><span class="skeleton-line w60"></span></td></tr></tbody>
+          </table>
+        </div>
+      </section>
     </main>
 
     <footer class="site-foot">
@@ -117,6 +131,7 @@
       </div>
     </footer>
 
+    <script src="/js/road-versions.js?v=1"></script>
     <script src="/js/road-history.js"></script>
     <script src="/js/search.js" defer></script>
   </body>
