@@ -1132,3 +1132,7 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 
 /* Form notes that report a failure (Road preference, drafts). */
 .note-text.bad{color:#8c2f22;font-weight:600}
+
+/* Account header actions: keep the admin link and sign out together at the right, not spread across
+   the row by the header's space-between. */
+.account-head .head-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
