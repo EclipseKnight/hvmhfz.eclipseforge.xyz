@@ -42,7 +42,7 @@
     main.appendChild(panel);
   }
 
-  function render(quest, details) {
+  function render(quest, details, byName) {
     main.textContent = "";
     document.title = "Hunsterverse MHFZ: " + quest.name;
 
@@ -81,11 +81,21 @@
       var mon = section("Monsters", "what the objective names");
       var grid = el("div", "quest-monsters");
       quest.monsters.forEach(function (name) {
-        var link = el("a", "monster-tile");
-        var slug = quest.monsterSlugs && quest.monsterSlugs[name];
-        link.href = slug ? "/monster.html?m=" + encodeURIComponent(slug) : "/monsters.html?q=" + encodeURIComponent(name);
-        link.appendChild(el("span", null, name));
-        grid.appendChild(link);
+        var tile = el("a", "monster-tile");
+        var slug = slugFor(name, byName);
+        tile.href = slug ? "/monster.html?m=" + encodeURIComponent(slug) : "/monsters.html?q=" + encodeURIComponent(name);
+        if (slug) {
+          var entry = byName[name] || byName[SYNONYMS[name]] ||
+            Object.keys(byName).map(function (k) { return byName[k]; }).filter(function (m) { return m.slug === slug; })[0];
+          if (entry && entry.icon) {
+            var img = el("img");
+            img.src = "/assets/monsters/icons/" + entry.icon;
+            img.alt = name;
+            tile.appendChild(img);
+          }
+        }
+        tile.appendChild(el("span", null, name));
+        grid.appendChild(tile);
       });
       mon.appendChild(grid);
       main.appendChild(mon);
@@ -113,14 +123,32 @@
     fail("The address needs a quest id, for example /quest.html?id=23250.");
     return;
   }
+  var SYNONYMS = { "Fatalis": "Black", "Crimson Fatalis": "Crimson", "White Fatalis": "White",
+    "Berserk Laviente": "Berserk lavieG", "Laviente": "Berserk lavieG" };
+
+  function slugFor(name, byName) {
+    var hit = byName[name] || byName[SYNONYMS[name]];
+    if (hit) return hit.slug;
+    var key = name.toLowerCase().replace(/[^a-z0-9]+/g, "");
+    var names = Object.keys(byName);
+    for (var i = 0; i < names.length; i++) {
+      if (names[i].toLowerCase().replace(/[^a-z0-9]+/g, "") === key) return byName[names[i]].slug;
+    }
+    return null;
+  }
+
   Promise.all([
     fetch("/data/quests.json", { cache: "no-cache" }).then(function (r) { return r.json(); }),
+    fetch("/data/monsters/index.json", { cache: "no-cache" }).then(function (r) { return r.json(); })
+      .catch(function () { return []; }),
     fetch("/data/quest-details.json", { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : {}; })
       .catch(function () { return {}; })
   ]).then(function (results) {
     var quest = (results[0].quests || []).filter(function (q) { return q.id === id; })[0];
     if (!quest) { fail("No quest with id " + id + " on this server."); return; }
-    render(quest, results[1][String(id)]);
+    var byName = {};
+    (results[1] || []).forEach(function (m) { byName[m.name] = m; });
+    render(quest, results[2][String(id)], byName);
   }).catch(function (error) {
     fail("The quest could not be loaded (" + error.message + ").");
   });
