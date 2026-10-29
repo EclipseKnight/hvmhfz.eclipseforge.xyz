@@ -14,10 +14,10 @@
   function duration(seconds) {
     if (seconds === null || seconds === undefined) return "-";
     var s = Math.max(0, Math.round(seconds));
-    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
-    if (h) return h + "h " + m + "m";
-    if (m) return m + "m " + (s % 60) + "s";
-    return s + "s";
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+    if (h) return h + "h " + m + "m " + sec + "s";
+    if (m) return m + "m " + sec + "s";
+    return sec + "s";
   }
 
   function when(iso) {

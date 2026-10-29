@@ -99,12 +99,13 @@
   }
 
 
-  // The game's own playtime counter, in hours and minutes.
+  // The game's own playtime counter, down to the second.
   function playtime(seconds) {
     if (seconds === null || seconds === undefined) return "-";
     var h = Math.floor(seconds / 3600);
     var m = Math.floor((seconds % 3600) / 60);
-    return h.toLocaleString() + " h " + (m < 10 ? "0" : "") + m + " m";
+    var sec = Math.floor(seconds % 60);
+    return h.toLocaleString() + "h " + (m < 10 ? "0" : "") + m + "m " + (sec < 10 ? "0" : "") + sec + "s";
   }
 
   /* ---------- Hunting Road standings ---------- */
@@ -232,12 +233,15 @@
     return s;
   }
 
-  // Hours as "12 h" or "45 min" for the card and the weapon chart.
+  // Time on a weapon, down to the second: "12h 04m 09s".
   function hours(seconds) {
-    if (!seconds) return "0 h";
-    if (seconds < 3600) return Math.max(1, Math.round(seconds / 60)) + " min";
-    var h = seconds / 3600;
-    return (h < 10 ? h.toFixed(1) : Math.round(h).toLocaleString()) + " h";
+    if (!seconds) return "0s";
+    var h = Math.floor(seconds / 3600);
+    var m = Math.floor((seconds % 3600) / 60);
+    var sec = Math.floor(seconds % 60);
+    if (h) return h + "h " + (m < 10 ? "0" : "") + m + "m " + (sec < 10 ? "0" : "") + sec + "s";
+    if (m) return m + "m " + (sec < 10 ? "0" : "") + sec + "s";
+    return sec + "s";
   }
 
   // The most played weapon from the tracked hours, or null before any were tracked.

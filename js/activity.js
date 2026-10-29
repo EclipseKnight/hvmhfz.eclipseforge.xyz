@@ -204,10 +204,10 @@
   function questTime(seconds) {
     if (seconds === null || seconds === undefined) return "-";
     var s = Math.max(0, Math.round(seconds));
-    if (s < 60) return s + "s";
-    var m = Math.floor(s / 60);
-    if (m < 60) return m + "m";
-    return Math.floor(m / 60) + "h " + (m % 60) + "m";
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+    if (h) return h + "h " + m + "m " + sec + "s";
+    if (m) return m + "m " + sec + "s";
+    return sec + "s";
   }
 
   function setStat(id, value) {
