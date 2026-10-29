@@ -35,6 +35,7 @@ NAV = [
     ("/api.html", "API"),
     ("/guide-windows.html", "Windows guide"),
     ("/guide-linux.html", "Linux guide"),
+    ("/guide-roads.html", "Roads guide"),
     ("/report.html", "Report"),
     ("/account.html", "Account"),
     ("https://discord.gg/YuE42eh", "Discord"),

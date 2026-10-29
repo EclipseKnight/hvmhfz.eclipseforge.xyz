@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Roads in game: choosing a Hunting Road</title>
+<meta name="description" content="How a quest room picks a Hunting Road, and what happens to the rest of the party." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Roads in game: choosing a Hunting Road" />
+    <meta property="og:description" content="How a quest room picks a Hunting Road, and what happens to the rest of the party." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/guide-roads.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-roads.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Roads in game: choosing a Hunting Road" />
+    <meta name="twitter:description" content="How a quest room picks a Hunting Road, and what happens to the rest of the party." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-roads.png" />
+<meta name="theme-color" content="#150e09" />
+<link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="/css/styles.css" />
+<script src="/js/nav.js" defer></script>
+<script src="/js/background.js" defer></script>
+<script src="/js/consent.js" defer></script>
+</head>
+<body class="guide guide-roads">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html">Hunting Road</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/api.html">API</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/guide-roads.html" aria-current="page">Roads guide</a>
+            </div>
+          </div>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="guide-switch">
+      <span>Guide</span>
+      <a href="/guide-windows.html">Windows</a>
+      <a href="/guide-linux.html" aria-current="page">Linux</a>
+    </div>
+
+<main id="content" class="sheet">
+<h1>Roads in game</h1>
+<p class="lead">Which Hunting Road a quest room runs, how a room picks one, and what happens to everyone else in the party.</p>
+<p class="meta">A Road is the map the Hunting Road is built on. The server knows every Road it has run by its hash, so a room can play an old one without touching the records it already earned.</p>
+
+<div class="toc">
+<strong>Contents</strong>
+<ol>
+<li><a href="#what">What a Road is</a></li>
+<li><a href="#default">Set your default Road on the site</a></li>
+<li><a href="#choose">Choose a Road in the room</a></li>
+<li><a href="#others">What the rest of the party sees</a></li>
+<li><a href="#late">Joining a room later</a></li>
+<li><a href="#back">Going back to the live Road</a></li>
+<li><a href="#rules">Limits worth knowing</a></li>
+</ol>
+</div>
+
+<h2 id="what">1. What a Road is</h2>
+<p>Hunting Road is the tower climb. The <strong>Road</strong> is the set of maps and monster pools it is built from, and the server tracks each one by a hash. Rotations change the live Road every two weeks, but every Road the server has run stays playable and keeps its own board.</p>
+<p>A room can be pinned to any Road the server has installed. The pin belongs to the room, not to the server, so two parties can climb different Roads at the same time.</p>
+
+<h2 id="default">2. Set your default Road on the site</h2>
+<p>Open your <a href="/account.html">account page</a>, the <strong>Account</strong> tab, panel <strong>Road you play</strong>, or the same panel at the top of the <a href="/road.html">Road builder</a>. Pick a Road and press <strong>Save Road</strong>. The server pins that Road when you open a quest room; choosing <em>Follow the live Road</em> leaves the room unpinned.</p>
+<p>Your default only applies to rooms you host. A guest cannot pin their own choice onto somebody else's room.</p>
+
+<h2 id="choose">3. Choose a Road in the room</h2>
+<p>In the quest room, in chat:</p>
+<pre><code>!road</code></pre>
+<p>The server answers with what is installed. <code>0</code> is always the live Road:</p>
+<pre><code>Roads: 0 live | 1 Original Road | 2 Zenith Road. Use !road &lt;number&gt;.</code></pre>
+<p>Pin one by number:</p>
+<pre><code>!road 1</code></pre>
+<pre><code>Road set to Original Road for this room. Moving anyone still on the old Road back to town.</code></pre>
+<p>A number that is not on the list gets:</p>
+<pre><code>No such Road. Use !road to see the list.</code></pre>
+<p>Outside a room the command says <code>Roads are chosen inside a quest room.</code></p>
+
+<h2 id="others">4. What the rest of the party sees</h2>
+<p>Anyone already standing in the room whose client loaded a different Road is returned to town once, with this line in their chat:</p>
+<pre><code>The room's Road changed. Returning you to town so your client loads it.</code></pre>
+<p>They walk back into the room and are then on the room's Road. Players already on that Road are not touched, and nobody standing in town or in another room is affected at all.</p>
+
+<h2 id="late">5. Joining a room later</h2>
+<p>The client only reads the Road file when it enters town, so a player who loaded a different Road and then walks into a pinned room is sent to town once as well:</p>
+<pre><code>This room is on Original Road, which your client has not loaded. Returning you to town once; re-enter the room after.</code></pre>
+<p>They come back in, and ready up with everyone else. The check happens on entering the room, before anyone readies, so a party cannot depart on the wrong Road by accident.</p>
+
+<h2 id="back">6. Going back to the live Road</h2>
+<pre><code>!road clear</code></pre>
+<pre><code>This room is back on the live Road. Moving anyone still on another Road back to town.</code></pre>
+
+<h2 id="rules">7. Limits worth knowing</h2>
+<ul>
+<li>A town visit loads exactly one Road, so switching between rooms on different Roads costs one town trip in between. That is how the client works, not a rule the pin adds.</li>
+<li>Pins live in the game server's memory. A server restart puts every room back on the live Road.</li>
+<li>Only Roads installed on the server can be chosen. A Road still being designed in the builder becomes selectable once it is deployed.</li>
+<li>Clears are recorded against the Road the room ran, so an old Road's board keeps growing when people go back to it, separately from the records it earned while live.</li>
+</ul>
+</main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/guide-roads.html">Roads guide</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/api.html">API</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="/privacy.html">Privacy</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+</body>
+</html>

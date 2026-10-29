@@ -41,6 +41,7 @@ PAGES = {
     "changelog": ("Changelog", "Every server and site update, dated"),
     "api": ("API", "Public endpoints and the private docs"),
     "guide-windows": ("Windows guide", "Install and play on Windows"),
+    "guide-roads": ("Roads in game", "Choosing a Road, and what the rest of the party sees"),
     "guide-linux": ("Linux guide", "Install and play on Linux"),
 }
 
