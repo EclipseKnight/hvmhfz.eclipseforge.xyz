@@ -107,7 +107,46 @@
     return h.toLocaleString() + " h " + (m < 10 ? "0" : "") + m + " m";
   }
 
-  /* ---------- hunter card: a 1200 x 630 PNG drawn on a canvas ---------- */
+  /* ---------- Hunting Road standings ---------- */
+
+  // The hunter's place on the live Road's boards and on the Original Road's (open and solo), from the
+  // public leaderboard (top 100 of each). Resolves to {current: {name, open, solo}, original: {...}};
+  // open/solo are {rank, floor, points} or null when the hunter is not in that top 100. Never rejects:
+  // a board that does not load is left out.
+  var standingsCache = {};
+  function roadStandings(id) {
+    if (standingsCache[id]) return standingsCache[id];
+    function board(rotation, mode) {
+      return request("/api/public/road/leaderboard?rotation=" + rotation + "&mode=" + mode + "&limit=100")
+        .then(function (data) {
+          var mine = (data.entries || []).filter(function (e) { return e.characterId === id; })[0];
+          return { name: data.rotation && data.rotation.name, rank: mine ? mine.rank : null,
+                   floor: mine ? mine.floor : null, points: mine ? mine.points : null };
+        })
+        .catch(function () { return null; });
+    }
+    standingsCache[id] = Promise.all([board("current", "open"), board("current", "solo"),
+                                      board("original", "open"), board("original", "solo")])
+      .then(function (b) {
+        function pack(open, solo) {
+          if (!open && !solo) return null;
+          return { name: (open || solo).name, open: open && open.rank ? open : null, solo: solo && solo.rank ? solo : null };
+        }
+        return { current: pack(b[0], b[1]), original: pack(b[2], b[3]) };
+      });
+    return standingsCache[id];
+  }
+
+  // "#3 open (floor 6) · #1 solo (floor 4)", or "" when the hunter is on neither top 100.
+  function standingText(s) {
+    if (!s) return "";
+    var bits = [];
+    if (s.open) bits.push("#" + s.open.rank + " open (floor " + num(s.open.floor) + ")");
+    if (s.solo) bits.push("#" + s.solo.rank + " solo (floor " + num(s.solo.floor) + ")");
+    return bits.join(" · ");
+  }
+
+  /* ---------- hunter card: a 1200 x 820 PNG drawn on a canvas ---------- */
 
   function loadImage(src) {
     return new Promise(function (resolve) {
@@ -128,8 +167,8 @@
     return s;
   }
 
-  function drawCard(hunter, logo) {
-    var W = 1200, H = 630;
+  function drawCard(hunter, logo, road) {
+    var W = 1200, H = 820;
     var canvas = document.createElement("canvas");
     canvas.width = W;
     canvas.height = H;
@@ -257,6 +296,57 @@
       ctx.fillRect(mx + 22, y + 10, (mw - 44) * (m.kills / top), 6);
     });
 
+    // Hunting Road (Rengoku): lifetime bests from the save, then the board standings
+    var ry = 548;
+    ctx.fillStyle = "#e8c877";
+    ctx.font = "700 16px " + sans;
+    ctx.fillText("HUNTING ROAD (RENGOKU)", 60, ry);
+    ctx.strokeStyle = "rgba(232,200,119,0.28)";
+    ctx.beginPath();
+    ctx.moveTo(60 + ctx.measureText("HUNTING ROAD (RENGOKU)").width + 16, ry - 6);
+    ctx.lineTo(W - 60, ry - 6);
+    ctx.stroke();
+
+    function standing(s, fallbackName) {
+      if (!s) return [fallbackName, "-", "board not available"];
+      var best = s.open && s.solo ? (s.open.rank <= s.solo.rank ? s.open : s.solo) : (s.open || s.solo);
+      return [s.name || fallbackName, best ? "#" + best.rank : "Unranked",
+              best ? standingText(s) : "not in the top 100"];
+    }
+    var cur = standing(road && road.current, "Live Road");
+    var orig = standing(road && road.original, "Original Road");
+    var roadTiles = [
+      ["OPEN ROAD BEST", hunter.rengokuMpStages ? "Floor " + num(hunter.rengokuMpStages) : "-",
+       hunter.rengokuMpPoints ? num(hunter.rengokuMpPoints) + " points" : "no clear saved"],
+      ["SOLO ROAD BEST", hunter.rengokuSpStages ? "Floor " + num(hunter.rengokuSpStages) : "-",
+       hunter.rengokuSpPoints ? num(hunter.rengokuSpPoints) + " points" : "no clear saved"],
+      [cur[0].toUpperCase() + " (LIVE)", cur[1], cur[2]],
+      [orig[0].toUpperCase(), orig[1], orig[2]]
+    ];
+    var rgap = 14, rw = (W - 120 - rgap * 3) / 4, rh = 128, rtop = ry + 22;
+    roadTiles.forEach(function (s, i) {
+      var x = 60 + i * (rw + rgap);
+      ctx.fillStyle = "rgba(241,229,200,0.07)";
+      ctx.fillRect(x, rtop, rw, rh);
+      ctx.strokeStyle = "rgba(232,200,119,0.28)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x + 0.5, rtop + 0.5, rw - 1, rh - 1);
+      ctx.fillStyle = i < 2 ? "#b78a33" : "#5f8f7c";
+      ctx.fillRect(x, rtop, 4, rh);
+      ctx.fillStyle = "#9a8a6d";
+      var ls = fitText(ctx, s[0], rw - 30, 13, sans, "700");
+      ctx.font = "700 " + ls + "px " + sans;
+      ctx.fillText(s[0], x + 16, rtop + 30);
+      ctx.fillStyle = "#ffe6a8";
+      var vs2 = fitText(ctx, s[1], rw - 30, 34, sans, "700");
+      ctx.font = "700 " + vs2 + "px " + sans;
+      ctx.fillText(s[1], x + 16, rtop + 76);
+      ctx.fillStyle = "#c9b993";
+      var ss = fitText(ctx, s[2], rw - 30, 16, sans, "500");
+      ctx.font = "500 " + ss + "px " + sans;
+      ctx.fillText(s[2], x + 16, rtop + 108);
+    });
+
     // footer
     ctx.fillStyle = "#9a8a6d";
     ctx.font = "500 17px " + sans;
@@ -274,9 +364,11 @@
       button.textContent = "Drawing card";
     }
     var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-    ready.then(function () { return loadImage("/assets/brand/hunsterverse.gif"); })
+    var road = null;
+    ready.then(function () { return roadStandings(hunter.id); })
+      .then(function (standings) { road = standings; return loadImage("/assets/brand/hunsterverse.gif"); })
       .then(function (logo) {
-        var canvas = drawCard(hunter, logo);
+        var canvas = drawCard(hunter, logo, road);
         var file = (hunter.name || "hunter").replace(/[^A-Za-z0-9_-]+/g, "_") + "-hunter-card.png";
         return new Promise(function (resolve, reject) {
           if (!canvas.toBlob) {
@@ -379,15 +471,38 @@
     panel.appendChild(stats);
     view.appendChild(panel);
 
-    if (hunter.rengokuMpStages || hunter.rengokuSpStages || hunter.rengokuMpPoints) {
-      var rengoku = el("section", "panel");
-      rengoku.appendChild(el("div", "panel-head")).appendChild(el("h2", null, "Rengoku"));
-      var grid = el("div", "stat-grid");
-      grid.appendChild(statCard("Multiplayer best", num(hunter.rengokuMpStages) + " stages · " + num(hunter.rengokuMpPoints) + " pts"));
-      grid.appendChild(statCard("Solo best", num(hunter.rengokuSpStages) + " stages · " + num(hunter.rengokuSpPoints) + " pts"));
-      rengoku.appendChild(grid);
-      view.appendChild(rengoku);
-    }
+    // Hunting Road (Rengoku): the save's lifetime bests, then the hunter's place on the boards.
+    var rengoku = el("section", "panel");
+    var rhead = el("div", "panel-head");
+    rhead.appendChild(el("h2", null, "Hunting Road (Rengoku)"));
+    var rlink = el("a", "panel-note", "Road leaderboards");
+    rlink.href = "/leaderboards.html#road";
+    rhead.appendChild(rlink);
+    rengoku.appendChild(rhead);
+    var grid = el("div", "stat-grid");
+    grid.appendChild(statCard("Open Road best", hunter.rengokuMpStages
+      ? "Floor " + num(hunter.rengokuMpStages) + " · " + num(hunter.rengokuMpPoints) + " pts" : "-"));
+    grid.appendChild(statCard("Solo Road best", hunter.rengokuSpStages
+      ? "Floor " + num(hunter.rengokuSpStages) + " · " + num(hunter.rengokuSpPoints) + " pts" : "-"));
+    var liveCard = statCard("Live Road board", "Loading");
+    var originalCard = statCard("Original Road board", "Loading");
+    liveCard.classList.add("skeleton");
+    originalCard.classList.add("skeleton");
+    grid.appendChild(liveCard);
+    grid.appendChild(originalCard);
+    rengoku.appendChild(grid);
+    rengoku.appendChild(el("p", "note-text",
+      "Bests are the game's own lifetime record, on any Road. Board places are the top 100 of each Road's open and solo boards."));
+    view.appendChild(rengoku);
+    roadStandings(hunter.id).then(function (road) {
+      [[liveCard, road.current, "Live Road board"], [originalCard, road.original, "Original Road board"]]
+        .forEach(function (pair) {
+          var card = pair[0], s = pair[1];
+          card.classList.remove("skeleton");
+          card.querySelector(".stat-label").textContent = s && s.name ? s.name + (pair[2].indexOf("Live") === 0 ? " (live)" : "") : pair[2];
+          card.querySelector(".stat-value").textContent = !s ? "Not available" : standingText(s) || "Not in the top 100";
+        });
+    });
 
     if (hunter.topMonsters && hunter.topMonsters.length) {
       var monsters = el("section", "panel");
