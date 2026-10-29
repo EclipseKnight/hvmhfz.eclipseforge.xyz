@@ -313,12 +313,21 @@
   if (!slug) {
     fail("No monster was named in the link.");
   } else {
-    fetch("/data/monsters/" + encodeURIComponent(slug) + ".json")
-      .then(function (r) {
+    function load(candidate) {
+      return fetch("/data/monsters/" + encodeURIComponent(candidate) + ".json").then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();
-      })
-      .then(render)
-      .catch(function () { fail("That monster is not in the database."); });
+      });
+    }
+
+    // Slugs are the English names now. An older link (or a Discord post from before the rename) still
+    // names the old slug, so the index's oldSlug is checked before giving up.
+    load(slug).then(render).catch(function () {
+      fetch("/data/monsters/index.json").then(function (r) { return r.json(); }).then(function (list) {
+        var hit = (list || []).filter(function (m) { return m.oldSlug === slug || m.slug === slug; })[0];
+        if (!hit) throw new Error("unknown");
+        return load(hit.slug).then(render);
+      }).catch(function () { fail("That monster is not in the database."); });
+    });
   }
 })();
