@@ -307,7 +307,7 @@
 
     message(board, "Loading");
     var load = board.timed ? huntBoards(choice.period)
-      : board.road ? request("/api/public/road/leaderboard?mode=" + choice.mode + "&rotation=" + choice.rotation + "&limit=" + TOP)
+      : board.road ? request("/api/public/road/leaderboard?mode=" + choice.mode + "&rotation=" + choice.rotation + "&limit=" + TOP + sideParam(choice.rotation))
       : request(board.path);
     load.then(function (data) {
       if (current !== key) return; // a late answer for a board left already
@@ -316,9 +316,12 @@
           periodNote(data) + (board.note ? " · " + board.note : "");
       }
       if (board.road) {
+        loadRoadSides();
+        refreshRoadSides();
         fillRotations(data);
         document.getElementById("board-title").textContent =
-          rotationLabel(data.rotation) + ", " + MODES[choice.mode];
+          rotationLabel(data.rotation) + ", " + MODES[choice.mode]
+          + (sideParam(data.rotation) ? " (" + (roadSide === "revisit" ? "revisit" : "original") + ")" : "");
         document.getElementById("board-note").textContent = roadNote(data);
         if (!data.tracking) {
           message(board, "Hunting Road clears are recorded from the next game server update on. Climb a floor after it and you show up here.");
@@ -333,6 +336,44 @@
 
   function go(board, period) {
     window.location.hash = BOARDS[board].timed ? board + "-" + period : board;
+  }
+
+  // A retired Road keeps two boards: the original one frozen when it retired, and the revisit board
+  // for everything climbed since. The cycle number in the hash is what links the two to the archive.
+  var roadSide = "original";
+  var roadSideRetired = {};
+  var roadSideLoaded = false;
+
+  function roadCycle(rotation) {
+    return rotation === "original" ? -1 : Number(rotation);
+  }
+
+  function sideParam(rotation) {
+    var retired = roadSideRetired[roadCycle(rotation)];
+    return rotation !== "current" && retired ? "&board=" + roadSide : "";
+  }
+
+  function loadRoadSides() {
+    if (roadSideLoaded) return;
+    roadSideLoaded = true;
+    request("/api/public/road/versions").then(function (list) {
+      (list || []).forEach(function (v) { roadSideRetired[v.cycle] = v.retiredAt; });
+      refreshRoadSides();
+    }).catch(function () {});
+  }
+
+  function refreshRoadSides() {
+    var chips = document.getElementById("road-board-chips");
+    if (!chips) return;
+    var rotation = parse(window.location.hash.slice(1)).rotation;
+    var retired = roadSideRetired[roadCycle(rotation)];
+    var show = rotation !== "current" && !!retired;
+    chips.hidden = !show;
+    if (show) {
+      Array.prototype.forEach.call(chips.querySelectorAll(".chip"), function (chip) {
+        chip.setAttribute("aria-pressed", String(chip.getAttribute("data-board") === roadSide));
+      });
+    }
   }
 
   function goRoad(mode, rotation) {
@@ -355,6 +396,12 @@
   });
   document.getElementById("road-rotation").addEventListener("change", function (event) {
     goRoad(parse(window.location.hash.slice(1)).mode, event.target.value);
+  });
+  document.getElementById("road-board-chips").addEventListener("click", function (event) {
+    var chip = event.target.closest(".chip");
+    if (!chip) return;
+    roadSide = chip.getAttribute("data-board");
+    show(window.location.hash.slice(1));
   });
   window.addEventListener("hashchange", function () { show(window.location.hash.slice(1)); });
 

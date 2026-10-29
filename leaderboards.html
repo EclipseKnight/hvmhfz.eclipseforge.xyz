@@ -109,8 +109,12 @@
           <label class="select-wrap road-rotation">
             <select id="road-rotation" aria-label="Rotation"></select>
           </label>
+          <div class="chips" id="road-board-chips" role="group" aria-label="Board" hidden>
+            <button type="button" class="chip" data-board="original" aria-pressed="true">Original</button>
+            <button type="button" class="chip" data-board="revisit" aria-pressed="false">Revisit</button>
+          </div>
         </div>
-        <p class="road-rule" id="road-rule" hidden>Ranked by the highest floor reached in one run during the rotation, then by who reached it first. Each rotation has its own board, and so do the open and solo Roads. Every floor is recorded by the game server as it is cleared and tagged with the Road data it was climbed on, so a board shows exactly who climbed what, on which map, and when. Boards start empty at a new rotation. The Original Road ran before floors were tracked, so its board is each hunter's saved best floor and points (no date); a tie on a saved best goes to the higher points.</p>
+        <p class="road-rule" id="road-rule" hidden>Ranked by the highest floor reached in one run during the rotation, then by who reached it first. Each rotation has its own board, and so do the open and solo Roads. Every floor is recorded by the game server as it is cleared and tagged with the Road data it was climbed on, so a board shows exactly who climbed what, on which map, and when. Boards start empty at a new rotation. The Original Road ran before floors were tracked, so its board is each hunter's saved best floor and points (no date); a tie on a saved best goes to the higher points. When a Road retires, its board is frozen as the original board and everything climbed after that goes to a separate revisit board, so going back never overwrites an old record.</p>
 
         <div class="table-wrap">
           <table class="data-table">
