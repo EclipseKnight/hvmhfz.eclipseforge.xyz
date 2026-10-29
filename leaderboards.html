@@ -122,6 +122,19 @@
           </table>
         </div>
       </section>
+
+      <section class="panel" id="weapon-board-panel">
+        <div class="panel-head">
+          <h2>Weapon usage, all time</h2>
+          <span class="panel-note" id="weapon-board-note">every hunter, tracked since the first sample</span>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th class="num">#</th><th>Weapon</th><th class="num">Total time</th><th class="num">Hunters</th><th class="num">Share</th><th>Most time on it</th></tr></thead>
+            <tbody id="weapon-board-body"><tr><td colspan="6"><span class="skeleton-line w60"></span></td></tr></tbody>
+          </table>
+        </div>
+      </section>
     </main>
 
     <footer class="site-foot">
@@ -140,6 +153,7 @@
       </div>
     </footer>
 
+    <script src="/js/weapon-board.js?v=1"></script>
     <script src="/js/leaderboards.js"></script>
     <script src="/js/search.js" defer></script>
   </body>
