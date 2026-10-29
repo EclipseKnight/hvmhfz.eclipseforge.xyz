@@ -13,6 +13,16 @@
     return n;
   }
 
+  function icon(weapon) {
+    var slug = weapon.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    var img = document.createElement("img");
+    img.className = "weapon-icon";
+    img.src = "/assets/weapons/" + slug + ".png";
+    img.alt = "";
+    img.loading = "lazy";
+    return img;
+  }
+
   function time(seconds) {
     if (!seconds) return "0s";
     var s = Math.round(seconds), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
@@ -30,7 +40,10 @@
       weapons.forEach(function (weapon, index) {
         var tr = el("tr");
         tr.appendChild(el("td", "num", String(index + 1)));
-        tr.appendChild(el("td", "cell-name", weapon.weapon));
+        var nameCell = el("td", "cell-name weapon-cell");
+        nameCell.appendChild(icon(weapon.weapon));
+        nameCell.appendChild(el("span", null, weapon.weapon));
+        tr.appendChild(nameCell);
         tr.appendChild(el("td", "num", time(weapon.seconds)));
         tr.appendChild(el("td", "num", (weapon.hunters || 0).toLocaleString()));
         tr.appendChild(el("td", "num", total ? (100 * weapon.seconds / total).toFixed(1) + "%" : "-"));

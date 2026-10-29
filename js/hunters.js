@@ -516,7 +516,15 @@
     var top = rows.length ? Math.max.apply(null, rows.map(function (r) { return r.seconds; })) : 0;
     rows.forEach(function (r) {
       var item = el("li", r.seconds ? null : "is-zero");
-      item.appendChild(el("span", "wb-name", r.weapon));
+      var label = el("span", "wb-name");
+      var img = document.createElement("img");
+      img.className = "weapon-icon";
+      img.src = "/assets/weapons/" + r.weapon.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".png";
+      img.alt = "";
+      img.loading = "lazy";
+      label.appendChild(img);
+      label.appendChild(document.createTextNode(r.weapon));
+      item.appendChild(label);
       var track = el("span", "wb-track");
       var fill = el("span", "wb-fill");
       fill.style.width = top ? Math.max(r.seconds ? 1.5 : 0, (r.seconds / top) * 100) + "%" : "0";

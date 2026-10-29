@@ -1095,3 +1095,8 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .audit-run-count{color:var(--ink-soft);font-size:.8rem}
 .audit-run .table-wrap{border-top:1px solid rgba(255,255,255,.06)}
 .audit-run .data-table th{background:transparent}
+
+/* Weapon type icons (white line art from the wiki, on the dark panels) */
+.weapon-icon{width:20px;height:20px;object-fit:contain;vertical-align:-4px;margin-right:8px;opacity:.9}
+.weapon-cell .weapon-icon{margin-right:9px}
+.weapon-bars .wb-name .weapon-icon{width:18px;height:18px;vertical-align:-4px;margin-right:6px}
