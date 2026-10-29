@@ -67,8 +67,8 @@ the validation, and the UI should say so instead of pretending a green check mea
 
 A quest binary is content the player's client will parse. That means: cap the size, reject anything that
 fails the structural parse, never rewrite a file in place outside its title slot, serve test files only to
-rooms holding a valid token, and never expose another account's test file through the public API. Also keep
-Capcom's own quest files out of the public catalog, since redistributing them is not ours to do.
+rooms holding a valid token, and never expose another account's test file through the public API. The quest set is written for this server, so those files are the project's own content and can be
+published freely; the protection that matters is over other people's drafts and test files.
 
 ## Licensing note
 

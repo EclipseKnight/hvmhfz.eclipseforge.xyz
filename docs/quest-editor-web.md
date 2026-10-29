@@ -68,5 +68,6 @@ token-gated serving, no rewards and no board entries, automatic expiry.
 ## Safety
 
 Edited or uploaded quests are client-facing content. Cap sizes, parse strictly, refuse to serialize a model
-that fails validation, keep Capcom's own files out of the public catalog, and only serve test files to rooms
-holding a valid token.
+that fails validation, and only serve a test file to rooms holding a valid token. The quest set itself is ours, written for
+this server, so publishing, downloading and editing those files is ours to allow; the token rule is about
+unfinished work and privacy, not ownership.
