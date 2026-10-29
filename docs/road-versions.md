@@ -138,6 +138,46 @@ is legitimate, since the same design can be reached independently.
 The one thing that must not be content addressed is the picker: it lists versions by family and author, so a
 player sees "Nightfall by Ael" and "Nightfall by Kai" as two Roads even though the bytes match.
 
+
+## The workspace: drafts that survive a closed browser
+
+The builder needs somewhere to keep unfinished work, and it must not be the version table. Drafts are
+mutable, versions are immutable.
+
+```
+road_draft(
+  id bigserial primary key,
+  family_id bigint references road_family(id) on delete set null,
+  owner_account bigint not null,
+  name text not null,
+  data jsonb not null,            -- the builder's own document; the blob is derived on publish
+  revision int not null default 1,
+  published_version_id bigint references road_version(id),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+)
+```
+
+Behaviour:
+
+- **Autosave** the draft every few seconds while editing, debounced, with a "saved at 14:02" line. This
+  writes one row, repeatedly overwritten, never a version.
+- **localStorage** keeps a copy too, so a dropped connection does not lose the last minute. On load the
+  server copy wins unless the local one is newer, and the page says which it used.
+- **Draft to version only on Publish or Test.** That is the moment a sha is computed and a
+  `road_blob`/`road_version` row appears.
+- **A workspace page** under Account lists every draft with name, last edited, revision, and whether it has
+  ever been published or tested, with Open, Duplicate, Rename and Delete. That is the "come back and
+  continue" surface, and it is per account, so it follows the person across machines.
+- **Two tabs editing the same draft**: the revision number catches it. The second save sends its base
+  revision, the server rejects a stale one, and the page offers keep mine or reload theirs rather than
+  silently overwriting.
+- **Limits**: 20 drafts per account and the same 7 KB each. If someone wants more, they archive a draft by
+  publishing it as a private custom Road, which is cheap now that blobs dedupe.
+
+Drafts are never shown in the Road picker. Only published versions are, which keeps experiments out of
+everybody else's list.
+
 ## What to check in Erupe first
 
 1. Is the Rengoku blob served per request on the session, or cached once per connection? If per request,
