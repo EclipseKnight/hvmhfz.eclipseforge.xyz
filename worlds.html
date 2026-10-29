@@ -91,6 +91,40 @@
         </div>
       </section>
 
+      <section class="panel" id="history-panel">
+        <div class="panel-head">
+          <h2>Players over time</h2>
+          <span class="panel-note" id="history-updated"></span>
+        </div>
+        <div class="chips" id="history-ranges" role="group" aria-label="Time range"></div>
+        <p class="form-alert" id="history-alert" hidden></p>
+        <div class="stat-grid" id="history-stats" role="group" aria-label="Range summary">
+          <div class="stat-card skeleton"><span class="stat-label">Online now</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton"><span class="stat-label">Peak online</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton"><span class="stat-label">Average online</span><span class="stat-value">&nbsp;</span></div>
+          <div class="stat-card skeleton"><span class="stat-label">Players in range</span><span class="stat-value">&nbsp;</span></div>
+        </div>
+        <div class="history-chart" id="history-chart"><span class="skeleton-line w60"></span></div>
+        <div class="history-legend" aria-hidden="true">
+          <span class="lg lg-line">Online (average)</span>
+          <span class="lg lg-peak">Online (peak)</span>
+          <span class="lg lg-active">Active hunters</span>
+        </div>
+        <p class="note-text" id="history-note"></p>
+
+        <h3 class="subhead">Players</h3>
+        <div class="admin-search">
+          <input id="history-search" type="search" autocomplete="off" placeholder="Search a player" aria-label="Search a player" />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Hunter</th><th class="num">Play time</th><th class="num">Sessions</th><th class="num">Time online</th><th>Last seen</th><th>Status</th></tr></thead>
+            <tbody id="history-players"><tr><td colspan="6"><span class="skeleton-line w60"></span></td></tr></tbody>
+          </table>
+        </div>
+        <p class="note-text" id="players-note"></p>
+      </section>
+
       <section class="panel" id="live-board">
         <div class="panel-head">
           <h2>Who's online</h2>
@@ -141,6 +175,7 @@
     </footer>
 
     <script src="/js/worlds.js"></script>
+    <script src="/js/worlds-history.js"></script>
     <script src="/js/activity.js"></script>
     <script src="/js/search.js" defer></script>
   </body>

@@ -1003,3 +1003,31 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .api-gate{margin:18px 0;padding:12px 16px;border:1px solid var(--frame);border-left:4px solid var(--gold);
   border-radius:3px;background:rgba(232,200,119,.08);color:var(--text-light)}
 .api-gate a{color:var(--gold-bright)}
+
+/* ===== worlds: players over time (js/worlds-history.js) ===== */
+.history-chart{position:relative;min-height:220px;margin:4px 0 6px;transition:opacity .2s}
+.history-chart.is-loading{opacity:.45}
+.history-chart svg{display:block;width:100%;height:auto;overflow:visible}
+.hc-grid{stroke:rgba(94,75,52,.18);stroke-width:1}
+.hc-axis{fill:var(--ink-soft);font:11px var(--font-ui)}
+.hc-active{fill:rgba(46,91,78,.22)}
+.hc-area{fill:rgba(183,138,51,.18)}
+.hc-line{fill:none;stroke:#7f5712;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.hc-peak{fill:none;stroke:#8b2f27;stroke-width:1.2;stroke-dasharray:4 3;opacity:.8}
+.hc-dot{fill:#7f5712}
+.hc-cursor{stroke:rgba(43,33,24,.45);stroke-width:1}
+.hc-tip{position:absolute;top:8px;z-index:3;display:flex;flex-direction:column;gap:2px;padding:7px 10px;max-width:240px;
+  background:#1b120b;color:#f1e5c8;border:1px solid #5a4226;border-radius:4px;font:12px/1.35 var(--font-ui);pointer-events:none;
+  box-shadow:0 6px 16px rgba(0,0,0,.35)}
+.hc-tip strong{color:var(--gold-bright);font-weight:600}
+.history-legend{display:flex;flex-wrap:wrap;gap:14px;margin:0 0 4px;font:.75rem var(--font-ui);color:var(--ink-soft)}
+.history-legend .lg::before{content:"";display:inline-block;width:18px;height:0;margin-right:6px;vertical-align:middle}
+.history-legend .lg-line::before{border-top:2px solid #7f5712}
+.history-legend .lg-peak::before{border-top:2px dashed #8b2f27}
+.history-legend .lg-active::before{height:10px;width:12px;background:rgba(46,91,78,.35);border:0}
+#history-stats{margin:6px 0 12px}
+@media (max-width:720px){
+  .history-chart{min-height:200px}
+  #history-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+.hunter-actions{margin-bottom:18px}

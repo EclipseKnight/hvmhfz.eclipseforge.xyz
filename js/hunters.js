@@ -98,6 +98,219 @@
     });
   }
 
+
+  // The game's own playtime counter, in hours and minutes.
+  function playtime(seconds) {
+    if (seconds === null || seconds === undefined) return "-";
+    var h = Math.floor(seconds / 3600);
+    var m = Math.floor((seconds % 3600) / 60);
+    return h.toLocaleString() + " h " + (m < 10 ? "0" : "") + m + " m";
+  }
+
+  /* ---------- hunter card: a 1200 x 630 PNG drawn on a canvas ---------- */
+
+  function loadImage(src) {
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { resolve(null); };
+      img.src = src;
+    });
+  }
+
+  function fitText(ctx, text, maxWidth, size, family, weight) {
+    var s = size;
+    do {
+      ctx.font = (weight || "") + " " + s + "px " + family;
+      if (ctx.measureText(text).width <= maxWidth) break;
+      s -= 2;
+    } while (s > 14);
+    return s;
+  }
+
+  function drawCard(hunter, logo) {
+    var W = 1200, H = 630;
+    var canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+    var ctx = canvas.getContext("2d");
+    var serif = "Georgia, 'Palatino Linotype', 'Book Antiqua', serif";
+    var sans = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+
+    // leather background with a warm glow
+    var bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, "#1f150e");
+    bg.addColorStop(1, "#0b0705");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+    var glow = ctx.createRadialGradient(W * 0.3, -60, 40, W * 0.3, -60, 700);
+    glow.addColorStop(0, "rgba(183,138,51,0.35)");
+    glow.addColorStop(1, "rgba(183,138,51,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+
+    // brass frame
+    ctx.strokeStyle = "#6d4f2b";
+    ctx.lineWidth = 6;
+    ctx.strokeRect(18, 18, W - 36, H - 36);
+    ctx.strokeStyle = "rgba(232,200,119,0.35)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(30, 30, W - 60, H - 60);
+
+    // logo
+    if (logo) {
+      var lh = 54, lw = logo.width * (lh / logo.height);
+      ctx.save();
+      ctx.globalCompositeOperation = "screen";
+      ctx.drawImage(logo, 60, 52, lw, lh);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = "#e8c877";
+      ctx.font = "700 30px " + serif;
+      ctx.fillText("HUNSTERVERSE", 60, 92);
+    }
+    ctx.fillStyle = "#c9b993";
+    ctx.font = "600 15px " + sans;
+    ctx.textAlign = "right";
+    ctx.fillText("HUNTER CARD", W - 60, 84);
+    ctx.textAlign = "left";
+
+    // name, online dot, weapon and guild
+    var nameSize = fitText(ctx, hunter.name, 620, 74, serif, "700");
+    ctx.fillStyle = "#f4e7c9";
+    ctx.font = "700 " + nameSize + "px " + serif;
+    ctx.fillText(hunter.name, 60, 190);
+    if (hunter.online) {
+      var nw = ctx.measureText(hunter.name).width;
+      ctx.fillStyle = "#8fd1b4";
+      ctx.beginPath();
+      ctx.arc(60 + nw + 26, 190 - nameSize * 0.33, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.font = "600 16px " + sans;
+      ctx.fillText("ONLINE", 60 + nw + 44, 190 - nameSize * 0.33 + 6);
+    }
+    ctx.fillStyle = "#c9b993";
+    ctx.font = "500 22px " + sans;
+    var sub = [hunter.weapon || "Unknown weapon", hunter.guildName ? hunter.guildName + (hunter.guildRank ? " · " + hunter.guildRank : "") : null]
+      .filter(Boolean).join("   ·   ");
+    ctx.fillText(sub, 60, 232);
+
+    // stat tiles
+    var stats = [
+      ["HUNTER RANK", num(hunter.hr)],
+      ["G RANK", num(hunter.gr)],
+      ["PLAY TIME", playtime(hunter.playtimeSeconds)],
+      ["HUNTS LOGGED", num(hunter.totalKills)],
+      ["TITLES", num(hunter.titles)],
+      ["LAST SEEN", hunter.online ? "Online now" : date(hunter.lastLogin)]
+    ];
+    var tx = 60, ty = 276, tw = 200, th = 92, gap = 14;
+    stats.forEach(function (s, i) {
+      var col = i % 3, row = Math.floor(i / 3);
+      var x = tx + col * (tw + gap), y = ty + row * (th + gap);
+      ctx.fillStyle = "rgba(241,229,200,0.07)";
+      ctx.fillRect(x, y, tw, th);
+      ctx.strokeStyle = "rgba(232,200,119,0.28)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x + 0.5, y + 0.5, tw - 1, th - 1);
+      ctx.fillStyle = "#b78a33";
+      ctx.fillRect(x, y, 4, th);
+      ctx.fillStyle = "#9a8a6d";
+      ctx.font = "700 13px " + sans;
+      ctx.fillText(s[0], x + 16, y + 30);
+      ctx.fillStyle = "#ffe6a8";
+      var vs = fitText(ctx, s[1], tw - 30, 30, sans, "700");
+      ctx.font = "700 " + vs + "px " + sans;
+      ctx.fillText(s[1], x + 16, y + 70);
+    });
+
+    // most hunted
+    var mx = 740, my = 150, mw = W - 60 - mx;
+    ctx.fillStyle = "rgba(241,229,200,0.06)";
+    ctx.fillRect(mx, my, mw, 362);
+    ctx.strokeStyle = "rgba(232,200,119,0.28)";
+    ctx.strokeRect(mx + 0.5, my + 0.5, mw - 1, 361);
+    ctx.fillStyle = "#e8c877";
+    ctx.font = "700 16px " + sans;
+    ctx.fillText("MOST HUNTED", mx + 22, my + 36);
+    var monsters = (hunter.topMonsters || []).slice(0, 6);
+    if (!monsters.length) {
+      ctx.fillStyle = "#9a8a6d";
+      ctx.font = "italic 18px " + serif;
+      ctx.fillText("No hunts logged yet", mx + 22, my + 80);
+    }
+    var top = monsters.length ? monsters[0].kills : 1;
+    monsters.forEach(function (m, i) {
+      var y = my + 74 + i * 47;
+      ctx.fillStyle = "#eadfc6";
+      var ms = fitText(ctx, m.name, mw - 120, 19, sans, "600");
+      ctx.font = "600 " + ms + "px " + sans;
+      ctx.fillText(m.name, mx + 22, y);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#ffe6a8";
+      ctx.font = "700 18px " + sans;
+      ctx.fillText(num(m.kills), mx + mw - 22, y);
+      ctx.textAlign = "left";
+      ctx.fillStyle = "rgba(183,138,51,0.25)";
+      ctx.fillRect(mx + 22, y + 10, mw - 44, 6);
+      ctx.fillStyle = "#b78a33";
+      ctx.fillRect(mx + 22, y + 10, (mw - 44) * (m.kills / top), 6);
+    });
+
+    // footer
+    ctx.fillStyle = "#9a8a6d";
+    ctx.font = "500 17px " + sans;
+    ctx.fillText("hvmhfz.eclipseforge.xyz/hunters.html?id=" + hunter.id, 60, H - 62);
+    ctx.textAlign = "right";
+    ctx.fillText("Monster Hunter Frontier Z · Hunsterverse", W - 60, H - 62);
+    ctx.textAlign = "left";
+    return canvas;
+  }
+
+  function downloadCard(hunter, button) {
+    var label = button ? button.textContent : "";
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Drawing card";
+    }
+    var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    ready.then(function () { return loadImage("/assets/brand/hunsterverse.gif"); })
+      .then(function (logo) {
+        var canvas = drawCard(hunter, logo);
+        var file = (hunter.name || "hunter").replace(/[^A-Za-z0-9_-]+/g, "_") + "-hunter-card.png";
+        return new Promise(function (resolve, reject) {
+          if (!canvas.toBlob) {
+            resolve({ url: canvas.toDataURL("image/png"), file: file, revoke: false });
+            return;
+          }
+          canvas.toBlob(function (blob) {
+            if (!blob) { reject(new Error("The card could not be drawn.")); return; }
+            resolve({ url: URL.createObjectURL(blob), file: file, revoke: true });
+          }, "image/png");
+        });
+      })
+      .then(function (out) {
+        var link = document.createElement("a");
+        link.href = out.url;
+        link.download = out.file;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        if (out.revoke) setTimeout(function () { URL.revokeObjectURL(out.url); }, 4000);
+        if (button) button.textContent = "Card downloaded";
+      })
+      .catch(function () {
+        if (button) button.textContent = "Could not draw the card";
+      })
+      .then(function () {
+        if (!button) return;
+        setTimeout(function () {
+          button.disabled = false;
+          button.textContent = label;
+        }, 1800);
+      });
+  }
+
   function statCard(label, value) {
     var card = el("div", "stat-card");
     card.appendChild(el("span", "stat-label", label));
@@ -121,6 +334,7 @@
     var badges = el("div", "badge-row");
     badges.appendChild(el("span", "badge", hunter.weapon || "Unknown weapon"));
     badges.appendChild(el("span", "badge", hunter.female ? "Female" : "Male"));
+    if (hunter.online) badges.appendChild(el("span", "badge good", "Online now"));
     if (hunter.guildName) {
       var guildBadge = el("a", "badge good", hunter.guildName + (hunter.guildRank ? " · " + hunter.guildRank : ""));
       guildBadge.href = "/guilds.html";
@@ -143,7 +357,7 @@
     });
     var cardBtn = el("button", "ghost-btn small", "Download hunter card");
     cardBtn.type = "button";
-    cardBtn.addEventListener("click", function () { downloadCard(hunter); });
+    cardBtn.addEventListener("click", function () { downloadCard(hunter, cardBtn); });
     actions.appendChild(copy);
     actions.appendChild(cardBtn);
     view.appendChild(actions);
@@ -152,8 +366,9 @@
     var panel = el("section", "panel");
     panel.appendChild(el("div", "panel-head")).appendChild(el("h2", null, "Record"));
     var stats = el("div", "guild-stats");
-    [["Hunter rank", num(hunter.hr)], ["G rank", num(hunter.gr)], ["Titles", num(hunter.titles)],
-     ["Hunts logged", num(hunter.totalKills)], ["Last seen", date(hunter.lastLogin)],
+    [["Hunter rank", num(hunter.hr)], ["G rank", num(hunter.gr)], ["Play time", playtime(hunter.playtimeSeconds)],
+     ["Titles", num(hunter.titles)], ["Hunts logged", num(hunter.totalKills)],
+     ["Last seen", hunter.online ? "Online now" : date(hunter.lastLogin)],
      ["Guild joined", hunter.guildJoined ? date(hunter.guildJoined) : "-"]]
       .forEach(function (row) {
         var item = el("div", "guild-stat");
