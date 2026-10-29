@@ -69,13 +69,15 @@ No token, cached 30 seconds unless stated. Paged endpoints return {items, page, 
 
 | GET /api/public/hunters | q, sort (hr default, name, gr, last), page, size (30, max 100) | paged hunter summaries |
 
-| GET /api/public/hunters/{id} | id: character id | one hunter: name, HR, GR, weapon, guild, playtimeSeconds (the game's own counter), online, hunts, top monsters |
+| GET /api/public/hunters/{id} | id: character id | one hunter: name, HR, GR, weapon, guild, playtimeSeconds (the game's own counter), online, hunts, top monsters, weaponTime[] (weaponType, weapon, seconds; most played first) and weaponTimeSince |
 
 | GET /api/public/catalog/items | q, page, size (40, max 100) | paged items: id (hex), name, type, icon |
 
 | GET /api/public/catalog/equipment | slot (melee default, ranged, head, chest, arms, waist, legs), q, page, size (40) | paged equipment |
 
 | GET /api/public/worlds | none | worlds: name, description, players, capacity |
+| GET /api/public/weapons | none | hours played per weapon type by every hunter: since (when tracking began), seconds, hunters, weapons[] (all 14 types, most played first: weaponType, weapon, seconds, hunters) |
+| GET /api/public/road/hunter/{id} | id: character id | one hunter's place on the live Road's and the Original Road's boards at any rank: [{key, name, current, open, solo}], open/solo = {rank, of, floor, points, reachedAt}, rank null with no clear |
 | GET /api/public/worlds/history | range (24h default, 7d, 30d, 90d, all) | players online over time (sampled every minute: points[] with average and peak per bucket), active hunters per hour/day/week from the hunt log (active[]), and the players seen in the range: name, HR, GR, playtimeSeconds, sessions, secondsInRange, lastSeen, online (newest 500) |
 
 | GET /api/public/monsters | limit (300 default, 1 to 300) | monster kill totals |

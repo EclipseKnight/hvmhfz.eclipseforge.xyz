@@ -1003,8 +1003,9 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 
 /* API page gate (js/api-docs.js): the private half is hidden until a moderator or admin signs in */
 .api-gate{margin:18px 0;padding:12px 16px;border:1px solid var(--frame);border-left:4px solid var(--gold);
-  border-radius:3px;background:rgba(232,200,119,.08);color:var(--text-light)}
-.api-gate a{color:var(--gold-bright)}
+  border-radius:3px;background:rgba(183,138,51,.12);color:var(--ink)}
+/* the gate sits on the parchment page: dark ink and a dark gold link, not the night-page colours */
+.api-gate a{color:#7f5712;font-weight:600;text-decoration:underline}
 
 /* ===== worlds: players over time (js/worlds-history.js) ===== */
 .history-chart{position:relative;min-height:220px;margin:4px 0 6px;transition:opacity .2s}
@@ -1033,3 +1034,21 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   #history-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 .hunter-actions{margin-bottom:18px}
+
+/* ===== hunter page: card tab and weapon hours (js/hunters.js) ===== */
+#detail-view .tabs{margin-top:6px}
+.card-stage{margin:12px 0 14px;padding:10px;background:#0b0705;border:1px solid var(--frame);border-radius:4px}
+.card-preview{display:block;width:100%;height:auto;max-width:1200px;margin:0 auto;border-radius:2px;
+  box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.card-actions{align-items:center;gap:14px}
+.card-actions .note-text{margin:0}
+.weapon-bars{list-style:none;margin:14px 0 6px;padding:0;display:grid;gap:7px}
+.weapon-bars li{display:grid;grid-template-columns:150px 1fr 120px;align-items:center;gap:12px;font:.86rem var(--font-ui);color:var(--ink)}
+.weapon-bars li.is-zero{color:var(--ink-soft);opacity:.7}
+.wb-track{height:12px;background:rgba(94,75,52,.14);border-radius:2px;overflow:hidden}
+.wb-fill{display:block;height:100%;background:linear-gradient(90deg,#8a6a24,#b78a33);border-radius:2px}
+.wb-value{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+@media (max-width:720px){
+  .weapon-bars li{grid-template-columns:110px 1fr 84px;gap:8px;font-size:.8rem}
+  .card-stage{padding:4px}
+}
