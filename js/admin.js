@@ -707,7 +707,7 @@
   var usersWired = false;
   var serverWired = false;
   var auditWired = false;
-  var audit = { entries: [], query: "", action: "", account: "" };
+  var audit = { entries: [], runs: [], query: "", action: "", account: "" };
   var ops = { service: "erupe", errors: false };
   var currentName = "";
 
@@ -1079,22 +1079,18 @@
     select.value = values.indexOf(current) === -1 ? "" : current;
   }
 
-  function renderAuditPage() {
-    var body = $("audit-rows");
-    clear(body);
-    var shown = audit.entries.filter(auditMatches);
-    $("audit-note").textContent = shown.length + " of " + audit.entries.length + " actions";
-    if (!shown.length) {
+  function auditTable(entries) {
+    var wrap = el("div", "table-wrap");
+    var table = el("table", "data-table admin-table");
+    var head = el("thead");
+    var hr = el("tr");
+    ["When", "Account", "What", "Target", "Outcome"].forEach(function (label) { hr.appendChild(el("th", null, label)); });
+    head.appendChild(hr);
+    table.appendChild(head);
+    var body = el("tbody");
+    entries.forEach(function (entry) {
       var row = el("tr");
-      var cell = el("td", "empty-cell", audit.entries.length ? "Nothing matches those filters." : "No actions recorded yet.");
-      cell.colSpan = 5;
-      row.appendChild(cell);
-      body.appendChild(row);
-      return;
-    }
-    shown.forEach(function (entry) {
-      var row = el("tr");
-      var when = el("td", null, since(entry.at));
+      var when = el("td", null, entry.at ? new Date(entry.at).toLocaleString() : "-");
       when.setAttribute("data-sort", entry.at || "");
       row.appendChild(when);
       row.appendChild(el("td", null, entry.account || "-"));
@@ -1103,18 +1099,53 @@
       row.appendChild(el("td", null, entry.result || "-"));
       body.appendChild(row);
     });
+    table.appendChild(body);
+    wrap.appendChild(table);
+    return wrap;
+  }
+
+  function renderAuditPage() {
+    var box = $("audit-runs");
+    clear(box);
+    var loaded = audit.runs.map(function (run) {
+      return { run: run, entries: (run.entries || []).filter(auditMatches) };
+    }).filter(function (item) { return item.entries.length > 0; });
+    var total = audit.runs.reduce(function (n, run) { return n + (run.actions || 0); }, 0);
+    var shown = loaded.reduce(function (n, item) { return n + item.entries.length; }, 0);
+    $("audit-note").textContent = shown + " of " + total + " actions in " + audit.runs.length + " runs";
+    if (!loaded.length) {
+      box.appendChild(el("p", "empty-cell", total ? "Nothing matches those filters." : "No actions recorded yet."));
+      return;
+    }
+    loaded.forEach(function (item, index) {
+      var details = el("details", "audit-run");
+      if (index === 0) details.open = true;
+      var summary = el("summary");
+      var at = item.run.startedAt ? new Date(item.run.startedAt) : null;
+      summary.appendChild(el("span", "audit-run-time", at && !isNaN(at) ? at.toLocaleString() : "Unknown run"));
+      summary.appendChild(el("span", "audit-run-count",
+        item.entries.length + (item.entries.length === 1 ? " action" : " actions") +
+        (item.entries.length !== item.run.actions ? " of " + item.run.actions : "")));
+      details.appendChild(summary);
+      details.appendChild(auditTable(item.entries));
+      box.appendChild(details);
+    });
     if (window.enhanceSortableTables) window.enhanceSortableTables($("audit-panel"));
   }
 
   function loadAuditPage() {
     $("audit-alert").hidden = true;
-    return request("/api/admin/ops/audit?max=500").then(function (list) {
-      audit.entries = list || [];
+    return request("/api/admin/ops/audit/runs?runs=10&entries=200").then(function (list) {
+      audit.runs = list || [];
+      audit.entries = [];
       var actions = {};
       var accounts = {};
-      audit.entries.forEach(function (entry) {
-        if (entry.action) actions[entry.action] = true;
-        if (entry.account) accounts[entry.account] = true;
+      audit.runs.forEach(function (run) {
+        (run.entries || []).forEach(function (entry) {
+          audit.entries.push(entry);
+          if (entry.action) actions[entry.action] = true;
+          if (entry.account) accounts[entry.account] = true;
+        });
       });
       fillFilter($("audit-action"), Object.keys(actions).sort(), audit.action, "All actions");
       fillFilter($("audit-account"), Object.keys(accounts).sort(), audit.account, "All accounts");

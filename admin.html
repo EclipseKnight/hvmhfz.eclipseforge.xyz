@@ -268,13 +268,10 @@
           <button type="button" class="ghost-btn small" id="audit-refresh">Refresh</button>
           <button type="button" class="ghost-btn small" id="audit-export">Export CSV</button>
         </div>
-        <div class="table-wrap">
-          <table class="data-table admin-table">
-            <thead><tr><th>When</th><th>Account</th><th>What</th><th>Target</th><th>Outcome</th></tr></thead>
-            <tbody id="audit-rows"><tr><td colspan="5" class="empty-cell">Loading</td></tr></tbody>
-          </table>
+        <div class="audit-runs" id="audit-runs">
+          <p class="empty-cell">Loading</p>
         </div>
-        <p class="note-text">Who did what: restarts, role and chat-flag changes, gifts, Hunting Road changes and session cleanups. The newest 500 lines of the server's audit file are read; the filters and sorting work on what was loaded. Times are UTC.</p>
+        <p class="note-text">Who did what: restarts, role and chat-flag changes, gifts, Hunting Road changes and session cleanups. Actions are stored in the database and grouped by server run, newest run first; open a run to see its actions. The filters work on what was loaded. Times are shown in your local time.</p>
       </section>
       </div>
     </main>
