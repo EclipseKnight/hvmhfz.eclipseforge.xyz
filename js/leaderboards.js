@@ -103,6 +103,9 @@
       columns: [
         ["Hunter", roadHunterLink],
         ["Floor", function (e) { return num(e.floor); }, "num"],
+        ["Points", function (e) {
+          return e.points === null || e.points === undefined ? "-" : num(e.points);
+        }, "num"],
         ["Reached", function (e) { return when(e.reachedAt); }],
         ["Floors climbed", function (e) {
           // before tracking began only each hunter's best was saved: no floor count to show

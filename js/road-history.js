@@ -24,7 +24,7 @@
     clear(body);
     var row = el("tr");
     var cell = el("td", "empty-cell", text);
-    cell.colSpan = 6;
+    cell.colSpan = 7;
     row.appendChild(cell);
     body.appendChild(row);
   }
@@ -41,6 +41,9 @@
       var row = el("tr");
       row.appendChild(el("td", "rank", item.number > 0 ? String(item.number) : "base"));
       row.appendChild(el("td", "cell-name", item.name));
+      var map = el("td", "num", item.sha256 ? item.sha256.slice(0, 10) : "-");
+      if (item.sha256) map.title = "Road data sha256: " + item.sha256;
+      row.appendChild(map);
       row.appendChild(el("td", null, item.characterName || "-"));
       row.appendChild(el("td", "num", item.votes === null || item.votes === undefined ? "-" : String(item.votes)));
       row.appendChild(el("td", null, formatDate(item.liveFrom) || "-"));
