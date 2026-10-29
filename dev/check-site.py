@@ -161,6 +161,21 @@ def check(root):
         for picture in re.findall(r'"([^"]+)"', listed.group(1)):
             if not (root / "assets/backgrounds" / picture).is_file():
                 problems.append(f"js/background.js: assets/backgrounds/{picture} does not exist")
+
+    # Two function declarations with one name in a script: the later one silently replaces the
+    # earlier everywhere in that scope (hoisting), which broke the admin Gifts tab once.
+    for script in sorted((root / "js").glob("*.js")):
+        seen = {}
+        for number, line in enumerate(script.read_text(encoding="utf-8").splitlines(), 1):
+            m = re.match(r"(\s*)function (\w+)\s*\(", line)
+            if not m:
+                continue
+            key = (len(m.group(1)), m.group(2))
+            if key in seen:
+                problems.append(f"js/{script.name}:{number}: function {m.group(2)} is declared again "
+                                f"(first at line {seen[key]}); the later one replaces the earlier")
+            else:
+                seen[key] = number
     return problems
 
 

@@ -1066,7 +1066,7 @@
     return haystack.indexOf(audit.query) !== -1;
   }
 
-  function fillSelect(select, values, current, allLabel) {
+  function fillFilter(select, values, current, allLabel) {
     clear(select);
     var all = el("option", null, allLabel);
     all.value = "";
@@ -1116,8 +1116,8 @@
         if (entry.action) actions[entry.action] = true;
         if (entry.account) accounts[entry.account] = true;
       });
-      fillSelect($("audit-action"), Object.keys(actions).sort(), audit.action, "All actions");
-      fillSelect($("audit-account"), Object.keys(accounts).sort(), audit.account, "All accounts");
+      fillFilter($("audit-action"), Object.keys(actions).sort(), audit.action, "All actions");
+      fillFilter($("audit-account"), Object.keys(accounts).sort(), audit.account, "All accounts");
       renderAuditPage();
     }).catch(function (error) { auditFail(error); throw error; });
   }
