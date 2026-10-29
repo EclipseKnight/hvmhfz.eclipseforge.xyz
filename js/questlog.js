@@ -53,7 +53,7 @@
     var table = el("table", "data-table");
     var thead = el("thead");
     var hr = el("tr");
-    ["Quest", "Result", "In quest", "Clear time", "When"].forEach(function (label) {
+    ["Quest", "Result", "Party", "In quest", "Clear time", "When"].forEach(function (label) {
       hr.appendChild(el("th", label === "In quest" || label === "Clear time" ? "num" : null, label));
     });
     thead.appendChild(hr);
@@ -81,16 +81,33 @@
       if (!state.rows.length) {
         var row = el("tr");
         var cell = el("td", "empty-cell", state.total ? "Nothing on this page." : "No quests recorded yet.");
-        cell.colSpan = 5;
+        cell.colSpan = 6;
         row.appendChild(cell);
         tbody.appendChild(row);
       }
       state.rows.forEach(function (quest) {
         var row = el("tr");
-        row.appendChild(el("td", "cell-name", quest.quest || (quest.questId ? "#" + quest.questId : "-")));
+        var nameCell = el("td", "cell-name");
+        if (quest.questId) {
+          var link = el("a", null, quest.quest || ("#" + quest.questId));
+          link.href = "/quest.html?id=" + quest.questId;
+          nameCell.appendChild(link);
+        } else {
+          nameCell.textContent = quest.quest || "-";
+        }
+        row.appendChild(nameCell);
         var res = el("td");
         res.appendChild(badge(quest.result));
         row.appendChild(res);
+        var party = el("td", "quest-party");
+        (quest.party || []).forEach(function (member, index) {
+          if (index) party.appendChild(document.createTextNode(", "));
+          var link = el("a", null, member);
+          link.href = "/hunters.html?name=" + encodeURIComponent(member);
+          party.appendChild(link);
+        });
+        if (!(quest.party || []).length) party.textContent = "-";
+        row.appendChild(party);
         row.appendChild(el("td", "num", duration(quest.durationSeconds)));
         row.appendChild(el("td", "num", quest.clearSeconds === null || quest.clearSeconds === undefined
           ? "-" : duration(quest.clearSeconds)));

@@ -106,7 +106,9 @@
       var tr = el("tr");
 
       var nameCell = el("td", "cell-name");
-      nameCell.appendChild(el("span", null, quest.name));
+      var nameLink = el("a", null, quest.name);
+      nameLink.href = "/quest.html?id=" + quest.id;
+      nameCell.appendChild(nameLink);
       nameCell.appendChild(el("span", "cell-sub muted", "#" + quest.id + (quest.nameJp !== quest.name ? " · " + quest.nameJp : "")));
       tr.appendChild(nameCell);
 

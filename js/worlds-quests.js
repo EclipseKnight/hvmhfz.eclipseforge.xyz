@@ -56,7 +56,8 @@
     while (list.firstChild) list.removeChild(list.firstChild);
     (stats.topQuests || []).forEach(function (q) {
       var item = el("li", "quest-top-item");
-      var name = el("span", "quest-top-name", q.quest || ("#" + q.questId));
+      var name = el("a", "quest-top-name", q.quest || ("#" + q.questId));
+      name.href = "/quest.html?id=" + q.questId;
       item.appendChild(name);
       item.appendChild(el("span", "quest-top-count", q.clears + " clear" + (q.clears === 1 ? "" : "s") +
         (q.fails ? " · " + q.fails + " fail" + (q.fails === 1 ? "" : "s") : "")));
@@ -71,7 +72,7 @@
     if (!rows.length) {
       var empty = el("tr");
       var cell = el("td", "empty-cell", "No quests have finished yet.");
-      cell.colSpan = 5;
+      cell.colSpan = 6;
       empty.appendChild(cell);
       body.appendChild(empty);
       return;
@@ -87,11 +88,26 @@
         hunter.textContent = "-";
       }
       tr.appendChild(hunter);
-      tr.appendChild(el("td", null, row.quest || (row.questId ? "#" + row.questId : "-")));
+      var nameCell = el("td");
+      if (row.questId) {
+        var qlink = el("a", null, row.quest || ("#" + row.questId));
+        qlink.href = "/quest.html?id=" + row.questId;
+        nameCell.appendChild(qlink);
+      } else {
+        nameCell.textContent = row.quest || "-";
+      }
+      tr.appendChild(nameCell);
       var result = el("td");
       var label = row.result === "clear" ? "Cleared" : row.result === "fail" ? "Failed" : "Unknown";
       result.appendChild(el("span", "badge " + (row.result === "clear" ? "good" : row.result === "fail" ? "bad" : ""), label));
       tr.appendChild(result);
+      var partyCell = el("td", "quest-party");
+      (row.party || []).forEach(function (member, index) {
+        if (index) partyCell.appendChild(document.createTextNode(", "));
+        partyCell.appendChild(document.createTextNode(member));
+      });
+      if (!(row.party || []).length) partyCell.textContent = "-";
+      tr.appendChild(partyCell);
       tr.appendChild(el("td", "num", duration(row.durationSeconds)));
       tr.appendChild(el("td", "num", row.clearSeconds === null || row.clearSeconds === undefined ? "-" : duration(row.clearSeconds)));
       body.appendChild(tr);
@@ -105,7 +121,7 @@
     while (body.firstChild) body.removeChild(body.firstChild);
     var row = el("tr");
     var cell = el("td", "empty-cell", "The quest log is unavailable right now.");
-    cell.colSpan = 5;
+    cell.colSpan = 6;
     row.appendChild(cell);
     body.appendChild(row);
   }
