@@ -104,6 +104,40 @@ side, which is the point.
 - The site's Road vote page stays about the next rotation; picking a Road to play lives with the room,
   not the vote.
 
+
+## Identical designs: content key versus identity key
+
+Two people can genuinely build the same Road, and a pure sha would collapse them into one row, which
+would silently attribute one person's work to the other and merge their boards. Separate the two ideas:
+
+```
+road_blob(sha256 primary key, bytes bytea, size int, created_at timestamptz)
+
+road_version(
+  id bigserial primary key,
+  family_id bigint references road_family(id),
+  sha256 text references road_blob(sha256),
+  name text, author text, kind text,
+  created_at timestamptz, first_live_at timestamptz, retired_at timestamptz,
+  unique (family_id, sha256)          -- one version per family per content
+)
+```
+
+- The **sha is the content**: identical files share one `road_blob` row, so 7 KB is stored once no matter
+  how many people submit it.
+- The **version id is the identity**: two authors with the same design get two versions, each with its own
+  name, dates and boards, and rooms pin the version id rather than the raw sha.
+- Boards key on `version_id`, not sha. That is what lets two identical Roads keep separate records instead
+  of inheriting each other's clears. Quest rows store both: the version id for the board, the sha for
+  verification against the blob that was actually served.
+
+On upload the API hashes the blob, looks it up, and if it already exists tells the author: "this is
+byte-identical to Road X by Y", offering Publish anyway (their own version) or Cancel. Publishing anyway
+is legitimate, since the same design can be reached independently.
+
+The one thing that must not be content addressed is the picker: it lists versions by family and author, so a
+player sees "Nightfall by Ael" and "Nightfall by Kai" as two Roads even though the bytes match.
+
 ## What to check in Erupe first
 
 1. Is the Rengoku blob served per request on the session, or cached once per connection? If per request,
