@@ -204,7 +204,16 @@
 
     var info = el("div", "monster-hero-info");
     info.appendChild(el("p", "kicker", detail.category || "Monster"));
-    info.appendChild(el("h1", null, detail.name));
+    var title = el("h1", "monster-title");
+    if (detail.icon) {
+      var badge = document.createElement("img");
+      badge.className = "monster-icon-badge";
+      badge.src = "/assets/monsters/icons/" + detail.icon;
+      badge.alt = "";
+      title.appendChild(badge);
+    }
+    title.appendChild(document.createTextNode(detail.name));
+    info.appendChild(title);
     var forms = [];
     if (detail.variantStats) detail.variantStats.forEach(function (v) { forms.push(v); });
     if (forms.length) {
