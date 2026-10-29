@@ -99,14 +99,15 @@
       road: true,
       empty: "Nobody has cleared a floor in this rotation yet.",
       rows: function (data) { return data.entries; },
-      score: function (e) { return [e.floor, e.reachedAt]; },
+      // a saved best has no date: hunters on the same floor are told apart by their points
+      score: function (e) { return [e.floor, e.reachedAt || "saved-" + e.points]; },
       columns: [
         ["Hunter", roadHunterLink],
         ["Floor", function (e) { return num(e.floor); }, "num"],
         ["Points", function (e) {
           return e.points === null || e.points === undefined ? "-" : num(e.points);
         }, "num"],
-        ["Reached", function (e) { return when(e.reachedAt); }],
+        ["Reached", function (e) { return e.reachedAt ? when(e.reachedAt) : "Saved best"; }],
         ["Floors climbed", function (e) {
           // before tracking began only each hunter's best was saved: no floor count to show
           return e.floorsClimbed > 0 ? num(e.floorsClimbed) : "-";
@@ -259,6 +260,9 @@
       bits.push("clears tracked since " + day(data.trackingSince));
     }
     if (data.hunters) bits.push(num(data.hunters) + (data.hunters === 1 ? " hunter" : " hunters"));
+    if (data.savedBests) {
+      bits.push(num(data.savedBests) + " from saved bests (the game keeps each hunter's best floor and points, with no date)");
+    }
     return bits.join(" · ");
   }
 

@@ -33,7 +33,7 @@
     var body = document.getElementById("history-rows");
     document.getElementById("history-note").textContent = list.length + (list.length === 1 ? " Road" : " Roads");
     if (!list.length) {
-      messageRow(body, "No player-made Road has gone live yet.");
+      messageRow(body, "No Road has gone live yet.");
       return;
     }
     clear(body);
@@ -45,7 +45,9 @@
       if (item.sha256) map.title = "Road data sha256: " + item.sha256;
       row.appendChild(map);
       row.appendChild(el("td", null, item.characterName || "-"));
-      row.appendChild(el("td", "num", item.votes === null || item.votes === undefined ? "-" : String(item.votes)));
+      // a base Road, or a Road drawn when nobody entered, was not voted in
+      var drawn = item.number <= 0 ? "base Road" : item.fallback ? "drawn" : null;
+      row.appendChild(el("td", "num", drawn || (item.votes === null || item.votes === undefined ? "-" : String(item.votes))));
       row.appendChild(el("td", null, formatDate(item.liveFrom) || "-"));
       row.appendChild(el("td", null, item.liveUntil ? formatDate(item.liveUntil) : "Live now"));
       body.appendChild(row);
