@@ -11,7 +11,8 @@
    "GR"
   ],
   "oldSlug": "abio",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "abiorugu.webp"
  },
  {
   "slug": "akantor",
@@ -26,7 +27,8 @@
    "GR"
   ],
   "oldSlug": "akamu",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "akantor.webp"
  },
  {
   "slug": "akura-jebia",
@@ -40,7 +42,8 @@
    "GR"
   ],
   "oldSlug": "aquraj",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "akurajebia.webp"
  },
  {
   "slug": "akura-vashimu",
@@ -56,13 +59,14 @@
    "Zenith"
   ],
   "oldSlug": "aqura",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "akuravashimu.webp"
  },
  {
   "slug": "amatsu",
   "name": "Amatsu",
   "category": "Elder Dragon",
-  "icon": "amatsu.webp",
+  "icon": "amatsu.png",
   "zone": "amatsu.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -70,7 +74,8 @@
    "GR"
   ],
   "oldSlug": null,
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "amatsu.webp"
  },
  {
   "slug": "anorupatisu",
@@ -84,43 +89,44 @@
    "Zenith"
   ],
   "oldSlug": "anolu",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "anorupatisu.webp"
  },
  {
   "slug": "anteka",
   "name": "Anteka",
   "category": "Other",
-  "icon": "anteka.webp",
+  "icon": "anteka.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "gau",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "apceros",
   "name": "Apceros",
   "category": "Other",
-  "icon": "apceros.webp",
+  "icon": "apceros.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "apuke",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "aptonoth",
   "name": "Aptonoth",
   "category": "Other",
-  "icon": "aptonoth.webp",
+  "icon": "aptonoth.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "apono",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "aruganosu",
@@ -132,19 +138,21 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "volgin",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "aruganosu.webp"
  },
  {
   "slug": "ashen-lao-shan-lung",
   "name": "Ashen Lao-Shan Lung",
   "category": "Elder Dragon",
-  "icon": "ashenlao-shanlung.webp",
+  "icon": "ashen-lao-shan-lung.png",
   "zone": "ashenlao-shanlung.webp",
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "raoao",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "ashenlao-shanlung.webp"
  },
  {
   "slug": "azure-rathalos",
@@ -158,7 +166,8 @@
    "GR"
   ],
   "oldSlug": "reusuao",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "azurerathalos.webp"
  },
  {
   "slug": "barioth",
@@ -172,13 +181,14 @@
    "GR"
   ],
   "oldSlug": "berio",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "barioth.webp"
  },
  {
   "slug": "baruragaru",
   "name": "Baruragaru",
   "category": "Fanged Wyvern",
-  "icon": "baruragaru.webp",
+  "icon": "baruragaru.png",
   "zone": "baruragaru.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -187,13 +197,14 @@
    "Zenith"
   ],
   "oldSlug": "bal",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "baruragaru.webp"
  },
  {
   "slug": "basarios",
   "name": "Basarios",
   "category": "Flying Wyvern",
-  "icon": "basarios.webp",
+  "icon": "basarios.png",
   "zone": "basarios.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -203,19 +214,20 @@
    "Corridor & Road"
   ],
   "oldSlug": "basa",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "basarios.webp"
  },
  {
   "slug": "berserk-laviente",
   "name": "Berserk Laviente",
   "category": "Elder Dragon",
-  "icon": "berserkraviente.webp",
+  "icon": "berserk-laviente.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "lavieG",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "berukyurosu",
@@ -229,7 +241,8 @@
    "GR"
   ],
   "oldSlug": "beru",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "berukyurosu.webp"
  },
  {
   "slug": "fatalis",
@@ -243,13 +256,14 @@
    "GR"
   ],
   "oldSlug": "mira",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "blackfatalis.webp"
  },
  {
   "slug": "black-diablos",
   "name": "Black Diablos",
   "category": "Flying Wyvern",
-  "icon": "blackdiablos.webp",
+  "icon": "black-diablos.png",
   "zone": "blackdiablos.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -257,13 +271,14 @@
    "GR"
   ],
   "oldSlug": "deakuro",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "blackdiablos.webp"
  },
  {
   "slug": "black-gravios",
   "name": "Black Gravios",
   "category": "Flying Wyvern",
-  "icon": "blackgravios.webp",
+  "icon": "black-gravios.png",
   "zone": "blackgravios.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -271,19 +286,20 @@
    "GR"
   ],
   "oldSlug": "gurakuro",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "blackgravios.webp"
  },
  {
   "slug": "blango",
   "name": "Blango",
   "category": "Other",
-  "icon": "blango.webp",
+  "icon": "blango.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "bura",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "blangonga",
@@ -299,13 +315,14 @@
    "Zenith"
   ],
   "oldSlug": "dodobura",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "blangonga.webp"
  },
  {
   "slug": "blue-yian-kut-ku",
   "name": "Blue Yian Kut-Ku",
   "category": "Bird Wyvern",
-  "icon": "blueyiankut-ku.webp",
+  "icon": "blue-yian-kut-ku.png",
   "zone": "blueyiankut-ku.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -313,7 +330,8 @@
    "GR"
   ],
   "oldSlug": "kukkuao",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "blueyiankut-ku.webp"
  },
  {
   "slug": "bogabadorumu",
@@ -325,13 +343,14 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "boga",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "zenith_bogabadorumu.webp"
  },
  {
   "slug": "brachydios",
   "name": "Brachydios",
   "category": "Brute Wyvern",
-  "icon": "brachydios.webp",
+  "icon": "brachydios.png",
   "zone": "brachydios.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -339,13 +358,14 @@
    "GR"
   ],
   "oldSlug": "buraki",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "brachydios.webp"
  },
  {
   "slug": "breeding-season-hypnocatrice",
   "name": "Breeding Season Hypnocatrice",
   "category": "Bird Wyvern",
-  "icon": "breedingseasonhypnoc.webp",
+  "icon": "breeding-season-hypnocatrice.png",
   "zone": "breedingseasonhypnoc.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -353,13 +373,14 @@
    "GR"
   ],
   "oldSlug": "hipuao",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "breedingseasonhypnoc.webp"
  },
  {
   "slug": "bulldrome",
   "name": "Bulldrome",
   "category": "Fanged Beast",
-  "icon": "bulldrome.webp",
+  "icon": "bulldrome.png",
   "zone": "bulldrome.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -369,31 +390,32 @@
    "Corridor & Road"
   ],
   "oldSlug": "dosburu",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "bulldrome.webp"
  },
  {
   "slug": "bullfango",
   "name": "Bullfango",
   "category": "Other",
-  "icon": "bullfango.webp",
+  "icon": "bullfango.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "buru",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "burukku",
   "name": "Burukku",
   "category": "Other",
-  "icon": "burukku.webp",
+  "icon": "burukku.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "brook",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "cactus",
@@ -405,25 +427,26 @@
   "hasDrops": false,
   "variants": [],
   "oldSlug": "saboten",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": null
  },
  {
   "slug": "shogun-ceanataur",
   "name": "Shogun Ceanataur",
   "category": "Other",
-  "icon": "ceanataur.webp",
+  "icon": "shogun-ceanataur.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "yao",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "cephadrome",
   "name": "Cephadrome",
   "category": "Piscine Wyvern",
-  "icon": "cephadrome.webp",
+  "icon": "cephadrome.png",
   "zone": "cephadrome.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -432,25 +455,26 @@
    "GR"
   ],
   "oldSlug": "dosgare",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "cephadrome.webp"
  },
  {
   "slug": "cephalos",
   "name": "Cephalos",
   "category": "Other",
-  "icon": "cephalos.webp",
+  "icon": "cephalos.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "gare",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "chameleos",
   "name": "Chameleos",
   "category": "Elder Dragon",
-  "icon": "chameleos.webp",
+  "icon": "chameleos.png",
   "zone": "chameleos.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -458,25 +482,26 @@
    "GR"
   ],
   "oldSlug": "oo",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "chameleos.webp"
  },
  {
   "slug": "conga",
   "name": "Conga",
   "category": "Other",
-  "icon": "conga.webp",
+  "icon": "conga.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "konga",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "congalala",
   "name": "Congalala",
   "category": "Fanged Beast",
-  "icon": "congalala.webp",
+  "icon": "congalala.png",
   "zone": "congalala.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -485,7 +510,8 @@
    "GR"
   ],
   "oldSlug": "babakonga",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "congalala.webp"
  },
  {
   "slug": "crimson-fatalis",
@@ -499,7 +525,8 @@
    "GR"
   ],
   "oldSlug": "miraval",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "crimsonfatalis.webp"
  },
  {
   "slug": "daimyo-hermitaur",
@@ -515,13 +542,14 @@
    "Zenith"
   ],
   "oldSlug": "daimyo",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "daimyohermitaur.webp"
  },
  {
   "slug": "deviljho",
   "name": "Deviljho",
   "category": "Brute Wyvern",
-  "icon": "deviljho.webp",
+  "icon": "deviljho.png",
   "zone": "deviljho.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -529,13 +557,14 @@
    "GR"
   ],
   "oldSlug": "joe",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "deviljho.webp"
  },
  {
   "slug": "diablos",
   "name": "Diablos",
   "category": "Flying Wyvern",
-  "icon": "diablos.webp",
+  "icon": "diablos.png",
   "zone": "diablos.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -544,7 +573,8 @@
    "GR"
   ],
   "oldSlug": "dea",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "diablos.webp"
  },
  {
   "slug": "diorex",
@@ -558,19 +588,21 @@
    "GR"
   ],
   "oldSlug": "dio",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "diorex.webp"
  },
  {
   "slug": "disufiroa",
   "name": "Disufiroa",
   "category": "Elder Dragon",
-  "icon": "disufiroa.webp",
+  "icon": "disufiroa.png",
   "zone": "disufiroa.webp",
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "disf",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "disufiroa.webp"
  },
  {
   "slug": "doragyurosu",
@@ -585,7 +617,8 @@
    "Zenith"
   ],
   "oldSlug": "doragyu",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "doragyurosu.webp"
  },
  {
   "slug": "duremudira-1st",
@@ -597,7 +630,8 @@
   "hasDrops": false,
   "variants": [],
   "oldSlug": "dolem1",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "duremudirafirstdistrict.webp"
  },
  {
   "slug": "duremudira-2nd",
@@ -609,7 +643,8 @@
   "hasDrops": false,
   "variants": [],
   "oldSlug": "dolem2",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "duremudirafirstdistrict.webp"
  },
  {
   "slug": "dyuragaua",
@@ -624,7 +659,8 @@
    "Corridor & Road"
   ],
   "oldSlug": "dura",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "dyuragaua.webp"
  },
  {
   "slug": "egyurasu",
@@ -636,7 +672,8 @@
   "hasDrops": false,
   "variants": [],
   "oldSlug": "egura",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": null
  },
  {
   "slug": "elzelion",
@@ -648,19 +685,20 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "elze",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "elzelion.webp"
  },
  {
   "slug": "erupe",
   "name": "Erupe",
   "category": "Other",
-  "icon": "erupe.webp",
+  "icon": "erupe.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": null,
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "espinas",
@@ -677,37 +715,39 @@
    "Zenith"
   ],
   "oldSlug": "esp",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "espinas.webp"
  },
  {
   "slug": "farunokku",
   "name": "Farunokku",
   "category": "Bird Wyvern",
-  "icon": "farunokku.webp",
+  "icon": "farunokku.png",
   "zone": "farunokku.webp",
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "faru",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "farunokku.webp"
  },
  {
   "slug": "felyne",
   "name": "Felyne",
   "category": "Other",
-  "icon": "felyne.webp",
+  "icon": "felyne.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": false,
   "variants": [],
   "oldSlug": "airu",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "forokururu",
   "name": "Forokururu",
   "category": "Bird Wyvern",
-  "icon": "forokururu.webp",
+  "icon": "forokururu.png",
   "zone": "forokururu.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -715,7 +755,8 @@
    "GR"
   ],
   "oldSlug": "folo",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "forokururu.webp"
  },
  {
   "slug": "garuba-daora",
@@ -729,7 +770,8 @@
    "GR"
   ],
   "oldSlug": "galba",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "garubadaora.webp"
  },
  {
   "slug": "gasurabazura",
@@ -744,13 +786,14 @@
    "Zenith"
   ],
   "oldSlug": "gasra",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "gasurabazura.webp"
  },
  {
   "slug": "gendrome",
   "name": "Gendrome",
   "category": "Bird Wyvern",
-  "icon": "gendrome.webp",
+  "icon": "gendrome.png",
   "zone": "gendrome.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -759,19 +802,20 @@
    "GR"
   ],
   "oldSlug": "dosgene",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "gendrome.webp"
  },
  {
   "slug": "genprey",
   "name": "Genprey",
   "category": "Other",
-  "icon": null,
+  "icon": "genprey.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "gene",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "giaorugu",
@@ -785,19 +829,20 @@
    "Zenith"
   ],
   "oldSlug": "giao",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "giaorugu.webp"
  },
  {
   "slug": "giaprey",
   "name": "Giaprey",
   "category": "Other",
-  "icon": null,
+  "icon": "giaprey.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "giano",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "gogomoa",
@@ -811,13 +856,14 @@
    "GR"
   ],
   "oldSlug": "gogo",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "gogomoa.webp"
  },
  {
   "slug": "gold-rathian",
   "name": "Gold Rathian",
   "category": "Flying Wyvern",
-  "icon": "goldrathian.webp",
+  "icon": "gold-rathian.png",
   "zone": "goldrathian.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -826,13 +872,14 @@
    "GR"
   ],
   "oldSlug": "reiakin",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "goldrathian.webp"
  },
  {
   "slug": "gore-magala",
   "name": "Gore Magala",
   "category": "？？？",
-  "icon": "goremagala.webp",
+  "icon": "gore-magala.png",
   "zone": "goremagala.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -840,7 +887,8 @@
    "GR"
   ],
   "oldSlug": "goa",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "goremagala.webp"
  },
  {
   "slug": "goruganosu",
@@ -852,7 +900,8 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "volkin",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "goruganosu.webp"
  },
  {
   "slug": "gravios",
@@ -869,19 +918,20 @@
    "Zenith"
   ],
   "oldSlug": "gura",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "gravios.webp"
  },
  {
   "slug": "great-thunderbug",
   "name": "Great Thunderbug",
   "category": "Other",
-  "icon": null,
+  "icon": "great-thunderbug.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "raikou",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "green-plesioth",
@@ -895,7 +945,8 @@
    "GR"
   ],
   "oldSlug": "ganomidori",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "greenplesioth.webp"
  },
  {
   "slug": "guanzorumu",
@@ -909,13 +960,14 @@
    "GR"
   ],
   "oldSlug": "guan",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "guanzorumu.webp"
  },
  {
   "slug": "gureadomosu",
   "name": "Gureadomosu",
   "category": "Flying Wyvern",
-  "icon": "gureadomosu.webp",
+  "icon": "gureadomosu.png",
   "zone": "gureadomosu.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -923,7 +975,8 @@
    "GR"
   ],
   "oldSlug": "glare",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "gureadomosu.webp"
  },
  {
   "slug": "gurenzeburu",
@@ -937,13 +990,14 @@
    "GR"
   ],
   "oldSlug": "guren",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "gurenzeburu.webp"
  },
  {
   "slug": "gypceros",
   "name": "Gypceros",
   "category": "Bird Wyvern",
-  "icon": "gypceros.webp",
+  "icon": "gypceros.png",
   "zone": "gypceros.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -953,13 +1007,14 @@
    "Corridor & Road"
   ],
   "oldSlug": "geryo",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "gypceros.webp"
  },
  {
   "slug": "harudomerugu",
   "name": "Harudomerugu",
   "category": "Elder Dragon",
-  "icon": "harudomerugu.webp",
+  "icon": "harudomerugu.png",
   "zone": "harudomerugu.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -968,25 +1023,26 @@
    "Zenith"
   ],
   "oldSlug": "hald",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "harudomerugu.webp"
  },
  {
   "slug": "hornetaur",
   "name": "Hornetaur",
   "category": "Other",
-  "icon": null,
+  "icon": "hornetaur.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "kanta",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "hypnocatrice",
   "name": "Hypnocatrice",
   "category": "Bird Wyvern",
-  "icon": "hypnoc.webp",
+  "icon": "hypnocatrice.png",
   "zone": "hypnoc.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -997,7 +1053,8 @@
    "Zenith"
   ],
   "oldSlug": "hipu",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "hypnoc.webp"
  },
  {
   "slug": "hyujikiki",
@@ -1011,7 +1068,8 @@
    "Zenith"
   ],
   "oldSlug": "hyuji",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "hyujikiki.webp"
  },
  {
   "slug": "inagami",
@@ -1026,13 +1084,14 @@
    "Zenith"
   ],
   "oldSlug": "ina",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "inagami.webp"
  },
  {
   "slug": "iodrome",
   "name": "Iodrome",
   "category": "Bird Wyvern",
-  "icon": "iodrome.webp",
+  "icon": "iodrome.png",
   "zone": "iodrome.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1041,25 +1100,26 @@
    "GR"
   ],
   "oldSlug": "dosios",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "iodrome.webp"
  },
  {
   "slug": "ioprey",
   "name": "Ioprey",
   "category": "Other",
-  "icon": null,
+  "icon": "ioprey.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "ios",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "kamu-orugaron",
   "name": "Kamu Orugaron",
   "category": "Fanged Beast",
-  "icon": "kamuorugaron.webp",
+  "icon": "kamu-orugaron.png",
   "zone": "kamuorugaron.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1067,19 +1127,20 @@
    "GR"
   ],
   "oldSlug": "olgk",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "kamuorugaron.webp"
  },
  {
   "slug": "kelbi",
   "name": "Kelbi",
   "category": "Other",
-  "icon": null,
+  "icon": "kelbi.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "kerubi",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "keoaruboru",
@@ -1091,13 +1152,14 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "keoa",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "keoaruboru.webp"
  },
  {
   "slug": "khezu",
   "name": "Khezu",
   "category": "Flying Wyvern",
-  "icon": "khezu.webp",
+  "icon": "khezu.png",
   "zone": "khezu.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1107,7 +1169,8 @@
    "Zenith"
   ],
   "oldSlug": "furu",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "khezu.webp"
  },
  {
   "slug": "king-shakalaka",
@@ -1119,13 +1182,14 @@
   "hasDrops": false,
   "variants": [],
   "oldSlug": "cyacyaKing",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": null
  },
  {
   "slug": "kirin",
   "name": "Kirin",
   "category": "Elder Dragon",
-  "icon": "kirin.webp",
+  "icon": "kirin.png",
   "zone": "kirin.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1133,7 +1197,8 @@
    "GR"
   ],
   "oldSlug": null,
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "kirin.webp"
  },
  {
   "slug": "kokomoa",
@@ -1145,13 +1210,14 @@
   "hasDrops": false,
   "variants": [],
   "oldSlug": "koko",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": null
  },
  {
   "slug": "kuarusepusu",
   "name": "Kuarusepusu",
   "category": "Fanged Wyvern",
-  "icon": "kuarusepusu.webp",
+  "icon": "kuarusepusu.png",
   "zone": "kuarusepusu.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1159,13 +1225,14 @@
    "GR"
   ],
   "oldSlug": "qual",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "kuarusepusu.webp"
  },
  {
   "slug": "kushala-daora",
   "name": "Kushala Daora",
   "category": "Elder Dragon",
-  "icon": "kushaladaora.webp",
+  "icon": "kushala-daora.png",
   "zone": "kushaladaora.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1173,7 +1240,8 @@
    "GR"
   ],
   "oldSlug": "kusha",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "kushaladaora.webp"
  },
  {
   "slug": "kusubami",
@@ -1191,13 +1259,14 @@
   "slug": "lao-shan-lung",
   "name": "Lao-Shan Lung",
   "category": "Elder Dragon",
-  "icon": "lao-shanlung.webp",
+  "icon": "lao-shan-lung.png",
   "zone": "lao-shanlung.webp",
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "rao",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "lao-shanlung.webp"
  },
  {
   "slug": "lolo-gougarf",
@@ -1211,13 +1280,14 @@
    "GR"
   ],
   "oldSlug": "goglf_r",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "lologougarf.webp"
  },
  {
   "slug": "lunastra",
   "name": "Lunastra",
   "category": "Elder Dragon",
-  "icon": "lunastra.webp",
+  "icon": "lunastra.png",
   "zone": "lunastra.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1225,19 +1295,20 @@
    "GR"
   ],
   "oldSlug": "nana",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "lunastra.webp"
  },
  {
   "slug": "melynx",
   "name": "Melynx",
   "category": "Other",
-  "icon": "Melynx.webp",
+  "icon": "melynx.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "merura",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "meraginasu",
@@ -1251,7 +1322,8 @@
    "GR"
   ],
   "oldSlug": "mera",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "meraginasu.webp"
  },
  {
   "slug": "midogaron",
@@ -1265,13 +1337,14 @@
    "Zenith"
   ],
   "oldSlug": "mido",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "midogaron.webp"
  },
  {
   "slug": "monoblos",
   "name": "Monoblos",
   "category": "Flying Wyvern",
-  "icon": "monoblos.webp",
+  "icon": "monoblos.png",
   "zone": "monoblos.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1279,19 +1352,20 @@
    "GR"
   ],
   "oldSlug": "mono",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "monoblos.webp"
  },
  {
   "slug": "mosswine",
   "name": "Mosswine",
   "category": "Other",
-  "icon": null,
+  "icon": "mosswine.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "mos",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "duremudira-musou",
@@ -1303,13 +1377,14 @@
   "hasDrops": false,
   "variants": [],
   "oldSlug": "bogaK",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "musou_bogabadorumu.webp"
  },
  {
   "slug": "nargacuga",
   "name": "Nargacuga",
   "category": "Flying Wyvern",
-  "icon": "nargacuga.webp",
+  "icon": "nargacuga.png",
   "zone": "nargacuga.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1317,13 +1392,14 @@
    "GR"
   ],
   "oldSlug": "nalga",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "nargacuga.webp"
  },
  {
   "slug": "nono-orugaron",
   "name": "Nono Orugaron",
   "category": "Fanged Beast",
-  "icon": "nonoorugaron.webp",
+  "icon": "nono-orugaron.png",
   "zone": "nonoorugaron.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1331,7 +1407,8 @@
    "GR"
   ],
   "oldSlug": "olgn",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "nonoorugaron.webp"
  },
  {
   "slug": "odibatorasu",
@@ -1345,7 +1422,8 @@
    "GR"
   ],
   "oldSlug": "odiva",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "odibatorasu.webp"
  },
  {
   "slug": "orange-espinas",
@@ -1360,7 +1438,8 @@
    "Corridor & Road"
   ],
   "oldSlug": "espcya",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "orangeespinas.webp"
  },
  {
   "slug": "pariapuria",
@@ -1375,13 +1454,14 @@
    "Corridor & Road"
   ],
   "oldSlug": "paria",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "pariapuria.webp"
  },
  {
   "slug": "pink-rathian",
   "name": "Pink Rathian",
   "category": "Flying Wyvern",
-  "icon": "pinkrathian.webp",
+  "icon": "pink-rathian.png",
   "zone": "pinkrathian.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1389,13 +1469,14 @@
    "GR"
   ],
   "oldSlug": "reiasa",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "pinkrathian.webp"
  },
  {
   "slug": "plesioth",
   "name": "Plesioth",
   "category": "Piscine Wyvern",
-  "icon": "plesioth.webp",
+  "icon": "plesioth.png",
   "zone": "plesioth.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1405,7 +1486,8 @@
    "Zenith"
   ],
   "oldSlug": "gano",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "plesioth.webp"
  },
  {
   "slug": "poborubarumu",
@@ -1419,7 +1501,8 @@
    "GR"
   ],
   "oldSlug": "pobol",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "poborubarumu.webp"
  },
  {
   "slug": "poison-light-bug",
@@ -1431,7 +1514,8 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "dokukou",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": null
  },
  {
   "slug": "pokara",
@@ -1455,25 +1539,26 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": null,
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "pokaradon.webp"
  },
  {
   "slug": "popo",
   "name": "Popo",
   "category": "Other",
-  "icon": null,
+  "icon": "popo.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": null,
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "purple-gypceros",
   "name": "Purple Gypceros",
   "category": "Bird Wyvern",
-  "icon": "purplegypceros.webp",
+  "icon": "purple-gypceros.png",
   "zone": "purplegypceros.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1482,13 +1567,14 @@
    "Corridor & Road"
   ],
   "oldSlug": "geryoao",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "purplegypceros.webp"
  },
  {
   "slug": "rajang",
   "name": "Rajang",
   "category": "Fanged Beast",
-  "icon": "rajang.webp",
+  "icon": "rajang.png",
   "zone": "rajang.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1498,7 +1584,8 @@
    "Corridor & Road"
   ],
   "oldSlug": "ra",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "rajang.webp"
  },
  {
   "slug": "rappy",
@@ -1510,13 +1597,14 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "lappy",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": null
  },
  {
   "slug": "rathalos",
   "name": "Rathalos",
   "category": "Flying Wyvern",
-  "icon": "rathalos.webp",
+  "icon": "rathalos.png",
   "zone": "rathalos.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1526,13 +1614,14 @@
    "Zenith"
   ],
   "oldSlug": "reusu",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "rathalos.webp"
  },
  {
   "slug": "rathian",
   "name": "Rathian",
   "category": "Flying Wyvern",
-  "icon": null,
+  "icon": "rathian.png",
   "zone": "rathian.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1541,7 +1630,8 @@
    "GR"
   ],
   "oldSlug": "reia",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "rathian.webp"
  },
  {
   "slug": "raviente",
@@ -1553,7 +1643,8 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "lavie",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "raviente.webp"
  },
  {
   "slug": "ray-gougarf",
@@ -1567,7 +1658,8 @@
    "GR"
   ],
   "oldSlug": "goglf_l",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "raygougarf.webp"
  },
  {
   "slug": "rebidiora",
@@ -1579,13 +1671,14 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "levy",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "rebidiora.webp"
  },
  {
   "slug": "red-khezu",
   "name": "Red Khezu",
   "category": "Flying Wyvern",
-  "icon": "redkhezu.webp",
+  "icon": "red-khezu.png",
   "zone": "redkhezu.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1593,7 +1686,8 @@
    "GR"
   ],
   "oldSlug": "furuaka",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "redkhezu.webp"
  },
  {
   "slug": "red-volganos",
@@ -1607,19 +1701,20 @@
    "GR"
   ],
   "oldSlug": "volaka",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "redvolganos.webp"
  },
  {
   "slug": "remobra",
   "name": "Remobra",
   "category": "Other",
-  "icon": null,
+  "icon": "remobra.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "gabu",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "rock",
@@ -1631,7 +1726,8 @@
   "hasDrops": false,
   "variants": [],
   "oldSlug": "iwa",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": null
  },
  {
   "slug": "rukodiora",
@@ -1646,25 +1742,27 @@
    "Zenith"
   ],
   "oldSlug": "ruco",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "rukodiora.webp"
  },
  {
   "slug": "rusted-kushala-daora",
   "name": "Rusted Kushala Daora",
   "category": "Elder Dragon",
-  "icon": "rustedkushaladaora.webp",
+  "icon": "rusted-kushala-daora.png",
   "zone": "rustedkushaladaora.webp",
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "kushasabi",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "rustedkushaladaora.webp"
  },
  {
   "slug": "seregios",
   "name": "Seregios",
   "category": "Flying Wyvern",
-  "icon": "seregios.webp",
+  "icon": "seregios.png",
   "zone": "seregios.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1672,19 +1770,20 @@
    "GR"
   ],
   "oldSlug": "sell",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "seregios.webp"
  },
  {
   "slug": "shakalaka",
   "name": "Shakalaka",
   "category": "Other",
-  "icon": null,
+  "icon": "shakalaka.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "cyacya",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "shantien",
@@ -1696,7 +1795,8 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "shan",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "shantien.webp"
  },
  {
   "slug": "shen-gaoren",
@@ -1708,13 +1808,14 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "shen",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "shengaoren.webp"
  },
  {
   "slug": "silver-hypnocatrice",
   "name": "Silver Hypnocatrice",
   "category": "Bird Wyvern",
-  "icon": "whitehypnoc.webp",
+  "icon": "silver-hypnocatrice.png",
   "zone": "whitehypnoc.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1722,13 +1823,14 @@
    "GR"
   ],
   "oldSlug": "hipusiro",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "whitehypnoc.webp"
  },
  {
   "slug": "silver-rathalos",
   "name": "Silver Rathalos",
   "category": "Flying Wyvern",
-  "icon": "silverrathalos.webp",
+  "icon": "silver-rathalos.png",
   "zone": "silverrathalos.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1737,13 +1839,14 @@
    "GR"
   ],
   "oldSlug": "reusugin",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "silverrathalos.webp"
  },
  {
   "slug": "stygian-zinogre",
   "name": "Stygian Zinogre",
   "category": "Fanged Wyvern",
-  "icon": "stygianzinogre.webp",
+  "icon": "stygian-zinogre.png",
   "zone": "stygianzinogre.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1751,7 +1854,8 @@
    "GR"
   ],
   "oldSlug": "zingoku",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "stygianzinogre.webp"
  },
  {
   "slug": "taikun-zamuza",
@@ -1765,7 +1869,8 @@
    "Zenith"
   ],
   "oldSlug": "taikun",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "taikunzamuza.webp"
  },
  {
   "slug": "teostra",
@@ -1779,13 +1884,14 @@
    "GR"
   ],
   "oldSlug": "teo",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "teostra.webp"
  },
  {
   "slug": "tigrex",
   "name": "Tigrex",
   "category": "Flying Wyvern",
-  "icon": "tigrex.webp",
+  "icon": "tigrex.png",
   "zone": "tigrex.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1796,13 +1902,14 @@
    "Zenith"
   ],
   "oldSlug": "tiga",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "tigrex.webp"
  },
  {
   "slug": "toa-tesukatora",
   "name": "Toa Tesukatora",
   "category": "Elder Dragon",
-  "icon": "toatesukatora.webp",
+  "icon": "toa-tesukatora.png",
   "zone": "toatesukatora.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1810,7 +1917,8 @@
    "GR"
   ],
   "oldSlug": "toa",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "toatesukatora.webp"
  },
  {
   "slug": "toridcless",
@@ -1825,13 +1933,14 @@
    "Zenith"
   ],
   "oldSlug": "torid",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "toridcless.webp"
  },
  {
   "slug": "uragaan",
   "name": "Uragaan",
   "category": "Brute Wyvern",
-  "icon": "uragaan.webp",
+  "icon": "uragaan.png",
   "zone": "uragaan.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1839,7 +1948,8 @@
    "GR"
   ],
   "oldSlug": "ura",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "uragaan.webp"
  },
  {
   "slug": "uruki",
@@ -1865,13 +1975,14 @@
    "GR"
   ],
   "oldSlug": "valsa",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "varusaburosu.webp"
  },
  {
   "slug": "velocidrome",
   "name": "Velocidrome",
   "category": "Bird Wyvern",
-  "icon": "velocidrome.webp",
+  "icon": "velocidrome.png",
   "zone": "velocidrome.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1881,31 +1992,32 @@
    "Corridor & Road"
   ],
   "oldSlug": "dosran",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "velocidrome.webp"
  },
  {
   "slug": "velociprey",
   "name": "Velociprey",
   "category": "Other",
-  "icon": null,
+  "icon": "velociprey.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "ran",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "vespoid",
   "name": "Vespoid",
   "category": "Other",
-  "icon": null,
+  "icon": "vespoid.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "rango",
-  "iconKind": "render"
+  "iconKind": "wiki"
  },
  {
   "slug": "volganos",
@@ -1921,7 +2033,8 @@
    "Corridor & Road"
   ],
   "oldSlug": "vol",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "volganos.webp"
  },
  {
   "slug": "voljang",
@@ -1935,7 +2048,8 @@
    "GR"
   ],
   "oldSlug": "Vau",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "voljang.webp"
  },
  {
   "slug": "white-fatalis",
@@ -1949,7 +2063,8 @@
    "GR"
   ],
   "oldSlug": "miraru",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "whitefatalis.webp"
  },
  {
   "slug": "white-espinas",
@@ -1963,13 +2078,14 @@
    "GR"
   ],
   "oldSlug": "espsiro",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": "whiteespinas.webp"
  },
  {
   "slug": "white-monoblos",
   "name": "White Monoblos",
   "category": "Flying Wyvern",
-  "icon": "whitemonoblos.webp",
+  "icon": "white-monoblos.png",
   "zone": "whitemonoblos.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1977,7 +2093,8 @@
    "GR"
   ],
   "oldSlug": "monosiro",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "whitemonoblos.webp"
  },
  {
   "slug": "yama-kurai",
@@ -1991,7 +2108,8 @@
    "GR"
   ],
   "oldSlug": "yamac",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "yamakurai.webp"
  },
  {
   "slug": "yama-tsukami",
@@ -2003,13 +2121,14 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "yama",
-  "iconKind": "render"
+  "iconKind": "render",
+  "render": null
  },
  {
   "slug": "yian-garuga",
   "name": "Yian Garuga",
   "category": "Bird Wyvern",
-  "icon": "yiangaruga.webp",
+  "icon": "yian-garuga.png",
   "zone": "yiangaruga.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -2019,13 +2138,14 @@
    "Corridor & Road"
   ],
   "oldSlug": "garuru",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "yiangaruga.webp"
  },
  {
   "slug": "yian-kut-ku",
   "name": "Yian Kut-Ku",
   "category": "Bird Wyvern",
-  "icon": "yiankut-ku.webp",
+  "icon": "yian-kut-ku.png",
   "zone": "yiankut-ku.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -2034,7 +2154,8 @@
    "GR"
   ],
   "oldSlug": "kukku",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "yiankut-ku.webp"
  },
  {
   "slug": "zenaserisu",
@@ -2046,13 +2167,14 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "zena",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "render": "zenaserisu.webp"
  },
  {
   "slug": "zerureusu",
   "name": "Zerureusu",
   "category": "Flying Wyvern",
-  "icon": "zerureusu.webp",
+  "icon": "zerureusu.png",
   "zone": "zerureusu.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -2060,13 +2182,14 @@
    "GR"
   ],
   "oldSlug": "zeru",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "zerureusu.webp"
  },
  {
   "slug": "zinogre",
   "name": "Zinogre",
   "category": "Fanged Wyvern",
-  "icon": "zinogre.webp",
+  "icon": "zinogre.png",
   "zone": "zinogre.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -2074,6 +2197,7 @@
    "GR"
   ],
   "oldSlug": "zin",
-  "iconKind": "render"
+  "iconKind": "wiki",
+  "render": "zinogre.webp"
  }
 ]

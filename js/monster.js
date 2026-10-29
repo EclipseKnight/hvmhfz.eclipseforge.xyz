@@ -212,6 +212,13 @@
       badge.alt = "";
       title.appendChild(badge);
     }
+    if (detail.render) {
+      var render = document.createElement("img");
+      render.className = "monster-render-mini";
+      render.src = "/assets/monsters/icons/" + detail.render;
+      render.alt = detail.name + " render";
+      title.appendChild(render);
+    }
     title.appendChild(document.createTextNode(detail.name));
     info.appendChild(title);
     var forms = [];
