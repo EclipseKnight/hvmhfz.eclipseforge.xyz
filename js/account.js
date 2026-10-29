@@ -786,6 +786,88 @@
     }
   }
 
+  /* ---------- Gifts ---------- */
+
+  function giftQuantity(quantity) {
+    return Number(quantity).toLocaleString();
+  }
+
+  function giftImageUrl(icon) {
+    return "/assets/items/" + icon + ".webp";
+  }
+
+  function giftRow(item) {
+    var row = el("li", "gift-row");
+    var iconCell = el("span", "gift-icon");
+    if (item.icon) {
+      var img = el("img", null, "");
+      img.src = giftImageUrl(item.icon);
+      img.alt = "";
+      img.loading = "lazy";
+      img.onerror = function () { iconCell.style.display = "none"; };
+      iconCell.appendChild(img);
+    }
+    row.appendChild(iconCell);
+    var label = item.name || item.itemTypeLabel;
+    var text = giftQuantity(item.quantity) + " " + label;
+    if (label !== item.itemTypeLabel) text += " (" + item.itemTypeLabel + ")";
+    row.appendChild(el("span", "gift-label", text));
+    return row;
+  }
+
+  function giftCard(gift) {
+    var item = el("div", "guild-card");
+    var head = el("p", "subhead", gift.eventName);
+    if (gift.ended) head.appendChild(el("span", "tab-count", "ended"));
+    item.appendChild(head);
+    if (gift.description) {
+      item.appendChild(el("p", "note-text", gift.description.replace(/~C\d+/g, "")));
+    }
+    var tags = ["Gift list: " + gift.listName,
+      "up to " + gift.timesAcceptable + " take" + (gift.timesAcceptable === 1 ? "" : "s") + " each"];
+    if (gift.targeted) tags.push("only for " + gift.targetedTo);
+    item.appendChild(el("p", "note-text", tags.join(" ")));
+    if (gift.items.length) {
+      var list = el("ul", "gift-list");
+      gift.items.forEach(function (giftItem) { list.appendChild(giftRow(giftItem)); });
+      item.appendChild(list);
+    }
+    gift.acceptedBy.forEach(function (accept) {
+      item.appendChild(el("p", "note-text", accept.characterName + ": accepted " +
+        accept.timesAccepted + " of " + gift.timesAcceptable));
+    });
+    if (!gift.ended && !gift.acceptedBy.length && !gift.targeted) {
+      item.appendChild(el("p", "note-text", "None of your characters has picked this one up."));
+    }
+    return item;
+  }
+
+  function renderGifts(list) {
+    var body = document.getElementById("gifts-body");
+    clear(body);
+    var open = list.filter(function (gift) { return !gift.ended; });
+    document.getElementById("gifts-note").textContent =
+      !list.length ? "none" : open.length + " open" + (list.length > open.length ? ", " + (list.length - open.length) + " ended" : "");
+    if (!list.length) {
+      body.appendChild(el("p", "note-text", "No gifts on the server right now."));
+      return;
+    }
+    open.concat(list.filter(function (gift) { return gift.ended; })).forEach(function (gift) {
+      body.appendChild(giftCard(gift));
+    });
+  }
+
+  function loadGifts() {
+    return request("/api/account/distributions").then(function (data) {
+      renderGifts(data.gifts || []);
+    }).catch(function (error) {
+      if (error.message === "unauthenticated") return;
+      document.getElementById("gifts-note").textContent = error.message === "unauthenticated" ? "unavailable" : "unavailable (" + (error.serverMessage || error.message) + ")";
+      clear(document.getElementById("gifts-body"));
+      document.getElementById("gifts-body").appendChild(el("p", "note-text", "The gift lists could not be loaded right now."));
+    });
+  }
+
   /* ---------- Hunting Road rewards ---------- */
 
   function roadRewardAlert(text, ok) {
@@ -916,6 +998,8 @@
       renderActivity(state.characters, state.guilds);
       wireCharacters(state.characters);
       loadRoadRewards();
+      loadGifts();
+
     }).catch(function (error) {
       if (error.message === "unauthenticated") return;
       showError("Could not load your account right now. Try again in a moment.");
