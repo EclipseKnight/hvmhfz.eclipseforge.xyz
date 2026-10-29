@@ -700,12 +700,201 @@
     loadRoad().catch(roadFail);
   }
 
+  /* ---------- tabs ---------- */
+
+  var TAB_PANELS = { gifts: "panel-gifts", road: "panel-road", users: "panel-users" };
+  var roadStarted = false;
+  var usersWired = false;
+  var currentName = "";
+
+  function activateTab(name) {
+    if (!TAB_PANELS[name]) name = "gifts";
+    Object.keys(TAB_PANELS).forEach(function (key) {
+      var panel = $(TAB_PANELS[key]);
+      if (panel) panel.hidden = key !== name;
+      var tab = $("tab-" + key);
+      if (tab) tab.setAttribute("aria-selected", key === name ? "true" : "false");
+    });
+    if (name === "road" && !roadStarted) {
+      roadStarted = true;
+      startRoad();
+    }
+    if (name === "users") {
+      if (!usersWired) {
+        usersWired = true;
+        wireUsers();
+      }
+      loadUsers().catch(usersFail);
+    }
+  }
+
+  function wireTabs() {
+    document.querySelector(".tabs").addEventListener("click", function (event) {
+      var tab = event.target.closest(".tab");
+      if (!tab) return;
+      event.preventDefault();
+      window.location.hash = tab.getAttribute("href").slice(1);
+    });
+    window.addEventListener("hashchange", function () {
+      activateTab(window.location.hash.replace("#", ""));
+    });
+  }
+
+  /* ---------- users ---------- */
+
+  var users = { page: 0, size: 25, query: "" };
+
+  function usersAlert(text) {
+    var box = $("users-alert");
+    box.textContent = text || "";
+    box.hidden = !text;
+  }
+
+  function usersFail(error) {
+    if (error.message === "signin") usersAlert("Your sign-in has expired. Sign in again on the home page.");
+    else if (error.message === "forbidden") usersAlert("This account is not an admin.");
+    else usersAlert(error.message || "The user list could not be loaded.");
+  }
+
+  function stamp(value) {
+    if (!value) return "never";
+    return new Date(value).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+  }
+
+  function roleBadge(role) {
+    var extra = role === "ROLE_ADMIN" ? " role-admin" : role === "ROLE_MODERATOR" ? " role-mod" : "";
+    return el("span", "role-badge" + extra, role.replace("ROLE_", ""));
+  }
+
+  function roleButton(user, role, label) {
+    var has = user.roles.indexOf(role) !== -1;
+    var button = el("button", "ghost-btn small" + (has ? " is-on" : ""), (has ? "Remove " : "Make ") + label);
+    button.type = "button";
+    if (has && role === "ROLE_ADMIN" && currentName && user.username === currentName) {
+      button.disabled = true;
+      button.title = "You can't remove your own admin role.";
+    }
+    button.addEventListener("click", function () {
+      button.disabled = true;
+      request("/api/admin/roles", {
+        method: "POST",
+        body: JSON.stringify({ username: user.username, role: role, grant: !has })
+      }).then(function (data) {
+        usersAlert((data && data.message) || "Saved.");
+        return loadUsers();
+      }).catch(function (error) {
+        button.disabled = false;
+        usersFail(error);
+      });
+    });
+    return button;
+  }
+
+  function chatToggle(user, field) {
+    var on = !!user[field];
+    var button = el("button", "ghost-btn small" + (on ? " is-on" : ""), field);
+    button.type = "button";
+    button.setAttribute("aria-pressed", on ? "true" : "false");
+    button.title = field + " is " + (on ? "on" : "off") + " for " + user.username;
+    button.addEventListener("click", function () {
+      button.disabled = true;
+      var body = {};
+      body[field] = !on;
+      request("/api/admin/users/" + user.id + "/flags", { method: "POST", body: JSON.stringify(body) })
+        .then(function (data) {
+          usersAlert((data && data.message) || "Saved.");
+          return loadUsers();
+        }).catch(function (error) {
+          button.disabled = false;
+          usersFail(error);
+        });
+    });
+    return button;
+  }
+
+  function renderUsers(data) {
+    var body = $("user-rows");
+    clear(body);
+    $("users-summary").textContent = num(data.summary.accounts) + " accounts · " + data.summary.admins + " admins · "
+      + data.summary.moderators + " moderators · " + num(data.summary.linked) + " Discord links";
+    $("count-users").textContent = "(" + num(data.summary.accounts) + ")";
+    $("users-page").textContent = num(data.total) + (data.total === 1 ? " match" : " matches")
+      + " · page " + (data.page + 1) + " of " + Math.max(1, Math.ceil(data.total / data.size));
+    $("users-prev").disabled = data.page <= 0;
+    $("users-next").disabled = (data.page + 1) * data.size >= data.total;
+    if (!data.users.length) {
+      var empty = el("tr");
+      var cell = el("td", "empty-cell", "No account matches that search.");
+      cell.colSpan = 9;
+      empty.appendChild(cell);
+      body.appendChild(empty);
+      return;
+    }
+    data.users.forEach(function (user) {
+      var row = el("tr");
+      row.appendChild(el("td", "rank", String(user.id)));
+      var name = el("td", "cell-name");
+      name.appendChild(el("span", null, user.username));
+      if (currentName && user.username === currentName) name.appendChild(el("span", "admin-desc", "you"));
+      row.appendChild(name);
+      var roles = el("td", "role-cell");
+      if (!user.roles.length) roles.appendChild(el("span", "role-badge", "none"));
+      else user.roles.forEach(function (role) { roles.appendChild(roleBadge(role)); });
+      row.appendChild(roles);
+      row.appendChild(el("td", "num", num(user.characters)));
+      row.appendChild(el("td", null, stamp(user.lastLogin)));
+      row.appendChild(el("td", null, user.discordLinked ? "Linked" : "-"));
+      var chat = el("td", "admin-flags");
+      chat.appendChild(chatToggle(user, "op"));
+      chat.appendChild(chatToggle(user, "timer"));
+      row.appendChild(chat);
+      var adminCell = el("td");
+      adminCell.appendChild(roleButton(user, "ROLE_ADMIN", "admin"));
+      row.appendChild(adminCell);
+      var modCell = el("td");
+      modCell.appendChild(roleButton(user, "ROLE_MODERATOR", "moderator"));
+      row.appendChild(modCell);
+      body.appendChild(row);
+    });
+  }
+
+  function loadUsers() {
+    return request("/api/admin/users?query=" + encodeURIComponent(users.query) + "&page=" + users.page + "&size=" + users.size)
+      .then(function (data) { renderUsers(data); });
+  }
+
+  function wireUsers() {
+    $("users-prev").addEventListener("click", function () {
+      if (users.page > 0) {
+        users.page -= 1;
+        loadUsers().catch(usersFail);
+      }
+    });
+    $("users-next").addEventListener("click", function () {
+      users.page += 1;
+      loadUsers().catch(usersFail);
+    });
+    var timer = null;
+    $("user-search").addEventListener("input", function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        users.query = $("user-search").value.trim();
+        users.page = 0;
+        loadUsers().catch(usersFail);
+      }, 250);
+    });
+  }
+
   function start() {
     if (!token()) {
       alertBox("Sign in on the home page with an admin account first.");
       return;
     }
-    startRoad();
+    wireTabs();
+    activateTab(window.location.hash.replace("#", "") || "gifts");
+    request("/api/users/self")
+      .then(function (self) { currentName = (self && self.username) || ""; })
+      .catch(function () { /* the list still works; only the "you" mark is missing */ });
     request("/api/admin/distributions/options")
       .then(function (data) {
         options = data;

@@ -4,11 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hunsterverse MHFZ: Admin</title>
-    <meta name="description" content="Hunsterverse admin panel: gifts and the Hunting Road rotation." />
+    <meta name="description" content="Hunsterverse admin panel: gifts, the Hunting Road rotation and the user manager." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Hunsterverse" />
     <meta property="og:title" content="Hunsterverse MHFZ: Admin" />
-    <meta property="og:description" content="Hunsterverse admin panel: gifts and the Hunting Road rotation." />
+    <meta property="og:description" content="Hunsterverse admin panel: gifts, the Hunting Road rotation and the user manager." />
     <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/admin.html" />
     <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
     <meta property="og:image:width" content="1200" />
@@ -77,11 +77,18 @@
       <header class="page-head">
         <p class="kicker">Hunsterverse · Admin</p>
         <h1>Admin</h1>
-        <p class="page-sub">Gifts (distributions) and the Hunting Road rotation. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
+        <p class="page-sub">Gifts (distributions), the Hunting Road rotation and the accounts of the server. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
+
+      <nav class="tabs" role="tablist" aria-label="Admin sections">
+        <a class="tab" id="tab-gifts" role="tab" aria-controls="panel-gifts" aria-selected="true" href="#gifts">Gifts</a>
+        <a class="tab" id="tab-road" role="tab" aria-controls="panel-road" aria-selected="false" href="#road">Hunting Road</a>
+        <a class="tab" id="tab-users" role="tab" aria-controls="panel-users" aria-selected="false" href="#users">Users <span class="tab-count" id="count-users"></span></a>
+      </nav>
       </header>
 
       <p class="form-alert" id="admin-alert" hidden></p>
 
+      <div class="tab-panel" id="panel-gifts">
       <section class="panel" id="new-gift" hidden>
         <div class="panel-head"><h2>New gift</h2><span class="panel-note">live as soon as you create it</span></div>
         <form id="gift-form" class="admin-form" novalidate>
@@ -158,8 +165,10 @@
           </table>
         </div>
       </section>
+      </div>
 
-      <section class="panel" id="road-panel" hidden>
+      <div class="tab-panel" id="panel-road" hidden>
+      <section class="panel" id="road-panel">
         <div class="panel-head"><h2>Hunting Road</h2><span class="panel-note" id="road-note"></span></div>
         <p class="form-alert" id="road-alert" hidden></p>
         <p class="road-ok" id="road-ok" hidden></p>
@@ -190,6 +199,29 @@
         <h3 class="subhead">Rotations</h3>
         <div id="road-cycles"><p class="note-text">Loading</p></div>
       </section>
+      </div>
+
+      <div class="tab-panel" id="panel-users" hidden>
+      <section class="panel" id="users-panel">
+        <div class="panel-head"><h2>Users</h2><span class="panel-note" id="users-summary"></span></div>
+        <p class="form-alert" id="users-alert" hidden></p>
+        <div class="admin-search">
+          <input id="user-search" type="search" autocomplete="off" placeholder="Search an account name" aria-label="Search an account name" />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table admin-table">
+            <thead><tr><th>#</th><th>Account</th><th>Roles</th><th class="num">Characters</th><th>Last login</th><th>Discord</th><th>Chat</th><th>Admin</th><th>Moderator</th></tr></thead>
+            <tbody id="user-rows"><tr><td colspan="9" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+        <div class="admin-pager">
+          <button type="button" class="ghost-btn small" id="users-prev">Previous</button>
+          <span class="panel-note" id="users-page"></span>
+          <button type="button" class="ghost-btn small" id="users-next">Next</button>
+        </div>
+        <p class="note-text">Roles apply at the account's next request. Nobody can remove their own admin role, and the last admin cannot be removed. Search is case-insensitive; account names themselves are case-sensitive. Chat toggles are the in-game <code>op</code> (chat commands) and <code>timer</code> (quest timer) flags.</p>
+      </section>
+      </div>
     </main>
 
     <footer class="site-foot">
