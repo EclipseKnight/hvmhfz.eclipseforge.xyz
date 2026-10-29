@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hunsterverse MHFZ: Leaderboards</title>
-    <meta name="description" content="Top hunters, guilds and most hunted monsters on the Hunsterverse Monster Hunter Frontier Z server." />
+    <meta name="description" content="Top hunters, guilds, most hunted monsters and Hunting Road clears on the Hunsterverse Monster Hunter Frontier Z server." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Hunsterverse" />
     <meta property="og:title" content="Hunsterverse MHFZ: Leaderboards" />
@@ -76,7 +76,7 @@
       <header class="page-head">
         <p class="kicker">Hunsterverse · Community</p>
         <h1>Leaderboards</h1>
-        <p class="page-sub">Who hunted the most this week, this month and of all time, from the server kill log. Weeks start Monday 00:00 UTC and months on the 1st. Characters that were never played or hold corrupt records are left out.</p>
+        <p class="page-sub">Who hunted the most this week, this month and of all time, from the server kill log. Weeks start Monday 00:00 UTC and months on the 1st. The Hunting Road board ranks each Road rotation by the highest floor cleared. Characters that were never played or hold corrupt records are left out.</p>
       </header>
 
       <section class="panel">
@@ -89,6 +89,7 @@
           <button type="button" class="chip" data-board="guilds" aria-pressed="false">Top guilds</button>
           <button type="button" class="chip" data-board="monsters" aria-pressed="false">Most hunted</button>
           <button type="button" class="chip" data-board="rp" aria-pressed="false">Guild RP</button>
+          <button type="button" class="chip" data-board="road" aria-pressed="false">Hunting Road</button>
         </div>
         <div class="chips" id="period-chips" role="group" aria-label="Period">
           <button type="button" class="chip" data-period="week" aria-pressed="true">This week</button>
@@ -97,6 +98,16 @@
           <button type="button" class="chip" data-period="lastmonth" aria-pressed="false">Last month</button>
           <button type="button" class="chip" data-period="all" aria-pressed="false">All time</button>
         </div>
+        <div class="road-controls" id="road-controls" hidden>
+          <div class="chips" id="mode-chips" role="group" aria-label="Road">
+            <button type="button" class="chip" data-mode="open" aria-pressed="true">Open Road</button>
+            <button type="button" class="chip" data-mode="solo" aria-pressed="false">Solo Road</button>
+          </div>
+          <label class="select-wrap road-rotation">
+            <select id="road-rotation" aria-label="Rotation"></select>
+          </label>
+        </div>
+        <p class="road-rule" id="road-rule" hidden>Ranked by the highest floor reached in one run during the rotation, then by who reached it first. Each rotation has its own board, and so do the open and solo Roads.</p>
 
         <div class="table-wrap">
           <table class="data-table">

@@ -902,3 +902,10 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   .road-floors{grid-template-columns:minmax(0,1fr)}
 }
 .admin-table tr.is-winner td{background:rgba(46,91,78,.12)}
+
+/* Leaderboards: Hunting Road board controls (Road chips beside the rotation picker). */
+.road-controls{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px 16px;margin-bottom:6px}
+.road-controls .chips{margin-bottom:12px}
+.road-controls .road-rotation select{min-width:240px;max-width:100%}
+.road-rule{margin:0 0 16px;color:var(--ink-soft);font-size:.9rem;max-width:72ch}
+@media (max-width:640px){.road-controls .road-rotation,.road-controls .road-rotation select{width:100%;min-width:0}}
