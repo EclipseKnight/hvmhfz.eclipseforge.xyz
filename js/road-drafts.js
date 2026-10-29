@@ -99,6 +99,33 @@
       .then(function () { save.disabled = false; });
   });
 
+
+  // Autosave: every 15 seconds, if the builder changed, quietly write it to the same draft. No version is
+  // created, nothing is submitted; this is only so a closed tab costs at most a quarter of a minute.
+  var lastSent = "";
+  function autosave() {
+    if (!token() || !window.roadDraftState) return;
+    var state = window.roadDraftState();
+    var blob = JSON.stringify(state.edits || {});
+    if (blob === "{}" || blob === lastSent) return;
+    var id = window.roadDraftId ? window.roadDraftId() : null;
+    var url = API + "/api/account/road-drafts" + (id ? "/" + id : "");
+    fetch(url, {
+      method: id ? "PUT" : "POST",
+      headers: { Authorization: "Bearer " + token(), "Content-Type": "application/json" },
+      body: JSON.stringify({ name: state.name, data: state.edits })
+    }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (d) {
+      lastSent = blob;
+      if (window.roadDraftSaved && d.id) window.roadDraftSaved(d.id);
+      say("Saved " + new Date().toLocaleTimeString(), false);
+      load();
+    }).catch(function () { say("Autosave is waiting for a connection.", true); });
+  }
+  window.setInterval(autosave, 15000);
+
   if (window.roadDraftState) load();
   else window.addEventListener("load", load);
 })();
