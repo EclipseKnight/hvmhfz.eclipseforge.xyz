@@ -2,7 +2,7 @@
    GET /api/public/activity (refreshed every 30 seconds, the API's own cache time).
 
    The answer: {generatedAt, totals{online,inTown,inQuest},
-   worlds[{serverId,worldName,land,online,inTown,inQuest,players[{characterName,charId,discordName,status,questId}],
+   worlds[{serverId,worldName,land,online,inTown,inQuest,players[{characterName,charId,discordName,status,questId,questName}],
    parties[{questId,members[characterName]}]}]}.
    players is [] when the API is set to counts only. parties (hunters questing together, 2 or more) is
    missing in answers from before the API had it; the board then shows no parties and no "in party" tags. discordName (server nickname, else Discord display
@@ -38,10 +38,15 @@
     return world.land === null || world.land === undefined ? name : name + " · Land " + world.land;
   }
 
-  /** What the character is doing. A quest whose id is not known yet is still loading. */
+  /**
+   * What the character is doing. The quest's own name when the API knows it (from the game's quest
+   * files), else its number; nothing yet while the quest is still loading.
+   */
   function questLabel(player) {
     if (player.status !== "quest") return "";
-    return player.questId === null || player.questId === undefined ? "Departing" : "Quest " + player.questId;
+    if (player.questId === null || player.questId === undefined) return "Departing";
+    var name = typeof player.questName === "string" ? player.questName.trim() : "";
+    return name || "Quest " + player.questId;
   }
 
   /** A usable character id: a whole number above 0, else null. */
@@ -75,10 +80,12 @@
     return ids;
   }
 
-  /** A party's quest. Quest names live in the client, so the id; null while the quest is still loading. */
+  /** A party's quest: its name when known, else its number; null while the quest is still loading. */
   function partyQuestLabel(party) {
     var id = party && party.questId;
-    return typeof id === "number" && isFinite(id) ? "Quest #" + id : "Quest loading\u2026";
+    if (!(typeof id === "number" && isFinite(id))) return "Quest loading\u2026";
+    var name = party && typeof party.questName === "string" ? party.questName.trim() : "";
+    return name || "Quest #" + id;
   }
 
   /**
