@@ -55,7 +55,7 @@ Status codes: 400 bad body, 401 missing or expired token, 403 signed in but not 
 
 ## Public endpoints
 
-No token, cached 30 seconds unless stated. Paged endpoints return {items, page, size, total}; page starts at 0 and size is clamped to 1 to 100.
+No token, cached 30 seconds unless stated. Paged endpoints return {items, page, size, total}; page starts at 0 and size is clamped to 1 to 100. Every other route, including the account and admin pages, needs an account token: sign in as described above and send it as a bearer token.
 
 | Path | Parameters | Returns |
 
