@@ -66,9 +66,26 @@
     var body = el("tbody");
     body.appendChild(row("Category", quest.category));
     body.appendChild(row("Area", quest.area || "-"));
-    body.appendChild(row("Objective", quest.objective || quest.objectiveJp || "-"));
+    var objective = (details && details.objectiveEn) || quest.objective || quest.objectiveJp || "-";
+    var objectiveRow = row("Objective", objective);
+    if (details && details.objectiveEn && details.objectiveJp) {
+      var sub = document.createElement("div");
+      sub.className = "cell-sub muted";
+      sub.textContent = details.objectiveJp;
+      objectiveRow.lastChild.appendChild(sub);
+    }
+    body.appendChild(objectiveRow);
     if (details) {
-      if (details.client) body.appendChild(row("Client", details.client));
+      if (details.clientEn || details.client) {
+      var clientRow = row("Client", details.clientEn || details.client);
+      if (details.clientEn && details.client) {
+        var csub = document.createElement("div");
+        csub.className = "cell-sub muted";
+        csub.textContent = details.client;
+        clientRow.lastChild.appendChild(csub);
+      }
+      body.appendChild(clientRow);
+    }
       if (details.minutes) body.appendChild(row("Time limit", details.minutes + " minutes"));
       if (details.rewardMoney !== undefined) body.appendChild(row("Reward money", details.rewardMoney.toLocaleString() + "z"));
       if (details.zenny !== undefined) body.appendChild(row("Contract fee", details.zenny.toLocaleString() + "z"));
@@ -103,9 +120,15 @@
       main.appendChild(mon);
     }
 
-    if (details && details.description) {
-      var desc = section("Description", "from the quest file");
-      desc.appendChild(el("p", "quest-description", details.description));
+    if (details && (details.descriptionEn || details.description)) {
+      var desc = section("Description", details.descriptionEn ? "translated" : "from the quest file");
+      desc.appendChild(el("p", "quest-description", details.descriptionEn || details.description));
+      if (details.descriptionEn && details.description) {
+        var original = el("details", "quest-original");
+        original.appendChild(el("summary", null, "Original Japanese"));
+        original.appendChild(el("p", "quest-description muted", details.description));
+        desc.appendChild(original);
+      }
       main.appendChild(desc);
     }
 
