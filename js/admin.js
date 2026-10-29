@@ -702,10 +702,12 @@
 
   /* ---------- tabs ---------- */
 
-  var TAB_PANELS = { gifts: "panel-gifts", road: "panel-road", users: "panel-users", server: "panel-server" };
+  var TAB_PANELS = { gifts: "panel-gifts", road: "panel-road", users: "panel-users", server: "panel-server", audit: "panel-audit" };
   var roadStarted = false;
   var usersWired = false;
   var serverWired = false;
+  var auditWired = false;
+  var audit = { entries: [], query: "", action: "", account: "" };
   var ops = { service: "erupe", errors: false };
   var currentName = "";
 
@@ -727,6 +729,13 @@
         wireUsers();
       }
       loadUsers().catch(usersFail);
+    }
+    if (name === "audit") {
+      if (!auditWired) {
+        auditWired = true;
+        wireAudit();
+      }
+      loadAuditPage().catch(auditFail);
     }
     if (name === "server") {
       if (!serverWired) {
@@ -1036,6 +1045,122 @@
 
   function loadAudit() {
     return request("/api/admin/ops/audit?max=20").then(renderAudit);
+  }
+
+
+  /* ---------- audit log ---------- */
+
+  function auditFail(error) {
+    var box = $("audit-alert");
+    box.textContent = error && error.message === "forbidden"
+      ? "Only admins can read the audit log."
+      : "Could not load the audit log: " + ((error && error.message) || error);
+    box.hidden = false;
+  }
+
+  function auditMatches(entry) {
+    if (audit.action && entry.action !== audit.action) return false;
+    if (audit.account && entry.account !== audit.account) return false;
+    if (!audit.query) return true;
+    var haystack = [entry.account, entry.action, entry.target, entry.result].join(" ").toLowerCase();
+    return haystack.indexOf(audit.query) !== -1;
+  }
+
+  function fillSelect(select, values, current, allLabel) {
+    clear(select);
+    var all = el("option", null, allLabel);
+    all.value = "";
+    select.appendChild(all);
+    values.forEach(function (value) {
+      var option = el("option", null, value);
+      option.value = value;
+      select.appendChild(option);
+    });
+    select.value = values.indexOf(current) === -1 ? "" : current;
+  }
+
+  function renderAuditPage() {
+    var body = $("audit-rows");
+    clear(body);
+    var shown = audit.entries.filter(auditMatches);
+    $("audit-note").textContent = shown.length + " of " + audit.entries.length + " actions";
+    if (!shown.length) {
+      var row = el("tr");
+      var cell = el("td", "empty-cell", audit.entries.length ? "Nothing matches those filters." : "No actions recorded yet.");
+      cell.colSpan = 5;
+      row.appendChild(cell);
+      body.appendChild(row);
+      return;
+    }
+    shown.forEach(function (entry) {
+      var row = el("tr");
+      var when = el("td", null, since(entry.at));
+      when.setAttribute("data-sort", entry.at || "");
+      row.appendChild(when);
+      row.appendChild(el("td", null, entry.account || "-"));
+      row.appendChild(el("td", null, entry.action || "-"));
+      row.appendChild(el("td", null, entry.target || "-"));
+      row.appendChild(el("td", null, entry.result || "-"));
+      body.appendChild(row);
+    });
+    if (window.enhanceSortableTables) window.enhanceSortableTables($("audit-panel"));
+  }
+
+  function loadAuditPage() {
+    $("audit-alert").hidden = true;
+    return request("/api/admin/ops/audit?max=500").then(function (list) {
+      audit.entries = list || [];
+      var actions = {};
+      var accounts = {};
+      audit.entries.forEach(function (entry) {
+        if (entry.action) actions[entry.action] = true;
+        if (entry.account) accounts[entry.account] = true;
+      });
+      fillSelect($("audit-action"), Object.keys(actions).sort(), audit.action, "All actions");
+      fillSelect($("audit-account"), Object.keys(accounts).sort(), audit.account, "All accounts");
+      renderAuditPage();
+    }).catch(function (error) { auditFail(error); throw error; });
+  }
+
+  function auditCsv() {
+    var rows = [["when", "account", "action", "target", "outcome"]];
+    audit.entries.filter(auditMatches).forEach(function (entry) {
+      rows.push([entry.at || "", entry.account || "", entry.action || "", entry.target || "", entry.result || ""]);
+    });
+    var text = rows.map(function (row) {
+      return row.map(function (value) {
+        var s = String(value);
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      }).join(",");
+    }).join("\n");
+    var link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([text + "\n"], { type: "text/csv" }));
+    link.download = "hvmhfz-audit-" + new Date().toISOString().slice(0, 10) + ".csv";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+  }
+
+  function wireAudit() {
+    var timer = null;
+    $("audit-search").addEventListener("input", function () {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () {
+        audit.query = $("audit-search").value.trim().toLowerCase();
+        renderAuditPage();
+      }, 120);
+    });
+    $("audit-action").addEventListener("change", function () {
+      audit.action = $("audit-action").value;
+      renderAuditPage();
+    });
+    $("audit-account").addEventListener("change", function () {
+      audit.account = $("audit-account").value;
+      renderAuditPage();
+    });
+    $("audit-refresh").addEventListener("click", function () { loadAuditPage().catch(auditFail); });
+    $("audit-export").addEventListener("click", auditCsv);
   }
 
   function wireServer() {

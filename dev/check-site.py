@@ -31,6 +31,7 @@ NAV = [
     ("/worlds.html", "Worlds"),
     ("/events.html", "Events"),
     ("/changelog.html", "Changelog"),
+    ("/api.html", "API"),
     ("/guide-windows.html", "Windows guide"),
     ("/guide-linux.html", "Linux guide"),
     ("/report.html", "Report"),

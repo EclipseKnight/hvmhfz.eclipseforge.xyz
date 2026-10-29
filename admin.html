@@ -23,6 +23,7 @@
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <link rel="stylesheet" href="/css/styles.css" />
     <script src="/js/nav.js" defer></script>
+    <script src="/js/tablesort.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
   </head>
@@ -57,6 +58,7 @@
               <a class="navlink" href="/worlds.html">Worlds</a>
               <a class="navlink" href="/events.html">Events</a>
               <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/api.html">API</a>
             </div>
           </div>
           <div class="nav-group">
@@ -84,6 +86,7 @@
         <a class="tab" id="tab-road" role="tab" aria-controls="panel-road" aria-selected="false" href="#road">Hunting Road</a>
         <a class="tab" id="tab-users" role="tab" aria-controls="panel-users" aria-selected="false" href="#users">Users <span class="tab-count" id="count-users"></span></a>
         <a class="tab" id="tab-server" role="tab" aria-controls="panel-server" aria-selected="false" href="#server">Server</a>
+        <a class="tab" id="tab-audit" role="tab" aria-controls="panel-audit" aria-selected="false" href="#audit">Audit</a>
       </nav>
       </header>
 
@@ -252,6 +255,27 @@
         </div>
       </section>
       </div>
+
+      <div class="tab-panel" id="panel-audit" hidden>
+      <section class="panel" id="audit-panel">
+        <div class="panel-head"><h2>Audit log</h2><span class="panel-note" id="audit-note"></span></div>
+        <p class="form-alert" id="audit-alert" hidden></p>
+        <div class="admin-search audit-filters">
+          <input id="audit-search" type="search" autocomplete="off" placeholder="Search account, action, target or outcome" aria-label="Search the audit log" />
+          <select id="audit-action" aria-label="Filter by action"><option value="">All actions</option></select>
+          <select id="audit-account" aria-label="Filter by account"><option value="">All accounts</option></select>
+          <button type="button" class="ghost-btn small" id="audit-refresh">Refresh</button>
+          <button type="button" class="ghost-btn small" id="audit-export">Export CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table admin-table">
+            <thead><tr><th>When</th><th>Account</th><th>What</th><th>Target</th><th>Outcome</th></tr></thead>
+            <tbody id="audit-rows"><tr><td colspan="5" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+        <p class="note-text">Who did what: restarts, role and chat-flag changes, gifts, Hunting Road changes and session cleanups. The newest 500 lines of the server's audit file are read; the filters and sorting work on what was loaded. Times are UTC.</p>
+      </section>
+      </div>
     </main>
 
     <footer class="site-foot">
@@ -260,6 +284,7 @@
           <a href="/guide-windows.html">Windows guide</a>
           <a href="/guide-linux.html">Linux guide</a>
           <a href="/changelog.html">Changelog</a>
+          <a href="/api.html">API</a>
           <a href="/report.html">Report a problem</a>
           <a href="/privacy.html">Privacy</a>
           <a href="https://discord.gg/YuE42eh">Discord</a>
