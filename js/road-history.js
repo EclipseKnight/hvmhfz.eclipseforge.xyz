@@ -39,7 +39,7 @@
     clear(body);
     list.slice().sort(function (a, b) { return b.number - a.number; }).forEach(function (item) {
       var row = el("tr");
-      row.appendChild(el("td", "rank", String(item.number)));
+      row.appendChild(el("td", "rank", item.number > 0 ? String(item.number) : "base"));
       row.appendChild(el("td", "cell-name", item.name));
       row.appendChild(el("td", null, item.characterName || "-"));
       row.appendChild(el("td", "num", item.votes === null || item.votes === undefined ? "-" : String(item.votes)));

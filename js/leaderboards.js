@@ -224,6 +224,7 @@
 
   function rotationLabel(r) {
     if (r.key === "original") return "Original Road";
+    if (r.number !== null && r.number !== undefined && r.number <= 0) return r.name || "Base Road";
     return "Rotation " + r.number + (r.name ? ": " + r.name : "");
   }
 
