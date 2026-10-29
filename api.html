@@ -22,6 +22,7 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 <link rel="stylesheet" href="/css/styles.css" />
 <script src="/js/nav.js" defer></script>
+    <script src="/js/api-docs.js" defer></script>
 <script src="/js/background.js" defer></script>
 <script src="/js/consent.js" defer></script>
 </head>
@@ -74,123 +75,118 @@
 
 <main id="content" class="sheet">
 <h1>API</h1>
-<p class="lead">Everything the site and the Discord bot show comes from one JSON service. Sign in with a game account to read your own data; admin accounts get the server tools and the audit log.</p>
-<p class="meta">Base URL <code>https://api.hvmhfz.eclipseforge.xyz</code> · health at <code>/actuator/health</code> · times are UTC</p>
-
-<div class="toc">
-<strong>Contents</strong>
-<ol>
-<li><a href="#auth">Signing in</a></li>
+<p class="lead">Everything the site and the Discord bot show comes from one JSON service. The public reads are documented below for everyone; signing in, your account and the admin tools are shown to moderators and admins after sign-in.</p>
+<p class="meta">Base URL <code>https://api.hvmhfz.eclipseforge.xyz</code> · health <code>/actuator/health</code> · times UTC · <a href="/docs/api.md">plain markdown version</a></p>
+<div class="toc"><strong>Contents</strong><ol>
+<li><a href="#signin">Signing in</a></li>
 <li><a href="#public">Public endpoints</a></li>
-<li><a href="#account">Your account</a></li>
-<li><a href="#admin">Admin endpoints and the audit log</a></li>
 <li><a href="#errors">Errors, limits and caching</a></li>
-<li><a href="#examples">Worked examples</a></li>
-</ol>
-</div>
-
-<h2 id="auth">Signing in</h2>
-<p>Two routes return the same signed token (valid 7 days). The token identifies the account; no endpoint takes an account id from the caller, so one token cannot read another account's data.</p>
-
-<h3>From a program</h3>
+<li class="private-toc"><a href="#account">Your account</a></li>
+<li class="private-toc"><a href="#admin-ops">Admin endpoints and the audit log</a></li>
+<li class="private-toc"><a href="#admin-users">Users, roles and gifts</a></li>
+<li class="private-toc"><a href="#admin-road">Hunting Road admin</a></li>
+<li class="private-toc"><a href="#auth-audit">Auth rules</a></li>
+<li><a href="#errors">Errors, limits and caching</a></li>
+</ol></div>
+<section id="signin">
+<h2>Signing in</h2>
+<p>Two routes return the same signed token, valid 7 days. The token names the account; no endpoint takes an account id from the caller, so one token cannot read another account&#x27;s data. Sign-in itself is one of the few routes that do not need a token.</p>
+<h3>POST /api/auth/signin (programs, no captcha)</h3>
+<p>Body fields: username (game account name), password (plain, over HTTPS), token (empty string; the captcha answer is only used by the web route).</p>
 <pre><code>curl -s https://api.hvmhfz.eclipseforge.xyz/api/auth/signin \
-  -H 'Content-Type: application/json' \
-  -d '{"username":"YourGameName","password":"your-password","token":""}'</code></pre>
-<pre><code>{"accessToken":"eyJhbGciOiJIUzI1NiJ9...","id":12345,"roles":["ROLE_USER"],"tokenType":"Bearer"}</code></pre>
-<p>Then send it on every account request:</p>
-<pre><code>curl -s https://api.hvmhfz.eclipseforge.xyz/api/account \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9..."</code></pre>
-
-<h3>From the site (Cloudflare Turnstile)</h3>
-<p><code>POST /api/auth/signinweb</code> takes the same body plus the Turnstile answer in <code>token</code>. The site's form does this for you. Registration and password reset use <code>POST /api/auth/signup</code> and <code>PUT /api/auth/passwordreset</code>.</p>
-<p>The token is a JWT: <code>sub</code> (account name), <code>roles</code>, <code>exp</code>, signed by the server. Editing the payload breaks the signature, so roles cannot be faked. The server checks the role on every request.</p>
-
-<h2 id="public">Public endpoints</h2>
-<p>No token needed, cached 30 seconds.</p>
-<div class="table-wrap">
-<table class="data-table">
-<thead><tr><th>Path</th><th>Query</th><th>Returns</th></tr></thead>
-<tbody>
-<tr><td><code>/api/public/summary</code></td><td></td><td>server totals</td></tr>
-<tr><td><code>/api/public/guilds</code></td><td><code>q</code>, <code>sort</code> (<code>rp</code>), <code>page</code>, <code>size</code></td><td>paged guilds</td></tr>
-<tr><td><code>/api/public/guilds/{id}</code></td><td></td><td>one guild with roster and board</td></tr>
-<tr><td><code>/api/public/hunters</code></td><td><code>q</code>, <code>sort</code> (<code>name</code>, <code>hr</code>, <code>gr</code>, <code>last</code>), <code>page</code>, <code>size</code></td><td>paged hunters</td></tr>
-<tr><td><code>/api/public/hunters/{id}</code></td><td></td><td>one hunter</td></tr>
-<tr><td><code>/api/public/catalog/items</code></td><td><code>q</code>, <code>page</code>, <code>size</code></td><td>item catalog</td></tr>
-<tr><td><code>/api/public/catalog/equipment</code></td><td><code>slot</code>, <code>q</code>, <code>page</code>, <code>size</code></td><td>equipment catalog</td></tr>
-<tr><td><code>/api/public/worlds</code></td><td></td><td>worlds and player counts</td></tr>
-<tr><td><code>/api/public/monsters</code></td><td><code>limit</code></td><td>monster kill counts</td></tr>
-<tr><td><code>/api/public/leaderboards/hunts</code></td><td><code>period</code>, <code>board</code></td><td>one hunt board</td></tr>
-<tr><td><code>/api/public/road/leaderboard</code></td><td><code>rotation</code>, <code>mode</code>, <code>limit</code></td><td>Hunting Road board</td></tr>
-<tr><td><code>/api/public/road/history</code></td><td></td><td>every Road that went live</td></tr>
-<tr><td><code>/api/public/search</code></td><td><code>q</code></td><td>hunters, guilds and monsters together</td></tr>
-<tr><td><code>/api/public/events</code></td><td></td><td>current and upcoming events</td></tr>
-</tbody>
-</table>
-</div>
-<p>The Road board ranks the highest floor reached in one run during that rotation, then who reached it first. Entries carry the floor, when it was reached, how many floors were recorded in the rotation and the Road point balance at that floor. Rotations carry <code>sha</code>: the sha256 of the Road data file, the map's permanent id.</p>
-
-<h2 id="account">Your account</h2>
-<p>Send <code>Authorization: Bearer &lt;token&gt;</code>. The server reads the account from the token.</p>
-<div class="table-wrap">
-<table class="data-table">
-<thead><tr><th>Path</th><th>Returns</th></tr></thead>
-<tbody>
-<tr><td><code>/api/account</code></td><td>account summary and characters</td></tr>
-<tr><td><code>/api/account/characters</code></td><td>your characters</td></tr>
-<tr><td><code>/api/account/guilds</code></td><td>guilds your characters belong to</td></tr>
-<tr><td><code>/api/account/discord</code></td><td>linked Discord account</td></tr>
-<tr><td><code>/api/account/distributions</code></td><td>gift lists: global plus yours, with claim counts</td></tr>
-<tr><td><code>/api/account/characters/{id}/storage</code></td><td>item box and pouch, decoded</td></tr>
-<tr><td><code>/api/account/characters/{id}/hunts</code></td><td>hunt history for that character</td></tr>
-</tbody>
-</table>
-</div>
-<p>No raw save blobs are returned; the server decodes them. Asking for somebody else's character returns <code>404</code>, not their data.</p>
-
-<h2 id="admin">Admin endpoints and the audit log</h2>
-<p>Admin accounts (<code>ROLE_ADMIN</code>), some also open to moderators. The server checks the role on every call; the site only hides the buttons.</p>
-<h3>Server tools</h3>
-<ul>
-<li><code>GET /api/admin/ops/services</code> state of the game server, the API and the bot, restart counts, players.</li>
-<li><code>GET /api/admin/ops/services/{service}/logs?lines=200&amp;errors=false</code> recent log lines with secrets and player IPs masked.</li>
-<li><code>POST /api/admin/ops/services/{service}/restart</code> restarts the API or bot at once. For <code>erupe</code> it schedules the warned restart: 10 minutes of Discord and in-game messages, the bot status counts down, then the swap and restart. The call answers <code>restart=scheduled</code> immediately. One restart per service every two minutes.</li>
-<li><code>GET /api/admin/ops/audit?max=500</code> newest-first audit entries: <code>at</code>, <code>account</code>, <code>action</code>, <code>target</code>, <code>result</code>.</li>
-</ul>
-<p>Every admin action is written to the audit log: restarts, role changes, chat flags, gifts, Hunting Road cycles and entries, session cleanups. The admin page shows the same data under <b>Audit</b> with search, action and account filters, column sorting and CSV export.</p>
-<h3>Users, roles and gifts</h3>
-<ul>
-<li><code>GET /api/admin/users?q=&amp;page=0&amp;size=25</code> paged accounts with roles, characters, last login and flags.</li>
-<li><code>POST /api/admin/users/{id}/flags</code> body <code>{"op":true,"timer":false}</code>.</li>
-<li><code>GET /api/admin/roles</code>, <code>POST /api/admin/roles</code> body <code>{"username":"Name","role":"ROLE_MODERATOR","grant":true}</code>.</li>
-<li><code>GET /api/dist/all</code>, <code>POST /api/dist/createDist</code> gift lists.</li>
-</ul>
-<h3>Hunting Road</h3>
-<p><code>GET/POST /api/admin/road/cycles</code>, <code>PUT /api/admin/road/cycles/{id}</code>, then <code>close</code>, <code>approve</code>, <code>winner</code>; entry actions <code>hide</code>, <code>unhide</code>, <code>disqualify</code> with <code>{"reason":"..."}</code>; <code>POST /api/admin/road/pause</code> with <code>{"paused":true}</code>. The player-facing routes live under <code>/api/road</code> and need an account token.</p>
-<p><code>/api/road/deploy/next</code> and <code>/api/road/deploy/{cycleId}/result</code> are for the game host's deploy timer and use the <code>X-Road-Deploy-Token</code> header, not an account token.</p>
-
-<h2 id="errors">Errors, limits and caching</h2>
-<p>Errors are <code>{"message":"..."}</code>. Common codes: <code>400</code> bad input, <code>401</code> missing or expired token, <code>403</code> wrong role or not your character, <code>404</code> unknown id, <code>409</code> conflict, <code>429</code> rate limit, <code>502</code> an upstream tool failed.</p>
-<p>Public responses are cached 30 seconds. Sign-in and the public endpoints are rate limited per client: back off on <code>429</code> instead of retrying in a loop.</p>
-
-<h2 id="examples">Worked examples</h2>
-<h3>Shell: token and gifts</h3>
+  -H &#x27;Content-Type: application/json&#x27; \
+  -d &#x27;{&quot;username&quot;:&quot;YourGameName&quot;,&quot;password&quot;:&quot;your-password&quot;,&quot;token&quot;:&quot;&quot;}&#x27;</code></pre>
+<pre><code>{&quot;accessToken&quot;:&quot;eyJhbGciOiJIUzI1NiJ9...&quot;,&quot;id&quot;:12345,&quot;roles&quot;:[&quot;ROLE_USER&quot;],&quot;tokenType&quot;:&quot;Bearer&quot;}</code></pre>
+<p>Send it on every request that needs an account: Authorization: Bearer &lt;accessToken&gt;. The token is a JWT: sub is the account name, roles lists ROLE_USER / ROLE_MODERATOR / ROLE_ADMIN, exp is the expiry. The server checks the signature and the role on every request; editing the payload breaks the signature.</p>
+<h3>POST /api/auth/signinweb (the website)</h3>
+<p>Same body, but token carries the Cloudflare Turnstile answer. The site&#x27;s form does this for you. Wrong or missing captcha answers are refused; repeated failures are rate limited (429).</p>
+<h3>Registration and password reset</h3>
+<p>POST /api/auth/signup takes username, password and an optional role (ignored for new accounts, which are always ROLE_USER). PUT /api/auth/passwordreset takes username, password and discordId for accounts that linked Discord. Both are rate limited.</p>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td>Authorization</td><td>Bearer &lt;accessToken&gt;</td></tr><tr><td>Content-Type</td><td>application/json on requests with a body</td></tr></tbody></table></div>
+<p>Status codes: 400 bad body, 401 missing or expired token, 403 signed in but not allowed, 429 too many sign-in attempts.</p>
+</section>
+<section id="public">
+<h2>Public endpoints</h2>
+<p>No token, cached 30 seconds unless stated. Paged endpoints return {items, page, size, total}; page starts at 0 and size is clamped to 1 to 100.</p>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Parameters</th><th>Returns</th></tr></thead><tbody><tr><td>GET /api/public/summary</td><td>none</td><td>counts: hunters, guilds, characters, online players</td></tr><tr><td>GET /api/public/guilds</td><td>q (search, case-insensitive), sort (default rp), page (0), size (30, max 100)</td><td>paged guild summaries</td></tr><tr><td>GET /api/public/guilds/{id}</td><td>id: guild id</td><td>one guild: name, rank, points, roster, board</td></tr><tr><td>GET /api/public/hunters</td><td>q, sort (hr default, name, gr, last), page, size (30, max 100)</td><td>paged hunter summaries</td></tr><tr><td>GET /api/public/hunters/{id}</td><td>id: character id</td><td>one hunter: name, HR, GR, weapon, guild, playtime, hunts</td></tr><tr><td>GET /api/public/catalog/items</td><td>q, page, size (40, max 100)</td><td>paged items: id (hex), name, type, icon</td></tr><tr><td>GET /api/public/catalog/equipment</td><td>slot (melee default, ranged, head, chest, arms, waist, legs), q, page, size (40)</td><td>paged equipment</td></tr><tr><td>GET /api/public/worlds</td><td>none</td><td>worlds: name, description, players, capacity</td></tr><tr><td>GET /api/public/monsters</td><td>limit (300 default, 1 to 300)</td><td>monster kill totals</td></tr><tr><td>GET /api/public/leaderboards/hunts</td><td>period (week default, lastweek, month, lastmonth, all), limit (100 default, 1 to 100)</td><td>period, from, to, resetsAt, hunters[], guilds[], monsters[]</td></tr><tr><td>GET /api/public/road/leaderboard</td><td>rotation (current default, original, or a cycle number), mode (open default, solo), limit (100 default, 1 to 100)</td><td>rotation, rotations[], tracking, hunters, entries[]</td></tr><tr><td>GET /api/public/road/history</td><td>none</td><td>every Road that has gone live, newest first</td></tr><tr><td>GET /api/public/search</td><td>q (required in practice)</td><td>hunters, guilds and monsters matching q</td></tr><tr><td>GET /api/public/events</td><td>none</td><td>current and upcoming events</td></tr></tbody></table></div>
+<p>The hunt board scans the whole kill log, so it is cached for 5 minutes per period and size. Weeks start Monday 00:00 UTC and months on the 1st, so week resets every Monday.</p>
+<h3>Road leaderboard entry fields</h3>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Field</th><th>Meaning</th></tr></thead><tbody><tr><td>rank</td><td>1-based position on this board</td></tr><tr><td>characterId, name, guildName, gr</td><td>who reached the floor</td></tr><tr><td>floor</td><td>highest floor reached in one run during the rotation</td></tr><tr><td>reachedAt</td><td>when that floor was first reached (ISO 8601 UTC)</td></tr><tr><td>floorsClimbed</td><td>how many floors were recorded for that hunter in the rotation</td></tr><tr><td>points</td><td>Road point balance at that floor, or null when it was not recorded</td></tr></tbody></table></div>
+<p>rotation.sha is the sha256 of the Road data file, the map&#x27;s permanent id. Rotations are listed in rotations[], newest first.</p>
+</section>
+<section id="errors">
+<h2>Errors, limits and caching</h2>
+<p>Errors are {&quot;message&quot;:&quot;...&quot;}. 400 bad input (missing field, out of range, a minimum above its maximum), 401 missing or expired token, 403 wrong role or a character that is not yours, 404 unknown id, 409 conflicts such as an existing vote, 429 rate limit, 502 an upstream tool failed.</p>
+<p>Public reads are cached 30 seconds; hunt boards 5 minutes per period and size. Sign-in and the public endpoints are rate limited per client: back off on 429 instead of retrying in a loop.</p>
+<p>Paged endpoints take page (0-based) and size (1 to 100). Sizes above the maximum are clamped, not refused.</p>
+</section>
+<p class="api-gate" id="api-gate">The account and admin half of this page is for moderators and admins. <a href="/account.html">Sign in</a> with one and reload; the public endpoints above stay readable by everyone. The server enforces every role regardless of what this page shows.</p>
+<div id="private-docs" hidden>
+<section id="account">
+<h2>Your account</h2>
+<p>Send Authorization: Bearer &lt;token&gt;. The account comes from the token; there is no id parameter. No raw save blobs are returned, only decoded numbers.</p>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Parameters</th><th>Returns</th></tr></thead><tbody><tr><td>GET /api/account</td><td>none</td><td>account: id, name, roles, characters</td></tr><tr><td>GET /api/account/characters</td><td>none</td><td>your characters</td></tr><tr><td>GET /api/account/guilds</td><td>none</td><td>guilds your characters belong to</td></tr><tr><td>GET /api/account/discord</td><td>none</td><td>linked Discord id and name, or null</td></tr><tr><td>GET /api/account/distributions</td><td>none</td><td>gift lists: global gifts plus those targeted at your characters, with accepted counts</td></tr><tr><td>GET /api/account/characters/{id}/storage</td><td>id: one of your character ids</td><td>zenny, G zenny, CP, item box, pouch, warehouse, stamps, house</td></tr><tr><td>GET /api/account/characters/{id}/hunts</td><td>id: one of your character ids</td><td>hunt history for that character</td></tr></tbody></table></div>
+<p>A character id that is not yours answers 404 (not another account&#x27;s data). A missing or expired token answers 401.</p>
 <pre><code>TOKEN=$(curl -s https://api.hvmhfz.eclipseforge.xyz/api/auth/signin \
-  -H 'Content-Type: application/json' \
-  -d '{"username":"YourGameName","password":"your-password","token":""}' | jq -r .accessToken)
+  -H &#x27;Content-Type: application/json&#x27; \
+  -d &#x27;{&quot;username&quot;:&quot;YourGameName&quot;,&quot;password&quot;:&quot;your-password&quot;,&quot;token&quot;:&quot;&quot;}&#x27; | jq -r .accessToken)
 
 curl -s https://api.hvmhfz.eclipseforge.xyz/api/account/distributions \
-  -H "Authorization: Bearer $TOKEN"</code></pre>
-<h3>JavaScript: the weekly hunter board</h3>
-<pre><code>const res = await fetch("https://api.hvmhfz.eclipseforge.xyz/api/public/leaderboards/hunts?period=week&amp;board=hunters");
-const board = await res.json();</code></pre>
-<h3>Python: the Road board</h3>
-<pre><code>import requests
-board = requests.get("https://api.hvmhfz.eclipseforge.xyz/api/public/road/leaderboard",
-                     params={"rotation": "current", "mode": "open"}).json()
-for entry in board["entries"]:
-    print(entry["rank"], entry["name"], entry["floor"], entry.get("points"))</code></pre>
-<p>The same content as a plain markdown file lives in the site repository at <code>docs/api.md</code>.</p>
+  -H &quot;Authorization: Bearer $TOKEN&quot;</code></pre>
+</section>
+<section id="admin-ops">
+<h2>Server tools (admin and moderator)</h2>
+<p>Bearer token with ROLE_ADMIN or ROLE_MODERATOR. The server checks the role on every call; the buttons on the site are only a convenience. Every action here is written to the audit log with the account that did it.</p>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Parameters</th><th>Does</th></tr></thead><tbody><tr><td>GET /api/admin/ops/services</td><td>none</td><td>state of erupe, api and bot: state, since, restarts, players</td></tr><tr><td>GET /api/admin/ops/services/{service}/logs</td><td>service: erupe, api, bot; lines (200 default, 1 to 500); errors (false default; true filters WARN/ERROR)</td><td>recent log lines, secrets and player IPs masked</td></tr><tr><td>POST /api/admin/ops/services/{service}/restart</td><td>service: erupe, api, bot</td><td>api and bot restart at once. erupe schedules the warned restart: 10 minutes of Discord and in-game messages, the bot status counts down, then the swap and restart. Answers restart=scheduled (...). One restart per service every two minutes (429).</td></tr><tr><td>GET /api/admin/ops/audit</td><td>max (50 default, 1 to 1000)</td><td>newest-first audit entries: at, account, action, target, result</td></tr></tbody></table></div>
+<p>The audit log records every admin action (restarts, roles, chat flags, gifts, Road changes, session cleanups) and every signed-in request that changes something outside the admin pages (Road entries and votes, Discord link and unlink, save imports). Public reads are not logged.</p>
+</section>
+<section id="admin-users">
+<h2>Users, roles and gifts (admin)</h2>
+<p>Users and roles need ROLE_ADMIN. Gifts need ROLE_ADMIN as well.</p>
+<h3>Accounts</h3>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Parameters</th><th>Does</th></tr></thead><tbody><tr><td>GET /api/admin/users</td><td>q (name search), page (0), size (25, max 100)</td><td>paged accounts: id, name, roles, characters, last login, Discord link, chat flags</td></tr><tr><td>POST /api/admin/users/{id}/flags</td><td>id: account id; body {&quot;op&quot;:true,&quot;timer&quot;:false} (either or both; null leaves it)</td><td>sets the in-game chat flags</td></tr><tr><td>GET /api/admin/roles</td><td>none</td><td>role list</td></tr><tr><td>POST /api/admin/roles</td><td>body {&quot;username&quot;:&quot;Name&quot;,&quot;role&quot;:&quot;ROLE_MODERATOR&quot;,&quot;grant&quot;:true}</td><td>grants or removes a role. Nobody can remove their own admin role; the last admin cannot be removed.</td></tr></tbody></table></div>
+<h3>Gift lists (distributions)</h3>
+<p>A gift is one entry in one of the game&#x27;s gift lists. With no characters it goes to every character; with characters, Erupe stores one copy per character. The gift is in the game&#x27;s list as soon as the call returns, so the panel asks for confirmation first.</p>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Parameters</th><th>Does</th></tr></thead><tbody><tr><td>GET /api/admin/distributions</td><td>none</td><td>every gift: id, type, typeName, eventName, description, deadline, ended, timesAcceptable, targets, rank limits, items, accepted, claimants</td></tr><tr><td>GET /api/admin/distributions/options</td><td>none</td><td>lists {}, itemTypes {}, itemTypesWithId [], maxCharacters (100). The panel builds its selects from this, so it always matches the server.</td></tr><tr><td>POST /api/admin/distributions</td><td>body: NewDistribution (see below)</td><td>201 {id, ids[]}; one id per targeted character, or one for all</td></tr><tr><td>POST /api/admin/distributions/{id}/end</td><td>id: gift id</td><td>204; ends the gift early</td></tr></tbody></table></div>
+<h3>NewDistribution fields</h3>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Rules</th></tr></thead><tbody><tr><td>type</td><td>integer</td><td>yes</td><td>gift list: 0 Bought, 1 Event, 2 Compensation, 4 Promo, 7 Event item, 8 Promo item, 9 Subscription item</td></tr><tr><td>eventName</td><td>string</td><td>yes</td><td>1 to 60 characters; the client shows ~C05... colour codes</td></tr><tr><td>description</td><td>string</td><td>no</td><td>up to 600 characters; same colour codes</td></tr><tr><td>deadline</td><td>ISO 8601 instant</td><td>no</td><td>must be in the future; null means no end</td></tr><tr><td>timesAcceptable</td><td>integer</td><td>yes</td><td>1 to 255, how many times each character can claim it</td></tr><tr><td>characterIds</td><td>array of integers</td><td>no</td><td>up to 100 character ids; omit or [] for every character</td></tr><tr><td>characterId</td><td>integer</td><td>no</td><td>single-character form; both fields are merged without repeats</td></tr><tr><td>minHr, maxHr, minSr, maxSr, minGr, maxGr</td><td>integer</td><td>no</td><td>1 to 999; a minimum above its maximum is refused</td></tr><tr><td>items</td><td>array of objects</td><td>yes</td><td>1 to 100 entries; see below</td></tr></tbody></table></div>
+<h3>Each item in items[]</h3>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Field</th><th>Type</th><th>Rules</th></tr></thead><tbody><tr><td>itemType</td><td>integer 0 to 31</td><td>which kind of thing: 0 Legs, 1 Head, 2 Chest, 3 Arms, 4 Waist, 5 Melee weapon, 6 Ranged weapon, 7 Item, 8 Furniture, 10 Zenny, 14 Tore points, 15 Poogie outfit, 16 Restyle points, 17 N points, 18 Goocoo outfit, 19 Gacha coins, 20 Trial gacha coins, 21 Frontier points, 23 Guild RP, 30 Item box pages, 31 Equipment box pages. Types the client ignores are refused, so a gift cannot silently give nothing.</td></tr><tr><td>itemId</td><td>integer 0 to 65535</td><td>required for types that name a thing (0 to 8, 15, 18): the catalog id (for type 7 the item&#x27;s hex id as a number, for example BF39 -&gt; 14783). Poogie outfits are 1 to 31. Not used by the amount types (10, 14, 16, 17, 19 to 21, 23, 30, 31).</td></tr><tr><td>quantity</td><td>integer 1 to 999999</td><td>how much. For items keep it at 99 or less so the client stacks it the way the game does; Zenny and points accept larger values.</td></tr></tbody></table></div>
+<h3>Example: a gift for everyone</h3>
+<pre><code>curl -s -X POST https://api.hvmhfz.eclipseforge.xyz/api/admin/distributions \
+  -H &quot;Authorization: Bearer $TOKEN&quot; \
+  -H &#x27;Content-Type: application/json&#x27; \
+  -d &#x27;{
+    &quot;type&quot;: 1,
+    &quot;eventName&quot;: &quot;~C07Autumn supply drop&quot;,
+    &quot;description&quot;: &quot;~C05Enjoy the new Hunting Road!&quot;,
+    &quot;deadline&quot;: &quot;2026-11-12T23:59:59Z&quot;,
+    &quot;timesAcceptable&quot;: 1,
+    &quot;minHr&quot;: 1,
+    &quot;maxHr&quot;: 999,
+    &quot;items&quot;: [
+      {&quot;itemType&quot;: 7, &quot;itemId&quot;: 14783, &quot;quantity&quot;: 10},
+      {&quot;itemType&quot;: 10, &quot;quantity&quot;: 100000}
+    ]
+  }&#x27;</code></pre>
+<p>That gives every character 10 of item 14783 and 100,000 Zenny, claimable once, until 12 November. Add characterIds: [12, 44] to target only those characters. The answer is 201 {&quot;id&quot;:123,&quot;ids&quot;:[123,124,...]}.</p>
+<p>Item ids come from GET /api/public/catalog/items (its id is hex; the API wants the same number the game uses) and equipment ids from GET /api/public/catalog/equipment with the matching slot.</p>
+</section>
+<section id="admin-road">
+<h2>Hunting Road admin (admin)</h2>
+<p>One rotation at a time. Times are ISO 8601 instants, UTC.</p>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Body</th><th>Does</th></tr></thead><tbody><tr><td>GET /api/admin/road/cycles</td><td>none</td><td>cycles with state, times, entries and votes</td></tr><tr><td>POST /api/admin/road/cycles</td><td>{&quot;submitOpens&quot;:&quot;2026-11-01T00:00:00Z&quot;,&quot;submitCloses&quot;:&quot;2026-11-08T00:00:00Z&quot;,&quot;voteCloses&quot;:&quot;2026-11-10T00:00:00Z&quot;}</td><td>creates a cycle</td></tr><tr><td>PUT /api/admin/road/cycles/{id}</td><td>same body</td><td>edits the times of an open cycle</td></tr><tr><td>POST /api/admin/road/cycles/{id}/close</td><td>none</td><td>closes submissions and opens voting</td></tr><tr><td>POST /api/admin/road/cycles/{id}/approve</td><td>none</td><td>approves the voted winner for deploy</td></tr><tr><td>POST /api/admin/road/cycles/{id}/winner</td><td>{&quot;entryId&quot;:12}</td><td>overrides the winner</td></tr><tr><td>POST /api/admin/road/entries/{id}/hide</td><td>{&quot;reason&quot;:&quot;...&quot;} (optional)</td><td>hides an entry</td></tr><tr><td>POST /api/admin/road/entries/{id}/unhide</td><td>same</td><td>restores it</td></tr><tr><td>POST /api/admin/road/entries/{id}/disqualify</td><td>same</td><td>disqualifies it</td></tr><tr><td>POST /api/admin/road/pause</td><td>{&quot;paused&quot;:true} or {&quot;paused&quot;:false}</td><td>pauses or resumes the rotation</td></tr></tbody></table></div>
+<h3>Player Road endpoints (any signed-in account)</h3>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Path</th><th>Body / query</th><th>Does</th></tr></thead><tbody><tr><td>GET /api/road/pool</td><td>none</td><td>the shared base pool</td></tr><tr><td>GET /api/road/cycle</td><td>none</td><td>the current cycle and your entry</td></tr><tr><td>POST /api/road/check</td><td>{&quot;edits&quot;:{...}}</td><td>validates edits without saving</td></tr><tr><td>GET /api/road/entries</td><td>none</td><td>entries for the open cycle</td></tr><tr><td>GET /api/road/entries/{id}</td><td>none</td><td>one entry</td></tr><tr><td>POST /api/road/entries</td><td>{&quot;name&quot;:&quot;...&quot;,&quot;description&quot;:&quot;...&quot;,&quot;characterId&quot;:12,&quot;edits&quot;:{...}}</td><td>submits an entry</td></tr><tr><td>PUT /api/road/entries/{id}</td><td>same body</td><td>edits your entry while submissions are open</td></tr><tr><td>POST /api/road/votes</td><td>{&quot;entryId&quot;:12}</td><td>votes for an entry</td></tr><tr><td>DELETE /api/road/votes/{entryId}</td><td>none</td><td>removes your vote</td></tr><tr><td>GET /api/road/results?cycle=3</td><td>cycle optional</td><td>results for a closed cycle</td></tr><tr><td>GET /api/road/rewards</td><td>none</td><td>your Road rewards</td></tr></tbody></table></div>
+<p>The rules (what edits are allowed, one entry per account, vote limits) are described on the Hunting Road page and enforced by the server.</p>
+</section>
+<section id="auth-audit">
+<h2>Authentication rules and the audit trail</h2>
+<p>Every endpoint except sign-in, sign-up, password reset, the public reads and the Road deploy hook requires an account token. The deploy hook uses its own X-Road-Deploy-Token header and is only reachable from the game host.</p>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Area</th><th>Auth</th><th>Audited</th></tr></thead><tbody><tr><td>/api/auth/**</td><td>none (rate limited)</td><td>no</td></tr><tr><td>/api/public/**</td><td>none</td><td>no</td></tr><tr><td>/api/road/deploy/**</td><td>X-Road-Deploy-Token</td><td>deploy result only</td></tr><tr><td>/api/account/**</td><td>account token</td><td>no (reads)</td></tr><tr><td>/api/road (entries, votes)</td><td>account token</td><td>yes, every successful change</td></tr><tr><td>/api/users, /api/characters/import</td><td>account token</td><td>yes, every successful change</td></tr><tr><td>/api/admin/ops/**</td><td>ADMIN or MODERATOR</td><td>yes, with action and target</td></tr><tr><td>/api/admin/users, roles, road, distributions</td><td>ADMIN</td><td>yes, with action and target</td></tr></tbody></table></div>
+<p>Audit entries are one JSON line each: at, account, action, target, result. Admin actions carry a readable action (restart, role grant, gift create, road approve...); other signed-in changes are recorded as api POST/PUT/DELETE with the path. The newest 1000 are served by GET /api/admin/ops/audit and shown under Audit on the admin page.</p>
+</section>
+</div>
 </main>
     <footer class="site-foot">
       <div class="wrap">

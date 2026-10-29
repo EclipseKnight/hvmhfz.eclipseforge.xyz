@@ -998,3 +998,8 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   .tabs{-webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 16px),transparent);
     mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 16px),transparent)}
 }
+
+/* API page gate (js/api-docs.js): the private half is hidden until a moderator or admin signs in */
+.api-gate{margin:18px 0;padding:12px 16px;border:1px solid var(--frame);border-left:4px solid var(--gold);
+  border-radius:3px;background:rgba(232,200,119,.08);color:var(--text-light)}
+.api-gate a{color:var(--gold-bright)}
