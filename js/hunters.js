@@ -249,15 +249,20 @@
     return list.length ? list[0] : null;
   }
 
-  var CARD_W = 1200, CARD_H = 820;
+  // The card is drawn in a 1200 x 1000 layout and rendered at 1.5x (1800 x 1500), so the PNG stays sharp
+  // and the band under the Road tiles has room for the sections that come later.
+  var CARD_SCALE = 1.5;
+  var CARD_W = 1200 * CARD_SCALE, CARD_H = 1000 * CARD_SCALE;
+  var CARD_VW = 1200, CARD_VH = 1000;
 
   // Draws the card on `canvas` (sized 1200 x 820). `road` is roadStandings(), or null while loading.
   function drawCard(canvas, hunter, logo, road, frameKey) {
     var f = FRAMES[frameKey] || FRAMES.brass;
-    var W = CARD_W, H = CARD_H;
-    canvas.width = W;
-    canvas.height = H;
+    canvas.width = CARD_W;
+    canvas.height = CARD_H;
     var ctx = canvas.getContext("2d");
+    ctx.setTransform(CARD_SCALE, 0, 0, CARD_SCALE, 0, 0);
+    var W = CARD_VW, H = CARD_VH;
     var serif = "Georgia, 'Palatino Linotype', 'Book Antiqua', serif";
     var sans = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
 
@@ -409,6 +414,16 @@
       tile(60 + i * (rw + rgap), ry + 22, rw, 128, s[0], s[1], s[2], s[3]);
     });
 
+    var band = [
+      ["TIME PLAYED", playtime(hunter.playtimeSeconds)],
+      ["WEAPONS USED", String((hunter.weapons || []).filter(function (w) { return w.seconds > 0; }).length)],
+      ["HUNTS LOGGED", num(hunter.totalKills)]
+    ];
+    var bwid = (W - 120 - 28) / 3;
+    band.forEach(function (b, i) {
+      tile(60 + i * (bwid + 14), 744, bwid, 104, b[0], b[1]);
+    });
+
     ctx.fillStyle = f.label;
     ctx.font = "500 17px " + sans;
     ctx.fillText("hvmhfz.eclipseforge.xyz/hunters.html?id=" + hunter.id, 60, H - 62);
@@ -445,7 +460,7 @@
   function cardTab(panel, hunter) {
     var head = el("div", "panel-head");
     head.appendChild(el("h2", null, "Hunter card"));
-    head.appendChild(el("span", "panel-note", "1200 x 820 PNG"));
+    head.appendChild(el("span", "panel-note", "1800 x 1500 PNG"));
     panel.appendChild(head);
 
     var frame = chosenFrame();
