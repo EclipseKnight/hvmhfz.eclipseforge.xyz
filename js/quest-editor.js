@@ -244,14 +244,14 @@
     var list = el("datalist");
     list.id = listId;
     options.forEach(function (opt) { var o = el("option"); o.value = opt.label; list.appendChild(o); });
-    function commit() {
+    function commitCell() {
       var raw = input.value.trim();
       var m = raw.match(/\((\d+)\)\s*$/);
       var next = m ? parseInt(m[1], 10) : parseInt(raw, 10);
       if (!isNaN(next)) { onChange(next); input.value = display ? display(next) : String(next); }
     }
-    input.addEventListener("change", commit);
-    input.addEventListener("blur", commit);
+    input.addEventListener("change", commitCell);
+    input.addEventListener("blur", commitCell);
     cell.appendChild(input);
     cell.appendChild(list);
     return cell;
