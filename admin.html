@@ -212,9 +212,10 @@
       <div class="tab-panel" id="panel-quests" hidden>
         <section class="panel">
           <div class="panel-head"><h2>Custom quests</h2><span class="panel-note" id="quests-note"></span></div>
-          <p class="note-text">Players submit a quest file, and nothing is playable or deployable until it is approved here. Custom quests are sandbox content: no rewards, no zenny and no leaderboard contribution.</p>
+          <p class="note-text">A submitted quest is testable by its author straight away, and only by them. Publishing makes it public; rejecting removes it. Custom quests are sandbox content: no rewards, no zenny and no leaderboard contribution.</p>
           <div class="chips" id="quests-filter" role="group" aria-label="Status">
-            <button type="button" class="chip" data-status="pending" aria-pressed="true">Pending</button>
+            <button type="button" class="chip" data-status="testing" aria-pressed="true">Testing</button>
+            <button type="button" class="chip" data-status="pending" aria-pressed="false">Pending</button>
             <button type="button" class="chip" data-status="approved" aria-pressed="false">Approved</button>
             <button type="button" class="chip" data-status="rejected" aria-pressed="false">Rejected</button>
             <button type="button" class="chip" data-status="all" aria-pressed="false">All</button>

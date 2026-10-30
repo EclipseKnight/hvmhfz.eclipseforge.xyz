@@ -5,7 +5,7 @@
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
-  var status = "pending";
+  var status = "testing";
   var started = false;
 
   function el(tag, cls, text) {
@@ -60,13 +60,9 @@
 
     var actions = el("td");
     if (item.status === "pending") {
-      var test = el("button", "btn btn-primary btn-small", "Allow testing");
-      test.type = "button";
-      test.title = "Only this player sees and can load it";
-      test.addEventListener("click", function () { decide(item.id, true, "", true); });
       var approve = el("button", "btn btn-primary btn-small", "Publish");
       approve.type = "button";
-      approve.addEventListener("click", function () { decide(item.id, true, "", false); });
+      approve.addEventListener("click", function () { decide(item.id, true, ""); });
       var reject = el("button", "ghost-btn small", "Reject");
       reject.type = "button";
       reject.addEventListener("click", function () {
@@ -74,8 +70,6 @@
         if (note === null) return;
         decide(item.id, false, note);
       });
-      actions.appendChild(test);
-      actions.appendChild(document.createTextNode(" "));
       actions.appendChild(approve);
       actions.appendChild(document.createTextNode(" "));
       actions.appendChild(reject);
@@ -86,10 +80,10 @@
     return tr;
   }
 
-  function decide(id, approve, note, testing) {
+  function decide(id, approve, note) {
     request("/api/admin/quest-submissions/" + id + "/decide", {
       method: "POST",
-      body: JSON.stringify({ approve: approve, testing: !!testing, note: note })
+      body: JSON.stringify({ approve: approve, note: note })
     }).then(function () { load(); })
       .catch(function () { note2("Could not save that decision."); });
   }
