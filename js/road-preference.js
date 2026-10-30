@@ -32,7 +32,8 @@
         (list || []).forEach(function (v) {
           var o = document.createElement("option");
           o.value = v.sha256;
-          o.textContent = (v.name || "Road") + (v.live ? " (live)" : " (retired)");
+          var state = v.always ? " (always available)" : v.live ? " (live)" : " (retired)";
+          o.textContent = (v.name || "Road") + state;
           select.appendChild(o);
         });
       });
