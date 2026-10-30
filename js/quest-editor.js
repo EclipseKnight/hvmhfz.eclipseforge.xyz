@@ -140,15 +140,55 @@
     return options;
   }
 
-  function areaOptions(current, count) {
-    var top = Math.max(count || 0, current || 0, 10);
-    var options = [];
-    for (var i = 1; i <= top; i += 1) options.push({ value: i, label: "Area " + i });
-    return options;
+  function areaOptions(current, count, mapId) {
+    var known = areasForMap(mapId);
+    if (!known.length) {
+      var top = Math.max(count || 0, current || 0, 10);
+      var simple = [];
+      for (var i = 1; i <= top; i += 1) simple.push({ value: i, label: "Area " + i });
+      return simple;
+    }
+    if (current && known.indexOf(current) === -1) known.push(current);
+    return known.sort(function (a, b) { return a - b; }).map(function (id) {
+      return { value: id, label: areaLabel(id) };
+    });
   }
 
 
   var mapIds = null;
+  var mapAreas = null;
+  var areaIds = null;
+  var itemIds = null;
+
+  function loadTables() {
+    function grab(url, fallback) {
+      return fetch(url).then(function (r) { return r.ok ? r.json() : fallback; }).catch(function () { return fallback; });
+    }
+    return Promise.all([
+      mapIds ? Promise.resolve(mapIds) : grab("/data/map-ids.json", {}),
+      mapAreas ? Promise.resolve(mapAreas) : grab("/data/map-areas.json", {}),
+      areaIds ? Promise.resolve(areaIds) : grab("/data/area-ids.json", {}),
+      itemIds ? Promise.resolve(itemIds) : grab("/data/item-ids.json", {})
+    ]).then(function (r) {
+      mapIds = mapIds || r[0]; mapAreas = mapAreas || r[1]; areaIds = areaIds || r[2]; itemIds = itemIds || r[3];
+      return true;
+    });
+  }
+
+  function areaLabel(id) {
+    var name = areaIds && areaIds[String(id)];
+    return name || ("Area " + id);
+  }
+
+  function areasForMap(mapId) {
+    var list = (mapAreas && mapAreas[String(mapId)]) || [];
+    return list.slice();
+  }
+
+  function itemLabel(id) {
+    var name = itemIds && itemIds[String(id)];
+    return name || ("Item " + id);
+  }
 
   function loadMapIds() {
     if (mapIds) return Promise.resolve(mapIds);
@@ -161,7 +201,8 @@
   function mapOptions(current) {
     var options = [];
     Object.keys(mapIds || {}).map(Number).sort(function (a, b) { return a - b; }).forEach(function (id) {
-      options.push({ value: id, label: mapIds[id].name + " (" + id + ")" });
+      var entry = mapIds[id] || {};
+      options.push({ value: id, label: (entry.name || ("Map " + id)) + " (" + id + ")" });
     });
     if (current && !(String(current) in (mapIds || {}))) {
       options.unshift({ value: current, label: "Map " + current });
@@ -186,6 +227,22 @@
     wrap.appendChild(select);
     if (hint) wrap.appendChild(note(hint));
     return wrap;
+  }
+
+  function itemCell(value, onChange) {
+    var cell = el("td", "item-cell");
+    var input = el("input", "cell-input");
+    input.type = "number";
+    input.min = "0";
+    input.value = String(value === undefined || value === null ? 0 : value);
+    var label = el("span", "cell-name", itemLabel(value));
+    input.addEventListener("input", function () {
+      var next = parseInt(input.value, 10);
+      if (!isNaN(next)) { onChange(next); label.textContent = itemLabel(next); }
+    });
+    cell.appendChild(input);
+    cell.appendChild(label);
+    return cell;
   }
 
   function cellSelect(value, options, onChange) {
@@ -365,13 +422,13 @@
     return area.spawns;
   }
 
-  function spawnTable(spawns) {
+  function spawnTable(spawns, model) {
     var rows = (spawns || []).map(function (spawn) {
       var index = spawns.indexOf(spawn);
       return [
         cellSelect(spawn.monsterId, monsterOptions(spawn.monsterId), function (v) { spawn.monsterId = v; }),
         cellInput(spawn.count, function (v) { spawn.count = v; }),
-        cellSelect(spawn.areaId, areaOptions(spawn.areaId, spawns.length + 4), function (v) { spawn.areaId = v; }),
+        cellSelect(spawn.areaId, areaOptions(spawn.areaId, spawns.length + 4, model.body.mapId), function (v) { spawn.areaId = v; }),
         cellAction("Remove", function () {
           spawns.splice(index, 1);
           rebuild();
@@ -445,7 +502,7 @@
       var rows = entries.map(function (entry, entryIndex) {
         return [
           cellInput(entry.weight, function (v) { entry.weight = v; }),
-          cellInput(entry.itemId, function (v) { entry.itemId = v; }),
+          itemCell(entry.itemId, function (v) { entry.itemId = v; }),
           cellInput(entry.count, function (v) { entry.count = v; }),
           cellAction("Remove", function () {
             entries.splice(entryIndex, 1);

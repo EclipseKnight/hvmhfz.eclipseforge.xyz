@@ -91,7 +91,8 @@
       if (details.zenny !== undefined) body.appendChild(row("Contract fee", details.zenny.toLocaleString() + "z"));
     }
     if (details && details.requirementItemId) {
-      body.appendChild(row("Requirement", "Item #" + details.requirementItemId + " x" + details.requirementCount));
+      body.appendChild(row("Requirement", (details.requirementItemName || ("Item #" + details.requirementItemId))
+        + " x" + details.requirementCount));
     }
     body.appendChild(row("Files", String(quest.variants.length) + " (" + quest.variants.join(", ") + ")"));
     if (quest.nameJp && quest.nameJp !== quest.name) body.appendChild(row("Original title", quest.nameJp));

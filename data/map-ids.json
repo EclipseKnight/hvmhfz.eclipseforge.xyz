@@ -1,297 +1,407 @@
 {
-"5": {
-"name": "Volcano",
-"hits": 50,
-"quests": 235
-},
-"6": {
-"name": "Jungle",
-"hits": 85,
-"quests": 478
-},
-"57": {
-"name": "Tide Island",
-"hits": 52,
-"quests": 163
-},
-"44": {
-"name": "Great Forest",
-"hits": 38,
-"quests": 159
-},
-"27": {
-"name": "Great Forest",
-"hits": 52,
-"quests": 289
-},
-"4": {
-"name": "Swamp",
-"hits": 94,
-"quests": 431
-},
-"20": {
-"name": "Jungle",
-"hits": 96,
-"quests": 520
-},
-"11": {
-"name": "Snowy Mountains",
-"hits": 77,
-"quests": 295
-},
-"28": {
-"name": "Volcano",
-"hits": 25,
-"quests": 129
-},
-"19": {
-"name": "Volcano",
-"hits": 53,
-"quests": 241
-},
-"17": {
-"name": "Desert",
-"hits": 133,
-"quests": 548
-},
-"80": {
-"name": "White Lake",
-"hits": 9,
-"quests": 52
+"1": {
+"name": "Fortress",
+"source": "quest text",
+"share": 0.667
 },
 "2": {
 "name": "Forest and Hills",
-"hits": 15,
-"quests": 81
-},
-"21": {
-"name": "Snowy Mountains",
-"hits": 58,
-"quests": 290
-},
-"16": {
-"name": "Forest and Hills",
-"hits": 10,
-"quests": 83
-},
-"54": {
-"name": "Arena",
-"hits": 86,
-"quests": 436
-},
-"15": {
-"name": "Tower",
-"hits": 54,
-"quests": 177
-},
-"53": {
-"name": "Arena",
-"hits": 80,
-"quests": 443
-},
-"29": {
-"name": "Volcano",
-"hits": 26,
-"quests": 116
-},
-"14": {
-"name": "Tower",
-"hits": 28,
-"quests": 176
-},
-"61": {
-"name": "Polar Sea",
-"hits": 18,
-"quests": 86
-},
-"31": {
-"name": "Canyon",
-"hits": 72,
-"quests": 179
-},
-"26": {
-"name": "Great Forest",
-"hits": 46,
-"quests": 287
-},
-"23": {
-"name": "Fortress",
-"hits": 18,
-"quests": 27
-},
-"55": {
-"name": "Interception Base",
-"hits": 82,
-"quests": 132
-},
-"50": {
-"name": "Highlands",
-"hits": 45,
-"quests": 188
+"source": "area table",
+"share": 1.0
 },
 "3": {
 "name": "Desert",
-"hits": 124,
-"quests": 563
+"source": "area table",
+"share": 1.0
 },
-"51": {
-"name": "Highlands",
-"hits": 46,
-"quests": 210
+"4": {
+"name": "Swamp",
+"source": "area table",
+"share": 1.0
 },
-"69": {
-"name": "Decisive Field",
-"hits": 8,
-"quests": 57
+"5": {
+"name": "Volcano",
+"source": "area table",
+"share": 1.0
 },
-"32": {
-"name": "Canyon",
-"hits": 55,
-"quests": 166
+"6": {
+"name": "Jungle",
+"source": "area table",
+"share": 1.0
 },
-"24": {
-"name": "Arena",
-"hits": 36,
-"quests": 111
+"7": {
+"name": null,
+"source": null,
+"share": null
 },
 "8": {
 "name": "Volcano",
-"hits": 5,
-"quests": 10
+"source": "area table",
+"share": 1.0
 },
 "9": {
 "name": "Arena",
-"hits": 31,
-"quests": 122
-},
-"58": {
-"name": "Tide Island",
-"hits": 33,
-"quests": 136
-},
-"1": {
-"name": "Fortress",
-"hits": 10,
-"quests": 15
-},
-"18": {
-"name": "Swamp",
-"hits": 82,
-"quests": 425
-},
-"52": {
-"name": "Tower",
-"hits": 56,
-"quests": 134
-},
-"65": {
-"name": "Snowy Mountains",
-"hits": 1,
-"quests": 48
-},
-"13": {
-"name": "Tower",
-"hits": 33,
-"quests": 159
-},
-"81": {
-"name": "Isolated Island",
-"hits": 18,
-"quests": 18
-},
-"60": {
-"name": "Polar Sea",
-"hits": 17,
-"quests": 82
-},
-"79": {
-"name": "White Lake",
-"hits": 13,
-"quests": 66
-},
-"66": {
-"name": "Volcano",
-"hits": 8,
-"quests": 8
-},
-"56": {
-"name": "Interception Base",
-"hits": 74,
-"quests": 126
-},
-"22": {
-"name": "Fortress",
-"hits": 1,
-"quests": 7
-},
-"91": {
-"name": "Fortress",
-"hits": 6,
-"quests": 26
-},
-"35": {
-"name": "Decisive Field",
-"hits": 3,
-"quests": 62
-},
-"47": {
-"name": "Isolated Island",
-"hits": 3,
-"quests": 3
+"source": "quest text",
+"share": 0.254
 },
 "10": {
 "name": "Arena",
-"hits": 4,
-"quests": 14
+"source": "quest text",
+"share": 0.286
+},
+"11": {
+"name": "Snowy Mountains",
+"source": "area table",
+"share": 1.0
+},
+"12": {
+"name": null,
+"source": null,
+"share": null
+},
+"13": {
+"name": "Tower",
+"source": "quest text",
+"share": 0.208
+},
+"14": {
+"name": "Tower",
+"source": "quest text",
+"share": 0.159
+},
+"15": {
+"name": "Tower",
+"source": "quest text",
+"share": 0.305
+},
+"16": {
+"name": "Forest and Hills",
+"source": "area table",
+"share": 1.0
+},
+"17": {
+"name": "Desert",
+"source": "area table",
+"share": 1.0
+},
+"18": {
+"name": "Swamp",
+"source": "area table",
+"share": 1.0
+},
+"19": {
+"name": "Volcano",
+"source": "area table",
+"share": 1.0
+},
+"20": {
+"name": "Jungle",
+"source": "area table",
+"share": 1.0
+},
+"21": {
+"name": "Snowy Mountains",
+"source": "area table",
+"share": 1.0
+},
+"22": {
+"name": "Fortress",
+"source": "quest text",
+"share": 0.143
+},
+"23": {
+"name": "Fortress",
+"source": "quest text",
+"share": 0.667
+},
+"24": {
+"name": "Arena",
+"source": "quest text",
+"share": 0.324
 },
 "25": {
 "name": "Arena",
-"hits": 4,
-"quests": 14
+"source": "quest text",
+"share": 0.286
 },
-"96": {
-"name": "Sacred Mountain",
-"hits": 5,
-"quests": 8
+"26": {
+"name": "Great Forest",
+"source": "area table",
+"share": 1.0
 },
-"49": {
+"27": {
+"name": "Great Forest",
+"source": "area table",
+"share": 1.0
+},
+"28": {
+"name": "Volcano",
+"source": "area table",
+"share": 1.0
+},
+"29": {
+"name": "Volcano",
+"source": "area table",
+"share": 1.0
+},
+"30": {
+"name": "Jungle",
+"source": "area table",
+"share": 1.0
+},
+"31": {
+"name": "Gorge",
+"source": "area table",
+"share": 1.0
+},
+"32": {
+"name": "Gorge",
+"source": "area table",
+"share": 1.0
+},
+"35": {
+"name": "Volcano",
+"source": "area table",
+"share": 1.0
+},
+"44": {
+"name": "Great Forest",
+"source": "quest text",
+"share": 0.239
+},
+"45": {
+"name": null,
+"source": null,
+"share": null
+},
+"46": {
+"name": null,
+"source": null,
+"share": null
+},
+"47": {
 "name": "Isolated Island",
-"hits": 7,
-"quests": 7
-},
-"59": {
-"name": "Tide Island",
-"hits": 6,
-"quests": 22
+"source": "quest text",
+"share": 1.0
 },
 "48": {
 "name": "Isolated Island",
-"hits": 3,
-"quests": 3
+"source": "quest text",
+"share": 1.0
 },
-"90": {
+"49": {
 "name": "Isolated Island",
-"hits": 3,
-"quests": 3
+"source": "quest text",
+"share": 1.0
 },
-"89": {
+"50": {
+"name": "Highlands",
+"source": "area table",
+"share": 1.0
+},
+"51": {
+"name": "Highlands",
+"source": "area table",
+"share": 1.0
+},
+"52": {
+"name": "Tower",
+"source": "quest text",
+"share": 0.418
+},
+"53": {
+"name": "Arena",
+"source": "quest text",
+"share": 0.181
+},
+"54": {
+"name": "Arena",
+"source": "quest text",
+"share": 0.197
+},
+"55": {
+"name": "Interception Base",
+"source": "quest text",
+"share": 0.621
+},
+"56": {
+"name": "Interception Base",
+"source": "quest text",
+"share": 0.587
+},
+"57": {
+"name": "Tidal Island",
+"source": "area table",
+"share": 1.0
+},
+"58": {
+"name": "Tidal Island",
+"source": "area table",
+"share": 1.0
+},
+"59": {
+"name": "Tidal Island",
+"source": "area table",
+"share": 1.0
+},
+"60": {
+"name": "Polar Sea",
+"source": "area table",
+"share": 1.0
+},
+"61": {
+"name": "Polar Sea",
+"source": "area table",
+"share": 1.0
+},
+"62": {
+"name": null,
+"source": null,
+"share": null
+},
+"63": {
+"name": null,
+"source": null,
+"share": null
+},
+"64": {
+"name": "Flower Field",
+"source": "area table",
+"share": 1.0
+},
+"65": {
+"name": "Flower Field",
+"source": "area table",
+"share": 1.0
+},
+"66": {
+"name": "Volcano",
+"source": "quest text",
+"share": 1.0
+},
+"67": {
+"name": null,
+"source": null,
+"share": null
+},
+"68": {
+"name": null,
+"source": null,
+"share": null
+},
+"69": {
+"name": "Volcano",
+"source": "area table",
+"share": 1.0
+},
+"71": {
+"name": "Tower Airship",
+"source": "area table",
+"share": 1.0
+},
+"72": {
+"name": "Tower Airship",
+"source": "area table",
+"share": 1.0
+},
+"73": {
+"name": "Tower Airship",
+"source": "area table",
+"share": 1.0
+},
+"74": {
+"name": "Tower Airship",
+"source": "area table",
+"share": 1.0
+},
+"75": {
+"name": "Tower Airship",
+"source": "area table",
+"share": 1.0
+},
+"76": {
+"name": "Tower Airship",
+"source": "area table",
+"share": 1.0
+},
+"78": {
+"name": "Tower Airship",
+"source": "area table",
+"share": 1.0
+},
+"79": {
+"name": "White Lake",
+"source": "area table",
+"share": 1.0
+},
+"80": {
+"name": "White Lake",
+"source": "area table",
+"share": 1.0
+},
+"81": {
 "name": "Isolated Island",
-"hits": 3,
-"quests": 3
+"source": "quest text",
+"share": 1.0
 },
 "86": {
 "name": "Isolated Island",
-"hits": 3,
-"quests": 3
+"source": "quest text",
+"share": 1.0
 },
 "87": {
 "name": "Isolated Island",
-"hits": 3,
-"quests": 3
+"source": "quest text",
+"share": 1.0
 },
 "88": {
 "name": "Isolated Island",
-"hits": 3,
-"quests": 3
+"source": "quest text",
+"share": 1.0
+},
+"89": {
+"name": "Isolated Island",
+"source": "quest text",
+"share": 1.0
+},
+"90": {
+"name": "Isolated Island",
+"source": "quest text",
+"share": 1.0
+},
+"91": {
+"name": "Fortress",
+"source": "quest text",
+"share": 0.231
+},
+"92": {
+"name": "Painted Falls",
+"source": "area table",
+"share": 1.0
+},
+"93": {
+"name": "Painted Falls",
+"source": "area table",
+"share": 1.0
+},
+"94": {
+"name": null,
+"source": null,
+"share": null
+},
+"95": {
+"name": "Hunter's Road",
+"source": "area table",
+"share": 1.0
+},
+"96": {
+"name": "Sacred Mountain",
+"source": "quest text",
+"share": 0.625
+},
+"97": {
+"name": null,
+"source": null,
+"share": null
 }
 }
