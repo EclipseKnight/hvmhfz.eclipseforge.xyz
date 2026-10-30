@@ -702,7 +702,7 @@
 
   /* ---------- tabs ---------- */
 
-  var TAB_PANELS = { gifts: "panel-gifts", road: "panel-road", users: "panel-users", server: "panel-server", audit: "panel-audit" };
+  var TAB_PANELS = { gifts: "panel-gifts", road: "panel-road", quests: "panel-quests", users: "panel-users", server: "panel-server", audit: "panel-audit" };
   var roadStarted = false;
   var usersWired = false;
   var serverWired = false;
@@ -722,6 +722,9 @@
     if (name === "road" && !roadStarted) {
       roadStarted = true;
       startRoad();
+    }
+    if (name === "quests") {
+      if (window.startQuestSubmissions) window.startQuestSubmissions();
     }
     if (name === "users") {
       if (!usersWired) {

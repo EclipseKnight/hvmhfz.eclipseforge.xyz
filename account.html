@@ -298,6 +298,21 @@
 
       <!-- Account -->
       <section class="tab-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" hidden>
+        <section class="panel" id="quest-submit-panel">
+          <div class="panel-head"><h2>Custom quests</h2><span class="panel-note">five waiting or approved</span></div>
+          <p class="note-text">Upload a decompressed quest file. An admin reviews it before it can be played, and custom quests grant no rewards or zenny.</p>
+          <div class="field"><label for="quest-file">Quest file</label><input id="quest-file" type="file" accept=".bin" /></div>
+          <div class="field"><label for="quest-title">Title</label><input id="quest-title" type="text" maxlength="80" placeholder="What should it be called?" /></div>
+          <button type="button" class="btn btn-primary btn-small" id="quest-submit">Submit for approval</button>
+          <p class="note-text" id="quest-submit-note" aria-live="polite"></p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Quest</th><th>Status</th><th>Note</th><th>Submitted</th></tr></thead>
+              <tbody id="quest-submit-list"><tr><td colspan="4" class="empty-cell">Loading your submissions.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
         <section class="panel" id="road-pref-panel">
           <div class="panel-head"><h2>Road you play</h2><span class="panel-note">applies to rooms you open</span></div>
           <p class="note-text">Erupe pins this Road when you open a quest room. A room can still change it in game with <code>!road</code>, and that choice lasts for that room only.</p>
@@ -349,6 +364,7 @@
 
     <script src="/js/questlog.js?v=2"></script>
     <script src="/js/road-preference.js?v=1"></script>
+    <script src="/js/quest-submissions.js?v=1"></script>
     <script src="/js/account.js"></script>
     <script src="/js/search.js" defer></script>
   </body>

@@ -86,6 +86,7 @@
       <nav class="tabs" role="tablist" aria-label="Admin sections">
         <a class="tab" id="tab-gifts" role="tab" aria-controls="panel-gifts" aria-selected="true" href="#gifts">Gifts</a>
         <a class="tab" id="tab-road" role="tab" aria-controls="panel-road" aria-selected="false" href="#road">Hunting Road</a>
+        <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests <span class="tab-count" id="count-quests"></span></a>
         <a class="tab" id="tab-users" role="tab" aria-controls="panel-users" aria-selected="false" href="#users">Users <span class="tab-count" id="count-users"></span></a>
         <a class="tab" id="tab-server" role="tab" aria-controls="panel-server" aria-selected="false" href="#server">Server</a>
         <a class="tab" id="tab-audit" role="tab" aria-controls="panel-audit" aria-selected="false" href="#audit">Audit</a>
@@ -207,6 +208,25 @@
       </section>
       </div>
 
+      <div class="tab-panel" id="panel-quests" hidden>
+        <section class="panel">
+          <div class="panel-head"><h2>Custom quests</h2><span class="panel-note" id="quests-note"></span></div>
+          <p class="note-text">Players submit a quest file, and nothing is playable or deployable until it is approved here. Custom quests are sandbox content: no rewards, no zenny and no leaderboard contribution.</p>
+          <div class="chips" id="quests-filter" role="group" aria-label="Status">
+            <button type="button" class="chip" data-status="pending" aria-pressed="true">Pending</button>
+            <button type="button" class="chip" data-status="approved" aria-pressed="false">Approved</button>
+            <button type="button" class="chip" data-status="rejected" aria-pressed="false">Rejected</button>
+            <button type="button" class="chip" data-status="all" aria-pressed="false">All</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Quest</th><th>Account</th><th>Size</th><th>Submitted</th><th>Status</th><th>Note</th><th></th></tr></thead>
+              <tbody id="quests-body"><tr><td colspan="7" class="empty-cell">Loading submissions.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
       <div class="tab-panel" id="panel-users" hidden>
       <section class="panel" id="users-panel">
         <div class="panel-head"><h2>Users</h2><span class="panel-note" id="users-summary"></span></div>
@@ -294,6 +314,7 @@
       </div>
     </footer>
 
+    <script src="/js/admin-quests.js?v=1"></script>
     <script src="/js/admin.js"></script>
     <script src="/js/search.js" defer></script>
   </body>
