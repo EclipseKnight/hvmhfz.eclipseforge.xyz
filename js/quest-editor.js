@@ -147,6 +147,47 @@
     return options;
   }
 
+
+  var mapIds = null;
+
+  function loadMapIds() {
+    if (mapIds) return Promise.resolve(mapIds);
+    return fetch("/data/map-ids.json")
+      .then(function (res) { return res.ok ? res.json() : {}; })
+      .then(function (map) { mapIds = map || {}; return mapIds; })
+      .catch(function () { mapIds = {}; return mapIds; });
+  }
+
+  function mapOptions(current) {
+    var options = [];
+    Object.keys(mapIds || {}).map(Number).sort(function (a, b) { return a - b; }).forEach(function (id) {
+      options.push({ value: id, label: mapIds[id].name + " (" + id + ")" });
+    });
+    if (current && !(String(current) in (mapIds || {}))) {
+      options.unshift({ value: current, label: "Map " + current });
+    }
+    return options;
+  }
+
+  function selectField(id, labelText, value, hint, options, onChange) {
+    var wrap = el("div", "field");
+    var label = el("label", null, labelText);
+    label.htmlFor = id;
+    var select = el("select");
+    select.id = id;
+    options.forEach(function (opt) {
+      var option = el("option", null, opt.label);
+      option.value = String(opt.value);
+      if (Number(opt.value) === Number(value)) option.selected = true;
+      select.appendChild(option);
+    });
+    select.addEventListener("change", function () { onChange(parseInt(select.value, 10)); });
+    wrap.appendChild(label);
+    wrap.appendChild(select);
+    if (hint) wrap.appendChild(note(hint));
+    return wrap;
+  }
+
   function cellSelect(value, options, onChange) {
     var cell = el("td");
     var select = el("select", "cell-input");
@@ -298,8 +339,14 @@
       function (v) { b.maxHunters = v; }));
     grid.appendChild(numberField("meta-class", "Quest class", b.questClass, "body +0x0a",
       function (v) { b.questClass = v; }));
-    grid.appendChild(numberField("meta-map", "Map (environment)", b.mapId, "body +0x24 · the stage the quest runs in",
-      function (v) { b.mapId = v; }));
+    if (mapIds && Object.keys(mapIds).length) {
+      grid.appendChild(selectField("meta-map", "Map (environment)", b.mapId,
+        "body +0x24 · named from the quest text that mentions each region",
+        mapOptions(b.mapId), function (v) { b.mapId = v; }));
+    } else {
+      grid.appendChild(numberField("meta-map", "Map (environment)", b.mapId, "body +0x24",
+        function (v) { b.mapId = v; }));
+    }
     if (model.startAreas && model.startAreas.length) {
       grid.appendChild(numberField("meta-start-area", "Start area", model.startAreas[0].areaId,
         "header +0x04 · where the party lands",
