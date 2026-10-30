@@ -385,7 +385,7 @@
   var TICKS_PER_MINUTE = 1800;
 
   function metadataPanel(model) {
-    var p = panel("Metadata", "body fields");
+    var p = panel("Map and rules", "environment, limits and payout");
     var b = model.body;
     var grid = el("div", "editor-grid");
     grid.appendChild(numberField("meta-time", "Time limit (minutes)",
@@ -722,9 +722,9 @@
 
   function panels(model) {
     root.textContent = "";
+    root.appendChild(objectivesPanel(model));
     root.appendChild(textPanel(model));
     root.appendChild(metadataPanel(model));
-    root.appendChild(objectivesPanel(model));
     root.appendChild(spawnPanel(model));
     root.appendChild(rewardPanel(model));
   }
