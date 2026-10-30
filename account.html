@@ -96,6 +96,7 @@
         <a class="tab" id="tab-storage" role="tab" aria-controls="panel-storage" aria-selected="false" href="#storage">Storage</a>
         <a class="tab" id="tab-hunts" role="tab" aria-controls="panel-hunts" aria-selected="false" href="#hunts">Hunts</a>
         <a class="tab" id="tab-guild" role="tab" aria-controls="panel-guild" aria-selected="false" href="#guild">Guild <span class="tab-count" id="count-guild"></span></a>
+        <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests</a>
         <a class="tab" id="tab-account" role="tab" aria-controls="panel-account" aria-selected="false" href="#account">Account</a>
       </nav>
 
@@ -297,14 +298,14 @@
         </section>
       </section>
 
-      <!-- Account -->
-      <section class="tab-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" hidden>
+      <!-- Custom quests -->
+      <section class="tab-panel" id="panel-quests" role="tabpanel" aria-labelledby="tab-quests" hidden>
         <section class="panel" id="quest-submit-panel">
-          <div class="panel-head"><h2>Custom quests</h2><span class="panel-note">five waiting or approved</span></div>
+          <div class="panel-head"><h2>Custom quests</h2><span class="panel-note">five at a time</span></div>
           <p class="note-text">Upload a decompressed quest file and it is yours to test straight away, in game under Event. An admin publishes or rejects it later. Custom quests grant no rewards or zenny.</p>
           <div class="field"><label for="quest-file">Quest file</label><input id="quest-file" type="file" accept=".bin" /></div>
           <div class="field"><label for="quest-title">Title</label><input id="quest-title" type="text" maxlength="80" placeholder="What should it be called?" /></div>
-          <button type="button" class="btn btn-primary btn-small" id="quest-submit">Submit for approval</button>
+          <button type="button" class="btn btn-primary btn-small" id="quest-submit">Submit and test it</button>
           <p class="note-text" id="quest-submit-note" aria-live="polite"></p>
           <div class="table-wrap">
             <table class="data-table">
@@ -314,6 +315,10 @@
           </div>
         </section>
 
+      </section>
+
+      <!-- Account -->
+      <section class="tab-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" hidden>
         <section class="panel" id="road-pref-panel">
           <div class="panel-head"><h2>Road you play</h2><span class="panel-note">applies to rooms you open</span></div>
           <p class="note-text">Erupe pins this Road when you open a quest room. A room can still change it in game with <code>!road</code>, and that choice lasts for that room only.</p>
