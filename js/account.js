@@ -855,9 +855,17 @@
       body.appendChild(el("p", "note-text", "No gifts on the server right now."));
       return;
     }
-    open.concat(list.filter(function (gift) { return gift.ended; })).forEach(function (gift) {
-      body.appendChild(giftCard(gift));
-    });
+    var ended = list.filter(function (gift) { return gift.ended; });
+    open.forEach(function (gift) { body.appendChild(giftCard(gift)); });
+    if (!open.length) {
+      body.appendChild(el("p", "note-text", "No open gifts right now."));
+    }
+    if (ended.length) {
+      var box = el("details", "ended-group");
+      box.appendChild(el("summary", null, "Ended gifts (" + ended.length + ")"));
+      ended.forEach(function (gift) { box.appendChild(giftCard(gift)); });
+      body.appendChild(box);
+    }
   }
 
   function loadGifts() {

@@ -845,6 +845,11 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .admin-desc{display:block;margin-top:3px;font-weight:400;font-size:.82rem;color:var(--ink-soft)}
 .admin-items-cell{max-width:340px}
 .admin-table tr.is-ended td{opacity:.55}
+.ended-group{margin-top:12px;border-top:1px solid rgba(189,166,122,.5);padding-top:10px}
+.ended-group summary{cursor:pointer;font-family:var(--display,serif);letter-spacing:.06em;text-transform:uppercase;font-size:.74rem;color:var(--ink-soft)}
+.ended-group summary:hover{color:var(--ink)}
+.ended-toggle td{padding-top:14px}
+.ended-toggle button{width:100%}
 @media (max-width:720px){
   .admin-item{grid-template-columns:minmax(0,1fr)}
   .admin-remove{margin-top:0;justify-self:start}

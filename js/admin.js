@@ -99,7 +99,7 @@
       body.appendChild(empty);
       return;
     }
-    gifts.forEach(function (gift) {
+    function giftRow(gift) {
       var row = el("tr", gift.ended ? "is-ended" : null);
       row.appendChild(el("td", "rank", String(gift.id)));
       var name = el("td", "cell-name");
@@ -121,8 +121,35 @@
         action.appendChild(end);
       }
       row.appendChild(action);
-      body.appendChild(row);
+      return row;
+    }
+
+    // Ended gifts are history: one row to open them, so the live ones stay at the top.
+    var ended = gifts.filter(function (gift) { return gift.ended; });
+    gifts.filter(function (gift) { return !gift.ended; }).forEach(function (gift) {
+      body.appendChild(giftRow(gift));
     });
+    if (ended.length) {
+      var toggle = el("tr", "ended-toggle");
+      var cell = el("td");
+      cell.colSpan = 8;
+      var button = el("button", "ghost-btn small", "Show " + ended.length + " ended");
+      button.type = "button";
+      cell.appendChild(button);
+      toggle.appendChild(cell);
+      body.appendChild(toggle);
+      var rows = ended.map(function (gift) {
+        var row = giftRow(gift);
+        row.hidden = true;
+        body.appendChild(row);
+        return row;
+      });
+      button.addEventListener("click", function () {
+        var show = rows[0].hidden;
+        rows.forEach(function (row) { row.hidden = !show; });
+        button.textContent = (show ? "Hide " : "Show ") + ended.length + " ended";
+      });
+    }
   }
 
   // Ending takes two clicks on the same button: the first asks, the second ends it.
