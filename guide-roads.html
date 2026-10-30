@@ -122,12 +122,12 @@
 <h2 id="others">4. What the rest of the party sees</h2>
 <p>Anyone already in the party who has a different Road gets this line in their chat:</p>
 <pre><code>Your Road has been set to Original Road to match the host.</code></pre>
-<p>Their Road now matches the party. Players already on that Road are not touched, and nobody standing in town or in another party is affected at all.</p>
+<p>Their account is now on that Road, which is the same setting the site shows, and it stays there while they are in the party. Players already on that Road are not touched, and nobody standing in town or in another party is affected at all.</p>
 
 <h2 id="late">5. Joining a quest party later</h2>
 <p>The client only reads the Road file when it enters town, so a player who has a different Road and then joins the party gets the same line:</p>
 <pre><code>This party is on Original Road. Your Road has been set to match the host.</code></pre>
-<p>They ready up with everyone else. The check happens when they join the party, before anyone readies, so a group cannot depart on the wrong Road by accident.</p>
+<p>They ready up with everyone else. The check happens when they join the party, before anyone readies, so a group cannot depart on the wrong Road by accident. Their account is set to the party's Road for as long as they are in it.</p>
 
 <h2 id="party">6. Join a party from Discord</h2>
 <p>Any linked hunter can open a party with <code>/roadparty</code>. The bot posts a message in the channel with a <strong>Join</strong> and a <strong>Leave</strong> button, on the Road that hunter has saved on the site.</p>
@@ -145,6 +145,7 @@
 
 <h2 id="rules">8. Limits worth knowing</h2>
 <ul>
+<li>Joining a party sets the Road on your account; leaving the party puts back whatever you had before, including following the live Road. The site shows the same value at every step.</li>
 <li>Your client loads a Road when it enters town, so switching between parties on different Roads takes one town trip in between. That is how the client works, not a rule the pin adds.</li>
 <li>The choice lives in the game server's memory. A server restart puts every party back on the live Road.</li>
 <li>Only Roads installed on the server can be chosen. A Road still being designed in the builder becomes selectable once it is deployed.</li>
