@@ -214,6 +214,14 @@
      titled with the date (and "Game server update" / "Discord bot" / ...). Move the
      entries that went live out of "Coming next". Steps: docs/how-to.md in the project home. -->
 
+<h3>30 Oct 2026: Quest editor</h3>
+      <ul>
+        <li><b>Edit a copy of any quest:</b> every quest page has an "Edit a copy" button. The editor opens that quest's own file as a form: the eight text slots with the room each one has, time limit, zenny, reward money, party size, quest class, monster spawns and the reward groups.</li>
+        <li><b>Drafts:</b> Save keeps a private draft on your account and the live quest file is never changed; opening the editor again brings the draft back at the revision you saved.</li>
+        <li><b>Longer text is not cut:</b> a line that does not fit its slot is appended to the end of the file and the slot repointed, the same way the quest titles were translated, up to the game's 32 KB quest buffer. The server writes every byte, so what you download is what the game will read.</li>
+        <li><b>Download and test:</b> Download gives you the exact .bin the server would serve. Submit puts the quest in your own quest counter as a testing quest that only your account can load, with its rewards emptied, and queues it for an admin to publish.</li>
+      </ul>
+
 <h3>29 Oct 2026: Quest catalog and English quest text</h3>
       <ul>
         <li><b>Quest catalog:</b> every quest on the server, searchable by name, monster, area, rank and type, with monster icons and 40 per page (<a href="/quests.html">/quests.html</a>).</li>

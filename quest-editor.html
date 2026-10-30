@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hunsterverse MHFZ: Quest editor</title>
+    <meta name="description" content="Edit a copy of a quest on the Hunsterverse Monster Hunter Frontier Z server: text, time limit, zenny, monsters and rewards, saved as a private draft." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Hunsterverse MHFZ: Quest editor" />
+    <meta property="og:description" content="Edit a copy of a quest on the Hunsterverse Monster Hunter Frontier Z server: text, time limit, zenny, monsters and rewards, saved as a private draft." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/quest-editor.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/quest-editor.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hunsterverse MHFZ: Quest editor" />
+    <meta name="twitter:description" content="Edit a copy of a quest on the Hunsterverse Monster Hunter Frontier Z server: text, time limit, zenny, monsters and rewards, saved as a private draft." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/quest-editor.png" />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/nav.js" defer></script>
+    <script src="/js/background.js" defer></script>
+    <script src="/js/consent.js" defer></script>
+    <script src="/js/quest-editor.js?v=1" defer></script>
+  </head>
+
+  <body class="public-page">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/quests.html" aria-current="page">Quests</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html">Hunting Road</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/api.html">API</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/guide-roads.html">Roads guide</a>
+              <a class="navlink" href="/guide-frontier.html">Frontier handbook</a>
+            </div>
+          </div>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="content" class="wrap page wide">
+      <header class="page-head">
+        <p class="kicker">Hunsterverse · Quest editor</p>
+        <h1 id="editor-title">Quest editor</h1>
+        <p class="page-sub" id="editor-sub">Reading the quest file from the server…</p>
+      </header>
+
+      <section class="panel" id="editor-draft-panel">
+        <div class="panel-head">
+          <h2>Draft</h2>
+          <span class="panel-note" id="editor-draft-note">not saved yet</span>
+        </div>
+        <p class="note-text">Save keeps this draft on the server under your account. Download gives you the
+          .bin exactly as the server would serve it. Submit puts it in your quest counter as a testing
+          quest that only you can load; the sandbox copy has its rewards emptied.</p>
+        <div class="editor-actions">
+          <button class="btn btn-primary btn-small" id="editor-save" type="button" disabled>Save draft</button>
+          <button class="ghost-btn small" id="editor-download" type="button" disabled>Download .bin</button>
+          <button class="ghost-btn small" id="editor-submit" type="button" disabled>Submit for testing</button>
+          <span class="note-text" id="editor-status" role="status" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <div id="editor-root">
+        <p class="skeleton-line w60"></p>
+        <p class="skeleton-line w40"></p>
+      </div>
+    </main>
+
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/guide-roads.html">Roads guide</a>
+          <a href="/guide-frontier.html">Frontier handbook</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/api.html">API</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="/privacy.html">Privacy</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+  </body>
+</html>

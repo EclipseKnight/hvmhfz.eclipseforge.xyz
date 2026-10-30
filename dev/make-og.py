@@ -32,6 +32,7 @@ PAGES = {
     "worlds": ("Worlds", "Who is online, what they hunt, how many play"),
     "quests": ("Quest catalog", "Every quest on the server, searchable"),
     "quest": ("Quest", "Objective, area, monsters and rewards"),
+    "quest-editor": ("Quest editor", "Edit a copy of a quest and test it in game"),
     "monsters": ("Monster field guide", "Frontier monsters, hitzones and drops"),
     "guilds": ("Guilds", "Guild rosters, halls and applications"),
     "events": ("Events", "What is running on the server right now"),

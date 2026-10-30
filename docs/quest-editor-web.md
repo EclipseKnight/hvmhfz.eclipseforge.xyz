@@ -71,3 +71,39 @@ Edited or uploaded quests are client-facing content. Cap sizes, parse strictly, 
 that fails validation, and only serve a test file to rooms holding a valid token. The quest set itself is ours, written for
 this server, so publishing, downloading and editing those files is ours to allow; the token rule is about
 unfinished work and privacy, not ownership.
+
+## Shipped (30 Oct 2026)
+
+The first three steps of the feature order are live: text and metadata, monsters and spawns, rewards. Flags,
+objectives and script opcodes are not editable yet; the model carries them and they round-trip untouched.
+
+**Server (API repo, `quest/`)**
+
+| Endpoint | Does |
+|---|---|
+| `GET /api/account/quests/model?questId=&variant=` | the quest file as the `QuestCodec` model: 8 text slots with `capacity`, header, body, reward groups, spawn groups, plus `raw` ranges. 404 when the file is absent, 400 when it does not parse |
+| `POST /api/account/quest-drafts` `{questId, variant}` | parses the live file and stores the model, returns `{id, revision}` |
+| `GET /api/account/quest-drafts` | the account's drafts, newest first |
+| `GET /api/account/quest-drafts/{id}` | `{id, sourceQuestId, variant, revision, model}`; another account's id is a 404 |
+| `PUT /api/account/quest-drafts/{id}` `{model}` | validates by writing it with the codec (400 with the codec's message), stores it, bumps `revision` |
+| `GET /api/account/quest-drafts/{id}/file` | the `.bin` as `application/octet-stream`, attachment named `<questId><variant>.bin` |
+| `POST /api/account/quest-drafts/{id}/submit` | reward-stripped copy via `QuestFile`, a `quest_submission` row with status `testing`, the sandbox quest published by `QuestSubmissionController`'s own method; `{submissionId, sandboxQuestId}` |
+
+`quest_draft(id, account_id, source_quest_id, variant, model jsonb, revision, created_at, updated_at)`,
+DDL in the API repo at `src/main/resources/db/quest-draft.sql`.
+
+**How a string is written.** `QuestModelWriter.prepare` encodes each slot's text to Shift-JIS. A slot whose
+text still reads as its original bytes is left byte-for-byte alone, which is why an untouched model
+serializes identically to the live file. A shorter string is written in place and padded with NULs; one that
+does not fit its room is appended at the end of the file and the slot repointed, so nothing is cut. The
+result is refused past the client's 32 KB quest buffer, and text Shift-JIS cannot hold is refused with the
+character named.
+
+**Page.** `quest-editor.html?id=&variant=` with `js/quest-editor.js`: a Draft panel (save, download, submit,
+variant) then Text, Metadata, Monsters and spawns, and Rewards. Fields are bound straight onto the model, so
+what is posted is the model the server sent. The time limit is edited in minutes (the body field counts 1 800
+ticks a minute). The quest page carries the "Edit a copy" button.
+
+**Still open.** The `quest_submission` queue, MAX_ACTIVE and the sandbox id block are unchanged; a draft is
+never a submission until Submit. Nothing here deletes drafts (the API caps an account at 50), and the private
+API docs have no entry for these routes yet.

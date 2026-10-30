@@ -52,6 +52,8 @@ CURRENT = {
     # One monster's page sits under the Monsters guide.
     "monster.html": "/monsters.html",
     "quest.html": "/quests.html",
+    # The quest editor edits one quest, so it sits under the same catalog link.
+    "quest-editor.html": "/quests.html",
     # The Road builder and the winners list sit under the Hunting Road link (the vote page).
     "road.html": "/road-vote.html",
     "road-history.html": "/road-vote.html",
