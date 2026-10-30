@@ -333,9 +333,9 @@
         }
         // Attempts live in the quest log, not the Road tables, so they are joined in here once.
         var r = data.rotation || {};
-        var q = "/api/public/quests/road/attempts?";
-        if (r.from) q += "from=" + encodeURIComponent(r.from) + "&";
-        if (r.to) q += "to=" + encodeURIComponent(r.to);
+        var q = "/api/public/quests/road/attempts?mode=" + encodeURIComponent(choice.mode);
+        if (r.from) q += "&from=" + encodeURIComponent(r.from);
+        if (r.to) q += "&to=" + encodeURIComponent(r.to);
         request(q).then(function (a) {
           if (current !== key) return;
           var counts = (a && a.attempts) || {};
