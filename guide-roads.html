@@ -93,6 +93,7 @@
 <li><a href="#choose">Choose a Road in the room</a></li>
 <li><a href="#others">What the rest of the party sees</a></li>
 <li><a href="#late">Joining a room later</a></li>
+<li><a href="#party">Join a party from Discord</a></li>
 <li><a href="#back">Going back to the live Road</a></li>
 <li><a href="#rules">Limits worth knowing</a></li>
 </ol>
@@ -128,11 +129,21 @@
 <pre><code>This room is on Original Road, which your client has not loaded. Returning you to town once; re-enter the room after.</code></pre>
 <p>They come back in, and ready up with everyone else. The check happens on entering the room, before anyone readies, so a party cannot depart on the wrong Road by accident.</p>
 
-<h2 id="back">6. Going back to the live Road</h2>
+<h2 id="party">6. Join a party from Discord</h2>
+<p>Any linked hunter can open a party with <code>/roadparty</code>. The bot posts a message in the channel with a <strong>Join</strong> and a <strong>Leave</strong> button, on the Road that hunter has saved on the site.</p>
+<ul>
+<li>Up to four hunters, counting the one who started it.</li>
+<li>Joining checks that your Discord is linked and that you have a hunter, then switches your saved Road to the party's Road. Nothing else about your account changes.</li>
+<li>Leaving removes you from the list and leaves your saved Road as it is.</li>
+<li>A party closes after three hours, and a bot restart closes any that are open. The Road it set on your account stays.</li>
+</ul>
+<p>Nobody has to be in game for this. When the group is ready, whoever hosts opens a room and the server does the rest: the room starts on that Road, and anyone who joins with a different one is sent to town once to load it.</p>
+
+<h2 id="back">7. Going back to the live Road</h2>
 <pre><code>!road clear</code></pre>
 <pre><code>This room is back on the live Road. Moving anyone still on another Road back to town.</code></pre>
 
-<h2 id="rules">7. Limits worth knowing</h2>
+<h2 id="rules">8. Limits worth knowing</h2>
 <ul>
 <li>A town visit loads exactly one Road, so switching between rooms on different Roads costs one town trip in between. That is how the client works, not a rule the pin adds.</li>
 <li>Pins live in the game server's memory. A server restart puts every room back on the live Road.</li>
