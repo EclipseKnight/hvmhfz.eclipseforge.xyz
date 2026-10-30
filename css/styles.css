@@ -1136,3 +1136,13 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 /* Account header actions: keep the admin link and sign out together at the right, not spread across
    the row by the header's space-between. */
 .account-head .head-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+/* The quest log grid must let its columns shrink: without min-width the table forces the column
+   wider than the panel and the whole block runs off the right edge on a phone. */
+.quest-log-grid > *{min-width:0}
+#quest-log .table-wrap{max-width:100%}
+@media (max-width:560px){
+  /* Room for hunter, quest, result and times: party names are the first thing to go. */
+  #quest-log .data-table th:nth-child(4),
+  #quest-log .data-table td:nth-child(4){display:none}
+}
