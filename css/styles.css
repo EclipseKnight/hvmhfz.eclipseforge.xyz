@@ -929,6 +929,7 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .role-cell{display:flex;flex-wrap:wrap;gap:6px}
 .role-badge{display:inline-block;padding:3px 8px;border-radius:999px;border:1px solid #b9a379;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);background:rgba(183,138,51,.08)}
 .role-badge.role-admin{border-color:#8a6a24;color:#6d5318;background:rgba(183,138,51,.16);font-weight:700}
+.role-badge.role-tester{border-color:#4c6f7a;color:#2f4d57;background:rgba(76,111,122,.12)}
 .role-badge.role-mod{border-color:#5f7a4c;color:#3f5530;background:rgba(95,122,76,.12)}
 .admin-flags{display:flex;gap:6px;flex-wrap:wrap}
 .ghost-btn.is-on{border-color:#8a6a24;color:#6d5318;background:rgba(183,138,51,.16);box-shadow:inset 0 0 0 1px rgba(138,106,36,.35)}

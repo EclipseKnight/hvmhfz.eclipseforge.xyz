@@ -784,7 +784,7 @@
   }
 
   function roleBadge(role) {
-    var extra = role === "ROLE_ADMIN" ? " role-admin" : role === "ROLE_MODERATOR" ? " role-mod" : "";
+    var extra = role === "ROLE_ADMIN" ? " role-admin" : role === "ROLE_MODERATOR" ? " role-mod" : role === "ROLE_TESTER" ? " role-tester" : "";
     return el("span", "role-badge" + extra, role.replace("ROLE_", ""));
   }
 
@@ -876,6 +876,11 @@
       var modCell = el("td");
       modCell.appendChild(roleButton(user, "ROLE_MODERATOR", "moderator"));
       row.appendChild(modCell);
+      var testerCell = el("td");
+      var testerBtn = roleButton(user, "ROLE_TESTER", "tester");
+      testerBtn.title = "Custom quest and road tester: can load and try custom content before it is published.";
+      testerCell.appendChild(testerBtn);
+      row.appendChild(testerCell);
       body.appendChild(row);
     });
   }
