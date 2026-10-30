@@ -105,6 +105,53 @@
     return wrap;
   }
 
+
+  // ---- id lookups ---------------------------------------------------------------------------
+
+  var monsterIds = null;
+
+  function loadMonsterIds() {
+    if (monsterIds) return Promise.resolve(monsterIds);
+    return fetch("/data/monster-ids.json")
+      .then(function (res) { return res.ok ? res.json() : {}; })
+      .then(function (map) { monsterIds = map || {}; return monsterIds; })
+      .catch(function () { monsterIds = {}; return monsterIds; });
+  }
+
+  function monsterOptions(current) {
+    var options = [{ value: 0, label: "None (0)" }];
+    Object.keys(monsterIds || {}).map(Number).sort(function (a, b) {
+      return String(monsterIds[a]).localeCompare(String(monsterIds[b]));
+    }).forEach(function (id) {
+      options.push({ value: id, label: monsterIds[id] + " (" + id + ")" });
+    });
+    if (current && !(current in (monsterIds || {}))) {
+      options.push({ value: current, label: "Unlisted monster (" + current + ")" });
+    }
+    return options;
+  }
+
+  function areaOptions(current, count) {
+    var top = Math.max(count || 0, current || 0, 10);
+    var options = [];
+    for (var i = 1; i <= top; i += 1) options.push({ value: i, label: "Area " + i });
+    return options;
+  }
+
+  function cellSelect(value, options, onChange) {
+    var cell = el("td");
+    var select = el("select", "cell-input");
+    options.forEach(function (opt) {
+      var option = el("option", null, opt.label);
+      option.value = String(opt.value);
+      if (Number(opt.value) === Number(value)) option.selected = true;
+      select.appendChild(option);
+    });
+    select.addEventListener("change", function () { onChange(parseInt(select.value, 10)); });
+    cell.appendChild(select);
+    return cell;
+  }
+
   function cellInput(value, onChange) {
     var cell = el("td");
     var input = el("input", "cell-input");
@@ -242,12 +289,12 @@
   function spawnTable(spawns) {
     var rows = (spawns || []).map(function (spawn) {
       return [
-        cellInput(spawn.monsterId, function (v) { spawn.monsterId = v; }),
+        cellSelect(spawn.monsterId, monsterOptions(spawn.monsterId), function (v) { spawn.monsterId = v; }),
         cellInput(spawn.count, function (v) { spawn.count = v; }),
-        cellInput(spawn.areaId, function (v) { spawn.areaId = v; })
+        cellSelect(spawn.areaId, areaOptions(spawn.areaId, spawns.length + 4), function (v) { spawn.areaId = v; })
       ];
     });
-    return table(["Monster id", "Count", "Area id"], rows);
+    return table(["Monster", "Count", "Area"], rows);
   }
 
   function spawnPanel(model) {
@@ -448,7 +495,8 @@
       .then(body).catch(function (error) { return { error: error }; }),
     api("/api/account/quest-drafts").then(body).catch(function () { return []; }),
     fetch("/data/quests.json", { cache: "no-cache" })
-      .then(function (res) { return res.json(); }).catch(function () { return null; })
+      .then(function (res) { return res.json(); }).catch(function () { return null; }),
+    loadMonsterIds()
   ]).then(function (results) {
     var live = results[0];
     if (live && live.error) {
