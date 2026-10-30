@@ -41,6 +41,11 @@ PAGES = {
     "changelog": ("Changelog", "Every server and site update, dated"),
     "api": ("API", "Public endpoints and the private docs"),
     "guide-windows": ("Windows guide", "Install and play on Windows"),
+    "guide-frontier": ("Frontier handbook", "Frontier Z from first hunt to Zenith, for this server"),
+    "guide-frontier-basics": ("Getting started", "Ranks, styles, G Rank and Zenith"),
+    "guide-frontier-equipment": ("Gear and skills", "Fourteen weapons, sigils, armour and Transcend"),
+    "guide-frontier-activities": ("What there is to do", "Quests, festivals, Road, Caravan, Raviente"),
+    "guide-frontier-reference": ("Reference", "House, items, monsters, gathering and tools"),
     "guide-roads": ("Roads in game", "Choosing a Road, and what the rest of the party sees"),
     "guide-linux": ("Linux guide", "Install and play on Linux"),
 }

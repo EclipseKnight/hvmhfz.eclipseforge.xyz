@@ -36,6 +36,7 @@ NAV = [
     ("/guide-windows.html", "Windows guide"),
     ("/guide-linux.html", "Linux guide"),
     ("/guide-roads.html", "Roads guide"),
+    ("/guide-frontier.html", "Frontier handbook"),
     ("/report.html", "Report"),
     ("/account.html", "Account"),
     ("https://discord.gg/YuE42eh", "Discord"),
@@ -54,6 +55,10 @@ CURRENT = {
     # The Road builder and the winners list sit under the Hunting Road link (the vote page).
     "road.html": "/road-vote.html",
     "road-history.html": "/road-vote.html",
+    "guide-frontier-basics.html": "/guide-frontier.html",
+    "guide-frontier-equipment.html": "/guide-frontier.html",
+    "guide-frontier-activities.html": "/guide-frontier.html",
+    "guide-frontier-reference.html": "/guide-frontier.html",
 }
 
 
