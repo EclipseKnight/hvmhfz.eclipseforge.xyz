@@ -306,8 +306,8 @@
         function (v) { model.startAreas.forEach(function (a) { a.areaId = v; }); }));
     }
     p.appendChild(grid);
-    p.appendChild(note("Map names are not mapped yet, so the map is a number; 27 is the Great Forest and 54 the arena,"
-      + " for example. The server assigns the quest id when you submit, so it is 0 here."
+    p.appendChild(note("Map names are not mapped yet, so the map is a number: the client's own stage id."
+      + " The server assigns the quest id when you submit, so it is 0 here."
       + " " + String(model.layout).toLowerCase().replace("_", " ") + " layout · " + model.length
       + " bytes as it stands."));
     return p;
