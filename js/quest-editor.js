@@ -170,10 +170,12 @@
       mapAreas ? Promise.resolve(mapAreas) : grab("/data/map-areas.json", {}),
       areaIds ? Promise.resolve(areaIds) : grab("/data/area-ids.json", {}),
       itemIds ? Promise.resolve(itemIds) : grab("/data/item-ids.json", {}),
-      objectiveTypes ? Promise.resolve(objectiveTypes) : grab("/data/objective-types.json", {})
+      objectiveTypes ? Promise.resolve(objectiveTypes) : grab("/data/objective-types.json", {}),
+      monsterIds ? Promise.resolve(monsterIds) : grab("/data/monster-ids.json", {})
     ]).then(function (r) {
       mapIds = mapIds || r[0]; mapAreas = mapAreas || r[1]; areaIds = areaIds || r[2]; itemIds = itemIds || r[3];
       objectiveTypes = objectiveTypes || r[4];
+      monsterIds = monsterIds || r[5];
       return true;
     });
   }
@@ -784,7 +786,7 @@
         return draft.model;
       });
 
-  Promise.all([load, loadMonsterIds()])
+  Promise.all([load, loadTables()])
     .then(function (results) {
       render(results[0]);
       return refreshDrafts();
