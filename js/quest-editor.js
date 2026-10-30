@@ -234,6 +234,29 @@
     return wrap;
   }
 
+
+  function cellCombo(value, options, onChange, display) {
+    var cell = el("td", "item-cell");
+    var listId = "items-" + Math.random().toString(36).slice(2, 8);
+    var input = el("input", "cell-input");
+    input.setAttribute("list", listId);
+    input.value = display ? display(value) : String(value);
+    var list = el("datalist");
+    list.id = listId;
+    options.forEach(function (opt) { var o = el("option"); o.value = opt.label; list.appendChild(o); });
+    function commit() {
+      var raw = input.value.trim();
+      var m = raw.match(/\((\d+)\)\s*$/);
+      var next = m ? parseInt(m[1], 10) : parseInt(raw, 10);
+      if (!isNaN(next)) { onChange(next); input.value = display ? display(next) : String(next); }
+    }
+    input.addEventListener("change", commit);
+    input.addEventListener("blur", commit);
+    cell.appendChild(input);
+    cell.appendChild(list);
+    return cell;
+  }
+
   function itemCell(value, onChange) {
     var cell = el("td", "item-cell");
     var input = el("input", "cell-input");
@@ -410,10 +433,16 @@
         function (v) { b.mapId = v; }));
     }
     if (model.startAreas && model.startAreas.length) {
-      grid.appendChild(numberField("meta-start-area", "Start area", model.startAreas[0].areaId,
+      grid.appendChild(selectField("meta-start-area", "Start area", model.startAreas[0].areaId,
         "header +0x04 · where the party lands",
+        areaOptions(model.startAreas[0].areaId, 10, b.mapId),
         function (v) { model.startAreas.forEach(function (a) { a.areaId = v; }); }));
     }
+    grid.appendChild(comboField("meta-requirement", "Requirement item (0 = none)", b.iconLabelId,
+      "body +0x94 · the item the quest consumes on entry", itemOptions(),
+      function (v) { b.iconLabelId = v; }, itemDisplay));
+    grid.appendChild(numberField("meta-requirement-count", "Requirement count", b.iconLabelCount,
+      "body +0x96 · how many the quest takes", function (v) { b.iconLabelCount = v; }));
     p.appendChild(grid);
     p.appendChild(note("Map names are not mapped yet, so the map is a number: the client's own stage id."
       + " The server assigns the quest id when you submit, so it is 0 here."
@@ -427,6 +456,50 @@
     return area.spawns;
   }
 
+
+
+  // A searchable picker: the input accepts a name or an id, and the datalist offers every known name.
+  // Used where a plain select would hold 16,701 options (items).
+  function comboField(id, labelText, value, hint, options, onChange, display) {
+    var wrap = el("div", "field");
+    var label = el("label", null, labelText);
+    label.htmlFor = id;
+    var listId = id + "-list";
+    var input = el("input");
+    input.id = id;
+    input.setAttribute("list", listId);
+    input.value = display ? display(value) : String(value === undefined || value === null ? 0 : value);
+    var list = el("datalist");
+    list.id = listId;
+    options.forEach(function (opt) {
+      var option = el("option");
+      option.value = opt.label;
+      list.appendChild(option);
+    });
+    function commit() {
+      var raw = input.value.trim();
+      var match = raw.match(/\((\d+)\)\s*$/);
+      var next = match ? parseInt(match[1], 10) : parseInt(raw, 10);
+      if (!isNaN(next)) { onChange(next); input.value = display ? display(next) : String(next); }
+    }
+    input.addEventListener("change", commit);
+    input.addEventListener("blur", commit);
+    wrap.appendChild(label);
+    wrap.appendChild(input);
+    wrap.appendChild(list);
+    if (hint) wrap.appendChild(note(hint));
+    return wrap;
+  }
+
+  function itemOptions() {
+    return Object.keys(itemIds || {}).map(Number).sort(function (a, b) {
+      return String(itemIds[a]).localeCompare(String(itemIds[b]));
+    }).map(function (id) { return { value: id, label: itemIds[id] + " (" + id + ")" }; });
+  }
+
+  function itemDisplay(id) {
+    return itemIds && itemIds[String(id)] ? itemIds[String(id)] + " (" + id + ")" : "Item " + id;
+  }
 
   function typeOptions(current) {
     var options = [];
@@ -455,6 +528,10 @@
         grid.appendChild(selectField("obj-" + index + "-target", "Monster", objective.target,
           "the monster the objective counts", monsterOptions(objective.target),
           function (v) { objective.target = v; }));
+      } else if (objective.type & 2) {
+        grid.appendChild(comboField("obj-" + index + "-target", "Item", objective.target,
+          "the item the objective counts", itemOptions(),
+          function (v) { objective.target = v; }, itemDisplay));
       } else {
         grid.appendChild(numberField("obj-" + index + "-target", "Target id", objective.target,
           "monster or item id", function (v) { objective.target = v; }));
@@ -548,7 +625,7 @@
       var rows = entries.map(function (entry, entryIndex) {
         return [
           cellInput(entry.weight, function (v) { entry.weight = v; }),
-          itemCell(entry.itemId, function (v) { entry.itemId = v; }),
+          cellCombo(entry.itemId, itemOptions(), function (v) { entry.itemId = v; }, itemDisplay),
           cellInput(entry.count, function (v) { entry.count = v; }),
           cellAction("Remove", function () {
             entries.splice(entryIndex, 1);
