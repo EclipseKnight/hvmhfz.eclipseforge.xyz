@@ -90,6 +90,9 @@
       if (details.rewardMoney !== undefined) body.appendChild(row("Reward money", details.rewardMoney.toLocaleString() + "z"));
       if (details.zenny !== undefined) body.appendChild(row("Contract fee", details.zenny.toLocaleString() + "z"));
     }
+    if (details && details.requirementItemId) {
+      body.appendChild(row("Requirement", "Item #" + details.requirementItemId + " x" + details.requirementCount));
+    }
     body.appendChild(row("Files", String(quest.variants.length) + " (" + quest.variants.join(", ") + ")"));
     if (quest.nameJp && quest.nameJp !== quest.name) body.appendChild(row("Original title", quest.nameJp));
     table.appendChild(body);
@@ -156,10 +159,10 @@
     if (details && (details.descriptionEn || details.description)) {
       var desc = section("Description", details.descriptionEn ? "translated" : "from the quest file");
       desc.appendChild(el("p", "quest-description", details.descriptionEn || details.description));
-      if (details.descriptionEn && details.description) {
+      if (details.descriptionJp) {
         var original = el("details", "quest-original");
         original.appendChild(el("summary", null, "Original Japanese"));
-        original.appendChild(el("p", "quest-description muted", details.description));
+        original.appendChild(el("p", "quest-description muted", details.descriptionJp));
         desc.appendChild(original);
       }
       main.appendChild(desc);
