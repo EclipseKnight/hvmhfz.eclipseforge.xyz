@@ -96,8 +96,9 @@
     facts.appendChild(table);
     var edit = el("p", "note-text");
     var editLink = el("a", "btn btn-primary btn-small", "Edit a copy");
+    var variant = quest.variants.indexOf("d0") >= 0 ? "d0" : quest.variants[0];
     editLink.href = "/quest-editor.html?id=" + quest.id +
-      (quest.variants.length ? "&variant=" + encodeURIComponent(quest.variants[0]) : "");
+      (variant ? "&variant=" + encodeURIComponent(variant) : "");
     edit.appendChild(editLink);
     edit.appendChild(document.createTextNode(" Opens this quest in the editor as a private draft."
       + " The live file is never changed."));
