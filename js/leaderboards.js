@@ -112,6 +112,10 @@
           // before tracking began only each hunter's best was saved: no floor count to show
           return e.floorsClimbed > 0 ? num(e.floorsClimbed) : "-";
         }, "num"],
+        ["Attempts", function (e) {
+          // every stay on a Hunting Road quest, cleared or not; 0 means none recorded in this window
+          return e.attempts === undefined ? "-" : num(e.attempts);
+        }, "num"],
         ["Guild", function (e) { return e.guildName || "-"; }]
       ]
     }
@@ -327,6 +331,20 @@
           message(board, "Hunting Road clears are recorded from the next game server update on. Climb a floor after it and you show up here.");
           return;
         }
+        // Attempts live in the quest log, not the Road tables, so they are joined in here once.
+        var r = data.rotation || {};
+        var q = "/api/public/quests/road/attempts?";
+        if (r.from) q += "from=" + encodeURIComponent(r.from) + "&";
+        if (r.to) q += "to=" + encodeURIComponent(r.to);
+        request(q).then(function (a) {
+          if (current !== key) return;
+          var counts = (a && a.attempts) || {};
+          (data.entries || []).forEach(function (e) {
+            e.attempts = counts[String(e.characterId)] || 0;
+          });
+          render(board, board.rows(data));
+        }).catch(function () { render(board, board.rows(data)); });
+        return;
       }
       render(board, board.rows(data));
     }).catch(function () {

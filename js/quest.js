@@ -96,6 +96,30 @@
     facts.appendChild(table);
     main.appendChild(facts);
 
+    // What the server has actually seen of this quest: attempts, outcomes and how long a clear takes.
+    fetch("https://api.hvmhfz.eclipseforge.xyz/api/public/quests/" + quest.id + "/stats")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (st) {
+        if (!st || !st.attempts) return;
+        var panel = section("Tracked runs", "recorded by the game server");
+        var t = el("table", "data-table quest-facts");
+        var b = el("tbody");
+        b.appendChild(row("Attempts", String(st.attempts)));
+        b.appendChild(row("Cleared", String(st.clears)));
+        b.appendChild(row("Failed", String(st.fails)));
+        b.appendChild(row("Abandoned", String(st.abandoned)));
+        if (st.successRate !== null && st.successRate !== undefined) {
+          b.appendChild(row("Clear rate", st.successRate + "%"));
+        }
+        if (st.avgClearSeconds !== null && st.avgClearSeconds !== undefined) {
+          b.appendChild(row("Average clear", duration(st.avgClearSeconds)));
+        }
+        t.appendChild(b);
+        panel.appendChild(t);
+        main.appendChild(panel);
+      })
+      .catch(function () {});
+
     if (quest.monsters && quest.monsters.length) {
       var mon = section("Monsters", "what the objective names");
       var grid = el("div", "quest-monsters");
