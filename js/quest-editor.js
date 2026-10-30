@@ -159,6 +159,7 @@
   var mapAreas = null;
   var areaIds = null;
   var itemIds = null;
+  var objectiveTypes = null;
 
   function loadTables() {
     function grab(url, fallback) {
@@ -168,9 +169,11 @@
       mapIds ? Promise.resolve(mapIds) : grab("/data/map-ids.json", {}),
       mapAreas ? Promise.resolve(mapAreas) : grab("/data/map-areas.json", {}),
       areaIds ? Promise.resolve(areaIds) : grab("/data/area-ids.json", {}),
-      itemIds ? Promise.resolve(itemIds) : grab("/data/item-ids.json", {})
+      itemIds ? Promise.resolve(itemIds) : grab("/data/item-ids.json", {}),
+      objectiveTypes ? Promise.resolve(objectiveTypes) : grab("/data/objective-types.json", {})
     ]).then(function (r) {
       mapIds = mapIds || r[0]; mapAreas = mapAreas || r[1]; areaIds = areaIds || r[2]; itemIds = itemIds || r[3];
+      objectiveTypes = objectiveTypes || r[4];
       return true;
     });
   }
@@ -420,6 +423,47 @@
   function spawnsOf(area) {
     if (!area.spawns) area.spawns = [];
     return area.spawns;
+  }
+
+
+  function typeOptions(current) {
+    var options = [];
+    Object.keys(objectiveTypes || {}).map(Number).sort(function (a, b) { return a - b; })
+      .forEach(function (id) {
+        options.push({ value: id, label: objectiveTypes[id] + " (" + id + ")" });
+      });
+    if (!(String(current) in (objectiveTypes || {}))) {
+      options.unshift({ value: current, label: "Type " + current });
+    }
+    return options;
+  }
+
+  function objectivesPanel(model) {
+    var p = panel("Objectives", "what the quest asks for");
+    var b = model.body;
+    ["objective0", "objective1", "objective2"].forEach(function (key, index) {
+      var objective = b[key];
+      if (!objective) return;
+      p.appendChild(el("h3", "subhead", "Objective " + (index + 1)));
+      var grid = el("div", "editor-grid");
+      grid.appendChild(selectField("obj-" + index + "-type", "Type", objective.type,
+        "body +0x" + (0x30 + index * 8).toString(16) + " · the objective kind",
+        typeOptions(objective.type), function (v) { objective.type = v; render(model, state.quest); }));
+      if (objective.type & 1) {
+        grid.appendChild(selectField("obj-" + index + "-target", "Monster", objective.target,
+          "the monster the objective counts", monsterOptions(objective.target),
+          function (v) { objective.target = v; }));
+      } else {
+        grid.appendChild(numberField("obj-" + index + "-target", "Target id", objective.target,
+          "monster or item id", function (v) { objective.target = v; }));
+      }
+      grid.appendChild(numberField("obj-" + index + "-count", "Count", objective.count,
+        "how many are needed", function (v) { objective.count = v; }));
+      p.appendChild(grid);
+    });
+    p.appendChild(note("Type values are the client's own objective bitfield: Hunt, Slay, Capture, Deliver,"
+      + " Break Part, Damage and so on."));
+    return p;
   }
 
   function spawnTable(spawns, model) {
@@ -680,6 +724,7 @@
     root.textContent = "";
     root.appendChild(textPanel(model));
     root.appendChild(metadataPanel(model));
+    root.appendChild(objectivesPanel(model));
     root.appendChild(spawnPanel(model));
     root.appendChild(rewardPanel(model));
   }
