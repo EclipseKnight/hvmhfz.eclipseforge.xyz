@@ -298,8 +298,16 @@
       function (v) { b.maxHunters = v; }));
     grid.appendChild(numberField("meta-class", "Quest class", b.questClass, "body +0x0a",
       function (v) { b.questClass = v; }));
+    grid.appendChild(numberField("meta-map", "Map (environment)", b.mapId, "body +0x24 · the stage the quest runs in",
+      function (v) { b.mapId = v; }));
+    if (model.startAreas && model.startAreas.length) {
+      grid.appendChild(numberField("meta-start-area", "Start area", model.startAreas[0].areaId,
+        "header +0x04 · where the party lands",
+        function (v) { model.startAreas.forEach(function (a) { a.areaId = v; }); }));
+    }
     p.appendChild(grid);
-    p.appendChild(note("The server assigns the quest id when you submit, so it is 0 here."
+    p.appendChild(note("Map names are not mapped yet, so the map is a number; 27 is the Great Forest and 54 the arena,"
+      + " for example. The server assigns the quest id when you submit, so it is 0 here."
       + " " + String(model.layout).toLowerCase().replace("_", " ") + " layout · " + model.length
       + " bytes as it stands."));
     return p;
