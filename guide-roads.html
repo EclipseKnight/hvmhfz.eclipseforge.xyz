@@ -114,7 +114,7 @@
 <pre><code>Roads: 0 live | 1 Original Road | 2 Zenith Road. Use !road &lt;number&gt;.</code></pre>
 <p>Pin one by number:</p>
 <pre><code>!road 1</code></pre>
-<pre><code>Road set to Original Road for this party. Moving anyone still on the old Road back to town.</code></pre>
+<pre><code>Road set to Original Road for this party.</code></pre>
 <p>A number that is not on the list gets:</p>
 <pre><code>No such Road. Use !road to see the list.</code></pre>
 <p>Outside a party the command says <code>Roads are chosen inside a quest party.</code></p>
@@ -137,15 +137,15 @@
 <li>Leaving removes you from the list and leaves your saved Road as it is.</li>
 <li>A party closes after three hours, and a bot restart closes any that are open. The Road it set on your account stays.</li>
 </ul>
-<p>Nobody has to be in game for this. When the group is ready, whoever hosts opens the party and the server does the rest: the party starts on that Road, and anyone who joins with a different one is sent to town once to load it.</p>
+<p>Nobody has to be in game for this. When the group is ready, whoever hosts opens the party and the server does the rest: the party starts on that Road, and anyone who joins with a different one has their Road switched to match.</p>
 
 <h2 id="back">7. Going back to the live Road</h2>
 <pre><code>!road clear</code></pre>
-<pre><code>This party is back on the live Road. Moving anyone still on another Road back to town.</code></pre>
+<pre><code>This party is back on the live Road.</code></pre>
 
 <h2 id="rules">8. Limits worth knowing</h2>
 <ul>
-<li>A town visit loads exactly one Road, so switching between parties on different Roads costs one town trip in between. That is how the client works, not a rule the pin adds.</li>
+<li>Your client loads a Road when it enters town, so switching between parties on different Roads takes one town trip in between. That is how the client works, not a rule the pin adds.</li>
 <li>The choice lives in the game server's memory. A server restart puts every party back on the live Road.</li>
 <li>Only Roads installed on the server can be chosen. A Road still being designed in the builder becomes selectable once it is deployed.</li>
 <li>Clears are recorded against the Road the party ran, so an old Road's board keeps growing when people go back to it, separately from the records it earned while live.</li>
