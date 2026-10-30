@@ -1,5 +1,5 @@
-/* Quest editor: one quest file as a model, edited as a draft. The server writes the bytes.
-   A draft is private to the signed-in account; nothing here touches the live quest files. */
+/* Quest builder: a new quest as a QuestCodec model, edited as a private draft. The server writes the
+   bytes. Nothing here opens a live quest file; every draft starts from the blank quest the API owns. */
 (function () {
   "use strict";
 
@@ -20,14 +20,17 @@
   ];
 
   var params = new URLSearchParams(window.location.search);
-  var questId = parseInt(params.get("id"), 10);
-  var variant = (params.get("variant") || "d0").toLowerCase();
+  /* The old address for a copy of a live quest. It is kept only so the page can show the server's refusal
+     instead of a blank editor that looks like it worked. */
+  var liveId = parseInt(params.get("id"), 10);
+  var draftParam = parseInt(params.get("draft"), 10);
 
   var root = document.getElementById("editor-root");
   var titleEl = document.getElementById("editor-title");
   var subEl = document.getElementById("editor-sub");
   var statusEl = document.getElementById("editor-status");
   var draftNote = document.getElementById("editor-draft-note");
+  var draftsBody = document.getElementById("editor-drafts");
   var saveBtn = document.getElementById("editor-save");
   var downloadBtn = document.getElementById("editor-download");
   var submitBtn = document.getElementById("editor-submit");
@@ -49,7 +52,7 @@
     return fetch(API + path, opts).then(function (res) {
       if (res.status === 401) {
         window.location.replace("/account.html");
-        throw new Error("Sign in to use the quest editor.");
+        throw new Error("Sign in to use the quest builder.");
       }
       return res;
     });
@@ -105,6 +108,12 @@
     return wrap;
   }
 
+  function actionButton(label, onClick) {
+    var button = el("button", "ghost-btn small", label);
+    button.type = "button";
+    button.addEventListener("click", onClick);
+    return button;
+  }
 
   // ---- id lookups ---------------------------------------------------------------------------
 
@@ -166,9 +175,18 @@
     return cell;
   }
 
+  function cellAction(label, onClick) {
+    var cell = el("td");
+    cell.appendChild(actionButton(label, onClick));
+    return cell;
+  }
+
   function table(headers, rows) {
     var wrap = el("div", "table-wrap");
     var t = el("table", "data-table");
+    // An editable table must not be re-ordered by the site's table sorter: a sorted row would sit next to
+    // the wrong label while its inputs stayed bound to the record they were built from.
+    t.setAttribute("data-nosort", "");
     var head = el("thead");
     var row = el("tr");
     headers.forEach(function (name) { row.appendChild(el("th", "num", name)); });
@@ -177,7 +195,7 @@
     var tb = el("tbody");
     if (!rows.length) {
       var empty = el("tr");
-      var td = el("td", "empty-cell", "Nothing in this table.");
+      var td = el("td", "empty-cell", "Nothing in this table yet.");
       td.colSpan = headers.length;
       empty.appendChild(td);
       tb.appendChild(empty);
@@ -281,20 +299,51 @@
     grid.appendChild(numberField("meta-class", "Quest class", b.questClass, "body +0x0a",
       function (v) { b.questClass = v; }));
     p.appendChild(grid);
-    p.appendChild(note("Quest " + b.questId + " · " + String(model.layout).toLowerCase().replace("_", " ")
-      + " layout · " + model.length + " bytes as it stands."));
+    p.appendChild(note("The server assigns the quest id when you submit, so it is 0 here."
+      + " " + String(model.layout).toLowerCase().replace("_", " ") + " layout · " + model.length
+      + " bytes as it stands."));
     return p;
+  }
+
+  function spawnsOf(area) {
+    if (!area.spawns) area.spawns = [];
+    return area.spawns;
   }
 
   function spawnTable(spawns) {
     var rows = (spawns || []).map(function (spawn) {
+      var index = spawns.indexOf(spawn);
       return [
         cellSelect(spawn.monsterId, monsterOptions(spawn.monsterId), function (v) { spawn.monsterId = v; }),
         cellInput(spawn.count, function (v) { spawn.count = v; }),
-        cellSelect(spawn.areaId, areaOptions(spawn.areaId, spawns.length + 4), function (v) { spawn.areaId = v; })
+        cellSelect(spawn.areaId, areaOptions(spawn.areaId, spawns.length + 4), function (v) { spawn.areaId = v; }),
+        cellAction("Remove", function () {
+          spawns.splice(index, 1);
+          rebuild();
+        })
       ];
     });
-    return table(["Monster", "Count", "Area"], rows);
+    return table(["Monster", "Count", "Area", ""], rows);
+  }
+
+  function defaultMonsterId() {
+    // Id 0 is "None", which is not a monster; the list is keyed by id, so the first real one is the default.
+    var keys = Object.keys(monsterIds || {}).map(Number).filter(function (id) { return id > 0; }).sort(function (a, b) {
+      return a - b;
+    });
+    return keys.length ? keys[0] : 1;
+  }
+
+  /** Adds a monster to the first large spawn area, creating that area when the quest has none. */
+  function addMonster() {
+    var model = state.model;
+    if (!model.largeSpawnAreas) model.largeSpawnAreas = [];
+    if (!model.largeSpawnAreas.length) {
+      model.largeSpawnAreas.push({ areaId: 1, reserved: 0, monsterIdsOffset: 0, spawnOffset: 0, spawns: [] });
+    }
+    var area = model.largeSpawnAreas[0];
+    spawnsOf(area).push({ monsterId: defaultMonsterId(), count: 1, areaId: area.areaId || 1 });
+    rebuild();
   }
 
   function spawnPanel(model) {
@@ -305,18 +354,19 @@
     }
     var areas = model.largeSpawnAreas || [];
     if (!areas.length) {
-      p.appendChild(note("No large monster spawns in this file."));
+      p.appendChild(note("No monsters yet. Add one and it goes into area 1; change the area in its row."));
     }
     areas.forEach(function (area) {
       p.appendChild(el("h3", "subhead", "Large spawns · area " + area.areaId));
-      p.appendChild(spawnTable(area.spawns));
+      p.appendChild(spawnTable(spawnsOf(area)));
     });
     (model.smallSpawnGroups || []).forEach(function (group, i) {
       (group.areas || []).forEach(function (area) {
         p.appendChild(el("h3", "subhead", "Small spawns · group " + (i + 1) + " · area " + area.areaId));
-        p.appendChild(spawnTable(area.spawns));
+        p.appendChild(spawnTable(spawnsOf(area)));
       });
     });
+    p.appendChild(actionButton("Add monster", addMonster));
     return p;
   }
 
@@ -324,43 +374,48 @@
     var p = panel("Rewards", "groups and their entries");
     var groups = model.rewardGroups || [];
     if (!groups.length) {
-      p.appendChild(note("This quest has no reward table."));
+      p.appendChild(note("No reward table yet. Add a group, then entries inside it."));
     }
-    groups.forEach(function (group) {
-      p.appendChild(el("h3", "subhead", "Group " + (group.groupId + 1) + " · id " + group.groupId));
-      var rows = (group.entries || []).map(function (entry) {
+    groups.forEach(function (group, groupIndex) {
+      if (!group.entries) group.entries = [];
+      var head = el("div", "panel-head");
+      head.appendChild(el("h3", "subhead", "Group " + (group.groupId + 1) + " · id " + group.groupId));
+      head.appendChild(actionButton("Add entry", function () {
+        if (!group.entries) group.entries = [];
+        group.entries.push({ weight: 1, itemId: 0, count: 1 });
+        rebuild();
+      }));
+      p.appendChild(head);
+      var entries = group.entries || [];
+      var rows = entries.map(function (entry, entryIndex) {
         return [
           cellInput(entry.weight, function (v) { entry.weight = v; }),
           cellInput(entry.itemId, function (v) { entry.itemId = v; }),
-          cellInput(entry.count, function (v) { entry.count = v; })
+          cellInput(entry.count, function (v) { entry.count = v; }),
+          cellAction("Remove", function () {
+            entries.splice(entryIndex, 1);
+            rebuild();
+          })
         ];
       });
-      p.appendChild(table(["Weight", "Item id", "Count"], rows));
+      p.appendChild(table(["Weight", "Item id", "Count", ""], rows));
+      if (groups.length > 1) {
+        p.appendChild(actionButton("Remove group " + (groupIndex + 1), function () {
+          groups.splice(groupIndex, 1);
+          rebuild();
+        }));
+      }
     });
+    p.appendChild(actionButton("Add reward group", function () {
+      if (!model.rewardGroups) model.rewardGroups = [];
+      model.rewardGroups.push({
+        groupId: model.rewardGroups.length, reserved: 0, entryOffset: 0, entries: []
+      });
+      rebuild();
+    }));
     p.appendChild(note("Item ids are the client's own table indices. A submitted quest is served with"
       + " its rewards emptied, so a test clear pays nothing."));
     return p;
-  }
-
-  function variantField() {
-    var wrap = el("div", "field");
-    var label = el("label", null, "Quest file variant");
-    label.htmlFor = "editor-variant";
-    var input = el("input");
-    input.id = "editor-variant";
-    input.type = "text";
-    input.maxLength = 4;
-    input.value = variant;
-    input.addEventListener("change", function () {
-      var next = input.value.trim().toLowerCase();
-      if (/^[a-z][0-9]$/.test(next) && next !== variant) {
-        window.location.search = "?id=" + questId + "&variant=" + encodeURIComponent(next);
-      }
-    });
-    wrap.appendChild(label);
-    wrap.appendChild(input);
-    wrap.appendChild(note("d0, d1, n0 … the difficulty and player-count file the client asks for."));
-    return wrap;
   }
 
   // ---- state and actions ---------------------------------------------------------------------
@@ -381,11 +436,14 @@
     return api("/api/account/quest-drafts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ questId: questId, variant: variant })
+      body: JSON.stringify({ blank: true })
     }).then(body).then(function (created) {
       state.draftId = created.id;
       state.revision = created.revision;
       setDraftNote();
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, "", "/quest-editor.html?draft=" + created.id);
+      }
       return created.id;
     });
   }
@@ -399,6 +457,7 @@
       }).then(body).then(function (saved) {
         state.revision = saved.revision;
         setDraftNote();
+        refreshDrafts();
         return id;
       });
     });
@@ -414,12 +473,12 @@
       var url = URL.createObjectURL(blob);
       var anchor = el("a");
       anchor.href = url;
-      anchor.download = questId + variant + ".bin";
+      anchor.download = "new-quest.bin";
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
       setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
-      say("Downloaded " + questId + variant + ".bin — that is the file the server would serve.", false);
+      say("Downloaded new-quest.bin — that is the file the server would serve.", false);
     });
   }
 
@@ -447,37 +506,99 @@
 
   function fail(message) {
     root.textContent = "";
-    var p = panel("The editor could not open this quest");
+    var p = panel("The builder could not open a quest");
     p.appendChild(note(message));
     root.appendChild(p);
     buttons.forEach(function (button) { button.disabled = true; });
+    titleEl.textContent = "New quest";
+    subEl.textContent = "Start again from /quest-editor.html for a blank quest.";
   }
 
-  function render(model, quest) {
-    state.model = model;
+  // ---- drafts list ---------------------------------------------------------------------------
+
+  function when(iso) {
+    var date = new Date(iso);
+    return isNaN(date) ? "-" : date.toLocaleDateString();
+  }
+
+  function refreshDrafts() {
+    if (!draftsBody) return Promise.resolve();
+    return api("/api/account/quest-drafts").then(body).then(function (rows) {
+      renderDrafts(rows || []);
+    }).catch(function () {
+      draftsBody.innerHTML = "";
+      var tr = el("tr");
+      var td = el("td", "empty-cell", "Your drafts could not be loaded.");
+      td.colSpan = 3;
+      tr.appendChild(td);
+      draftsBody.appendChild(tr);
+    });
+  }
+
+  function renderDrafts(rows) {
+    draftsBody.innerHTML = "";
+    if (!rows.length) {
+      var empty = el("tr");
+      var cell = el("td", "empty-cell", "No drafts yet.");
+      cell.colSpan = 3;
+      empty.appendChild(cell);
+      draftsBody.appendChild(empty);
+      return;
+    }
+    rows.forEach(function (row) {
+      var tr = el("tr");
+      var name = el("td");
+      var link = el("a", null, row.title || "Untitled quest");
+      link.href = "/quest-editor.html?draft=" + row.id;
+      if (row.id === state.draftId) {
+        link.setAttribute("aria-current", "page");
+        name.appendChild(el("span", "panel-note", "open · "));
+      }
+      name.appendChild(link);
+      tr.appendChild(name);
+      tr.appendChild(el("td", "num", String(row.revision)));
+      tr.appendChild(el("td", null, when(row.updatedAt)));
+      draftsBody.appendChild(tr);
+    });
+  }
+
+  // ---- render --------------------------------------------------------------------------------
+
+  function panels(model) {
     root.textContent = "";
     root.appendChild(textPanel(model));
     root.appendChild(metadataPanel(model));
     root.appendChild(spawnPanel(model));
     root.appendChild(rewardPanel(model));
+  }
 
-    var name = quest && quest.name ? quest.name : "quest " + questId;
-    titleEl.textContent = "Edit " + name;
-    document.title = "Hunsterverse MHFZ: Edit " + name;
-    subEl.textContent = "Editing a draft of " + questId + variant + ". The live file is never changed;"
-      + " this copy is yours until you submit it for testing.";
+  /** Redraws the panels after a row was added or removed; the model holds every field. */
+  function rebuild() {
+    if (!state.model) return;
+    panels(state.model);
+  }
+
+  function render(model) {
+    state.model = model;
+    if (!model.largeSpawnAreas) model.largeSpawnAreas = [];
+    if (!model.rewardGroups) model.rewardGroups = [];
+    panels(model);
+    titleEl.textContent = "New quest";
+    document.title = "Hunsterverse MHFZ: New quest";
+    subEl.textContent = state.draftId
+      ? "Draft #" + state.draftId + ", revision " + state.revision + ". The server assigns the quest id at"
+        + " submit; nothing here touches a live quest file."
+      : "A new quest. Save keeps it as a draft under your account; the server assigns the quest id at"
+        + " submit.";
     buttons.forEach(function (button) { button.disabled = false; });
     say("", false);
+    setDraftNote();
   }
 
   // ---- boot ----------------------------------------------------------------------------------
 
   if (!token()) {
     window.location.replace("/account.html");
-    return;
-  }
-  if (isNaN(questId)) {
-    fail("The address needs a quest id, for example /quest-editor.html?id=40212.");
     return;
   }
 
@@ -487,44 +608,32 @@
   downloadBtn.addEventListener("click", function () { run(downloadDraft); });
   submitBtn.addEventListener("click", function () { run(submitDraft); });
 
-  var draftPanel = document.getElementById("editor-draft-panel");
-  draftPanel.insertBefore(variantField(), draftPanel.querySelector(".editor-actions"));
+  if (!isNaN(liveId)) {
+    // The builder only makes new quests. Ask the API for that file's model so the refusal on screen is the
+    // server's own answer, not a message this page invented.
+    api("/api/account/quests/model?questId=" + liveId).then(body).then(function () {
+      fail("This page builds new quests only; it does not open live quests.");
+    }).catch(function (error) {
+      fail(error.message);
+    });
+    return;
+  }
 
-  Promise.all([
-    api("/api/account/quests/model?questId=" + questId + "&variant=" + encodeURIComponent(variant))
-      .then(body).catch(function (error) { return { error: error }; }),
-    api("/api/account/quest-drafts").then(body).catch(function () { return []; }),
-    fetch("/data/quests.json", { cache: "no-cache" })
-      .then(function (res) { return res.json(); }).catch(function () { return null; }),
-    loadMonsterIds()
-  ]).then(function (results) {
-    var live = results[0];
-    if (live && live.error) {
-      fail(live.error.message);
-      return;
-    }
-    var drafts = results[1] || [];
-    var catalog = results[2];
-    var quest = null;
-    if (catalog && catalog.quests) {
-      quest = catalog.quests.filter(function (q) { return q.id === questId; })[0] || null;
-    }
-    var mine = drafts.filter(function (d) {
-      return d.sourceQuestId === questId && d.variant === variant;
-    })[0];
+  var load = isNaN(draftParam)
+    ? api("/api/account/quests/model").then(body)
+    : api("/api/account/quest-drafts/" + draftParam).then(body).then(function (draft) {
+        state.draftId = draft.id;
+        state.revision = draft.revision;
+        return draft.model;
+      });
 
-    if (!mine) {
-      render(live, quest);
-      setDraftNote();
-      return;
-    }
-    api("/api/account/quest-drafts/" + mine.id).then(body).then(function (draft) {
-      state.draftId = draft.id;
-      state.revision = draft.revision;
-      render(draft.model, quest);
-      setDraftNote();
-    }).catch(function (error) { fail(error.message); });
-  }).catch(function (error) {
-    fail("The quest could not be loaded (" + error.message + ").");
-  });
+  Promise.all([load, loadMonsterIds()])
+    .then(function (results) {
+      render(results[0]);
+      return refreshDrafts();
+    })
+    .catch(function (error) {
+      fail(error.message);
+      refreshDrafts();
+    });
 })();

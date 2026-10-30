@@ -3,19 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hunsterverse MHFZ: Quest editor</title>
-    <meta name="description" content="Edit a copy of a quest on the Hunsterverse Monster Hunter Frontier Z server: text, time limit, zenny, monsters and rewards, saved as a private draft." />
+    <title>Hunsterverse MHFZ: Quest builder</title>
+    <meta name="description" content="Build a new quest for the Hunsterverse Monster Hunter Frontier Z server: text, time limit, zenny, monsters and rewards, saved as a private draft and tested in game." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Hunsterverse" />
-    <meta property="og:title" content="Hunsterverse MHFZ: Quest editor" />
-    <meta property="og:description" content="Edit a copy of a quest on the Hunsterverse Monster Hunter Frontier Z server: text, time limit, zenny, monsters and rewards, saved as a private draft." />
+    <meta property="og:title" content="Hunsterverse MHFZ: Quest builder" />
+    <meta property="og:description" content="Build a new quest for the Hunsterverse Monster Hunter Frontier Z server: text, time limit, zenny, monsters and rewards, saved as a private draft and tested in game." />
     <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/quest-editor.html" />
     <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/quest-editor.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Hunsterverse MHFZ: Quest editor" />
-    <meta name="twitter:description" content="Edit a copy of a quest on the Hunsterverse Monster Hunter Frontier Z server: text, time limit, zenny, monsters and rewards, saved as a private draft." />
+    <meta name="twitter:title" content="Hunsterverse MHFZ: Quest builder" />
+    <meta name="twitter:description" content="Build a new quest for the Hunsterverse Monster Hunter Frontier Z server: text, time limit, zenny, monsters and rewards, saved as a private draft and tested in game." />
     <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/quest-editor.png" />
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png" />
@@ -24,7 +24,7 @@
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
-    <script src="/js/quest-editor.js?v=1" defer></script>
+    <script src="/js/quest-editor.js?v=2" defer></script>
   </head>
 
   <body class="public-page">
@@ -79,9 +79,9 @@
 
     <main id="content" class="wrap page wide">
       <header class="page-head">
-        <p class="kicker">Hunsterverse · Quest editor</p>
-        <h1 id="editor-title">Quest editor</h1>
-        <p class="page-sub" id="editor-sub">Reading the quest file from the server…</p>
+        <p class="kicker">Hunsterverse · Quest builder</p>
+        <h1 id="editor-title">New quest</h1>
+        <p class="page-sub" id="editor-sub">Starting from a blank quest…</p>
       </header>
 
       <section class="panel" id="editor-draft-panel">
@@ -89,14 +89,23 @@
           <h2>Draft</h2>
           <span class="panel-note" id="editor-draft-note">not saved yet</span>
         </div>
-        <p class="note-text">Save keeps this draft on the server under your account. Download gives you the
-          .bin exactly as the server would serve it. Submit puts it in your quest counter as a testing
-          quest that only you can load; the sandbox copy has its rewards emptied.</p>
+        <p class="note-text">You are building a new quest from nothing. Nothing here reads or changes a live
+          quest file. Save keeps this draft on the server under your account; Download gives you the .bin
+          exactly as the server would serve it. Submit puts it in your quest counter as a testing quest that
+          only you can load, and the server assigns its quest id; the sandbox copy has its rewards emptied.</p>
         <div class="editor-actions">
           <button class="btn btn-primary btn-small" id="editor-save" type="button" disabled>Save draft</button>
           <button class="ghost-btn small" id="editor-download" type="button" disabled>Download .bin</button>
           <button class="ghost-btn small" id="editor-submit" type="button" disabled>Submit for testing</button>
           <span class="note-text" id="editor-status" role="status" aria-live="polite"></span>
+        </div>
+        <h3 class="subhead">Your drafts</h3>
+        <p class="note-text">A draft is yours until you submit it. Open one to carry on building.</p>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Quest</th><th>Revision</th><th>Last saved</th></tr></thead>
+            <tbody id="editor-drafts"><tr><td colspan="3" class="empty-cell">Loading your drafts.</td></tr></tbody>
+          </table>
         </div>
       </section>
 

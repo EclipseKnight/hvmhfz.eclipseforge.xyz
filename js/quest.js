@@ -97,15 +97,6 @@
     if (quest.nameJp && quest.nameJp !== quest.name) body.appendChild(row("Original title", quest.nameJp));
     table.appendChild(body);
     facts.appendChild(table);
-    var edit = el("p", "note-text");
-    var editLink = el("a", "btn btn-primary btn-small", "Edit a copy");
-    var variant = quest.variants.indexOf("d0") >= 0 ? "d0" : quest.variants[0];
-    editLink.href = "/quest-editor.html?id=" + quest.id +
-      (variant ? "&variant=" + encodeURIComponent(variant) : "");
-    edit.appendChild(editLink);
-    edit.appendChild(document.createTextNode(" Opens this quest in the editor as a private draft."
-      + " The live file is never changed."));
-    facts.appendChild(edit);
     main.appendChild(facts);
 
     // What the server has actually seen of this quest: attempts, outcomes and how long a clear takes.

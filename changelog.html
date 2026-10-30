@@ -214,9 +214,18 @@
      titled with the date (and "Game server update" / "Discord bot" / ...). Move the
      entries that went live out of "Coming next". Steps: docs/how-to.md in the project home. -->
 
+<h3>30 Oct 2026: Quest builder</h3>
+      <ul>
+        <li><b>Start from blank:</b> the editor now builds a new quest instead of copying a live one. It opens with eight empty text slots, no monsters, no rewards and no start items, a 50-minute limit and room for four players. The reward and monster tables have their own room in the file, so you add entries and monsters as rows instead of thinking about byte offsets.</li>
+        <li><b>Live quests are not editable:</b> the "Edit a copy" button is gone from quest pages, and the server refuses to hand out a live quest's file or start a draft from one. Building happens on new quests only.</li>
+        <li><b>Your drafts, listed:</b> the Draft panel lists every draft on your account with its revision and last save, so you can reopen one and carry on where you stopped.</li>
+        <li><b>Where to start:</b> "Create a quest" sits on the <a href="/quests.html">quest catalog</a> and on the account page's Custom quests tab.</li>
+        <li><b>Same road into the game:</b> Download gives the exact .bin the server would serve, and Submit puts the quest in your own counter as a testing quest under the id the server assigns, with its rewards emptied until an admin publishes it.</li>
+      </ul>
+
 <h3>30 Oct 2026: Quest editor</h3>
       <ul>
-        <li><b>Edit a copy of any quest:</b> every quest page has an "Edit a copy" button. The editor opens that quest's own file as a form: the eight text slots with the room each one has, time limit, zenny, reward money, party size, quest class, monster spawns and the reward groups.</li>
+        <li><b>Edit a copy of any quest:</b> this was the first version of the page and was replaced by the quest builder the same day, so the copy action is gone. It opened a quest's own file as a form: the eight text slots with the room each one has, time limit, zenny, reward money, party size, quest class, monster spawns and the reward groups.</li>
         <li><b>Drafts:</b> Save keeps a private draft on your account and the live quest file is never changed; opening the editor again brings the draft back at the revision you saved.</li>
         <li><b>Longer text is not cut:</b> a line that does not fit its slot is appended to the end of the file and the slot repointed, the same way the quest titles were translated, up to the game's 32 KB quest buffer. The server writes every byte, so what you download is what the game will read.</li>
         <li><b>Download and test:</b> Download gives you the exact .bin the server would serve. Submit puts the quest in your own quest counter as a testing quest that only your account can load, with its rewards emptied, and queues it for an admin to publish.</li>
