@@ -120,14 +120,14 @@
 <p>Outside a party the command says <code>Roads are chosen inside a quest party.</code></p>
 
 <h2 id="others">4. What the rest of the party sees</h2>
-<p>Anyone already in the party who has a different Road is returned to town once, with this line in their chat:</p>
-<pre><code>The party's Road changed. Returning you to town so your client loads it.</code></pre>
-<p>They walk back in and are then on the party's Road. Players already on that Road are not touched, and nobody standing in town or in another party is affected at all.</p>
+<p>Anyone already in the party who has a different Road gets this line in their chat:</p>
+<pre><code>Your Road has been set to Original Road to match the host.</code></pre>
+<p>Their Road now matches the party. Players already on that Road are not touched, and nobody standing in town or in another party is affected at all.</p>
 
 <h2 id="late">5. Joining a quest party later</h2>
-<p>The client only reads the Road file when it enters town, so a player who has a different Road and then joins the party is sent to town once as well:</p>
-<pre><code>This party is on Original Road, which your client has not loaded. Returning you to town once; re-join the party after.</code></pre>
-<p>They come back in, and ready up with everyone else. The check happens when they join the party, before anyone readies, so a group cannot depart on the wrong Road by accident.</p>
+<p>The client only reads the Road file when it enters town, so a player who has a different Road and then joins the party gets the same line:</p>
+<pre><code>This party is on Original Road. Your Road has been set to match the host.</code></pre>
+<p>They ready up with everyone else. The check happens when they join the party, before anyone readies, so a group cannot depart on the wrong Road by accident.</p>
 
 <h2 id="party">6. Join a party from Discord</h2>
 <p>Any linked hunter can open a party with <code>/roadparty</code>. The bot posts a message in the channel with a <strong>Join</strong> and a <strong>Leave</strong> button, on the Road that hunter has saved on the site.</p>
