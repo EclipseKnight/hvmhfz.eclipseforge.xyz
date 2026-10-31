@@ -527,10 +527,14 @@
     return wrap;
   }
 
+  var itemOptionCache = null;
+
   function itemOptions() {
-    return Object.keys(itemIds || {}).map(Number).sort(function (a, b) {
+    if (itemOptionCache) return itemOptionCache;
+    itemOptionCache = Object.keys(itemIds || {}).map(Number).sort(function (a, b) {
       return String(itemIds[a]).localeCompare(String(itemIds[b]));
     }).map(function (id) { return { value: id, label: itemIds[id] + " (" + id + ")" }; });
+    return itemOptionCache;
   }
 
   function itemDisplay(id) {
