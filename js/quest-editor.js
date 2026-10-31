@@ -524,17 +524,14 @@
       grid.appendChild(selectField("obj-" + index + "-type", "Type", objective.type,
         "body +0x" + (0x30 + index * 8).toString(16) + " · the objective kind",
         typeOptions(objective.type), function (v) { objective.type = v; render(model, state.quest); }));
-      if (objective.type & 1) {
-        grid.appendChild(selectField("obj-" + index + "-target", "Monster", objective.target,
-          "the monster the objective counts", monsterOptions(objective.target),
-          function (v) { objective.target = v; }));
-      } else if (objective.type & 2) {
-        grid.appendChild(comboField("obj-" + index + "-target", "Item", objective.target,
+      if (objective.type & 2 && !(objective.type & 1)) {
+        grid.appendChild(comboField("obj-" + index + "-target", "Item target", objective.target,
           "the item the objective counts", itemOptions(),
           function (v) { objective.target = v; }, itemDisplay));
       } else {
-        grid.appendChild(numberField("obj-" + index + "-target", "Target id", objective.target,
-          "monster or item id", function (v) { objective.target = v; }));
+        grid.appendChild(selectField("obj-" + index + "-target", "Monster target", objective.target,
+          "the monster the objective counts" + (objective.type === 0 ? " · pick a type above first" : ""),
+          monsterOptions(objective.target), function (v) { objective.target = v; }));
       }
       grid.appendChild(numberField("obj-" + index + "-count", "Count", objective.count,
         "how many are needed", function (v) { objective.count = v; }));
@@ -542,6 +539,40 @@
     });
     p.appendChild(note("Type values are the client's own objective bitfield: Hunt, Slay, Capture, Deliver,"
       + " Break Part, Damage and so on."));
+    return p;
+  }
+
+
+  function iconMonstersPanel(model) {
+    var p = panel("Quest page icons", "the monster icons the info page shows");
+    var icons = (model.body && model.body.iconMonsters) || [];
+    var grid = el("div", "editor-grid");
+    icons.forEach(function (id, i) {
+      grid.appendChild(selectField("icon-mon-" + i, "Icon " + (i + 1), id,
+        i === 0 ? "body +0xb9 · usually the objective target" : "body +0x" + (0xb9 + i).toString(16),
+        monsterOptions(id), function (v) { icons[i] = v; }));
+    });
+    p.appendChild(grid);
+    return p;
+  }
+
+  function supplyPanel(model) {
+    var p = panel("Supply box", "items handed out at departure");
+    var items = model.startItems || [];
+    var shown = 0;
+    var grid = el("div", "editor-grid");
+    items.forEach(function (entry, index) {
+      if (!entry.itemId) return;
+      shown += 1;
+      grid.appendChild(comboField("supply-" + index, "Item " + shown, entry.itemId,
+        "header +0x08 · count below", itemOptions(),
+        function (v) { entry.itemId = v; }, itemDisplay));
+      grid.appendChild(numberField("supply-count-" + index, "Count", entry.count, "how many",
+        function (v) { entry.count = v; }));
+    });
+    if (!shown) p.appendChild(note("This quest hands out no supply items."));
+    p.appendChild(grid);
+    p.appendChild(note("Clearing an item sets its id to 0, which removes it from the box."));
     return p;
   }
 
@@ -804,6 +835,8 @@
     root.appendChild(objectivesPanel(model));
     root.appendChild(textPanel(model));
     root.appendChild(metadataPanel(model));
+    root.appendChild(iconMonstersPanel(model));
+    root.appendChild(supplyPanel(model));
     root.appendChild(spawnPanel(model));
     root.appendChild(rewardPanel(model));
   }
