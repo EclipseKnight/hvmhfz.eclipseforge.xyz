@@ -845,6 +845,10 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .admin-desc{display:block;margin-top:3px;font-weight:400;font-size:.82rem;color:var(--ink-soft)}
 .admin-items-cell{max-width:340px}
 .admin-table tr.is-ended td{opacity:.55}
+.pick-icon{width:22px;height:22px;object-fit:contain;vertical-align:middle;margin-right:6px;border-radius:3px;background:rgba(0,0,0,.06)}
+.pick-icon.is-empty{opacity:.25}
+.monster-cell .pick-icon{display:inline-block}
+.item-cell{white-space:nowrap}
 .ended-group{margin-top:12px;border-top:1px solid rgba(189,166,122,.5);padding-top:10px}
 .ended-group summary{cursor:pointer;font-family:var(--display,serif);letter-spacing:.06em;text-transform:uppercase;font-size:.74rem;color:var(--ink-soft)}
 .ended-group summary:hover{color:var(--ink)}

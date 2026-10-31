@@ -160,6 +160,8 @@
   var areaIds = null;
   var itemIds = null;
   var objectiveTypes = null;
+  var monsterIcons = null;
+  var itemIcons = null;
 
   function loadTables() {
     function grab(url, fallback) {
@@ -171,11 +173,15 @@
       areaIds ? Promise.resolve(areaIds) : grab("/data/area-ids.json", {}),
       itemIds ? Promise.resolve(itemIds) : grab("/data/item-ids.json", {}),
       objectiveTypes ? Promise.resolve(objectiveTypes) : grab("/data/objective-types.json", {}),
-      monsterIds ? Promise.resolve(monsterIds) : grab("/data/monster-ids.json", {})
+      monsterIds ? Promise.resolve(monsterIds) : grab("/data/monster-ids.json", {}),
+      monsterIcons ? Promise.resolve(monsterIcons) : grab("/data/monster-icons.json", {}),
+      itemIcons ? Promise.resolve(itemIcons) : grab("/data/item-icons.json", {})
     ]).then(function (r) {
       mapIds = mapIds || r[0]; mapAreas = mapAreas || r[1]; areaIds = areaIds || r[2]; itemIds = itemIds || r[3];
       objectiveTypes = objectiveTypes || r[4];
       monsterIds = monsterIds || r[5];
+      monsterIcons = monsterIcons || r[6];
+      itemIcons = itemIcons || r[7];
       return true;
     });
   }
@@ -234,6 +240,27 @@
     return wrap;
   }
 
+
+
+  function monsterCell(spawn) {
+    var cell = el("td", "monster-cell");
+    var img = iconImg(monsterIcon(spawn.monsterId), "monster icon");
+    var select = el("select", "cell-input");
+    monsterOptions(spawn.monsterId).forEach(function (opt) {
+      var option = el("option", null, opt.label);
+      option.value = String(opt.value);
+      if (Number(opt.value) === Number(spawn.monsterId)) option.selected = true;
+      select.appendChild(option);
+    });
+    select.addEventListener("change", function () {
+      spawn.monsterId = parseInt(select.value, 10);
+      var next = monsterIcon(spawn.monsterId);
+      if (next) { img.src = next; img.className = "pick-icon"; } else { img.removeAttribute("src"); img.className = "pick-icon is-empty"; }
+    });
+    cell.appendChild(img);
+    cell.appendChild(select);
+    return cell;
+  }
 
   function cellCombo(value, options, onChange, display) {
     var cell = el("td", "item-cell");
@@ -501,6 +528,22 @@
     return itemIds && itemIds[String(id)] ? itemIds[String(id)] + " (" + id + ")" : "Item " + id;
   }
 
+
+  function monsterIcon(id) {
+    return (monsterIcons && monsterIcons[String(id)]) || "";
+  }
+
+  function itemIcon(id) {
+    return (itemIcons && itemIcons[String(id)]) || "";
+  }
+
+  function iconImg(src, alt) {
+    var img = el("img", "pick-icon");
+    img.alt = alt || "";
+    if (src) img.src = src; else img.className += " is-empty";
+    return img;
+  }
+
   function typeOptions(current) {
     var options = [];
     Object.keys(objectiveTypes || {}).map(Number).sort(function (a, b) { return a - b; })
@@ -576,11 +619,19 @@
     return p;
   }
 
+
+  function itemCellWithIcon(entry) {
+    var cell = cellCombo(entry.itemId, itemOptions(), function (v) { entry.itemId = v; }, itemDisplay);
+    var icon = itemIcon(entry.itemId);
+    if (icon) cell.insertBefore(iconImg(icon, "item icon"), cell.firstChild);
+    return cell;
+  }
+
   function spawnTable(spawns, model) {
     var rows = (spawns || []).map(function (spawn) {
       var index = spawns.indexOf(spawn);
       return [
-        cellSelect(spawn.monsterId, monsterOptions(spawn.monsterId), function (v) { spawn.monsterId = v; }),
+        monsterCell(spawn),
         cellInput(spawn.count, function (v) { spawn.count = v; }),
         cellSelect(spawn.areaId, areaOptions(spawn.areaId, spawns.length + 4, model.body.mapId), function (v) { spawn.areaId = v; }),
         cellAction("Remove", function () {
@@ -656,7 +707,7 @@
       var rows = entries.map(function (entry, entryIndex) {
         return [
           cellInput(entry.weight, function (v) { entry.weight = v; }),
-          cellCombo(entry.itemId, itemOptions(), function (v) { entry.itemId = v; }, itemDisplay),
+          itemCellWithIcon(entry),
           cellInput(entry.count, function (v) { entry.count = v; }),
           cellAction("Remove", function () {
             entries.splice(entryIndex, 1);
