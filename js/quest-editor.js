@@ -242,6 +242,13 @@
 
 
 
+
+  function cellPicker(value, options, onChange, iconFn) {
+    var cell = el("td", "monster-cell");
+    cell.appendChild(makePicker(value, options, onChange, iconFn, true));
+    return cell;
+  }
+
   function monsterCell(spawn) {
     var cell = el("td", "monster-cell");
     var img = iconImg(monsterIcon(spawn.monsterId), "monster icon");
@@ -465,9 +472,11 @@
         areaOptions(model.startAreas[0].areaId, 10, b.mapId),
         function (v) { model.startAreas.forEach(function (a) { a.areaId = v; }); }));
     }
-    grid.appendChild(comboField("meta-requirement", "Requirement item (0 = none)", b.iconLabelId,
-      "body +0x94 · the item the quest consumes on entry", itemOptions(),
-      function (v) { b.iconLabelId = v; }, itemDisplay));
+    var qwrap = el("div", "field");
+    qwrap.appendChild(el("label", null, "Requirement item (0 = none)"));
+    qwrap.appendChild(makePicker(b.iconLabelId, itemOptions(), function (v) { b.iconLabelId = v; }, itemIcon, false));
+    qwrap.appendChild(note("body +0x94 · the item the quest consumes on entry"));
+    grid.appendChild(qwrap);
     grid.appendChild(numberField("meta-requirement-count", "Requirement count", b.iconLabelCount,
       "body +0x96 · how many the quest takes", function (v) { b.iconLabelCount = v; }));
     p.appendChild(grid);
@@ -544,6 +553,84 @@
     return img;
   }
 
+
+  // A picker with icons: a button showing the current choice, and a popup with a search box and a list.
+  // Native selects cannot draw images inside their options, which is why this exists.
+  function makePicker(value, options, onChange, iconFn, compact) {
+    var wrap = el(compact ? "span" : "div", compact ? "picker picker-compact" : "picker");
+    var button = el("button", "picker-btn");
+    button.type = "button";
+    var icon = el("img", "pick-icon");
+    var label = el("span", "picker-label");
+    button.appendChild(icon);
+    button.appendChild(label);
+
+    var pop = el("div", "picker-pop");
+    pop.hidden = true;
+    var search = el("input", "picker-search");
+    search.type = "search";
+    search.placeholder = "Search";
+    var list = el("div", "picker-list");
+    pop.appendChild(search);
+    pop.appendChild(list);
+
+    var current = value;
+    var rows = [];
+
+    function paint() {
+      var src = iconFn ? iconFn(current) : "";
+      if (src) { icon.src = src; icon.className = "pick-icon"; } else { icon.removeAttribute("src"); icon.className = "pick-icon is-empty"; }
+      var found = options.filter(function (o) { return Number(o.value) === Number(current); })[0];
+      label.textContent = found ? found.label : "None";
+    }
+
+    function choose(next) {
+      current = next;
+      onChange(next);
+      paint();
+      pop.hidden = true;
+    }
+
+    function fill(term) {
+      list.textContent = "";
+      var needle = (term || "").toLowerCase();
+      var shown = 0;
+      options.forEach(function (opt) {
+        if (shown >= 150) return;
+        if (needle && opt.label.toLowerCase().indexOf(needle) === -1) return;
+        shown += 1;
+        var row = el("button", "picker-row");
+        row.type = "button";
+        var img = el("img", "pick-icon");
+        var src = iconFn ? iconFn(opt.value) : "";
+        if (src) img.src = src; else img.className += " is-empty";
+        row.appendChild(img);
+        row.appendChild(el("span", null, opt.label));
+        if (Number(opt.value) === Number(current)) row.className += " is-on";
+        row.addEventListener("click", function () { choose(Number(opt.value)); });
+        list.appendChild(row);
+      });
+      if (!shown) list.appendChild(el("p", "note-text", "No match."));
+    }
+
+    button.addEventListener("click", function () {
+      pop.hidden = !pop.hidden;
+      if (!pop.hidden) { search.value = ""; fill(""); search.focus(); }
+    });
+    search.addEventListener("input", function () { fill(search.value); });
+    document.addEventListener("click", function (event) {
+      if (!wrap.contains(event.target)) pop.hidden = true;
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") pop.hidden = true;
+    });
+
+    wrap.appendChild(button);
+    wrap.appendChild(pop);
+    paint();
+    return wrap;
+  }
+
   function typeOptions(current) {
     var options = [];
     Object.keys(objectiveTypes || {}).map(Number).sort(function (a, b) { return a - b; })
@@ -568,13 +655,21 @@
         "body +0x" + (0x30 + index * 8).toString(16) + " · the objective kind",
         typeOptions(objective.type), function (v) { objective.type = v; render(model, state.quest); }));
       if (objective.type & 2 && !(objective.type & 1)) {
-        grid.appendChild(comboField("obj-" + index + "-target", "Item target", objective.target,
-          "the item the objective counts", itemOptions(),
-          function (v) { objective.target = v; }, itemDisplay));
+        var iwrap = el("div", "field");
+        iwrap.appendChild(el("label", null, "Item target"));
+        iwrap.appendChild(makePicker(objective.target, itemOptions(),
+          function (v) { objective.target = v; }, itemIcon, false));
+        iwrap.appendChild(note("the item the objective counts"));
+        grid.appendChild(iwrap);
       } else {
-        grid.appendChild(selectField("obj-" + index + "-target", "Monster target", objective.target,
-          "the monster the objective counts" + (objective.type === 0 ? " · pick a type above first" : ""),
-          monsterOptions(objective.target), function (v) { objective.target = v; }));
+        var mwrap = el("div", "field");
+        var mlabel = el("label", null, "Monster target");
+        mwrap.appendChild(mlabel);
+        mwrap.appendChild(makePicker(objective.target, monsterOptions(objective.target),
+          function (v) { objective.target = v; }, monsterIcon, false));
+        mwrap.appendChild(note("the monster the objective counts"
+          + (objective.type === 0 ? " · pick a type above first" : "")));
+        grid.appendChild(mwrap);
       }
       grid.appendChild(numberField("obj-" + index + "-count", "Count", objective.count,
         "how many are needed", function (v) { objective.count = v; }));
@@ -607,9 +702,11 @@
     items.forEach(function (entry, index) {
       if (!entry.itemId) return;
       shown += 1;
-      grid.appendChild(comboField("supply-" + index, "Item " + shown, entry.itemId,
-        "header +0x08 · count below", itemOptions(),
-        function (v) { entry.itemId = v; }, itemDisplay));
+      var swrap = el("div", "field");
+      swrap.appendChild(el("label", null, "Item " + shown));
+      swrap.appendChild(makePicker(entry.itemId, itemOptions(),
+        function (v) { entry.itemId = v; }, itemIcon, false));
+      grid.appendChild(swrap);
       grid.appendChild(numberField("supply-count-" + index, "Count", entry.count, "how many",
         function (v) { entry.count = v; }));
     });
@@ -631,7 +728,8 @@
     var rows = (spawns || []).map(function (spawn) {
       var index = spawns.indexOf(spawn);
       return [
-        monsterCell(spawn),
+        cellPicker(spawn.monsterId, monsterOptions(spawn.monsterId),
+          function (v) { spawn.monsterId = v; }, monsterIcon),
         cellInput(spawn.count, function (v) { spawn.count = v; }),
         cellSelect(spawn.areaId, areaOptions(spawn.areaId, spawns.length + 4, model.body.mapId), function (v) { spawn.areaId = v; }),
         cellAction("Remove", function () {
@@ -707,7 +805,7 @@
       var rows = entries.map(function (entry, entryIndex) {
         return [
           cellInput(entry.weight, function (v) { entry.weight = v; }),
-          itemCellWithIcon(entry),
+          cellPicker(entry.itemId, itemOptions(), function (v) { entry.itemId = v; }, itemIcon),
           cellInput(entry.count, function (v) { entry.count = v; }),
           cellAction("Remove", function () {
             entries.splice(entryIndex, 1);
