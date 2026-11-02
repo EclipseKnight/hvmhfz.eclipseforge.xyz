@@ -892,7 +892,9 @@
 
   function rewardCard(reward) {
     var item = el("div", "guild-card");
-    item.appendChild(el("p", "subhead", "Rotation " + reward.number + (reward.entryName ? ": " + reward.entryName : "")));
+    item.appendChild(el("p", "subhead", RoadRewards.title(reward)));
+    var details = RoadRewards.details(reward);
+    if (details) item.appendChild(el("p", null, details));
     var claimed = reward.claimed;
     if (claimed) {
       item.appendChild(el("p", "note-text", "Claimed by " + (claimed.characterName || "a character") + " on " +
@@ -905,7 +907,7 @@
     }
     var row = el("div", "road-claim");
     var select = el("select");
-    select.setAttribute("aria-label", "Character that gets the reward for rotation " + reward.number);
+    select.setAttribute("aria-label", "Character that gets the reward: " + RoadRewards.title(reward));
     state.characters.forEach(function (character) {
       var option = document.createElement("option");
       option.value = character.id;
@@ -921,7 +923,7 @@
       request("/api/road/rewards/claim", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cycleId: reward.cycleId, characterId: Number(select.value) })
+        body: JSON.stringify(RoadRewards.claimBody(reward, select.value))
       }).then(function () {
         roadRewardAlert("Claimed. It is in the gift list of that character in the game.", true);
         return loadRoadRewards();

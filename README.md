@@ -64,6 +64,7 @@ js/road-summary.js    Hunting Road: a Road's changes from the base, in words (bu
 js/road.js            Hunting Road builder
 js/road-vote.js       Hunting Road vote page
 js/road-history.js    Hunting Road past winners
+js/road-rewards.js    Hunting Road rewards on the account page: labels and the claim body per board (design, score); also runs under node
 js/account.js         account page, including storage and hunt log
 js/guilds.js          guild directory and detail
 js/hunters.js         hunter directory and profile
@@ -80,6 +81,7 @@ dev/check-road-policy.js checks the policy rules the Go outputs don't cover (poi
 dev/check-road-summary.js  checks js/road-summary.js on a small made-up Road (node dev/check-road-summary.js)
 dev/make-road-data.py writes the Road tables into road-data.html from decoded Road files (rengoku-build decode)
 dev/check-road-data.py checks dev/make-road-data.py on two small made-up Roads (python3 dev/check-road-data.py)
+dev/check-road-rewards.js checks js/road-rewards.js on made-up reward rows, with and without boards
 dev/check-site.py     checks that every page has the same nav, footer and skip link
 CNAME                 hvmhfz.eclipseforge.xyz
 ```
