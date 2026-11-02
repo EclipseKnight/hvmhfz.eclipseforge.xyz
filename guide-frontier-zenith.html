@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zenith (GR200+) · Frontier handbook · Hunsterverse</title>
+<meta name="description" content="Zenith is the hardest standard content in Frontier Z: powered-up monsters from GR200, with Zenith armour, weapons, cuffs and skills. This page explains the monsters, their parts and materials, their new status effects and blights, and the gear you make from them." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Zenith (GR200+) · Frontier handbook" />
+    <meta property="og:description" content="Zenith is the hardest standard content in Frontier Z: powered-up monsters from GR200, with Zenith armour, weapons, cuffs and skills. This page explains the monsters, their parts and materials, their new status effects and blights, and the gear you make from them." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/guide-frontier-zenith.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Zenith (GR200+) · Frontier handbook" />
+    <meta name="twitter:description" content="Zenith is the hardest standard content in Frontier Z: powered-up monsters from GR200, with Zenith armour, weapons, cuffs and skills. This page explains the monsters, their parts and materials, their new status effects and blights, and the gear you make from them." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+<meta name="theme-color" content="#150e09" />
+<link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="/css/styles.css" />
+<link rel="stylesheet" href="/css/guide-frontier.css" />
+<script src="/js/nav.js" defer></script>
+<script src="/js/background.js" defer></script>
+<script src="/js/consent.js" defer></script>
+<script src="/js/guide-frontier.js" defer></script>
+</head>
+<body class="guide guide-frontier">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html">Hunting Road</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/api.html">API</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/guide-roads.html">Roads guide</a>
+              <a class="navlink" href="/guide-frontier.html" aria-current="page">Frontier handbook</a>
+            </div>
+          </div>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+<div class="hb-layout">
+<nav class="hb-crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/guide-frontier.html">Frontier handbook</a></li><li><a href="/guide-frontier.html#progression">Progression</a></li><li aria-current="page">Zenith (GR200+)</li></ol></nav>
+<aside class="hb-side" aria-label="Handbook contents">
+<details class="hb-panel hb-toc"><summary>On this page</summary>
+<ol>
+<li><a href="#zenith-basics">What Zenith is</a></li>
+<li><a href="#zenith-monsters">Zenith monsters</a></li>
+<li><a href="#zenith-materials">Zenith materials</a></li>
+<li><a href="#blights-and-status">Blights and status</a></li>
+<li><a href="#zenith-skills">Zenith skills</a></li>
+<li><a href="#zenith-armour">Zenith armour</a></li>
+<li><a href="#zenith-cuffs">Zenith cuffs</a></li>
+<li><a href="#zenith-weapons">Zenith weapons</a></li>
+</ol>
+</details>
+<details class="hb-panel hb-all"><summary>All sections</summary>
+<ul>
+<li><a href="/guide-frontier.html">Handbook home</a></li>
+<li class="hb-group">Getting started</li>
+<li><a href="/guide-frontier-basics.html">Basics and Getting Started</a></li>
+<li><a href="/guide-frontier-guild.html">English Guild and Guild Hall</a></li>
+<li><a href="/guide-frontier-house.html">House and AI Companions</a></li>
+<li><a href="/guide-frontier-menus.html">Menus and Town NPCs</a></li>
+<li class="hb-group">Gear and items</li>
+<li><a href="/guide-frontier-items.html">Items and Materials</a></li>
+<li><a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a></li>
+<li><a href="/guide-frontier-weapons.html">Weapons and Sigils</a></li>
+<li><a href="/guide-frontier-armour.html">Armour, Decorations and Skills</a></li>
+<li><a href="/guide-frontier-transcend.html">Transcend</a></li>
+<li class="hb-group">Monsters and references</li>
+<li><a href="/guide-frontier-monsters.html">Monsters</a></li>
+<li><a href="/guide-frontier-tools.html">Tools and References</a></li>
+<li class="hb-group">Progression</li>
+<li><a href="/guide-frontier-hunter-rank.html">Hunter Rank and Style Rank</a></li>
+<li><a href="/guide-frontier-g-rank-start.html">Starting G Rank</a></li>
+<li><a href="/guide-frontier-g-rank.html">G Rank</a></li>
+<li><a href="/guide-frontier-zenith.html" aria-current="page">Zenith (GR200+)</a></li>
+<li class="hb-group">Things to do</li>
+<li><a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a></li>
+<li><a href="/guide-frontier-events.html">Regular Events</a></li>
+<li><a href="/guide-frontier-hunters-road.html">Hunter&#x27;s Road</a></li>
+</ul>
+</details>
+</aside>
+<main id="content" class="sheet hb-sheet">
+<p class="kicker">Frontier handbook · Progression · 15 of 18</p>
+<h1>Zenith (GR200+)</h1>
+<p class="lead">Zenith is the hardest standard content in Frontier Z: powered-up monsters from GR200, with Zenith armour, weapons, cuffs and skills. This page explains the monsters, their parts and materials, their new status effects and blights, and the gear you make from them.</p>
+<section id="zenith-basics">
+<h2>What Zenith is</h2>
+<p>"Zenith" means a type of monster introduced in Frontier Z, and any equipment or skills you can only get from hunting these monsters.</p>
+<p>Zenith monsters start harder than the existing Exotic monsters (G Rank Nargacuga, Zinogre and so on) at GR200. By GR800 they are the hardest standard content in the game, beaten only by super hard event quests such as Howling Zinogre.</p>
+<p>Zenith equipment is almost a flat upgrade over all standard G equipment (Raviente weapons excepted). It has higher defense, more true raw and better skill points, and gives one of the new <strong>Zenith skills</strong> for each piece, cuff or weapon you equip.</p>
+<p>Zenith skills are always-on skills, mostly designed to buff existing skills or to give a set more skills overall, by adding skill slots. For example the <strong>Zenith Daimyo Hermitaur Headpiece</strong> gives the Zenith skill <strong>Quake Res Up</strong>. It raises your Quake Res by <strong>1 tier</strong>, including inside combination skills such as Three Worlds Protection. That lets the skill go past Quake Res+2 to become, in effect, Quake Res+3. These extra tiers of resistance are needed to counter Extreme Wind Pressure, Roars and Quakes.</p>
+<p>Zenith monsters often use levels of Roar, Quake and Wind that standard Super High-Grade Earplugs and similar cannot counter. You either wear a piece of Zenith equipment that counters them, or you dodge the effects. In the same way, Poison, Paralysis, Sleep, Fire Blight and the rest are all raised, and you counter them with high enough resistance to the right element or with a Zenith skill that boosts the standard resistance. <strong>Not every status can be nullified.</strong> You can never counter Extreme Poison, so try never to be hit by it.</p>
+<aside class="box hv-note"><p>For monster hitzones, HP and carves, see the <a href="/monsters.html">monster field guide</a>. For the armour sets and skills, see <a href="/guide-frontier-armour.html#zenith-armour">Armour: Zenith armour</a> and <a href="/guide-frontier-armour.html#zenith-skills">Zenith skills</a>.</p></aside>
+</section>
+
+<section id="zenith-monsters">
+<h2>Zenith monsters</h2>
+<p>Zenith monsters are versions of existing monsters with very powerful attacks and extra abilities, such as Ultra Wind Pressure, Roars, Tremor, Sleep, Poison and Paralysis. Every Zenith monster has one highly developed part. When you break it, you get a specific material that depends on the rank.</p>
+<p>There are four ratings, <strong>★1 to ★4</strong>. Each raises the monster's attack and effective health. Every version of a Zenith gives a defense reduction of 1050, the same as Exotic monster quests.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Monster</th><th>Effective health</th></tr></thead>
+<tbody>
+<tr><td>G Rank Espinas (GR1, ★6)</td><td>29,090</td></tr>
+<tr><td>G Rank Barioth (GR100, ★8)</td><td>93,333</td></tr>
+<tr><td>★1 Zenith Espinas (GR200)</td><td>99,800</td></tr>
+<tr><td>★2 Zenith Espinas (GR400)</td><td>119,800</td></tr>
+<tr><td>★3 Zenith Espinas (GR600)</td><td>149,800</td></tr>
+<tr><td>★4 Zenith Espinas (GR800)</td><td>249,600</td></tr>
+</tbody>
+</table></div>
+<p>Treat ★4 as some of the hardest required content in the game, and do not try it without proper gear. But <strong>almost all materials are the same across every tier of a Zenith monster</strong>. You only need to kill around 5 of the GR800 monster while breaking its special part to max out any Zenith equipment. You can farm everything else on the GR600 versions without trouble. More on this under <a href="#zenith-materials">Zenith materials</a>.</p>
+<h3 id="special-parts">The special part</h3>
+<p>Every Zenith has a <strong>specific extra developed body part</strong>. If you break it you get a special item with a 100% break chance. It has four variants, each 100% within one rank band. This table shows them for Zenith Espinas, plus the top one from Khezu.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Item</th><th>GR200 (★1)</th><th>GR400 (★2)</th><th>GR600 (★3)</th><th>GR800 (★4)</th></tr></thead>
+<tbody>
+<tr><td>Espinas Zenith Horn</td><td>100%</td><td>0%</td><td>0%</td><td>0%</td></tr>
+<tr><td>Espinas Zenith Mid Horn</td><td>0%</td><td>100%</td><td>0%</td><td>0%</td></tr>
+<tr><td>Espinas Zenith High Horn</td><td>0%</td><td>0%</td><td>100%</td><td>0%</td></tr>
+<tr><td>Khezu Zenith Top Head</td><td>0%</td><td>0%</td><td>0%</td><td>100%</td></tr>
+</tbody>
+</table></div>
+<p>Breaking the part <strong>usually lowers the monster's threat</strong>. This varies. Some monsters lose part of their moveset, or lose properties such as Zenith-level Roar, Tremor or Wind Pressure. Others only get slightly easier.</p>
+<h3 id="monster-references">Monster references</h3>
+<p>The guide marks in red the parts you must break to get the materials for each rank band. You usually have to break both parts when there are two (claws, wings and so on). The last column is the special part.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Monster</th><th>Other parts</th><th>Special part</th></tr></thead>
+<tbody>
+<tr><td>Khezu</td><td>Body, Wings, Legs</td><td>Head</td></tr>
+<tr><td>Daimyo Hermitaur</td><td>Skull (twice)</td><td>Claws</td></tr>
+<tr><td>Hypnoc</td><td>Tail</td><td>Beak</td></tr>
+<tr><td>Espinas</td><td>Wings, Back, Belly, Tail</td><td>Horn</td></tr>
+<tr><td>Rathalos</td><td>Head, Tail</td><td>Wings</td></tr>
+<tr><td>Blangonga</td><td>Head, Tail</td><td>Arms</td></tr>
+<tr><td>Akura Vashimu</td><td>Both Claws, Head</td><td>Tail</td></tr>
+<tr><td>Tigrex</td><td>Head, Tail</td><td>Claws</td></tr>
+<tr><td>Hyujikiki</td><td>Horn, Wings, Tail</td><td>Back</td></tr>
+<tr><td>Giaorugu</td><td>Horn, Fangs, Chest, Legs</td><td>Tail</td></tr>
+<tr><td>Midogaron</td><td>Head, Back, Tail</td><td>Legs</td></tr>
+<tr><td>Rukodiora</td><td>Head, Tail</td><td>Wings</td></tr>
+<tr><td>Plesioth</td><td>Back Fin, Legs, Tail</td><td>Head</td></tr>
+<tr><td>Inagami</td><td>Head, Forelegs, Hindlegs</td><td>Tail</td></tr>
+<tr><td>Toridcless</td><td>Head, Tail</td><td>Wings</td></tr>
+<tr><td>Doragyurosu</td><td>Wings, Tail</td><td>Horn</td></tr>
+<tr><td>Gasurabazura</td><td>Head, Back, Tail</td><td>Claws</td></tr>
+<tr><td>Anorupatisu</td><td>Wing, Tail, Back</td><td>Horn</td></tr>
+<tr><td>Bogabadorumu</td><td>Back, Tail, Head</td><td>Forelegs</td></tr>
+<tr><td>Gravios</td><td>Head, Tail</td><td>Body</td></tr>
+<tr><td>Baruragaru</td><td>Forelegs, Tail, Back</td><td>Head</td></tr>
+<tr><td>Taikun Zamuza</td><td>Body, Legs</td><td>Claws</td></tr>
+<tr><td>Harudomerugu</td><td>Forelegs, Wings, Tail</td><td>Head</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="zenith-materials">
+<h2>Zenith materials</h2>
+<p>Everything except the unique break item for each tier is available on every tier of the right Zenith monster. As an example, these tables show where to get each item needed for the Zenith Espinas Headpiece upgrades, and at what percentage. Each tier column is the chance to get the item on that tier.</p>
+<h3 id="espinas-upgrade-items">Espinas Headpiece: items for Z through ZX Lv1</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Step</th><th>Item</th><th>Qty</th><th>GR200 (★1)</th><th>GR400 (★2)</th><th>GR600 (★3)</th><th>GR800 (★4)</th></tr></thead>
+<tbody>
+<tr><th colspan="7">ZX Lv1</th></tr>
+<tr><td></td><td>Espinas Thick Green Scale</td><td>10</td><td>52%</td><td>22%</td><td>5%</td><td>3%</td></tr>
+<tr><td></td><td>Deadly Poison Sac</td><td>1</td><td>3%</td><td>5%</td><td>7%</td><td>9%</td></tr>
+<tr><td></td><td>Espinas Wing Claw</td><td>3</td><td>90%</td><td>80%</td><td>75%</td><td>50%</td></tr>
+<tr><td></td><td>Espinas Zenith Horn</td><td>1</td><td>100%</td><td>0%</td><td>0%</td><td>0%</td></tr>
+<tr><th colspan="7">ZF Lv1</th></tr>
+<tr><td></td><td>Espinas Crimson Barb</td><td>20</td><td>31%</td><td>53%</td><td>8%</td><td>5%</td></tr>
+<tr><td></td><td>Deadly Poison Sac</td><td>2</td><td>3%</td><td>5%</td><td>7%</td><td>9%</td></tr>
+<tr><td></td><td>Espinas Poison Membrane</td><td>5</td><td>90%</td><td>80%</td><td>75%</td><td>50%</td></tr>
+<tr><td></td><td>Espinas Zenith Mid Horn</td><td>1</td><td>0%</td><td>100%</td><td>0%</td><td>0%</td></tr>
+<tr><th colspan="7">ZY Lv1 to Lv7</th></tr>
+<tr><td></td><td>Espinas Thick Green Scale</td><td>30</td><td>52%</td><td>22%</td><td>5%</td><td>3%</td></tr>
+<tr><td></td><td>Espinas Crimson Barb</td><td>20</td><td>31%</td><td>53%</td><td>8%</td><td>5%</td></tr>
+<tr><td></td><td>Espinas Thick Green Shell</td><td>40</td><td>8%</td><td>10%</td><td>52%</td><td>21%</td></tr>
+<tr><td></td><td>Deadly Poison Sac</td><td>5</td><td>3%</td><td>5%</td><td>7%</td><td>9%</td></tr>
+<tr><td></td><td>Espinas Wing Claw</td><td>7</td><td>90%</td><td>80%</td><td>75%</td><td>50%</td></tr>
+<tr><td></td><td>Espinas Heavy Wing</td><td>2</td><td>10%</td><td>20%</td><td>25%</td><td>50%</td></tr>
+<tr><td></td><td>Espinas Poison Membrane</td><td>5</td><td>90%</td><td>80%</td><td>75%</td><td>50%</td></tr>
+<tr><td></td><td>Espinas Sting Gland</td><td>2</td><td>10%</td><td>20%</td><td>25%</td><td>50%</td></tr>
+<tr><td></td><td>Espinas Poison Marrow</td><td>10</td><td>90%</td><td>80%</td><td>75%</td><td>50%</td></tr>
+<tr><td></td><td>Espinas Poison Tail</td><td>2</td><td>10%</td><td>20%</td><td>25%</td><td>50%</td></tr>
+<tr><td></td><td>Espinas Zenith Horn</td><td>1</td><td>100%</td><td>0%</td><td>0%</td><td>0%</td></tr>
+<tr><td></td><td>Espinas Zenith Mid Horn</td><td>1</td><td>0%</td><td>100%</td><td>0%</td><td>0%</td></tr>
+<tr><td></td><td>Espinas Zenith High Horn</td><td>2</td><td>0%</td><td>0%</td><td>100%</td><td>0%</td></tr>
+<tr><th colspan="7">ZX Lv1 (the guide's last block)</th></tr>
+<tr><td></td><td>Espinas Poison Blood</td><td>20</td><td>5%</td><td>7%</td><td>23%</td><td>55%</td></tr>
+<tr><td></td><td>Deadly Poison Sac</td><td>2</td><td>3%</td><td>5%</td><td>7%</td><td>9%</td></tr>
+<tr><td></td><td>Espinas Huge Gem</td><td>1</td><td>1%</td><td>3%</td><td>5%</td><td>8%</td></tr>
+<tr><td></td><td>Espinas Zenith Top Horn</td><td>3</td><td>0%</td><td>0%</td><td>0%</td><td>100%</td></tr>
+</tbody>
+</table></div>
+<p>The guide's table labels both its first and its last block "ZX Lv1". The headings are copied here as written. Together the four blocks come to the 196 materials the guide gives for Z through ZX Lv1.</p>
+<p>From this you can see that although it may take longer, you can comfortably farm most items from ★1 to ★3 versions of the monster. You would only need to fight 3 of the GR800 ★4 version, as long as you reliably broke the horn.</p>
+<h3 id="zx-lv7">Is ZX Lv2 to Lv7 worth it?</h3>
+<p>There are no decorations or other real benefits from taking ZX armour to Lv7, so you can leave it at Lv1 and miss nothing beyond some defense. The ZX upgrades are not really recommended. They add only around 30 to 50 defense, but use around 70% of the total items needed just to reach ZX Lv1.</p>
+<p>The table below shows how many materials that is. ZX Lv2 to Lv7 needs <strong>142 materials in total</strong>. In comparison, Z through ZX Lv1 needs <strong>196 materials in total</strong>. It is almost always better to get other armour pieces or work on weapons than to upgrade to ZX Lv7.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Item (ZX Lv2 to Lv7)</th><th>Qty</th><th>GR200 (★1)</th><th>GR400 (★2)</th><th>GR600 (★3)</th><th>GR800 (★4)</th></tr></thead>
+<tbody>
+<tr><td>Espinas Thick Green Scale</td><td>20</td><td>52%</td><td>22%</td><td>5%</td><td>3%</td></tr>
+<tr><td>Espinas Crimson Barb</td><td>20</td><td>31%</td><td>53%</td><td>8%</td><td>5%</td></tr>
+<tr><td>Espinas Thick Green Shell</td><td>20</td><td>8%</td><td>10%</td><td>52%</td><td>21%</td></tr>
+<tr><td>Espinas Poison Blood</td><td>40</td><td>5%</td><td>7%</td><td>23%</td><td>55%</td></tr>
+<tr><td>Deadly Poison Sac</td><td>5</td><td>3%</td><td>5%</td><td>7%</td><td>9%</td></tr>
+<tr><td>Espinas Huge Gem</td><td>2</td><td>1%</td><td>3%</td><td>5%</td><td>8%</td></tr>
+<tr><td>Espinas Wing Claw</td><td>5</td><td>90%</td><td>80%</td><td>75%</td><td>50%</td></tr>
+<tr><td>Espinas Heavy Wing</td><td>3</td><td>10%</td><td>20%</td><td>25%</td><td>50%</td></tr>
+<tr><td>Espinas Poison Membrane</td><td>5</td><td>90%</td><td>80%</td><td>75%</td><td>50%</td></tr>
+<tr><td>Espinas Sting Gland</td><td>3</td><td>10%</td><td>20%</td><td>25%</td><td>50%</td></tr>
+<tr><td>Espinas Poison Marrow</td><td>5</td><td>90%</td><td>80%</td><td>75%</td><td>50%</td></tr>
+<tr><td>Espinas Poison Tail</td><td>3</td><td>10%</td><td>20%</td><td>25%</td><td>50%</td></tr>
+<tr><td>Espinas Zenith Horn</td><td>3</td><td>100%</td><td>0%</td><td>0%</td><td>0%</td></tr>
+<tr><td>Espinas Zenith Mid Horn</td><td>3</td><td>0%</td><td>100%</td><td>0%</td><td>0%</td></tr>
+<tr><td>Espinas Zenith High Horn</td><td>3</td><td>0%</td><td>0%</td><td>100%</td><td>0%</td></tr>
+<tr><td>Espinas Zenith Top Horn</td><td>2</td><td>0%</td><td>0%</td><td>0%</td><td>100%</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="blights-and-status">
+<h2>Blights and status</h2>
+<p>Apart from new levels of Wind Pressure, Roars and Quake, Zenith monsters bring new levels of any status effect they inflict.</p>
+<h3 id="new-status">New status effects</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Status</th><th>What it does</th><th>Caused by</th></tr></thead>
+<tbody>
+<tr><td>Super Poison</td><td>Works like other poisons, but can only be cured by picking up the purple shinies dropped on the ground during a Zenith Espinas fight. It drains up to 10 health per second at GR800. The Zenith skill on Poison Resistance can reduce its effect, but there is no Super Poison immunity.</td><td>Zenith Espinas</td></tr>
+<tr><td>Sound Asleep</td><td>Works like other sleep, but can only be cured by being hit by other players. It lasts a very long time. While players are in this state, Zenith Hypnoc performs a Nightmare Song that drains health rapidly, which guarantees a one-shot if you are solo. The Zenith skill on Sleep Resistance reduces it to the effect of normal Sleep, so you can recover with an Energy Drink.</td><td>Zenith Hypnoc</td></tr>
+<tr><td>Crystal Paralysis</td><td>A mix of Paralysis and Crystallisation. You are paralysed while also inflicted with the Crystal status. This stops you getting out of the crystals easily and leaves you fully immobile. The paralysis is the Lingering Paralysis below. Crystal Immunity stops the Crystal effect, but not the paralysis.</td><td>Zenith Akura Vashimu</td></tr>
+<tr><td>Lingering Paralysis</td><td>Starts like normal paralysis, but lingers: every so often you flinch as if hit by a small monster, which interrupts your actions and is annoying. Only the Zenith skill on Paralysis Resistance counters it, and it gives full immunity.</td><td>Zenith Akura Vashimu</td></tr>
+<tr><td>Bleeding</td><td>Causes damage over time and during all actions. You can cure it with Clotting Balls after a certain amount of time. Crouching or eating meat does not cure it, unlike mainline bleeding.</td><td>Zenith Tigrex, Hyujikiki</td></tr>
+<tr><td>Lightning Rod Needle</td><td>A spike is stuck into the hunter, so that lightning targets it every so often. It is destroyed when struck.</td><td>Zenith Hyujikiki</td></tr>
+</tbody>
+</table></div>
+<h3 id="new-blights">New blights</h3>
+<p>You can counter every new blight from Zenith monsters by having <strong>the matching resistance at 55 or higher</strong>. The easiest way is to use both the SR All Res Up skill (+14 to +19) and the individual Res Up skills (+25 to +34), plus Guild Food (+30). That can reach up to 83 in an individual resistance, which counters the blights on almost any set.</p>
+<p>You can also buy <strong>Cancellation Fruit</strong> from the <strong>Pink Store NPC</strong>. It instantly cures any blights you have, as long as they have not left you unable to use it.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Blight</th><th>What it does</th><th>Caused by</th></tr></thead>
+<tbody>
+<tr><td>Extreme Fireblight</td><td>You lose both your normal health and the length of the health bar over time. Rolling cancels it.</td><td>Zenith Rathalos, Midogaron</td></tr>
+<tr><td>Extreme Thunderblight</td><td>While you have it, taking any amount of thunder damage gives you cardiac arrest, and you need a hit to be revived. This mostly means a guaranteed cart. It runs out naturally, and another player's revival can cancel the cardiac arrest. Rolling cancels the effect.</td><td>Zenith Khezu</td></tr>
+<tr><td>Extreme Waterblight</td><td>Your stamina recovers extremely slowly, and infinite stamina effects are removed at once. It runs out naturally, and rolling cancels it.</td><td>Zenith Daimyo Hermitaur, Plesioth</td></tr>
+<tr><td>Extreme Iceblight</td><td>Actively drains your stamina, and freezes you in place when it hits zero. Freeze Res cannot cancel the freezing, but being hit after you freeze frees you at once. You can mash out of it both before and after the freeze.</td><td>Zenith Blangonga, Abiorugu</td></tr>
+<tr><td>Extreme Dragonblight</td><td>Disables every recovery item: they give a negative reaction that reduces health instead. It also disables natural healing and cancels other sources, such as vampirism or a Transcend activation. It runs out naturally, or you can cancel it with 13 rolls, but only with your weapon sheathed.</td><td>Zenith Rukodiora</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="zenith-skills">
+<h2>Zenith skills</h2>
+<p><strong>Zenith skills</strong> work like Burst, Origin or socketed Tower weapon skills, with one key difference: they mostly improve other skills, or let you have more skills overall.</p>
+<p>For example, an armour piece may have <strong>Guard Up</strong>. While you have any level of the skill <strong>Guard</strong>, Guard Up raises it by one level. Guard+3 (the equivalent of Zenith Guard) gives new, unique effects.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Skill you have</th><th>No Zenith skill</th><th>Guard Up+1</th><th>Guard Up+2</th></tr></thead>
+<tbody>
+<tr><td>No Guard skill</td><td>Nothing</td><td>Nothing</td><td>Nothing</td></tr>
+<tr><td>Guard+1</td><td>Guard+1</td><td>Guard+2</td><td>Guard+3, Zenith Active</td></tr>
+<tr><td>Guard+2</td><td>Guard+2</td><td>Guard+3, Zenith Active</td><td>Guard+3, Zenith Active</td></tr>
+<tr><td>Fortification+1</td><td>Guard+1</td><td>Guard+2</td><td>Guard+3, Zenith Active</td></tr>
+<tr><td>Fortification+2</td><td>Guard+2</td><td>Guard+3, Zenith Active</td><td>Guard+3, Zenith Active</td></tr>
+</tbody>
+</table></div>
+<p>Besides buffing skills, some pieces simply give extra skill slots. This goes up to a maximum of 7: 5 Zenith armour pieces, a Zenith weapon and a Zenith cuff. ZP armour also counts towards skill extension, so on a ZP set you could in theory have 19 hand-picked skills.</p>
+<p>All the Zenith skills and their effects are in the <a href="/guide-frontier-armour.html#zenith-skills">Zenith skills</a> part of Armour, Decorations and Skills.</p>
+<figure class="hb-fig"><img src="/assets/guide/zenith/zenith-armour-set.webp" alt="A Zenith armour set shown on two hunters, with a table of the set's pieces, their skill points and the Zenith skills it gives." width="960" height="456" loading="lazy" decoding="async" /><figcaption>A Zenith armour set and its skills</figcaption></figure>
+</section>
+
+<section id="zenith-armour">
+<h2>Zenith armour</h2>
+<p>Zenith armour has four levels: <strong>Z, ZF, ZY and ZX</strong>. Z and ZF have only 1 upgrade each. ZY and ZX have the usual 7. The upgrades match the GR200, GR400, GR600 and GR800 tiers of the Zenith monsters. All ZX armour is better than standard GX or GP armour, and usually has at least 25 points across 5 different skills. It also has a Zenith skill.</p>
+<p>There are Premium and Lottery Zenith armours with ZP upgrades. In the current sets, the progression goes from GP straight to ZP. They have less defense than a standard ZX piece, but more than a normal GX. They need only materials from a GR200 Hypnoc, and the Lottery ones also need 2 extra tickets for each piece you upgrade to ZP.</p>
+<p>The skills on Lottery pieces are usually fixed and do not change when you upgrade to ZP. Premium Kits get completely reworked skills, to match the more common skills in the updates that came after their first release (Fencing replaced with Sword God, for example).</p>
+<h3 id="skill-slots-up">Skill Slots Up</h3>
+<p>All Z pieces count towards the skill slot expansion rule for G Rank armour. Five ZX pieces let you equip 12 skills, even if no piece has Skill Slots Up itself. If one piece has Skill Slots Up, that becomes 13, and so on.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Zenith pieces</th><th>G Rank pieces</th><th>Origin pieces</th><th>Natural skills</th><th>Maximum skills</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>5</td><td>0</td><td>12</td><td>14</td></tr>
+<tr><td>0</td><td>4</td><td>1</td><td>11</td><td>13</td></tr>
+<tr><td>0</td><td>2</td><td>3</td><td>10</td><td>14</td></tr>
+<tr><td>4</td><td>0</td><td>1</td><td>11</td><td>17</td></tr>
+<tr><td>5</td><td>0</td><td>0</td><td>12</td><td>19</td></tr>
+</tbody>
+</table></div>
+<p>The extra 2 slots that do not come from armour pieces come from a Zenith weapon and cuff.</p>
+</section>
+
+<section id="zenith-cuffs">
+<h2>Zenith cuffs</h2>
+<p>Zenith cuffs are simple. They all need Zenith monster materials to craft, take two slots, and are all rated SZ, which means they do not need a Premium outfit. They give no skill points of their own. Instead they give one extra Zenith skill. With an SZ cuff you could, for example, buff Thunder Clad or add an extra skill slot.</p>
+<p>All of them take two standard Pugi cuff slots, so you <strong>cannot get skill points from cuffs while using one</strong>.</p>
+</section>
+
+<section id="zenith-weapons">
+<h2>Zenith weapons</h2>
+<p>Zenith weapons are the current standard of weapon power. Each comes with a Zenith skill that varies, and can be very enabling. They also have a <strong>Zenith Partbreaker effect</strong> that raises damage to parts by 1.50x, which cuts the hits you need on a Zenith part to 66% of what a normal weapon needs. Upgrading a weapon uses materials from all tiers, and the final upgrade needs ★4 Zenith Breaks, ★4 Common Mats, Semi-Rares and Rares.</p>
+<p>The list shows, for each source, the weapon types you can make, the element and the Zenith skills. The guide's table has no column headings, so the headings here were added. Abbreviations: SnS Sword and Shield, DS Dual Swords, GS Great Sword, LS Long Sword, HH Hunting Horn, GL Gunlance, Swaxe Switch Axe F, MS (Mag Spike) Magnet Spike, LBG Light Bowgun, HBG Heavy Bowgun.</p>
+<h3 id="zenith-weapons-monsters">Weapons from monster materials</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Monster</th><th>Weapon types</th><th>Element</th><th>Zenith skills</th></tr></thead>
+<tbody>
+<tr><td>Khezu</td><td>DS, LS, Tonfa, HBG, LBG, Bow</td><td>Thunder</td><td>Dissolver Up, Skill Slots Up</td></tr>
+<tr><td>Daimyo Hermitaur</td><td>DS, HH, Swaxe, HBG, LBG, Bow</td><td>Water</td><td>Dissolver Up, Skill Slots Up</td></tr>
+<tr><td>Hypnoc</td><td>SnS, GS, Hammer, HH, GL, Swaxe</td><td>Sleep</td><td>Drug Knowledge Up</td></tr>
+<tr><td>Espinas</td><td>SnS, DS, LS, Lance, GL</td><td>Poison</td><td>Drug Knowledge Up</td></tr>
+<tr><td>Rathalos</td><td>DS, Hammer, GL, HBG, LBG, Bow</td><td>Fire</td><td>Dissolver Up, Skill Slots Up</td></tr>
+<tr><td>Blangonga</td><td>GS, Tonfa, Swaxe, HBG, LBG, Bow</td><td>Ice</td><td>Dissolver Up, Skill Slots Up</td></tr>
+<tr><td>Akura Vashimu</td><td>SnS, LS, Swaxe, Lance, GL, HH</td><td>Paralysis</td><td>Drug Knowledge Up</td></tr>
+<tr><td>Tigrex</td><td>SnS, GS, Hammer, LS, Lance, Tonfa</td><td>Raw</td><td>Hearing Protection Up</td></tr>
+<tr><td>Hyujikiki</td><td>DS, GS, Hammer, Swaxe, HBG, Bow</td><td>Raw</td><td>Quake Res Up</td></tr>
+<tr><td>Giaorugu</td><td>SnS, DS, Hammer, GL, Lance, Tonfa</td><td>Ice</td><td>Thunder Clad Up</td></tr>
+<tr><td>Midogaron</td><td>GS, Lance, LS, HH, Tonfa, LBG</td><td>Fire</td><td>Stylish Assault Up</td></tr>
+<tr><td>Rukodiora</td><td>DS, HH, Swaxe, Tonfa, HBG, Bow</td><td>Dragon, Paralysis</td><td>Hearing Protection Up</td></tr>
+<tr><td>Plesioth</td><td>SnS, GS, LS, Hammer, Lance, GL</td><td>Water</td><td>Stylish Up</td></tr>
+<tr><td>Inagami</td><td>SnS, LS, Lance, Tonfa, HBG, LBG</td><td>Sleep</td><td>Skill Slots Up</td></tr>
+<tr><td>Toridcless</td><td>SnS, GS, Lance, GL, HH, Bow</td><td>Thunder</td><td>Encourage, Vigorous, Reflect, Thunder Clad</td></tr>
+<tr><td>Doragyurosu</td><td>SnS, LS, Hammer, GL, Swaxe, LBG</td><td>Sleep</td><td>Crit Conversion Up</td></tr>
+<tr><td>Gasurabazura</td><td>GS, Swaxe, Hammer, HBG, Tonfa, Bow</td><td>Poison</td><td>Obscurity, Stylish Assault, Stylish, Skill Slots</td></tr>
+<tr><td>Anorupatisu</td><td>Tonfa, DS, HH, GL, LS, Lance</td><td>Ice</td><td>Skill Slots, Obscurity</td></tr>
+<tr><td>Bogabadorumu</td><td>DS, HH, Lance, GL, Tonfa, Bow</td><td>Blast</td><td>Rush Up</td></tr>
+<tr><td>Gravios</td><td>SnS, LS, Lance, GL, DS, Swaxe</td><td>Fire, Blast</td><td>Rush, Guard, Encourage, Vigorous</td></tr>
+<tr><td>Baruragaru</td><td>GS, Hammer, Tonfa, Swaxe, LBG, HBG</td><td>Water</td><td>Rush, Skill Slots, Bullet Saver</td></tr>
+<tr><td>Taikun Zamuza</td><td>LS, Tonfa, Hammer, Swaxe, MS, HBG, Bow</td><td>Thunder</td><td>Ceaseless, Skill Slots, Thunder Clad, Rush, Vigorous</td></tr>
+<tr><td>Harudomerugu</td><td>SnS, DS, GS, HH, Lance, GL, MS</td><td>Raw</td><td>Ceaseless</td></tr>
+</tbody>
+</table></div>
+<h3 id="zenith-weapons-sets">Weapons from numbered sets</h3>
+<p>The guide lists these only by a number and a Chinese name, with no English name. The last five numbers are shown as "??" in the guide.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Set</th><th>Weapon types</th><th>Element</th><th>Zenith skills</th></tr></thead>
+<tbody>
+<tr><td>32 / 鬼魂岩</td><td>SnS, LS, HH, GL, Tonfa, LBG</td><td>Dragon</td><td>Dissolver Up, Skill Slots Up</td></tr>
+<tr><td>34 / 魚魂岩</td><td>DS, GS, Hammer, Lance, Swaxe, HBG, Bow</td><td>Dragon</td><td>Dissolver Up, Skill Slots Up</td></tr>
+<tr><td>37 / 鳥魂岩</td><td>SnS, LS, HH, Lance, Swaxe, LBG</td><td>Tenshou</td><td>Wind Pressure Up</td></tr>
+<tr><td>39 / 虫魂岩</td><td>DS, GS, Hammer, GL, Tonfa, HBG, Bow</td><td>Tenshou</td><td>Wind Pressure Up</td></tr>
+<tr><td>41 / 辰魂岩</td><td>DS, GS, Hammer, GL, Swaxe, HBG</td><td>Crimson Demon</td><td>Skill Slots Up, Bullet Saver Up</td></tr>
+<tr><td>43 / 蛇魂岩</td><td>SnS, LS, HH, Lance, Tonfa, LBG, Bow</td><td>Crimson Demon</td><td>Skill Slots Up, Bullet Saver Up</td></tr>
+<tr><td>45 / 隼魂岩</td><td>LS, Lance, HBG</td><td>Okiko</td><td>Quake Res Up</td></tr>
+<tr><td>47 / 鰐魂岩</td><td>Swaxe, SnS, Hammer, LBG</td><td>Okiko</td><td>Quake Res Up</td></tr>
+<tr><td>48 / 蜃魂岩</td><td>GS, Bow, Tonfa</td><td>Okiko</td><td>Quake Res Up</td></tr>
+<tr><td>50 / 狼魂岩</td><td>DS, HH, GL</td><td>Okiko</td><td>Quake Res Up</td></tr>
+<tr><td>51 / 燕魂石</td><td>DS, Hammer, Swaxe, HBG</td><td>Sound</td><td>Thunder Clad Up</td></tr>
+<tr><td>54 / 蛍魂岩</td><td>LS, Lance, Tonfa, LBG</td><td>Sound</td><td>Thunder Clad Up</td></tr>
+<tr><td>56 / 妖魂岩</td><td>SnS, GS, HH, GL, HBG</td><td>Sound</td><td>Thunder Clad Up</td></tr>
+<tr><td>57 / 鷲魂岩</td><td>SnS, DS, LS, MS</td><td>Black Flame</td><td>Skill Slots Up</td></tr>
+<tr><td>?? / 獅魂岩</td><td>GS, HH, GL, Swaxe, Bow, LBG</td><td>Black Flame</td><td>Skill Slots Up</td></tr>
+<tr><td>?? / 兎魂岩</td><td>Hammer, Lance, Tonfa, HBG</td><td>Black Flame</td><td>Skill Slots Up</td></tr>
+<tr><td>?? / 鯨魂岩</td><td>SnS, MS, Bow</td><td>Music</td><td>Skill Slots Up</td></tr>
+<tr><td>?? / 獏魂岩</td><td>GS, Hammer, GL, LBG</td><td>Music</td><td>Skill Slots Up</td></tr>
+</tbody>
+</table></div>
+<p>For the weapon family in general, see <a href="/guide-frontier-weapons.html#weapon-families">Weapons: Zenith weapon</a>.</p>
+</section>
+<nav class="hb-pager" aria-label="Previous and next section">
+<a class="hb-prev" href="/guide-frontier-g-rank.html" rel="prev"><span>&larr; Previous</span><strong>G Rank</strong></a>
+<a class="hb-next" href="/guide-frontier-quests-food.html" rel="next"><span>Next &rarr;</span><strong>Quests, Food Buffs and Bentos</strong></a>
+</nav>
+<div class="hb-credit">
+<p>Based on <a href="https://fist.moe/">Fist's Monster Hunter Frontier guide</a> (fist.moe, saved January 2022), with data from the <a href="https://docs.google.com/spreadsheets/d/17c7OXNxcAZmT0MWRePekAZXQQqdCo7S8ICuXPsgK8Is/edit">Comprehensive Google Doc</a> and <a href="http://ferias.life.coocan.jp/">Ferias</a>. Questions about the original: <a href="https://fist.moe/discord/">Fist's Discord</a>.</p>
+<p>Reworded and laid out for Hunsterverse; pictures are from the original guide. Spotted a mistake? <a href="/report.html">Report it</a> or say so in our <a href="https://discord.gg/YuE42eh">Discord</a>.</p>
+</div>
+</main>
+</div>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/guide-roads.html">Roads guide</a>
+          <a href="/guide-frontier.html">Frontier handbook</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/api.html">API</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="/privacy.html">Privacy</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+</body>
+</html>

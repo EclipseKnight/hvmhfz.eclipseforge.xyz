@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tools and References · Frontier handbook · Hunsterverse</title>
+<meta name="description" content="Community tools for building sets and reading sigils, area maps for gathering, and quick-reference tables for armour upgrades and buffs." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Tools and References · Frontier handbook" />
+    <meta property="og:description" content="Community tools for building sets and reading sigils, area maps for gathering, and quick-reference tables for armour upgrades and buffs." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/guide-frontier-tools.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Tools and References · Frontier handbook" />
+    <meta name="twitter:description" content="Community tools for building sets and reading sigils, area maps for gathering, and quick-reference tables for armour upgrades and buffs." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+<meta name="theme-color" content="#150e09" />
+<link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="/css/styles.css" />
+<link rel="stylesheet" href="/css/guide-frontier.css" />
+<script src="/js/nav.js" defer></script>
+<script src="/js/background.js" defer></script>
+<script src="/js/consent.js" defer></script>
+<script src="/js/guide-frontier.js" defer></script>
+</head>
+<body class="guide guide-frontier">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html">Hunting Road</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/api.html">API</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/guide-roads.html">Roads guide</a>
+              <a class="navlink" href="/guide-frontier.html" aria-current="page">Frontier handbook</a>
+            </div>
+          </div>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+<div class="hb-layout">
+<nav class="hb-crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/guide-frontier.html">Frontier handbook</a></li><li><a href="/guide-frontier.html#reference">Monsters and references</a></li><li aria-current="page">Tools and References</li></ol></nav>
+<aside class="hb-side" aria-label="Handbook contents">
+<details class="hb-panel hb-toc"><summary>On this page</summary>
+<ol>
+<li><a href="#armour-set-builder">MHSX2G armour set builder</a></li>
+<li><a href="#sigil-hunter">Sigil Hunter</a></li>
+<li><a href="#ferias-loxxol-script">English Ferias and Loxxol script</a></li>
+<li><a href="#ocr">OCR tools</a></li>
+<li><a href="#dedicated-pages">The guide author's other pages</a></li>
+<li><a href="#gathering-maps">Area maps</a></li>
+<li><a href="#armour-quick-reference">Armour quick reference</a></li>
+<li><a href="#weapon-quick-reference">Weapon quick reference</a></li>
+<li><a href="#skill-mechanics">Skill mechanics</a></li>
+</ol>
+</details>
+<details class="hb-panel hb-all"><summary>All sections</summary>
+<ul>
+<li><a href="/guide-frontier.html">Handbook home</a></li>
+<li class="hb-group">Getting started</li>
+<li><a href="/guide-frontier-basics.html">Basics and Getting Started</a></li>
+<li><a href="/guide-frontier-guild.html">English Guild and Guild Hall</a></li>
+<li><a href="/guide-frontier-house.html">House and AI Companions</a></li>
+<li><a href="/guide-frontier-menus.html">Menus and Town NPCs</a></li>
+<li class="hb-group">Gear and items</li>
+<li><a href="/guide-frontier-items.html">Items and Materials</a></li>
+<li><a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a></li>
+<li><a href="/guide-frontier-weapons.html">Weapons and Sigils</a></li>
+<li><a href="/guide-frontier-armour.html">Armour, Decorations and Skills</a></li>
+<li><a href="/guide-frontier-transcend.html">Transcend</a></li>
+<li class="hb-group">Monsters and references</li>
+<li><a href="/guide-frontier-monsters.html">Monsters</a></li>
+<li><a href="/guide-frontier-tools.html" aria-current="page">Tools and References</a></li>
+<li class="hb-group">Progression</li>
+<li><a href="/guide-frontier-hunter-rank.html">Hunter Rank and Style Rank</a></li>
+<li><a href="/guide-frontier-g-rank-start.html">Starting G Rank</a></li>
+<li><a href="/guide-frontier-g-rank.html">G Rank</a></li>
+<li><a href="/guide-frontier-zenith.html">Zenith (GR200+)</a></li>
+<li class="hb-group">Things to do</li>
+<li><a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a></li>
+<li><a href="/guide-frontier-events.html">Regular Events</a></li>
+<li><a href="/guide-frontier-hunters-road.html">Hunter&#x27;s Road</a></li>
+</ul>
+</details>
+</aside>
+<main id="content" class="sheet hb-sheet">
+<p class="kicker">Frontier handbook · Monsters and references · 11 of 18</p>
+<h1>Tools and References</h1>
+<p class="lead">Community tools for building sets and reading sigils, area maps for gathering, and quick-reference tables for armour upgrades and buffs.</p>
+<section id="armour-set-builder">
+<h2>MHSX2G armour set builder</h2>
+<figure class="hb-fig"><img src="/assets/guide/tools/mhsx2g-window.webp" alt="The MHSX2G window: search conditions and skill selection at the top, a table of results below, and the selected set's pieces, skills and needed materials on the right." width="857" height="624" loading="lazy" decoding="async" /><figcaption>MHSX2G: pick the skills you want, and it lists matching sets</figcaption></figure>
+<p>MHSX2G is a tool for finding armour sets from criteria such as skills, number of each armour type and slots. The armour piece names are all in Japanese, but the main window is mostly English. The version the guide's author published includes unreleased monsters and upcoming event armours, so <strong>set your filters carefully</strong> to avoid gear you cannot get.</p>
+<p>Taiwan-only armours have plain English names in every version of MHSX2G the guide published. Decorations use their real in-game names.</p>
+<p>The Z2.3 version uses the latest Japanese data files as of the end of August 2018, with English selected by default. The guide's author hosted a <a href="http://fist.moe/tools/MHSX2G_Z2_3.rar">download</a>. It is a third-party program, so use it with the usual care.</p>
+<aside class="box hv-note"><p>Hunsterverse has a browser-based <a href="/set-builder.html">armour set builder</a>: pick skills and it finds sets. For what the skills do, see <a href="/guide-frontier-armour.html#skills">Armour skills</a>.</p></aside>
+</section>
+
+<section id="sigil-hunter">
+<h2>Sigil Hunter</h2>
+<figure class="hb-fig side"><img src="/assets/guide/tools/sigil-result-tooltip.webp" alt="A crafting result window for a sigil: a green sigil icon rated RARE-4 with a tooltip reading Found: Switch Axe Sigil Skill, Bait, Elemental Damage." width="318" height="310" loading="lazy" decoding="async" /><figcaption>A sigil crafting result in the game</figcaption></figure>
+<p>Sigil Hunter reads the skills on a sigil and prints them as text. It finds all sigils in a general sense. For example, it tells you that you have Ultra Rapid Fire, but not which ammo type it uses. The guide's author says it is <strong>no longer updated</strong>, and that you probably only want about five skills anyway. Press <kbd>F1</kbd> at the top left of the sigil skill read-out for the updated notes.</p>
+<p>The tool <strong>needs</strong> a Chinese system locale with the proper language packs, and the in-game font must be identical to the font in the guide's preview image, or it will not read properly. It also needs AutoHotkey (<a href="https://ahkscript.org/">ahkscript.org</a>). The guide gives the version as 20160106.</p>
+<aside class="box hv-note"><p>The tool was made for the Taiwanese client's text and font. Whether it works with our client is not known here: ask in the <a href="https://discord.gg/YuE42eh">Discord</a>. To learn what each sigil does, see <a href="/guide-frontier-weapons.html#sigils">Sigils</a>.</p></aside>
+</section>
+
+<section id="ferias-loxxol-script">
+<h2>English Ferias and Loxxol script</h2>
+<p>This is a Tampermonkey-style userscript that adds basic translations to Ferias and Loxxol, two Japanese Monster Hunter Frontier data sites. It does these things:</p>
+<ul>
+<li>Translates the hitbox quick link page on Loxxol.</li>
+<li>Lets you view the individual Lv2 to Lv49 G Rank weapon upgrades.</li>
+<li>Translates all loaded armour skills on armour pages when you hold the left mouse button on an armour type section (such as G Rank).</li>
+<li>Translates all loaded armour skills on decoration and cuff pages when you click the fist icon at the top right of the page.</li>
+<li>Translates all loaded weapon flags on weapon pages when you hold the left mouse button on a weapon type section's link (such as RNGou).</li>
+</ul>
+<figure class="hb-fig"><img src="/assets/guide/tools/ferias-armour-page.webp" alt="A Japanese Ferias armour page: a menu on the left, a list of armour sets with their upgrade steps in the middle, and armour piece stats such as Strong Attack, Expert and Auto-Reload on the right." width="658" height="280" loading="lazy" decoding="async" /><figcaption>A Ferias armour page, before translation</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/tools/loxxol-monster-list.webp" alt="The top of the Loxxol hitbox monster list page: a title bar and a list of monster names in English letters, such as Akantor, Jebia and Vashimu." width="400" height="198" loading="lazy" decoding="async" /><figcaption>The Loxxol monster hitbox list</figcaption></figure>
+<p>Firefox users need Tampermonkey or an older version of Greasemonkey to use the script. Chrome and other browsers need Tampermonkey. The guide gives the version as 1.201700101. Get Tampermonkey for <a href="https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/">Firefox</a> or <a href="https://chrome.google.com/webstore/detail/tampermonkey/">Chrome</a>. The script file is <a href="http://fist.moe/userscripts/ferias.user.js">ferias.user.js</a>. Only install a userscript if you trust its source.</p>
+<p>The hitbox page itself is on <a href="https://loxxol.com/mhf/monster/meat/">Loxxol</a>.</p>
+<aside class="box hv-note"><p>For hitzones on Hunsterverse, see the <a href="/monsters.html">monster field guide</a>. For items and equipment, use the <a href="/catalog.html">catalog</a>.</p></aside>
+</section>
+
+<section id="ocr">
+<h2>OCR tools</h2>
+<p>OCR tools turn text in a picture into text you can copy or translate.</p>
+<ul>
+<li><strong>ABBYY FineReader</strong> is an excellent OCR program, and you can buy it on the ABBYY website.</li>
+<li><strong><a href="https://sourceforge.net/projects/capture2text/">Capture2Text</a></strong> is completely free. Its results are slightly worse.</li>
+<li>There are also phone and tablet apps that read text from photos, such as <a href="https://play.google.com/store/apps/details?id=com.embermitre.hanping.app.lite">Hanping</a>.</li>
+</ul>
+<aside class="box hv-note"><p>Menu and item names in our client are in English, from the translation patch, so you will need OCR much less than on the Taiwanese client.</p></aside>
+</section>
+
+<section id="dedicated-pages">
+<h2>The guide author's other pages</h2>
+<p>The guide's author hosts several tools and databases:</p>
+<ul>
+<li><a href="http://fist.moe/damage/">Damage Calculator</a></li>
+<li><a href="http://fist.moe/hiden/">Hiden Materials Calculator</a></li>
+<li><a href="http://fist.moe/database/">Item Name Database</a></li>
+<li><a href="http://fist.moe/deco.html">Decoration Name Database</a></li>
+<li><a href="http://fist.moe/mons.html">Monster Name Database</a></li>
+</ul>
+<p>On Hunsterverse, the <a href="/catalog.html">item and equipment catalog</a> and the <a href="/monsters.html">monster field guide</a> cover similar ground.</p>
+</section>
+
+<section id="gathering-maps">
+<h2>Area maps</h2>
+<p>These maps show the areas of each field, with the area numbers and the gathering points marked. They are in the guide's order.</p>
+<h3 id="map-jungle">Jungle</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/jungle-map.webp" alt="Map of the Jungle with its areas numbered and its gathering points marked." width="951" height="901" loading="lazy" decoding="async" /><figcaption>Jungle</figcaption></figure>
+<h3 id="map-desert">Desert</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/desert-map.webp" alt="Map of the Desert with its areas numbered and its gathering points marked." width="951" height="800" loading="lazy" decoding="async" /><figcaption>Desert</figcaption></figure>
+<h3 id="map-great-forest">Great Forest</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/great-forest-map.webp" alt="Map of the Great Forest with its areas numbered and its gathering points marked." width="751" height="851" loading="lazy" decoding="async" /><figcaption>Great Forest</figcaption></figure>
+<h3 id="map-swamp">Swamp</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/swamp-map.webp" alt="Map of the Swamp with its areas numbered and its gathering points marked." width="861" height="800" loading="lazy" decoding="async" /><figcaption>Swamp</figcaption></figure>
+<h3 id="map-snowy-mountains">Snowy Mountains</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/snowy-mountains-map.webp" alt="Map of the Snowy Mountains with its areas numbered and its gathering points marked." width="851" height="801" loading="lazy" decoding="async" /><figcaption>Snowy Mountains</figcaption></figure>
+<h3 id="map-volcano">Volcano</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/volcano-map.webp" alt="Map of the Volcano with its areas numbered and its gathering points marked." width="960" height="863" loading="lazy" decoding="async" /><figcaption>Volcano</figcaption></figure>
+<h3 id="map-tower-base-camp">Tower Base Camp</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/tower-base-camp-map.webp" alt="Map of the Tower Base Camp with its areas numbered and its gathering points marked." width="343" height="402" loading="lazy" decoding="async" /><figcaption>Tower Base Camp</figcaption></figure>
+<h3 id="map-tower-a">Tower A</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/tower-a-map.webp" alt="Map of the Tower A with its areas numbered and its gathering points marked." width="651" height="500" loading="lazy" decoding="async" /><figcaption>Tower A</figcaption></figure>
+<h3 id="map-tower-b">Tower B</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/tower-b-map.webp" alt="Map of the Tower B with its areas numbered and its gathering points marked." width="651" height="386" loading="lazy" decoding="async" /><figcaption>Tower B</figcaption></figure>
+<h3 id="map-forest-and-hills">Forest and Hills</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/forest-and-hills-map.webp" alt="Map of the Forest and Hills with its areas numbered and its gathering points marked." width="771" height="771" loading="lazy" decoding="async" /><figcaption>Forest and Hills</figcaption></figure>
+<h3 id="map-highlands">Highlands</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/highlands-map.webp" alt="Map of the Highlands with its areas numbered and its gathering points marked." width="901" height="830" loading="lazy" decoding="async" /><figcaption>Highlands</figcaption></figure>
+<h3 id="map-gorge">Gorge</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/gorge-map.webp" alt="Map of the Gorge with its areas numbered and its gathering points marked." width="821" height="821" loading="lazy" decoding="async" /><figcaption>Gorge</figcaption></figure>
+<h3 id="map-tidal-island">Tidal Island</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/tidal-island-map.webp" alt="Map of the Tidal Island with its areas numbered and its gathering points marked." width="777" height="745" loading="lazy" decoding="async" /><figcaption>Tidal Island</figcaption></figure>
+<h3 id="map-flower-field">Flower Field</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/flower-field-map.webp" alt="Map of the Flower Field with its areas numbered and its gathering points marked." width="919" height="926" loading="lazy" decoding="async" /><figcaption>Flower Field</figcaption></figure>
+<h3 id="map-polar-sea">Polar Sea (G Rank)</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/polar-sea-map.webp" alt="Map of the Polar Sea (G Rank) with its areas numbered and its gathering points marked." width="901" height="981" loading="lazy" decoding="async" /><figcaption>Polar Sea (G Rank)</figcaption></figure>
+<h3 id="map-white-lake">White Lake</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/white-lake-map.webp" alt="Map of the White Lake with its areas numbered and its gathering points marked." width="851" height="921" loading="lazy" decoding="async" /><figcaption>White Lake</figcaption></figure>
+<h3 id="map-painted-falls">Painted Falls</h3>
+<figure class="hb-fig"><img src="/assets/guide/tools/painted-falls-map.webp" alt="Map of the Painted Falls with its areas numbered and its gathering points marked." width="848" height="844" loading="lazy" decoding="async" /><figcaption>Painted Falls</figcaption></figure>
+</section>
+
+<section id="armour-quick-reference">
+<h2>Armour quick reference</h2>
+<h3 id="armour-buffs">Armour buffs</h3>
+<p>This chart shows which buffs each armour family gives.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Armour</th><th>Hardcore Regen</th><th>Defense Increase</th><th>Damage Reduction</th><th>C. Distance Multi Up</th><th>Skill Rank Boost</th><th>Gou Line Attack</th><th>Skill Slots Up</th><th>G Rank Attack</th><th>Free Skill</th><th>Zenith Skills</th></tr></thead>
+<tbody>
+<tr><td>Origin</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td><td>No</td><td>No</td><td>No</td></tr>
+<tr><td>G Rank</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td><td>No</td><td>No</td></tr>
+<tr><td>Exotic</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+<tr><td>Zenith</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+<tr><td>ZP</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+</tbody>
+</table></div>
+<ul>
+<li>Skill Rank Boost only affects some pre-G Rank skills.</li>
+<li>Gou Attack is only added if you use Gou base weapons (Gou, Burst, Origin and so on).</li>
+<li>Origin and Zenith pieces apply the Critical Distance buff globally, on any Gou or higher quest.</li>
+<li>Exotic skills do not take up a skill slot.</li>
+<li>Damage reduction is a flat percentage reduction based on the total number of parts (10% / 17% / 24% / 27% / 30%).</li>
+</ul>
+<h3 id="armour-upgrade-flow">Armour upgrade flow</h3>
+<p>Each row is an upgrade path, in order. Many armours skip some steps.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Armour</th><th>Path</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Standard</td><td>Base, F, FX / FY, HC, HS, G, GF, GX</td><td>Most standard armour does not go beyond HS. HC and HS are sometimes skipped, and HS can also be listed under its Chinese name without the HS branding. Some armours start at FX level or never get lettered levels at all.</td></tr>
+<tr><td>Standard (U line)</td><td>Base, U, R, RX</td><td>Most armour does not go beyond R. These armours have no real long-term use.</td></tr>
+<tr><td>Standard (S line)</td><td>Base, S, L, LX</td><td>Most armour does not go beyond L. These armours have no real long-term use.</td></tr>
+<tr><td>SP (HR5)</td><td>SP</td><td>A single step with 7 levels. Mostly only useful for gathering sets with SP decorations.</td></tr>
+<tr><td>Gou (HR5)</td><td>Gou, Storm, Supremacy, G Supremacy, Burst, Origin</td><td></td></tr>
+<tr><td>Exotic (HR5)</td><td>Base, G, GF, GX</td><td></td></tr>
+<tr><td>Premium (HR5)</td><td>Base, F, FZ, HC, HS, GS, GP, ZP</td><td>Premium armour may skip some steps such as HC. GP needs GR1 materials and ZP needs GR200 materials.</td></tr>
+<tr><td>Standard G Rank</td><td>G, GF, GX</td><td></td></tr>
+<tr><td>Zenith</td><td>Z, ZF, ZY, ZX</td><td>The steps are GR200, GR400, GR600 and GR800.</td></tr>
+</tbody>
+</table></div>
+<p>More on each family is in <a href="/guide-frontier-armour.html#armour-types">Armour types</a>, and on the Zenith line in <a href="/guide-frontier-zenith.html#zenith-armour">Zenith armour</a>.</p>
+</section>
+
+<section id="weapon-quick-reference">
+<h2>Weapon quick reference</h2>
+<p>The guide repeats its weapon reference tables here. The elements and combination elements, sharpness, weapon length, Gunlance shots, sword crystals, bowgun and bow references, critical distance tables and Active Feature are all on the <a href="/guide-frontier-weapons.html">Weapons and Sigils</a> page. This quick-reference page differs from it in a few numbers, which are listed below.</p>
+<h3 id="raw-multipliers">Weapon raw multipliers</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Weapon</th><th>Multiplier</th></tr></thead>
+<tbody>
+<tr><td>Sword and Shield</td><td>1.4</td></tr>
+<tr><td>Dual Swords</td><td>1.4</td></tr>
+<tr><td>Great Sword</td><td>4.8</td></tr>
+<tr><td>Long Sword</td><td>4.8</td></tr>
+<tr><td>Hammer</td><td>5.2</td></tr>
+<tr><td>Hunting Horn</td><td>5.2</td></tr>
+<tr><td>Lance</td><td>2.3</td></tr>
+<tr><td>Gunlance</td><td>2.3</td></tr>
+<tr><td>Tonfa</td><td>1.8</td></tr>
+<tr><td>Switch Axe</td><td>5.4</td></tr>
+<tr><td>Magnet Spike</td><td>5.4</td></tr>
+</tbody>
+</table></div>
+<p>The bowguns and Bow are 1.2x here too. On the Weapons page, the Magnet Spike is listed as 1.2x. The guide gives both.</p>
+<h3 id="quick-reference-differences">Other differences</h3>
+<ul>
+<li><strong>Bomb Coating:</strong> this page lists the Bomb Coating modifier as 1.4. The Weapons page lists it as 1.0. The other coatings agree (Power 1.5, Sleep, Paralysis, Poison and Impact 1.4).</li>
+<li><strong>Heavy Bowgun critical distance:</strong> this page says the extra 0.3x multiplier (for example 2.0 in the first half of Normal Shot range) becomes 2.3x "with an Origin or Zenith Piece and G Rank Weapon". The Weapons page says "with an Origin Piece and G Rank Weapon".</li>
+</ul>
+</section>
+
+<section id="skill-mechanics">
+<h2>Skill mechanics</h2>
+<p>The guide repeats its skill mechanics at the end of this quick-reference page. They are covered in full in <a href="/guide-frontier-armour.html#skills">Armour, Decorations and Skills</a>:</p>
+<ul>
+<li><a href="/guide-frontier-armour.html#skill-basics">Skill basics</a>: the default limit of 10 active skills (11 or 12 at G Rank) and hidden skill priority.</li>
+<li><a href="/guide-frontier-armour.html#hybrid-skills">Hybrid skills</a>: Sword God +2, Gentle Shot +3, Blazing Majesty +2 and the grey skills that waste a slot.</li>
+<li><a href="/guide-frontier-armour.html#exotic-weapon-skills">Exotic, Tower and weapon skills</a>: fixed skills that do not add points.</li>
+<li><a href="/guide-frontier-armour.html#other-skill-sources">Other sources of skills</a>: Skill Fruits (30 fruits for 3 Lottery G Coins) and Guild Cooking.</li>
+<li><a href="/guide-frontier-armour.html#muscle-boost">Muscle Boost</a> and the <a href="/guide-frontier-armour.html#gou-armour">Gou armour types</a> table with the health needed for each piece count.</li>
+</ul>
+</section>
+<nav class="hb-pager" aria-label="Previous and next section">
+<a class="hb-prev" href="/guide-frontier-monsters.html" rel="prev"><span>&larr; Previous</span><strong>Monsters</strong></a>
+<a class="hb-next" href="/guide-frontier-hunter-rank.html" rel="next"><span>Next &rarr;</span><strong>Hunter Rank and Style Rank</strong></a>
+</nav>
+<div class="hb-credit">
+<p>Based on <a href="https://fist.moe/">Fist's Monster Hunter Frontier guide</a> (fist.moe, saved January 2022), with data from the <a href="https://docs.google.com/spreadsheets/d/17c7OXNxcAZmT0MWRePekAZXQQqdCo7S8ICuXPsgK8Is/edit">Comprehensive Google Doc</a> and <a href="http://ferias.life.coocan.jp/">Ferias</a>. Questions about the original: <a href="https://fist.moe/discord/">Fist's Discord</a>.</p>
+<p>Reworded and laid out for Hunsterverse; pictures are from the original guide. Spotted a mistake? <a href="/report.html">Report it</a> or say so in our <a href="https://discord.gg/YuE42eh">Discord</a>.</p>
+</div>
+</main>
+</div>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/guide-roads.html">Roads guide</a>
+          <a href="/guide-frontier.html">Frontier handbook</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/api.html">API</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="/privacy.html">Privacy</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+</body>
+</html>

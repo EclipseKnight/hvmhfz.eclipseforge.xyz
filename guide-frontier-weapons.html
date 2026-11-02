@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Weapons and Sigils · Frontier handbook · Hunsterverse</title>
+<meta name="description" content="The 14 weapon types, how weapon families differ, element and bowgun references, daily Active Features, and the full list of sigils for G Rank weapons." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Weapons and Sigils · Frontier handbook" />
+    <meta property="og:description" content="The 14 weapon types, how weapon families differ, element and bowgun references, daily Active Features, and the full list of sigils for G Rank weapons." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/guide-frontier-weapons.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Weapons and Sigils · Frontier handbook" />
+    <meta name="twitter:description" content="The 14 weapon types, how weapon families differ, element and bowgun references, daily Active Features, and the full list of sigils for G Rank weapons." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+<meta name="theme-color" content="#150e09" />
+<link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="/css/styles.css" />
+<link rel="stylesheet" href="/css/guide-frontier.css" />
+<script src="/js/nav.js" defer></script>
+<script src="/js/background.js" defer></script>
+<script src="/js/consent.js" defer></script>
+<script src="/js/guide-frontier.js" defer></script>
+</head>
+<body class="guide guide-frontier">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html">Hunting Road</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/api.html">API</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/guide-roads.html">Roads guide</a>
+              <a class="navlink" href="/guide-frontier.html" aria-current="page">Frontier handbook</a>
+            </div>
+          </div>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+<div class="hb-layout">
+<nav class="hb-crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/guide-frontier.html">Frontier handbook</a></li><li><a href="/guide-frontier.html#gear">Gear and items</a></li><li aria-current="page">Weapons and Sigils</li></ol></nav>
+<aside class="hb-side" aria-label="Handbook contents">
+<details class="hb-panel hb-toc"><summary>On this page</summary>
+<ol>
+<li><a href="#weapon-types">Weapon types</a></li>
+<li><a href="#making-weapons">Making weapons</a></li>
+<li><a href="#weapon-families">Weapon families</a></li>
+<li><a href="#gou-boosts">Gou weapon boosts</a></li>
+<li><a href="#elements">Elements and properties</a></li>
+<li><a href="#melee-weapons">Melee weapons</a></li>
+<li><a href="#bowguns">Bowguns</a></li>
+<li><a href="#bows">Bows</a></li>
+<li><a href="#active-feature">Active Feature</a></li>
+<li><a href="#weapon-styles">Weapon styles and motion values</a></li>
+<li><a href="#hunting-horn-songs">Hunting Horn songs</a></li>
+<li><a href="#sigils">Sigils</a></li>
+</ol>
+</details>
+<details class="hb-panel hb-all"><summary>All sections</summary>
+<ul>
+<li><a href="/guide-frontier.html">Handbook home</a></li>
+<li class="hb-group">Getting started</li>
+<li><a href="/guide-frontier-basics.html">Basics and Getting Started</a></li>
+<li><a href="/guide-frontier-guild.html">English Guild and Guild Hall</a></li>
+<li><a href="/guide-frontier-house.html">House and AI Companions</a></li>
+<li><a href="/guide-frontier-menus.html">Menus and Town NPCs</a></li>
+<li class="hb-group">Gear and items</li>
+<li><a href="/guide-frontier-items.html">Items and Materials</a></li>
+<li><a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a></li>
+<li><a href="/guide-frontier-weapons.html" aria-current="page">Weapons and Sigils</a></li>
+<li><a href="/guide-frontier-armour.html">Armour, Decorations and Skills</a></li>
+<li><a href="/guide-frontier-transcend.html">Transcend</a></li>
+<li class="hb-group">Monsters and references</li>
+<li><a href="/guide-frontier-monsters.html">Monsters</a></li>
+<li><a href="/guide-frontier-tools.html">Tools and References</a></li>
+<li class="hb-group">Progression</li>
+<li><a href="/guide-frontier-hunter-rank.html">Hunter Rank and Style Rank</a></li>
+<li><a href="/guide-frontier-g-rank-start.html">Starting G Rank</a></li>
+<li><a href="/guide-frontier-g-rank.html">G Rank</a></li>
+<li><a href="/guide-frontier-zenith.html">Zenith (GR200+)</a></li>
+<li class="hb-group">Things to do</li>
+<li><a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a></li>
+<li><a href="/guide-frontier-events.html">Regular Events</a></li>
+<li><a href="/guide-frontier-hunters-road.html">Hunter&#x27;s Road</a></li>
+</ul>
+</details>
+</aside>
+<main id="content" class="sheet hb-sheet">
+<p class="kicker">Frontier handbook · Gear and items · 7 of 18</p>
+<h1>Weapons and Sigils</h1>
+<p class="lead">The 14 weapon types, how weapon families differ, element and bowgun references, daily Active Features, and the full list of sigils for G Rank weapons.</p>
+<section id="weapon-types">
+<h2>Weapon types</h2>
+<p><strong>Tonfa and Switch Axe F are only available at G Rank.</strong> The Switch Axe F unlocks as soon as you reach G Rank. The Tonfa needs a string of specific quests first. The guide has a page for each weapon with more detail (and one each for the Tonfa and Switch Axe F). This page covers what they share.</p>
+<p>The guide's "Multi" column is each weapon type's raw multiplier.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Weapon</th><th>Raw multiplier</th></tr></thead>
+<tbody>
+<tr><td><img class="hb-icon" src="/assets/weapons/sword-and-shield.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Sword and Shield</td><td>1.4x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/dual-blades.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Dual Swords</td><td>1.4x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/great-sword.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Great Sword</td><td>4.8x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/long-sword.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Long Sword</td><td>4.8x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/hammer.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Hammer</td><td>5.2x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/hunting-horn.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Hunting Horn</td><td>5.2x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/lance.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Lance</td><td>2.3x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/gunlance.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Gunlance</td><td>2.3x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/tonfa.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Tonfa</td><td>1.8x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/switch-axe.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Switch Axe F</td><td>5.4x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/magnet-spike.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Magnet Spike</td><td>1.2x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/heavy-bowgun.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Heavy Bowgun</td><td>1.2x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/light-bowgun.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Light Bowgun</td><td>1.2x</td></tr>
+<tr><td><img class="hb-icon" src="/assets/weapons/bow.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> Bow</td><td>1.2x</td></tr>
+</tbody>
+</table></div>
+<p>The guide's quick-reference page lists a different multiplier for the Magnet Spike (5.4x). See <a href="/guide-frontier-tools.html#weapon-quick-reference">Tools and References</a>.</p>
+</section>
+
+<section id="making-weapons">
+<h2>Making weapons</h2>
+<p>When you have a Partner, the Blacksmith first asks whether you are making equipment for them or for yourself. You can tell which you chose at once: your Partner takes your place on screen when you craft for them.</p>
+<p>The Blacksmith's main menu has four parts: Weapons, Armour, Decorations and Pugi Cuffs. Menu names may differ slightly in our client. Under <strong>Weapons</strong> you choose a family:</p>
+<div class="hb-table"><table>
+<thead><tr><th>Menu</th><th>Entries</th></tr></thead>
+<tbody>
+<tr><td>Weapons</td><td>Standard Weapons, Upgrade Weapons, Gou Weapons, G Supremacy Weapons, G Rank Weapons, Upgrade G Rank Weapons, Exotic Weapons, Raviente / Evolution Weapons, Zenith Weapons, Premium Weapons</td></tr>
+<tr><td>Premium Weapons</td><td>Prem Kit Weapons 1, Prem Kit Weapons 2, Lottery Weapons, NetCafe Weapons, HL/EX Weapons, Event/Promo Weapons, Exotic Weapons</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="weapon-families">
+<h2>Weapon families</h2>
+<p>Weapons are grouped by where they come from and what they add. Each family below is a step up in power or a special case.</p>
+<dl>
+<dt>Standard weapon</dt>
+<dd>Normal weapons with no special properties. They are the baseline for every other family.</dd>
+<dt>SP weapon</dt>
+<dd>HR5 weapons that are reskins of other weapons. They get +10 true raw and +20% affinity automatically on HR5 or higher quests. They have had little purpose since their original launch.</dd>
+<dt>HC weapon</dt>
+<dd>HR5 weapons with a low rarity but decent power for that rarity. Like SP weapons, they have little purpose now.</dd>
+<dt>Master's Mark weapon</dt>
+<dd>Mostly the same as normal weapons, but they give the skill Weapon Handling for free, with no skill slot and no points. Unless they are one of a handful that upgrade to G Finesse, they have little purpose.</dd>
+<dt>Evolution weapon</dt>
+<dd>These weapons need you to hunt Raviente to upgrade them. They have 300 levels across three tiers (HR2, HR5 and GR) and end up among the best weapons in the game, and the best true raw weapons outright. They take <strong>hundreds of hours of grind</strong>, so ignore them unless you are very serious about getting them and already have endgame skills. Each weapon type gets its own extra tool:
+<ul>
+<li><strong>Melee weapons</strong> can use Raviente Power Crystals (Power Sword Crystals), which boost raw damage by 1.2x. You can carry 30.</li>
+<li><strong>Light Bowguns</strong> can use Acid Shots, raw or one of the five elements. They add +10 to the weakness value of that type for 30 seconds. You can carry 5.</li>
+<li><strong>Heavy Bowguns</strong> can use Bomb Shots: lingering shots that damage over time inside a radius. You can carry 5.</li>
+<li><strong>Bows</strong> can use Impact Coatings. They make your shots use Impact hitbox values and cause KO, but the shots still deal Shot-type damage, so they cannot break things limited to Impact, such as Daimyo shells. You can carry 30.</li>
+</ul>
+See <a href="/guide-frontier-events.html#raviente">Raviente</a> for how to get them.</dd>
+<dt>Gou weapon</dt>
+<dd>The core HR5 weapon type. Their attack grows with the number of Gou (or higher) armour pieces you wear (see <a href="#gou-boosts">Gou weapon boosts</a>).
+<ul>
+<li><strong>Melee weapons</strong> gain ESP while you are at maximum HP and stamina.</li>
+<li><strong>Light Bowguns</strong> can have Ultra Rapid Fire, which lets you keep feeding ammo into one rapid-fire volley.</li>
+<li><strong>Heavy Bowguns</strong> have a Heat Cannon. It turns the heat built up by steady shooting into a giant beam, like a Gravios.</li>
+<li><strong>Bows</strong> can use Bomb Coatings, which deal bomb damage.</li>
+</ul></dd>
+<dt>Heavenly Storm weapon</dt>
+<dd>On HR5 or higher quests, wearing 2 or more pieces of Heavenly Storm armour (or better) raises Blademaster sharpness by one level (purple to cyan, and so on). Gunners get higher critical range multipliers and stronger power coatings.</dd>
+<dt>Supremacy weapon</dt>
+<dd>The same as Heavenly Storm, with a different glow effect and higher base stats.</dd>
+<dt>G Supremacy weapon</dt>
+<dd>The same as Supremacy, with a different glow effect and higher base stats.</dd>
+<dt>Burst weapon</dt>
+<dd>Mostly the same as G Supremacy, with a different glow effect and much higher base stats. It also gives a skill just for being equipped, shown in its description. This is often something like Vamprism, Exploit Weakness or Evade Distance.</dd>
+<dt>Origin weapon</dt>
+<dd>Mostly the same as Burst, with a different glow effect and much higher base stats. Like Burst weapons, it gives a skill just for being equipped, often Vamprism, Exploit Weakness or Evade Distance.</dd>
+<dt>G Rank weapon</dt>
+<dd>G Rank weapons have sigils instead of decorations, and a level system that goes up to Lv50. A Lv50 weapon is usually called "G50" or similar. See <a href="#sigils">Sigils</a>.</dd>
+<dt>G Rank Finesse</dt>
+<dd>Upgraded forms of various event, festival and normal weapons. They have the faster sheathing and unsheathing of Weapon Handling, plus Movement Speed +1. From G8 you can upgrade normal Lv50 G Rank weapons into Finesse versions with better stats.</dd>
+<dt>Tower weapon</dt>
+<dd>A customisable weapon made from materials you find in the Sky Corridor. You can customise sharpness, raw, element, status, shelling type, shot type and more, so each one is unique to its player. Fully upgraded, it can rival a Lv50 G Rank weapon, depending on several factors. The decorations you put into it give skills outright, with no slot use, which is very strong when built well.</dd>
+<dt>Exotic weapon</dt>
+<dd>The weapons of the mainline import (Exotic) monsters. They start at HR5, or at GR for the Switch Axe and Tonfa, and have 2 or 1 upgrades after crafting. At maximum they have the stats of a G50 weapon, take both decorations and sigils, and give Quick Eating without using a slot or skill points. To finish them you need access to G Rank exotics, and each needs its monster's lowest-percentage carve (such as a Jasper or Mantle).</dd>
+<dt>Prayer weapon</dt>
+<dd>Tied to the Diva Defense event and given as daily or personal rewards. By default they have the stats of a low-end G50 weapon. But with a Prayer active during the Song of War chapter of the event, they get a huge boost, enough to beat even Lv100 G Raviente weapons. The boost is:
+<ul>
+<li>True raw +45</li>
+<li>Doubled element</li>
+<li>Weapon Handling and Movement Speed +2</li>
+<li>Turns on the weapon type's Active Feature</li>
+<li>Sharpness colours raised by one tier</li>
+<li>Turns on the special Dual Hiden skill</li>
+<li>Interception Points raised to 1.2x</li>
+</ul>
+See <a href="/guide-frontier-events.html#diva-defense">Diva Defense</a>.</dd>
+<dt>Zenith weapon</dt>
+<dd>G Rank weapons that open at GR200 and are finished only after GR800. Their stats go beyond a standard G50 weapon, and each has a unique ability and one Zenith skill. The ability is better Zenith part breaking, which makes it easier to destroy the parts of Zenith monsters that reward the unique items all Zenith equipment needs. Zenith skills either upgrade an existing skill or add skill slots. For example Thunder Clad Up lengthens Thunder Clad when it is on a Zenith weapon or armour piece. See <a href="/guide-frontier-zenith.html">Zenith</a>.</dd>
+</dl>
+</section>
+
+<section id="gou-boosts">
+<h2>Gou weapon boosts</h2>
+<p>If you use a weapon from a Gou line that is at least Heavenly Storm, its stats grow with the armour you wear. Every piece of <strong>Heavenly Storm, Supremacy, G Supremacy or Burst</strong> armour adds <strong>+15 Attack, +2% Status and +2% Element</strong>. It stacks per piece, to a maximum of +80 Attack, +10% Status and +10% Element.</p>
+<p>With <strong>two or more of those pieces</strong> you also get Sharpness Level Up, Critical Distance Up +0.3x and Power Coatings Up +0.1x.</p>
+<ul>
+<li>Sharpness Level Up raises the sharpness colour by one full level.</li>
+<li>Critical Distance Up greatly improves well-spaced shots for ranged weapons.</li>
+<li>Power Coatings Up improves power coatings further (for example 1.6x becomes 1.7x).</li>
+</ul>
+<p><strong>These effects only work on Gou, Supremacy or G Rank quests.</strong> That is where you will spend most of your time anyway.</p>
+<figure class="hb-fig"><img src="/assets/guide/weapons/sharpness-gou-armour.webp" alt="Two sharpness bars: sharpness without any Gou line armour pieces, and sharpness with 2x G Supremacy, 2x Burst or 1x Origin piece, which is one colour level higher." width="355" height="135" loading="lazy" decoding="async" /><figcaption>Sharpness without (top) and with (bottom) the armour bonus</figcaption></figure>
+<p>On a Gou-line weapon, every piece of <strong>Origin</strong> armour adds <strong>+20 Attack, +3% Status and +3% Element</strong>, up to +110 Attack, +15% Status and +15% Element. Any single Origin piece gives Sharpness Level Up on the right Gou weapon types.</p>
+<p>Origin pieces matter most to gunners. Their Critical Distance Up and Power Coatings Up buffs <strong>apply to all G Rank weapons</strong>, not just Gou-line ones. That is a <strong>huge buff</strong> for standard weapons. It is almost never worth wearing a standard armour piece over an Origin one, even with Zenith armour added in the Z update. Note that the extra Attack, Element and Status <strong>do not apply to non-Gou weapons</strong>.</p>
+<p>For the other armour families and their Boost conditions, see <a href="/guide-frontier-armour.html#gou-armour">Armour: Gou armour</a>.</p>
+</section>
+
+<section id="elements">
+<h2>Elements and properties</h2>
+<p>These are the properties a weapon can have. Menu names may differ slightly in our client.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Property</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Fire, Thunder, Dragon, Water, Ice</td><td>Elements</td></tr>
+<tr><td>Sleep, Poison, Paralysis</td><td>Status (build-up values)</td></tr>
+<tr><td>Defense +</td><td>Adds defense</td></tr>
+</tbody>
+</table></div>
+<h3 id="combo-elements">Combination elements</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Element</th><th>Made of</th></tr></thead>
+<tbody>
+<tr><td>Light</td><td>70% Fire, 70% Thunder</td></tr>
+<tr><td>Blaze</td><td>70% Fire, 70% Dragon</td></tr>
+<tr><td>Tenshou</td><td>30% Fire, 100% Water, 70% Thunder</td></tr>
+<tr><td>Lightning Rod</td><td>70% Thunder, 70% Dragon</td></tr>
+<tr><td>Okiko</td><td>80% Fire, 80% Ice, 40% Dragon</td></tr>
+<tr><td>Black Flame</td><td>50% Fire, 150% Dragon</td></tr>
+<tr><td>Crimson Demon</td><td>50% Dragon, 150% Fire</td></tr>
+<tr><td>Dark</td><td>80% Ice, 80% Dragon</td></tr>
+<tr><td>Music</td><td>100% Water, 100% Ice</td></tr>
+<tr><td>Sound</td><td>100% Water, 100% Dragon</td></tr>
+<tr><td>Wind</td><td>80% Thunder, 80% Ice</td></tr>
+<tr><td>Burning Zero</td><td>125% Ice, 125% Fire</td></tr>
+<tr><td>Emperor's Roar</td><td>150% Thunder, 50% Dragon</td></tr>
+</tbody>
+</table></div>
+<p>Combination elements <strong>always deal the damage of both elements</strong>. The element you see when you hit a monster is the one that hitzone is weak to. For example, with a weapon of 100 Light hitting a hitbox weak to fire, you would deal 80 Thunder and 80 Fire, but only see the fire damage effects.</p>
+<p>The guide's author keeps an element quick reference and a section of a spreadsheet for these. See the <a href="https://docs.google.com/spreadsheets/d/17c7OXNxcAZmT0MWRePekAZXQQqdCo7S8ICuXPsgK8Is/edit#gid=1452546289">spreadsheet</a>.</p>
+</section>
+
+<section id="melee-weapons">
+<h2>Melee weapons</h2>
+<h3 id="sharpness">Sharpness</h3>
+<p>Sharpness in Frontier has <strong>8 levels</strong> at present, from red to cyan. The picture shows each level with its raw multiplier on top and its element multiplier below. Blue sharpness or higher also adds 10% affinity.</p>
+<figure class="hb-fig"><img src="/assets/guide/weapons/sharpness-levels.webp" alt="The eight sharpness colours from red to cyan, each with a raw multiplier above and an element multiplier below. Levels above blue add 10% affinity." width="355" height="70" loading="lazy" decoding="async" /><figcaption>Sharpness levels and their multipliers</figcaption></figure>
+<h3 id="melee-info-screen">The melee weapon screen</h3>
+<figure class="hb-fig side"><img src="/assets/guide/weapons/melee-weapon-info.webp" alt="Two melee weapon information windows with fields for attack, sharpness, element, status, weapon type, rarity, affinity and slots." width="318" height="396" loading="lazy" decoding="async" /><figcaption>A melee weapon's information window</figcaption></figure>
+<p>The information window shows attack, length, sharpness, element and status, weapon type, rarity, affinity and slots. Some terms appear in the Blacksmith and weapon lists:</p>
+<ul>
+<li><strong>Weapon length:</strong> Very Short, Short, Normal, Long, Very Long.</li>
+<li><strong>Gunlance shots:</strong> Normal Shot, Spread Shot, Long Shot, plus the Shelling Level.</li>
+<li><strong>Sword crystals:</strong> Explosive, Power, Poison, Paralysis, Sleep, Fire, Ice, Thunder, Ice (the guide lists this one twice) and Dragon.</li>
+<li><strong>GR200 sword crystals:</strong> Inferno, Tsunami, Storm, Glacial and Elder Dragon.</li>
+</ul>
+<h3 id="weapon-length">Weapon length</h3>
+<p><strong>Weapon length</strong> is a mechanic unique to Frontier. It changes the weapon's total reach and its sweet spot to match. On a very short Great Sword, almost the whole blade becomes the sweet spot, at the cost of a lot of range. On a very long one the opposite is true.</p>
+<h3 id="sword-crystals">Sword crystals</h3>
+<p><strong>Sword crystals</strong> need their own skill to use. Each has three tiers, and +3 gives the most damage or status per crystal. To apply a crystal, hold <kbd>R2</kbd> and press the right analog stick in (<kbd>R3</kbd>), or press <kbd>Shift</kbd> plus the Minus key (not on the numpad), or use the touchpad on the Vita.</p>
+<p><strong>GR200 sword crystals</strong> are purely elemental, and do about as much elemental damage as <strong>three hits from the normal ones</strong>. You can only buy them for GCP from the Pink store after reaching <strong>GR200</strong>.</p>
+</section>
+
+<section id="bowguns">
+<h2>Bowguns</h2>
+<figure class="hb-fig side"><img src="/assets/guide/weapons/bowgun-info-screen.webp" alt="Two bowgun information windows showing attack, reload speed, recoil, ammo counts per shot type, upgrades and slots." width="318" height="528" loading="lazy" decoding="async" /><figcaption>A bowgun's information window</figcaption></figure>
+<p>A bowgun's window lists its ammo, reload speed and recoil, and its upgrades. Each bowgun's special abilities are covered in the guide's detailed weapon pages.</p>
+<ul>
+<li><strong>Reload speed:</strong> Very Slow, Slow, Normal, Fast, Very Fast.</li>
+<li><strong>Recoil:</strong> Medium, Small, Smaller.</li>
+<li><strong>Ammo:</strong> Normal, Pierce, Pellet, Crag, Cluster, Recovery, Poison, Paralysis, Sleep, Fire, Water, Thunder, Ice, Dragon, Tranq, Paint, Demon and Armour Shot, plus Rapid Fire and Ultra Rapid Fire.</li>
+</ul>
+<figure class="hb-fig"><img src="/assets/guide/weapons/bowgun-layout.webp" alt="A bowgun window with its labels in English and Chinese: ammo types, reload speed, recoil, rapid fire, and upgrades Level Up, Silencer, Long Barrel, Zoom Scope, Shield and Power Barrel." width="586" height="776" loading="lazy" decoding="async" /><figcaption>Bowgun layout. Upgrades: Level Up, Silencer, Long Barrel, Zoom Scope, Shield, Power Barrel</figcaption></figure>
+<h3 id="bowgun-critical-distance">Critical Distance</h3>
+<p>Critical Distance is shown when the shot expands fully and makes a circle. The Heavy Bowgun has a much larger impact animation in the first half of critical distance on standard shots, so it is very obvious when you are properly spaced. This adds an extra 0.3x to damage in that zone (for example 2.0 in the first half of Normal Shot range, 2.3x with an Origin piece and a G Rank weapon).</p>
+<p>These are the damage multipliers by distance, as the guide's author measured them. They are not perfect, but enough to work from if you plan to use ranged weapons seriously. A blank means the shot does not reach that distance.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Weapon</th><th>Close</th><th>Mid 1</th><th>Mid 2</th><th>Far 1</th><th>Far 2</th><th>Far 3</th><th>Far 4</th><th>Far 5</th></tr></thead>
+<tbody>
+<tr><th colspan="9">Normal / Rapid shot</th></tr>
+<tr><td>LBG (Earth)</td><td>1.50</td><td>1.50</td><td>1.00</td><td>0.80</td><td>0.50</td><td>0.50</td><td></td><td></td></tr>
+<tr><td>LBG (Heaven / Storm)</td><td>1.60</td><td>1.00</td><td>0.80</td><td>0.50</td><td>0.50</td><td>0.50</td><td></td><td></td></tr>
+<tr><td>LBG (Storm Step Shot)</td><td>2.00</td><td>2.00</td><td>2.00</td><td>1.50</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Heavy Bowgun</td><td>2.00</td><td>2.00</td><td>1.70</td><td>1.70</td><td>1.00</td><td>0.80</td><td>0.50</td><td>0.50</td></tr>
+<tr><th colspan="9">Pierce shot</th></tr>
+<tr><td>LBG (Earth)</td><td>1.00</td><td>1.70</td><td>1.70</td><td>1.70</td><td>1.70</td><td>0.80</td><td>0.50</td><td>0.50</td></tr>
+<tr><td>LBG (Heaven / Storm)</td><td>1.00</td><td>1.60</td><td>1.60</td><td>1.00</td><td>0.80</td><td>0.50</td><td>0.50</td><td>0.50</td></tr>
+<tr><td>LBG (Storm Step Shot)</td><td>2.00</td><td>2.00</td><td>2.00</td><td>1.50</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Heavy Bowgun</td><td>1.00</td><td>2.00</td><td>2.00</td><td>1.70</td><td>1.70</td><td>0.80</td><td>0.50</td><td>0.50</td></tr>
+<tr><th colspan="9">Pellet / Spread shot</th></tr>
+<tr><td>LBG (Earth)</td><td>1.00</td><td>1.00</td><td>1.00</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>LBG (Heaven / Storm)</td><td>1.00</td><td>1.00</td><td>1.00</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>LBG (Storm Step Shot)</td><td>1.00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Heavy Bowgun</td><td>1.00</td><td>1.00</td><td>1.00</td><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody>
+</table></div>
+<p>The guide's author keeps the hitbox values for bows and bowguns in a <a href="https://docs.google.com/spreadsheets/d/17c7OXNxcAZmT0MWRePekAZXQQqdCo7S8ICuXPsgK8Is/edit#gid=99034017">spreadsheet</a>.</p>
+</section>
+
+<section id="bows">
+<h2>Bows</h2>
+<figure class="hb-fig side"><img src="/assets/guide/weapons/bow-info-screen.webp" alt="A bow information window showing attack, arc shot, element, defense, weapon type, rarity, affinity, slots, charge levels, coating types and the power, paralysis and sleep coatings." width="318" height="529" loading="lazy" decoding="async" /><figcaption>A bow's information window</figcaption></figure>
+<p>A bow's window lists its arc shot, charge levels and coatings. Each bow's special abilities are covered in the guide's detailed weapon pages.</p>
+<ul>
+<li><strong>Arc shots:</strong> Arrow Rain, Wide Pellet Rain, Narrow Pellet Rain, Explosive Shell.</li>
+<li><strong>Charge types:</strong> Pierce, Rapid, Scatter.</li>
+<li><strong>Coatings:</strong> Power, Crit, Poison, Paralysis and Sleep.</li>
+</ul>
+<p>The coating modifier is the damage multiplier a coating gives:</p>
+<div class="hb-table"><table>
+<thead><tr><th>Coating</th><th>Modifier</th></tr></thead>
+<tbody>
+<tr><td>Power Coating</td><td>1.5</td></tr>
+<tr><td>Sleep Coating</td><td>1.4</td></tr>
+<tr><td>Paralysis Coating</td><td>1.4</td></tr>
+<tr><td>Poison Coating</td><td>1.4</td></tr>
+<tr><td>Impact Coating</td><td>1.4</td></tr>
+<tr><td>Bomb Coating</td><td>1.0</td></tr>
+</tbody>
+</table></div>
+<p>The guide's quick-reference page gives the Bomb Coating as 1.4 (see <a href="/guide-frontier-tools.html#weapon-quick-reference">Tools and References</a>).</p>
+<h3 id="bow-critical-distance">Critical Distance</h3>
+<p>Hold the aim button or key to see a rough indication of Critical Distance. Hits inside it make a large flash, and hits outside it make a small flash. The rough sweet spots, measured in backhops and rolls from the monster, are:</p>
+<div class="hb-table"><table>
+<thead><tr><th>Shot</th><th>Backhops</th><th>Rolls</th></tr></thead>
+<tbody>
+<tr><td>Pierce Shot</td><td>4 to 7.5</td><td>2 to 3.75</td></tr>
+<tr><td>Rapid Shot</td><td>2 to 4.5</td><td>1 to 2.25</td></tr>
+<tr><td>Scatter Shot</td><td>0.5 to 3</td><td>0.25 to 1.5</td></tr>
+<tr><td>Rising Shot</td><td>6~</td><td>3~</td></tr>
+</tbody>
+</table></div>
+<p>The damage multipliers by distance (not perfect, but enough to work from):</p>
+<div class="hb-table"><table>
+<thead><tr><th>Shot</th><th>Close</th><th>Mid 1</th><th>Mid 2</th><th>Far 1</th><th>Far 2</th><th>Far 3</th><th>Far 4</th><th>Far 5</th></tr></thead>
+<tbody>
+<tr><td>Rapid</td><td>1.00</td><td>1.50</td><td>1.50</td><td>1.00</td><td>0.80</td><td>0.80</td><td>0.50</td><td></td></tr>
+<tr><td>Pierce</td><td>1.00</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.00</td><td>0.80</td><td>0.50</td><td></td></tr>
+<tr><td>Spread</td><td>1.00</td><td>1.50</td><td>1.00</td><td>0.80</td><td>0.80</td><td>0.50</td><td></td><td></td></tr>
+<tr><td>Aura Shot</td><td>1.00</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.00</td><td>0.80</td></tr>
+<tr><td>Piercing Aura</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.00</td><td>0.80</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="active-feature">
+<h2>Active Feature</h2>
+<p>The <strong>Active Feature</strong> is a daily buff for one weapon type. It lasts from noon until noon, then a new weapon type is chosen. You can see up to one day ahead in town by looking behind the main Active Feature bar at the top of your screen.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Weapon</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Sword and Shield</td><td>Status and element attack increased 1.2x. This is internal only and does not change the value shown on your weapon.</td></tr>
+<tr><td>Dual Swords</td><td>Stamina and HP use lowered (0.5x).</td></tr>
+<tr><td>Great Sword</td><td>Unsheathe attacks gain +100% affinity. This is added on top of any existing affinity and works with Critical Conversion. With Z1 this also applies to attacks from Parries, and gives the raw-increasing effect of the skill Critical Conversion (without the +30%) during these actions.</td></tr>
+<tr><td>Long Sword</td><td>Full spirit bar buff increased (+10 attack becomes +40 attack).</td></tr>
+<tr><td>Hammer</td><td>Stun damage increased 1.5x. Stacks with the sigil or Caravan skills.</td></tr>
+<tr><td>Hunting Horn</td><td>Song duration 2.0x. Stacks with Flute Expert.</td></tr>
+<tr><td>Lance</td><td>Guard skill goes up by 1 level. Turns on Reflect +3.</td></tr>
+<tr><td>Gunlance</td><td>Wyvern Fire and shelling damage increased 1.5x.</td></tr>
+<tr><td>Switch Axe F</td><td>Phial meter recovery from the main recovery method (reloading or guarding) increased. All Ryuuki finisher (explosion) effects are buffed.</td></tr>
+<tr><td>Tonfa</td><td>Head: KO damage duration 20s to 30s. Tail: bleeding does 1.5x damage. Body: sharpness return 15 to 20, and Gunner Attack Up 25 to 50.</td></tr>
+<tr><td>Light Bowgun</td><td>Damage increased at critical distance (+0.1x). Status damage 1.2x.</td></tr>
+<tr><td>Heavy Bowgun</td><td>Damage increased at critical distance (+0.1x).</td></tr>
+<tr><td>Bow</td><td>Short Charge effect, which stacks with Auto-Reload (0.85x).</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="weapon-styles">
+<h2>Weapon styles and motion values</h2>
+<p>HR5 unlocks <strong>Heaven Style</strong> for all non-G weapons, and lets you take an Urgent for <strong>Storm Style</strong>. See <a href="/guide-frontier-hunter-rank.html#style-rank">Style Rank</a> for the full process.</p>
+<ul>
+<li>The Tonfa and Switch Axe F get Heaven Style straight away.</li>
+<li>Switch Axe F Storm Style only needs you to take a standard non-G Urgent.</li>
+<li>Tonfa Storm Style needs GSR100 in the weapon to take the Urgent, and the Urgent is only against G Rank HC monsters.</li>
+</ul>
+<p>For motion values, use the guide's author's <a href="http://fist.moe/damage/">Damage Calculator</a>, which has all of them.</p>
+</section>
+
+<section id="hunting-horn-songs">
+<h2>Hunting Horn songs</h2>
+<p>Pick three notes to see the songs for that type of Hunting Horn. Storm Style is unlocked at HR5 and Extreme at GR1.</p>
+<div class="box note"><p>The column headings of the guide's song table did not survive in the copy this page was made from. The lists below show each song's effects and the three durations exactly as given. Which column or duration belongs to which style or song level is unclear in the original. Songs that appear more than once in the original are listed once.</p></div>
+<h3 id="standard-songs">Standard songs</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Effect</th><th>Second effect</th><th>Durations</th></tr></thead>
+<tbody>
+<tr><td>Movement Speed Up</td><td>Less Bouncing</td><td>600s / 240s / 600s</td></tr>
+<tr><td>Attack Up [Small] [1.15x/1.10x]</td><td>Attack Up [1.2x/1.15x]</td><td>120s / 90s / 120s</td></tr>
+<tr><td>Attack Up [Large] [1.2x/1.15x]</td><td>Attack Up [1.3x/1.2x]</td><td>90s / 60s / 90s</td></tr>
+<tr><td>Defense Up [Small] [1.15x/+120]</td><td>Defense Up [1.2x/+160]</td><td>120s / 90s / 120s</td></tr>
+<tr><td>Defense Up [Large] [1.2x/+160]</td><td>Defense Up [1.3x/+240]</td><td>90s / 60s / 90s</td></tr>
+<tr><td>Defense Up [Large] [1.2x]</td><td>Defense Up [1.3x]</td><td>90s / 60s / 90s</td></tr>
+<tr><td>No Stamina Loss [Small]</td><td>No Stamina Loss</td><td>90s / 60s / 90s</td></tr>
+<tr><td>No Stamina Loss [Large]</td><td>No Stamina Loss</td><td>150s / 60s / 150s</td></tr>
+<tr><td>Elemental Attack Up [1.10x]</td><td>-</td><td>90s / 60s / 150s</td></tr>
+<tr><td>Divine Protection</td><td>-</td><td>60s / 30s / 90s</td></tr>
+<tr><td>Health Increase [Small] [+20]</td><td>-</td><td>180s / 120s / 180s</td></tr>
+<tr><td>Health Increase [Med] [+30]</td><td>-</td><td>180s / 120s / 180s</td></tr>
+<tr><td>Health Increase [Large] [+50]</td><td>-</td><td>180s / 120s / 180s</td></tr>
+<tr><td>Health Rec [Small] / [Tiny]</td><td>-</td><td>-</td></tr>
+<tr><td>Health Rec [Med] / [Tiny]</td><td>-</td><td>-</td></tr>
+<tr><td>Health Rec [Large] / [Small]</td><td>-</td><td>-</td></tr>
+<tr><td>Health Rec [Small] / [Tiny] and Antidote</td><td>-</td><td>-</td></tr>
+<tr><td>Health Rec [Med] / [Tiny] and Antidote</td><td>-</td><td>-</td></tr>
+<tr><td>Health Rec [Med] / [Tiny] and Deodorant</td><td>-</td><td>-</td></tr>
+<tr><td>Recovery Speed [Small]</td><td>-</td><td>120s / 60s / 180s</td></tr>
+<tr><td>Recovery Speed [Large]</td><td>-</td><td>120s / 60s / 180s</td></tr>
+<tr><td>Sharp Sword Recovery [Small]</td><td>-</td><td>-</td></tr>
+<tr><td>Sharp Sword Recovery [Large]</td><td>-</td><td>-</td></tr>
+<tr><td>Wind Pressure [Small]</td><td>Wind Pressure [Large]</td><td>180s / 120s / 120s</td></tr>
+<tr><td>Wind Pressure [Large]</td><td>Wind Pressure Invalid</td><td>180s / 120s / 180s</td></tr>
+<tr><td>Wind Pressure Invalid</td><td>-</td><td>180s / 180s / 180s</td></tr>
+<tr><td>Hearing Protection [Small]</td><td>Hearing Protection [Large]</td><td>180s / 120s / 120s</td></tr>
+<tr><td>Hearing Protection [Large]</td><td>-</td><td>180s / 120s / 120s</td></tr>
+<tr><td>Cold Invalid</td><td>-</td><td>240s / 240s / 480s</td></tr>
+<tr><td>Heat Invalid</td><td>-</td><td>240s / 240s / 480s</td></tr>
+<tr><td>Stun Immunity</td><td>-</td><td>180s / 120s / 300s</td></tr>
+<tr><td>Paralysis Immunity</td><td>-</td><td>180s / 120s / 300s</td></tr>
+<tr><td>Quake Res</td><td>-</td><td>180s / 120s / 300s</td></tr>
+<tr><td>Clairvoyance</td><td>-</td><td>30s / 30s / 30s</td></tr>
+<tr><td>No Flinching</td><td>-</td><td>60s / 60s / 90s</td></tr>
+<tr><td>Fire Res [Small] [+10]</td><td>Fire Res [+15]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Fire Res [Large] [+15]</td><td>Fire Res [+20]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Water Res [Small] [+10]</td><td>Water Res [+15]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Water Res [Large] [+15]</td><td>Water Res [+20]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Thunder Res [Small] [+10]</td><td>Thunder Res [+15]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Thunder Res [Large] [+15]</td><td>Thunder Res [+20]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Ice Res [Small] [+10]</td><td>Ice Res [+15]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Ice Res [Large] [+15]</td><td>Ice Res [+20]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Dragon Res [Small] [+10]</td><td>Dragon Res [+15]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Dragon Res [Large] [+15]</td><td>Dragon Res [+20]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Sharp Sword</td><td>-</td><td>60s / 30s / 60s</td></tr>
+<tr><td>Stun Up [1.1x]</td><td>-</td><td>90s / 60s / 90s</td></tr>
+<tr><td>Status Up [1.125x]</td><td>-</td><td>90s / 60s / 90s</td></tr>
+</tbody>
+</table></div>
+<h3 id="storm-songs">Storm Style songs</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Effect</th><th>Second effect</th><th>Durations</th></tr></thead>
+<tbody>
+<tr><td>Cold Invalid</td><td>-</td><td>240s / 240s / 480s</td></tr>
+<tr><td>Heat Invalid</td><td>-</td><td>240s / 240s / 480s</td></tr>
+<tr><td>Stun Immunity</td><td>-</td><td>180s / 120s / 300s</td></tr>
+<tr><td>Paralysis Immunity</td><td>-</td><td>180s / 120s / 300s</td></tr>
+<tr><td>Quake Res</td><td>-</td><td>180s / 120s / 300s</td></tr>
+<tr><td>Fire Res [Small] [+10]</td><td>Fire Res [+15]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Ice Res [Small] [+10]</td><td>Ice Res [+15]</td><td>60s / 60s / 60s</td></tr>
+<tr><td>Defense Up [Small] [1.15x]</td><td>Defense Up [1.2x]</td><td>120s / 90s / 120s</td></tr>
+<tr><td>Elemental Attack Up [1.10x]</td><td>-</td><td>90s / 60s / 150s</td></tr>
+<tr><td>Attack Up [Large] [1.2x/1.15x] (listed five times)</td><td>Attack Up [Large] [1.3x/1.2x]</td><td>90s / 60s / 90s</td></tr>
+</tbody>
+</table></div>
+<h3 id="extreme-debuffs">Extreme Style debuffs</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Effect</th><th>Durations</th></tr></thead>
+<tbody>
+<tr><td>Monster Cannot Flee</td><td>300s / 300s / 300s</td></tr>
+<tr><td>Raw Hitbox Debuff [+2]</td><td>90s / 90s / 90s</td></tr>
+<tr><td>Elemental Hitbox Debuff [+4] (listed five times)</td><td>90s / 90s / 90s</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="sigils">
+<h2>Sigils</h2>
+<figure class="hb-fig side"><img src="/assets/guide/weapons/sigil-slot-examples.webp" alt="Two G Rank weapon descriptions: one with 2 sigils and 1 empty slot, and one Exotic weapon with 1 decoration, 1 sigil and 1 empty slot." width="318" height="260" loading="lazy" decoding="async" /><figcaption>Slots on a G Rank weapon: sigils, a decoration and empty slots</figcaption></figure>
+<p><strong>Sigils</strong> are like decorations, but only for G Rank weapons. You craft them at the Cat Smith, who makes random Gou weapons.</p>
+<p><strong>Sigil slots</strong> are triangular. They either replace the decoration slots on standard G Rank weapons, or they are hybrid slots that take either a decoration or a sigil. A weapon can have up to <strong>three sigils</strong>. Sigils with a variable value generally stack. Sigils that add or improve abilities and motions have a fixed effect, however many you slot.</p>
+<p>Sigil tables below show the skill name, the range of points (for example -10 / +15) a sigil can roll, and its effect. A dash means the sigil has no value. "Does not stack" means a second one of the same sigil adds nothing.</p>
+
+<h3 id="choosing-sigils">Choosing sigils</h3>
+<p>Most weapons have dedicated sigils, but many are far from optimal. Think about how often you will really use the attack. For example, the Dual Swords sigils for Rush Slash and Frontflip Slash are of very low value for Extreme Style. Extreme Demon Mode cannot use them, and good play uses that mode almost all the time.</p>
+<p>In the same way, the Great Sword's Guard Slash is not available in Extreme Style, and Upswings are mostly charged (which the sigil does not help), so sigils for those moves are mostly useless, especially compared with just adding raw.</p>
+<p>For the best results, aim almost entirely for <strong>Attack or Element on your sigils</strong> and one or more of your weapon's specific sigils. For a Gunlance, always aim for <strong>Lv9 shelling</strong> if you use shelling and Wyvern Fires.</p>
+
+<h3 id="sigils-health">Health and stamina</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Points</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Sleeping</td><td>-</td><td>Recover health by using the Sleep gesture. Does not stack.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-offensive">Offensive</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Points</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Attack Adjustment</td><td>-10 / +15</td><td>Adjusts the true raw of a weapon by the stated amount.</td></tr>
+<tr><td>Attribute Value</td><td>-10 / +15</td><td>Adjusts the true element of a weapon by the stated amount. Each point is +10 on the displayed element.</td></tr>
+<tr><td>Affinity</td><td>-10 / +15</td><td>Adjusts the affinity percentage of a weapon by the stated amount.</td></tr>
+<tr><td>Flying Wyvern Slayer</td><td>-10 / +15</td><td>Adjusts true raw by the stated value while you are in an area with that species.</td></tr>
+<tr><td>Bird Wyvern Slayer</td><td>-10 / +15</td><td>Same, for Bird Wyverns.</td></tr>
+<tr><td>Carapaceon Slayer</td><td>-10 / +15</td><td>Same, for Carapaceons.</td></tr>
+<tr><td>Piscine Slayer</td><td>-10 / +15</td><td>Same, for Piscine monsters.</td></tr>
+<tr><td>Fanged Beast Slayer</td><td>-10 / +15</td><td>Same, for Fanged Beasts.</td></tr>
+<tr><td>Brute Wyvern Slayer</td><td>-10 / +15</td><td>Same, for Brute Wyverns.</td></tr>
+<tr><td>Leviathan Slayer</td><td>-10 / +15</td><td>Same, for Leviathans.</td></tr>
+<tr><td>Fanged Wyvern Slayer</td><td>-10 / +15</td><td>Same, for Fanged Wyverns.</td></tr>
+<tr><td>Elder Dragon Slayer</td><td>-10 / +15</td><td>Same, for Elder Dragons.</td></tr>
+<tr><td>Minion Slayer</td><td>-10 / +15</td><td>Same, for small minion monsters.</td></tr>
+<tr><td>Hot (Heat Wave)</td><td>-10 / +15</td><td>Adjusts true raw by the stated value in a hot area that would require a Cold Pot (Desert, Volcano).</td></tr>
+<tr><td>Cold (Intense Cold)</td><td>-10 / +15</td><td>Adjusts true raw by the stated value in a cold area that would require a Hot Pot (Snowy Mountains, Swamp Caves).</td></tr>
+<tr><td>Morning Slayer</td><td>-10 / +15</td><td>Adjusts true raw by the stated value while it is morning (the guide says Taiwan time).</td></tr>
+<tr><td>Night Slayer</td><td>-10 / +15</td><td>Adjusts true raw by the stated value while it is night (the guide says Taiwan time).</td></tr>
+<tr><td>Breeding Season Slayer</td><td>-10 / +15</td><td>Adjusts true raw by the stated value in quests in the Breeding Season (green).</td></tr>
+<tr><td>Warm Season Slayer</td><td>-10 / +15</td><td>Adjusts true raw by the stated value in quests in the Warm Season (orange).</td></tr>
+<tr><td>Cold Season Slayer</td><td>-10 / +15</td><td>Adjusts true raw by the stated value in quests in the Cold Season (blue).</td></tr>
+<tr><td>Monday Slayer to Sunday Slayer (one sigil for each day)</td><td>-10 / +15</td><td>Adjusts true raw by the stated value on that day (the guide says Taiwan time).</td></tr>
+<tr><td>Unity</td><td>-</td><td>+5 true raw if all hunters in the quest are nearby. Does not stack.</td></tr>
+<tr><td>Strengthen Bow Raw</td><td>-</td><td>Adds extra raw damage based on attack. Formula: Attack x 0.015 x Charge Modifier x Hitbox. Charge modifier: Lv1 0.04x, Lv2 1.0x, Lv3 1.5x, Lv4 1.85x, Snipe Lv4 1.0x, Snipe Lv4 1.1x, Rising 2.0x. Not affected by affinity, coatings or critical distance. Does not stack and does not work on bows with an element.</td></tr>
+<tr><td>Strengthen SnS Raw</td><td>-</td><td>Adds extra raw damage based on attack. Formula: Attack x 0.025 x Sharpness Multiplier x Hitbox. Sharpness multiplier: Blue 1.0625x, White 1.125x, Purple 1.15x, Cyan 1.20x. It ignores motion values, and Fencing+2 adds a further 0.2x of the extra damage. Does not stack and does not work on a Sword and Shield with an element or status.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-weapon-up">Weapon Up sigils</h3>
+<p>The guide files these under "Unlimited Mode". Only one Up roll is active at a time. For example a +14 DS Up and a +12 DS Up sigil together give +14, not +26.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Points</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Sword and Shield Up, Dual Swords Up, Great Sword Up, Long Sword Up, Hammer Up, Hunting Horn Up, Lance Up, Gunlance Up, Tonfa Up, Switch Axe Up, Magnet Spike Up, Light Bowgun Up, Heavy Bowgun Up, Bow Up</td><td>+1 / +15</td><td>Increases Attack, Affinity and Element values of the matching weapon class.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-defensive">Defensive</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Points</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Defense</td><td>-10 / +20</td><td>Changes defense by the stated value.</td></tr>
+<tr><td>Helper</td><td>-</td><td>Hunters who are not G Rank get +50 defense in quests with a user of this sigil. Does not stack.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-blademaster">Blademaster</h3>
+<p>Arrows show the motion value before and after the sigil (for example 21 → 31). Where a move has several hits, the values are separated by a dot.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Weapon</th><th>Sigil</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Sword and Shield</td><td>Tech Boost: Slide Attack</td><td>Raises the motion value of the Sliding Attack (21 → 31).</td></tr>
+<tr><td>Sword and Shield</td><td>Tech Boost: Shield Attacks</td><td>Raises the motion value of the Shield Attack (13 → 19) and Shield Bash (18 → 27). No effect on Extreme Style's Continuous Bashing Combo.</td></tr>
+<tr><td>Sword and Shield</td><td>Tech Boost: Infinite Slash</td><td>Raises the motion value of all three motions of the Infinite Slash (25 → 28).</td></tr>
+<tr><td>Sword and Shield</td><td>Tech Change: Vacuum Slash</td><td>Changes the property of the Horizontal Slash and adds a ranged red shockwave to it. Motion value is 31·16, and the second part is not affected by Fencing+2. Earth and Extreme Styles.</td></tr>
+<tr><td>Dual Swords</td><td>Tech Boost: Frontflip Slash</td><td>Raises the motion value of the Frontflip Slash (11·15 → 16·22). Storm Style only.</td></tr>
+<tr><td>Dual Swords</td><td>Tech Boost: Rush Slash</td><td>Raises the motion value of the Dash Attack (11·5 → 16·7, and 14·6 → 21·9 in Demon Mode). Earth and Heaven Styles only.</td></tr>
+<tr><td>Dual Swords</td><td>Tech Boost: Sharpening Technique</td><td>The first sharpen in a combo counts as two sharpens when building the multiplier (maximum 4 sharpens for a 1.20x attack multiplier).</td></tr>
+<tr><td>Great Sword</td><td>Tech Boost: Upswing</td><td>Raises the motion value of the Upswing (56 → 72). Does not affect Upswing charges.</td></tr>
+<tr><td>Great Sword</td><td>Tech Boost: Rotation Slash</td><td>Raises the motion value of the Horizontal Slash (44 → 57).</td></tr>
+<tr><td>Great Sword</td><td>Tech Boost: Guard Slash</td><td>Lets the Guard Slash block one more hit, which raises the counter's damage. Heaven and Storm Styles only. At most two extra blocked attacks, three in total, so up to 2 sigils are useful.</td></tr>
+<tr><td>Long Sword</td><td>Tech Boost: Piercing Stab</td><td>Raises the motion value of the Piercing Stab (24·12x2 → 32·16x2) and the Super Piercing Stab (24·12x5·30 → 32·16x5·40). Only affects the manually charged version, not the follow-up after a parry. Storm and Extreme Styles only.</td></tr>
+<tr><td>Long Sword</td><td>Tech Boost: Upswing</td><td>Raises the motion value of the Upswing (28 → 42).</td></tr>
+<tr><td>Long Sword</td><td>Tech Boost: Retreating Sword</td><td>Adds invincibility frames to the Fade Slash and Backhop Slash, like those on the Evade Slash in Heaven and Storm Styles. Earth Style only.</td></tr>
+<tr><td>Long Sword</td><td>Tech Boost: Blink</td><td>Increases the distance of the Blink teleport. Does not stack. Extreme Style only.</td></tr>
+<tr><td>Long Sword</td><td>Draw Strength</td><td>Raises the motion value of all unsheathe attacks by 1.50x.</td></tr>
+<tr><td>Lance</td><td>Tech Boost: Shield Attack</td><td>Raises the motion value of the Shield Rush (3·25 → 4·37). Storm and Extreme Styles.</td></tr>
+<tr><td>Lance</td><td>Tech Boost: Charge Finisher</td><td>Raises the motion value of the Charge Finisher (50 → 75). Earth Style only.</td></tr>
+<tr><td>Lance</td><td>Tech Change: Drill Charge</td><td>Turns the Charge into a Drill Charge attack (25 x hits → (31·16) x hits). Earth Style only.</td></tr>
+<tr><td>Lance</td><td>Draw Strength</td><td>Raises the motion value of all unsheathe attacks by 1.50x.</td></tr>
+<tr><td>Gunlance</td><td>Tech Boost: Rush Thrust</td><td>Raises the motion value of the Rush Thrust (38 → 57). This is the main unsheathe attack, done by moving and pressing the normal thrust while unsheathed.</td></tr>
+<tr><td>Gunlance</td><td>Tech Boost: Horizontal Slash</td><td>Raises the motion value of the Horizontal Slash (34 → 51). Does not affect the Bombardment Boost follow-up.</td></tr>
+<tr><td>Hammer</td><td>Tech Boost: Baseball Swing</td><td>Raises the motion value of the Baseball Swing (100 → 130).</td></tr>
+<tr><td>Hammer</td><td>Tech Boost: Unsheathe Upswing</td><td>Raises the motion value of the Unsheathe Upswing (32 → 48).</td></tr>
+<tr><td>Hammer</td><td>Tech Boost: Charging Movement Speed</td><td>Raises movement speed while holding a charge attack. Stacks for more speed. Only affects charges that are not running.</td></tr>
+<tr><td>Hunting Horn</td><td>Tech Boost: Musical Attacks</td><td>Raises the motion value of all attacks that play notes: Start Playing (26 → 39), Note 1 (50 → 75), Note 2 (43 → 64), Note 3 (49 → 73), Stop Playing (31 → 46).</td></tr>
+<tr><td>Hunting Horn</td><td>Tech Boost: Beatdown</td><td>Raises the motion value of the Jab (16 → 27).</td></tr>
+<tr><td>Switch Axe</td><td>Tech Boost: Stunning Blast</td><td>Raises the stun values of the Elemental Discharge and Absorption Release. Early Ele. Discharge 20 → 40, Ele. Discharge 50 → 80, Early Abs. Release 40 → 50, Abs. Release 150 → 220.</td></tr>
+<tr><td>Switch Axe</td><td>Tech Boost: Guard</td><td>Widens the guarding window by a few degrees and restores 15 health while guarding. Does not stack and does not add guarding frames.</td></tr>
+<tr><td>Switch Axe</td><td>Tech Boost: Charge Movement Speed</td><td>Raises movement speed while charging.</td></tr>
+<tr><td>Tonfa</td><td>Tech Boost: EX Meter</td><td>Raises the rate the EX gauge fills. Does not stack. All Styles with an EX gauge.</td></tr>
+<tr><td>Tonfa</td><td>Tech Boost: Combo Timer</td><td>Slows how fast a combo (the red bars) drops while using the Tonfa. Does not stack. All Styles with a combo gauge.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-length">Length Up (Radiant Blue)</h3>
+<p>Each Radiant Blue sigil raises weapon length by one level, at the cost of some attack. The cost is always 25 true raw, so it shows as a different attack value for each weapon type. Several sigils raise the length by more levels, but the raw loss stays fixed at 25 true raw: three sigils still lose 25, not 75.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Attack lost</th></tr></thead>
+<tbody>
+<tr><td>Radiant Blue Sword (Sword and Shield)</td><td>35</td></tr>
+<tr><td>Radiant Blue Dual Swords</td><td>35</td></tr>
+<tr><td>Radiant Blue Great Sword</td><td>120</td></tr>
+<tr><td>Radiant Blue Long Sword</td><td>120</td></tr>
+<tr><td>Radiant Blue Lance</td><td>58</td></tr>
+<tr><td>Radiant Blue Hammer</td><td>130</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-notes-shelling">Notes and shelling</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Note Change 1</td><td>Changes the colour of the 1st note to the colour on the sigil: Blue, Yellow, Green, Red or Cyan.</td></tr>
+<tr><td>Note Change 2</td><td>Changes the colour of the 2nd note: Purple, Blue, Yellow, Green, Red or Cyan.</td></tr>
+<tr><td>Note Change 3</td><td>Changes the colour of the 3rd note: Purple, Blue, Yellow, Green, Red or Cyan.</td></tr>
+<tr><td>Shell Change</td><td>Changes a Gunlance's shelling type to the one on the sigil: Normal, Spread or Long.</td></tr>
+<tr><td>Shelling Level Up</td><td>Raises a Gunlance's shelling by 1 level. Stacks for more levels. Lv9 shelling is the maximum.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-gunner">Gunner</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Rapid Fire Add: Normal S Lv1, Normal S Lv2, Pierce S Lv1, Pellet S Lv1, Crag S Lv1, Flame S, Water S, Thunder S, Ice S</td><td>Adds the ability to shoot that ammo with Rapid Fire. Light Bowgun only.</td></tr>
+<tr><td>Super Rapid Fire Add: Normal S Lv2, Pierce S Lv1, Pellet S Lv1, Flame S, Water S</td><td>Adds the ability to shoot that ammo with Super Rapid Fire. Light Bowgun only.</td></tr>
+<tr><td>Rapid Fire Immunity (Remove Rapid Fire): Normal S Lv1, Normal S Lv2, Pierce S Lv1, Pellet S Lv1, Crag S Lv1, Flame S, Water S, Thunder S, Ice S</td><td>One sigil for each ammo type listed. The guide's description repeats the "adds the ability to shoot with Rapid Fire" text of the Add sigils, which does not fit their "Remove" names. Light Bowgun only.</td></tr>
+<tr><td>Heat Cannon Add</td><td>Adds a Heat Cannon to a Heavy Bowgun. Heavy Bowgun only. It does not use a slot and can be added while using a shield and so on. It is added on top of Extreme Style's own beam, giving two beams.</td></tr>
+<tr><td>Tech Change (Bow): Piercing Shot</td><td>Changes the crouching, final-charge-level Snipe Shot into a Piercing Shot that hits several times. Storm Style only.</td></tr>
+<tr><td>Tech Boost (Bow): Rising Dragon Bow</td><td>Raises the motion value of the Shoryuken attack (12x2·10x2·31·10 → 17x2·15x2·41·15). Storm and Heaven Styles only.</td></tr>
+<tr><td>Tech Change (LBG): J Gauge</td><td>Widens the "Just" sweet spot for quick reloads and shots.</td></tr>
+<tr><td>Arc Shot Change</td><td>Changes the Arc Shot to the type on the sigil: Wide Pellet Rain, Narrow Pellet Rain, Explosive Shell or Cutting Rain.</td></tr>
+<tr><td>Cluster Shot: Explosion</td><td>Cluster Shots have a low chance to blow up in a giant explosion.</td></tr>
+<tr><td>Pellet Shot: Blunt Bullets</td><td>Changes Pellet Shots to Impact damage, and they cause KO.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-status">Status</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Status Attack</td><td>Raises the status value on weapons by 1.1x. Does not stack with more sigils. Does stack with Pugi, Status Attack Up and Status Phials.</td></tr>
+<tr><td>Stun Value</td><td>Raises KO inflicted by 1.1x. Only one sigil applies. Stacks with the Caravan skill (1.1x) and Active Feature (1.5x), for a maximum of 1.815x.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-utility">Items, map and gathering</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Points</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Omnivore</td><td>-</td><td>A chance to heal when you use any consumable. Does not stack.</td></tr>
+<tr><td>Ballista Saver</td><td>-</td><td>A chance not to use up ballista ammo when you fire. Does not stack.</td></tr>
+<tr><td>Balloon's Friend</td><td>-</td><td>Lets you wave at the Balloon without limit to find the monster. Does not stack and does not force balloons to appear.</td></tr>
+<tr><td>Decoy</td><td>-</td><td>Use the Clap gesture to draw a monster's attention to you. Does not stack.</td></tr>
+<tr><td>Dowsing</td><td>+1 / +15</td><td>Apparently raises the rate of Rare and G Rank items from a gathering spot's item pool. The guide says it is unclear how it works, possibly like the Caravan carving skill, which rerolls any carve above 51% and removes that item from the carving pool.</td></tr>
+<tr><td>Carving Division</td><td>-</td><td>Always carve Raw Meat in 2 stacks. Does not stack.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-rewards">Rewards</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Points</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Hunter Soul</td><td>-</td><td>Adds +1 Colour PP to the matching types on all eligible quests. Does not stack.</td></tr>
+<tr><td>Soul Collection</td><td>-</td><td>Adds +1 Soul from quests during the festival. Does not stack.</td></tr>
+<tr><td>Money Expert</td><td>+1 / +10</td><td>Raises the money you receive from a quest. The guide gives the formula as "1.10 x Defined (Value/100)" with the example that +6 is 1.16x the original Zeny or GZeny.</td></tr>
+<tr><td>Experience Expert</td><td>+1 / +10</td><td>Raises Ranking Points from a quest by 1.01 x the defined value. Additive: 1.10x, 1.20x and 1.30x on three separate sigils would be 1.50x, not 1.71x. Does not affect GSRP, only GRP.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-misc">Miscellaneous</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Points</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Manager's Friend</td><td>+1 / +10</td><td>A higher chance of the Farm Waifu appearing during quests.</td></tr>
+<tr><td>Gook's Friend</td><td>+1 / +10</td><td>A higher chance of Rare Gooks on Gook quests.</td></tr>
+<tr><td>Halk's Friend</td><td>-</td><td>A higher chance of the Halk dropping an egg when the quest ends. Does not stack.</td></tr>
+<tr><td>Cat Breeder</td><td>-</td><td>The Partnyaa's mood is more likely to go up.</td></tr>
+<tr><td>Daddy's Influence</td><td>-</td><td>Do the "Spoiled Brat" action to get a 10% discount in stores.</td></tr>
+<tr><td>Sonic Bomb Range</td><td>-</td><td>Increases the range of the sonic bomb effect.</td></tr>
+<tr><td>Weapon Unsheathed Movement Speed</td><td>-</td><td>Movement speed goes up after you unsheathe a weapon, by 1.13 to 1.20x. Does not stack or overlap with most similar armour skills. Overlaps with Hammer Charge Speed, the SnS Hiden, the Hunting Horn Movement Speed song and Dual Swords Demon Mode speed buffs.</td></tr>
+<tr><td>Rarity Change (Rarity 1 to 12)</td><td>-</td><td>Changes a G Rank weapon's rarity to the stated value, at the cost of lower raw, element and status values.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-zenith">Zenith sigil</h3>
+<p>A Zenith sigil gives your weapon a timed effect. The two timing sigils set how long it lasts and how fast it recharges.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Points</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Effect Duration</td><td>-</td><td>Sets how long the Zenith sigil lasts: 15 seconds plus the sigil's value.</td></tr>
+<tr><td>Recharge Duration</td><td>+1 / +20</td><td>Sets how long it takes to recharge: a cooldown of 120 seconds minus the sigil's value.</td></tr>
+<tr><td>[Zenith] Fire Res</td><td>+4 / +20</td><td>Raises that elemental resistance and removes any active blights of that element.</td></tr>
+<tr><td>[Zenith] Water Res</td><td>+1 / +10</td><td>As above, for Water.</td></tr>
+<tr><td>[Zenith] Thunder Res</td><td>+1 / +10</td><td>As above, for Thunder.</td></tr>
+<tr><td>[Zenith] Ice Res</td><td>+1 / +10</td><td>As above, for Ice.</td></tr>
+<tr><td>[Zenith] Dragon Res</td><td>+1 / +10</td><td>As above, for Dragon.</td></tr>
+<tr><td>[Zenith] Healing</td><td>+1 / +5</td><td>Recovers health over time while active.</td></tr>
+<tr><td>[Zenith] Heroics</td><td>-</td><td>Makes a single hit deal 0 damage. Reactions to the hit, such as launching, still happen.</td></tr>
+<tr><td>[Zenith] Attack</td><td>+1 / +15</td><td>Raises raw while active by <strong>30 + 20 x Value</strong> (for +8: 20 x 8 = 160, plus 30 = 190 true raw).</td></tr>
+<tr><td>[Zenith] Elemental</td><td>+1 / +15</td><td>Multiplies element values while active by <strong>1.3 + Value x 0.1</strong> (for +8: 0.1 x 8 = 0.8, plus 1.3 = 2.1x element).</td></tr>
+<tr><td>[Zenith] Movement Speed</td><td>+1 / +5</td><td>Raises movement speed while active.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sigils-aoe">Area of Effect sigil</h3>
+<p>This sigil makes a coloured dome. Its effect works for you while you are inside the dome.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Sigil</th><th>Points</th><th>Dome</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>[Ranged] Attack</td><td>+1 / +15</td><td>Red</td><td>Raises Attack values. The value for each roll is <strong>25 + (Value x 5)</strong>.</td></tr>
+<tr><td>[Ranged] Elemental</td><td>+1 / +15</td><td>Pink</td><td>Raises Element values. The value for each roll is <strong>50 + (Value x 50)</strong> (for +8: 8 x 50 = 400, plus 50 = +450 element value).</td></tr>
+<tr><td>[Ranged] Affinity</td><td>+1 / +15</td><td>Blue</td><td>Raises Affinity values. The value for each roll is <strong>20 + (Value x 2)</strong> (for +8: 8 x 2 = 16, plus 20 = +36% affinity).</td></tr>
+<tr><td>[Ranged] Status</td><td>-</td><td>Purple</td><td>Raises Status values by 1.50x. Does not stack.</td></tr>
+<tr><td>[Ranged] Stun</td><td>-</td><td>Yellow</td><td>Raises Stun values.</td></tr>
+<tr><td>[Ranged] Healing</td><td>-</td><td>Green</td><td>Recovers health.</td></tr>
+<tr><td>[Ranged] All Res</td><td>+1 / +15</td><td>Black</td><td>Raises all resistances. The resistance rises by the roll x 2.</td></tr>
+</tbody>
+</table></div>
+<aside class="box hv-note"><p>Menu and sigil names may differ slightly in our client. To look up the items and weapons that exist on Hunsterverse, use the <a href="/catalog.html">item and equipment catalog</a>.</p></aside>
+</section>
+<nav class="hb-pager" aria-label="Previous and next section">
+<a class="hb-prev" href="/guide-frontier-item-box.html" rel="prev"><span>&larr; Previous</span><strong>Equipment and Item Boxes</strong></a>
+<a class="hb-next" href="/guide-frontier-armour.html" rel="next"><span>Next &rarr;</span><strong>Armour, Decorations and Skills</strong></a>
+</nav>
+<div class="hb-credit">
+<p>Based on <a href="https://fist.moe/">Fist's Monster Hunter Frontier guide</a> (fist.moe, saved January 2022), with data from the <a href="https://docs.google.com/spreadsheets/d/17c7OXNxcAZmT0MWRePekAZXQQqdCo7S8ICuXPsgK8Is/edit">Comprehensive Google Doc</a> and <a href="http://ferias.life.coocan.jp/">Ferias</a>. Questions about the original: <a href="https://fist.moe/discord/">Fist's Discord</a>.</p>
+<p>Reworded and laid out for Hunsterverse; pictures are from the original guide. Spotted a mistake? <a href="/report.html">Report it</a> or say so in our <a href="https://discord.gg/YuE42eh">Discord</a>.</p>
+</div>
+</main>
+</div>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/guide-roads.html">Roads guide</a>
+          <a href="/guide-frontier.html">Frontier handbook</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/api.html">API</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="/privacy.html">Privacy</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+</body>
+</html>

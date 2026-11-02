@@ -18,6 +18,9 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/worlds.html` | Live world status, the live board (who is online, in town or on a quest and which quest, and who is questing together, from `/api/public/activity`; each name links to its hunter profile by `charId`, or to the Hunters page searching for it when the answer has no `charId`) and server wide hunt totals, refreshed every 30 seconds. |
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
+| `/guide-frontier.html` | Frontier handbook, landing page: one card per section (picture and one line), grouped in five chapters (`#start`, `#gear`, `#reference`, `#progression`, `#activities`), plus links to our own guides and the credit to the original guide. In the nav under Guides, and a card and a step on the home page. |
+| `/guide-frontier-<section>.html` | One handbook section each, 18 in reading order: `basics`, `guild`, `house`, `menus`, `items`, `item-box`, `weapons`, `armour`, `transcend`, `monsters`, `tools`, `hunter-rank`, `g-rank-start`, `g-rank`, `zenith`, `quests-food`, `events`, `hunters-road`. Each has breadcrumbs, a side column with "On this page" and "All sections" (sticky on wide screens, folded above the text on phones), the text with its pictures, previous/next links and the credit. Rewritten from Fist's guide (fist.moe, saved as a PDF in January 2022); "On Hunsterverse" notes link our own pages where the server differs. |
+| `/guide-frontier-equipment.html`, `-activities.html`, `-reference.html` | Old handbook addresses: a short notice listing the pages that replaced the chapter, and a redirect to its chapter on the landing page. `noindex`, not in the sitemap. |
 | `/changelog.html` | Rolling player changelog: "Coming next" (finished, not live), then one dated entry per live update, newest first, then known issues. Linked from the footer. Update it at every live deploy (below). |
 | `/road-vote.html` | Hunting Road rotation: phase and dates, the entries, vote or take a vote back during the vote window, results after it closes. Signed in (shows a sign-in prompt otherwise). The nav's "Hunting Road" link. Needs the saved sign-in; API `/api/road/**`. |
 | `/road.html` | Hunting Road builder: per floor its table and two Road points multipliers (capped by the policy's `maxPoints`, default 4x), per table its entries (monster, second monster, weight, forced), add an entry, reset to the base. The monster pickers (`js/builder-ui.js`, with each monster's icon and a search box) offer all 176 monsters the game knows (ids and names as Erupe's `common/mhfmon`, kept in `js/road-rules.js`): first the ones the live Road uses, then those new to the Road. An "Also change the solo Road" box (off by default) shows the solo Road (mode 1) to edit when the policy allows mode 1; unticking it drops those changes. Lists every change from the base in words ("Changes from the base", `js/road-summary.js`), for the Road being built and for an entry opened from the vote page. Checks the rules live with `js/road-rules.js`, asks `POST /api/road/check` before submitting (POST) or saving (PUT), and won't submit while the page itself lists a problem. `?entry=<id>` opens an entry (yours to edit during submissions, others read-only). Everything about the Road itself (base, tables, policy) comes from `GET /api/road/pool` at run time; the builder holds no game data itself. Signed in only, `noindex`. |
@@ -40,6 +43,8 @@ worlds.html           world status, live board and hunt totals
 guide-windows.html    Windows guide
 guide-linux.html      Linux guide
 report.html           bug report and feature request forms
+guide-frontier.html   Frontier handbook landing page (cards per section)
+guide-frontier-*.html Frontier handbook sections (18) and three moved-page notices
 privacy.html          privacy and cookies policy
 admin.html            admin panel: gifts (distributions) and the Hunting Road rotation
 road.html             Hunting Road builder and entry viewer
@@ -49,11 +54,14 @@ road-data.html        Hunting Road data per Road and floor (public, static, writ
 changelog.html        player changelog (rolling, one entry per live update)
 css/styles.css        shared guild-hall theme (leather page, parchment panels, brass trim, gold buttons)
 assets/guide/*.webp   guide screenshots, WebP
+assets/guide/<section>/ Frontier handbook pictures, WebP, one folder per handbook section
+css/guide-frontier.css Frontier handbook layout only (side column, pictures, cards, previous/next)
 assets/backgrounds/   page background pictures (rules and sizes in its README.md)
 assets/favicon.png    site icon
 js/nav.js             site nav: the four menus, and the Menu button on narrow screens
 js/background.js      page background: a random picture from assets/backgrounds/ per page load, dark and blurred
 js/consent.js         cookie banner (Accept/Decline, kept in localStorage hvmhfz.consent); runs held-back optional scripts after Accept
+js/guide-frontier.js  Frontier handbook: opens the side lists on wide screens, marks the section in view
 js/whatsnew.js        home page "What's new": the newest entry of changelog.html
 js/main.js            login, saved session
 js/turnstile.js       Cloudflare Turnstile widget, shared by main.js and report.js
@@ -92,6 +100,7 @@ data/map-ids.json     every map id's own name (place plus day/night, version or 
 data/quest-fields.json  every quest-file field the quest builder and the API codec touch: offset, bytes, range, value names (docs/quest-fields.md)
 dev/check-quest-fields.js checks data/quest-fields.json against the API codec, js/quest-editor.js, the site's name tables and docs/quest-fields.md
 dev/check-quest-maps.js checks the quest builder in headless Chromium against a fake API: only the server's maps can be chosen, a 400 shows next to its field, no unnamed areas (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-quest-maps.js)
+dev/check-links.py    checks every local link, picture and #anchor on the site (python3 dev/check-links.py [pages])
 CNAME                 hvmhfz.eclipseforge.xyz
 ```
 
@@ -128,6 +137,21 @@ python3 dev/check-site.py      # "site shell OK", exit code 0
 ```
 
 It also reports local links and images that point at missing files.
+
+## Frontier handbook
+
+The handbook pages are plain HTML like every other page; edit them directly. Each section page repeats two
+lists in its side column: "On this page" (one entry per `<section id>` with an `<h2>`) and "All sections"
+(every handbook page, the same on all of them). Adding or renaming a section means updating those lists,
+the previous/next links of its neighbours and the landing page's cards. Pictures go in
+`assets/guide/<section>/` as WebP (about 960px wide at most), with `width`, `height`, `alt` and
+`loading="lazy"`. Facts about our server go in an `<aside class="box hv-note">` and link our own page.
+Then run both checks:
+
+```
+python3 dev/check-site.py     # "site shell OK"
+python3 dev/check-links.py    # "no broken links"; also checks the #anchors of the contents lists
+```
 
 ## Changelog
 

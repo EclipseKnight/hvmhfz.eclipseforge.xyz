@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Monsters · Frontier handbook · Hunsterverse</title>
+<meta name="description" content="The monster list, the status effects Frontier monsters inflict, and the special rules for monsters with their own tricks, such as Akura tails, Unknown invasions and Garuba Daora&#x27;s shield." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Monsters · Frontier handbook" />
+    <meta property="og:description" content="The monster list, the status effects Frontier monsters inflict, and the special rules for monsters with their own tricks, such as Akura tails, Unknown invasions and Garuba Daora&#x27;s shield." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/guide-frontier-monsters.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Monsters · Frontier handbook" />
+    <meta name="twitter:description" content="The monster list, the status effects Frontier monsters inflict, and the special rules for monsters with their own tricks, such as Akura tails, Unknown invasions and Garuba Daora&#x27;s shield." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+<meta name="theme-color" content="#150e09" />
+<link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="/css/styles.css" />
+<link rel="stylesheet" href="/css/guide-frontier.css" />
+<script src="/js/nav.js" defer></script>
+<script src="/js/background.js" defer></script>
+<script src="/js/consent.js" defer></script>
+<script src="/js/guide-frontier.js" defer></script>
+</head>
+<body class="guide guide-frontier">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html">Hunting Road</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/api.html">API</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/guide-roads.html">Roads guide</a>
+              <a class="navlink" href="/guide-frontier.html" aria-current="page">Frontier handbook</a>
+            </div>
+          </div>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+<div class="hb-layout">
+<nav class="hb-crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/guide-frontier.html">Frontier handbook</a></li><li><a href="/guide-frontier.html#reference">Monsters and references</a></li><li aria-current="page">Monsters</li></ol></nav>
+<aside class="hb-side" aria-label="Handbook contents">
+<details class="hb-panel hb-toc"><summary>On this page</summary>
+<ol>
+<li><a href="#large-monsters">Large monsters</a></li>
+<li><a href="#small-monsters">Small monsters</a></li>
+<li><a href="#status-effects">Frontier status effects</a></li>
+<li><a href="#unique-mechanics">Unique monster mechanics</a></li>
+</ol>
+</details>
+<details class="hb-panel hb-all"><summary>All sections</summary>
+<ul>
+<li><a href="/guide-frontier.html">Handbook home</a></li>
+<li class="hb-group">Getting started</li>
+<li><a href="/guide-frontier-basics.html">Basics and Getting Started</a></li>
+<li><a href="/guide-frontier-guild.html">English Guild and Guild Hall</a></li>
+<li><a href="/guide-frontier-house.html">House and AI Companions</a></li>
+<li><a href="/guide-frontier-menus.html">Menus and Town NPCs</a></li>
+<li class="hb-group">Gear and items</li>
+<li><a href="/guide-frontier-items.html">Items and Materials</a></li>
+<li><a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a></li>
+<li><a href="/guide-frontier-weapons.html">Weapons and Sigils</a></li>
+<li><a href="/guide-frontier-armour.html">Armour, Decorations and Skills</a></li>
+<li><a href="/guide-frontier-transcend.html">Transcend</a></li>
+<li class="hb-group">Monsters and references</li>
+<li><a href="/guide-frontier-monsters.html" aria-current="page">Monsters</a></li>
+<li><a href="/guide-frontier-tools.html">Tools and References</a></li>
+<li class="hb-group">Progression</li>
+<li><a href="/guide-frontier-hunter-rank.html">Hunter Rank and Style Rank</a></li>
+<li><a href="/guide-frontier-g-rank-start.html">Starting G Rank</a></li>
+<li><a href="/guide-frontier-g-rank.html">G Rank</a></li>
+<li><a href="/guide-frontier-zenith.html">Zenith (GR200+)</a></li>
+<li class="hb-group">Things to do</li>
+<li><a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a></li>
+<li><a href="/guide-frontier-events.html">Regular Events</a></li>
+<li><a href="/guide-frontier-hunters-road.html">Hunter&#x27;s Road</a></li>
+</ul>
+</details>
+</aside>
+<main id="content" class="sheet hb-sheet">
+<p class="kicker">Frontier handbook · Monsters and references · 10 of 18</p>
+<h1>Monsters</h1>
+<p class="lead">The monster list, the status effects Frontier monsters inflict, and the special rules for monsters with their own tricks, such as Akura tails, Unknown invasions and Garuba Daora&#x27;s shield.</p>
+<section id="large-monsters">
+<h2>Large monsters</h2>
+<aside class="box hv-note"><p>For weaknesses and hitboxes, the guide sends you to the Loxxol site, which has diagrams of each monster's hitboxes in all modes. Hunsterverse has its own <a href="/monsters.html">monster field guide</a> with hitzones, HP, stagger and carves, and one page for each monster. The names below link to those pages where we have one.</p></aside>
+<p>This is the guide's list of large monsters. Names are the English names used in the guide. Menu and monster names may differ slightly in our client.</p>
+<ul class="hb-icon-list">
+<li><img class="hb-icon" src="/assets/monsters/icons/anorupatisu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=anorupatisu">Anorupatisu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/abiorugu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=abiorugu">Abiorugu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/akantor.webp" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=akantor">Akantor</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/akura-jebia.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=akura-jebia">Akura Jebia</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/amatsu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=amatsu">Amatsu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/akura-vashimu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=akura-vashimu">Akura Vashimu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/barioth.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=barioth">Barioth</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/baruragaru.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=baruragaru">Baruragaru</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/basarios.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=basarios">Basarios</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/berukyurosu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=berukyurosu">Berukyurosu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/blangonga.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=blangonga">Blangonga</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/brachydios.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=brachydios">Brachydios</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/bulldrome.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=bulldrome">Bulldrome</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/cephadrome.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=cephadrome">Cephadrome</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/chameleos.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=chameleos">Chameleos</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/congalala.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=congalala">Congalala</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/daimyo-hermitaur.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=daimyo-hermitaur">Daimyo Hermitaur</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/deviljho.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=deviljho">Deviljho</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/diablos.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=diablos">Diablos</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/black-diablos.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=black-diablos">Black Diablos</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/diorex.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=diorex">Diorex</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/disufiroa.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=disufiroa">Disufiroa</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/doragyurosu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=doragyurosu">Doragyurosu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/dyuragaua.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=dyuragaua">Dyuragaua</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/elzelion.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=elzelion">Elzelion</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/espinas.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=espinas">Espinas</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/orange-espinas.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=orange-espinas">Orange Espinas</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/whiteespinas.webp" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=white-espinas">White Espinas</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/fatalis.webp" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=fatalis">Fatalis</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/whitefatalis.webp" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=white-fatalis">White Fatalis</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/crimsonfatalis.webp" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=crimson-fatalis">Crimson Fatalis</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/farunokku.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=farunokku">Farunokku</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/forokururu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=forokururu">Forokururu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/garuba-daora.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=garuba-daora">Garuba Daora</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/gasurabazura.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=gasurabazura">Gasurabazura</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/gendrome.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=gendrome">Gendrome</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/giaorugu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=giaorugu">Giaorugu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/gogomoa.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=gogomoa">Gogomoa</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/gore-magala.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=gore-magala">Gore Magala</a></li>
+<li>Gougarf</li>
+<li><img class="hb-icon" src="/assets/monsters/icons/gravios.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=gravios">Gravios</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/black-gravios.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=black-gravios">Black Gravios</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/guanzorumu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=guanzorumu">Guanzorumu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/gureadomosu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=gureadomosu">Gureadomosu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/gurenzeburu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=gurenzeburu">Gurenzeburu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/gypceros.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=gypceros">Gypceros</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/purple-gypceros.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=purple-gypceros">Purple Gypceros</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/harudomerugu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=harudomerugu">Harudomerugu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/hypnocatrice.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=hypnocatrice">Hypnoc</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/breeding-season-hypnocatrice.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=breeding-season-hypnocatrice">Breeding Season Hypnoc</a></li>
+<li>White Hypnoc</li>
+<li><img class="hb-icon" src="/assets/monsters/icons/hyujikiki.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=hyujikiki">Hyujikiki</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/iodrome.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=iodrome">Iodrome</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/inagami.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=inagami">Inagami</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/khezu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=khezu">Khezu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/keoaruboru.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=keoaruboru">Keoaruboru</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/red-khezu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=red-khezu">Red Khezu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/kirin.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=kirin">Kirin</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/kushala-daora.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=kushala-daora">Kushala Daora</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/rusted-kushala-daora.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=rusted-kushala-daora">Rusted Kushala Daora</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/kuarusepusu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=kuarusepusu">Kuarusepusu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/lao-shan-lung.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=lao-shan-lung">Lao-Shan Lung</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/ashen-lao-shan-lung.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=ashen-lao-shan-lung">Ashen Lao-Shan Lung</a></li>
+<li>Lavasioth</li>
+<li>Red Lavasioth</li>
+<li><img class="hb-icon" src="/assets/monsters/icons/aruganosu.webp" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=aruganosu">Aruganosu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/goruganosu.webp" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=goruganosu">Goruganosu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/meraginasu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=meraginasu">Meraginasu</a></li>
+<li>Mi Ru</li>
+<li><img class="hb-icon" src="/assets/monsters/icons/monoblos.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=monoblos">Monoblos</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/white-monoblos.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=white-monoblos">White Monoblos</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/odibatorasu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=odibatorasu">Odibatorasu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/kamu-orugaron.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=kamu-orugaron">Kamu Orugaron</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/nargacuga.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=nargacuga">Nargacuga</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/nono-orugaron.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=nono-orugaron">Nono Orugaron</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/midogaron.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=midogaron">Midogaron</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/pariapuria.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=pariapuria">Pariapuria</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/plesioth.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=plesioth">Plesioth</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/green-plesioth.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=green-plesioth">Green Plesioth</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/poborubarumu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=poborubarumu">Poborubarumu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/pokaradon.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=pokaradon">Pokaradon</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/rajang.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=rajang">Rajang</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/rathalos.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=rathalos">Rathalos</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/azure-rathalos.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=azure-rathalos">Azure Rathalos</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/silver-rathalos.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=silver-rathalos">Silver Rathalos</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/rathian.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=rathian">Rathian</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/pink-rathian.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=pink-rathian">Pink Rathian</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/gold-rathian.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=gold-rathian">Gold Rathian</a></li>
+<li>Unknown</li>
+<li><img class="hb-icon" src="/assets/monsters/icons/raviente.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=raviente">Raviente</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/berserk-laviente.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=berserk-laviente">Berserk Raviente</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/rebidiora.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=rebidiora">Rebidiora</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/rukodiora.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=rukodiora">Rukodiora</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/seregios.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=seregios">Seregios</a></li>
+<li>Shagaru Magala</li>
+<li><img class="hb-icon" src="/assets/monsters/icons/shantien.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=shantien">Shantien</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/shengaoren.webp" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=shen-gaoren">Shen Gaoren</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/shogun-ceanataur.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=shogun-ceanataur">Shogun Ceanataur</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/taikun-zamuza.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=taikun-zamuza">Taikun Zamuza</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/lunastra.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=lunastra">Lunastra</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/teostra.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=teostra">Teostra</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/tigrex.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=tigrex">Tigrex</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/toa-tesukatora.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=toa-tesukatora">Toa Tesukatora</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/toridcless.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=toridcless">Toridcless</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/uragaan.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=uragaan">Uragaan</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/varusaburosu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=varusaburosu">Varusaburosu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/velocidrome.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=velocidrome">Velocidrome</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/voljang.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=voljang">Voljang</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/yama-kurai.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=yama-kurai">Yama Kurai</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/yamatsukami.webp" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=yama-tsukami">Yama Tsukami</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/yian-kut-ku.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=yian-kut-ku">Yian Kut-Ku</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/blue-yian-kut-ku.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=blue-yian-kut-ku">Blue Yian Kut-Ku</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/yian-garuga.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=yian-garuga">Yian Garuga</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/zenaserisu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=zenaserisu">Zenaserisu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/zerureusu.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=zerureusu">Zerureusu</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/zinogre.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=zinogre">Zinogre</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/stygian-zinogre.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=stygian-zinogre">Stygian Zinogre</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/duremudirafirstdistrict.webp" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=duremudira-1st">Duremudira</a> (also <a href="/monster.html?m=duremudira-2nd">2nd form</a>)</li>
+</ul>
+<p>The guide lists the Gougarf as one entry. On our site, see <a href="/monster.html?m=lolo-gougarf">Lolo Gougarf</a> and <a href="/monster.html?m=ray-gougarf">Ray Gougarf</a>.</p>
+</section>
+
+<section id="small-monsters">
+<h2>Small monsters</h2>
+<ul class="hb-icon-list">
+<li><img class="hb-icon" src="/assets/monsters/icons/felyne.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=felyne">Felyne</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/melynx.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=melynx">Melynx</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/shakalaka.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=shakalaka">Shakalaka</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/uruki.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=uruki">Uruki</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/vespoid.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=vespoid">Vespoid</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/hornetaur.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=hornetaur">Hornetaur</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/great-thunderbug.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=great-thunderbug">Great Thunderbug</a></li>
+<li><a href="/monster.html?m=poison-light-bug">Poison Light Bug</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/kelbi.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=kelbi">Kelbi</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/mosswine.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=mosswine">Mosswine</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/anteka.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=anteka">Anteka</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/popo.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=popo">Popo</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/aptonoth.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=aptonoth">Aptonoth</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/apceros.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=apceros">Apceros</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/burukku.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=burukku">Burukku</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/erupe.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=erupe">Erupe</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/velociprey.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=velociprey">Velociprey</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/genprey.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=genprey">Genprey</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/ioprey.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=ioprey">Ioprey</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/giaprey.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=giaprey">Giaprey</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/remobra.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=remobra">Remobra</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/cephalos.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=cephalos">Cephalos</a></li>
+<li>Hermitaur</li>
+<li>Ceanataur</li>
+<li><img class="hb-icon" src="/assets/monsters/icons/bullfango.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=bullfango">Bullfango</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/conga.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=conga">Conga</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/blango.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=blango">Blango</a></li>
+<li>Baby Gogomoa</li>
+<li><img class="hb-icon" src="/assets/monsters/icons/pokara.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=pokara">Pokara</a></li>
+<li><img class="hb-icon" src="/assets/monsters/icons/kusubami.png" alt="" width="32" height="32" loading="lazy" decoding="async" /> <a href="/monster.html?m=kusubami">Kusubami</a></li>
+</ul>
+</section>
+
+<section id="status-effects">
+<h2>Frontier status effects</h2>
+<p>These status effects exist only in Frontier.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Status</th><th>What it does</th><th>Caused by</th></tr></thead>
+<tbody>
+<tr><td>Crystallisation</td><td>Instantly drops your stamina to the minimum and encases you in crystals. After a while the crystals explode violently, dealing heavy damage to you and those around you, unless you break out of them. A Mega Juice or Power Juice counters the stamina loss. To break out, mash buttons and move.</td><td>Akura Vashimu, Akura Jebia, Garuba Daora, Mi Ru</td></tr>
+<tr><td>Frostbite</td><td>Your stamina drops faster when you do actions such as rolling, and the stamina bar itself shrinks, like being in a cold area without a hot drink.</td><td>Dyuragaua, Duremudira</td></tr>
+<tr><td>Magnetism</td><td>Monsters can control your position with magnetic force: they can push you away and pull you towards them.</td><td>Rukodiora, Rebidiora, Gougarfs</td></tr>
+<tr><td>Vocal Chords</td><td>Stops you from communicating in any way in game.</td><td>Chameleos</td></tr>
+<tr><td>Blind</td><td>The screen is heavily covered by a black, goo-like texture, which makes it very hard to see.</td><td>Forokururu</td></tr>
+<tr><td>Confusion</td><td>You gesture or dance at random. Counter it the same way as a normal stun, by rotating the analog stick or mashing buttons.</td><td>Poborubarumu</td></tr>
+<tr><td>Deadly Poison</td><td>An extremely strong poison that Duremudira inflicts in its second phase. Only its own specific cure can counter it.</td><td>Duremudira</td></tr>
+</tbody>
+</table></div>
+<p>Zenith monsters add more status effects. See <a href="/guide-frontier-zenith.html#blights-and-status">Zenith</a>.</p>
+</section>
+
+<section id="unique-mechanics">
+<h2>Unique monster mechanics</h2>
+
+<h3 id="akura-tails">Akura Vashimu and Jebia tails</h3>
+<p><a href="/monster.html?m=akura-vashimu">Akura Vashimu</a> and <a href="/monster.html?m=akura-jebia">Akura Jebia</a> each have specific requirements for cutting their tails. For Jebia, the same steps are needed to make its Tail Crystal Stub appear.</p>
+<ol>
+<li>Deal <strong>Impact damage</strong> to their claws and heads. This breaks the crystals on each section.</li>
+<li>Deal <strong>Cutting damage</strong> to the now broken crystals. The monster flips over and lies on its back.</li>
+<li>For <strong>Akura Vashimu</strong>, you can cut the tail as soon as it flips the third time: just deal cutting damage to the tail.</li>
+<li>For <strong>Akura Jebia</strong>, deal extra <strong>Impact damage</strong> to the tail. Eventually <strong>red veins</strong> show. At that point deal <strong>cutting damage</strong> and you can sever the tail.</li>
+</ol>
+<p>With the tail severed, you get one carve from the tail itself and one more from the tail's crystal, as long as the crystal was not broken.</p>
+<p>After the tail is cut, both monsters will eventually try to eat their own tail to recover HP. If they succeed, <strong>the tail is removed and you lose all the carves on it</strong>.</p>
+<p><strong>Akura Jebia</strong> also grows spikes on its body where the tail was severed. Breaking these crystals gives extra rewards. To break them, wait for the monster to try to eat its own tail, then spam bounce bombs underneath it.</p>
+
+<h3 id="unknown-invasion">Unknown invasion</h3>
+<figure class="hb-fig side"><img src="/assets/guide/monsters/unknown-banner.webp" alt="The red UNKNOWN banner that fills the screen when Unknown invades a quest." width="291" height="183" loading="lazy" decoding="async" /><figcaption>The UNKNOWN banner</figcaption></figure>
+<p>After you clear a normal quest that is not a gathering quest, there is a chance your next quest will be invaded by an Unknown (a Black Rathian). Everyone is forced back to the base camp, and after a few seconds an "UNKNOWN" banner appears. It replaces the quest you posted, and gives Unknown materials instead of the original quest's rewards.</p>
+<ul>
+<li>On an invaded <strong>HR3-4</strong> quest, you can only <em>repel</em> Unknown, and it has one fewer rage phase.</li>
+<li>On an invaded <strong>HR5</strong> quest, you can <em>slay</em> Unknown and it gains an extra rage phase. This also lets you cut its tail, which is impossible in lower rank quests.</li>
+<li>The invasion Unknown is weaker than the Supremacy version you can fight at SR300, and gives the same materials.</li>
+<li>Farming the lower rank version is difficult. It follows a pattern that is not public, so trying is probably not wise.</li>
+<li>There is a G Rank Heavenly Conquest version. It is a set quest and does not invade other quests. It has even more moves and rage phases than the normal and Supremacy versions. As a conquest it is always at the maximum level of 9999, so it always has its maximum defence and damage. To fight it you must be at G Rank and have made at least one Lv50 G Rank weapon.</li>
+</ul>
+
+<h3 id="taikun-zamuza">Taikun Zamuza</h3>
+<p><a href="/monster.html?m=taikun-zamuza">Taikun Zamuza</a> is a Carapaceon that starts the fight covered in a layer of rocks. Remove all the rocks on its body and it breaks down into the second layer of its cave. On the second layer, break all of Zamuza's body parts to move on to a third layer.</p>
+<p>Each layer of the cave has its own mining spots, and the rewards you get depend on the layer you reach. It is very hard to get through all three layers on the lower rank versions, because the monster dies before it takes enough damage to break every part.</p>
+
+<h3 id="gogomoa">Gogomoa</h3>
+<p>Every adult <a href="/monster.html?m=gogomoa">Gogomoa</a> carries a baby on its back. If you make the baby fall off and deal enough damage to it, the adult goes into a rage mode. In rage mode Gogomoa gets an aura and attacks much faster, but it also takes far more damage from hunters. That lets you kill it much faster, at the price of a harder fight. If the adult changes zones after it enters rage mode, it rejoins its baby.</p>
+<p>If you attack the webbing during its webbing attacks, you can make the adult stagger and fall over. If you time attacks on the monster itself while it uses its webbing, you can cause a violent explosive reaction, shown by a huge orange flash. It deals heavy damage and can knock the monster out of the air or stagger it.</p>
+
+<h3 id="espinas">Espinas</h3>
+<p>Every version of <a href="/monster.html?m=espinas">Espinas</a> is enraged in its own way. It always starts placid, with high defence against all damage types. After enough damage, it becomes enraged and actively attacks hunters, but you can then hit it more freely, because it takes more damage and your weapon bounces less.</p>
+<p>All versions can have their horns broken and tails cut, but only while the monster is on low health. Focus on the tail after the horn breaks, or the other way round, to be sure of the rewards for both parts.</p>
+
+<h3 id="pariapuria">Pariapuria</h3>
+<p><a href="/monster.html?m=pariapuria">Pariapuria</a> is a fish-like monster that looks like a Tigrex. It eats any meat placed in front of it while it does a specific charge. Match the <strong>colour of its drool</strong> with the right type of meat (Raw, Drugged, Paralysis or Poison) during these charges, and the monster becomes bloated and starts to vomit. The vomit leaves piles of stone-like material that you can gather.</p>
+<p>Some items only come from making Paria vomit, and some rare items are more common in the vomit piles than elsewhere. Everything you gather is on top of quest rewards and carves. Some quests give extra rewards for making Paria vomit.</p>
+
+<h3 id="zerureusu">Zerureusu</h3>
+<p>Zerureusu, or White Los (<a href="/monster.html?m=zerureusu">Zerureusu</a>), has an ability called Adaptation. It adjusts its body to the type of damage it takes most:</p>
+<ul>
+<li>Mostly Impact damage: it hardens its head with crystals, which greatly lowers Impact's effect there.</li>
+<li>Shot damage: it hardens its wings.</li>
+<li>Cutting damage: it hardens its tail and legs.</li>
+</ul>
+<p>It also uses different attacks depending on its adaptation mode, based on the hitboxes that change. For example in Impact mode Zeru can start a counter move. If too much damage is dealt to the head while it is in this counter stance, it retaliates violently against everything around it.</p>
+<p>Gou (HR5) Zerureusu only starts to adapt at roughly 33% HP. G Rank Zeru starts to counter all damage types almost at once.</p>
+
+<h3 id="garuba-daora">Garuba Daora</h3>
+<p><a href="/monster.html?m=garuba-daora">Garuba Daora</a> is fought on an airship. It can do a <strong>massive area attack that can instantly cart a whole party</strong>.</p>
+<ul>
+<li>The tell: Garuba hops backwards while its crystal-covered parts glow.</li>
+<li>After the hop it swipes the air in front of it and creates a spherical shield around itself. Being inside the shield is <strong>the only safe spot in the arena</strong>.</li>
+<li>Outside the shield, a very fast damage-over-time effect will probably kill you at once.</li>
+<li>When Garuba opens the fight with this attack, it skips the backhop and swipes the air at once, making the shield and area effect.</li>
+</ul>
+<p>You can avoid it with a superman dive, but it is very easy to get wrong, and you die once your invincibility frames end.</p>
+
+<h3 id="red-rajang-phantom-dora">Red Rajang and Phantom Dora</h3>
+<p>If you post an HC HR5 or G Rank Rajang in the Volcano, or an HC HR5 Doragyurosu in the Snowy Mountains, there is a very low chance the monster is replaced by a Red Rajang or a Phantom Dora.</p>
+<ul>
+<li><strong>Red Rajang</strong> can summon a large ball of energy and launch it at the ground, where it explodes over a wide area, like a Spirit Bomb.</li>
+<li><strong>Phantom Doragyurosu</strong> is a Dora that dies once and then comes back to life, super powered.</li>
+</ul>
+<p>Neither gives different materials from its normal version, but if you find and kill one you get a vanity item that shows you hunted it.</p>
+
+<h3 id="aruganosu-goruganosu">Aruganosu and Goruganosu</h3>
+<p>The Supremacy monsters <a href="/monster.html?m=aruganosu">Aruganosu</a> and <a href="/monster.html?m=goruganosu">Goruganosu</a> (also called Gold and Silver Lavasioth in the guide) are fought together in the Tower arena. They cannot be killed until both are at 1 HP.</p>
+<p>When one is damaged down to 1 HP, it flops about constantly. If you take too long to lower the second one's health, it burrows under the injured one and launches it into the air, which revives it and heals it somewhat. Balance your damage between the pair, or you may end up only repelling because of the revivals.</p>
+
+<h3 id="mi-ru">Mi Ru (Unknown)</h3>
+<p>Mi Ru is a G Rank monster. It appears as a randomly assigned Urgent quest, given after you hunt normal G Rank monsters. The Urgent quest appears in its own section with nothing but Mi Ru in it. Finishing a Mi Ru Urgent quest in any way removes it from your list. You get only one attempt, so be sure to have a proper item set and the right gear equipped. If you fail, you can fight more normal monsters and try again later.</p>
+</section>
+<nav class="hb-pager" aria-label="Previous and next section">
+<a class="hb-prev" href="/guide-frontier-transcend.html" rel="prev"><span>&larr; Previous</span><strong>Transcend</strong></a>
+<a class="hb-next" href="/guide-frontier-tools.html" rel="next"><span>Next &rarr;</span><strong>Tools and References</strong></a>
+</nav>
+<div class="hb-credit">
+<p>Based on <a href="https://fist.moe/">Fist's Monster Hunter Frontier guide</a> (fist.moe, saved January 2022), with data from the <a href="https://docs.google.com/spreadsheets/d/17c7OXNxcAZmT0MWRePekAZXQQqdCo7S8ICuXPsgK8Is/edit">Comprehensive Google Doc</a> and <a href="http://ferias.life.coocan.jp/">Ferias</a>. Questions about the original: <a href="https://fist.moe/discord/">Fist's Discord</a>.</p>
+<p>Reworded and laid out for Hunsterverse; pictures are from the original guide. Spotted a mistake? <a href="/report.html">Report it</a> or say so in our <a href="https://discord.gg/YuE42eh">Discord</a>.</p>
+</div>
+</main>
+</div>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/guide-roads.html">Roads guide</a>
+          <a href="/guide-frontier.html">Frontier handbook</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/api.html">API</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="/privacy.html">Privacy</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+</body>
+</html>

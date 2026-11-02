@@ -58,10 +58,6 @@ CURRENT = {
     "road.html": "/road-vote.html",
     "road-history.html": "/road-vote.html",
     "road-data.html": "/road-vote.html",
-    "guide-frontier-basics.html": "/guide-frontier.html",
-    "guide-frontier-equipment.html": "/guide-frontier.html",
-    "guide-frontier-activities.html": "/guide-frontier.html",
-    "guide-frontier-reference.html": "/guide-frontier.html",
 }
 
 
@@ -134,7 +130,9 @@ def check(root):
         if links != NAV:
             problems.append(f"{name}: nav links differ from NAV: {links}")
         current = [href for href, _, cur in page.nav_links if cur == "page"]
-        expected = CURRENT.get(name, "/" + name)
+        # Every Frontier handbook page sits under the handbook's one nav link.
+        default = "/guide-frontier.html" if name.startswith("guide-frontier-") else "/" + name
+        expected = CURRENT.get(name, default)
         if current != ([expected] if expected else []):
             problems.append(f"{name}: aria-current on {current or 'nothing'}, expected {expected or 'nothing'}")
 

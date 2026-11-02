@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hunter&#x27;s Road · Frontier handbook · Hunsterverse</title>
+<meta name="description" content="The Hunter&#x27;s Road is a branching huntathon that replaced the Tower. This page covers how a run works, the stores and Road skills, Tower weapons and armour, White Fatalis and Duremudira, and using Road points for Hiden and Raviente grind." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Hunter&#x27;s Road · Frontier handbook" />
+    <meta property="og:description" content="The Hunter&#x27;s Road is a branching huntathon that replaced the Tower. This page covers how a run works, the stores and Road skills, Tower weapons and armour, White Fatalis and Duremudira, and using Road points for Hiden and Raviente grind." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/guide-frontier-hunters-road.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hunter&#x27;s Road · Frontier handbook" />
+    <meta name="twitter:description" content="The Hunter&#x27;s Road is a branching huntathon that replaced the Tower. This page covers how a run works, the stores and Road skills, Tower weapons and armour, White Fatalis and Duremudira, and using Road points for Hiden and Raviente grind." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+<meta name="theme-color" content="#150e09" />
+<link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="/css/styles.css" />
+<link rel="stylesheet" href="/css/guide-frontier.css" />
+<script src="/js/nav.js" defer></script>
+<script src="/js/background.js" defer></script>
+<script src="/js/consent.js" defer></script>
+<script src="/js/guide-frontier.js" defer></script>
+</head>
+<body class="guide guide-frontier">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html">Hunting Road</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/api.html">API</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/guide-roads.html">Roads guide</a>
+              <a class="navlink" href="/guide-frontier.html" aria-current="page">Frontier handbook</a>
+            </div>
+          </div>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+<div class="hb-layout">
+<nav class="hb-crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/guide-frontier.html">Frontier handbook</a></li><li><a href="/guide-frontier.html#activities">Things to do</a></li><li aria-current="page">Hunter&#x27;s Road</li></ol></nav>
+<aside class="hb-side" aria-label="Handbook contents">
+<details class="hb-panel hb-toc"><summary>On this page</summary>
+<ol>
+<li><a href="#road-basics">How the Road works</a></li>
+<li><a href="#road-stores">Stores and points</a></li>
+<li><a href="#road-tips">Surviving a long run</a></li>
+<li><a href="#tower-medals">Tower Medals</a></li>
+<li><a href="#white-fatalis">White Fatalis</a></li>
+<li><a href="#road-skills">Hunter's Road skills</a></li>
+<li><a href="#tower-weapons">Tower weapons</a></li>
+<li><a href="#tower-armour">Tower armour</a></li>
+<li><a href="#duremudira">Duremudira</a></li>
+<li><a href="#hiden-alternative">Road as a Hiden alternative</a></li>
+<li><a href="#road-raviente">Raviente materials</a></li>
+</ol>
+</details>
+<details class="hb-panel hb-all"><summary>All sections</summary>
+<ul>
+<li><a href="/guide-frontier.html">Handbook home</a></li>
+<li class="hb-group">Getting started</li>
+<li><a href="/guide-frontier-basics.html">Basics and Getting Started</a></li>
+<li><a href="/guide-frontier-guild.html">English Guild and Guild Hall</a></li>
+<li><a href="/guide-frontier-house.html">House and AI Companions</a></li>
+<li><a href="/guide-frontier-menus.html">Menus and Town NPCs</a></li>
+<li class="hb-group">Gear and items</li>
+<li><a href="/guide-frontier-items.html">Items and Materials</a></li>
+<li><a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a></li>
+<li><a href="/guide-frontier-weapons.html">Weapons and Sigils</a></li>
+<li><a href="/guide-frontier-armour.html">Armour, Decorations and Skills</a></li>
+<li><a href="/guide-frontier-transcend.html">Transcend</a></li>
+<li class="hb-group">Monsters and references</li>
+<li><a href="/guide-frontier-monsters.html">Monsters</a></li>
+<li><a href="/guide-frontier-tools.html">Tools and References</a></li>
+<li class="hb-group">Progression</li>
+<li><a href="/guide-frontier-hunter-rank.html">Hunter Rank and Style Rank</a></li>
+<li><a href="/guide-frontier-g-rank-start.html">Starting G Rank</a></li>
+<li><a href="/guide-frontier-g-rank.html">G Rank</a></li>
+<li><a href="/guide-frontier-zenith.html">Zenith (GR200+)</a></li>
+<li class="hb-group">Things to do</li>
+<li><a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a></li>
+<li><a href="/guide-frontier-events.html">Regular Events</a></li>
+<li><a href="/guide-frontier-hunters-road.html" aria-current="page">Hunter&#x27;s Road</a></li>
+</ul>
+</details>
+</aside>
+<main id="content" class="sheet hb-sheet">
+<p class="kicker">Frontier handbook · Things to do · 18 of 18</p>
+<h1>Hunter&#x27;s Road</h1>
+<p class="lead">The Hunter&#x27;s Road is a branching huntathon that replaced the Tower. This page covers how a run works, the stores and Road skills, Tower weapons and armour, White Fatalis and Duremudira, and using Road points for Hiden and Raviente grind.</p>
+<section id="road-basics">
+<h2>How the Road works</h2>
+<aside class="box hv-note"><p>This page describes the Hunter's Road as Capcom's Taiwanese servers ran it. Hunsterverse runs its own Road rotation: players vote every two weeks on the next Road, and you can build your own. In a quest party, use <code>!road</code> to pick a Road. Every Road keeps its own board, and rewards are claimed on your <a href="/account.html">account page</a>. See <a href="/guide-roads.html">Hunting Road on Hunsterverse</a>, the <a href="/road-vote.html">Road vote</a>, the <a href="/road.html">Road builder</a> and <a href="/road-data.html">Road data</a>. The stores, skills and numbers below are the guide's; ask in the <a href="https://discord.gg/YuE42eh">Discord</a> before you plan around them.</p></aside>
+<p>The Hunter's Road replaces the Tower, or Sky Corridor, event. It is a very fancy branching huntathon that borrows from both the Caravan and the Tower.</p>
+<p>The Road is always available. Only some limited-quantity rewards reset over time, so you can run it whenever you like. You start it from a new NPC that replaces the Tower NPC. You cannot take items in. You start in an area very like Guanzorumu, where you can buy things with Gm and choose a path through a number of different quests.</p>
+<figure class="hb-fig side"><img src="/assets/guide/hunters-road/road-points-display.webp" alt="The Road display: Monster Points and Gm for target monsters 1 and 2, then total points, total Gm and road progress as tasks completed." width="471" height="139" loading="lazy" decoding="async" /><figcaption>Points and Gm shown for each choice</figcaption></figure>
+<p>Most monsters are tuned to end up around a normal G Rank monster, whatever their tier was before Zeniths. The multipliers below hold up to floor 40. Many monsters use non-standard rates for their Road versions, so they are actually noticeably lower in health.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Floors</th><th>Attack</th><th>Health</th></tr></thead>
+<tbody>
+<tr><td>1 to 10</td><td>1.00x</td><td>1.00x</td></tr>
+<tr><td>11 to 20</td><td>1.50x</td><td>1.11x</td></tr>
+<tr><td>21 to 30</td><td>2.00x</td><td>1.25x</td></tr>
+<tr><td>31 and up (the guide writes "30+")</td><td>2.50x</td><td>1.33x</td></tr>
+</tbody>
+</table></div>
+<p>The choices have a wide range. They can include almost any standard G Rank content: normal G monsters, GHC, Exotics, Zeniths, Burst and Origin. There is some logic to it and a few are fixed difficulty, but mostly it is random. Each monster has an amount of Gm and Hunt Points it gives when slain.</p>
+<p>There are also bonus quests, such as Shakalaka slaying. These give fewer points but give Tower Medals, and they can be much easier than the other choice, so you can progress without using items.</p>
+<figure class="hb-fig side"><img src="/assets/guide/hunters-road/road-target-card.webp" alt="A Target card showing the next monster, with Japanese text reading a special target for Duremudira." width="183" height="205" loading="lazy" decoding="async" /></figure>
+<p>After you choose a branch, a Target pops up showing the name of the next monster.</p>
+</section>
+
+<section id="road-stores">
+<h2>Stores and points</h2>
+<h3 id="gm-store">Gm store</h3>
+<p>The Gm store works just like the one in the Tower. You spend Gm, earned by killing things on the Road or given to you at the start, on things like Whetstones, Potions and other utility items.</p>
+<h3 id="hunt-p-store">Hunt P store</h3>
+<p>There are no carves on the Hunter's Road. Instead, after each run you receive Hunt P based on what you hunted and how far you went. You spend Hunt P on items from most monsters in the game.</p>
+<p>More items unlock as you take consecutive steps on the Road, up to <strong>40 steps</strong>, which unlocks all monster items. Unlocks are never reset: once you have met a requirement, you can buy those items from then on.</p>
+<p>The store can stock most items in the game, including G Rank items and Zenith materials. You still need to progress far enough down the Road to unlock them.</p>
+<p>Some items have <strong>weekly limits</strong>. You must repeat the requirements every week to get more of them. Examples are White Fatalis materials and the Tower Weapon Zenith Sigil materials.</p>
+<p>HC and GHC carves are easy to get here, so the Road is a good alternative to the standard Hiden grind. You can buy HCs, cook them in Gook and get Souls and Ribbons (see <a href="#hiden-alternative">Road as a Hiden alternative</a>).</p>
+<p>The store has these sections: Consumables, Gatherables, Mats (HR1 to 4), Mats (HR5 to 7), G Rank Mats (GR1+), Decorations, Other, Time Limited Items (items with a purchase limit) and Super Special Items.</p>
+<p>Common prices:</p>
+<div class="hb-table"><table>
+<thead><tr><th>Item</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td>Tower Weapon Gems</td><td>30 to 50 P</td></tr>
+<tr><td>Tower Equipment Mats</td><td>300 to 500 P</td></tr>
+<tr><td>HR1-2 HC carves</td><td>500 P</td></tr>
+<tr><td>HR3-4 HC carves</td><td>1,000 P</td></tr>
+<tr><td>HR5-7 HC carves</td><td>1,500 P</td></tr>
+<tr><td>GHC carves</td><td>2,000 P</td></tr>
+<tr><td>G3% carves</td><td>1,000 P</td></tr>
+<tr><td>G1% carves</td><td>4,000 P</td></tr>
+<tr><td>Origin Low% carves</td><td>1,500 P</td></tr>
+<tr><td>Common G Break items</td><td>50 P</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="road-tips">
+<h2>Surviving a long run</h2>
+<p>The Road rewards one long session, and its consumables are limited to what you buy with points. So do not play it like a normal hunt. After the first step you cannot be sure what items you will have or what you will fight next. Some stages always hold a fixed type of monster, but not always the same monster.</p>
+<p>As you go deeper, monster attack multipliers rise a lot while their health stays about the same. You need to play better in later stages, because hits that were not one-shots before may become one-shots.</p>
+<h3 id="fixed-stages">Fixed stages</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Step</th><th>What appears</th></tr></thead>
+<tbody>
+<tr><td>Every 10 steps</td><td>White Fatalis</td></tr>
+<tr><td>12 steps</td><td>★1 Zenith</td></tr>
+<tr><td>14 steps</td><td>★2 Zenith</td></tr>
+<tr><td>16 steps</td><td>★3 Zenith</td></tr>
+<tr><td>18 steps</td><td>★4 Zenith</td></tr>
+</tbody>
+</table></div>
+<p>Nothing else is truly fixed. You will almost always get Zenith choices in pairs of the same tier (such as a choice of two ★2 Zeniths), unless you roll a Bonus Stage.</p>
+<p>You need to complete <strong>50 stages</strong> to unlock everything on the Road at the moment. These things help you last that long.</p>
+<h3 id="road-survival-skills">Things that help</h3>
+<dl>
+<dt>Transcend</dt>
+<dd>A very large buff to several stats that you can turn on roughly every 4 to 6 minutes, depending on how far you have levelled it. Maxed Transcend lasts <strong>two minutes</strong> and gives <strong>+800 Defense, +100 to all Elemental Resistances, Super Armour, Movement Speed Up, 113% Raw Damage and 200% Elemental Damage (113% for ranged)</strong>. It makes you <strong>immune to all blights</strong> and lets you survive almost any single hit if your base defense is high enough. See <a href="/guide-frontier-transcend.html">Transcend</a>.</dd>
+<dt>Guild Cooking</dt>
+<dd>A meal prepared in the Guild Hall gives a skill without using a skill slot. On the Road, the food effects last until you leave the Road.</dd>
+<dt>Diva Buff</dt>
+<dd>Gives Divine Protection, which helps you survive harder monsters.</dd>
+<dt>Guild Pugis</dt>
+<dd>As in any content, a fed and happy Guild Pugi applies an extra minor skill. The best Guild Pugi for the Road is usually the fluffy sheep pugi, which halves stamina use on actions such as evading. The watermelon status-attack Pugi can also help if you use a status build.</dd>
+<dt>Caravan skills</dt>
+<dd>The most useful is <strong>Bonus Art</strong>, which keeps your food buffs after you cart. Lesser useful ones: Recovery Items Up (1.10x healing from Potions, Mega Potions and Lifepowders), KO Technique (a flat 1.10x stun), and quality-of-life skills such as Unstable Defender, Perfect Defense or Weapon Art. The guide's author does not know whether skills with trigger limits reset for every monster, but thinks they should. See <a href="/guide-frontier-events.html#caravan-skills">Caravan skills</a>.</dd>
+</dl>
+<p>Any skills you have when you start the Road quest last the whole run. Guild Food and the Diva Song normally last only an hour and a half. But if you spend 8 hours on the Road without returning, you keep both effects for the whole time.</p>
+<h3 id="good-road-skills">Good skills to have</h3>
+<dl>
+<dt>Vampirism</dt>
+<dd>Lets you skip most healing while boosting your attack. It makes small mistakes easy to recover from and stops lesser monsters from whittling your health down.</dd>
+<dt>Vigorous</dt>
+<dd>Gives 1.15x attack while you are above 100 Health. It is a big boost on the Road, without the risk that even lesser monsters bring when you use Adrenaline. The Zenith skill <strong>Vigorous Up</strong> adds +100 True Raw for melee weapons and +50 True Raw for ranged weapons. You can get it on Zenith Midogaron's Waist, on Tower Weapon Zenith Sigils, or on the Vigorous Up Cuff.</dd>
+<dt>All Res Up</dt>
+<dd>You can gain +20 to every resistance with enough points or with Guild Food. Add a decent base set (5 in each element), SR skills (+19 All Res) and the Road All Res skill (+15), and you get an extra 49 resistance to every type. That can make you immune to all Extreme Blights on the Road.</dd>
+<dt>Negate Hunger</dt>
+<dd>Stops your stamina going down. You can get it with Guild Cooking.</dd>
+<dt>Divine Protection</dt>
+<dd>Gives you a chance to take no damage. The Diva Buff gives it.</dd>
+<dt>Wide-Area +3</dt>
+<dd>Lets you heal others without carrying Lifepowder. You can get it with Guild Cooking or an FP Exotic piece.</dd>
+<dt>Encourage</dt>
+<dd>Gives everyone evasion and stun immunity. Having it in your party lets people take more DPS skills and saves lives. Encourage Up also gives the whole party Stamina Recovery (Large) and Peerless, which helps everyone manage stamina.</dd>
+</dl>
+<h3 id="road-weapon-choice">Weapon choice for a deep run: Lance</h3>
+<p>Of all weapons, the Lance gives the best survivability on the Road. Guarding gives you infinite stamina, Lifepowder effects and attack buffs. With Guard Up you can chain guards even when attacked from behind. This blend of survivability and support means 4 Lance players can go deep without much risk.</p>
+<p>Tower Lances can use Guard Up or Reflect Up sigils while also giving Guard+2 or Reflect+3. They are weaker than a maxed Zenith weapon, but a Raw Lance will be within a few points of the raw value of a Zenith one.</p>
+</section>
+
+<section id="tower-medals">
+<h2>Tower Medals</h2>
+<p>Tower Medals come only from Bonus Stages on the Hunter's Road. You use them in place of points for items sold only in the Tower Medal store. A Bonus Stage always gives 5 medals, but they have low spawn rates. Even with the Road skill that makes them spawn more often, you will see about 5% Bonus Stages at most.</p>
+<p>Bonus Stages are easy to spot: the monster names are pink instead of white, and they are worth very few points.</p>
+<h3 id="medal-store">Tower Medal store</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Medals</th><th>Item</th></tr></thead>
+<tbody>
+<tr><td>8</td><td>Festival Gem worth 20 Souls (20P)</td></tr>
+<tr><td>16</td><td>Festival Gem worth 40 Souls (40P)</td></tr>
+<tr><td>30</td><td>Festival Gem worth 80 Souls (80P)</td></tr>
+<tr><td>8</td><td>Diva Defense Gem worth 200 Song Spheres</td></tr>
+<tr><td>16</td><td>Diva Defense Gem worth 500 Song Spheres</td></tr>
+<tr><td>30</td><td>Diva Defense Gem worth 1200 Song Spheres</td></tr>
+<tr><td>8</td><td>Interception Point Gem, low tier (purple)</td></tr>
+<tr><td>16</td><td>Interception Point Gem, mid tier (orange)</td></tr>
+<tr><td>30</td><td>Interception Point Gem, top tier (white)</td></tr>
+<tr><td>2</td><td>White Conquest Ticket (1 level)</td></tr>
+<tr><td>10</td><td>Purple Conquest Ticket (5 levels)</td></tr>
+<tr><td>20</td><td>Warm Honey Tea (+20 Diva affection)</td></tr>
+<tr><td>30</td><td>Diva Performance Gem</td></tr>
+<tr><td>5</td><td>Randomised Weapon Grass (Gou)</td></tr>
+<tr><td>100</td><td>Partner Rename Ticket</td></tr>
+<tr><td>100</td><td>Partner Personality Change Ticket</td></tr>
+<tr><td>10</td><td>Partnyaa Decorations lottery item, low tier (bronze paw print)</td></tr>
+<tr><td>25</td><td>Partnyaa Decorations lottery item, mid tier (silver paw print)</td></tr>
+<tr><td>40</td><td>Partnyaa Decorations lottery item, high tier (gold paw print)</td></tr>
+<tr><td>1</td><td>Sigil Removal Solution</td></tr>
+<tr><td>500</td><td>Tower Decoration Removal Solution</td></tr>
+<tr><td>5</td><td>Halk Pot</td></tr>
+<tr><td>1</td><td>HRP Ticket (4k)</td></tr>
+<tr><td>200</td><td>Weapon creation material (trash)</td></tr>
+<tr><td>150</td><td>Gesture guides: new gestures based on the actions the Legendary Rastas perform. The "I" series are gesture animations and the "II" series are idle animations. You can preview them by hiring a Legendary</td></tr>
+<tr><td>100</td><td>Halk food that instantly swaps their element</td></tr>
+</tbody>
+</table></div>
+<p>These descriptions are the guide's. Item names on Hunsterverse may differ slightly.</p>
+</section>
+
+<section id="white-fatalis">
+<h2>White Fatalis</h2>
+<p>White Fatalis can be a target on the Road, and he appears as an option every 10 floors. To unlock all his materials you must kill three White Fatalis in a week, and spend 19,800 P to buy them all.</p>
+<p>The fight is harder than a normal monster and about as hard as a Zenith. He has Ultra Roar, Ultra Quake and Ultra Wind Pressure, and attacks that one-shot you through any amount of health or survivability skills.</p>
+<p>The biggest one-shot is chained from a roar with a long start-up. If you are too far away you are very likely to die. If you stand next to Fatalis' legs, you avoid the one-shot completely and make him stagger himself.</p>
+<p>There is a weekly limit on the materials you can claim from White Fatalis, so you cannot finish everything he has in one week. You can complete a single decoration or armour piece in a week.</p>
+<p>White Fatalis' weapons all have the Emperor's Roar element, a hybrid of Thunder (150%) and Dragon (50%).</p>
+</section>
+
+<section id="road-skills">
+<h2>Hunter's Road skills</h2>
+<p>Like the Tower, the Road has special skills you can switch on and manage: more revivals, more attack, more Gm and other utility skills. As with the old Tower skill system, three things matter: Rank, Skill Points and Skill Cost.</p>
+<ul>
+<li><strong>Road Rank</strong>: if you are below the required rank, you cannot use the skill.</li>
+<li><strong>Cost</strong>: the total amount of skills you can equip. Each skill has its own Cost, and you have a total Cost you can allocate.</li>
+<li><strong>Road SP</strong> (Hunt SP): like Cost, but used for allocating the skill.</li>
+</ul>
+<p>Example: the Lv5 Attack skill costs 35 Cost and 12 SP in total to equip, and needs Hunt Rank 100. In the tables, the number in brackets is the total SP you have spent on that skill up to that level.</p>
+<p>You raise your total Cost, SP and Rank over time by playing the Road and using special items. If you took part in the Tower event before, your old TRP, TR and TSP convert to Hunt RP, Hunt R and Hunt SP, so you can pick some skills straight away.</p>
+<h3 id="physical-skills">Physical skills</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Skill</th><th>Lv</th><th>Cost</th><th>Road SP</th><th>Road Rank</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td rowspan="5">Attack</td><td>1</td><td>15</td><td>1 [1]</td><td>1</td><td>Small increase to attack (+10)</td></tr>
+<tr><td>2</td><td>25</td><td>1 [2]</td><td>1</td><td>Increases attack (+20)</td></tr>
+<tr><td>3</td><td>25</td><td>2 [4]</td><td>1</td><td>Medium increase to attack (+30)</td></tr>
+<tr><td>4</td><td>35</td><td>3 [7]</td><td>50</td><td>Large increase to attack (+50)</td></tr>
+<tr><td>5</td><td>35</td><td>5 [12]</td><td>100</td><td>Very large increase to attack (+70)</td></tr>
+<tr><td rowspan="5">Defence</td><td>1</td><td>5</td><td>1 [1]</td><td>1</td><td>Defence +30</td></tr>
+<tr><td>2</td><td>5</td><td>1 [2]</td><td>1</td><td>Defence +50</td></tr>
+<tr><td>3</td><td>5</td><td>2 [4]</td><td>1</td><td>Defence +80</td></tr>
+<tr><td>4</td><td>10</td><td>3 [7]</td><td>50</td><td>Defence +110</td></tr>
+<tr><td>5</td><td>10</td><td>5 [12]</td><td>100</td><td>Defence +150</td></tr>
+<tr><td rowspan="2">Health Recovery</td><td>1</td><td>15</td><td>3 [3]</td><td>1</td><td>Red Health recovery speed is increased</td></tr>
+<tr><td>2</td><td>25</td><td>7 [10]</td><td>25</td><td>Red Health recovery speed is increased further</td></tr>
+<tr><td rowspan="3">Fire Res, Water Res, Ice Res, Thunder Res, Dragon Res (each is a separate skill with the same numbers)</td><td>1</td><td>15</td><td>1 [1]</td><td>1</td><td>Resistance +10</td></tr>
+<tr><td>2</td><td>20</td><td>3 [4]</td><td>20</td><td>Resistance +15</td></tr>
+<tr><td>3</td><td>30</td><td>5 [9]</td><td>50</td><td>Resistance +25</td></tr>
+<tr><td rowspan="3">All Res</td><td>1</td><td>15</td><td>3 [3]</td><td>20</td><td>All Res +5</td></tr>
+<tr><td>2</td><td>20</td><td>5 [8]</td><td>50</td><td>All Res +10</td></tr>
+<tr><td>3</td><td>30</td><td>7 [15]</td><td>100</td><td>All Res +15</td></tr>
+</tbody>
+</table></div>
+<h3 id="technical-skills">Technical skills</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Skill</th><th>Lv</th><th>Cost</th><th>Road SP</th><th>Road Rank</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td rowspan="2">Starting Gm Up</td><td>1</td><td>30</td><td>1 [1]</td><td>1</td><td>Increases starting Gm (+1000 Gm)</td></tr>
+<tr><td>2</td><td>50</td><td>3 [4]</td><td>50</td><td>Increases starting Gm significantly (+3000 Gm)</td></tr>
+<tr><td rowspan="3">Hunting Road Points Up</td><td>1</td><td>10</td><td>1 [1]</td><td>1</td><td>Increases Road Point earning slightly (+10%)</td></tr>
+<tr><td>2</td><td>15</td><td>2 [3]</td><td>50</td><td>Increases Road Point earning (+20%)</td></tr>
+<tr><td>3</td><td>25</td><td>4 [7]</td><td>100</td><td>Increases Road Point earning greatly (+40%)</td></tr>
+<tr><td rowspan="2">Bonus Stages Up</td><td>1</td><td>10</td><td>3 [3]</td><td>20</td><td>Slightly increases the chance of Bonus Stages. Stacks with other players on the Road</td></tr>
+<tr><td>2</td><td>20</td><td>5 [8]</td><td>50</td><td>Increases the chance of Bonus Stages. Stacks with other players on the Road</td></tr>
+<tr><td>Resurrection Knowledge</td><td>1</td><td>60</td><td>10 [10]</td><td>200</td><td>Increases the number of times you can faint on the Road before failing (+1 cart)</td></tr>
+<tr><td rowspan="3">Advancement Knowledge</td><td>1</td><td>20</td><td>2 [2]</td><td>20</td><td>Attack rises every 5 stages. Floor 6 gives +20 Attack, and every 5th floor after that gives +10 Attack, stopping after floor 26. Maximum buff is 60 Attack for all floors above 26</td></tr>
+<tr><td>2</td><td>30</td><td>4 [6]</td><td>50</td><td>As above, but floor 6 gives +40 Attack. Maximum buff is 80 Attack above floor 26</td></tr>
+<tr><td>3</td><td>40</td><td>8 [14]</td><td>100</td><td>As above, but floor 6 gives +60 Attack. Maximum buff is 100 Attack above floor 26</td></tr>
+<tr><td rowspan="2">Last Stand</td><td>1</td><td>50</td><td>5 [5]</td><td>50</td><td>Affinity +30% and Attack +80, but you can faint only once on the Road, whatever other skills you have</td></tr>
+<tr><td>2</td><td>70</td><td>7 [12]</td><td>100</td><td>Affinity +50% and Attack +120, but you can faint only once on the Road, whatever other skills you have</td></tr>
+</tbody>
+</table></div>
+<h3 id="duremudira-skills">Duremudira-only skills</h3>
+<p>These skills only work in the Duremudira urgent quests (see <a href="#duremudira">Duremudira</a>). Their Cost is 0.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Skill</th><th>Lv</th><th>Road SP</th><th>Road Rank</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td rowspan="3">Care</td><td>1</td><td>2 [2]</td><td>1</td><td>Slightly increases the speed of revivals and the health left after being revived</td></tr>
+<tr><td>2</td><td>5 [7]</td><td>50</td><td>Increases the speed of revivals and the health left after being revived</td></tr>
+<tr><td>3</td><td>10 [17]</td><td>100</td><td>Greatly increases the speed of revivals and the health left after being revived</td></tr>
+<tr><td rowspan="3">Pharmacist</td><td>1</td><td>1 [1]</td><td>1</td><td>Carry 1 more revival item</td></tr>
+<tr><td>2</td><td>3 [4]</td><td>20</td><td>Carry 2 more revival items</td></tr>
+<tr><td>3</td><td>5 [9]</td><td>50</td><td>Carry 4 more revival items</td></tr>
+<tr><td rowspan="3">Virus Protection</td><td>1</td><td>2 [2]</td><td>10</td><td>Slightly increases resistance to Deadly Poison</td></tr>
+<tr><td>2</td><td>5 [7]</td><td>100</td><td>Increases resistance to Deadly Poison</td></tr>
+<tr><td>3</td><td>10 [17]</td><td>200</td><td>Greatly increases resistance to Deadly Poison</td></tr>
+<tr><td rowspan="3">Frost Protection</td><td>1</td><td>2 [2]</td><td>100</td><td>Slightly increases resistance to Powerful Frost</td></tr>
+<tr><td>2</td><td>5 [7]</td><td>200</td><td>Increases resistance to Powerful Frost</td></tr>
+<tr><td>3</td><td>10 [17]</td><td>250</td><td>Greatly increases resistance to Powerful Frost</td></tr>
+<tr><td rowspan="5">Gatekeeper Offensive</td><td>1</td><td>2 [2]</td><td>10</td><td>+50 true raw against Duremudira</td></tr>
+<tr><td>2</td><td>3 [5]</td><td>10</td><td>+75 true raw against Duremudira</td></tr>
+<tr><td>3</td><td>4 [9]</td><td>10</td><td>+100 true raw against Duremudira</td></tr>
+<tr><td>4</td><td>5 [14]</td><td>100</td><td>+150 true raw against Duremudira</td></tr>
+<tr><td>5</td><td>8 [22]</td><td>200</td><td>+200 true raw against Duremudira</td></tr>
+<tr><td rowspan="5">Gatekeeper Defensive</td><td>1</td><td>2 [2]</td><td>10</td><td>Increases defence against Duremudira</td></tr>
+<tr><td>2</td><td>3 [5]</td><td>10</td><td>Increases defence against Duremudira</td></tr>
+<tr><td>3</td><td>4 [9]</td><td>10</td><td>Increases defence against Duremudira</td></tr>
+<tr><td>4</td><td>5 [14]</td><td>100</td><td>Increases defence against Duremudira</td></tr>
+<tr><td>5</td><td>8 [22]</td><td>200</td><td>Increases defence against Duremudira</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="tower-weapons">
+<h2>Tower weapons</h2>
+<h3 id="tower-weapon-basics">The basics</h3>
+<figure class="hb-fig side"><img src="/assets/guide/hunters-road/tower-weapon-cat-menu.webp" alt="The Tower weapon cat at the blacksmith with the menu: Craft Weapon, Upgrade Weapon, Change Type, Tower Decorations, Tower Seals." width="444" height="360" loading="lazy" decoding="async" /><figcaption>The Tower weapon cat's menu</figcaption></figure>
+<p>Tower Weapons are customisable weapons you build from the ground up, starting from a template weapon with very low stats. Broadly there are two kinds: Light and Dark. Most upgrades to these weapons cannot be undone.</p>
+<ul>
+<li>Light versions have two sigil slots and one decoration slot.</li>
+<li>Dark versions have one sigil slot and two decoration slots.</li>
+</ul>
+<p>(Later the guide says all Tower Weapons have 2 Tower Sigil slots and 1 Tower Decoration slot. Check your own weapon in game.)</p>
+<p><strong>Tower Sigils</strong> grant Affinity, Status, Elemental or Zenith skills, or Weapon Abilities. You can only have as many of these properties as you have sigil slots, and you cannot have two of the same type. Two Elemental, Status or Affinity sigils do not stack.</p>
+<p><strong>Tower Decorations</strong> grant skills outright. If you have a Tower Decoration for Expert+5, it gives you that skill the moment you slot it into a weapon and equip it. A weapon can hold up to two such skills. Removing a decoration is <strong>very grindy</strong>: you need a decoration removal item that costs 500 Tower Medals, which is about 100 Bonus Stages on the Road.</p>
+<p>All Tower Weapons are on sale in the Road's Hunt Point store, along with all the materials needed to upgrade them. Upgrades cannot be undone, so build the weapon carefully in the Weapon Sim. You craft Tower Weapons by talking to the Cat wearing a backpack in the blacksmith.</p>
+<h3 id="tower-weapon-menu">The cat's menu</h3>
+<dl>
+<dt>Craft Weapon</dt>
+<dd>Needs a special item. You get it for completing the first floor of the Tower, and later find it at random in Treasure Chests in the Sky Corridor.</dd>
+<dt>Upgrade Weapon</dt>
+<dd>Uses the Gems you find in the Tower to upgrade the weapon. The gems depend on the sigils inserted in the weapon. Upgrades also need SR Weapon Souls for that weapon type. You get these by fighting Hardcore SR1-31 (Prelude), SR31-99 (Middle), SR100 (Ultimate) and Gou (Heaven) monsters. For example, the Dual Swords soul for Gou comes from an HC Gou monster fought with Dual Swords.</dd>
+<dt>Change Type</dt>
+<dd>Lets you change the properties of Tower Hunting Horns, Bows, Bowguns and Gunlances. It uses a Pulsating Liquid.</dd>
+<dt>Tower Decorations</dt>
+<dd>Lets you make and slot Tower Decorations. Most are found only by fighting Duremudira. Some stronger G Rank versions of skills come from 2nd District Duremudira's carves, and from base decorations combined with Duremudira materials. For example, Fencing+2, Sharp Sword+2 and Artisan decorations combine with Duremudira materials to make a Sword God+2 decoration. A full index of Tower Decorations is in the guide's Google Document. You can only remove a decoration with the 500-medal item, but you can replace it directly at the cost of <strong>losing the decoration that was in the slot</strong>.</dd>
+<dt>Tower Seals (Sigils)</dt>
+<dd>Lets you make and insert Tower Sigils, which adjust things like the weapon's element, affinity and status, and Bowgun shots. You craft each sigil with Ancient Gold Debris. You can change a sigil's value by upgrading it in the standard upgrade menu. A full index of Tower Sigils is in the guide's Google Document.</dd>
+</dl>
+<h3 id="tower-weapon-sim">Weapon simulator</h3>
+<p>A <a href="http://fist.moe/tenrou/weapon_sim.html">Tower weapon simulator</a> calculates the stats and cost, so you can plan a build before you commit. For a Switch Axe the guide pointed to the official Japanese simulator, which closed with the Japanese servers.</p>
+<p>Zenith Sigils affect any skills granted, including Exotics, Hybrids and Tower Decorations. They do not turn the weapon into a Zenith weapon, so it does not get the Zenith part breaker effect even though it has a Zenith skill.</p>
+</section>
+
+<section id="tower-armour">
+<h2>Tower armour</h2>
+<h3 id="tower-armours">Tower armours</h3>
+<p>This is a standard armour that you craft at low rank and upgrade all the way to GX. Players use it widely in mixed endgame sets. You make it from items found at a low chance in Tower Treasure Chests, or given outright for clearing a number of floors. Once maxed, it counts as standard G Rank armour for G Rank Skill Limits.</p>
+<p>You craft these at the normal blacksmith, in Special Armour Production under Event Armour.</p>
+<h3 id="tenrou-armours">Tenrou armours</h3>
+<p><strong>Tenrou</strong>, or customisable Tower armours, can be set up to act like other types of armour, in terms of the buffs they give. You craft and upgrade them only with Tower items, and you can fit them with special gems to get those buffs. The armour must be at the upgrade tier of the armour type you want it to copy. For example, to act as an Origin or G Rank piece, it must be at G level.</p>
+<p>The armour glows according to the Special Decorations in it. If two slots hold the same colour, that colour is the glow. If there is one of each, it glows white.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Seal</th><th>Slots needed</th><th>Effect</th><th>Uses</th></tr></thead>
+<tbody>
+<tr><td>Muscle Boost</td><td>3</td><td>Adds the Skill Boost effect from Gou and higher armours with only 1 piece needed</td><td>Ancient Hope Stone [Orange]</td></tr>
+<tr><td>Sharpness Level UP</td><td>3</td><td>Raises sharpness level with any Gou-derived weapon on Gou, Supremacy or G Rank quests</td><td>Ancient Hope Stone [Blue]</td></tr>
+<tr><td>Attack Up</td><td>1</td><td>Raises Raw with any Gou-derived weapon on Gou, Supremacy or G Rank quests. Works like an Origin piece for buff values (+20/40/60/80/110)</td><td>Ancient Hope Stone [Red]</td></tr>
+<tr><td>Elemental and Status Up</td><td>1</td><td>Raises element and status with any Gou-derived weapon on Gou, Supremacy or G Rank quests. Works like an Origin piece for buff values (+3%/6%/9%/12%/15%)</td><td>Ancient Hope Stone [Red]</td></tr>
+<tr><td>Critical Range Multiplier Up</td><td>2</td><td>Raises the critical range multiplier within critical distance with any ranged weapon on Gou, Supremacy or G Rank quests. Typically an extra 0.3x (for example 1.6x becomes 1.9x)</td><td>Ancient Hope Stone [Red]</td></tr>
+<tr><td>Power Coating Up</td><td>1</td><td>Raises the multiplier on power coatings with any bow on Gou, Supremacy or G Rank quests by 0.1x (for example 1.5x to 1.6x)</td><td>Ancient Hope Stone [Red]</td></tr>
+<tr><td>HS Defense Up</td><td>1</td><td>Adds the HS Armour Defense Up buff on HC or GHC quests with any Gou-derived weapon or Hardcore weapon (+20/40/60/80/100)</td><td>Ancient Hope Stone [Yellow]</td></tr>
+<tr><td>HS Damage Reduction</td><td>1</td><td>Adds the HS Damage Reduction buff on HC or GHC quests with any Gou-derived weapon or Hardcore weapon (10%/17%/24%/27%/30%)</td><td>Ancient Hope Stone [Yellow]</td></tr>
+<tr><td>HC Health Regen</td><td>1</td><td>Adds the HC Health Regen buff on HC or GHC quests. Time to regenerate 1 HP is the same as with normal HC or higher parts (8s/4s/2s/1.5s/1s)</td><td>Ancient Hope Stone [Yellow]</td></tr>
+<tr><td>G Rank Armour</td><td>2</td><td>Makes the piece act as G Rank armour, allowing higher skill totals and buffing damage when you wear 3 or 5 pieces in total</td><td>Ancient Hope Stone [Purple]</td></tr>
+</tbody>
+</table></div>
+<p>You craft Tenrou armour at the same NPC as a Tower Weapon, in the armour section. These armours cannot take Zenith Sigils and are relatively poor overall.</p>
+</section>
+
+<section id="duremudira">
+<h2>Duremudira</h2>
+<h3 id="duremudira-urgent">Urgent quests</h3>
+<p>As you go along the Road, you have a chance to trigger a Duremudira quest. Both first and second district Duremudiras can appear at any point. Like most urgents, they are <strong>posted individually</strong>. If you are in a party of four hunters, you will probably get four Duremudiras to do at once.</p>
+<p>The urgent quest takes place in a repurposed tower with a single floor for Duremudira. You can buy items with Gm from the cat, as on the Road, and you spawn with more Gm in the second district. Unlike White Fatalis and the Road, you can simply <strong>idle in the main hall</strong> if you do not want to fight him.</p>
+<p>Fighting Duremudira with less than a proper G Rank Hiden set is almost impossible, especially solo. So use any Duremudiras you get before you are fully geared as a way to learn the fight.</p>
+<h3 id="duremudira-fight">Fighting Duremudira</h3>
+<p>You have 20 minutes from the time the first person enters the arena. There are no carts. Instead, you lose 60 seconds every time a hunter is completely defeated. You can avoid this with:</p>
+<ul>
+<li><strong>Revival Balls</strong>, which you throw at a hunter to revive them at once, or</li>
+<li><strong>Revival Drugs</strong>, which you use while standing over the downed hunter.</li>
+</ul>
+<p>NPCs can also revive you a number of times, but they are inconsistent and can cause problems with some of Duremudira's attacks, because they do not know how to avoid them. By default you can carry 2 of each revival item. The Pharmacist Road skill raises this (see <a href="#duremudira-skills">Duremudira-only skills</a>).</p>
+<p>Duremudira inflicts two statuses:</p>
+<ul>
+<li><strong>Deadly Poison</strong> cuts defense massively and does very high damage over time. Cure it with the Deadly Poison Cure item sold at the cat store.</li>
+<li><strong>Freezing</strong> is only done by second district Duremudira and is literal. Road skills reduce the effects of both, but you cannot become immune. Vampirism with resistance may be enough to leech through the damage over time with some weapons.</li>
+</ul>
+<p><strong>First District Duremudira</strong> has no equipment or items of its own. He gives a pool of Tower items, including decorations and weapon materials. You gain a title on your first and fiftieth kills. The fight has two phases: the first is around 33% of his HP and the second around 66%.</p>
+<p><strong>Second District Duremudira</strong> has two low% carves (Red and Black Fluids) used to make G Rank Tower Gems and Sigils. He gains a third phase after he first collapses as if dead. You get a larger pool of Tower items than from the first district, and titles on your first and fiftieth kills. His HP is split about 20% for the first phase, 40% for the second and 40% for the third.</p>
+<h3 id="duremudira-hitzones">Hitzones and weaknesses</h3>
+<p>These are the hitzone values the guide gives, by part.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Part</th><th>Cutting</th><th>Impact</th><th>Shot</th><th>Fire</th><th>Water</th><th>Thunder</th><th>Dragon</th><th>Ice</th><th>KO</th></tr></thead>
+<tbody>
+<tr><td>Head</td><td>30</td><td>35</td><td>35</td><td>15</td><td>5</td><td>5</td><td>15</td><td>0</td><td>100</td></tr>
+<tr><td>Stomach</td><td>20</td><td>20</td><td>20</td><td>15</td><td>5</td><td>5</td><td>15</td><td>0</td><td>0</td></tr>
+<tr><td>Back</td><td>20</td><td>20</td><td>20</td><td>15</td><td>5</td><td>5</td><td>15</td><td>0</td><td>0</td></tr>
+<tr><td>Tail</td><td>35</td><td>25</td><td>35</td><td>15</td><td>5</td><td>5</td><td>15</td><td>0</td><td>0</td></tr>
+<tr><td>Front Legs</td><td>25</td><td>30</td><td>15</td><td>10</td><td>5</td><td>5</td><td>15</td><td>0</td><td>0</td></tr>
+<tr><td>Back Legs</td><td>25</td><td>25</td><td>15</td><td>10</td><td>5</td><td>5</td><td>15</td><td>0</td><td>0</td></tr>
+<tr><td>Wings</td><td>35</td><td>30</td><td>15</td><td>10</td><td>5</td><td>5</td><td>15</td><td>0</td><td>0</td></tr>
+</tbody>
+</table></div>
+<div class="hb-gallery">
+<figure class="hb-fig"><img src="/assets/guide/hunters-road/duremudira-cutting.webp" alt="Duremudira silhouette with cutting hitzone values by part: wings 35, tail 35, head 30, front legs 25, back legs 25 and 20, body 20." width="366" height="285" loading="lazy" decoding="async" /><figcaption>Cutting</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/hunters-road/duremudira-impact.webp" alt="Duremudira silhouette with impact hitzone values by part: head 35, wings 30, legs 25 to 30, tail 25, body 20." width="366" height="284" loading="lazy" decoding="async" /><figcaption>Impact</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/hunters-road/duremudira-shot.webp" alt="Duremudira silhouette with shot hitzone values by part: head 35, tail 35, body 20, wings and legs 15." width="366" height="284" loading="lazy" decoding="async" /><figcaption>Shot</figcaption></figure>
+</div>
+</section>
+
+<section id="hiden-alternative">
+<h2>Road as a Hiden alternative</h2>
+<p>You can buy HCs and GHCs from the Road store, so the Road is a direct alternative to the real Hiden grind. Time-wise it is probably worse than grinding with Premium, but you can work on it passively for extra decorations. Hitting 50 floors gives around 100,000 Points, so about four to five runs finish a single decoration.</p>
+<p>Points needed (1x means one set, 5x means five sets):</p>
+<div class="hb-table"><table>
+<thead><tr><th>Hiden decorations</th><th>1x</th><th>5x</th></tr></thead>
+<tbody>
+<tr><td>Low Souls</td><td>8,500</td><td>42,500</td></tr>
+<tr><td>Mid Souls</td><td>39,000</td><td>195,000</td></tr>
+<tr><td>High Souls</td><td>82,500</td><td>412,500</td></tr>
+<tr><td>Top Souls</td><td>25,500</td><td>127,500</td></tr>
+<tr><td>Souls completion</td><td>155,500</td><td>777,500</td></tr>
+<tr><td>Low Ribbons</td><td>68,000</td><td>334,000</td></tr>
+<tr><td>Mid Ribbons</td><td>110,000</td><td>550,000</td></tr>
+<tr><td>High Ribbons</td><td>110,000</td><td>550,000</td></tr>
+<tr><td>Ribbons completion</td><td>288,000</td><td>1,434,000</td></tr>
+<tr><td>Full completion</td><td>443,500</td><td>2,211,500</td></tr>
+<tr><td>Carves for armour upgrades (G1%s, GHCs, HCs)</td><td>48,000</td><td>240,000</td></tr>
+</tbody>
+</table></div>
+<p>Not all HCs and GHCs are equal. These give the most Souls (x5) and Ribbons (x3) back. Anything below these cookable totals is a huge waste of time and effort.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Carve</th><th>Gives</th></tr></thead>
+<tbody>
+<tr><td>Daora Desolation Shell</td><td>Low Souls x5</td></tr>
+<tr><td>Akantor Extreme Scale</td><td>Mid Souls x5</td></tr>
+<tr><td>Akantor Corruption Claw</td><td>High Souls x5</td></tr>
+<tr><td>Dyura Ice Shell</td><td>Top Souls x5</td></tr>
+<tr><td>Monoblos Brave Shell (G Rank)</td><td>Low Ribbons x3</td></tr>
+<tr><td>Malleable Hide (Red Khezu, G Rank)</td><td>Mid Ribbons x3</td></tr>
+<tr><td>Dora Perish Claw (G Rank)</td><td>High Ribbons x3</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="road-raviente">
+<h2>Raviente materials</h2>
+<p><strong>This was future content at the time of the guide, but you could save up points in advance.</strong> The Fourth Content Update for Z2 added Berserk Raviente materials to the point store. All of them have weekly limits, so every decoration takes at least four weeks from this source. The time investment is similar to that of the original decorations. The difference is that you can grind them solo or with small groups, without needing native speakers. See <a href="/guide-frontier-events.html#raviente">Raviente</a> for the fights.</p>
+<p>The tables show the materials, store costs, weekly limits and the number of weeks needed for each type of Raviente decoration.</p>
+<figure class="hb-fig"><img src="/assets/guide/hunters-road/raviente-deco-points.webp" alt="Table for Raviente decorations: each material with its Road Points store cost, weekly limit and total, and the weeks needed for 1 and 5 decorations. Total 547,500 points per week." width="717" height="263" loading="lazy" decoding="async" /><figcaption>Raviente decorations</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/hunters-road/violent-raviente-deco-points.webp" alt="The same table for Violent Raviente decorations." width="717" height="263" loading="lazy" decoding="async" /><figcaption>Violent Raviente decorations</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/hunters-road/berserk-raviente-deco-points.webp" alt="The same table for Berserk Raviente decorations." width="717" height="263" loading="lazy" decoding="async" /><figcaption>Berserk Raviente decorations</figcaption></figure>
+<p>As the tables show, you need to be able to earn 547,500 points a week. It takes 20 weeks to get Determination this way. This is meant as a complement to real Ravientes, but it works for players who cannot or will not join Raviente trains for decorations.</p>
+</section>
+<nav class="hb-pager" aria-label="Previous and next section">
+<a class="hb-prev" href="/guide-frontier-events.html" rel="prev"><span>&larr; Previous</span><strong>Regular Events</strong></a>
+<a class="hb-next" href="/guide-frontier.html"><span>Back to &rarr;</span><strong>Handbook home</strong></a>
+</nav>
+<div class="hb-credit">
+<p>Based on <a href="https://fist.moe/">Fist's Monster Hunter Frontier guide</a> (fist.moe, saved January 2022), with data from the <a href="https://docs.google.com/spreadsheets/d/17c7OXNxcAZmT0MWRePekAZXQQqdCo7S8ICuXPsgK8Is/edit">Comprehensive Google Doc</a> and <a href="http://ferias.life.coocan.jp/">Ferias</a>. Questions about the original: <a href="https://fist.moe/discord/">Fist's Discord</a>.</p>
+<p>Reworded and laid out for Hunsterverse; pictures are from the original guide. Spotted a mistake? <a href="/report.html">Report it</a> or say so in our <a href="https://discord.gg/YuE42eh">Discord</a>.</p>
+</div>
+</main>
+</div>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/guide-roads.html">Roads guide</a>
+          <a href="/guide-frontier.html">Frontier handbook</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/api.html">API</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="/privacy.html">Privacy</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,120 @@
+/* Frontier handbook (guide-frontier*.html) only. Loaded after styles.css by those pages, so the
+   shared stylesheet stays untouched. Layout: breadcrumbs, then a sticky side column (this page's
+   contents and every section) next to the parchment sheet; on narrow screens the side column sits above
+   the sheet and both lists fold into <details>. */
+
+.hb-layout{width:100%;max-width:1340px;margin:24px auto 56px;padding:0 20px;
+  display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.hb-layout main.sheet{margin:0;max-width:none}
+
+/* breadcrumbs */
+.hb-crumbs ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 0;
+  font:600 .78rem/1.4 var(--font-ui);letter-spacing:.04em;color:var(--text-dim)}
+.hb-crumbs li{display:flex;align-items:center;min-width:0}
+.hb-crumbs li + li::before{content:"\203A";margin:0 9px;color:var(--text-faint)}
+.hb-crumbs a{color:var(--gold-bright)}
+.hb-crumbs [aria-current]{color:var(--text-light);overflow-wrap:anywhere}
+
+/* side column: on this page + all sections */
+.hb-side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.hb-panel{background:linear-gradient(#2c1c11,#1a110a);border:1px solid var(--frame);border-radius:3px;
+  box-shadow:inset 0 0 0 1px rgba(232,200,119,.08);color:var(--text-light)}
+.hb-panel summary{cursor:pointer;padding:12px 16px;font:700 .72rem var(--font-ui);letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold-bright);list-style-position:inside}
+.hb-panel summary:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.hb-panel ol,.hb-panel ul{margin:0;padding:0 16px 14px 16px;list-style:none;font:.9rem/1.35 var(--font-ui)}
+.hb-panel li{margin:0}
+.hb-panel a{display:block;padding:6px 8px;border-radius:2px;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent}
+.hb-panel a:hover{color:var(--gold-pale);background:rgba(232,200,119,.06)}
+.hb-panel a[aria-current],.hb-panel a.is-here{color:var(--gold-bright);border-left-color:var(--gold);background:rgba(232,200,119,.08)}
+.hb-panel .hb-group{margin:8px 0 2px;padding:0 8px;font:700 .64rem var(--font-ui);letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text-faint)}
+
+/* the sheet */
+/* the page kicker already says where you are */
+body.guide-frontier main.sheet h1::before{content:none}
+main.sheet.hb-sheet section,main.sheet.hb-sheet h2,main.sheet.hb-sheet h3{scroll-margin-top:calc(var(--nav-h) + 16px)}
+main.sheet.hb-sheet section{display:flow-root}
+main.sheet .hb-source{font-size:.85rem;color:var(--ink-soft);margin:-.4em 0 1.6em}
+
+/* pictures: full width, beside the text, or in a row */
+main.sheet figure.hb-fig{margin:1.2em 0;padding:6px;max-width:100%;width:fit-content}
+main.sheet figure.hb-fig img{width:auto;max-width:100%;height:auto;margin:0 auto}
+main.sheet figure.hb-fig figcaption{margin-top:.5em}
+main.sheet .hb-gallery{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin:1.2em 0}
+main.sheet .hb-gallery figure.hb-fig{margin:0;flex:0 1 auto}
+main.sheet img.hb-icon{display:inline-block;width:auto;height:1.6em;vertical-align:middle;margin-right:.3em}
+main.sheet ul.hb-icon-list{list-style:none;padding:0;columns:220px;column-gap:24px}
+main.sheet ul.hb-icon-list li{break-inside:avoid;padding:3px 0}
+main.sheet ul.hb-icon-list li:not(:has(img)){padding-left:calc(1.6em + .3em)}
+
+/* tables scroll inside their box, never the page */
+main.sheet .hb-table{overflow-x:auto;margin:1.2em 0;max-width:100%}
+main.sheet .hb-table table{margin:0;min-width:100%;width:auto}
+main.sheet .hb-table td,main.sheet .hb-table th{white-space:normal}
+
+/* On Hunsterverse notes */
+main.sheet .hv-note{border-left-color:var(--wax)}
+main.sheet .hv-note::before{content:"ON HUNSTERVERSE";color:var(--wax)}
+main.sheet .box > :last-child{margin-bottom:0}
+main.sheet .box > :first-child{margin-top:0}
+
+/* previous / next */
+.hb-pager{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:3em 0 0;clear:both}
+.hb-pager a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:3px;
+  background:rgba(255,250,236,.55);text-decoration:none;color:var(--ink)}
+.hb-pager a:hover{border-color:var(--gold);background:rgba(255,250,236,.85)}
+.hb-pager span{display:block;font:700 .64rem var(--font-ui);letter-spacing:.18em;text-transform:uppercase;color:var(--gold-ink)}
+.hb-pager strong{display:block;margin-top:4px}
+.hb-pager .hb-next{text-align:right;grid-column:2}
+
+/* credit at the foot of every handbook page */
+.hb-credit{clear:both;margin-top:2.6em;padding-top:1.2em;border-top:3px double #a98b56;color:var(--ink-soft);font-size:.86rem}
+.hb-credit p{margin:.3em 0}
+
+/* landing page: one card per section, grouped by chapter */
+.hb-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin:1em 0 .5em}
+.hb-tile{display:flex;flex-direction:column;background:var(--parchment-3);border:1px solid var(--line);border-radius:3px;
+  overflow:hidden;color:var(--ink);text-decoration:none;transition:transform .15s,box-shadow .15s,border-color .15s}
+.hb-tile:hover,.hb-tile:focus-visible{color:var(--ink);border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 18px rgba(60,40,15,.18)}
+.hb-tile-pic{display:block;aspect-ratio:16/9;background:#2b1d12;overflow:hidden}
+.hb-tile-pic img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.hb-no-pic{display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#5a3d20,#1f150e 75%)}
+.hb-no-pic span{font:700 1rem var(--font-ui);letter-spacing:.3em;text-transform:uppercase;color:var(--gold-bright);
+  text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.hb-tile-body{padding:12px 14px 14px}
+.hb-tile-body strong{display:block;font-size:1.02rem;color:#3a2a16}
+.hb-tile-body strong::after{content:" \2192";color:var(--gold-ink)}
+.hb-tile-body span{display:block;margin-top:4px;font-size:.88rem;color:var(--ink-soft);line-height:1.4}
+.hb-num{font:700 .64rem var(--font-ui);letter-spacing:.14em;color:var(--gold-ink);display:block;margin-bottom:2px}
+
+/* moved-page notice (old handbook addresses) */
+.hb-moved{font-size:1.05rem}
+
+@media (min-width:1100px){
+  .hb-layout{grid-template-columns:250px minmax(0,1fr);column-gap:28px;align-items:start}
+  .hb-crumbs{grid-column:1 / -1}
+  .hb-layout.hb-wide{grid-template-columns:minmax(0,1fr);max-width:1100px}
+  .hb-side{position:sticky;top:calc(var(--nav-h) + 14px);max-height:calc(100vh - var(--nav-h) - 28px);overflow-y:auto;
+    scrollbar-width:thin}
+  main.sheet figure.hb-fig.side{float:right;clear:right;max-width:min(42%,360px);margin:.3em 0 1em 1.4em}
+}
+@media (max-width:720px){
+  .hb-layout{padding:0;margin-top:14px;gap:10px}
+  .hb-crumbs,.hb-side{padding:0 14px}
+  .hb-pager{grid-template-columns:1fr}
+  .hb-pager .hb-next{grid-column:1}
+}
+/* phones: one card per row, picture on the left, so the 18 cards stay a short list */
+@media (max-width:560px){
+  .hb-tiles{grid-template-columns:1fr;gap:10px}
+  .hb-tile{flex-direction:row;align-items:stretch}
+  .hb-tile-pic{flex:0 0 108px;aspect-ratio:auto;min-height:84px}
+  .hb-no-pic span{font-size:.62rem;letter-spacing:.14em;text-align:center;padding:0 6px}
+  .hb-tile-body{padding:10px 12px;min-width:0}
+  .hb-tile-body span{font-size:.84rem}
+}
+@media print{
+  .hb-side,.hb-crumbs,.hb-pager{display:none}
+  .hb-layout{display:block;margin:0;padding:0}
+}

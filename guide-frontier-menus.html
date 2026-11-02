@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Menus and Town NPCs · Frontier handbook · Hunsterverse</title>
+<meta name="description" content="A tour of the in-game menus, options, chat and Guild Card, and of every NPC in town, the Caravan area and your house, with what each one does." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Menus and Town NPCs · Frontier handbook" />
+    <meta property="og:description" content="A tour of the in-game menus, options, chat and Guild Card, and of every NPC in town, the Caravan area and your house, with what each one does." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/guide-frontier-menus.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Menus and Town NPCs · Frontier handbook" />
+    <meta name="twitter:description" content="A tour of the in-game menus, options, chat and Guild Card, and of every NPC in town, the Caravan area and your house, with what each one does." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+<meta name="theme-color" content="#150e09" />
+<link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="/css/styles.css" />
+<link rel="stylesheet" href="/css/guide-frontier.css" />
+<script src="/js/nav.js" defer></script>
+<script src="/js/background.js" defer></script>
+<script src="/js/consent.js" defer></script>
+<script src="/js/guide-frontier.js" defer></script>
+</head>
+<body class="guide guide-frontier">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html">Hunting Road</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/api.html">API</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/guide-roads.html">Roads guide</a>
+              <a class="navlink" href="/guide-frontier.html" aria-current="page">Frontier handbook</a>
+            </div>
+          </div>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+<div class="hb-layout">
+<nav class="hb-crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/guide-frontier.html">Frontier handbook</a></li><li><a href="/guide-frontier.html#start">Getting started</a></li><li aria-current="page">Menus and Town NPCs</li></ol></nav>
+<aside class="hb-side" aria-label="Handbook contents">
+<details class="hb-panel hb-toc"><summary>On this page</summary>
+<ol>
+<li><a href="#launcher">Launcher and game settings</a></li>
+<li><a href="#start-menu">Start menu</a></li>
+<li><a href="#hunter-status">Hunter Status menus</a></li>
+<li><a href="#community">Community menus</a></li>
+<li><a href="#options">Options menus</a></li>
+<li><a href="#controls">Control bindings</a></li>
+<li><a href="#chat">Chat</a></li>
+<li><a href="#town-square">Town Square NPCs</a></li>
+<li><a href="#blacksmith-npcs">Blacksmith NPCs</a></li>
+<li><a href="#caravan-area">Caravan Area NPCs</a></li>
+<li><a href="#house-npcs">House facility NPCs</a></li>
+<li><a href="#guild-card">Guild Card</a></li>
+</ol>
+</details>
+<details class="hb-panel hb-all"><summary>All sections</summary>
+<ul>
+<li><a href="/guide-frontier.html">Handbook home</a></li>
+<li class="hb-group">Getting started</li>
+<li><a href="/guide-frontier-basics.html">Basics and Getting Started</a></li>
+<li><a href="/guide-frontier-guild.html">English Guild and Guild Hall</a></li>
+<li><a href="/guide-frontier-house.html">House and AI Companions</a></li>
+<li><a href="/guide-frontier-menus.html" aria-current="page">Menus and Town NPCs</a></li>
+<li class="hb-group">Gear and items</li>
+<li><a href="/guide-frontier-items.html">Items and Materials</a></li>
+<li><a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a></li>
+<li><a href="/guide-frontier-weapons.html">Weapons and Sigils</a></li>
+<li><a href="/guide-frontier-armour.html">Armour, Decorations and Skills</a></li>
+<li><a href="/guide-frontier-transcend.html">Transcend</a></li>
+<li class="hb-group">Monsters and references</li>
+<li><a href="/guide-frontier-monsters.html">Monsters</a></li>
+<li><a href="/guide-frontier-tools.html">Tools and References</a></li>
+<li class="hb-group">Progression</li>
+<li><a href="/guide-frontier-hunter-rank.html">Hunter Rank and Style Rank</a></li>
+<li><a href="/guide-frontier-g-rank-start.html">Starting G Rank</a></li>
+<li><a href="/guide-frontier-g-rank.html">G Rank</a></li>
+<li><a href="/guide-frontier-zenith.html">Zenith (GR200+)</a></li>
+<li class="hb-group">Things to do</li>
+<li><a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a></li>
+<li><a href="/guide-frontier-events.html">Regular Events</a></li>
+<li><a href="/guide-frontier-hunters-road.html">Hunter&#x27;s Road</a></li>
+</ul>
+</details>
+</aside>
+<main id="content" class="sheet hb-sheet">
+<p class="kicker">Frontier handbook · Getting started · 4 of 18</p>
+<h1>Menus and Town NPCs</h1>
+<p class="lead">A tour of the in-game menus, options, chat and Guild Card, and of every NPC in town, the Caravan area and your house, with what each one does.</p>
+<section id="launcher">
+<h2>Launcher and game settings</h2>
+<p>The original guide begins this page with the Taiwanese launcher: its login window, the character list and a configuration window with graphics and sound tabs. The guide's own advice is that you only use those options once, because all other settings are changed in game. It also says to ignore the last tab, Proxy Settings, which is useless to almost everyone. The launcher and its timezone advice were for Capcom's Taiwanese servers.</p>
+<aside class="box hv-note"><p>On Hunsterverse you log in with the Mezeporta launcher. See the setup guides for <a href="/guide-windows.html#launcher">Windows</a> and <a href="/guide-linux.html">Linux</a>. Register your game account at <a href="https://hunstermonter.net">hunstermonter.net</a>.</p></aside>
+</section>
+
+<section id="start-menu">
+<h2>Start menu</h2>
+<figure class="hb-fig side"><img src="/assets/guide/menus/start-menu.webp" alt="The start menu: Items, Combine, Quest Status, Hunter Status, Community, Guild, F Key Binds, Hunter Challenge, Options, Log In Bonus, Quit / Restart." width="150" height="304" loading="lazy" decoding="async" /><figcaption>The start menu</figcaption></figure>
+<p>The start menu gives quick access to a lot of information. It is also where you set most of the options that can be changed in game. Opening an item from the Items entry gives a short menu with the actions you can take on it, and the combination entries.</p>
+<figure class="hb-fig"><img src="/assets/guide/menus/item-selected-menu.webp" alt="The menu for a selected item: Discard, Give to Player, Move in Bag, Give Partnyaa, F Key Bind. Below it, the Combination menu: 2 Items, 3 Items, From List." width="114" height="237" loading="lazy" decoding="async" /><figcaption>Selecting an item, and the Combination menu</figcaption></figure>
+</section>
+
+<section id="hunter-status">
+<h2>Hunter Status menus</h2>
+<figure class="hb-fig side"><img src="/assets/guide/menus/hunter-status-menu.webp" alt="The Hunter Status menu: Personal Status, Guild Card, Equipment Details, Tower Card, Diva Defense Card, Style Rank Settings, Transcend Card, Hunter Experience, Story Progress, Area Info, Monster Info, Tower Treasures." width="156" height="275" loading="lazy" decoding="async" /><figcaption>Hunter Status</figcaption></figure>
+<p>The Hunter Status menus hold a lot of information, including your equipment details and your <a href="#guild-card">Guild Card</a>. The Guild Card shows things such as your Hunter Rank, the HRP you need for the next rank, active subscriptions, guild information, and your Attack and Defense values.</p>
+<dl>
+<dt>Personal Status</dt><dd>Lets you set a number of icons for your player. They flash for anyone who is checking icons and has the same ones set.</dd>
+<dt>Guild Card</dt><dd>Shows a large amount of information. See <a href="#guild-card">Guild Card</a> below.</dd>
+<dt>Equipment Details</dt><dd>Lets you check your town and quest sets and see details on each piece of equipment.</dd>
+<dt>Tower Card</dt><dd>Shows detailed information on everything to do with the Tower or Sky Corridor. See the Tower section of the guide.</dd>
+<dt>SR Books</dt><dd>Shows details on the SR weapons you have. You cannot change settings here, such as the moveset, but you can confirm them. See <a href="/guide-frontier-hunter-rank.html#style-rank">Style Rank</a>.</dd>
+<dt>Hunter Experience</dt><dd>A collection of trophies for things you have done, depending on points in various categories. Other players can view them, but they mean nothing.</dd>
+<dt>Story Progress</dt><dd>Shows which mission you are on in each story questline (the ones from the Yellow Guild Sweetheart).</dd>
+<dt>Area Info</dt><dd>Shows information on the current area.</dd>
+<dt>Monster Info</dt><dd>Shows information on many monsters, including maximum and minimum sizes and the number hunted. You must have bought the books on that monster type from the Shop NPC.</dd>
+<dt>Ancient Treasures</dt><dd>Shows which treasures you have collected in the Tower and what effects they have enabled. The picture calls this entry Tower Treasures.</dd>
+</dl>
+<p>The picture also lists a Diva Defense Card, Style Rank Settings and a Transcend Card. The guide does not describe them here. See <a href="/guide-frontier-events.html#diva-defense">Diva Defense</a>, <a href="/guide-frontier-hunter-rank.html#style-rank">Style Rank</a> and <a href="/guide-frontier-transcend.html">Transcend</a>.</p>
+</section>
+
+<section id="community">
+<h2>Community menus</h2>
+<figure class="hb-fig side"><img src="/assets/guide/menus/community-menu.webp" alt="The Community menu: Friends List, Mail, Official Site, Player Info (Lobby), Player Info (Search), Joinable toggle, Blacklist, Preset Phrases." width="156" height="188" loading="lazy" decoding="async" /><figcaption>Community</figcaption></figure>
+<p>The Community menus hold most of what you need to deal with other players, including sending mail and managing the blacklist.</p>
+<p>The <strong>Friends List</strong> shows everyone you have registered as a friend. It works one way: other players do not need to have you on their list for you to have them. The <strong>Joinable</strong> toggle sets whether players who have you on their friends list can jump straight to your lobby.</p>
+</section>
+
+<section id="options">
+<h2>Options menus</h2>
+<p>The Options menu has these pages. The Rendering Options page only appears when High Grade mode is on.</p>
+<figure class="hb-fig"><img src="/assets/guide/menus/options-menu.webp" alt="Two Options menus side by side. High Grade On lists Display, Common, Rendering, Control, NPC, Chat and Sound Options. High Grade Off lists the same without Rendering Options." width="456" height="194" loading="lazy" decoding="async" /><figcaption>Options with High Grade on (left) and off (right)</figcaption></figure>
+<div class="hb-gallery">
+<figure class="hb-fig"><img src="/assets/guide/menus/display-options.webp" alt="Display Options: title display, name colours, PVP rank display, town player draw distance, render town weapons, NPC name label size, facility name label size." width="318" height="194" loading="lazy" decoding="async" /><figcaption>Display Options</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/common-options.webp" alt="Common Options: name display type, show HUD, show map, mouse compass, F key bindings, control guide overlay, HP and stamina bar length and other settings." width="318" height="347" loading="lazy" decoding="async" /><figcaption>Common Options</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/control-options.webp" alt="Control Options: simple mode, simple healing, control bindings, mouse, camera, aiming, auto-gathering and Lock On Mode settings." width="318" height="412" loading="lazy" decoding="async" /><figcaption>Control Options</figcaption></figure>
+</div>
+<figure class="hb-fig"><img src="/assets/guide/menus/rendering-options.webp" alt="Rendering Options (High Grade only): a Preset selector and on/off switches for Complex Shadows in town and in quests, Depth of Field, HDR, SSAO, Light Rays, Anti-Aliasing and High Quality Particles, with a Confirm button." width="590" height="321" loading="lazy" decoding="async" /><figcaption>Rendering Options (High Grade only)</figcaption></figure>
+<div class="hb-gallery">
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-options.webp" alt="The NPC Menu: Legendary Rasta, Partner, Partnyaa, Rasta, Fosta and Temporary Rasta, each ON, with a note on Halks." width="318" height="192" loading="lazy" decoding="async" /><figcaption>NPC Options</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/chat-options.webp" alt="Chat Options: chat type icons, transparency, chat log display, log lines, log output, Raviente Guide, Legendary Rasta Chat, Fosta Chat, Partner Chat, Partnyaa Chat, Tower Chat and G Raviente Guide." width="318" height="302" loading="lazy" decoding="async" /><figcaption>Chat Options</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/sound-options.webp" alt="Sound options: Music (BGM) and Sound Effects (SE), both set to 7." width="318" height="84" loading="lazy" decoding="async" /><figcaption>Sound Options</figcaption></figure>
+</div>
+<p>The NPC Options page sets the priority of your AI companions. See <a href="/guide-frontier-house.html#ai-companions">AI Companions</a>. The Chat Options page controls how much your companions talk during quests.</p>
+<h3 id="lock-on">Lock On modes</h3>
+<p>The guide says the Taiwanese client has three Lock On modes. You choose them in Control Options.</p>
+<dl>
+<dt>TW Lock On</dt><dd>Shows icons at the bottom of the screen. Press <kbd>R2</kbd> to change which monster is locked on, and <kbd>L1</kbd> to lock. It is active on the "Off" option. Because it was added before the official version, it has quirks, such as letting you lock on to burrowed or invisible monsters.</dd>
+<dt>JP Lock On</dt><dd>Basically a copy of the 3DS games' lock on. <strong>Type 1</strong> locks on with a single press and resets the camera with a double press. <strong>Type 2</strong> does the opposite. In these modes you must pause and press <kbd>R1</kbd> to change targets.</dd>
+</dl>
+<aside class="box hv-note"><p>Our client is the Japanese one with an English patch. Which Lock On modes it offers is not something this page can tell you. Ask in the <a href="https://discord.gg/YuE42eh">Discord</a>.</p></aside>
+</section>
+
+<section id="controls">
+<h2>Control bindings</h2>
+<figure class="hb-fig"><img src="/assets/guide/menus/control-bindings.webp" alt="The Control Bindings window, where you rebind the controls for each control type." width="653" height="493" loading="lazy" decoding="async" /><figcaption>The Control Bindings window</figcaption></figure>
+<p>You can change the bindings for every control type in the <strong>Control Bindings</strong> section of the Control Options menu. For PSP-style controls, choose the second option in the first drop-down on the controller section.</p>
+<p>The guide does not go through each weapon type and translate every action. If you want to rebind something, you will have to work out what each action is.</p>
+</section>
+
+<section id="chat">
+<h2>Chat</h2>
+<figure class="hb-fig side"><img src="/assets/guide/menus/chat-filters-modes.webp" alt="The chat pane's Chat Filters (Global, City, Guild, Alliance, Party, Private and Quest Advertisements) and Chat Modes (Private, City, Global and Guild chat)." width="324" height="257" loading="lazy" decoding="async" /><figcaption>Chat filters and modes</figcaption></figure>
+<h3 id="chat-modes">Chat modes and gestures</h3>
+<p>Open the in-game chat by pressing <kbd>Insert</kbd> (or by holding <kbd>L2</kbd> and <kbd>R2</kbd>). There are various filters and modes.</p>
+<ul>
+<li>Toggle filters with the buttons at the top of the chat pane.</li>
+<li>Change modes with <kbd>Shift</kbd>+<kbd>Up</kbd>/<kbd>Down</kbd>/<kbd>Left</kbd>/<kbd>Right</kbd>.</li>
+<li>To whisper to a player, press <kbd>Square</kbd> while in front of them, or click their name in the chat window.</li>
+<li>To perform a gesture, press <kbd>#</kbd> and then an F key. <kbd>F6</kbd> opens the second page of gestures.</li>
+</ul>
+<h3 id="chat-commands">Chat commands</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Command</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>@here</code></td><td>Posts a link to the server you are on that other players can click.</td></tr>
+<tr><td><code>@re</code></td><td>Inserts the number of spots left on your quest.</td></tr>
+<tr><td><code>@dice</code></td><td>Posts the result of a dice roll from 1 to 100.</td></tr>
+<tr><td><code>@clr1</code>, <code>@clr2</code>, <code>@clrall</code>, <code>@clrpast</code></td><td>Clear the chat.</td></tr>
+<tr><td><code>@help</code></td><td>Shows all available commands.</td></tr>
+<tr><td><code>@a</code>, <code>@f</code>, <code>@p</code>, <code>@g</code>, <code>@u</code></td><td>Send a message to one chat. In order they are Global, Local, Party, Guild and Alliance.</td></tr>
+<tr><td><code>&lt;act1&gt;</code> to <code>&lt;act24&gt;</code></td><td>Make you perform a gesture.</td></tr>
+<tr><td><code>&lt;act25&gt;</code> to <code>&lt;act48&gt;</code></td><td>Make you perform any legendary gestures you bought with Tower Medals (in town only).</td></tr>
+</tbody>
+</table></div>
+<aside class="box hv-note"><p>These are the game's own chat commands. Hunsterverse also has server commands that start with <code>!</code>. Type <code>!help</code> in game for the list.</p></aside>
+</section>
+
+<section id="town-square">
+<h2>Town Square NPCs</h2>
+<div class="hb-gallery">
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-guild-mistress.webp" alt="The Guild Mistress NPC." width="117" height="150" loading="lazy" decoding="async" /><figcaption>Guild Mistress</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-combiner.webp" alt="The Combiner NPC." width="136" height="150" loading="lazy" decoding="async" /><figcaption>Combiner</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-store-sweetheart.webp" alt="The Store Sweetheart NPC in a pink dress." width="115" height="150" loading="lazy" decoding="async" /><figcaption>Store Sweetheart</figcaption></figure>
+</div>
+<dl>
+<dt>Story and Item Trading Guild Sweetheart</dt><dd>Gives the first tutorial quests and the story quests. You can also trade for some items here.</dd>
+<dt>Guild Mistress</dt><dd>Gives quests after the first tutorials, the Gook quests, SR books and moveset urgents. You can trade monster kills for medals here, to get Talismans that reduce the wait after quests, give more HP at quest start, and so on. See <a href="/guide-frontier-items.html#medal-charms">Medal charms</a>.</dd>
+<dt>Main Quest Guild Sweetheart</dt><dd>Gives all non-G Rank quests after you progress past the Guild Mistress.</dd>
+<dt>Caravan Sweetheart</dt><dd>Gives Caravan quests outside the Caravan Area. She has the Caravan Festival missions whenever it is on, and the rewards for that week and the week after.</dd>
+<dt>Combiner</dt><dd>Combines items in batches. Does special combining, such as pots using Halk feathers. Exchanges gallery tickets for rewards and cash items for luck medals and similar. Exchanges monster kill medals for Talismans. Sells various combination items.</dd>
+<dt>Lunchbox / Ingredients NPC</dt><dd>Packs lunchboxes for quests and sells most of the ingredients needed to make them. See <a href="#lunchboxes">Lunchboxes</a> below.</dd>
+<dt>Purple Guild Sweetheart</dt><dd>Updates subscriptions. Gives out purchases, event items and compensation items. Has quests for titles. Exchanges subscription stamps for HL and EX tickets.</dd>
+<dt>Hunter Festival Manager</dt><dd>You turn in Festival Points to her. She has a table of all monsters and the points they are worth, shows the current team rankings, and trades festival points for items. See <a href="/guide-frontier-events.html#hunter-festival">Hunter Festival</a>.</dd>
+<dt>Hunter Festival Winners NPC</dt><dd>Gives out quests to whichever team colour won the Festival. You take these quests with medals you received for the points you contributed.</dd>
+<dt>Furniture and Gallery NPC</dt><dd>Sells furniture and makes it from materials. Trades stamps (earned by making furniture) for farm upgrades. Sells farm tools. Evaluates your gallery so you can get Gallery gems and other rewards. See <a href="/guide-frontier-house.html#house">House</a>.</dd>
+<dt>G Rank NPC</dt><dd>Gives out G Rank quests, including Event quests and Conquests.</dd>
+<dt>Guild Manager</dt><dd>Lets you create and join guilds after you finish the tutorial. Creating a guild needs a subscription, according to the guide.</dd>
+<dt>Store Sweetheart</dt><dd>Sells most consumable items, including honey. Sells the books for the monster list, combining, house expansion and box expansion. The guide says her stock is much better when you are subscribed than on the trial.</dd>
+<dt>Tower NPC</dt><dd>Gives out Tower quests and rewards while the Tower is available.</dd>
+</dl>
+<aside class="box hv-note"><p>Subscriptions, subscription stamps and the trial were part of Capcom's official service. Whether course perks are on for Hunsterverse accounts: ask in the <a href="https://discord.gg/YuE42eh">Discord</a>.</p></aside>
+
+<h3 id="lunchboxes">Lunchboxes</h3>
+<p>Here are the basic lunchbox combinations and where the ingredients come from. The guide recommends always posting quests with buffs at least as good as these whenever you can. More buffs and combinations are on <a href="/guide-frontier-quests-food.html#bentos">Quests, Food Buffs and Bentos</a>.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Season</th><th>Combination</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>Warm Season</td><td>Fist Rice + Spirit Mushrooms</td><td>+50 HP / +50 Stamina</td></tr>
+<tr><td>Cold Season</td><td>Fist Rice + Frost Tomatoes</td><td>+50 HP / +50 Stamina</td></tr>
+<tr><td>Breeding Season</td><td>Fist Rice + Power Lard</td><td>+50 HP / +25 Stamina</td></tr>
+</tbody>
+</table></div>
+<div class="hb-table"><table>
+<thead><tr><th>Ingredient</th><th>Price</th><th>Sold by</th></tr></thead>
+<tbody>
+<tr><td>Spirit Mushrooms</td><td>980z</td><td>Guild Cat Store</td></tr>
+<tr><td>Frost Tomatoes</td><td>450z</td><td>Guild Cat Store</td></tr>
+<tr><td>Fist Rice</td><td>550z</td><td>Lunchbox NPC</td></tr>
+<tr><td>Power Lard</td><td>400z</td><td>Lunchbox NPC</td></tr>
+</tbody>
+</table></div>
+<figure class="hb-fig side"><img src="/assets/guide/menus/subscription-npc-menu.webp" alt="The Purple Guild Sweetheart's menu: Manual, Title Quests, Ticket Exchange, Receive Items, Update Subs." width="220" height="166" loading="lazy" decoding="async" /><figcaption>Purple Guild Sweetheart's menu</figcaption></figure>
+<p>For reference, the Purple Guild Sweetheart's menu lists Manual, Title Quests, Ticket Exchange, Receive Items and Update Subs. Receive Items opens a second menu.</p>
+<figure class="hb-fig side"><img src="/assets/guide/menus/receive-items-menu.webp" alt="The Receive Items menu: Event Items, Purchased Items, Compensation Items, Promotional Items." width="270" height="153" loading="lazy" decoding="async" /><figcaption>Receive Items</figcaption></figure>
+<p>That second menu has Event Items, Purchased Items, Compensation Items and Promotional Items.</p>
+</section>
+
+<section id="blacksmith-npcs">
+<h2>Blacksmith NPCs</h2>
+<div class="hb-gallery">
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-blacksmith.webp" alt="The Blacksmith NPC." width="114" height="150" loading="lazy" decoding="async" /><figcaption>Blacksmith</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-lottery-cat.webp" alt="The Lottery Cat NPC holding a fan." width="119" height="151" loading="lazy" decoding="async" /><figcaption>Lottery Cat</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-tower-weapons-cat.webp" alt="The Tower Weapons Cat NPC." width="123" height="151" loading="lazy" decoding="async" /><figcaption>Tower Weapons Cat</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-legendary-blacksmith.webp" alt="The Legendary Blacksmith NPC." width="124" height="151" loading="lazy" decoding="async" /><figcaption>Legendary Blacksmith</figcaption></figure>
+</div>
+<dl>
+<dt>Blacksmith</dt><dd>Does all the basic crafting and upgrading until G Rank. Still does most of it even then. You can also open the full <a href="/guide-frontier-item-box.html">equipment box</a> here.</dd>
+<dt>Cat Smith</dt><dd>Makes armour and weapons for Partnyaas. Makes randomised Gou Weapons. Makes Sigils at G Rank.</dd>
+<dt>Lottery Cat</dt><dd>Lets you gamble with various items for rewards. According to the guide it was mostly paid for with real money, mostly at poor odds, and lotteries were time limited. That was the official service. What the lotteries hold on Hunsterverse is something to ask in the <a href="https://discord.gg/YuE42eh">Discord</a>.</dd>
+<dt>Warehouse Manager and Warehouse NPC</dt><dd>Hold the items given as daily rewards and the HRP tickets you receive for completing quests. They also have a warehouse for storing items and equipment. See <a href="#warehouse">Warehouse</a> below.</dd>
+<dt>Tower Weapons Cat</dt><dd>Makes and adjusts Tower Weapons. See the Tower section of the guide.</dd>
+<dt>Legendary Blacksmith</dt><dd>Does not appear at the moment. Previously used to upgrade some G Rank weapons.</dd>
+</dl>
+
+<h3 id="warehouse">Warehouse</h3>
+<figure class="hb-fig side"><img src="/assets/guide/menus/warehouse-menu.webp" alt="The Warehouse menu: Item Warehouse, Equipment Warehouse, Instructions, Rename Warehouse." width="269" height="130" loading="lazy" decoding="async" /><figcaption>Warehouse menu</figcaption></figure>
+<p>You can open the warehouses <strong>5 times every 12 hours</strong>. Each time you open one, you can make unlimited transfers between both equipment and normal boxes. You have 10 pages of each, and each page can be renamed.</p>
+<p>When you transfer items, you see your main box and the warehouse box. To reach the warehouse box, press left or right until you move out of the active box and into the see-through one. Sending items works like moving them between your inventory and your box: select the item, then choose how many to send.</p>
+</section>
+
+<section id="caravan-area">
+<h2>Caravan Area NPCs</h2>
+<div class="hb-gallery">
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-kashira.webp" alt="Kashira, the NPC who gives you your first Caravan Gem." width="115" height="150" loading="lazy" decoding="async" /><figcaption>Kashira</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-caravan-sweetheart.webp" alt="The Caravan Sweetheart NPC in the Caravan area." width="124" height="151" loading="lazy" decoding="async" /><figcaption>Caravan Sweetheart</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-caravan-combiner.webp" alt="The Caravan Combiner NPC at a table of coloured items." width="163" height="151" loading="lazy" decoding="async" /><figcaption>Caravan Combiner</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-cp-store.webp" alt="The CP Store NPC." width="125" height="151" loading="lazy" decoding="async" /><figcaption>CP Store</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-caravan-leader.webp" alt="The Caravan Leader NPC." width="178" height="150" loading="lazy" decoding="async" /><figcaption>Caravan Leader</figcaption></figure>
+</div>
+<p>These NPCs are in the Caravan Area. See <a href="/guide-frontier-events.html#caravan">Caravan</a> for how the Caravan works.</p>
+<dl>
+<dt>Kashira</dt><dd>Gives you a level 0 gem when you first talk to her. She is also used to set up Raviente hunts.</dd>
+<dt>Caravan Sweetheart</dt><dd>Gives the various Caravan quests in Pallone.</dd>
+<dt>Caravan Combiner</dt><dd>Combines items in batches. Does special combining for items made with Caravan materials. Sells various combination items.</dd>
+<dt>Store NPC</dt><dd>Sells standard store items.</dd>
+<dt>Food NPC</dt><dd>Sells food and packs lunchboxes.</dd>
+<dt>Upper Food NPC</dt><dd>Packs lunchboxes. Specifically for packing the larger lunchboxes that use four items for the various Raviente hunts.</dd>
+<dt>Caravan Gathering Spots</dt><dd>Lets you set up gathering on the various maps in exchange for CP, materials and time. Some items can only be gotten this way, such as those needed to craft a full Unknown armour set.</dd>
+<dt>CP Store</dt><dd>Trades CP for various Caravan items, including Whetstones that give +10% Affinity and materials for Caravan weapons.</dd>
+<dt>Caravan Gem Smith</dt><dd>Upgrades and maintains the Caravan Gem. Lets you roll a gem colour or get a rainbow gem. See <a href="/guide-frontier-events.html#caravan-gems">Caravan Gems</a>.</dd>
+<dt>Caravan Leader</dt><dd>Gives a 2 hour buff in exchange for 200k CP.</dd>
+</dl>
+</section>
+
+<section id="house-npcs">
+<h2>House facility NPCs</h2>
+<div class="hb-gallery">
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-house-cook.webp" alt="The House Cook, a cat." width="111" height="151" loading="lazy" decoding="async" /><figcaption>House Cook</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-pugi-farm-cat-manager.webp" alt="The Pugi Farm Cat Manager, a white cat at a counter." width="147" height="209" loading="lazy" decoding="async" /><figcaption>Pugi Farm Cat Manager</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/npc-partnyaa-manager.webp" alt="The Pugi Farm Partnyaa Manager, a dark cat standing in a flower field." width="174" height="268" loading="lazy" decoding="async" /><figcaption>Pugi Farm Partnyaa Manager</figcaption></figure>
+</div>
+<p>These NPCs are in the parts of your house. The <a href="/guide-frontier-house.html">House and AI Companions</a> page explains each facility.</p>
+<h3 id="main-house-npcs">Main house</h3>
+<dl>
+<dt>House Cook</dt><dd>Cooks meals for you and anyone in your house, bypassing any bentos posted with quests. This is useful for eating Adrenaline food without needing everyone to lose HP. Talking to him gives you an overview of the food you have. Sit at one of the dining tables, which come in different sizes, to actually have a meal prepared.</dd>
+</dl>
+<h3 id="gook-farm-npcs">Gook Farm</h3>
+<dl>
+<dt>Gook Manager</dt><dd>Looks after your gooks. Talk to him to receive all shinies dropped by gooks in the area. Gives access to Gook Cooking and creates decorative items for gooks.</dd>
+<dt>Farm Tools Cat</dt><dd>Lets you use the Gook Farm tools once per quest taken.</dd>
+<dt>Mail Cat</dt><dd>Lets you transfer items between characters on your account. The guide says this needs a subscription.</dd>
+<dt>Lost Cat</dt><dd>A cat who wants you to find items it lost in town. It has a chance to appear after normal quests (not deliveries). It can give exclusive items, such as crowns that are used to craft armour sets.</dd>
+</dl>
+<h3 id="support-island-npcs">My Support Island</h3>
+<dl>
+<dt>My Support Manager</dt><dd>Manages every part of your Halk. Lets you hire Partnyaas.</dd>
+</dl>
+<h3 id="pugi-farm-npcs">Pugi Farm</h3>
+<dl>
+<dt>Pugi Farm Manager</dt><dd>A girl whose looks vary with the outfits you bought for her and with which of the three sisters you chose when setting up the Pugi Farm. Gives daily points. Lets you spend points on Pugi Farm facilities and buy the various cat stores. Gives special missions for exclusive items such as G Whetstones. Converts extra points into GCP.</dd>
+<dt>Pugi Farm Cat Manager</dt><dd>Manages the cat stores you have set up in Airou Plaza. Turns wandering cats, which you can hire, on and off.</dd>
+<dt>Pugi Farm Partnyaa Manager</dt><dd>Lets you pick which facility your Partnyaa works at.</dd>
+</dl>
+<h3 id="sr-challenge-room-npcs">SR Challenge Room</h3>
+<dl>
+<dt>The S NPC</dt><dd>Gives out various vanity challenges. Lets you take the quests that raise the final four stats on your Book of Secrets. See <a href="/guide-frontier-hunter-rank.html#style-rank">Style Rank</a>.</dd>
+<dt>The R NPC</dt><dd>Gives out various vanity challenges.</dd>
+</dl>
+<p>The guide labels these two NPCs only "S" and "R".</p>
+</section>
+
+<section id="guild-card">
+<h2>Guild Card</h2>
+<p>The Guild Card has several pages. Here is each one, in the guide's order. The Chinese labels on the first pictures are the Taiwanese client's own text. Some pictures carry the guide author's notes in English.</p>
+<div class="hb-gallery">
+<figure class="hb-fig"><img src="/assets/guide/menus/guild-card-page-1.webp" alt="Guild Card basic information: ID, money, icons, joinable setting, alliance and guild status, GSR, GSRP, GR, GRP and a comment, with a note that ranks are HR, SR, GR or GSR depending on progress." width="636" height="468" loading="lazy" decoding="async" /><figcaption>Basic information</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/guild-card-page-2.webp" alt="Guild Card subscription page showing the subscription type and when it expires." width="636" height="468" loading="lazy" decoding="async" /><figcaption>Subscription</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/guild-card-page-3.webp" alt="Guild Card equipment page: the Quest Set and Town Set pieces, with health, stamina, attack, defense and resistance totals." width="636" height="468" loading="lazy" decoding="async" /><figcaption>Quest Set and Town Set</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/guild-card-page-4.webp" alt="Guild Card skills page: skill points by weapon, head, chest, arms, waist, legs and Pugi, and the list of active skills." width="636" height="468" loading="lazy" decoding="async" /><figcaption>Skills</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/guild-card-page-5.webp" alt="Guild Card Caravan Gem page: gem level, colours, Caravan points, rank, and gem skills." width="636" height="468" loading="lazy" decoding="async" /><figcaption>Caravan Gem</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/guild-card-page-6.webp" alt="Guild Card page listing Conquest kills and GR armour suitability." width="636" height="468" loading="lazy" decoding="async" /><figcaption>Conquests</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/menus/guild-card-page-7.webp" alt="Guild Card page with Rasta GCP, Pugi points, and daily limits for bonus points, Halk pots and daily quests." width="636" height="468" loading="lazy" decoding="async" /><figcaption>Points and daily limits</figcaption></figure>
+</div>
+<p>Press <kbd>Square</kbd> (or <kbd>Z</kbd> on the keyboard) on your Guild Card to open a section where you can change your comment and background and see who has your Rasta.</p>
+<ul>
+<li>Comments simply appear on your Guild Card when other people check it.</li>
+<li>A monster's background is unlocked after you have killed 100 of its type and bought its related book in the shop.</li>
+<li>For more on Rastas, see <a href="/guide-frontier-house.html#rastas">Rastas</a>.</li>
+<li>You can change your title at the bookshelf in your <a href="/guide-frontier-house.html#house">House</a>.</li>
+</ul>
+</section>
+<nav class="hb-pager" aria-label="Previous and next section">
+<a class="hb-prev" href="/guide-frontier-house.html" rel="prev"><span>&larr; Previous</span><strong>House and AI Companions</strong></a>
+<a class="hb-next" href="/guide-frontier-items.html" rel="next"><span>Next &rarr;</span><strong>Items and Materials</strong></a>
+</nav>
+<div class="hb-credit">
+<p>Based on <a href="https://fist.moe/">Fist's Monster Hunter Frontier guide</a> (fist.moe, saved January 2022), with data from the <a href="https://docs.google.com/spreadsheets/d/17c7OXNxcAZmT0MWRePekAZXQQqdCo7S8ICuXPsgK8Is/edit">Comprehensive Google Doc</a> and <a href="http://ferias.life.coocan.jp/">Ferias</a>. Questions about the original: <a href="https://fist.moe/discord/">Fist's Discord</a>.</p>
+<p>Reworded and laid out for Hunsterverse; pictures are from the original guide. Spotted a mistake? <a href="/report.html">Report it</a> or say so in our <a href="https://discord.gg/YuE42eh">Discord</a>.</p>
+</div>
+</main>
+</div>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/guide-roads.html">Roads guide</a>
+          <a href="/guide-frontier.html">Frontier handbook</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/api.html">API</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="/privacy.html">Privacy</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+</body>
+</html>

@@ -3,27 +3,29 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Getting started and progression · Hunsterverse</title>
-<meta name="description" content="From the tutorial bracket to Zenith: ranks, styles and what unlocks when." />
+<title>Basics and Getting Started · Frontier handbook · Hunsterverse</title>
+<meta name="description" content="A friendly start to Monster Hunter Frontier Z: what the game is, how to get going, your first steps from Hunter Rank 1 to 7, daily routines, controls and chat, and where to read next." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Hunsterverse" />
-    <meta property="og:title" content="Getting started and progression" />
-    <meta property="og:description" content="From the tutorial bracket to Zenith: ranks, styles and what unlocks when." />
+    <meta property="og:title" content="Basics and Getting Started · Frontier handbook" />
+    <meta property="og:description" content="A friendly start to Monster Hunter Frontier Z: what the game is, how to get going, your first steps from Hunter Rank 1 to 7, daily routines, controls and chat, and where to read next." />
     <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/guide-frontier-basics.html" />
-    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier-basics.png" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Getting started and progression" />
-    <meta name="twitter:description" content="From the tutorial bracket to Zenith: ranks, styles and what unlocks when." />
-    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier-basics.png" />
+    <meta name="twitter:title" content="Basics and Getting Started · Frontier handbook" />
+    <meta name="twitter:description" content="A friendly start to Monster Hunter Frontier Z: what the game is, how to get going, your first steps from Hunter Rank 1 to 7, daily routines, controls and chat, and where to read next." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
 <meta name="theme-color" content="#150e09" />
 <link rel="icon" href="/assets/favicon.png" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 <link rel="stylesheet" href="/css/styles.css" />
+<link rel="stylesheet" href="/css/guide-frontier.css" />
 <script src="/js/nav.js" defer></script>
 <script src="/js/background.js" defer></script>
 <script src="/js/consent.js" defer></script>
+<script src="/js/guide-frontier.js" defer></script>
 </head>
 <body class="guide guide-frontier">
     <a class="skip-link" href="#content">Skip to content</a>
@@ -75,58 +77,863 @@
       </div>
     </header>
 
-    <div class="guide-switch">
-      <span>Guide</span>
-      <a href="/guide-windows.html">Windows</a>
-      <a href="/guide-linux.html" aria-current="page">Linux</a>
-    </div>
+<div class="hb-layout">
+<nav class="hb-crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/guide-frontier.html">Frontier handbook</a></li><li><a href="/guide-frontier.html#start">Getting started</a></li><li aria-current="page">Basics and Getting Started</li></ol></nav>
+<aside class="hb-side" aria-label="Handbook contents">
+<details class="hb-panel hb-toc"><summary>On this page</summary>
+<ol>
+<li><a href="#welcome">Welcome to Frontier</a></li>
+<li><a href="#where-to-next">Where to go next in this guide</a></li>
+<li><a href="#getting-started">Getting started: install, account and character</a></li>
+<li><a href="#first-login">First login and settings</a></li>
+<li><a href="#town">The town and Hunter Rank 1</a></li>
+<li><a href="#hr2">Hunter Rank 2</a></li>
+<li><a href="#hr3-hr4">Hunter Rank 3 and 4</a></li>
+<li><a href="#hr5">Hunter Rank 5: where the game starts</a></li>
+<li><a href="#hr6-hr7">Hunter Rank 6 and 7: the road to G Rank</a></li>
+<li><a href="#new-players-server">The newbie server and subscriptions</a></li>
+<li><a href="#controls-and-chat">Controls, menus and chat</a></li>
+<li><a href="#daily-routine">Daily routine</a></li>
+<li><a href="#paid-things">Subscriptions, courses and paid items</a></li>
+<li><a href="#japanese-server">Japanese-server tips</a></li>
+<li><a href="#zz-update">The ZZ update: Magnet Spike, Zenith Sigils, GR999 and more</a></li>
+</ol>
+</details>
+<details class="hb-panel hb-all"><summary>All sections</summary>
+<ul>
+<li><a href="/guide-frontier.html">Handbook home</a></li>
+<li class="hb-group">Getting started</li>
+<li><a href="/guide-frontier-basics.html" aria-current="page">Basics and Getting Started</a></li>
+<li><a href="/guide-frontier-guild.html">English Guild and Guild Hall</a></li>
+<li><a href="/guide-frontier-house.html">House and AI Companions</a></li>
+<li><a href="/guide-frontier-menus.html">Menus and Town NPCs</a></li>
+<li class="hb-group">Gear and items</li>
+<li><a href="/guide-frontier-items.html">Items and Materials</a></li>
+<li><a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a></li>
+<li><a href="/guide-frontier-weapons.html">Weapons and Sigils</a></li>
+<li><a href="/guide-frontier-armour.html">Armour, Decorations and Skills</a></li>
+<li><a href="/guide-frontier-transcend.html">Transcend</a></li>
+<li class="hb-group">Monsters and references</li>
+<li><a href="/guide-frontier-monsters.html">Monsters</a></li>
+<li><a href="/guide-frontier-tools.html">Tools and References</a></li>
+<li class="hb-group">Progression</li>
+<li><a href="/guide-frontier-hunter-rank.html">Hunter Rank and Style Rank</a></li>
+<li><a href="/guide-frontier-g-rank-start.html">Starting G Rank</a></li>
+<li><a href="/guide-frontier-g-rank.html">G Rank</a></li>
+<li><a href="/guide-frontier-zenith.html">Zenith (GR200+)</a></li>
+<li class="hb-group">Things to do</li>
+<li><a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a></li>
+<li><a href="/guide-frontier-events.html">Regular Events</a></li>
+<li><a href="/guide-frontier-hunters-road.html">Hunter&#x27;s Road</a></li>
+</ul>
+</details>
+</aside>
+<main id="content" class="sheet hb-sheet">
+<p class="kicker">Frontier handbook · Getting started · 1 of 18</p>
+<h1>Basics and Getting Started</h1>
+<p class="lead">A friendly start to Monster Hunter Frontier Z: what the game is, how to get going, your first steps from Hunter Rank 1 to 7, daily routines, controls and chat, and where to read next.</p>
+<section id="welcome">
+<h2>Welcome to Frontier</h2>
+<p>Monster Hunter Frontier Z (MHF-Z) is an online Monster Hunter game with a long history and a lot of content. Its main parts are:</p>
+<ul>
+<li><strong>Hunter Rank (HR) 1 to 7.</strong> HR1 to HR4 are very easy compared to the rest of the game and mostly work as a tutorial. The game ramps up at <strong>HR5</strong>. HR6 holds the old "endgame", and HR7 leads to G Rank.</li>
+<li><strong>G Rank (GR).</strong> A free-form rank where you hunt for better gear. Quests at GR200 and above are called Zenith.</li>
+<li><strong>Style Rank, Hardcore monsters, Transcend, Hiden, the Caravan, Raviente and the Hunter's Road</strong> are some of the systems that give Frontier its own flavour. Each has its own page in this guide.</li>
+</ul>
+<p>This page walks you through the early game in order. Frontier has some old-school limits: you can <strong>only equip things in your house or at the Blacksmith</strong>, you <strong>cannot combine items after you sign for a quest</strong>, and you <strong>cannot restock or change equipment during a quest</strong>. In general you commit more to each quest than in newer Monster Hunter games, so think before you leave.</p>
+<p>If you only know Monster Hunter: World, remember that this is a much older style of game. Take your time and read the other pages when you need them.</p>
+</section>
 
-<main id="content" class="sheet">
-<p class="kicker">Hunsterverse · Handbook</p>
-<h1>Getting started and progression</h1>
-<p class="lead">From the tutorial bracket to Zenith: ranks, styles and what unlocks when.</p>
-<h2>Getting Started and Progressing</h2>
-<p>Progression runs in four stages: a short tutorial bracket, a long Hunter Rank climb, a parallel Style Rank track, then G Rank and Zenith.</p>
-<h2>What Frontier Is</h2>
-<p>Frontier Z is Capcom's PC Monster Hunter MMO, built on the second-generation games but developed for over a decade. It has its own roster of Frontier-exclusive monsters and elders, its own weapon types such as Tonfa and Switch Axe F, and a progression ladder far longer than any handheld entry.</p>
-<p>It also keeps old-school rules: no combining items once a quest is posted, and no restocking mid-quest.</p>
-<p>The difficulty curve is not smooth. HR1 through HR4 is a tutorial bracket — the game hands you an HR5 weapon, every monster in those ranks is available again at HR5, and gear effectively resets there. HR5 is where the real game begins. Live servers were subscription-based: the trial ran to HR4 and HR5 onward required a paid course, which also gated store stock and daily quests.</p>
-<p>On Hunsterverse: there is no cash shop and no paid service, so those subscription gates do not apply. Capcom's calendar events — festivals, Diva Defense, Caravan, seasonal events — are not scheduled here; content exists only when it is part of the server's own quest set.</p>
-<h2>How a Hunt Works</h2>
-<p>You post quests at a counter: the guild girl in black at the middle counters early on, the G Rank guildie with the umbrella later. Quests sort by star rating, key quests always first with a star icon, and an urgent appears once the keys are done, flagged by a red exclamation mark over the NPC.</p>
-<p>Before posting you confirm party size and password; the final screen also toggles Hardcore mode. A party holds up to four hunters; empty slots can be filled by AI companions — Halk, Partnyaa, Partner or another player's Rasta.</p>
-<p>The quest gives you a supply box at camp and nothing else. From HR3 onward — High Rank by the old rating — you stop receiving supplies and can spawn at a random point. You cannot return to town for items, change gear mid-quest, or combine after posting, so leaving is a commitment. The end screen lists rewards, HRP gained and monster stats.</p>
-<p>Carting is not free: on Supremacy-class quests, carts and Halk Pot use shrink the reward pool. Halk Pots cut damage taken by a flat 70% but are limited to five a day, so treat them as a crutch.</p>
-<p>On Hunsterverse: quests come from the server's own quest set with English text; titles, objectives and descriptions are translated.</p>
-<h2>The Basic Loop</h2>
-<ul><li><strong>Open the Hunter Guide.</strong> Shift+C or R1+R2. Enter each section, press Z or Square for details, then confirm; most early tasks are "read this" and pay potions, meat, whetstones and cheques.</li><li><strong>Run keys, then the urgent.</strong> Three keys at HR1, the urgent, then back to town to rank up.</li><li><strong>Cash the cheques.</strong> At HR2 you get hundreds of yellow cheque items. Sell about 150 for 7.5 million zeny, then buy the Powercharm (36,000z), Armor Charm (24,000z), both Book of Storage volumes (1,500z and 5,000z), and box upgrades.</li><li><strong>Eat before you leave.</strong> Fist Rice with Demon Mushrooms gives +50 HP and +50 stamina in warm season; with Frost Tomatoes, the same in cold; with Power Lard, +50 HP and +25 stamina in breeding season.</li><li><strong>Claim the daily.</strong> The pink store guildie's last option gives a Daily quest, five Halk Pots and five N Points, resetting at 12:00 Taiwan time.</li><li><strong>Use your stamps.</strong> A completed stamp card pays 1x 4,000 HRP ticket, the next 3x, repeating forever; each adds 4,000 HRP to the quest.</li></ul>
-<p>On Hunsterverse: the site tracks playtime, hunts, weapon usage, quest outcomes and Road placings, and the Discord bot links accounts and shows who is online.</p>
-<h2>Hunter Rank</h2>
-<p>HR1 to HR7 is gated by keys and urgents, not point totals: clear the keys, an urgent unlocks, clear it and you rank up on returning to town.</p>
-<ul><li><strong>HR1</strong> — Taikun Zamuza, Yian Kut-Ku, Hypnoc; urgent Abiorugu.</li><li><strong>HR2</strong> — Rathian, Dyuragaua, Volganos, Gurenzeburu; urgent Espinas.</li><li><strong>HR3</strong> — Pariapuria, Rathalos, Nono Orugaron, Rajang; urgent Rukodiora.</li><li><strong>HR4</strong> — White Hypnoc, Orange Espinas, Kuarusepusu, Doragyurosu; urgent Akura Vashimu.</li><li><strong>HR5</strong> — Baruragaru, Diorex, Toridcless, Gasurabazura, Toa Tesukatora; urgent Supremacy Odibatorasu.</li><li><strong>HR6</strong> — Supremacy Aruganosu and Goruganosu, then Supremacy Unknown, as repels. No urgent: clearing the 6★ keys promotes you to HR7 automatically.</li><li><strong>HR7</strong> — Shantien repel, which opens G Rank.</li></ul>
-<p>HR5 is the hinge: it unlocks Style Rank, three of the four weapon styles per weapon, Hardcore monsters and the SP, Gou and Exotic gear trees. HR6 adds 6★ repels and slays, with Supremacy variants of Pariapuria, Unknown, Doragyurosu, Teostra and Odibatorasu; Lavasioth's Supremacy form is Aruganosu and Goruganosu, a pair that must both be brought to 1 HP before either dies. HR7 adds the last SR skills, and Affinity Up is the pick for almost every weapon.</p>
-<p>The cap is HR999; HRP comes from quests, with 4,000 HRP tickets as the shortcut.</p>
-<h2>Style Rank</h2>
-<p>Style Rank starts automatically the first time you approach the Guild Master at HR5 and ranks on SRP. It gives three things: SR Skills, two extra movesets per weapon type, and Hardcore monsters.</p>
-<p>Styles swap movesets. At HR5 you have Earth, Heaven and Storm, freely changeable at any equipment box under Change Equipment → Secret Book → Weapon → Style; Extreme unlocks at G Rank and is best in slot there. Storm is the default at HR5 for most weapons, but Storm Bow is a downgrade, Storm Long Sword only usable, and Sword and Shield and Gunlance good in all three.</p>
-<p>SR Skills are permanent buffs that cost no slots, equipped through the Book of Secrets, which must itself be equipped. You get one, and a second at GSR100: Defense +170, a single resistance +34, all resistances +19, Health +50, Affinity +20-24%. From HR7, Affinity Up is the standard pick.</p>
-<p>Attack Up adds +17 true raw at HR5, +45 at HR6, +50 at HR7, and caps at +100 at GSR999. Attack Ceiling is the stat people neglect: attack is capped at 800 true raw by default, and each of the 180 My Mission levels raises the cap by 40, to 8,000. Aim for about 50 levels early and 110-130 once your set is built.</p>
-<p>Hardcore is a toggle on the final quest screen, marked by a flame icon. It makes every large monster in the quest its HC variant, with new moves and higher roar, wind and quake levels. HC pays 3x HRP, 4x SRP, 1.5x zeny and 1.5x GCP while your weapon is within the rarity limit (Rare-11 at HR5, Rare-12 from HR6), and drops Weapon Souls by band: 序 for HR1-2, 中 for HR3-4, 極 for HR5 non-Gou, 天 for HR5 Gou. HC carves are a 5% carve outside the normal pool; GHC carves are 2%.</p>
-<p>Hiden is the long payoff: five decorations for a weapon type grant its Weapon Tech skill, always including Super High-Grade Earplugs and at least 1.2x melee / 1.3x ranged attack. Expect 775 hunts and 30+ hours for the first, and it cannot be finished before GR500.</p>
-<h2>G Rank</h2>
-<p>G Rank starts at HR7. The G Rank guildie posts a Shantien repel on an airship — ballista binder ammo from the deck box, the gong, and it goes down. Then talk to the Guild Master: she sets every weapon to GSR and unlocks Extreme Style for all of them. Do that immediately, on every weapon type.</p>
-<p>G Rank is free-form: everything is open except G Rank Exotics and Zeniths. Quests are sorted ★1 to ★7, and the star rating subtracts defense — full at ★1, -150 per star to -900 at ★7, and -1,050 at ★8 and on every Zenith. Lowering a quest's star rating when confirming cuts rewards and carves.</p>
-<ul><li><strong>GR100</strong> — required by the G Rank Hunter Guide; a milestone, not a gate.</li><li><strong>GR200</strong> — Zenith quests open at ★1.</li><li><strong>GR500</strong> — G Rank Exotics at fixed ★8, Merits, and the point Hiden sets can be completed.</li><li><strong>GR800</strong> — G Finesse upgrades, and ★4 Zeniths.</li><li><strong>GR899 / GR999</strong> — the original cap was GR899; a later update raised it to GR999 at 13,716,950 GRP total, 2,331,451 more from GR899. GRP quests pay 3,000-5,200; the Gogomoa GRP ship pays 8,000.</li></ul>
-<p>G Rank weapons have 50 levels, armour runs G Lv1 to GX Lv7, and sets run 12 relevant skills early and up to 16 late, so full monster sets are mostly unusable. Sigils replace decorations, G Break Jewels come from parts of same-star monsters, and GSR is per weapon: GSR1 gives +50 true raw, GSR999 +100.</p>
-<h2>Zenith Content</h2>
-<p>Zenith is the Frontier Z endgame tier: variants of existing monsters with one overdeveloped part, new patterns and much larger health pools. One rating per 200 GR — ★1 at GR200, ★2 at GR400, ★3 at GR600, ★4 at GR800 — and every Zenith quest applies -1,050 defense.</p>
-<p>G Rank Espinas at GR1 has about 29,090 effective health and G Rank Barioth at GR100 has 93,333; ★1 Zenith Espinas has 99,800, then 119,800 at ★2, 149,800 at ★3 and 249,600 at ★4.</p>
-<p>You do not need the top tier for materials. Almost everything is shared across a Zenith's tiers and only the special break item is band-specific — breaking the developed part gives a 100% drop for that band. Farm ★1 to ★3 for the bulk, then kill roughly five GR800 ★4s with the part broken to finish a set. Breaking it also usually reduces threat; some Zeniths lose their Zenith-level roar, tremor or wind pressure.</p>
-<p>Zenith gear is a flat upgrade over standard G Rank gear, and each piece carries a Zenith Skill that mostly boosts an existing skill a tier or adds a slot. Slots are the real prize: five armour pieces plus a Zenith weapon and Cuff give up to seven extra, and a ZP set can reach 19 skills. Zenith weapons add 1.5x part damage and up to 580 base true raw.</p>
-<p>Do not rush ZX upgrades. Armour runs Z, ZF, ZY and ZX at GR200, 400, 600 and 800. Z to ZX Lv1 costs 196 materials; ZX Lv2-7 costs another 142 for 30-50 defense. Leave it at Lv1.</p>
-<p>Zeniths also bring statuses standard gear cannot fully answer: Extreme blights need about 55 resistance — SR All Res Up, one Res Up and Guild Food can reach 83 — and Super Poison, Sound Asleep, Crystal Paralysis, Lingering Paralysis, Bleeding and Lightning Rod Needle each need specific handling. Extreme Poison cannot be countered at all.</p>
-<p class="meta"><a href="/guide-frontier.html">All handbook chapters</a></p>
+<section id="where-to-next">
+<h2>Where to go next in this guide</h2>
+<p>The guide is split into pages. Pick what you need:</p>
+<ul>
+<li>Setting up the game: <a href="/guide-windows.html">Windows setup</a> or <a href="/guide-linux.html">Linux setup</a>.</li>
+<li>Your first weeks: stay on this page, then read <a href="/guide-frontier-hunter-rank.html">Hunter Rank and Style Rank</a>.</li>
+<li>Menus and town people: <a href="/guide-frontier-menus.html">Menus and Town NPCs</a>. Your house, Partner and Partnyaa: <a href="/guide-frontier-house.html">House and AI Companions</a>.</li>
+<li>Items and gathering: <a href="/guide-frontier-items.html">Items and Materials</a>. Gear and box: <a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a>.</li>
+<li>Gear and builds: <a href="/guide-frontier-weapons.html">Weapons and Sigils</a>, <a href="/guide-frontier-armour.html">Armour, Decorations and Skills</a> and <a href="/guide-frontier-transcend.html">Transcend</a>.</li>
+<li>Food and quests: <a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a>. Your guild: <a href="/guide-frontier-guild.html">English Guild and Guild Hall</a>.</li>
+<li>Monsters and tools: <a href="/guide-frontier-monsters.html">Monsters</a> and <a href="/guide-frontier-tools.html">Tools and References</a>.</li>
+<li>When you reach G Rank: <a href="/guide-frontier-g-rank-start.html">Starting G Rank</a>, <a href="/guide-frontier-g-rank.html">G Rank</a> and <a href="/guide-frontier-zenith.html">Zenith</a>.</li>
+<li>Events: <a href="/guide-frontier-events.html">Regular Events</a> (Hunter Festival, Diva Defense, Caravan, Raviente) and <a href="/guide-frontier-hunters-road.html">Hunter's Road</a>.</li>
+</ul>
+<p>On our server you can also use the <a href="/monsters.html">monster field guide</a>, the <a href="/catalog.html">item and equipment catalog</a>, the <a href="/quests.html">quest catalog</a> and the <a href="/set-builder.html">armour set builder</a>.</p>
+</section>
+
+<section id="getting-started">
+<h2>Getting started: install, account and character</h2>
+<aside class="box hv-note"><p>The guide's own setup chapters (Windows locale and time zone, Locale Emulator, PlayStation versions, Taiwanese and Japanese account sign-ups, installers, VPNs) were written for Capcom's official servers. On Hunsterverse, follow our setup guides instead: <a href="/guide-windows.html">Windows</a> or <a href="/guide-linux.html">Linux</a>. Register a game account at <a href="https://hunstermonter.net">hunstermonter.net</a>, then log in with the Mezeporta launcher. No time zone or locale change is needed for our setup. Our Windows guide says Locale Emulator is only needed if the game refuses to start.</p></aside>
+<h3 id="main-menu">The main menu</h3>
+<figure class="hb-fig"><img src="/assets/guide/basics/start-menu.webp" alt="The start menu: Quick Start, Choose Server, Options, Quit." width="450" height="116" loading="lazy" decoding="async" /></figure>
+<p>When the game starts, you see a menu with four options:</p>
+<ul>
+<li><strong>Quick Start</strong> picks a server for you.</li>
+<li><strong>Choose Server</strong> lets you pick a server to join and see which servers your friends are on.</li>
+<li><strong>Options</strong></li>
+<li><strong>Quit</strong></li>
+</ul>
+<p>Character creation happens after you choose either Quick Start or Choose Server. On your first launch you have no character yet, so the launcher asks you to log in with your newly assigned ID.</p>
+<h3 id="character-creation">Character creation</h3>
+<figure class="hb-fig side"><img src="/assets/guide/basics/character-creation.webp" alt="The Character Creation screen with a female hunter in starter clothes and the creation menus on the left." width="194" height="122" loading="lazy" decoding="async" /><figcaption>Character creation</figcaption></figure>
+<p>The options are in English. Each section has a master selection option, with filters for individual sub-types (for example dark skin, long hair, light skin). <strong>Select</strong> randomises your character. The right stick, or <kbd>K</kbd> and <kbd>;</kbd> on a keyboard, turns your character around.</p>
+<p>After you design your character, you choose which weapon type you start with. This is only what you carry at first and you can change it later. As in mainline Monster Hunter, every character starts with the basic version of each weapon in the box.</p>
+<div class="box note"><p>You start with an <strong>HR5 weapon</strong> (a Gou weapon). HR1 to HR4 are <strong>very easy</strong> compared to the rest of the game, and content ramps up harshly from <strong>HR5 onwards</strong>. The Urgent quests are scaled down so you can solo them. You can make a new weapon from scratch and switch off NPCs (see <a href="/guide-frontier-menus.html">Menus</a>) if you want to stretch out the earliest stages, but that is not generally recommended: every monster from the first four rank bands is available again at HR5, gear essentially starts over (like High Rank in other games), and you unlock three of the four weapon styles for every weapon at HR5. The guide's author calls HR1 to HR4 about the equivalent of Low Rank at best.</p></div>
+<h3 id="first-servers">Your first servers</h3>
+<p>After you confirm the news posts, you are put on a server or you choose one, depending on how you started. If you have to choose, only the <strong>first</strong> and <strong>fifth</strong> tabs are available at the start. The first tab holds the standard low-rank servers and the fifth a special set of newbie servers. See <a href="#new-players-server">the newbie server</a> below. Our own worlds are listed on <a href="/worlds.html">the worlds page</a>.</p>
+</section>
+
+<section id="first-login">
+<h2>First login and settings</h2>
+<p>When you are in a server, you see your character walk into town and an <strong>instructor NPC</strong> greets you. Mash through what he says: it is not important. Then you get a message about the <strong>Hunter Guide</strong>, which works as both a set of achievements and a basic progression guide.</p>
+<figure class="hb-fig side"><img src="/assets/guide/basics/hunter-guide-window.webp" alt="The Hunter Guide window: a row of task icons across the top, a short instruction box, and a list of rewards." width="319" height="236" loading="lazy" decoding="async" /><figcaption>The Hunter Guide</figcaption></figure>
+<ol>
+<li>Press confirm to open the guide menus. You can open the <strong>HR Tasks</strong> section and the <strong>Other Tasks</strong> section.</li>
+<li>Open the HR section with confirm (<kbd>E</kbd>, left click, or the right face button on a controller). It has two tabs of tasks.</li>
+<li>In the first tab, press <kbd>Z</kbd> (or the left face button) to view the details of the tasks. This automatically completes five of them and lets you claim a basic set of starter items (potions, meat, whetstones) for your first quests.</li>
+<li>Do the same in the second tab and in the Other section for items that are useful later.</li>
+<li>Dismiss the pop-ups with back or confirm. You end up where the long string of prompts began.</li>
+</ol>
+<h3 id="options-to-change">Options worth changing now</h3>
+<figure class="hb-fig"><img src="/assets/guide/basics/options-menu.webp" alt="The Options menu in two versions: with High Grade on and off. Entries: Display Options, Common Options, Rendering Options, Control Options, NPC Options, Chat Options, Sound Options." width="456" height="195" loading="lazy" decoding="async" /><figcaption>The Options menu. Menu names may differ slightly in our client.</figcaption></figure>
+<ul>
+<li><strong>Controller type:</strong> change it to match modern console Monster Hunter games instead of the PS2 series. Go to <strong>Options > Control Options > Key Settings</strong>.</li>
+<li><strong>Display Options (Quests, General):</strong> turn off the <strong>Direction Arrow</strong> (the mouse-control direction indicator) and the <strong>Controls Guide</strong> overlay, which is not much use if you cannot read Chinese. <strong>HP Display</strong> can be Fixed Length or Stretched to full screen width, as you prefer.</li>
+<li><strong>Chat Options:</strong> disable all options from the bottom up if you do not want NPCs shouting at you in chat and making sound effects.</li>
+</ul>
+<div class="hb-gallery">
+<figure class="hb-fig"><img src="/assets/guide/basics/key-bindings.webp" alt="The key bindings screen with Keyboard, Mouse and Controller tabs, and a list of actions and their bindings." width="653" height="493" loading="lazy" decoding="async" /><figcaption>Key bindings</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/basics/chat-options.webp" alt="The Chat Options screen: a list of chat settings, each switched on or off." width="327" height="317" loading="lazy" decoding="async" /><figcaption>Chat options</figcaption></figure>
+</div>
+<h3 id="tutorial-quest">The tutorial quest</h3>
+<figure class="hb-fig side"><img src="/assets/guide/basics/quest-end-menu.webp" alt="The quest end menu: Take Item, Send Item To Box, Send All To Box, Exit and Sell Items, and the time left." width="228" height="130" loading="lazy" decoding="async" /><figcaption>The quest end menu</figcaption></figure>
+<p>When you talk to the instructor you may end up on a <strong>Gogomoa</strong> quest. Skip through the text prompts as they appear (press whichever button is cancel) and choose <strong>No</strong> when asked a question. Then:</p>
+<ol>
+<li>Use the <strong>Blue Box</strong> and take the coin from it.</li>
+<li>Deliver the coin to the <strong>Red Box</strong>. This lets you leave to the north.</li>
+<li>Kill the Gogomoa, which ends the quest.</li>
+</ol>
+<p>You then see a normal quest end screen where you can take rewards, followed by a list of the HRP you gained, monster stats and so on.</p>
+</section>
+
+<section id="town">
+<h2>The town and Hunter Rank 1</h2>
+<figure class="hb-fig"><img src="/assets/guide/basics/town-map.webp" alt="A rough map of the town with its key locations and NPCs marked." width="765" height="569" loading="lazy" decoding="async" /><figcaption>A rough, purposely off-scale map of the town. Use it to find the key points and NPCs mentioned in this guide.</figcaption></figure>
+<p>The town layout is simple. The map above shows the key locations, including the places named later on this page.</p>
+<h3 id="hr1-quests">HR1 quests</h3>
+<p>Weapons: the starter weapons are built to push you through the trial as fast as possible. They are not very strong in Frontier terms (very early HR5 weapons) but are notably stronger than the basic weapons you can craft. If you want to craft a weapon from scratch and learn to gather, see <a href="/guide-frontier-items.html">Items and Materials</a>. Finding materials is then entirely on you, with no hand-holding.</p>
+<ol>
+<li>Go to the <strong>guild girl in black</strong> at the middle counters in the town square. She may prompt you to return to the Hunter Guide; you can ignore this and keep talking to her until you get the quest menu.</li>
+<li>Choose <strong>Hunter Quests (raise HR) > 1 star</strong>. Key quests are sorted to the top and have an obvious star icon.</li>
+<li>Finish the three key quests. An obvious <strong>Urgent Quest</strong> section then appears under <strong>Hunter Quests (raise HR) > Urgent Quests</strong>. Complete it to progress to HR2.</li>
+</ol>
+<p>The instructor NPC shouts a lot during these quests and makes whistling sounds even if you switched messages off. He stops appearing in your quests after you reach HR2.</p>
+<h3 id="hunter-guide-tasks">Hunter Guide tasks</h3>
+<p>Hunter Guide tasks work like most modern achievement systems: you complete a task and get items. Most tasks are simple and most are worth doing. Open the Hunter Guide tasks window in town with <kbd>Shift</kbd>+<kbd>C</kbd> on keyboard or <kbd>R1</kbd>+<kbd>R2</kbd> on a controller. The challenges are split into sections ordered by progression.</p>
+<p>Open every section you can, press <kbd>Square</kbd> (or <kbd>Z</kbd> on keyboard) to view the detailed information, then press your normal confirm button. This claims a batch of tasks that are just "Read This", which gives you free items, including the cheques you sell below. The guide recommends working through all the tasks, because the rewards are very useful and most do not take you far out of your way. The Google Document has the details on each task.</p>
+</section>
+
+<section id="hr2">
+<h2>Hunter Rank 2</h2>
+<h3 id="zeny-and-box-space">Zeny and box space</h3>
+<p>When you finish the HR1 Urgent, you move up to HR2 automatically when you return to town. The instructor greets you, upgrades your house so you can get a partner, and gives you a stack of GCP tickets.</p>
+<p>Now <strong>open one of the boxes</strong> and sell about <strong>150 of the Cheques</strong> the Hunter Guide gave you. Choose <strong>Sell</strong> in the box, then <strong>Items</strong>, then the <strong>yellow ticket</strong> (a cheque; its name is Chinese-only in the guide) and sell around 150 of them. This puts you at about <strong>7.5 million zeny</strong>, enough to buy all the items and upgrades you need for a long time. Selling this many items is fine: they exist only to be sold, and the Hunter Guide tasks across HR1 to HR7 give you hundreds more.</p>
+<p>Then go to the <strong>Shop NPC</strong> (the pink guildie) and buy the Power Charm, Armour Charm and the box upgrades.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Shop section</th><th>Item</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td>Section 1 (basics, recovery items)</td><td>Powercharm</td><td>36,000z</td></tr>
+<tr><td>Section 1</td><td>Armor Charm</td><td>24,000z</td></tr>
+<tr><td>Section 2 (books)</td><td>Book of Storage 1</td><td>1,500z</td></tr>
+<tr><td>Section 2</td><td>Book of Storage 2</td><td>5,000z</td></tr>
+</tbody>
+</table></div>
+<p>You could also buy stacks of potions and other items in Section 1, but you should not need much until HR5, and the guide covers that there. For how boxes grow, see <a href="/guide-frontier-item-box.html#box-capacity">Getting more box space</a>.</p>
+<h3 id="caravan-gem">Caravan Gem</h3>
+<p>The <strong>Caravan Area</strong> (also called Pallone) is next to the town entrance. Go there and get your Caravan Gem as soon as possible after reaching HR2. Walk in and talk to <strong>Kashira</strong>, the woman near the bonfire. A new icon of a random colour then appears next to your name: that is your Caravan Gem.</p>
+<p>The gem adds a new option to your equipment box (in the Equip menu, <strong>Caravan Skills</strong>). At first it holds only <strong>Recovery Items Up</strong>. Equip it when you can: it raises the healing of Potions and Mega Potions to <strong>1.10x</strong> their normal amounts. For more on the Caravan see <a href="/guide-frontier-events.html#caravan">the Caravan section</a>.</p>
+<h3 id="partner">Your Partner</h3>
+<figure class="hb-fig side"><img src="/assets/guide/basics/partner-weapon-choices.webp" alt="Two Partner characters in matching pink armour side by side, one labelled Dual Swords and one labelled Sword and Shield." width="420" height="302" loading="lazy" decoding="async" /><figcaption>Dual Swords and Sword and Shield are the best Partner weapons</figcaption></figure>
+<p>At HR2 you should get a Partner. Enter the <strong>bar</strong> on the stairs of the town and talk to the <strong>waiter NPC in blue</strong> at the counter. This lets contracted NPCs go on quests with you and lets you start your own Human NPC companion.</p>
+<ol>
+<li>Talk to the <strong>Legendary Rasta</strong> who uses the weapon type you want your Partner to use. Tonfa and Switch Axe are unlocked separately at G Rank. If you are unsure what weapon a Legendary uses, talk to them and choose the second option to see their gear.</li>
+<li>Choose <strong>Partner</strong> (Take Partner / Unlock Weapon) to start creating one.</li>
+<li>Choose a <strong>gender</strong>, then a <strong>personality</strong>.</li>
+<li>Confirm your choices. After this, go to your <strong>House</strong>. The NPC you talked to greets you there and you can customise your Partner as you did your own character.</li>
+</ol>
+<p>The best choices for AI and actual damage are <strong>Dual Swords</strong> or <strong>Sword and Shield</strong>. Great Sword is also not too bad. The other weapons have AI that is pretty stupid and spends more time doing nothing than attacking monsters.</p>
+<p>The personality types are listed below (male on the left, female on the right). Personality only decides the manner of speech and does not matter much.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Male</th><th>Female</th></tr></thead>
+<tbody>
+<tr><td>Hot Blooded</td><td>Energetic</td></tr>
+<tr><td>Callous</td><td>Callous</td></tr>
+<tr><td>Delicate</td><td>Serious</td></tr>
+<tr><td>Bad</td><td>Naive</td></tr>
+<tr><td>Refreshing</td><td>Temperamental</td></tr>
+<tr><td>Manly</td><td>Focused</td></tr>
+<tr><td>Magnificent</td><td>Introverted</td></tr>
+</tbody>
+</table></div>
+<p>You cannot change gender without paying real money for restyle points or recreating the Partner. The name and personality can be changed with specific rare items. If you make a mistake, talk to the <strong>cat next to the bar</strong>: this deletes your Partner completely and lets you start again with a new name, gender and personality. To change only the face or voice, you can use Premium Restyle Points from the Item Shop (these cost real money on the official servers).</p>
+<p>Partners have much more to them, but you can ignore it until G Rank unless you plan to spend a long time at HR5. At G Rank, read <a href="/guide-frontier-house.html#partner">Partner</a> on the House and AI Companions page.</p>
+<h3 id="partnyaa">Felyne Partnyaas</h3>
+<p>Partnyaas are Felyne companions like those in MHFU and MHP3rd. You manage them in the same area as the Halks (go to your house and choose the <strong>heart icon</strong>). To hire one, talk to the Halk and <strong>My Support Manager</strong> (the only human in the zone) and choose his Partnyaa option. This starts Airou creation mode.</p>
+<p>There are five tabs for the look: <strong>Pattern, Eyes, Ears, Fur Colour</strong> and <strong>Tail</strong>. After you confirm, you name your Partnyaa and it appears on the island over the bridge. You can have <strong>1 to 2</strong> Partnyaas at first (2 if you are in a guild, 1 if not), and you can get more when one is at <strong>Rank 300</strong>. More is on <a href="/guide-frontier-house.html#partnyaa">the Partnyaa section</a>.</p>
+<div class="box tip"><p>For the fastest clearing of the first quests, open <strong>Options > NPC Options</strong> and move your Partnyaa to the lowest priority. This stops it joining your quests and replacing a normal NPC.</p></div>
+<h3 id="hr2-quests">HR2 quests</h3>
+<p>The HR2 keys are straightforward. The one thing to know: in the Rathian hunt, go to <strong>Area 6</strong> and wait, because Area 10 is closed to hunters at night in the jungle.</p>
+</section>
+
+<section id="hr3-hr4">
+<h2>Hunter Rank 3 and 4</h2>
+<h3 id="hr3-house-transcend">House and Transcend</h3>
+<p>At HR3 you can buy a <strong>second house expansion</strong> in the books section of the pink NPC's shop. This adds more box capacity. You also unlock the <strong>Transcend System</strong>: a customisable, time-based buff that augments your hunter's abilities. Like Wystones in MH4U, Transcend appears as a usable item among your consumables. Unlike a Wystone, the Transcend state starts with little charge and has to be powered up over time on quests.</p>
+<p>It starts as a slight increase to elemental and raw damage and becomes fairly powerful over the game. Full details are on the <a href="/guide-frontier-transcend.html">Transcend page</a>.</p>
+<h3 id="newbie-guild-and-bentos">Newbie guild and lunchboxes</h3>
+<p>The game wants you to join a <strong>newbie guild</strong> at HR3. Talk to the guild manager and answer positively to every prompt; he railroads you into a guild. After that you can enter the <strong>guild hall</strong> next to him and buy several useful food items that give <strong>+50 health</strong> and <strong>+25/+50 stamina</strong> on every quest. Guild Hall details are on <a href="/guide-frontier-guild.html">the guild page</a>.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Guild store section 1 (basics)</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td>Spirit Mushrooms</td><td>980z</td></tr>
+<tr><td>Frost Tomatoes</td><td>450z</td></tr>
+<tr><td>Pugi Crackers</td><td>10z</td></tr>
+</tbody>
+</table></div>
+<p>As an alternative you can apply to the English Guild, but acceptance is not automatic: you may have to wait until someone with permission accepts your request. You can also join the newbie guild, leave immediately after buying food, and then apply to the real guild.</p>
+<h3 id="lunchboxes">Lunchboxes and bentos</h3>
+<figure class="hb-fig side"><img src="/assets/guide/basics/bento-menu.webp" alt="The bento menu: Pack Bento, Buy Ingredients, Sell Items, Buy to Box, Use Bento Toggle." width="199" height="166" loading="lazy" decoding="async" /><figcaption>The bento NPC menu</figcaption></figure>
+<p>A lunchbox (or <strong>bento</strong>) is a buff meal that you set to go with your quest when you post it. You can buy many foods and combine them in many ways. Pack a bento at the right NPC: the dedicated food store in town, the Caravan area, or the <strong>Guild Store Cat</strong> in the Guild Hall.</p>
+<figure class="hb-fig side"><img src="/assets/guide/basics/bento-quest-posting.webp" alt="The quest posting screen with the bento line highlighted and a prompt to hit X or Z to change or check buffs." width="330" height="394" loading="lazy" decoding="async" /><figcaption>Posting a quest with a bento</figcaption></figure>
+<p>After you make any one meal it is added to a quick list by default. You can instantly prepare any meal on that list by pressing <kbd>X</kbd> on a controller or <kbd>Z</kbd> on a keyboard while posting a quest. The meal is remembered between quests, so once you choose the right food you do not need to choose again, unless the season changes.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Season</th><th>Standard combination</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>Warm season</td><td>Fist Rice + Spirit (Demon) Mushrooms</td><td>+50 HP / +50 Stamina</td></tr>
+<tr><td>Cold season</td><td>Fist Rice + Frost Tomatoes</td><td>+50 HP / +50 Stamina</td></tr>
+<tr><td>Breeding season</td><td>Fist Rice + Power Lard</td><td>+50 HP / +25 Stamina</td></tr>
+</tbody>
+</table></div>
+<div class="hb-table"><table>
+<thead><tr><th>Food</th><th>Price</th><th>Sold at</th></tr></thead>
+<tbody>
+<tr><td>Spirit Mushrooms</td><td>980z</td><td>Guild Cat Store</td></tr>
+<tr><td>Frost Tomatoes</td><td>450z</td><td>Guild Cat Store</td></tr>
+<tr><td>Fist Rice</td><td>275z</td><td>Lunchbox NPC</td></tr>
+<tr><td>Power Lard</td><td>200z</td><td>Lunchbox NPC</td></tr>
+</tbody>
+</table></div>
+<p>More meals are on <a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a>.</p>
+<h3 id="hr3-quests">HR3 quests</h3>
+<p>The HR3 quests are simple. HR3 is technically High Rank by the old rating system, so you no longer get supplies and you spawn at random spots in quests that support it. The Urgent is against the Elder Dragon <strong>Rukodiora</strong>, who uses <strong>Magnetism</strong>. This lets him move your hunter around while you have the <strong>Magnetised</strong> status.</p>
+<h3 id="pugi-farm">Pugi Farm</h3>
+<figure class="hb-fig side"><img src="/assets/guide/basics/pugi-farm-managers.webp" alt="The three farm managers labelled Eldest, Middle and Youngest." width="396" height="336" loading="lazy" decoding="async" /><figcaption>The three possible farm managers</figcaption></figure>
+<p>At <strong>HR4</strong> you can start getting a Pugi. Enter your <strong>Pugi Farm</strong> from the house door next to the shops (pig icon). Inside, talk to the NPC in front of you. She asks a series of questions that assign one of three farm managers. Use the table if you have a preference for their looks.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Answers</th><th>Manager assigned</th></tr></thead>
+<tbody>
+<tr><td>NYY</td><td>Random</td></tr>
+<tr><td>YYN</td><td>Youngest</td></tr>
+<tr><td>YYY</td><td>Middle</td></tr>
+<tr><td>YNY</td><td>Eldest</td></tr>
+</tbody>
+</table></div>
+<p>After the questions you wait until midnight (Taiwan time, on the official servers) to progress, so the rest is on the <a href="/guide-frontier-house.html">House and AI Companions page</a> under the Pugi Farm. A Pugi, with its outfits and cuffs, is Frontier's version of Talismans or Charms.</p>
+<h3 id="item-presets">Item presets</h3>
+<p>Item presets save your pouch for a quick restock. Set up your inventory exactly as you want it saved, open any box, choose <strong>Item Presets</strong> then <strong>Register Preset</strong>, pick a slot and optionally name it. Slots 1 to 4 have shortcuts: <kbd>L1</kbd>/<kbd>L2</kbd>/<kbd>R1</kbd>/<kbd>R2</kbd> or <kbd>F</kbd>/<kbd>Ctrl</kbd>/<kbd>C</kbd>/<kbd>Shift</kbd> while you interact with a box. So after a quest, run to a box, interact and press <kbd>L1</kbd> or <kbd>F</kbd> to equip the preset from slot 1 at once.</p>
+<p>On the official servers, subscribers got an extra <strong>20 preset slots</strong> (slots 5 to 24), under <strong>Item Presets > Equip Preset</strong>. These slots have no keyboard or controller shortcuts and must be equipped by hand. More in <a href="/guide-frontier-item-box.html#item-presets">Equipment and Item Boxes</a>.</p>
+<h3 id="hr4-quests">HR4 quests</h3>
+<p>The HR4 key quests are standard. The Urgent is against <strong>Akura Vashimu</strong>, who uses the Frontier-exclusive <strong>Crystallisation</strong> status.</p>
+<ul>
+<li>Crystallisation coats you in crystals and instantly drops your stamina bar to 25.</li>
+<li>After a short time the crystals explode and hurt you and anyone near you.</li>
+<li>You can shatter them by mashing and waggling the analog sticks, or by taking a hit from another hunter.</li>
+<li>NPC companions automatically try to break you out if they are not crystallised themselves.</li>
+</ul>
+</section>
+
+<section id="hr5">
+<h2>Hunter Rank 5: where the game starts</h2>
+<p><strong>HR5</strong> is where the game really starts, a step up like reaching High Rank in the mainline games. All the Frontier exclusives added in recent years are HR5 or higher, so there is plenty of variety if you want to stay a while before G Rank. Monsters have bigger health pools, adjusted hitboxes and hit harder. Your free weapons are the baseline: some of the least powerful HR5 weapons. From here, expect Keys and Urgents to be much closer to Online Quests in a typical Monster Hunter game. <a href="/guide-frontier-hunter-rank.html">Hunter Rank and Style Rank</a> goes deeper.</p>
+<h3 id="weapon-styles-hr5">Weapon styles</h3>
+<p>HR5 unlocks <strong>Style Rank</strong>, which gives your weapon new styles, and lets you fight <strong>Hardcore</strong> versions of monsters. Many of these are big changes beyond what you see even in Sub or Rare species, and are worth trying.</p>
+<ol>
+<li>After reaching HR5, walk up to the <strong>Guild Master</strong> to begin Style Rank. You interact with her automatically after talking to her, which grants SR and turns it on.</li>
+<li>To enable the new movesets, use any large box that lets you change gear (such as the one at the Blacksmith). Go to the equipment section and choose the new last option, <strong>SR Book</strong>.</li>
+<li>Pick your weapon type, then the second option, then your preferred style.</li>
+</ol>
+<p>At HR5 you have <strong>Heaven Style</strong> and <strong>Storm Style</strong>. Storm Style is the best for most weapons at this rank, with some variation. You can swap styles at any time and are not locked into any of the three styles available at first. The table rates the three styles for each weapon.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Weapon</th><th>Style 1</th><th>Style 2</th><th>Style 3</th></tr></thead>
+<tbody>
+<tr><td>Sword and Shield</td><td>Good</td><td>Good</td><td>Good</td></tr>
+<tr><td>Dual Swords</td><td>Decent</td><td>Good</td><td>Good</td></tr>
+<tr><td>Great Sword</td><td>Decent</td><td>Bad</td><td>Good</td></tr>
+<tr><td>Long Sword</td><td>Decent</td><td>Good</td><td>Usable</td></tr>
+<tr><td>Hammer</td><td>Decent</td><td>Bad</td><td>Good</td></tr>
+<tr><td>Hunting Horn</td><td>Decent</td><td>Decent</td><td>Good</td></tr>
+<tr><td>Lance</td><td>Decent</td><td>Good</td><td>Good</td></tr>
+<tr><td>Gunlance</td><td>Good</td><td>Good</td><td>Good</td></tr>
+<tr><td>Heavy Bowgun</td><td>Decent</td><td>Good</td><td>Good</td></tr>
+<tr><td>Light Bowgun</td><td>Good</td><td>Bad</td><td>Good</td></tr>
+<tr><td>Bow</td><td>Decent</td><td>Good</td><td>Bad</td></tr>
+</tbody>
+</table></div>
+<p>The guide does not label these three columns. It also says styles marked Bad are strictly downgrades of Heaven or Storm and so there is no reason to use them, and that Storm Bow has a crouch-shot gimmick that is worth trying once but is not actually good. See <a href="/guide-frontier-hunter-rank.html#style-rank">Style Rank</a> and <a href="/guide-frontier-weapons.html">Weapons</a>.</p>
+<h3 id="hr5-freebies">Freebies for reaching HR5</h3>
+<figure class="hb-fig side"><img src="/assets/guide/basics/coordination-fy-set.webp" alt="A full set of Coordination FY armour for a blademaster and a gunner, with a blue serrated weapon." width="630" height="395" loading="lazy" decoding="async" /><figcaption>Coordination FY armour and a Zerureusu weapon</figcaption></figure>
+<p>Just for hitting HR5 you get a booster pack. Talk to the NPC at the town entrance and choose <strong>Claim Event Rewards > Receive Items</strong> (the section for items of all kinds), and claim everything you can. The <strong>HR5 Booster</strong> holds a free set of armour, decorations and many materials.</p>
+<ul>
+<li>The armour is a full set of <strong>Coordination FY</strong>. It gives Earplugs and Wind Pressure, which make future content much easier.</li>
+<li>The materials are those used to craft <strong>Zerureusu</strong> weapons. These are very likely equal to or better than whatever you have equipped, so use them to speed up progress.</li>
+</ul>
+<p>If you have done extra content or have little box space, you may be unable to claim the freebies. See <a href="/guide-frontier-items.html">Items and Materials</a> for how to expand your house and box.</p>
+<h3 id="hr5-store-items">Store items</h3>
+<p>On the official servers you had to be subscribed at HR5, so the guide suggests stocking up on all core shop items now. Some are limited to subscribers, which is why they are listed here and not earlier.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Shop section</th><th>Items (price)</th></tr></thead>
+<tbody>
+<tr><td>Section 1 (basics, recovery)</td><td>Energy Drinks (60z), Nutrients (760z), Whetstones (40z), Farcasters (150z), Honey (45z), Nullberry (60z)</td></tr>
+<tr><td>Section 6 (sundries)</td><td>Dragon Toadstool (200z), Catalysts (240z), Life Crystals (296z), Wyvern Claws (29z), Power Seed (140z), Armour Seed (110z), Psychoserums (300z)</td></tr>
+</tbody>
+</table></div>
+<p>These enable you to combine: Mega Potions, Mega Nutrients, Max Potions, Ancient Potions, Lifepowders, Demondrugs, Power Pills, Armourskins and Armourpills.</p>
+<p><strong>Gunners</strong> should buy all their standard shots and coatings, plus the materials below to combine into the ammo and coatings they use. These are spread between the normal store NPC and the Combiner NPC next to her.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Where</th><th>Items (price)</th></tr></thead>
+<tbody>
+<tr><td>Combiner</td><td>Huskberry (2z), Rumblefish (38z), Needleberry (22z), Scatternut (82z)</td></tr>
+<tr><td>General Store</td><td>Sleep Herb (25z), Wyvern Fang (29z), Empty Bottle (3z), Nitroshroom (30z), Toadstool (37z), Parashroom (75z), Sm Bone Husk (50z)</td></tr>
+</tbody>
+</table></div>
+<p>These cover Normal, Pierce and Pellet shots up to Lv3. You can use GCP to get materials for Elemental shots, but after G Rank you should not use shot types other than Pierce unless you run out of both shots and materials. Elemental damage scales on a formula based on attack, while critical hits and bullet modifiers affect raw damage far more. Typically, using elemental you deal about <strong>50%</strong> of the damage of simply using pierce shots. The guide author's database has a full combination list for ammo and coatings.</p>
+<h3 id="charms-and-talons">Charms, talons and claws</h3>
+<figure class="hb-fig"><img src="/assets/guide/basics/talon-claw-crafting.webp" alt="A crafting chart: Power Charm plus Power Talon and Armour Charm plus Armour Talon, merging into Power Taloncharm and Armour Taloncharm, and finally into the Hunter Talon Charm." width="765" height="311" loading="lazy" decoding="async" /></figure>
+<p>At HR5 you have GCP tickets. Trade them for GCP at the pink General Store NPC: choose <strong>Exchange Guild Contribution P</strong>, then <strong>Obtain Points</strong>. The tickets give <strong>300 GCP</strong>, which you should save for now.</p>
+<p>Spend the GCP first on <strong>2x Lao Shan Claws</strong>: <strong>Exchange Guild Contribution P > Exchange for Points > Materials (HR1-4) > Page 44 > Lao Shan Claw</strong>, <strong>90 GCP</strong> each. Combine them with the Power and Armour Charms to make talons, combine those talons with a second set of charms to make claws, and combine the claws together a final time. This gives you the effects of all four items in one (<strong>Attack +14, Defense +40</strong>) in a single item slot.</p>
+<h3 id="hr5-armour-upgrades">Armour upgrades</h3>
+<p>You may not have needed to upgrade armour yet. For HR armours the game uses <strong>Armour Spheres</strong>, as the mainline games do. You get them as fixed extra rewards that depend on the tier of quest, from mining, and from several daily quests that give batches of 30 of two tiers each.</p>
+<p>Claim your <strong>Daily</strong> by talking to the <strong>pink General Store NPC</strong> and choosing the <strong>last option</strong>, <strong>Claim Daily</strong>. This also gives you some <strong>Halk Pots</strong>, which reduce damage taken during a quest but have a daily use limit.</p>
+<p>For Coordination FY armour, take the <strong>HR5 Daimyo Hermitaur daily</strong>. It gives stacks of <strong>True Armour Spheres</strong> and <strong>Heavy Armour Spheres</strong>, which let you push all 5 pieces to <strong>FY Lv7</strong>. The daily quest is in the standard HR quest giver's <strong>Limited-Time Quests > Daily Quests</strong>. Normally the only Daimyo quest is the correct one, but you can also look for the sphere names in the quest name and on page four of the quest details.</p>
+<p>Now you have the materials for most upgrades. You can safely buy these from the GCP store:</p>
+<ul>
+<li>5x Secret Proof [Low]</li>
+<li>5x Secret Proof [Mid]</li>
+<li>5x Secret Proof [High]</li>
+</ul>
+<p>They upgrade each piece to HS level. Four of the pieces can then go to Lv7 HS: upgrade every piece except the head to maximise defence. You can go further by grinding more items, but it is not necessary.</p>
+<p>Slot the upgraded Coordination armour with the Attack Up decorations (called Gallery Decorations in the guide, Chinese name 剛力珠) from the HR5 booster pack. Run the HR3 Gypceros quest that gives more (in <strong>Other Quests > Special Material Quests</strong>, High Rank Decoration [Attack Up]) and slot one extra. That pushes your Attack Up from Medium to Large. For more on decorations and skills, see <a href="/guide-frontier-armour.html#decorations">Decorations</a> and <a href="/guide-frontier-armour.html#skills">Skills</a>.</p>
+<h3 id="hr5-further-upgrades">Further upgrades</h3>
+<aside class="box hv-note"><p>The guide says that with the English patch you can buy the most useful G decorations in the pink girl's normal store, and that there is no reason to do the quests below if you can simply buy better versions. Whether our client's shop works the same way is not covered here: ask in the <a href="https://discord.gg/YuE42eh">Discord</a>.</p></aside>
+<p>If you plan to spend more time at HR5 or are struggling, there are a few more upgrades.</p>
+<h4 id="guts-decorations">Guts decorations</h4>
+<p>These stop you from being one-shot above certain health levels, and give some points in Status Res and Evasion.</p>
+<ul>
+<li><strong>15x</strong> raw gem (Chinese name 海棠原珠) from the HR4 Abiorugu "Guts Deco G and Abiorugu [High Rank]" quest in <strong>Other Quests > G Deco Quests</strong> (quest 76/90). The quest gives 4 of the material each run, and can roll extra stacks of 2 (common) or 4 (rare).</li>
+<li><strong>5x</strong> wyvern hide (literal translation of the Chinese name): a material from Khezu, Espinas or Gurenzeburu. Also buyable for 50 GCP.</li>
+<li><strong>5x</strong> wyvern scale (literal translation): a material from HR5 Rathian, Rathalos or Tigrex. Also buyable for 50 GCP.</li>
+</ul>
+<p><strong>Skill points: Guts +5, Evasion +5, Status Res +5.</strong> Two of them activate <strong>Guts, Status Halved, Evasion +1</strong> and Guts, which stops you dying if you are above 90 health. Four of them (and more gallery decorations lost) activate <strong>Status Immunity, Evasion +2</strong> and <strong>Great Guts</strong>, which lowers the health requirement to 70.</p>
+<h4 id="fencing-decorations">Fencing decorations</h4>
+<p>For a big damage upgrade, Blademasters can get <strong>Fencing +2</strong> for a <strong>1.20x</strong> multiplier on all their damage.</p>
+<ul>
+<li><strong>Basic Fencing Decoration</strong> (Chinese name 劍技珠G): 15x raw gem (水柿原珠) from the HR2 Chameleos "Fencing Deco G and Chameleos [Low Rank]" quest in <strong>Other Quests > G Deco Quests</strong> (13/90), 5x Toa Tesukatora ice scales (HR5 Toa Tesukatora, buyable for 50 GCP) and 5x Toa Tesukatora shells (same source, also 50 GCP). <strong>Skill points: Fencing +5, Stamina +5, Weapon Handling +5.</strong></li>
+<li><strong>Stronger Fencing Decoration</strong> (避劍珠G): 15x raw gem (水柿原珠) from the HR5 Kushala "Evasion Deco G and Kushala [Gou]" quest (90/90), 5x Toa Tesukatora ice scales and 5x Toa Tesukatora shells (50 GCP each). <strong>Skill points: Evasion +5, Fencing +5, Sharpening +5.</strong> The Kushala is a full normal HR5 Kushala with a unique moveset adapted from HC Rusted and Normal Kushala.</li>
+</ul>
+<p>It is highly recommended to buy the Toa Tesukatora materials before fighting it, so you can fight it with the skill. To get the widest skill spread, farm two of each of the decorations above: that grants Evasion +2, Fencing +2, Speed Sharpening, Weapon Handling, Guts and Status Halved.</p>
+<p>If you play Great Sword or Hammer you may want to give up some decorations for <strong>Focus +2</strong>. The Stronger Fencing Decoration variant for this needs 15x raw gem (鱉甲原珠) from the same Kushala quest (90/90), 5x Gasurabazura hide (HR5 Gasurabazura, 50 GCP) and 5x Yama Kurai hide (HR5 Yama Kurai, 50 GCP). <strong>Skill points: Focus +4, Caring +5, Defense +5.</strong> They are only +4 in Focus and have mediocre extra skills. A better option may be any Gore Magala piece, which grants Focus +2 by itself, but then you need to farm Gore Magala.</p>
+<h3 id="zerureusu-upgrades">Zerureusu weapon upgrades</h3>
+<figure class="hb-fig side"><img src="/assets/guide/basics/hardcore-toggle.webp" alt="The quest posting screen with the Mode Switch line set to HC and a note to toggle this option to make all monsters in the quest into their Hardcore variants." width="340" height="400" loading="lazy" decoding="async" /><figcaption>Toggling HC on when you post a quest</figcaption></figure>
+<p>Upgrading Zerureusu weapons needs a <strong>Hardcore Carve</strong> and <strong>Weapon Souls</strong>.</p>
+<ul>
+<li><strong>Hardcore carves:</strong> either work out which monster gives the HC carve you need and farm it with HC on (see <a href="/guide-frontier-items.html">Items and Materials</a> for identifying carves), or do the fixed Zerureusu quest in <strong>Other Quests > Special Material Quests</strong> called Heavenly Storm Weapon Upgrade [Zerureusu] (quest 44/67), which gives all the various HC carves as rewards.</li>
+<li><strong>Weapon Souls:</strong> find a quest with the <strong>Goushu</strong> (Gou) branding on a monster that has an HC variant (shown by a flame in the quest list). Toggle HC in the same section where you confirm players, before you post the quest.</li>
+</ul>
+<p>Weapon souls are <strong>per weapon type</strong>. To make a Long Sword you must use a Long Sword on your hunts to get Long Sword Souls.</p>
+<h3 id="hr5-progression">HR5 progression and monsters</h3>
+<p>Outside the key quests, <strong>Taikun Zamuza</strong> and <strong>HC Rusted Kushala Daora</strong> are still unique to HR5. It is worth fighting both with level-appropriate gear before you push to G Rank.</p>
+<div class="box tip"><p>If you seriously struggle with anything in HR5 or higher, use the tools the game gives you, such as <strong>Halk Pots</strong>. A Halk Pot gives a flat <strong>70% reduction</strong> in damage taken, so you can facetank almost anything except the hardest content. You can use only <strong>five a day</strong>, so use them as a crutch only when you need to. You get them from your Daily Quest (the last option on the pink store NPC) and from the Halk Area in your house.</p></div>
+<h4 id="gou-equipment">Gou equipment</h4>
+<p>Gou equipment needs a few types of materials: Monster Proofs, Gou Elder Materials and Gou Monster Materials. As an example, a Voljang Long Sword needs:</p>
+<div class="hb-table"><table>
+<thead><tr><th>Amount</th><th>Material</th><th>How to get it</th></tr></thead>
+<tbody>
+<tr><td>5x</td><td>Voljang Proofs</td><td>Hunt HR5 Voljangs. You get single tickets, with chances of extras.</td></tr>
+<tr><td>5x</td><td>Elder Dragon Top Tails</td><td>Hunt certain HR5 Elders and carve their tails. Best rates on Kushala and Rukodiora.</td></tr>
+<tr><td>3x</td><td>Voljang Shells</td><td>Hunt HR5 Voljangs: carves, and breaking the tail and arms.</td></tr>
+<tr><td>3x</td><td>Voljang Fangs (the original labels this "Shells" again; the Chinese name means fang)</td><td>Hunt HR5 Voljangs: carves, and breaking the head.</td></tr>
+</tbody>
+</table></div>
+<p>Armours follow the same logic, but the first craft always needs <strong>1x Elder Dragon Gem</strong>. It comes specifically from Rukodiora breaks and tail carves, but is also on daily quests and several event quests. Look on page 4 of the Event Quests in Limited-Time Quests, or in <strong>Other Quests > Special Material Quests</strong> for the Gou armour production and upgrade quest. Monster Proofs are simply tickets you get for slaying the monster the weapon is made for.</p>
+<h4 id="monster-types">Monster types</h4>
+<p>HR5 has three standard monster types: <strong>Goushu</strong> (Gou), and <strong>Henshu</strong> and <strong>Kishu</strong>. In a fight there is not much difference between them, but most Goushu monsters have equipment that upgrades to G Rank relevance, while most Henshu and Kishu do not.</p>
+<p>HR5 also gives access to <strong>Exotic Monsters</strong>: monsters imported from newer mainline games, and some of the harder monsters at this rank. They give <strong>Exotic Weapons and Armours</strong>. Exotic Weapons give <strong>Speed Eating</strong> when used. Exotic Armours instantly give a skill if you have even <strong>one piece</strong> equipped. For example, a single piece of Nargacuga armour (such as just the chest) grants <strong>Evasion +2</strong> without using skill slots or needing skill points. These Zenith skills cannot stack with themselves or with the skill they grant.</p>
+<h4 id="hardcore-monsters">Hardcore monsters</h4>
+<p>If you spend a while at HR5 you will likely need Weapon Souls and Hardcore Carves for upgrades. You get them by fighting monsters in a rank band with the <strong>HC option</strong> on. HC turns a monster into its Hardcore variant, adds a new <strong>5% carve</strong> item and gives a <strong>weapon soul</strong> based on the type of monster.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Weapon Soul</th><th>Rank band</th></tr></thead>
+<tbody>
+<tr><td>Low Soul</td><td>HR1-2</td></tr>
+<tr><td>Mid Soul</td><td>HR3-4</td></tr>
+<tr><td>High Soul</td><td>HR5, non-Gou</td></tr>
+<tr><td>High Soul (the Gou version)</td><td>HR5, Gou</td></tr>
+</tbody>
+</table></div>
+<p>For example, fighting an <strong>HR17 HC Lavasioth with Sword and Shield</strong> gives you an <strong>SnS Soul (Low)</strong>. You can tell if a monster is Gou by looking at the bracketed part of the quest name, which reads "Goushu Quest".</p>
+</section>
+
+<section id="hr6-hr7">
+<h2>Hunter Rank 6 and 7: the road to G Rank</h2>
+<h3 id="hr6">Hunter Rank 6</h3>
+<p>At HR6 you get <strong>6-star quests</strong>. They are notably harder than all earlier content and once were the absolute endgame (except Unknown, who was nerfed heavily). They fall into two groups: <strong>Repels</strong> and <strong>Slays</strong>. Repels are generally a joke compared with the true slay, but you do not need to do any slays to progress. Players who want an old-school HR6 experience need better upgrades and gear than this section covers.</p>
+<p>The monsters with <strong>Supremacy</strong> variants are <strong>Pariapura, Unknown, Doragyurosu, Teostra and Odibatorasu</strong>. <strong>Lavasioth</strong> has <strong>Aruganosu and Goruganosu</strong> as its supremacy form: a pair of a Silver and a Gold monster that you must always fight as a duo. They use combo attacks with Ice and Thunder, and <strong>both must be reduced to 1 HP</strong> before either can die.</p>
+<p>Supremacy monsters are mostly powerful and can make even G Rank players cart instantly if they are careless. They count as HC for HC armour regen and HC bonuses. Odibatorasu and Unknown are likely the easiest of them.</p>
+<p>There is no Urgent at HR6. After you finish the 6-star key quests you are promoted straight to <strong>HR7</strong>. This gives you access to new SR Skills, and most players should immediately switch their main weapon to <strong>Affinity +20%</strong> instead of any other SR skill.</p>
+<h3 id="hr7">Hunter Rank 7 and the G Rank Urgent</h3>
+<p>Talk to the <strong>G Rank guildie</strong>, the girl with the umbrella, to post the G Rank Urgent. It is a <strong>Shantien repel</strong>. Collect some ballista shots from the box on the airship deck so you can fire the ballista binders later in the fight. The fight is fairly straightforward and has three phases.</p>
+<p>After the repel, talk to the Guild Master a number of times and she starts you at <strong>G Rank</strong>, progresses your weapons to GSR and unlocks <strong>Extreme Style</strong> for all your weapons. Collect the bundle of free conquest materials from the purple entrance NPC now: it helps with the Hunter Guide-based progress at G Rank.</p>
+<p>G Rank is free-form compared with Hunter Rank: everything except G Rank Exotics and Zeniths is available at once. Read <a href="/guide-frontier-g-rank-start.html">Starting G Rank</a> to avoid mistakes and learn what the rushed flow of HR1 to HR7 does not teach you. Then see <a href="/guide-frontier-g-rank.html">G Rank</a>.</p>
+<p>One key point: the <strong>star rating of a quest actively reduces your defence</strong> at G Rank.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Quest rating</th><th>Defence</th></tr></thead>
+<tbody>
+<tr><td>1-star quests</td><td>Full defence</td></tr>
+<tr><td>2-star quests</td><td>-150</td></tr>
+<tr><td>3-star quests</td><td>-300</td></tr>
+<tr><td>4-star quests</td><td>-450</td></tr>
+<tr><td>5-star quests</td><td>-600</td></tr>
+<tr><td>6-star quests</td><td>-750</td></tr>
+<tr><td>7-star quests</td><td>-900</td></tr>
+<tr><td>8-star and Zenith quests</td><td>-1050</td></tr>
+</tbody>
+</table></div>
+<p>At G Rank each weapon is ranked up individually for <strong>GSR</strong>. Each rank adds special skills and buffs, including an always-active <strong>+100 extra Attack</strong> for that weapon type. For Switch Axes and Tonfa you can start GSR as soon as you have crafted a single weapon of that type. All weapons get <strong>Extreme Style at GSR1</strong> once you have made one of the weapon. A free Tonfa or Switch Axe F delivered straight to the box does not count towards that.</p>
+<h3 id="first-quests-note">About your first quests</h3>
+<p>The weapon your character starts with is an <strong>HR5 Gou Weapon</strong>. For a proper experience, swap to the weapon you craft in the sequence above. There is very little difficulty until HR5: about the equivalent of Low Rank at best in the current version of MHF-Z.</p>
+<p>After the tutorial (or ignoring it), talk to the Black Guildie to start your quests. The game uses the standard Key Quests into Urgent system of the mainline games. Key Quests always sort to the top of the quest list with a star icon. Choosing Hunter Quests on this NPC shows the star ratings. An unlocked Urgent is shown by a red exclamation mark above the NPC, and you choose <strong>Urgent Quests</strong> instead of a star rating.</p>
+<p>Start with the <strong>Key Quests</strong> (star icon), then the first <strong>Urgent Quest</strong>, an Abiorugu. The guide also tells you to read the Detailed Weapon Information part of its Weapons section, because Frontier changed weapon movesets and some actions are not ones you would try by accident. See <a href="/guide-frontier-weapons.html">Weapons and Sigils</a>.</p>
+</section>
+
+<section id="new-players-server">
+<h2>The newbie server and subscriptions</h2>
+<h3 id="newbie-server">The newbie server</h3>
+<p>On the official servers there was a <strong>fifth tab</strong> of servers with quests for new and returning players who wanted to catch up to G Rank. They give massive rewards for very little effort compared with normal quests. Access was time limited, shown by an icon, with the expiry date on your Guild Card. Make the most of them: they only give materials for things that are not hard to get otherwise and nothing beyond early G equipment. The <strong>GRP quests</strong> are especially worth grinding, so you are not locked out of GR100 or higher content when you want your first proper set.</p>
+<aside class="box hv-note"><p>Hunsterverse has a Newbie world (see <a href="/worlds.html">Worlds</a>). What it offers is not covered here: ask in the <a href="https://discord.gg/YuE42eh">Discord</a>.</p></aside>
+<h3 id="when-to-subscribe">When to subscribe (official servers)</h3>
+<p>On the official servers the trial lasted until HR4, so you only needed to subscribe from HR5. The guide's author recommended subscribing at HR4 at the latest, because HR4 opens the Pugi Farm. The Pugi Farm is directly needed to get Frontier's equivalent of Talismans or Charms, and you gain points from it daily only while subscribed. After subscribing you could restart the game, or choose the "update usage rights" option on the NPC in purple by the town entrance.</p>
+<p>Payment on the official servers (points, MyCard codes, PayPal, the Item Mall and PSN) is not reproduced here. Ask in the <a href="https://discord.gg/YuE42eh">Discord</a> what applies to our server.</p>
+</section>
+
+<section id="controls-and-chat">
+<h2>Controls, menus and chat</h2>
+<h3 id="controller">Controller</h3>
+<p>Xbox One controllers on Windows 8 or 10 can cause input problems, and you may have to install other drivers by hand to use them. If you want the game to play like newer Monster Hunter games, set the layout to match the PSP or 3DS games: right analogue and D-pad for the camera. The default is like the PS2 games: right analogue for attacks, D-pad for the camera.</p>
+<h3 id="keyboard">Keyboard and mouse</h3>
+<p>The default bindings are:</p>
+<ul>
+<li><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> for movement</li>
+<li><kbd>Q</kbd> for item use</li>
+<li><kbd>R</kbd> for block and similar actions</li>
+<li>The mouse for the camera</li>
+<li>Number keys, numpad or mouse buttons for attacks</li>
+</ul>
+<h3 id="chat">Chat and gestures</h3>
+<figure class="hb-fig side"><img src="/assets/guide/basics/chat-filters-modes.webp" alt="The chat panel: filters (Global, City, Guild, Alliance, Party, Private, Quest Advertisements) and modes (Private, City, Global, Guild Chat)." width="324" height="258" loading="lazy" decoding="async" /><figcaption>Chat filters and modes</figcaption></figure>
+<p>Open in-game chat with <kbd>Insert</kbd> (or by holding <kbd>L2</kbd> and <kbd>R2</kbd> on a controller). There are various filters and modes. Toggle the filters with the buttons at the top of the chat pane and change modes with <kbd>Shift</kbd>+<kbd>Up</kbd>/<kbd>Down</kbd>/<kbd>Left</kbd>/<kbd>Right</kbd>. To whisper a player, press <kbd>Square</kbd> while you are in front of them, or click their name in the chat window. For gestures, press <kbd>#</kbd> and then the F keys (<kbd>6</kbd> opens the second page of gestures).</p>
+<h3 id="chat-commands">Chat commands</h3>
+<aside class="box hv-note"><p>The list below is the guide's list for the official game, which used <code>@</code> commands. On Hunsterverse, server commands start with <code>!</code>. Type <code>!help</code> to list them. Ones enabled include <code>!ravi</code>, <code>!reload</code>, <code>!kqf</code>, <code>!psn</code>, <code>!timer</code>, <code>!playtime</code> and <code>!road</code> (see <a href="/guide-roads.html">Hunting Road on our server</a>).</p></aside>
+<div class="hb-table"><table>
+<thead><tr><th>Command</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>@here</code></td><td>Posts a link to the server you are on that other players can click.</td></tr>
+<tr><td><code>@re</code></td><td>Inserts the number of free spots left on your quest.</td></tr>
+<tr><td><code>@dice</code></td><td>Posts the result of a dice roll from 1 to 100.</td></tr>
+<tr><td><code>@clr1</code> / <code>@clr2</code> / <code>@clrall</code> / <code>@clrpast</code></td><td>Clear the chat.</td></tr>
+<tr><td><code>@help</code></td><td>Shows all available commands.</td></tr>
+<tr><td><code>@a</code> / <code>@f</code> / <code>@p</code> / <code>@g</code> / <code>@u</code></td><td>Send a message to Global, Local, Party, Guild and Alliance chat, in that order.</td></tr>
+<tr><td><code>&lt;act1&gt;</code> to <code>&lt;act24&gt;</code></td><td>Perform a gesture.</td></tr>
+<tr><td><code>&lt;act25&gt;</code> to <code>&lt;act48&gt;</code></td><td>Perform any legendary gestures you bought with Tower Medals (in town only).</td></tr>
+</tbody>
+</table></div>
+<h3 id="pasting">Pasting into the game</h3>
+<p>If you paste text straight into the game, it may show a string of <code>????</code> instead of Chinese characters. To fix this, paste into an office suite, a browser or the Windows Character Map tool first. Microsoft Office, LibreOffice and Apache OpenOffice should all work. Any browser can work, with Edge giving the best results on Windows 10.</p>
+<h3 id="main-start-menu">Menus</h3>
+<p>The Chat menu is where you get event items, purchased items and so on. The Options menu is shown above in <a href="#options-to-change">Options worth changing now</a>. Detailed guides to the other menus are on <a href="/guide-frontier-menus.html">Menus and Town NPCs</a>.</p>
+</section>
+
+<section id="daily-routine">
+<h2>Daily routine</h2>
+<h3 id="quests-and-stamps">Quests and quest stamps</h3>
+<p>You take the main quests from the <strong>Guild Master</strong> when you start the game, and later from the <strong>Guild Girl in the black outfit</strong>. There are various quest types. On the official servers, without a subscription, the only quests you could take were those with <strong>cyan-coloured names</strong>. See <a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a> for the quest types.</p>
+<p>After quests you get stamps. When you complete a card you get <strong>1x 4,000 HRP ticket</strong>, and for a second card <strong>3x 4,000 HRP tickets</strong>. This repeats in that pattern forever. Claim the tickets from the Guild Girl in the Blacksmith by choosing her last option. Taking one on a quest gives an extra 4,000 HRP when you finish it (not on gathering quests and similar). At this point in Frontier they are only useful for boosting your Partner's or Partnyaa's rank.</p>
+<h3 id="daily-list">Things to do each day</h3>
+<ul>
+<li><strong>Daily:</strong> claim NP from the pink store guildie (last option), and do a daily quest after claiming it. The same option that gives you NP gives you the Daily Quest. On the official servers you needed a subscription for full NP and for Daily Quests. It reset at 12:00 AM Taiwan time.</li>
+<li><strong>Daily:</strong> take a Halk Pot from the Halk / Partnyaa area.</li>
+<li><strong>Daily:</strong> talk to the Guild Cat and get the daily gift (fourth item up from the bottom).</li>
+<li><strong>After quests:</strong> use the Gook Farm if you like.</li>
+<li><strong>Daily (HR3):</strong> collect points from the Pugi Farm girl, give her gifts and talk to her.</li>
+<li><strong>After a quest (HR3, Pugi on the quest):</strong> check the dirt pile on the Pugi Farm for extra items.</li>
+<li><strong>Daily (HR5):</strong> check the sign near the Blacksmith for which monsters give boosted numbers of SR weapon tickets and similar.</li>
+<li><strong>Daily:</strong> check the purple guildie at the town entrance for event rewards. She does not always have items, so it is worth checking now and then.</li>
+</ul>
+<h3 id="ai-companions">AI companions</h3>
+<p>Like the portable titles, Frontier has AI companions who fill the role of other hunters in a quest. You control four types: your <strong>Halk</strong>, <strong>Partnyaa</strong>, <strong>Rasta</strong> and <strong>Partner</strong>. See <a href="/guide-frontier-house.html">House and AI Companions</a>.</p>
+<h3 id="daily-bonus">Daily Bonus</h3>
+<figure class="hb-fig"><img src="/assets/guide/basics/daily-bonus-calendar.webp" alt="The Daily Bonus calendar with a Felyne and a grid of daily item rewards." width="198" height="138" loading="lazy" decoding="async" /></figure>
+<p>When you complete a Quest Stamp Card, or take your Daily Bonus (the first login each day, after midnight Taiwan time), you get 1 to 3 HRP tickets or a bonus item. These are sent to the <strong>Warehouse NPC in the Blacksmith</strong>. On the official servers the VIP part of the Daily Bonus, and possibly other rewards, went to the main website's Giftbox.</p>
+<h3 id="log-in-boost">Log In Boost</h3>
+<figure class="hb-fig side"><img src="/assets/guide/basics/log-in-boost.webp" alt="The Log In Boost screen: five boxes for weeks 1 to 5, the rewards for each tier and the durations." width="568" height="485" loading="lazy" decoding="async" /><figcaption>The Log In Boost</figcaption></figure>
+<p>The Log In Boost is <strong>five separate boosts</strong> on individual timers: you gain the first weekly, the second every two weeks and so on. They are <strong>completely separate</strong>. Taking the weekly one does not reset the timer on the two-week or higher ones, so there is little reason not to use the lower-tier ones as you get them. You may want to keep the ones with extra carving or rewards for when new monsters launch. Once activated, a boost's expiry time is fixed and runs out even if you log out after 5 minutes. The multipliers also stack with Premium Courses: with a premium course the 5x GRP becomes 20x, and with a 3x Boost Week it would be 60x.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Boost</th><th>Duration</th><th>Rewards</th></tr></thead>
+<tbody>
+<tr><td>Week 1</td><td>2 hours</td><td>5x GRP/GSRP/z/Gz and Halk Pot effect (all boosts)</td></tr>
+<tr><td>Week 2</td><td>4 hours</td><td>Same as above</td></tr>
+<tr><td>Week 3</td><td>2 hours</td><td>Same, plus Carving +1 (3 weeks and higher)</td></tr>
+<tr><td>Week 4</td><td>3 hours</td><td>Same, plus Carving +1</td></tr>
+<tr><td>Week 5</td><td>4 hours</td><td>Same, plus Carving +1 and the Lucky Bag effect (5 weeks)</td></tr>
+</tbody>
+</table></div>
+<h3 id="hunter-guide-again">Hunter Guide tasks</h3>
+<p>The Hunter Guide tasks (see <a href="#hunter-guide-tasks">above</a>) stay worth doing all game. The guide says all of them are worth doing. Open the window with <kbd>Shift</kbd>+<kbd>C</kbd> or <kbd>R1</kbd>+<kbd>R2</kbd>.</p>
+</section>
+
+<section id="paid-things">
+<h2>Subscriptions, courses and paid items</h2>
+<aside class="box hv-note"><p>This section describes how things worked on Capcom's official servers, where you bought subscriptions and items with points (MyCard codes or PayPal) in an Item Mall. Those payment services were for the official servers only. We do not know whether course perks are on here or what anything costs: ask in the <a href="https://discord.gg/YuE42eh">Discord</a>. The in-game gacha (box gachas, step-up gachas, prize box) does work here, and selling items for Frontier Points works. What a gacha holds is not known: ask in the Discord.</p></aside>
+<h3 id="courses">Courses on the official servers</h3>
+<p>Subscriptions were time blocks: buying 30 days gave an expiry 30 days later. They stacked, and were <strong>not recurring</strong>. You did not lose progress when a subscription ended, you simply could not do content that needed one. There were two main kinds, the Main subscription and the Premium Courses.</p>
+<ul>
+<li><strong>Core Subscription (30 Days).</strong> Not premium: required to play the game properly. It includes <strong>Hunter Life</strong> (all non-premium quests, needed to rank to HR5 and beyond and to take part in events) and <strong>EX</strong> (extra town functions including town boxes, extra store items such as Honey, Energy Drinks and Power Seeds, and many Caravan conveniences). Without it you were limited to HR4 content or lower, even at HR5 or maxed G Rank. It cost about 9.90 USD a month, with the first month half price (April 2017 rates). The NetCafe Course cost the same, so the guide told players to read what they were buying.</li>
+<li><strong>Premium Course</strong> (1 Day pass or a 7 Day pass). Optional. The 1 Day pass included 24 hours of every course including the Core Subscription; the 7 Day pass included only the VIP parts, so you needed to already be subscribed to get the most from it.</li>
+</ul>
+<h4 id="course-benefits">Premium Course benefits</h4>
+<ul>
+<li>PRP/HRP/GRP/SRP/GSRP x2</li>
+<li>Halk Pot effect (disabled in a few quests)</li>
+<li>4x GCP on quests; 3x Caravan Points; 4x Caravan Gem colours</li>
+<li>Always +2 Hiden Materials, +5 on Priority Quests</li>
+<li>HC rates doubled (5% to 10% on HC, 2% to 4% GHC)</li>
+<li>An extra carve on everything carvable</li>
+<li>Most common materials on monsters can be rerolled (see below)</li>
+<li>4 fixed partner carve slots and 4 extra Legendary Pugi carve slots</li>
+<li>Great Luck effect always active; free Diva Song buffs at max level</li>
+<li>Legendary Rasta and Pugi</li>
+<li>1.25x damage dealt to monsters (disabled in some quests)</li>
+<li>Doubled Raviente G or Gg Gems; doubled Diva Defense and Caravan Festival Points</li>
+<li>Halks can only drop Skill Books</li>
+<li>Access to Premium Quests (mostly outdated)</li>
+</ul>
+<p><strong>Reroll:</strong> with Premium (and a certain Caravan Gem skill), when you carve the most common material from something there is a chance to reroll it. That removes the rerolled item from the pool and makes the lower-percentage items more common. It is not always a benefit if you actually want the most common carve; the guide estimates it at about 10% chance at best. The example is Monoblos: normally 50% for the most common shell, 46% for another shell, 3% and 2% for horns. After a reroll the common shell is removed and the numbers become 92%, 6% and 2%.</p>
+<h4 id="legendary-rastas">Legendary Rastas</h4>
+<figure class="hb-fig side"><img src="/assets/guide/basics/legendary-rasta-menu.webp" alt="The Legendary Rasta menu: Talk, Check Gear, Contract (Premium Only), Take Partner / Unlock Weapon." width="299" height="151" loading="lazy" decoding="async" /><figcaption>Legendary Rasta menu</figcaption></figure>
+<p>On a Premium Course, Legendary Rastas are powerful AI companions. They do not disappear like other AI companions, ignore monster attacks and attack infinitely. To get one, enter the bar, choose the <strong>3rd option</strong> on them and confirm. You can only have one at a time but can swap freely while you have VIP. After contracting one, new options appear to control the items they use on quests (Throwing Knives, Powders, Flutes) and their weapons.</p>
+<h4 id="netcafe">NetCafe Courses and N Points</h4>
+<ul>
+<li><strong>NetCafe Course</strong> (also called Super VIP or the Grace Course): all the Premium benefits with PRP/HRP/GRP/SRP/GSRP x5, <strong>1,200 N Points</strong>, NetCafe store items, the NetCafe Item Booster Set and materials to make special headpieces. The booster set holds items you can otherwise only get as Guild Daily Rewards, such as Starving Wolf pots that push your maximum stamina down to 25. You can claim it per character slot.</li>
+<li><strong>NetCafe Boost Course</strong> (Ultra VIP or the Grace Boost Course): everything above, plus <strong>3,300 N Points</strong>, <strong>25,000 fixed GRP</strong> on quests, two Legendary Rastas and <strong>Soul Resurgence</strong>. Soul Resurgence works like a Great Guts Ticket: once per quest it saves you and restores you to full health, but it can still fail against some multi-hit attacks such as Zinogre's nuke.</li>
+</ul>
+<p><strong>N Points</strong> are NetCafe Points, and pay for much of the game including HC and GHC carves and the exclusive materials for NetCafe gear. NetCafe gear is among the best in the game. You get 5 NP a day from your daily, and the Daily Bonus gives 200 N Points a month, with 15 rolls with a low chance of giving 400 NP extra for the last 15 or so days of a month. On the official servers the NetCafe Course gave 1,200 to 2,400 N Points, and events sometimes raised this to 3,600 and 4,800 (3,300 and 5,700 for the Boost Course in events). The Boost Course gave 6 NP per TWD compared with 4 NP per TWD.</p>
+<div class="hb-table"><table>
+<thead><tr><th>What</th><th>NP price</th></tr></thead>
+<tbody>
+<tr><td>Consumables</td><td>1 - 4 NP</td></tr>
+<tr><td>Gathered materials</td><td>1 - 26 NP</td></tr>
+<tr><td>Standard carves</td><td>9 - 80 NP</td></tr>
+<tr><td>G3% carves</td><td>100 NP</td></tr>
+<tr><td>HC carves</td><td>100 - 170 NP</td></tr>
+<tr><td>GHC carves</td><td>200 NP</td></tr>
+<tr><td>N Weapon materials</td><td>100 NP</td></tr>
+<tr><td>N Armour materials</td><td>500 NP</td></tr>
+</tbody>
+</table></div>
+<p>An N Weapon needs up to 835 material items to max out. N Armour needs 12 items per piece and 60 per set. A single armour piece costs about <strong>6,000 NP</strong> and a full set <strong>30,000</strong>. Making an N Point weapon usable took about <strong>52,000 N Points</strong>, and about <strong>73,600</strong> to reach Lv49 G Finesse; the final upgrade alone costs <strong>9,900</strong>.</p>
+<h3 id="pugi-outfits-and-cuffs">Pugi outfits and cuffs</h3>
+<p>A Pugi Cuff plus a Pugi Outfit is the Frontier equivalent of a Talisman or Charm: cuffs are like decorations that slot into the outfits to give skill points. You can get a Pugi after <strong>HR50</strong> from the Pugi Farm (see <a href="/guide-frontier-house.html">House and AI Companions</a>). G Cuffs need you to be <strong>GR50</strong> and to have bought a <strong>G Cuff License for 60P</strong>, so 120P in total on the official servers. Premium Pugi Cuffs need a Premium Outfit. The guide lists the G Aid Package as giving 60P in one place and 90P in another, and does not recommend buying it. For Pugi outfits and cuffs in practice, see <a href="/guide-frontier-g-rank-start.html#pugi-outfits-and-cuffs">Starting G Rank</a>.</p>
+<ul>
+<li><strong>Premium Pugi Cuff I:</strong> lets you craft 1x PA, 2x PB and 5x PC cuffs from the first Pugi Cuff package.</li>
+<li><strong>Premium Pugi Cuff II:</strong> lets you craft 1x II PA, 2x II PB and 5x II PC cuffs.</li>
+<li><strong>Premium Pugi G Cuffs:</strong> lets you craft 1x PA, 2x PB and 5x PC G Rank level cuffs. There is only one set of G Rank tickets, so you can craft any cuff in the G Rank Premium sections.</li>
+</ul>
+<h3 id="premium-kits">Premium kits</h3>
+<figure class="hb-fig"><img src="/assets/guide/basics/premium-kit-list.webp" alt="The Premium Kit store list: 2010 Anniv, Shaln, 10th Anniv, Magisa, Pelegri, 2016 Anniversary, 21 Premkit, Astell, Lien and Carrol kits." width="576" height="465" loading="lazy" decoding="async" /></figure>
+<p>Premium Kits are sets of equipment you can only get by buying the kit. Most kits give the materials for <strong>2 armour sets</strong>, one Gunner and one Blademaster. Kits do not include materials to upgrade the gear. G Rank upgrades need <strong>G Tickets</strong>, which some kits include and some do not (no kit includes enough to push everything to G Rank). G Tickets can also be bought, or got by exchanging the tickets most premium kits give at the Combiner. The weapons in kits are generally only suitable for early G Rank. <strong>G Rank</strong> is still needed to craft kit Tonfas. All <strong>Zenith-level</strong> premium weapons and armour pieces need <strong>GR200 Zenith Hypnoc Materials</strong>, which are common and needed in small amounts but act as a barrier until GR200.</p>
+<p>The guide's recommendation, from best to worst: 10th Anniversary Kits >>> Lien > Pelegri Heads = Duremudira Sets >> Carrol >> Asteli = Z1 > Magisa > Pelegri Others > Shaln. The 10th Anniversary kit contains <strong>13 sets with relevant meta skills</strong> and is still used by top time-attack players. The Pelegri headpieces suit Gunlance and Great Sword only (and Gore pieces and the 10th Anniversary sets reduce the Great Sword case). Magisa is only for the Hunter's Road, to get All Res UP +20. The ratings use the ZP versions of the sets; the GP versions of Asteli, Carrol and Lien are lacking.</p>
+<h3 id="other-paid-items">Other paid items</h3>
+<ul>
+<li><strong>Item Packs / Aid Packages:</strong> consumable packages that cost too much to be sensible. The exception is the <strong>G Aid Package</strong>, which has 90P: enough for a G Pugi Cuff License at G Rank if you lack points (or convertible to 9,000 GCP).</li>
+<li><strong>Restyle Points:</strong> a single premium restyle point changes Voice, Face or Inner clothing at <strong>1 point each</strong>. Three are needed to change a character or Partner completely. Redeem them at the <strong>Cat Hairdresser</strong> (second option), which also previews voices and faces.</li>
+<li><strong>Character slots:</strong> you can have up to <strong>three</strong> characters on one account, of any genders. The <strong>Post Felyne</strong> on the farm moves any standard box item between characters, but equipment cannot be transferred. G Rank items need G Rank to be removed from the box, but <strong>all decorations, including G Rank ones</strong>, can be extracted at any rank, which lets you become very overpowered while powering through early ranks.</li>
+<li><strong>Premium Sigil Tickets:</strong> paid sigils with Attack (9-30), Elemental (12-30), Crit Up (6-30), Elder Dragon Attack (12-45), Dowsing (15-45) or Money Expert (6-15). The low end is more common, and perfect rolls need three rolls of 5-20% chance each. They are worse than Heavenly Conquest sigils but only roll the listed types. See <a href="/guide-frontier-weapons.html#sigils">Sigils</a>.</li>
+</ul>
+<h3 id="lotteries">Lotteries (gacha) and Frontier Points</h3>
+<p>Lotteries (Gachapon) use coins to gamble for items. Odds vary a lot, and most lotteries mainly offer armour suited to the meta of the time. You can also roll consumables (Superior Tickets for quests with preset rewards, special G2 pots that fill your HP bar), weapon materials and N Point items (usually N Blocks, used for the first upgrades of some NetCafe gear). Weapons are mostly bad, except special Evolution weapon lotteries, which are very good but need as many Raviente Gems to max as standard ones, which means hundreds of hours of grind.</p>
+<figure class="hb-fig"><img src="/assets/guide/basics/step-up-lottery.webp" alt="The Step Up lottery screen: current step 2 of 6, gambles with step 2, extra items, and a prize description with a Step Up button." width="638" height="377" loading="lazy" decoding="async" /></figure>
+<p>There are two types: the <strong>Standard</strong> lottery and the <strong>Step Up</strong> (Lottery G). Both use the same coins, sold in packs of 1 to 170. Collaboration lotteries (Madoka, Evangelion and similar) use their own coins, but internal Capcom collaborations (such as Breath of Fire) used standard coins. Tickets such as the Lottery G Ticket and the two Evangelion tickets are redeemed at the <strong>lottery cat in the Blacksmith</strong>.</p>
+<ul>
+<li><strong>Standard lottery:</strong> coins only work on their own lottery. Talk to the Lottery Cat and choose Standard Lottery. Press the detail button (or <kbd>Z</kbd> on keyboard) to see each prize's odds.</li>
+<li><strong>Step Up lottery:</strong> a linear series of steps that resets every day at 12:00 (Taiwan time). Each step gives a different number of rolls and different extra rewards. Going higher than <strong>Step 2</strong> always starts wasting coins, and doing Step 3 across several days gets more rolls than higher steps. Newer lotteries sometimes tie extra armour tickets to Step 6; the guide says that is nearly the only time going that high is worth it, and that these pieces cost between 60 and 200 USD each. Claim rewards in <strong>Rewards Storage</strong>, which shows a red exclamation mark when it holds items. Step 6 uses 80 coins at the typical rolls-to-coins ratio.</li>
+<li><strong>Coins</strong> are <strong>account wide</strong> and visible on any character's Guild Card. <strong>Each character has its own Step Up steps</strong>, so with several characters you can do every step up to three times without waiting for a reset. Doing Steps 1 and 2 on several characters is better than pushing one character to Step 6 repeatedly.</li>
+<li>A <strong>Lucky Box</strong> lottery works differently: each prize is removed as you roll it, so you can guarantee every prize by paying for all of the rolls.</li>
+</ul>
+<h4 id="frontier-points">Frontier Points</h4>
+<p>Frontier Points (FP) come from higher Step Up lottery steps and from cashing in tickets for premium equipment. Weapon Tickets convert into <strong>1 FP</strong> each and Armour Tickets into <strong>3 FP</strong>. The weapons you can buy are mostly poor, so converting them is fine. Do not convert Armour Tickets if you might want to use them. Spend FP at <strong>Exchange Points</strong> (Obtain Points).</p>
+<div class="hb-table"><table>
+<thead><tr><th>Item</th><th>FP cost</th></tr></thead>
+<tbody>
+<tr><td>Yukumo Exotic Armour ticket (Great Luck)</td><td>500 FP</td></tr>
+<tr><td>Rhopessa Exotic Armour ticket (Status Attack Up)</td><td>500 FP</td></tr>
+<tr><td>Guild Exotic Armour ticket (Wide Area +3)</td><td>500 FP</td></tr>
+<tr><td>Bnahabra Violin (Hunting Horn) ticket</td><td>300 FP</td></tr>
+<tr><td>Cha-Cha and Kayamba (Dual Swords) ticket</td><td>300 FP</td></tr>
+<tr><td>Shark Warning (Lance) ticket</td><td>300 FP</td></tr>
+<tr><td>Felyne Blowgun (Light Bowgun) ticket</td><td>300 FP</td></tr>
+<tr><td>Tri (Sword and Shield) ticket</td><td>300 FP</td></tr>
+<tr><td>Gaiasp Hammer ticket</td><td>300 FP</td></tr>
+<tr><td>Corn Gunlance ticket</td><td>300 FP</td></tr>
+<tr><td>Arca Raptora (Bow) ticket</td><td>300 FP</td></tr>
+<tr><td>Windeater (Long Sword) ticket</td><td>300 FP</td></tr>
+<tr><td>Great Meteor (Heavy Bowgun) ticket</td><td>300 FP</td></tr>
+<tr><td>Vulcanis (Great Sword) ticket</td><td>300 FP</td></tr>
+<tr><td>Hairtail's Hairblade ticket</td><td>300 FP</td></tr>
+<tr><td>FP Sigil Ticket</td><td>10 FP</td></tr>
+<tr><td>2x Raviente 100 G Gem</td><td>1 FP</td></tr>
+</tbody>
+</table></div>
+<p>FP Sigils seem biased to roll individual weapon tech-change and boost skills, with a 75% chance of attack, affinity or elemental rolls. A Lv100 HR5 weapon needs <strong>17,528 Raviente gems</strong>; this does not cover G Rank upgrades and the gems cannot be used for them, so spending FP on these is mostly not worth it. A single ticket maxes out any one Exotic piece, so a full set costs <strong>2,500 FP</strong>. Despite how Great Luck sounds, the armour is not very practical for skill points: Rhopessa has niches in status sets, and the Guild set suits support sets but wastes slots. The guide also says FP appear to have been retired for new equipment, with new Lottery Exotics given for multiple Step 6 rolls instead.</p>
+</section>
+
+<section id="japanese-server">
+<h2>Japanese-server tips</h2>
+<aside class="box hv-note"><p>This section came from the guide's Japanese official-server chapter, so the account sign-up, installation, dual-client setup, VPN and Locale Emulator steps are not reproduced. Use our setup guides: <a href="/guide-windows.html">Windows</a> and <a href="/guide-linux.html">Linux</a>. Whether the gear tips below apply on Hunsterverse is not confirmed: ask in the <a href="https://discord.gg/YuE42eh">Discord</a>.</p></aside>
+<p>On the Japanese server, you follow the same flow as the Taiwanese one up to GR1. Japan has a couple of even easier gearing options that make the Hunter Guide tasks almost pointless.</p>
+<h3 id="jp-gearing">Easy early gear</h3>
+<p>Do the <strong>Event Silver Rathalos quest</strong>, the first event quest in the first section (a G 7-star event quest named after Silver Rathalos). It gives at least <strong>50x Mercury Books</strong> per run, which make a full set of <strong>Dounru GX</strong>. All Dounru pieces <strong>start at GX level when crafted</strong>, so upgrading is optional.</p>
+<p>For easy decorations, go to the Road with a carry (or facetank the easier monsters). The Road has strong Furious decorations that need one floor of progress and cost <strong>500 points</strong>:</p>
+<div class="hb-table"><table>
+<thead><tr><th>500 RP decoration</th><th>Skills</th></tr></thead>
+<tbody>
+<tr><td>G Lion Blood Jewel</td><td>Furious +2, Vampirism +3, Vigorous +2</td></tr>
+<tr><td>G Lion Thunder Jewel</td><td>Furious +2, Thunder Clad +2, Flash Conversion +2</td></tr>
+<tr><td>G Lion Strike Jewel</td><td>Furious +2, Stylish Assault +2, Strong Attack +2</td></tr>
+<tr><td>G Lion Fierce Jewel</td><td>Furious +2, Rush +2, Drawing Arts +3</td></tr>
+<tr><td>G Lion Sword Jewel</td><td>Furious +2, Sword God +2, Issen +2</td></tr>
+<tr><td>G Lion Shot Jewel</td><td>Furious +2, Steady Hand +2, Issen +2</td></tr>
+</tbody>
+</table></div>
+<p>The decoration names above are translations of the Japanese names. A solid base: <strong>5x Blood, 1x Thunder and 1x Fierce</strong>, which leaves room for your free Hiden decorations. See <a href="/guide-frontier-hunters-road.html">Hunter's Road</a>.</p>
+<h3 id="jp-freebies">Freebies</h3>
+<ul>
+<li><strong>Determination decorations:</strong> once a day you can roll a gacha for Raviente decorations: <strong>50%</strong> for 1x Basic Raviente Decoration, <strong>45%</strong> for 2x Violent or Berserk Raviente Decorations, <strong>5%</strong> for 3x Extreme Raviente Decorations. Talk to the Gacha Cat in the Blacksmith and choose the Normal lottery. It costs 4,000 HRP tickets (from quests, or in huge quantities from the Hunter Guide). With very good luck it takes 2 days to get Determination.</li>
+<li><strong>True Hiden decorations:</strong> trade <strong>50k Gzeny cheques</strong> at the Gacha Cat for True Hiden decorations. Go to Box Lottery, then Event Box Lottery, then True Hiden Box Lottery. This is a Lucky Box style lottery: keep rolling and you get every variant of every True Hiden decoration.</li>
+<li><strong>Hiden cuffs:</strong> claim the materials for up to four Hiden cuffs by reaching G Rank requirements or owning certain gear (see below).</li>
+</ul>
+<div class="hb-table"><table>
+<thead><tr><th>Requirement</th><th>Reward</th></tr></thead>
+<tbody>
+<tr><td>Reach GR500</td><td>Kill Dyuras or Gogomoas</td></tr>
+<tr><td>Own the Prototype Magnet Spike (alpha)</td><td>Bone Magnet Spike: unlock the weapon type and buy the prototype materials at the General Store</td></tr>
+<tr><td>Own a Ketsui Series Switch Axe [X] or Tonfa [X]</td><td>GR200 Hypnoc in Bamboo Forest with Beak Break</td></tr>
+</tbody>
+</table></div>
+<p>You create the cuffs at the Combiner. You hand in the Hiden Soul, Ribbon and Merit Stones in their own quests with the HR and GR NPCs. Depending on how you spend the materials, you can make either <strong>7x G or True Hiden cuffs</strong> or <strong>50x Standard Hiden cuffs</strong>. A good balance is <strong>6 G or True and 8 Standard</strong> to cover all weapon classes. This table in the original was only partly readable, so check the details in game or ask in the Discord.</p>
+</section>
+
+<section id="zz-update">
+<h2>The ZZ update: Magnet Spike, Zenith Sigils, GR999 and more</h2>
+<p>The ZZ update adds a new weapon class, new sigil types, a new monster mode and raises the G Rank limit to GR999. It was released like a "Z3": no new Exotics were added. The guide's author has a translated changelog.</p>
+<h3 id="magnet-spike">Magnet Spike</h3>
+<figure class="hb-fig side"><img src="/assets/guide/basics/magnet-spike-stats.webp" alt="A Magnet Spike's stat window: attack 3456, reach Medium, a sharpness gauge, fire 660 and a sharpening skill." width="318" height="291" loading="lazy" decoding="async" /><figcaption>A Magnet Spike's stats</figcaption></figure>
+<p>Magnet Spikes have two modes you can morph between: <strong>cutting</strong> and <strong>impact</strong>. They deal the damage type they are named for and use those hitboxes. The name comes from being Magnets in a game full of Spikes; they are not spikes.</p>
+<h4 id="unlock-magnet-spike">Unlocking it</h4>
+<p>A short story unlocks the weapon with a number of <strong>solo-only</strong> quests. At the end you unlock Magnet Spikes and get the materials for a Prototype MS for both you and your partner. The quests are not very hard, but being G Rank you will want at least your first free GR set. Short guide:</p>
+<ol>
+<li>Talk to the smithy and ignore what he says.</li>
+<li>Enter the legendary bar and talk to the new NPC, <strong>Graham</strong>.</li>
+<li>Go out to the entrance and talk to the cat you have ignored many times.</li>
+<li>Go back in, talk to Graham and do the G Rank Gougarfs in the top section.</li>
+<li>Talk to Graham, then the Combiner in the town square.</li>
+<li>Hunt the G Rank Rebidora in the same section as the Gougarfs.</li>
+<li>Go back and talk to Graham, the Smith, Graham again and the Road NPC.</li>
+<li>Post the new G Rukodiora in the topmost section and kill it.</li>
+<li>Talk to Graham after returning, then the Smith.</li>
+</ol>
+<h4 id="magnet-spike-stats">Stats</h4>
+<p>Magnet Spikes have <strong>no phials and no length</strong>. Their <strong>attack multiplier is 5.4</strong>: divide the displayed attack by 5.4 and round up to get the true raw.</p>
+<h4 id="using-magnet-spikes">Using them</h4>
+<figure class="hb-fig side"><img src="/assets/guide/basics/magnet-marker-icons.webp" alt="Three marker icons: red for Attract, white for out of range, blue for Repel." width="228" height="68" loading="lazy" decoding="async" /><figcaption>Red: attract. White: no action. Blue: repel.</figcaption></figure>
+<ul>
+<li>Both modes can be swapped to and unsheathed into at any time from idle, and neither depends on a meter. From any horizontal attack in one mode you can swap into a horizontal in the other.</li>
+<li><strong>Cutting mode</strong> has fast attacks and evasions like Dual Swords. <strong>Impact mode</strong> is slower with heavy single attacks, but still has quick swipes and a very fast charge.</li>
+<li>In either mode you can toggle <strong>aiming mode</strong>. It lets you shoot a <strong>Magnetic Marker</strong> at a monster, or attract towards or repel away from a placed marker.</li>
+<li>Attract or repel depends on distance. Too close allows only <strong>Repel</strong> (blue). Too far allows no action (white). The right distance allows <strong>Attract</strong> (red). Attraction chases a monster as long as you follow a straight path towards it and can be cancelled into an evade or a powerful falling attack.</li>
+<li>Both modes charge as you use them. When the icon turns red you can <strong>magnetise</strong> the weapon: all attacks get <strong>1.1x</strong>, like a power phial, with extra hits on some attacks, for <strong>80 seconds</strong>. After it ends you cannot gain progress towards it again for a short time. Both modes charge separately and can stay at red charge indefinitely.</li>
+<li>Both modes have a <strong>gauge</strong> used for evasions, attracting, repelling and the Magnetic Pin attack. It recharges over time and while attacking. Each action uses a single bar.</li>
+</ul>
+<h4 id="magnetic-pin">Magnetic Pin</h4>
+<figure class="hb-fig side"><img src="/assets/guide/basics/magnetic-pin-qte.webp" alt="A hunter slamming a Magnet Spike into a monster, with a QTE prompt bar at the top." width="264" height="359" loading="lazy" decoding="async" /><figcaption>The pin and its QTE</figcaption></figure>
+<p>The pin builds up like a normal status effect: hit the monster enough and a moving magnetism effect on its body shows it is ready to be pinned. You can pin out of <strong>Magnetic Double Slash</strong> or <strong>Double Swipe</strong>. You leap and slam your Magnet Spike down, which pins the monster and starts a QTE that holds it in place until you either perform the pin or fail the QTE.</p>
+<p>The QTE shows which directions and buttons to mash. If you mash well enough, the monster icon's face turns red and you can perform a <strong>Pin Finisher</strong>. It has an incredibly high motion value, makes the monster fall over, and holds it for a bit longer because the finisher animation is long. The finisher <strong>targets the spot where your magnetic marker is attached</strong>, so you can choose the best hitbox or the part you want to break. On tails it deals cutting damage but can only reduce a tail to 1 HP, so any single cutting hit then severs it.</p>
+<h4 id="magnet-spike-moveset">Moveset</h4>
+<p>The flow chart below is the official one from Capcom's manual. It is mostly complete but misses a few less obvious combos, such as the <strong>Magnetic Assault Leap</strong> in cutting mode flowing into <strong>Upslash</strong> and then <strong>Vertical 2</strong>, which allows a <strong>Finishing Slash</strong> earlier than otherwise possible.</p>
+<figure class="hb-fig"><img src="/assets/guide/basics/magnet-spike-flow-chart.webp" alt="The Magnet Spike moves flow chart (Extreme Style), showing cutting-mode and impact-mode actions and how they connect through the magnetic field." width="550" height="716" loading="lazy" decoding="async" /></figure>
+<p>Motion values. In impact mode, the number in brackets is the damage part that is not cutting. "(iframes)" marks a move with invincibility frames.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Cutting mode move</th><th>Motion value</th></tr></thead>
+<tbody>
+<tr><td>Unsheathe Vertical</td><td>61</td></tr>
+<tr><td>Vertical 1</td><td>43</td></tr>
+<tr><td>Upslash</td><td>35</td></tr>
+<tr><td>Vertical 2</td><td>46</td></tr>
+<tr><td>Horizontal 1</td><td>56</td></tr>
+<tr><td>Horizontal 2</td><td>46</td></tr>
+<tr><td>Horizontal 3</td><td>64</td></tr>
+<tr><td>Finishing Slash</td><td>120</td></tr>
+<tr><td>Finishing Slash (Magnetised)</td><td>120, then 10x3</td></tr>
+<tr><td>Guard Counter</td><td>30</td></tr>
+<tr><td>Guard Counter (Success)</td><td>30, then 80</td></tr>
+<tr><td>Magnetic Double Slash (iframes)</td><td>44, then 54</td></tr>
+<tr><td>Magnetic Evade into Upslash</td><td>55</td></tr>
+<tr><td>Retreat Slash (iframes)</td><td>20, then 20</td></tr>
+<tr><td>Magnetic Assault (Leap) (iframes)</td><td>80</td></tr>
+<tr><td>Falling Downslash (iframes)</td><td>200</td></tr>
+<tr><td>Magnetic Pin</td><td>1</td></tr>
+<tr><td>Magnetic Pin Finisher</td><td>600</td></tr>
+</tbody>
+</table></div>
+<div class="hb-table"><table>
+<thead><tr><th>Impact mode move</th><th>Motion value (non-cutting part)</th></tr></thead>
+<tbody>
+<tr><td>Horizontal 1</td><td>44 (30)</td></tr>
+<tr><td>Horizontal 2</td><td>53 (30)</td></tr>
+<tr><td>Overhead Horizontal</td><td>100 (45)</td></tr>
+<tr><td>Down Swipe</td><td>46 (25)</td></tr>
+<tr><td>Triple Strike 1</td><td>51 (10)</td></tr>
+<tr><td>Triple Strike 2</td><td>58 (20)</td></tr>
+<tr><td>Triple Strike 3</td><td>130 (50)</td></tr>
+<tr><td>Charged Strike</td><td>338 (190)</td></tr>
+<tr><td>Charged Strike (C.UP+1)</td><td>363 (190)</td></tr>
+<tr><td>Charged Strike (C.UP+2)</td><td>373 (190)</td></tr>
+<tr><td>Supplex</td><td>96, then 121 (50, then 65)</td></tr>
+<tr><td>Guard Assault (iframes)</td><td>73, then 90 (35, then 45)</td></tr>
+<tr><td>Magnetic Double Swipe (iframes)</td><td>42, then 52 (30, then 35)</td></tr>
+<tr><td>Magnetic Shock (Whiff)</td><td>75 (30)</td></tr>
+<tr><td>Magnetic Shock (Iframed)</td><td>125, then 5x3 (60, then 5x3)</td></tr>
+<tr><td>Magnetic Assault (Leap) (iframes)</td><td>40, then 50 (35, then 35)</td></tr>
+<tr><td>Falling Swings (iframes)</td><td>25, then 80, then 120 (20, then 35, then 75)</td></tr>
+<tr><td>Magnetic Pin</td><td>1</td></tr>
+<tr><td>Magnetic Pin Finisher</td><td>600</td></tr>
+</tbody>
+</table></div>
+<h3 id="zenith-sigils">Zenith Sigils</h3>
+<figure class="hb-fig side"><img src="/assets/guide/basics/zenith-sigil-item-icon.webp" alt="The Zenith Sigil item icon on the item bar, with a Japanese label and a button prompt." width="196" height="122" loading="lazy" decoding="async" /><figcaption>A Zenith Sigil in the item bar</figcaption></figure>
+<p>Zenith Sigils, new in ZZ, are used actively for a base duration of 15 to 25 seconds, rather than being always-on passives like standard Sigils. There are two kinds: <strong>Standard</strong> and <strong>AoE</strong> Zenith Sigils. They drop from doing any rank of Zenith. The overall drop rate is not known, but it is at the low end and probably follows the rare carve reward rate for each Zenith tier (1%, 3%, 5%, 7%). On your item bar a new sigil-shaped item appears. You can use it any time you are not mid-action, with the use button. Using one makes you do the Smoke Bomb animation and applies the buffs. More Sigil information is in <a href="/guide-frontier-weapons.html#sigils">Sigils</a>.</p>
+<h4 id="standard-zenith-sigils">Standard Zenith Sigils</h4>
+<p>A Standard Zenith Sigil gives you a number of buffs. The duration is a base of <strong>15 seconds</strong> plus the sigil's duration value (for example +4 duration is 19 seconds). The recharge is a base of <strong>2 minutes (120 seconds)</strong> minus the sigil's value (for example +14 recharge is 1:46, or 106 seconds). The sigil values do not map directly to the buffs and are far stronger than low rolls look: <strong>+15 Attack is really +330 attack</strong>. With good management a decent roll ends up as good as a top roll on a normal sigil.</p>
+<figure class="hb-fig"><img src="/assets/guide/basics/standard-zenith-sigil-values.webp" alt="A Standard Zenith Sigil's detail window: recharge time +12, effect time +2, attack +3." width="318" height="72" loading="lazy" decoding="async" /></figure>
+<h4 id="aoe-zenith-sigils">Area of Effect Sigils</h4>
+<figure class="hb-fig"><img src="/assets/guide/basics/aoe-sigil-dome.webp" alt="A translucent dome of energy on a snowy ground around hunters, created by an Area of Effect sigil." width="444" height="223" loading="lazy" decoding="async" /></figure>
+<p>An AoE Zenith Sigil makes a <strong>dome</strong> on the ground where you use it, for a set duration of about <strong>25 seconds</strong> and a recharge of <strong>2 minutes</strong>. It can buff Attack, Elemental, Status, All Resistance, Affinity and Stun output, and give passive healing. You can roll several buff types on one sigil, and the dome alternates between colours to show which buffs are active. The values do not match the buff directly either: a sigil with <strong>+1 elemental and +14 to Resistances</strong> actually gives Elemental +100 and All Resistances +28. Higher rolls give much more.</p>
+<h3 id="gr999">GR999 and Unlimited Mode</h3>
+<p><strong>GR999</strong> is the new maximum rank, reached with a total of <strong>13,716,950 GRP</strong>. If you are already GR899, you need <strong>2,331,451 GRP</strong>. You can stack many buffs to multiply the gain: <strong>Diva Song</strong>, <strong>Log In Boost</strong>, <strong>Hardcore Mode</strong> and any <strong>Premium Courses</strong>. A GRP quest against a Gogomoa for 8,000 GRP shipped with ZZ. Reaching GR999 adds box pages, SR food at the standard Food NPC and old Event Armours at the Warehouse Manager NPC in the Blacksmith. These sets are of little use unless you rushed to GR999 on premium without building a real set.</p>
+<h4 id="unlimited-mode">Unlimited Mode (UL)</h4>
+<p>GR999 unlocks <strong>Unlimited Mode</strong>, a per-quest toggle on some monsters that works much like Hardcore. It sets the monster's Attack, Health and similar values to around those of 3-4 star Zenith. Monsters with a hardcore variant use their hardcore moveset; monsters that never had one (such as Pokaradon) use their base moveset. Quests you can toggle are marked with a <strong>Blue Flame icon</strong> and cover all standard G star ratings. There are no Burst, Origin or Exotic monsters in UL mode.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Star rating</th><th>UL monsters</th></tr></thead>
+<tbody>
+<tr><td>1 star</td><td>Pokaradon, Yian Kut-Ku, Bulldrome, Breeding Season Hypnoc</td></tr>
+<tr><td>2 stars</td><td>Farunokku, Blue Yian-Kut Ku, Gypceros, Cephadrome, Congalala</td></tr>
+<tr><td>3 stars</td><td>Purple Gypceros, Gogomoa, Shogun Ceantaur, Basarios</td></tr>
+<tr><td>4 stars</td><td>Green Plesioth, Black Diablos, Red Khezu, Pink Rathian</td></tr>
+<tr><td>5 stars</td><td>Abiorugu, Berukyurosu, Azure Rathalos, Gougarfs</td></tr>
+<tr><td>6 stars</td><td>Volganos, Red Volganos, Kuarusepusu, Black Gravios</td></tr>
+<tr><td>7 stars</td><td>Rebidiora, Akura Jebia, Akantor, Yian Garuga, Espinas, Gurenzeburu, Dyuragaua, Forokururu, Poborubarumu</td></tr>
+</tbody>
+</table></div>
+<p>With a proper ZX set, expect the harder monsters to be able to one-shot you with some attacks from 150 health, and with most attacks if you use Adrenaline.</p>
+<p><strong>UL rewards.</strong> The main reward is the strong new <strong>per-weapon-type Up Sigils</strong>, such as Dual Swords Up. This skill gives its value to <strong>Attack, Affinity and Elemental at once</strong>: a <strong>Dual Swords Up +10</strong> sigil gives 10 true raw, 10% affinity and 100 elemental. Since they can roll two other values at the normal range (up to +15), one sigil can have <strong>up to 75 effective points</strong>, which is very good for anyone not filling every weapon slot with decorations.</p>
+<figure class="hb-fig"><img src="/assets/guide/basics/weapon-up-sigil-roll.webp" alt="A weapon-specific sigil's detail window showing a Magnet Spike Up skill of +14 and attack bonuses of +5 and +6." width="318" height="73" loading="lazy" decoding="async" /></figure>
+<p>The materials for these sigils drop at a low rate, but <strong>three featured monsters each day</strong> give boosted rates. The items are <strong>unique per weapon</strong>, so this is a long-term goal. UL monsters also give <strong>doubled Transmog Lotto points</strong> and <strong>Hiden Souls, Ribbons and Merits</strong>, so they are a good source of Hiden materials. Sigil details are in <a href="/guide-frontier-weapons.html#sigils">Sigils</a>.</p>
+<h4 id="gr999-armour-store">GR999 armour store</h4>
+<p>Reaching GR999 opens an armour store of old event sets at GX level. The set names are listed by their look; the original shows Japanese and Chinese names only.</p>
+<ul>
+<li>Beginner G Set; White Nun; Black Nun; Purple Nun</li>
+<li>Gray and Green Samurai; Green Demon Blademaster; Green Demon Gunner</li>
+<li>Butler / Maid Guildie; 2015 Event Armour</li>
+<li>Red Silver Abomination; Green Purple Abomination</li>
+<li>White Indian Set; Pink Indian Set; Pure White Indian</li>
+<li>Yellow Kimono (Blademaster and Gunner)</li>
+<li>Purple G Starter Set; 2015 Swimsuit; 2016 Swimsuit; Pink Azure Event Set</li>
+<li>Viking Event; Eruki Robot Helm; Black Burukku; Red Burukku</li>
+<li>Unreleased Purple Set; Rave Event; Dounru</li>
+</ul>
+<h3 id="zz-monsters">New ZZ monsters</h3>
+<h4 id="bogabadorumu">Bogabadorumu</h4>
+<p>A blast monster that comes with the new skill <strong>Furious</strong> and the new Zenith skill <strong>Rush Up</strong>. Cuffs for both use his materials, not any standard G monster's. His weapons have <strong>Blast Element</strong>, which post-rework still does not seem very good, but they have Rush Up: free infinite stamina and <strong>+70 true</strong> on top of the usual Rush buffs, which makes them good Raw choices. He has Ultra Quake and Roar, Blast, and can stun you into an on-your-knees stance even with stun immunity. His <strong>Zenith Parts are his forelegs</strong>, which only become Zenith parts midway through the fight; both must be broken. His tail can be cut and his head and back can be broken.</p>
+<h4 id="zenith-gravios">Zenith Gravios</h4>
+<p>Comes with the new skill <strong>Trained</strong>, a hybrid skill with Focus, Martial Arts and the equivalent of Caring +3. Its <strong>Zenith Part is the chest</strong>. The head can also be broken and the tail severed. It can inflict <strong>Extreme Fireblight</strong> and has Ultra Roar and Ultra Quake. The weapons are Fire and Blast with different Zenith skills per weapon class; they are not very good. The armour is mediocre, with points in Trained but needing more pieces than is reasonable to reach +2.</p>
+<h4 id="zenith-baruragaru">Zenith Baruragaru</h4>
+<p>Can pin you, cause sharpness loss and defence down, cause extreme water blight and has an Extreme level Roar. Its <strong>Zenith Part is the head</strong>, extending to the tongue. The armour is mostly mediocre, with standouts in the Blademaster Chest (+10 Charge Attack Up, +6 Trained) and the Gunner Helmet (+10 Mounting). More about Zenith monsters is on <a href="/guide-frontier-zenith.html">Zenith</a>.</p>
+<h3 id="zz-skills">New and changed skills</h3>
+<p>See also <a href="/guide-frontier-armour.html#skills">Skills</a>.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Skill</th><th>Points</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td>Trained (new)</td><td>10 or 15</td><td>Grants Focus and Martial Arts at levels equal to the skill level, and stops you launching players with attacks.</td></tr>
+<tr><td>Furious (new)</td><td>10</td><td>Raises Attack, Affinity, Elemental and Status as you evade, attack and perfect guard. Needs both evades and attacks to advance in stages, and resets when you take damage. At the maximum level of 3: <strong>Attack +180, Elemental 1.20x, Status 1.20x, Affinity +40%</strong>.</td></tr>
+<tr><td>Magnet Spike Tech [Magnetic Star] (new)</td><td>30</td><td>Attack Up, ESP, Ultra Earplugs. Successful evasive motions boost attack and gauge recovery. Movement speed up. The magnetic target marker does not disappear.</td></tr>
+<tr><td>Strong Attack +6 (changed)</td><td>50</td><td>200 true raw.</td></tr>
+<tr><td>Sword God +3 (changed)</td><td>25</td><td>Includes Sharpening Artisan.</td></tr>
+<tr><td>Steady Hand +2 (changed)</td><td>20</td><td>Adds the effect of Precision +2 or Critical Shot's +5 hitbox bonus. Works on both Bowguns and Bows.</td></tr>
+<tr><td>Gentle Shot +3 (changed)</td><td>20 (was 30)</td><td>Points required lowered.</td></tr>
+<tr><td>Mounting +3 (changed)</td><td>20 (was 30)</td><td>Points required lowered.</td></tr>
+<tr><td>Mounting +2 (changed)</td><td>15 (was 20)</td><td>Points required lowered.</td></tr>
+<tr><td>Recoil +3 (changed)</td><td>20 total</td><td>Lowered to 20 points in total.</td></tr>
+<tr><td>Exploit Weakness (changed)</td><td>30 (was 35)</td><td>The requirement for the raw hitbox buff is lowered.</td></tr>
+<tr><td>Auto-Guard (changed)</td><td>-</td><td>No longer activates Reflect, Obscurity or Rush. Does not fill the lance guard gauge.</td></tr>
+</tbody>
+</table></div>
+<h3 id="pz-cuffs">PZ cuffs</h3>
+<p>ZZ adds <strong>PZ cuffs</strong>: upgraded versions of the SZ cuffs, with a single Zenith Skill and up to 5 points in a meta skill. Unlike earlier Premium Cuffs they are only in a <strong>Lucky Box style gacha</strong> that costs <strong>30 coins</strong> up front and rolls for <strong>10 cuffs</strong>. You cannot roll duplicates, since each cuff is removed as you roll it, so <strong>150 coins</strong> (about 90 USD) guarantees every cuff. There are a fair number of useful cuffs but more mediocre and brick rolls, so you could easily spend 90 coins before seeing one you want. Five series of PZ cuffs have launched since ZZ. Using a PZ cuff is always the best choice, especially with Hiden Cuffs launching in the same update cycle.</p>
+<h3 id="tower-weapons">New Tower weapons</h3>
+<figure class="hb-fig"><img src="/assets/guide/basics/blue-tower-weapons.webp" alt="Six dark blue Tower weapons: a Magnet Spike, a Sword and Shield, Dual Swords, a Long Sword, a Great Sword and a Heavy Bowgun." width="585" height="400" loading="lazy" decoding="async" /></figure>
+<p>New Tower weapons arrived a couple of weeks into the ZZ update, just before Zenith Gravios. They are extremely strong, with very high potential Raw, Element and Status values. They only have <strong>Tower Sigil Slots</strong> (no decorations), but their stats outclass any weapon that is not a Raviente or Road weapon, and they are best in slot outside a handful of Raviente weapons, even for the hardest content. You can craft <strong>one weapon a week</strong>, and upgrade them with standard tower gems from the Road Store plus a small number of Zenith Materials. They remove almost any reason to grind normal weapons: all new Zenith monsters have launched with bricked weapons since this series. Their one downside: Tower weapons <strong>do not have the Zenith Partbreaker effect</strong>.</p>
+<h3 id="zz-update-1">ZZ Update 1</h3>
+<ul>
+<li><strong>New monsters:</strong> Zenith Taikun Zamuza, Zenith Harudomerugu, Musou Zerureusu. The weapons from the new Zeniths are useless on day 0 because of Blue Tower Weapons, but the armour pieces are good.</li>
+<li><strong>New Zenith skill Ceaseless Up:</strong> relaxes hit requirements, makes the skill's buff stages go down one at a time instead of resetting to zero, and adds a third stage with more Affinity and Crit Multiplier.</li>
+<li><strong>New Road and Tower weapons:</strong> GS and Hammer get Very Long versions of the Blue Tower series, and Lance gets a Long version (more usable than the very long one). Crimson Demon Road weapons are added, one weekly from the Road Store; they are globally pretty bad, worse than the Burning Zero Series and the Festival Chroma Series.</li>
+<li><strong>Other changes:</strong> UL Mode adds Zenaserisu, White Hypnoc, White Espinas, Silver Rathalos and Gold Rathian. Legendary Rastas completely ignore all Zenith Blights, Ultra Roars, Wind and Quake. New options rebind the interact-with-NPC key and let you always run in town. The Hunter's Road has new equipment and lets you earn medals more easily, including a new skill for extras. Diva Defense has new weapons, including a Magnet Spike. Weekend Carnival has new transmog masks.</li>
+</ul>
+<h4 id="hiden-cuffs">New Hiden Cuffs</h4>
+<figure class="hb-fig side"><img src="/assets/guide/basics/hiden-cuff-materials.webp" alt="A table of the Hiden materials needed for Basic, G and True cuffs: Souls, Ribbons and Merits, with a total of 690 for Basic and 4,830 for G." width="211" height="249" loading="lazy" decoding="async" /><figcaption>Hiden material costs for the cuffs</figcaption></figure>
+<p>New cuffs give Hiden points and stop the Hiden using a skill slot. They are separate from normal skill cuffs and take no actual outfit slots. You can equip a single Hiden cuff alongside any other cuff. There are three power levels:</p>
+<ul>
+<li><strong>Basic Cuffs:</strong> +6 points in a Hiden and the Hiden does not use a skill slot.</li>
+<li><strong>G Cuffs:</strong> +12 points in a Hiden and the Hiden does not use a skill slot.</li>
+<li><strong>True Cuffs:</strong> +12 points in a Hiden, +2 points in a Meta Skill and the Hiden does not use a skill slot.</li>
+</ul>
+<p>The first two levels use standard Hiden materials; you cannot exchange HL Hiden tickets for them. A True cuff needs a single <strong>True Hiden decoration</strong>. There are 8 versions of these cuffs for each weapon type, and any True Hiden decoration can make any of them. The guide says it cannot be understated how enabling these are for building sets, and how much power creep they bring.</p>
+<h4 id="zenith-nerfs">Zenith nerfs</h4>
+<p>This update <strong>nerfs all GR200 to GR400 Zeniths</strong> considerably, which changes the difficulty of entry-level Zeniths a lot.</p>
+<ul>
+<li><strong>GR200 monsters:</strong> standardised to about <strong>86% of their original health</strong> and <strong>80% or less of their attack</strong>.</li>
+<li><strong>GR400 monsters:</strong> standardised to about <strong>80% of their original health</strong> and <strong>90% or less of their attack</strong>.</li>
+<li>At both GR200 and GR400, weaker outliers such as Tigrex only lost about 93% of their health but took the same attack cut as the others.</li>
+</ul>
+<p>As a result, some standard G Rank monsters now have more HP and Attack than their "Zenith" versions, and a GR100 Shagaru Magala has more HP than every GR200 Zenith except Taikun. On the plus side, you can ignore the old non-Zenith content more easily. The guide's last words on the update: Monster Hunter Frontier as a whole was being shut down on the official servers.</p>
+</section>
+<nav class="hb-pager" aria-label="Previous and next section">
+<a class="hb-prev" href="/guide-frontier.html"><span>&larr; Back to</span><strong>Handbook home</strong></a>
+<a class="hb-next" href="/guide-frontier-guild.html" rel="next"><span>Next &rarr;</span><strong>English Guild and Guild Hall</strong></a>
+</nav>
+<div class="hb-credit">
+<p>Based on <a href="https://fist.moe/">Fist's Monster Hunter Frontier guide</a> (fist.moe, saved January 2022), with data from the <a href="https://docs.google.com/spreadsheets/d/17c7OXNxcAZmT0MWRePekAZXQQqdCo7S8ICuXPsgK8Is/edit">Comprehensive Google Doc</a> and <a href="http://ferias.life.coocan.jp/">Ferias</a>. Questions about the original: <a href="https://fist.moe/discord/">Fist's Discord</a>.</p>
+<p>Reworded and laid out for Hunsterverse; pictures are from the original guide. Spotted a mistake? <a href="/report.html">Report it</a> or say so in our <a href="https://discord.gg/YuE42eh">Discord</a>.</p>
+</div>
 </main>
+</div>
     <footer class="site-foot">
       <div class="wrap">
         <nav class="foot-links" aria-label="Footer">

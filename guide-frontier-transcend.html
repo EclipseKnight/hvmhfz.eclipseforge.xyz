@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Transcend · Frontier handbook · Hunsterverse</title>
+<meta name="description" content="Transcend is a timed buff you charge up during quests and switch on like an item. This page covers its settings, every buff and level, how to earn upgrade points, and the Elemental Burst finisher." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Transcend · Frontier handbook" />
+    <meta property="og:description" content="Transcend is a timed buff you charge up during quests and switch on like an item. This page covers its settings, every buff and level, how to earn upgrade points, and the Elemental Burst finisher." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/guide-frontier-transcend.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Transcend · Frontier handbook" />
+    <meta name="twitter:description" content="Transcend is a timed buff you charge up during quests and switch on like an item. This page covers its settings, every buff and level, how to earn upgrade points, and the Elemental Burst finisher." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-frontier.png" />
+<meta name="theme-color" content="#150e09" />
+<link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="/css/styles.css" />
+<link rel="stylesheet" href="/css/guide-frontier.css" />
+<script src="/js/nav.js" defer></script>
+<script src="/js/background.js" defer></script>
+<script src="/js/consent.js" defer></script>
+<script src="/js/guide-frontier.js" defer></script>
+</head>
+<body class="guide guide-frontier">
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="/road-vote.html">Hunting Road</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/api.html">API</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/guide-roads.html">Roads guide</a>
+              <a class="navlink" href="/guide-frontier.html" aria-current="page">Frontier handbook</a>
+            </div>
+          </div>
+          <a class="navlink" href="/report.html">Report</a>
+          <a class="navlink nav-cta" href="/account.html">Account</a>
+          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+        </nav>
+      </div>
+    </header>
+
+<div class="hb-layout">
+<nav class="hb-crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/guide-frontier.html">Frontier handbook</a></li><li><a href="/guide-frontier.html#gear">Gear and items</a></li><li aria-current="page">Transcend</li></ol></nav>
+<aside class="hb-side" aria-label="Handbook contents">
+<details class="hb-panel hb-toc"><summary>On this page</summary>
+<ol>
+<li><a href="#what-is-transcend">What Transcend is</a></li>
+<li><a href="#offensive-buffs">Offensive buffs</a></li>
+<li><a href="#defensive-buffs">Defensive buffs</a></li>
+<li><a href="#upgrading">Upgrading</a></li>
+<li><a href="#using-transcend">Using Transcend in a quest</a></li>
+<li><a href="#elemental-bursts">Elemental Bursts</a></li>
+</ol>
+</details>
+<details class="hb-panel hb-all"><summary>All sections</summary>
+<ul>
+<li><a href="/guide-frontier.html">Handbook home</a></li>
+<li class="hb-group">Getting started</li>
+<li><a href="/guide-frontier-basics.html">Basics and Getting Started</a></li>
+<li><a href="/guide-frontier-guild.html">English Guild and Guild Hall</a></li>
+<li><a href="/guide-frontier-house.html">House and AI Companions</a></li>
+<li><a href="/guide-frontier-menus.html">Menus and Town NPCs</a></li>
+<li class="hb-group">Gear and items</li>
+<li><a href="/guide-frontier-items.html">Items and Materials</a></li>
+<li><a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a></li>
+<li><a href="/guide-frontier-weapons.html">Weapons and Sigils</a></li>
+<li><a href="/guide-frontier-armour.html">Armour, Decorations and Skills</a></li>
+<li><a href="/guide-frontier-transcend.html" aria-current="page">Transcend</a></li>
+<li class="hb-group">Monsters and references</li>
+<li><a href="/guide-frontier-monsters.html">Monsters</a></li>
+<li><a href="/guide-frontier-tools.html">Tools and References</a></li>
+<li class="hb-group">Progression</li>
+<li><a href="/guide-frontier-hunter-rank.html">Hunter Rank and Style Rank</a></li>
+<li><a href="/guide-frontier-g-rank-start.html">Starting G Rank</a></li>
+<li><a href="/guide-frontier-g-rank.html">G Rank</a></li>
+<li><a href="/guide-frontier-zenith.html">Zenith (GR200+)</a></li>
+<li class="hb-group">Things to do</li>
+<li><a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a></li>
+<li><a href="/guide-frontier-events.html">Regular Events</a></li>
+<li><a href="/guide-frontier-hunters-road.html">Hunter&#x27;s Road</a></li>
+</ul>
+</details>
+</aside>
+<main id="content" class="sheet hb-sheet">
+<p class="kicker">Frontier handbook · Gear and items · 9 of 18</p>
+<h1>Transcend</h1>
+<p class="lead">Transcend is a timed buff you charge up during quests and switch on like an item. This page covers its settings, every buff and level, how to earn upgrade points, and the Elemental Burst finisher.</p>
+<section id="what-is-transcend">
+<h2>What Transcend is</h2>
+<p>Transcend is a customisable, time-based buff that strengthens your hunter. It unlocks at <strong>HR3</strong>. Like the Wystone in Monster Hunter 4U, it appears as an item among your consumables. Unlike the Wystone, the Transcend state starts with little charge, and it has to power up over time during a quest.</p>
+<p>You open the Transcend settings from the normal start menu. Choose <strong>Status</strong>, then <strong>Secret Ceremony Status</strong>. Menu names may differ slightly in our client. The settings window controls everything about the Transcend state: you can switch the mode on and off, and upgrade the buffs it gives.</p>
+</section>
+
+<section id="offensive-buffs">
+<h2>Offensive buffs</h2>
+<p>There are six offensive buffs, called <strong>Attribute Pulse</strong>, one for each of Fire, Water, Ice, Thunder, Dragon and Raw. Each has 10 levels. An Attribute Pulse raises the damage of its element (or raw damage) by a set percentage.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Buff</th><th>Levels</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Attribute Pulse (Fire)</td><td>10</td><td>Increases Fire element damage by a set percentage.</td></tr>
+<tr><td>Attribute Pulse (Water)</td><td>10</td><td>Increases Water element damage by a set percentage.</td></tr>
+<tr><td>Attribute Pulse (Ice)</td><td>10</td><td>Increases Ice element damage by a set percentage.</td></tr>
+<tr><td>Attribute Pulse (Thunder)</td><td>10</td><td>Increases Thunder element damage by a set percentage.</td></tr>
+<tr><td>Attribute Pulse (Dragon)</td><td>10</td><td>Increases Dragon element damage by a set percentage.</td></tr>
+<tr><td>Attribute Pulse (Raw)</td><td>10</td><td>Increases raw damage by a set percentage.</td></tr>
+</tbody>
+</table></div>
+<p>All six use the same table. Melee weapons get the element and raw columns. Ranged weapons get one multiplier for everything. The points are what you need to spend to reach that level (see <a href="#upgrading">Upgrading</a>).</p>
+<div class="hb-table"><table>
+<thead><tr><th>Level</th><th>Melee (element / raw)</th><th>Ranged (all)</th><th>Points</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>110% / 101%</td><td>101%</td><td>-</td></tr>
+<tr><td>1</td><td>115% / 102%</td><td>102%</td><td>1500</td></tr>
+<tr><td>2</td><td>120% / 103%</td><td>103%</td><td>2500</td></tr>
+<tr><td>3</td><td>125% / 104%</td><td>104%</td><td>4000</td></tr>
+<tr><td>4</td><td>130% / 105%</td><td>105%</td><td>5500</td></tr>
+<tr><td>5</td><td>150% / 106%</td><td>106%</td><td>8000</td></tr>
+<tr><td>6</td><td>155% / 107%</td><td>107%</td><td>9500</td></tr>
+<tr><td>7</td><td>160% / 108%</td><td>108%</td><td>11000</td></tr>
+<tr><td>8</td><td>175% / 109%</td><td>109%</td><td>12500</td></tr>
+<tr><td>9</td><td>180% / 110%</td><td>110%</td><td>14000</td></tr>
+<tr><td>10</td><td>200% / 113%</td><td>113%</td><td>15500</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="defensive-buffs">
+<h2>Defensive buffs</h2>
+<div class="hb-table"><table>
+<thead><tr><th>Buff</th><th>Levels</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td>Enduring Cloak</td><td>10</td><td>Increases defense and elemental resistances.</td></tr>
+<tr><td>Concentration</td><td>10</td><td>Starts the Transcend state precharged to a set percentage.</td></tr>
+<tr><td>Courage</td><td>10</td><td>Increases how long the Transcend state lasts.</td></tr>
+<tr><td>Stronghold</td><td>1</td><td>Gives Super Armor, which stops knockback.</td></tr>
+<tr><td>Strider</td><td>1</td><td>Gives Movement Speed Up.</td></tr>
+<tr><td>Recovery</td><td>5</td><td>Heals a set amount of health to all nearby players and NPCs.</td></tr>
+</tbody>
+</table></div>
+<h3 id="enduring-cloak">Enduring Cloak</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Level</th><th>Effect</th><th>Points</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>Defense +50, Elemental Resistance +10</td><td>-</td></tr>
+<tr><td>1</td><td>Defense +100, Elemental Resistance +20</td><td>1500</td></tr>
+<tr><td>2</td><td>Defense +150, Elemental Resistance +30</td><td>2500</td></tr>
+<tr><td>3</td><td>Defense +200, Elemental Resistance +40</td><td>4000</td></tr>
+<tr><td>4</td><td>Defense +250, Elemental Resistance +50</td><td>5500</td></tr>
+<tr><td>5</td><td>Defense +400, Elemental Resistance +60</td><td>8000</td></tr>
+<tr><td>6</td><td>Defense +450, Elemental Resistance +65</td><td>9500</td></tr>
+<tr><td>7</td><td>Defense +500, Elemental Resistance +70</td><td>11000</td></tr>
+<tr><td>8</td><td>Defense +550, Elemental Resistance +85</td><td>12500</td></tr>
+<tr><td>9</td><td>Defense +600, Elemental Resistance +90</td><td>14000</td></tr>
+<tr><td>10</td><td>Defense +800, Elemental Resistance +100</td><td>15500</td></tr>
+</tbody>
+</table></div>
+<h3 id="concentration">Concentration</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Level</th><th>Effect</th><th>Points</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>The Transcend charging gauge starts at 0%.</td><td>-</td></tr>
+<tr><td>1</td><td>The gauge starts at 4%.</td><td>1500</td></tr>
+<tr><td>2</td><td>The gauge starts at 6%.</td><td>2500</td></tr>
+<tr><td>3</td><td>The gauge starts at 8%.</td><td>4000</td></tr>
+<tr><td>4</td><td>The gauge starts at 10%.</td><td>5500</td></tr>
+<tr><td>5</td><td>The gauge starts at 13%.</td><td>8000</td></tr>
+<tr><td>6</td><td>The gauge starts at 15%.</td><td>9500</td></tr>
+<tr><td>7</td><td>The gauge starts at 17%.</td><td>11000</td></tr>
+<tr><td>8</td><td>The gauge starts at 19%.</td><td>12500</td></tr>
+<tr><td>9</td><td>The gauge starts at 21%.</td><td>14000</td></tr>
+<tr><td>10</td><td>The gauge starts at 25%.</td><td>15500</td></tr>
+</tbody>
+</table></div>
+<h3 id="courage">Courage</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Level</th><th>Effect</th><th>Points</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>The Transcend state lasts 60 seconds.</td><td>1500</td></tr>
+<tr><td>1</td><td>It lasts 65 seconds.</td><td>1500</td></tr>
+<tr><td>2</td><td>It lasts 70 seconds.</td><td>2500</td></tr>
+<tr><td>3</td><td>It lasts 75 seconds.</td><td>4000</td></tr>
+<tr><td>4</td><td>It lasts 80 seconds.</td><td>5500</td></tr>
+<tr><td>5</td><td>It lasts 90 seconds.</td><td>8000</td></tr>
+<tr><td>6</td><td>It lasts 95 seconds.</td><td>9500</td></tr>
+<tr><td>7</td><td>It lasts 100 seconds.</td><td>11000</td></tr>
+<tr><td>8</td><td>It lasts 105 seconds.</td><td>12500</td></tr>
+<tr><td>9</td><td>It lasts 110 seconds.</td><td>14000</td></tr>
+<tr><td>10</td><td>It lasts 120 seconds.</td><td>15500</td></tr>
+</tbody>
+</table></div>
+<h3 id="stronghold-strider">Stronghold and Strider</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Buff</th><th>Level</th><th>Effect</th><th>Points</th></tr></thead>
+<tbody>
+<tr><td>Stronghold</td><td>1</td><td>Grants Super Armor.</td><td>10000</td></tr>
+<tr><td>Strider</td><td>1</td><td>Grants Movement Speed Up.</td><td>10000</td></tr>
+</tbody>
+</table></div>
+<h3 id="recovery">Recovery</h3>
+<div class="hb-table"><table>
+<thead><tr><th>Level</th><th>Effect</th><th>Points</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>-</td><td>-</td></tr>
+<tr><td>1</td><td>Heals a tiny amount of health to all nearby players and NPCs.</td><td>2000</td></tr>
+<tr><td>2</td><td>Heals a small amount.</td><td>3500</td></tr>
+<tr><td>3</td><td>Heals a medium amount.</td><td>5000</td></tr>
+<tr><td>4</td><td>Heals a large amount.</td><td>6500</td></tr>
+<tr><td>5</td><td>Heals a massive amount.</td><td>8000</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="upgrading">
+<h2>Upgrading</h2>
+<p>You earn points to upgrade the buffs in two ways:</p>
+<ul>
+<li>Use <strong>Ancient Hunting Books</strong>.</li>
+<li>Take weapons of the matching element onto quests: Fire, Water, Ice, Thunder, Dragon, Raw and hybrid elements.</li>
+</ul>
+<p>You get Ancient Hunting Books just by taking part in the cycling events (Conquests, Tower, Festival and Caravan). Different events give different books, and each book gives a different number of points. The books are given for reaching milestones in those events. For example, you might get 3 books for clearing 20 floors in the Tower. For these events, see <a href="/guide-frontier-events.html">Regular Events</a>, including the <a href="/guide-frontier-events.html#hunter-festival">Hunter Festival</a> and the <a href="/guide-frontier-events.html#caravan">Caravan</a>.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Book</th><th>Upgrades</th><th>Events</th><th>Points</th></tr></thead>
+<tbody>
+<tr><td>Ancient Hunting Ceremony Book (Red)</td><td>Offensive abilities</td><td>All</td><td>500</td></tr>
+<tr><td>Ancient Hunting Ceremony Book (Blue)</td><td>Offensive abilities</td><td>Sky Corridor, Hunter Festival</td><td>1000</td></tr>
+<tr><td>Ancient Hunting Ceremony Book (Dark)</td><td>Offensive abilities</td><td>Hunter Festival</td><td>3000</td></tr>
+<tr><td>Ancient Hunting Technique Book (Red)</td><td>Defensive abilities</td><td>All</td><td>500</td></tr>
+<tr><td>Ancient Hunting Technique Book (Blue)</td><td>Defensive abilities</td><td>Sky Corridor, Hunter Festival</td><td>1000</td></tr>
+</tbody>
+</table></div>
+<aside class="box hv-note"><p>The Hunter Festival (Festa) runs on Hunsterverse, and its prize table is on <a href="/events.html">Events</a>. Menu and item names may differ slightly in our client.</p></aside>
+</section>
+
+<section id="using-transcend">
+<h2>Using Transcend in a quest</h2>
+<p>When you enter a quest with Transcend on, you get a new item icon. It shows a hunter, and starts out light grey. As time passes, the grey area drains downwards. When it is ready, the icon is replaced by a yellow hunter on a flashing white background. That flashing always shows behind all your items, even if you have something other than the Transcend option selected.</p>
+<p>Using the "item" puts you in the <strong>Transcend state</strong>. A special animation plays and your character gets an aura. While the aura lasts, you get the effects of every ability you have turned on, and your weapon attacks use new hit animations depending on the element you use.</p>
+<p>After you land enough hits, a sound plays and the icon changes to a carving knife. This means you can use an <strong>Elemental Burst</strong>. Your character rushes forward with the knife, and when it hits the enemy, it sets off the burst that fits the element of your weapon and the monster you hit. A weapon with a combination element picks an effect based on which element hurt the monster most, or picks one at random. If the monster is immune to the element you dealt, the burst becomes Raw.</p>
+</section>
+
+<section id="elemental-bursts">
+<h2>Elemental Bursts</h2>
+<p>You can use an Elemental Burst on a monster after it has taken enough hits during Transcend. The item icon becomes a knife, and the burst depends on the element of the weapon you are holding.</p>
+<div class="hb-table"><table>
+<thead><tr><th>Element</th><th>Elemental Burst effect</th></tr></thead>
+<tbody>
+<tr><td>Attribute Pulse (Fire)</td><td>Deals fire damage. Flame bursts can make most monsters stagger.</td></tr>
+<tr><td>Attribute Pulse (Water)</td><td>Deals low water damage and softens monster hitzones. It lasts a very long time.</td></tr>
+<tr><td>Attribute Pulse (Ice)</td><td>Freezes a monster solid, so it cannot move for a while. Tails cannot be cut during this state, and some monsters may resist freezing even when they take ice damage.</td></tr>
+<tr><td>Attribute Pulse (Thunder)</td><td>Deals thunder damage and paralyses monsters. It does not work on monsters that cannot be paralysed.</td></tr>
+<tr><td>Attribute Pulse (Dragon)</td><td>Deals dragon and stun damage, and can KO monsters.</td></tr>
+<tr><td>Attribute Pulse (Raw)</td><td>Deals large amounts of raw damage and causes a Flash Bomb effect.</td></tr>
+</tbody>
+</table></div>
+<p>The burst is forced to Raw if the monster takes no damage from the element you used. Hybrid elements such as Light have an order of preference for the element chosen. For example, Shantien weapons deal 30% Fire, 100% Water and 70% Thunder, but always pick Fire as the burst type if fire damage has been dealt.</p>
+<div class="box warn"><p><strong>Status effects only happen if the monster can normally be afflicted by them, and if you use the burst during frames in which the monster can be staggered.</strong> For example, an Ice burst during an uninterruptible attack animation will not freeze the monster. A Thunder burst on a monster that cannot be paralysed will not paralyse it.</p></div>
+</section>
+<nav class="hb-pager" aria-label="Previous and next section">
+<a class="hb-prev" href="/guide-frontier-armour.html" rel="prev"><span>&larr; Previous</span><strong>Armour, Decorations and Skills</strong></a>
+<a class="hb-next" href="/guide-frontier-monsters.html" rel="next"><span>Next &rarr;</span><strong>Monsters</strong></a>
+</nav>
+<div class="hb-credit">
+<p>Based on <a href="https://fist.moe/">Fist's Monster Hunter Frontier guide</a> (fist.moe, saved January 2022), with data from the <a href="https://docs.google.com/spreadsheets/d/17c7OXNxcAZmT0MWRePekAZXQQqdCo7S8ICuXPsgK8Is/edit">Comprehensive Google Doc</a> and <a href="http://ferias.life.coocan.jp/">Ferias</a>. Questions about the original: <a href="https://fist.moe/discord/">Fist's Discord</a>.</p>
+<p>Reworded and laid out for Hunsterverse; pictures are from the original guide. Spotted a mistake? <a href="/report.html">Report it</a> or say so in our <a href="https://discord.gg/YuE42eh">Discord</a>.</p>
+</div>
+</main>
+</div>
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <a href="/guide-windows.html">Windows guide</a>
+          <a href="/guide-linux.html">Linux guide</a>
+          <a href="/guide-roads.html">Roads guide</a>
+          <a href="/guide-frontier.html">Frontier handbook</a>
+          <a href="/changelog.html">Changelog</a>
+          <a href="/api.html">API</a>
+          <a href="/report.html">Report a problem</a>
+          <a href="/privacy.html">Privacy</a>
+          <a href="https://discord.gg/YuE42eh">Discord</a>
+          <a href="https://hunstermonter.net">hunstermonter.net</a>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+</body>
+</html>
