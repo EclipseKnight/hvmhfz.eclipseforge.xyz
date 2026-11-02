@@ -410,7 +410,13 @@
       var on = String(opt.value) === current;
       row.setAttribute("aria-selected", on ? "true" : "false");
       if (on) { row.classList.add("is-on"); selectedIndex = shown; }
-      row.addEventListener("click", function () { choose(p, opt.value); });
+      if (opt.disabled) {
+        // Shown so the user sees it exists, but it cannot be chosen (its hint says why).
+        row.classList.add("is-disabled");
+        row.setAttribute("aria-disabled", "true");
+      } else {
+        row.addEventListener("click", function () { choose(p, opt.value); });
+      }
       list.appendChild(row);
       shown += 1;
     });
@@ -487,7 +493,8 @@
 
   /**
    * A dropdown with icons. opts:
-   *   options   [{value, label, group?, hint?}] (shared arrays are fine; they are never changed)
+   *   options   [{value, label, group?, hint?, disabled?}] (shared arrays are fine; they are never changed);
+   *             a disabled option is listed, muted, but cannot be chosen
    *   value     the current value (one the list lacks is shown with unknownLabel)
    *   onChange  called with the new value (a number)
    *   kind      "monster" or "item" to draw their icons; anything else draws none

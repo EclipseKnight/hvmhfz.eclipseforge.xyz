@@ -1,407 +1,99 @@
 {
-"1": {
-"name": "Fortress",
-"source": "quest text",
-"share": 0.667
-},
-"2": {
-"name": "Forest and Hills",
-"source": "area table",
-"share": 1.0
-},
-"3": {
-"name": "Desert",
-"source": "area table",
-"share": 1.0
-},
-"4": {
-"name": "Swamp",
-"source": "area table",
-"share": 1.0
-},
-"5": {
-"name": "Volcano",
-"source": "area table",
-"share": 1.0
-},
-"6": {
-"name": "Jungle",
-"source": "area table",
-"share": 1.0
-},
-"7": {
-"name": null,
-"source": null,
-"share": null
-},
-"8": {
-"name": "Volcano",
-"source": "area table",
-"share": 1.0
-},
-"9": {
-"name": "Arena",
-"source": "quest text",
-"share": 0.254
-},
-"10": {
-"name": "Arena",
-"source": "quest text",
-"share": 0.286
-},
-"11": {
-"name": "Snowy Mountains",
-"source": "area table",
-"share": 1.0
-},
-"12": {
-"name": null,
-"source": null,
-"share": null
-},
-"13": {
-"name": "Tower",
-"source": "quest text",
-"share": 0.208
-},
-"14": {
-"name": "Tower",
-"source": "quest text",
-"share": 0.159
-},
-"15": {
-"name": "Tower",
-"source": "quest text",
-"share": 0.305
-},
-"16": {
-"name": "Forest and Hills",
-"source": "area table",
-"share": 1.0
-},
-"17": {
-"name": "Desert",
-"source": "area table",
-"share": 1.0
-},
-"18": {
-"name": "Swamp",
-"source": "area table",
-"share": 1.0
-},
-"19": {
-"name": "Volcano",
-"source": "area table",
-"share": 1.0
-},
-"20": {
-"name": "Jungle",
-"source": "area table",
-"share": 1.0
-},
-"21": {
-"name": "Snowy Mountains",
-"source": "area table",
-"share": 1.0
-},
-"22": {
-"name": "Fortress",
-"source": "quest text",
-"share": 0.143
-},
-"23": {
-"name": "Fortress",
-"source": "quest text",
-"share": 0.667
-},
-"24": {
-"name": "Arena",
-"source": "quest text",
-"share": 0.324
-},
-"25": {
-"name": "Arena",
-"source": "quest text",
-"share": 0.286
-},
-"26": {
-"name": "Great Forest",
-"source": "area table",
-"share": 1.0
-},
-"27": {
-"name": "Great Forest",
-"source": "area table",
-"share": 1.0
-},
-"28": {
-"name": "Volcano",
-"source": "area table",
-"share": 1.0
-},
-"29": {
-"name": "Volcano",
-"source": "area table",
-"share": 1.0
-},
-"30": {
-"name": "Jungle",
-"source": "area table",
-"share": 1.0
-},
-"31": {
-"name": "Gorge",
-"source": "area table",
-"share": 1.0
-},
-"32": {
-"name": "Gorge",
-"source": "area table",
-"share": 1.0
-},
-"35": {
-"name": "Volcano",
-"source": "area table",
-"share": 1.0
-},
-"44": {
-"name": "Great Forest",
-"source": "quest text",
-"share": 0.239
-},
-"45": {
-"name": null,
-"source": null,
-"share": null
-},
-"46": {
-"name": null,
-"source": null,
-"share": null
-},
-"47": {
-"name": "Isolated Island",
-"source": "quest text",
-"share": 1.0
-},
-"48": {
-"name": "Isolated Island",
-"source": "quest text",
-"share": 1.0
-},
-"49": {
-"name": "Isolated Island",
-"source": "quest text",
-"share": 1.0
-},
-"50": {
-"name": "Highlands",
-"source": "area table",
-"share": 1.0
-},
-"51": {
-"name": "Highlands",
-"source": "area table",
-"share": 1.0
-},
-"52": {
-"name": "Tower",
-"source": "quest text",
-"share": 0.418
-},
-"53": {
-"name": "Arena",
-"source": "quest text",
-"share": 0.181
-},
-"54": {
-"name": "Arena",
-"source": "quest text",
-"share": 0.197
-},
-"55": {
-"name": "Interception Base",
-"source": "quest text",
-"share": 0.621
-},
-"56": {
-"name": "Interception Base",
-"source": "quest text",
-"share": 0.587
-},
-"57": {
-"name": "Tidal Island",
-"source": "area table",
-"share": 1.0
-},
-"58": {
-"name": "Tidal Island",
-"source": "area table",
-"share": 1.0
-},
-"59": {
-"name": "Tidal Island",
-"source": "area table",
-"share": 1.0
-},
-"60": {
-"name": "Polar Sea",
-"source": "area table",
-"share": 1.0
-},
-"61": {
-"name": "Polar Sea",
-"source": "area table",
-"share": 1.0
-},
-"62": {
-"name": null,
-"source": null,
-"share": null
-},
-"63": {
-"name": null,
-"source": null,
-"share": null
-},
-"64": {
-"name": "Flower Field",
-"source": "area table",
-"share": 1.0
-},
-"65": {
-"name": "Flower Field",
-"source": "area table",
-"share": 1.0
-},
-"66": {
-"name": "Volcano",
-"source": "quest text",
-"share": 1.0
-},
-"67": {
-"name": null,
-"source": null,
-"share": null
-},
-"68": {
-"name": null,
-"source": null,
-"share": null
-},
-"69": {
-"name": "Volcano",
-"source": "area table",
-"share": 1.0
-},
-"71": {
-"name": "Tower Airship",
-"source": "area table",
-"share": 1.0
-},
-"72": {
-"name": "Tower Airship",
-"source": "area table",
-"share": 1.0
-},
-"73": {
-"name": "Tower Airship",
-"source": "area table",
-"share": 1.0
-},
-"74": {
-"name": "Tower Airship",
-"source": "area table",
-"share": 1.0
-},
-"75": {
-"name": "Tower Airship",
-"source": "area table",
-"share": 1.0
-},
-"76": {
-"name": "Tower Airship",
-"source": "area table",
-"share": 1.0
-},
-"78": {
-"name": "Tower Airship",
-"source": "area table",
-"share": 1.0
-},
-"79": {
-"name": "White Lake",
-"source": "area table",
-"share": 1.0
-},
-"80": {
-"name": "White Lake",
-"source": "area table",
-"share": 1.0
-},
-"81": {
-"name": "Isolated Island",
-"source": "quest text",
-"share": 1.0
-},
-"86": {
-"name": "Isolated Island",
-"source": "quest text",
-"share": 1.0
-},
-"87": {
-"name": "Isolated Island",
-"source": "quest text",
-"share": 1.0
-},
-"88": {
-"name": "Isolated Island",
-"source": "quest text",
-"share": 1.0
-},
-"89": {
-"name": "Isolated Island",
-"source": "quest text",
-"share": 1.0
-},
-"90": {
-"name": "Isolated Island",
-"source": "quest text",
-"share": 1.0
-},
-"91": {
-"name": "Fortress",
-"source": "quest text",
-"share": 0.231
-},
-"92": {
-"name": "Painted Falls",
-"source": "area table",
-"share": 1.0
-},
-"93": {
-"name": "Painted Falls",
-"source": "area table",
-"share": 1.0
-},
-"94": {
-"name": null,
-"source": null,
-"share": null
-},
-"95": {
-"name": "Hunter's Road",
-"source": "area table",
-"share": 1.0
-},
-"96": {
-"name": "Sacred Mountain",
-"source": "quest text",
-"share": 0.625
-},
-"97": {
-"name": null,
-"source": null,
-"share": null
-}
+"1": {"name": "Fortress (day)", "base": "Fortress", "ja": "砦", "group": "Forts and sieges", "quests": 15, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Lao-Shan Lung fort defense; every area is \"Siege Fortress Day\" in the overlay table"},
+"2": {"name": "Forest and Hills (day)", "base": "Forest and Hills", "group": "Field maps", "quests": 81, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"3": {"name": "Desert (day)", "base": "Desert", "group": "Field maps", "quests": 563, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"4": {"name": "Swamp (day)", "base": "Swamp", "group": "Field maps", "quests": 431, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"5": {"name": "Volcano (day)", "base": "Volcano", "group": "Field maps", "quests": 235, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed", "note": "the original Volcano, Areas 1-8"},
+"6": {"name": "Jungle (day)", "base": "Jungle", "group": "Field maps", "quests": 478, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"7": {"name": "Castle Schrade", "base": "Castle Schrade", "group": "Arenas and battle stages", "quests": 15, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "Fatalis; quest names say Castle Schrade (シュレイド城)"},
+"8": {"name": "Crimson Battleground", "ja": "決戦場", "group": "Arenas and battle stages", "quests": 10, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Crimson Fatalis (紅き怒りを追撃せよ); the Volcano secret area then the battleground; the wiki calls it Battleground (決戦場), our quest text says Battlefield"},
+"9": {"name": "Arena (day)", "base": "Arena", "group": "Arenas and battle stages", "quests": 122, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "quest text says Arena (闘技場); weak wiki match: Great Arena (大闘技場), unresolved"},
+"10": {"name": "Felyne Arena (day)", "base": "Arena", "group": "Arenas and battle stages", "quests": 14, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "likely", "note": "the Arena base camp with another fight area; Felyne and Melynx, Velocidrome quests"},
+"11": {"name": "Snowy Mountains (day)", "base": "Snowy Mountains", "group": "Field maps", "quests": 295, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"12": {"name": "Dundorma Fort (day)", "base": "Dundorma Fort", "ja": "戦闘街", "group": "Forts and sieges", "quests": 9, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); id pattern (night copy = day id + 14 or the next id); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Dundorma defense quests; day or night from the id pattern only; wiki: probably Battlequarters (戦闘街)"},
+"13": {"name": "Ancient Tower 1", "base": "Ancient Tower", "ja": "塔", "group": "Towers", "quests": 159, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Tower 1: top area is Tower 1 Area 8; Rathalos and Kirin quests"},
+"14": {"name": "Ancient Tower 2", "base": "Ancient Tower", "ja": "塔", "group": "Towers", "quests": 176, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Tower 1 plus the Tower 2 top area; Azure Rathalos, Pink Rathian"},
+"15": {"name": "Ancient Tower 3", "base": "Ancient Tower", "ja": "塔", "group": "Towers", "quests": 176, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Tower 3, Areas 8-10 at the top; Lunastra, Teostra; the wiki's Tower 3 is the 1-area Forlorn Arena (塔の秘境), not this 11-area map, so the Japanese 塔 is for the tower in general"},
+"16": {"name": "Forest and Hills (night)", "base": "Forest and Hills", "group": "Field maps", "quests": 83, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"17": {"name": "Desert (night)", "base": "Desert", "group": "Field maps", "quests": 548, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"18": {"name": "Swamp (night)", "base": "Swamp", "group": "Field maps", "quests": 425, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"19": {"name": "Volcano (night)", "base": "Volcano", "group": "Field maps", "quests": 241, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed", "note": "the original Volcano, Areas 1-8"},
+"20": {"name": "Jungle (night)", "base": "Jungle", "group": "Field maps", "quests": 520, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"21": {"name": "Snowy Mountains (night)", "base": "Snowy Mountains", "group": "Field maps", "quests": 290, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"22": {"name": "Dundorma Fort (night)", "base": "Dundorma Fort", "ja": "戦闘街", "group": "Forts and sieges", "quests": 7, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); id pattern (night copy = day id + 14 or the next id); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "its own copy of the four Dundorma Fort areas; night from the id pattern only; wiki: probably Battlequarters (戦闘街)"},
+"23": {"name": "Fortress (night)", "base": "Fortress", "ja": "砦", "group": "Forts and sieges", "quests": 27, "source": "quest text (data/quests.json); id pattern (night copy = day id + 14 or the next id); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "guess", "note": "Lao-Shan Lung fort defense on seven areas no table names; night from the id pattern only"},
+"24": {"name": "Arena (night)", "base": "Arena", "group": "Arenas and battle stages", "quests": 111, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); id pattern (night copy = day id + 14 or the next id); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "quest text says Arena (闘技場); weak wiki match: Great Arena (大闘技場), unresolved"},
+"25": {"name": "Felyne Arena (night)", "base": "Arena", "group": "Arenas and battle stages", "quests": 14, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); id pattern (night copy = day id + 14 or the next id)", "confidence": "likely", "note": "Felyne and Melynx, Velocidrome quests"},
+"26": {"name": "Great Forest (day)", "base": "Great Forest", "group": "Field maps", "quests": 287, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"27": {"name": "Great Forest (night)", "base": "Great Forest", "group": "Field maps", "quests": 288, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"28": {"name": "Volcano with Areas 9-10 (day)", "base": "Volcano", "group": "Field maps", "quests": 129, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed", "note": "the later Volcano: adds Areas 9 and 10 (Volganos, Midogaron)"},
+"29": {"name": "Volcano with Areas 9-10 (night)", "base": "Volcano", "group": "Field maps", "quests": 116, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed", "note": "the later Volcano: adds Areas 9 and 10 (Volganos, Midogaron)"},
+"30": {"name": "Jungle, Area 10 only (Sleep Learning)", "base": "Jungle", "group": "Raviente, Road and special", "quests": 2, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed", "note": "one area; used by the two Sleep Learning quests"},
+"31": {"name": "Canyon (day)", "base": "Canyon", "ja": "峡谷", "group": "Field maps", "quests": 179, "source": "area names (data/area-ids.json); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "confirmed", "note": "quest text and the wiki call it Canyon (峡谷)"},
+"32": {"name": "Canyon (night)", "base": "Canyon", "ja": "峡谷", "group": "Field maps", "quests": 166, "source": "area names (data/area-ids.json); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "confirmed", "note": "quest text and the wiki call it Canyon (峡谷)"},
+"33": {"name": "Unused test stage, PvP Room (day)", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "guess", "note": "odd mix: two Interception Base areas, an Arena base camp, Cities Map, PvP Room"},
+"34": {"name": "Unused test stage, Halk Area (night)", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "guess", "note": "night copy of map 33 with Halk Area"},
+"35": {"name": "Battlefield (Akantor)", "group": "Arenas and battle stages", "quests": 62, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "quest names say Battlefield; Akantor"},
+"36": {"name": "Unused stage, areas 266 and 268", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "guess", "note": "no table names its areas"},
+"37": {"name": "Unused stage, areas 267 and 269", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "guess", "note": "no table names its areas"},
+"38": {"name": "Unused stage, areas 266 and 270", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "guess", "note": "no table names its areas"},
+"39": {"name": "Unused stage, areas 267 and 271", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "guess", "note": "no table names its areas"},
+"40": {"name": "Interception Base, 2 areas (day)", "base": "Interception Base", "ja": "迎撃拠点", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "base camp and Area 1 of the Interception Base"},
+"41": {"name": "Interception Base, 2 areas (night)", "base": "Interception Base", "ja": "迎撃拠点", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "base camp and Area 1 of the Interception Base"},
+"42": {"name": "Solitary Isles, whole island (set 1)", "base": "Solitary Isles", "ja": "絶島", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Raviente: campaign tent, balloon and the isles"},
+"43": {"name": "Solitary Isles, whole island (set 2)", "base": "Solitary Isles", "ja": "絶島", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Raviente: the other copy of the island areas"},
+"44": {"name": "Great Forest Canopy", "base": "Great Forest Canopy", "ja": "樹海頂部", "group": "Arenas and battle stages", "quests": 159, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "two areas; Doragyurosu and the Exotic (G★8) quests"},
+"45": {"name": "Caravan Blimp (day)", "base": "Caravan Blimp", "group": "Raviente, Road and special", "quests": 1, "source": "area names (MHFZ Overlay area table)", "confidence": "guess", "note": "one area; one Caravan (インター) quest with no title"},
+"46": {"name": "Caravan Blimp (night)", "base": "Caravan Blimp", "group": "Raviente, Road and special", "quests": 3, "source": "area names (MHFZ Overlay area table)", "confidence": "guess", "note": "one area; three Caravan (インター) quests with no title"},
+"47": {"name": "Solitary Isle 1 (Raviente)", "base": "Solitary Isles", "ja": "絶島", "group": "Raviente, Road and special", "quests": 3, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "confirmed", "note": "Great Slaying: the balloon and isle 1"},
+"48": {"name": "Solitary Isle 2 (Raviente)", "base": "Solitary Isles", "ja": "絶島", "group": "Raviente, Road and special", "quests": 3, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "confirmed", "note": "Great Slaying: the balloon and isle 2"},
+"49": {"name": "Solitary Isle 3 (Raviente)", "base": "Solitary Isles", "ja": "絶島", "group": "Raviente, Road and special", "quests": 7, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "confirmed", "note": "Great Slaying: the balloon and isle 3"},
+"50": {"name": "Highlands (day)", "base": "Highlands", "group": "Field maps", "quests": 188, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"51": {"name": "Highlands (night)", "base": "Highlands", "group": "Field maps", "quests": 210, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"52": {"name": "Ancient Tower 1 with Area 9", "base": "Ancient Tower", "ja": "塔", "group": "Towers", "quests": 134, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Tower 1 plus the Tower 1 Area 9 summit; Stygian Zinogre, mostly G rank"},
+"53": {"name": "Arena with moat (day)", "base": "Arena with Moat", "group": "Arenas and battle stages", "quests": 443, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "the busy G rank arena: daily, Idaten and Great Arena quests; weak wiki match: the Season 10 new Great Arena (新大闘技場)"},
+"54": {"name": "Arena with moat (night)", "base": "Arena with Moat", "group": "Arenas and battle stages", "quests": 436, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "the busy G rank arena: daily, Idaten and Great Arena quests; weak wiki match: the Season 10 new Great Arena (新大闘技場)"},
+"55": {"name": "Interception Base (day)", "base": "Interception Base", "ja": "迎撃拠点", "group": "Forts and sieges", "quests": 132, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "confirmed", "note": "Intercept quests (迎撃)"},
+"56": {"name": "Interception Base (night)", "base": "Interception Base", "ja": "迎撃拠点", "group": "Forts and sieges", "quests": 126, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "confirmed", "note": "Intercept quests (迎撃)"},
+"57": {"name": "Tidal Island (day)", "base": "Tidal Island", "ja": "潮島", "group": "Field maps", "quests": 162, "source": "area names (data/area-ids.json); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "confirmed"},
+"58": {"name": "Tidal Island (night)", "base": "Tidal Island", "ja": "潮島", "group": "Field maps", "quests": 136, "source": "area names (data/area-ids.json); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "confirmed"},
+"59": {"name": "Tidal Island (dusk)", "base": "Tidal Island", "ja": "潮島", "group": "Field maps", "quests": 22, "source": "area names (data/area-ids.json); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "its own six areas, one \"Orange Area 5\"; quest names say dusk (黄昏)"},
+"60": {"name": "Polar Sea (day)", "base": "Polar Sea", "group": "Field maps", "quests": 82, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"61": {"name": "Polar Sea (night)", "base": "Polar Sea", "group": "Field maps", "quests": 86, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"62": {"name": "World's End (Disufiroa)", "base": "World's End", "group": "Arenas and battle stages", "quests": 14, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "Disufiroa"},
+"63": {"name": "Large Airship (Shantien)", "base": "Large Airship", "group": "Arenas and battle stages", "quests": 23, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "Shantien"},
+"64": {"name": "Flower Field (day)", "base": "Flower Field", "group": "Field maps", "quests": 34, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"65": {"name": "Flower Field (night)", "base": "Flower Field", "group": "Field maps", "quests": 48, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"66": {"name": "Deep Crater (Crimson Fatalis)", "base": "Deep Crater", "ja": "火口深部", "group": "Arenas and battle stages", "quests": 7, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Battlefield entrance then Deep Crater; Crimson Fatalis (紅龍)"},
+"67": {"name": "Bamboo Forest (day)", "base": "Bamboo Forest", "group": "Arenas and battle stages", "quests": 33, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "Inagami (雅翁龍)"},
+"68": {"name": "Bamboo Forest (night)", "base": "Bamboo Forest", "group": "Arenas and battle stages", "quests": 31, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "Inagami (雅翁龍)"},
+"69": {"name": "Battlefield (Varusaburosu)", "ja": "決戦場", "group": "Arenas and battle stages", "quests": 57, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Volcano secret area, then the battlefield; the wiki calls it Battleground (決戦場), our quest text says Battlefield"},
+"70": {"name": "Unused stage, areas 381-385", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "guess", "note": "no table names its areas"},
+"71": {"name": "Sky Corridor, 1st District", "ja": "天廊", "group": "Towers", "quests": 3, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "airship, tower entrance, Tower 01, then Duremudira"},
+"72": {"name": "Sky Corridor, 1st District, Duremudira only", "group": "Towers", "quests": 1, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "likely", "note": "airship straight to the Duremudira arena"},
+"73": {"name": "Sky Corridor, 2nd District", "ja": "天廊", "group": "Towers", "quests": 1, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "airship, tower entrance, Tower 02, then Duremudira"},
+"74": {"name": "Sky Corridor, 2nd District, Duremudira only", "group": "Towers", "quests": 3, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "likely", "note": "airship straight to the Duremudira arena; also Arrogant Duremudira"},
+"75": {"name": "Sky Corridor, 3rd District", "ja": "天廊", "group": "Towers", "quests": 2, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "quest names say Third District"},
+"76": {"name": "Sky Corridor, 3rd District, short", "group": "Towers", "quests": 1, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "likely", "note": "airship, the urgent tower floor, Duremudira arena"},
+"77": {"name": "Sky Corridor, 4th District", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "likely", "note": "no quest file uses it"},
+"78": {"name": "Sky Corridor, 4th District, short", "group": "Towers", "quests": 1, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "likely", "note": "quest name says Fourth District"},
+"79": {"name": "White Lake (day)", "base": "White Lake", "group": "Field maps", "quests": 66, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"80": {"name": "White Lake (night)", "base": "White Lake", "group": "Field maps", "quests": 52, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"81": {"name": "Berserk Raviente, combat stage 1", "base": "Berserk Raviente", "group": "Raviente, Road and special", "quests": 18, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "Berserk / Extreme Raviente slaying"},
+"82": {"name": "Berserk Raviente, combat stage 2", "base": "Berserk Raviente", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "likely", "note": "no quest file uses it"},
+"83": {"name": "Berserk Raviente, combat stage 3", "base": "Berserk Raviente", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "likely", "note": "no quest file uses it"},
+"84": {"name": "Berserk Raviente, combat stage 4", "base": "Berserk Raviente", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "likely", "note": "no quest file uses it"},
+"85": {"name": "Berserk Raviente, combat stage 5", "base": "Berserk Raviente", "group": "Unused / untested", "quests": 0, "source": "area names (MHFZ Overlay area table)", "confidence": "likely", "note": "no quest file uses it"},
+"86": {"name": "Berserk Raviente, support stage 1", "base": "Berserk Raviente", "group": "Raviente, Road and special", "quests": 3, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "G rank siege support quests"},
+"87": {"name": "Berserk Raviente, support stage 2", "base": "Berserk Raviente", "group": "Raviente, Road and special", "quests": 3, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "G rank siege support quests"},
+"88": {"name": "Berserk Raviente, support stage 3", "base": "Berserk Raviente", "group": "Raviente, Road and special", "quests": 3, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "G rank siege support quests"},
+"89": {"name": "Berserk Raviente, support stage 4", "base": "Berserk Raviente", "group": "Raviente, Road and special", "quests": 3, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "G rank siege support quests"},
+"90": {"name": "Berserk Raviente, support stage 5", "base": "Berserk Raviente", "group": "Raviente, Road and special", "quests": 3, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "G rank siege support quests"},
+"91": {"name": "Guanzorumu's arena", "base": "Guanzorumu's arena", "group": "Arenas and battle stages", "quests": 26, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "Guanzorumu"},
+"92": {"name": "Painted Falls (day)", "base": "Painted Falls", "group": "Field maps", "quests": 41, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"93": {"name": "Painted Falls (night)", "base": "Painted Falls", "group": "Field maps", "quests": 34, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed"},
+"94": {"name": "Shagaru Magala's arena", "base": "Shagaru Magala's arena", "group": "Arenas and battle stages", "quests": 12, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "Shagaru Magala"},
+"95": {"name": "Hunting Road", "base": "Hunter's Road", "group": "Raviente, Road and special", "quests": 2, "source": "area names (data/area-ids.json); quest text (data/quests.json)", "confidence": "confirmed", "note": "area names say Hunter's Road"},
+"96": {"name": "Amatsu's arena", "base": "Amatsu's arena", "group": "Arenas and battle stages", "quests": 8, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json)", "confidence": "confirmed", "note": "Amatsu"},
+"97": {"name": "Historic Site (Musou)", "base": "Historic Site", "ja": "古跡", "group": "Arenas and battle stages", "quests": 25, "source": "area names (MHFZ Overlay area table); quest text (data/quests.json); wiki: https://monsterhunterwiki.org (matched by description, no source gives ids)", "confidence": "likely", "note": "Musou quests (遷悠) against many monsters"}
 }

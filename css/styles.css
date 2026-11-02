@@ -1210,11 +1210,15 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .bui-search{flex:0 0 auto;width:100%;margin:0 0 6px}
 .bui-search[hidden]{display:none}
 .bui-list{flex:1 1 auto;min-height:0;overflow:auto;margin:0;padding:0;list-style:none;outline:none}
-.bui-option{display:flex;align-items:center;gap:10px;min-height:42px;padding:5px 8px;border-radius:3px;cursor:pointer;font-size:.92rem}
+.bui-option{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;min-height:42px;padding:5px 8px;border-radius:3px;cursor:pointer;font-size:.92rem}
 .bui-option:hover{background:rgba(183,138,51,.14)}
 .bui-option.is-active{background:rgba(183,138,51,.26);box-shadow:inset 3px 0 0 var(--gold)}
 .bui-option.is-on{font-weight:700}
-.bui-name{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.bui-option.is-disabled{cursor:default;color:var(--ink-soft)}
+.bui-option.is-disabled:hover{background:none}
+.bui-option.is-disabled .bui-icon,.bui-option.is-disabled .bui-name{opacity:.6}
+.bui-name{flex:1 1 9em;min-width:0;overflow-wrap:anywhere}
+.bui-option .bui-hint{margin-left:auto;flex-shrink:1;min-width:0}
 .bui-hint,.bui-id{flex:0 0 auto;font:.72rem var(--font-ui);color:var(--ink-soft)}
 .bui-group{padding:8px 8px 4px;font:700 .64rem/1.2 var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
 .bui-empty{padding:10px 8px;color:var(--ink-soft);font-size:.9rem}

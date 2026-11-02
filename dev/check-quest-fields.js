@@ -16,7 +16,9 @@
       print each field's struct, offset and size as this file has them.
    4. The site's data: every map, area, item and monster used in data/quests.json and
       data/quest-details.json has a name, or is listed here as a known gap; the name tables hold no id
-      outside the field's range; the objective type names here match data/objective-types.json.
+      outside the field's range; the objective type names here match data/objective-types.json. Every map
+      in data/map-areas.json has its own name in data/map-ids.json (no two alike), with a group the builder
+      knows, its quest count and a confidence, and docs/maps.md's table matches it.
    5. docs/quest-fields.md: its field tables have one row per field, with the JSON's struct, offset and size.
 
    Exit code 0 = all good, 1 = problems, each listed on its own line. */
@@ -147,7 +149,7 @@ const WRITERS = {
   writeMap: { at: "mapRecord" },
   writeRewards: { at: "rewardGroup", entry: "rewardEntry" },
   writeSmallSpawns: { slot: "smallSpawnSlot" },
-  writeSpawnArea: { at: "spawnArea", record: "spawnRecord" },
+  writeSpawnArea: { at: "spawnArea", record: "spawnRecord", id: "monsterIdList" },
   writeTexts: { table: "textTable" }
 };
 const READERS = {
@@ -162,8 +164,9 @@ const READERS = {
   parseSpawnRecords: { at: "spawnRecord" },
   parseTexts: { table: "textTable" }
 };
-/* Writes whose value is not a getter: the small spawn slot holds the group offset itself. */
-const PLAIN_VALUES = { smallSpawnSlot: "smallSpawnGroupOffsets" };
+/* Writes whose value is not a getter: the small spawn slot holds the group offset itself, and the monster id
+   list is written id by id (and its 0xffffffff end) from a loop variable. */
+const PLAIN_VALUES = { smallSpawnSlot: "smallSpawnGroupOffsets", monsterIdList: "monsterIds" };
 
 function structOf(map, base) {
   if (base === null) return map[""] || null;
@@ -506,6 +509,50 @@ unnamedAreas.forEach(function (id) {
 Object.keys(field("largeSpawnAreas[].spawns[].monsterId").unnamed || {}).forEach(function (id) {
   if (id in monsters) fail("quest-fields.json lists monster " + id + " as unnamed, but data/monster-ids.json names it");
 });
+
+// Map names (docs/maps.md): one entry per map the client knows, every name different, so the builder's
+// dropdown never shows two maps alike; the groups are the builder's, and only unused maps are "Unused".
+const mapAreas = readJson("data/map-areas.json");
+const editorSource = fs.readFileSync(path.join(ROOT, "js/quest-editor.js"), "utf8");
+const groupsMatch = /var MAP_GROUPS = (\[[^\]]*\])/.exec(editorSource);
+const MAP_GROUPS = groupsMatch ? JSON.parse(groupsMatch[1].replace(/\s+/g, " ")) : [];
+if (!MAP_GROUPS.length) fail("js/quest-editor.js: no MAP_GROUPS list found");
+const UNUSED_GROUP = MAP_GROUPS[MAP_GROUPS.length - 1];
+const MAP_CONFIDENCE = ["confirmed", "likely", "guess"];
+const mapUse = {};
+Object.keys(details).forEach(function (qid) { const m = String(details[qid].mapId); mapUse[m] = (mapUse[m] || 0) + 1; });
+const mapLabels = {};
+Object.keys(mapAreas).forEach(function (id) {
+  const m = maps[id];
+  if (!m || !hasName(m.name)) { fail("data/map-ids.json: map " + id + " (in data/map-areas.json) has no name"); return; }
+  const label = m.name.toLowerCase();
+  if (mapLabels[label]) fail("data/map-ids.json: maps " + mapLabels[label] + " and " + id + " are both named \"" + m.name + "\"");
+  mapLabels[label] = id;
+  if (MAP_GROUPS.indexOf(m.group) < 0) fail("data/map-ids.json: map " + id + " has group \"" + m.group + "\", not one of js/quest-editor.js MAP_GROUPS");
+  if (m.quests !== (mapUse[id] || 0)) fail("data/map-ids.json: map " + id + " says " + m.quests + " quests, data/quest-details.json has " + (mapUse[id] || 0));
+  if ((m.group === UNUSED_GROUP) !== !mapUse[id]) fail("data/map-ids.json: map " + id + " is in group \"" + m.group + "\" with " + (mapUse[id] || 0) + " quests (only unused maps go in \"" + UNUSED_GROUP + "\")");
+  if (MAP_CONFIDENCE.indexOf(m.confidence) < 0) fail("data/map-ids.json: map " + id + " has confidence \"" + m.confidence + "\", not one of " + MAP_CONFIDENCE.join(", "));
+  if (!m.source) fail("data/map-ids.json: map " + id + " has no source");
+  if (m.base && !mapAreas[id].some(function (a) { return String(areas[a] || "").indexOf(m.base + " - ") === 0; })) {
+    fail("data/map-ids.json: map " + id + " has base \"" + m.base + "\", but no area of it in data/area-ids.json starts with it");
+  }
+});
+Object.keys(maps).forEach(function (id) {
+  if (!(id in mapAreas)) fail("data/map-ids.json: map " + id + " is not in data/map-areas.json");
+});
+const mapDoc = fs.readFileSync(path.join(ROOT, "docs/maps.md"), "utf8");
+const mapRows = {};
+mapDoc.split("\n").forEach(function (line, i) {
+  const cells = line.split("|").slice(1, -1).map(function (c) { return c.trim(); });
+  if (cells.length !== 8 || !/^\d+$/.test(cells[0])) return;
+  mapRows[cells[0]] = true;
+  const m = maps[cells[0]];
+  const want = m ? [cells[0], m.name, m.group, String((mapAreas[cells[0]] || []).length), String(m.quests)] : [];
+  if (!m || cells.slice(0, 5).join("|") !== want.join("|") || cells[6] !== m.confidence) {
+    fail("docs/maps.md:" + (i + 1) + ": row for map " + cells[0] + " does not match data/map-ids.json");
+  }
+});
+Object.keys(maps).forEach(function (id) { if (!mapRows[id]) fail("docs/maps.md: no row for map " + id); });
 
 // ---- 5. the readable table in docs/quest-fields.md ----------------------------------------------
 

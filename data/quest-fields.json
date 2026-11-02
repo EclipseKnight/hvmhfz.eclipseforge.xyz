@@ -53,6 +53,11 @@
    "size": 16,
    "end": "u32 0"
   },
+  "monsterIdList": {
+   "at": "spawnArea.monsterIdsOffset",
+   "size": 24,
+   "end": "u32 0xffffffff"
+  },
   "spawnRecord": {
    "at": "spawnArea.spawnOffset",
    "size": 60,
@@ -128,36 +133,7 @@
  },
  "unnamedAreaIds": {
   "note": "Area ids used in data/quest-details.json (areaId = the map record's base camp) that data/area-ids.json does not name. Most are base camps listed in data/map-areas.json.",
-  "ids": [
-   10,
-   20,
-   46,
-   76,
-   89,
-   121,
-   179,
-   183,
-   245,
-   258,
-   259,
-   272,
-   273,
-   280,
-   281,
-   311,
-   342,
-   359,
-   375,
-   376,
-   380,
-   417,
-   437,
-   438,
-   446,
-   448,
-   458,
-   460
-  ]
+  "ids": []
  },
  "fields": [
   {
@@ -1027,19 +1003,7 @@
    "editorHint": "body +0x24",
    "valuesFrom": "data/map-ids.json",
    "seen": "1..96, 68 values",
-   "unnamed": {
-    "7": "no source names it",
-    "12": "no source names it",
-    "45": "no source names it",
-    "46": "no source names it",
-    "62": "no source names it",
-    "63": "no source names it",
-    "67": "no source names it",
-    "68": "no source names it",
-    "94": "no source names it",
-    "97": "no source names it"
-   },
-   "notes": "Day and night are different map ids (3/17, 4/18, 5/19, 6/20, 11/21 ...). Must equal map.mapId, and the per-area tables (header +0x1c, +0x20, +0x28, +0x2c and the counts +0x7d..+0x7f) must be for this map.",
+   "notes": "Day and night are different map ids (3/17, 4/18, 5/19, 6/20, 11/21 ...); every map's name, and what tells it apart, is in data/map-ids.json (docs/maps.md). Must equal map.mapId, and the per-area tables (header +0x1c, +0x20, +0x28, +0x2c and the counts +0x7d..+0x7f) must be for this map.",
    "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 207",
@@ -2080,7 +2044,7 @@
    "values": {
     "0": "none"
    },
-   "notes": "Points to 5 u32 monster ids, then 0xffffffff. A builder-added area keeps 0 (no list); what the client does with the list is not traced.",
+   "notes": "Points to the monster id list (monsterIds[]). The server points a new quest's large areas at a list it writes (QuestTables.pack); 0 and 0xffffffff mean no list.",
    "builder": "carried",
    "source": [
     "hvmhfz_re docs/quest-files.md line 135",
@@ -2107,6 +2071,32 @@
     "hvmhfz_rest_api QuestCodec.java:515, 734"
    ],
    "confidence": "confirmed"
+  },
+  {
+   "key": "largeSpawnAreas[].monsterIds[]",
+   "label": "Monster id list",
+   "section": "monsters",
+   "struct": "monsterIdList",
+   "offset": "0x00",
+   "size": 20,
+   "type": "u32enum",
+   "count": 5,
+   "alsoKeys": [
+    "smallSpawnGroups[].areas[].monsterIds[]"
+   ],
+   "valuesFrom": "data/monster-ids.json",
+   "values": {
+    "0": "none (padding)"
+   },
+   "notes": "Where monsterIdsOffset points: 5 u32 monster ids, then u32 0xffffffff at +0x14 (the model holds the ids without the end). For a new quest the server writes the distinct monster ids of the area's spawns, first appearance first, padded with 0 to five, and refuses a sixth with 400 (QuestTables). What the client does with the list is not traced; loading the monsters' models is the likely use.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 135",
+    "hvmhfz_rest_api QuestCodec.java:542-557, 777-784 (a3aca9a)",
+    "hvmhfz_rest_api QuestTables.java:254-266 (a3aca9a)",
+    "survey of the 13,867 local quest files (2026-11-02): every sampled large list (2,774 of 2,774) is exactly this"
+   ],
+   "confidence": "one source"
   },
   {
    "key": "largeSpawnAreas[].spawns[].monsterId",
@@ -2192,18 +2182,22 @@
   },
   {
    "key": "largeSpawnAreas[].spawns[].position",
-   "label": "Spawn position (not in the codec)",
+   "label": "Spawn position",
    "section": "monsters",
    "struct": "spawnRecord",
    "offset": "0x20",
    "size": 12,
    "type": "f32",
    "count": 3,
-   "codec": false,
-   "notes": "x, y, z. A builder-added record keeps 0, 0, 0.",
-   "builder": "not in the model",
+   "alsoKeys": [
+    "smallSpawnGroups[].areas[].spawns[].position"
+   ],
+   "notes": "x, y, z. For a new quest the server sets each large monster's position to that of a real quest's large monster in the same map and area (its per-map template folder); where no real quest has one, it keeps the model's, 0, 0, 0 for a new monster. The client is not known to read it (RE: data only).",
+   "builder": "carried",
    "source": [
-    "hvmhfz_re docs/quest-files.md line 118"
+    "hvmhfz_re docs/quest-files.md line 118",
+    "hvmhfz_rest_api QuestCodec.java:578-579, 790-793 (a3aca9a)",
+    "hvmhfz_rest_api QuestMaps.java:44-53, 182 (a3aca9a)"
    ],
    "confidence": "one source"
   },

@@ -133,10 +133,11 @@ question.
 | `largeSpawnAreas[].reserved` | Spawn area reserved | spawnArea | 0x04 | 4 | u32 |  |  | carried | confirmed |
 | `largeSpawnAreas[].monsterIdsOffset` | Monster id list offset | spawnArea | 0x08 | 4 | u32 |  | 0 = none | carried | one source |
 | `largeSpawnAreas[].spawnOffset` | Spawn records offset | spawnArea | 0x0c | 4 | u32 |  |  | carried | confirmed |
+| `largeSpawnAreas[].monsterIds[]` | Monster id list | monsterIdList | 0x00 | 20 (5 x 4) | u32enum |  | 0 = none (padding); monster-ids.json | carried | one source |
 | `largeSpawnAreas[].spawns[].monsterId` | Monster | spawnRecord | 0x00 | 2 | u16enum | 1..176 | 65535 = end of the records; monster-ids.json | edits | confirmed |
 | `largeSpawnAreas[].spawns[].count` | Spawn count | spawnRecord | 0x04 | 1 | s8 | 0..99 |  | edits | confirmed |
 | `largeSpawnAreas[].spawns[].areaId` | Spawn area | spawnRecord | 0x08 | 2 | u16enum |  | area-ids.json | edits | confirmed |
-| `largeSpawnAreas[].spawns[].position` | Spawn position (not in the codec) | spawnRecord | 0x20 | 12 (3 x 4) | f32 |  |  | not in the model | one source |
+| `largeSpawnAreas[].spawns[].position` | Spawn position | spawnRecord | 0x20 | 12 (3 x 4) | f32 |  |  | carried | one source |
 | `largeSpawnAreas[].spawns[].arrival` | Random arrival spot flag (not in the codec) | spawnRecord | 0x0b | 1 | u8 |  | 1 = start at a random spot of the area (header +0x34) | not in the model | one source |
 
 ### Rewards
@@ -220,12 +221,12 @@ first four, so slots 0, 6 and 7 are `confirmed` and the rest `one source`:
 ## What the builder gets wrong
 
 Each item: what happens, the evidence, and the fix. Status (2026-11-02, branch `site-builder-ux`): items
-1, 3, 4, 6-14 are fixed in the builder as described, item 2 in part (the map record follows the map; a
-quest on any map but 26 shows an "untested" warning, `WARN_OTHER_MAPS` in `js/quest-editor.js`, until the
-API swaps in per-map area tables), item 5 by the builder redesign (`data/map-areas.json` now holds every
-area of each map), item 15 before. The builder also shows every input's offset and size, and names every
-value this file names. What is left is in the API: the server-side range check of item 8 and "The codec"
-below.
+1-4 and 6-14 are fixed in the builder as described (item 2 with the API: since `a3aca9a`, live 2026-11-02, the
+server gives a new quest the per-area tables of its map, and the builder offers only the maps
+`GET /api/account/quests/maps` lists), item 5 by the builder redesign (`data/map-areas.json` now holds every
+area of each map), item 15 before. The server-side range check of item 8 is in the API since `a3aca9a`; the
+builder shows its 400 messages next to the field they name. The builder also shows every input's offset and
+size, and names every value this file names. What is left of "The codec" below is gap 4.
 
 1. **Quest class is written to the copy the client hardly reads.** The builder sets `body.questClass`
    (+0x0a). The client's class getter `0x10aa1520` returns `header.questClass` (+0x5c) to about 400 callers;
@@ -309,28 +310,27 @@ monster/item switch of the objective target (bit 1 without bit 0 = item), and Sh
 ## The codec
 
 No wrong offset or size: every byte `QuestCodec` reads or writes matches the RE notes and this reference
-(87 writes, 87 reads, checked by the script), and it reproduces the quest files byte for byte. It has
-gaps that matter for new quests, all in the API repo, none in the builder:
+(checked by the script), and it reproduces the quest files byte for byte. The gaps found for new quests,
+all in the API repo; 1-3 and 5 are fixed in `hvmhfz_rest_api` `a3aca9a` (live since 2026-11-02 20:03 UTC):
 
-1. **No monster id list for a new large-monster record.** The large spawn record's +0x08 points to a list
-   of 5 u32 monster ids and a 0xffffffff end. In every sampled file (2,774 of 2,774, one in five) the list is
-   exactly the distinct monster ids of the record's spawns, padded with 0 to five entries.
-   `QuestTables.layoutAreas` keeps `monsterIdsOffset` as the model has it, and an area the builder adds has
-   0 ("none"). What the client does with the list is not traced; a likely use is loading the monsters'
-   models. Fix in `QuestTables.pack`: reserve 24 bytes per large area inside the 2,048-byte large-spawn span,
-   write the distinct spawn monster ids there (at most 5, refuse a sixth), pad with 0, end with 0xffffffff,
-   and point `monsterIdsOffset` at it; add the 24 bytes to `packedSpans` and `regionSpans`.
-2. **New spawn records have no position.** The codec writes monster, count and area (+0x00, +0x04, +0x08)
-   of the 60-byte record; the position (3 f32 at +0x20) stays 0, 0, 0. Fix: model the position, or copy it
-   from a spawn record of the same area in a real quest.
-3. **Duplicated fields are not kept in step.** `header.questClass` / `body.questClass` and `map.mapId` /
-   `body.mapId` are separate model fields. Besides the builder fix (items 1 and 2 above),
-   `QuestModelWriter.prepare` could copy the body values into the header and map record for new quests, so
-   no client of the API can get them out of step.
-4. **Overlapping views of the same bytes.** `body.flags` (u32 at +0x00) covers `body.seasonFlags` (+0x02)
-   and `body.flagByte` (+0x03). An editor that changes one without the other gets "Two fields disagree about
-   byte 0x..." on save. Edit one view only (the bytes, not the u32).
-5. **No range validation** (builder item 8).
+1. **Monster id list for a new large-monster record. Fixed.** The large spawn record's +0x08 points to a list
+   of 5 u32 monster ids and a 0xffffffff end (`largeSpawnAreas[].monsterIds[]`). In every sampled file
+   (2,774 of 2,774, one in five) the list is exactly the distinct monster ids of the record's spawns, padded
+   with 0 to five entries. `QuestTables.pack` now writes that list for every large area of a new quest and
+   points `monsterIdsOffset` at it; a sixth monster in one area is refused with 400 ("Large monster area 1
+   has 6 different monsters ..."). What the client does with the list is not traced.
+2. **Spawn positions. Fixed.** The position (3 f32 at +0x20) is a model field, `spawns[].position`, read and
+   written by the codec. For a new quest `QuestMaps` sets each large monster's position to that of a real
+   quest's large monster in the same map and area; where none has one it keeps the model's (0, 0, 0 for a new
+   monster).
+3. **Duplicated fields kept in step. Fixed.** `QuestModelWriter.prepare` copies `body.questClass` into
+   `header.questClass`, `body.mapId` into `map.mapId` and the first start area into `map.areaId`.
+4. **Overlapping views of the same bytes. Open.** `body.flags` (u32 at +0x00) covers `body.seasonFlags`
+   (+0x02) and `body.flagByte` (+0x03). An editor that changes one without the other gets "Two fields
+   disagree about byte 0x..." on save. Edit one view only (the bytes, not the u32).
+5. **Range validation. Fixed** (builder item 8). `QuestModelRanges` refuses a value outside this file's range
+   with 400 and the field's name, for example `Out of range: body.timeLimit is 0; allowed 1800..90000.`; a
+   field with no range here is checked against its width.
 
 ## Still unknown, or sources disagree
 
@@ -351,8 +351,8 @@ gaps that matter for new quests, all in the API repo, none in the builder:
 | `body.rank` vs `data/rank-names.json` | the overlay's rank bands are other numbers (100 is not one of them); `rank-names.json` is not used by the builder and does not name this field |
 | `header.monsterLevel`, `header.objective*Points` | what the level rows scale and the unit of the points are not traced |
 | monster ids 29, 86, 87, 88, 134, 135, 138 | used by small spawns (29 in 65,993 records) and 86 by 6 objectives; Erupe has only placeholders (Mon29 ...), no source names them |
-| maps 7, 12, 45, 46, 62, 63, 67, 68, 94, 97 | used by quests, no name in `map-ids.json` |
-| 28 area ids | used as base camps by the catalog data, no name in `area-ids.json` (listed in the JSON's `unnamedAreaIds`); most are the base camps of `map-areas.json` |
+| map names marked `likely` or `guess` | `map-ids.json` names every map from its areas' names and the quests on it, not from the client's own map name table (not read yet); see `docs/maps.md` |
+| area names marked `(guess)` | 126 areas of arenas, towers, forts, Raviente and other stages were named from the overlay's table on 2026-11-02 (`docs/maps.md`, "Area names"); where no table says it, or the overlay looks wrong, the name ends in `(guess)`. The JSON's `unnamedAreaIds` is empty now |
 
 ## Catalog data errors found on the way
 

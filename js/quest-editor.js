@@ -31,11 +31,9 @@
   /* body +0x20 counts 30 ticks a second, so a minute is 1 800 of them. */
   var TICKS_PER_MINUTE = 1800;
 
-  /* The blank quest's per-area tables (trigger zones, area rectangles, gathering points, area zones and their
-     counts at header +0x7d..+0x7f) belong to its own map, 26 (Great Forest, day, 9 areas), whatever map is
-     chosen (docs/quest-fields.md, builder item 2). Until the API swaps in the chosen map's tables (task
-     api-quest-codec), any other map is untested: set WARN_OTHER_MAPS to false once it does. */
-  var WARN_OTHER_MAPS = true;
+  /* The blank quest is on map 26. The API gives a new quest the per-area tables (trigger zones, area rectangles,
+     gathering points, area zones) of its chosen map, for the maps GET /api/account/quests/maps lists; any
+     other map is refused with 400. When that list cannot be loaded, only the blank's own map is offered. */
   var BLANK_MAP = 26;
 
   /* Objective types no quest file uses; their names come from the overlay only (builder item 11). */
@@ -72,7 +70,8 @@
   var submitBtn = document.getElementById("editor-submit");
   var buttons = [saveBtn, downloadBtn, submitBtn];
 
-  var state = { model: null, draftId: null, revision: 0, busy: false, mapMessage: "", supplyShown: {} };
+  var state = { model: null, draftId: null, revision: 0, busy: false, mapMessage: "", supplyShown: {},
+    serverMaps: null, mapsNote: "" };
 
   // ---- server calls --------------------------------------------------------------------------
 
@@ -97,7 +96,9 @@
   function body(res) {
     return res.json().catch(function () { return null; }).then(function (payload) {
       if (!res.ok) {
-        throw new Error((payload && payload.message) || "The server answered " + res.status + ".");
+        var error = new Error((payload && payload.message) || "The server answered " + res.status + ".");
+        error.status = res.status;
+        throw error;
       }
       return payload;
     });
@@ -126,6 +127,26 @@
       objectiveTypes = r[4] || {}; monsterIds = r[5] || {};
       ((r[6] || {}).fields || []).forEach(function (f) { fieldRef[f.key] = f; });
     });
+  }
+
+  /** The maps the server has area tables for (GET /api/account/quests/maps); on failure, the blank's map only. */
+  function loadServerMaps() {
+    return api("/api/account/quests/maps").then(body).then(function (answer) {
+      var list = answer && Array.isArray(answer.maps) ? answer.maps : null;
+      if (!list || !list.length) throw new Error("empty map list");
+      state.serverMaps = {};
+      list.forEach(function (id) { state.serverMaps[String(id)] = true; });
+    }).catch(function () {
+      state.serverMaps = {};
+      state.serverMaps[String(BLANK_MAP)] = true;
+      state.mapsNote = "The server's list of maps could not be loaded, so only map " + BLANK_MAP + " is offered for"
+        + " now. Reload the page to try again.";
+    });
+  }
+
+  /** True when the server can build a quest on this map (always true before the list has loaded). */
+  function mapOnServer(mapId) {
+    return !state.serverMaps || state.serverMaps[String(mapId)] === true;
   }
 
   // ---- the field reference (data/quest-fields.json) ------------------------------------------
@@ -215,32 +236,38 @@
     return (mapAreas[String(mapId)] || []).slice();
   }
 
-  /** "Day" or "Night" from the name of the map's first area, when its name says. */
-  function timeOfDay(mapId) {
-    var first = areasForMap(mapId)[0];
-    var name = first !== undefined ? areaIds[String(first)] || "" : "";
-    var m = name.match(/\b(Day|Night)$/);
-    return m ? m[1].toLowerCase() : "";
-  }
-
+  /** The map's name from data/map-ids.json: every map has its own ("Volcano (night)", "Ancient Tower 2"). */
   function mapName(mapId) {
     var entry = mapIds[String(mapId)];
-    var name = entry && entry.name && entry.name !== "None" ? entry.name : "Unnamed map";
-    var time = timeOfDay(mapId);
-    return time ? name + ", " + time : name;
+    return entry && entry.name ? entry.name : "Unlisted map (id " + mapId + ")";
   }
 
+  /* The dropdown's groups, in this order; data/map-ids.json gives each map one. Maps no quest file uses are
+     in the last group (dev/check-quest-fields.js keeps the groups and this list in step). */
+  var MAP_GROUPS = ["Field maps", "Arenas and battle stages", "Towers", "Forts and sieges",
+    "Raviente, Road and special", "Unused / untested"];
+
   var mapList = null;
+  /** Every map, by group: the ones the server can build first, the most used first; the others are shown but
+      cannot be chosen. The hint gives areas, quests and how sure the name is. */
   function mapOptions() {
     if (mapList) return mapList;
     mapList = Object.keys(mapIds).map(Number).map(function (id) {
       var entry = mapIds[id] || {};
       var count = areasForMap(id).length;
-      var hint = count ? count + (count === 1 ? " area" : " areas") : "";
-      if (entry.share !== undefined && entry.share !== null && entry.share < 0.5) hint += (hint ? ", " : "") + "name is a best guess";
-      if (WARN_OTHER_MAPS && id === BLANK_MAP) hint += (hint ? ", " : "") + "the blank's own map";
-      return { value: id, label: mapName(id), hint: hint };
-    }).sort(byLabel);
+      var quests = entry.quests || 0;
+      var hint = [count + (count === 1 ? " area" : " areas")];
+      hint.push(quests ? quests + (quests === 1 ? " quest" : " quests") : "no quest uses it");
+      if (quests && entry.confidence === "guess") hint.push("name is a guess");
+      if (entry.ja) hint.push(entry.ja);
+      var group = MAP_GROUPS.indexOf(entry.group) >= 0 ? entry.group : MAP_GROUPS[MAP_GROUPS.length - 1];
+      var off = !mapOnServer(id);
+      return { value: id, label: mapName(id), group: group, quests: quests, disabled: off,
+        hint: off ? "not available yet (no template on the server)" : hint.join(", ") };
+    }).sort(function (a, b) {
+      return MAP_GROUPS.indexOf(a.group) - MAP_GROUPS.indexOf(b.group) || a.disabled - b.disabled
+        || b.quests - a.quests || byLabel(a, b);
+    });
     return mapList;
   }
 
@@ -249,7 +276,8 @@
     var name = areaIds[String(areaId)];
     if (!name || /^Loading/.test(name)) return "Unnamed area";
     var entry = mapIds[String(mapId)];
-    var prefix = entry && entry.name ? entry.name + " - " : null;
+    // data/area-ids.json writes "<location> - Area 3 - Day"; base is that location ("Volcano" for "Volcano (night)").
+    var prefix = entry && entry.base ? entry.base + " - " : null;
     if (prefix && name.indexOf(prefix) === 0) name = name.slice(prefix.length);
     return name.split(" - ").join(", ");
   }
@@ -503,11 +531,6 @@
     return list;
   }
 
-  /** True when the chosen map is not the one the blank's per-area tables belong to (see WARN_OTHER_MAPS). */
-  function untestedMap(model) {
-    return WARN_OTHER_MAPS && Number(model.body.mapId) !== BLANK_MAP;
-  }
-
   /** The map changed (body.mapId and the map record are already set): every area list follows it, and
       anything left outside the new map is said in words. */
   function setMap(model, mapId) {
@@ -540,12 +563,15 @@
     var known = Object.keys(mapIds).length > 0;
     // The map record (header pointer 9) indexes the game's per-map area lists: it always follows body.mapId.
     if (known) {
-      g.appendChild(fieldFor(F(["body.mapId", "map.mapId"]), "Map", UI.picker({
+      var mapPicker = UI.picker({
         options: mapOptions(), value: b.mapId, showIds: true,
         unknownLabel: function (v) { return "Unlisted map (id " + v + ")"; },
         onChange: function (v) { b.mapId = v; if (model.map) model.map.mapId = v; setMap(model, v); }
-      }), "Choosing a map changes the area lists below to that map's areas. Sets the body's map and the"
-        + " map record."));
+      });
+      if (!mapOnServer(b.mapId)) mapPicker.setProblem("The server has no area tables for this map yet: choose another.");
+      g.appendChild(fieldFor(F(["body.mapId", "map.mapId"]), "Map", mapPicker, "Choosing a map changes the area"
+        + " lists below to that map's areas. Sets the body's map and the map record; the server adds the map's"
+        + " area tables. Maps marked \u201cnot available yet\u201d have no template on the server."));
     } else {
       g.appendChild(numberFor(F(["body.mapId", "map.mapId"]), "Map", {
         id: "meta-map", value: b.mapId, min: 0,
@@ -572,14 +598,7 @@
         + " Sets all four start records and the map record's base camp."));
     }
     p.appendChild(g);
-    if (untestedMap(model)) {
-      var warn = note("Untested on this map. The quest keeps the per-area tables (trigger zones, area"
-        + " rectangles, gathering points) of the blank's map, " + mapName(BLANK_MAP) + " (map " + BLANK_MAP
-        + "), until the server builds them for the chosen map. On another map the game may read areas that do"
-        + " not exist: test it before you rely on it, or choose " + mapName(BLANK_MAP) + ".", "bui-notice bui-warn");
-      warn.setAttribute("role", "alert");
-      p.appendChild(warn);
-    }
+    if (state.mapsNote) p.appendChild(note(state.mapsNote, "bui-notice"));
     if (state.mapMessage) {
       var msg = note(state.mapMessage, "bui-notice");
       msg.setAttribute("role", "status");
@@ -670,7 +689,8 @@
     return area.spawns;
   }
 
-  function spawnTable(model, spawns) {
+  /** where: the spawn area's path in the model ("largeSpawnAreas[0]"), so a server message can find the table. */
+  function spawnTable(model, spawns, where) {
     var mapId = model.body.mapId;
     var options = areaOptions(mapId);
     var rows = spawns.map(function (spawn, index) {
@@ -699,7 +719,9 @@
         }, "remove", "Remove " + monsterName(spawn.monsterId)) }
       ];
     });
-    return UI.table(["Monster", "How many", "Area", { label: "", cls: "bui-row-end" }], rows, "No monsters here yet.");
+    var t = UI.table(["Monster", "How many", "Area", { label: "", cls: "bui-row-end" }], rows, "No monsters here yet.");
+    t.setAttribute("data-where", where);
+    return t;
   }
 
   /** Adds a monster to the first large spawn area, creating that area when the quest has none. */
@@ -734,14 +756,14 @@
     var large = model.largeSpawnAreas || [];
     p.appendChild(UI.subhead("Large monsters"));
     if (!large.length) p.appendChild(UI.table(["Monster", "How many", "Area", ""], [], "No monsters yet."));
-    large.forEach(function (area) { p.appendChild(spawnTable(model, spawnsOf(area))); });
+    large.forEach(function (area, a) { p.appendChild(spawnTable(model, spawnsOf(area), "largeSpawnAreas[" + a + "]")); });
     var actions = el("div", "bui-actions");
     actions.appendChild(UI.button("Add a monster", function () { addMonster(model); }, "add"));
     p.appendChild(actions);
     (model.smallSpawnGroups || []).forEach(function (group, i) {
       (group.areas || []).forEach(function (area, j) {
         p.appendChild(UI.subhead("Small monsters, set " + (i + 1) + (group.areas.length > 1 ? ", part " + (j + 1) : "")));
-        p.appendChild(spawnTable(model, spawnsOf(area)));
+        p.appendChild(spawnTable(model, spawnsOf(area), "smallSpawnGroups[" + i + "].areas[" + j + "]"));
       });
     });
     return p;
@@ -926,9 +948,8 @@
     if (model.startAreas && model.startAreas.length && !areaOnMap(model.startAreas[0].areaId, b.mapId)) {
       list.push("The start area is not part of the chosen map (Map and start area).");
     }
-    if (untestedMap(model)) {
-      list.push("The quest is untested on " + mapName(b.mapId) + ": its area tables are still those of "
-        + mapName(BLANK_MAP) + " (Map and start area).");
+    if (!mapOnServer(b.mapId)) {
+      list.push("The server has no area tables for " + mapName(b.mapId) + " yet: choose another map (Map and start area).");
     }
     if (!b.iconLabelId !== !b.iconLabelCount) {
       list.push(b.iconLabelId ? "The item needed to enter has a count of 0 (Basics)."
@@ -1035,6 +1056,90 @@
     statusEl.classList.toggle("bad", !!bad);
   }
 
+  // ---- the server's refusals, next to the field they name ------------------------------------
+
+  /* The API answers a save it refuses with 400 and a message naming the model field ("Out of range:
+     body.timeLimit is 0; allowed 1800..90000.", "Large monster area 1 has 6 different monsters ...",
+     "Map 7 has no area tables on this server ..."). serverProblems turns it into [{key, text}] in plain words. */
+  function serverProblems(message) {
+    var text = String(message || "").replace(/^(Out of range|The quest model is not valid|This draft cannot be written as a quest file): /, "");
+    var out = [];
+    var range = /([A-Za-z][\w.\[\]]*) is (-?\d+); allowed (-?\d+)\.\.(-?\d+)/g;
+    var m;
+    while ((m = range.exec(text))) {
+      var ref = fieldRef[m[1].replace(/\[\d+\]/g, "[]")];
+      var label = ref ? ref.label : m[1];
+      var value = Number(m[2]), min = Number(m[3]), max = Number(m[4]);
+      if (ref && /^ticks/.test(ref.unit || "")) {
+        out.push({ key: m[1], text: label + " is " + minutes(value) + "; the server accepts " + minutes(min) + " to "
+          + minutes(max) + "." });
+      } else {
+        out.push({ key: m[1], text: label + " is " + value + "; the server accepts " + min + " to " + max + "." });
+      }
+    }
+    m = /Large monster area (\d+) has (\d+) different monsters \[([^\]]*)\]; a quest lists at most (\d+) per area/.exec(text);
+    if (m) {
+      var names = m[3].split(/,\s*/).filter(Boolean).map(function (id) { return monsterName(id); }).join(", ");
+      out.push({ key: "largeSpawnAreas[" + (Number(m[1]) - 1) + "]", text: "This list has " + m[2] + " different monsters ("
+        + names + "); a quest can list at most " + m[4] + " in one area. Remove one." });
+    }
+    m = /Map (\d+) has no area tables on this server/.exec(text);
+    if (m) {
+      out.push({ key: "body.mapId", text: "The server has no area tables for " + mapName(m[1]) + " (map " + m[1]
+        + ") yet, so a quest cannot use it. Choose a map the list offers." });
+    }
+    return out;
+  }
+
+  function minutes(ticks) {
+    var n = Math.round(ticks / TICKS_PER_MINUTE * 100) / 100;
+    return n + (n === 1 ? " minute" : " minutes");
+  }
+
+  /** The element a model path points at: a table cell, a field, or a spawn table; null when the page has none. */
+  function placeFor(key) {
+    var scope = root;
+    var rest = key;
+    var tables = root.querySelectorAll("[data-where]");
+    for (var i = 0; i < tables.length; i++) {
+      var where = tables[i].getAttribute("data-where");
+      if (key === where || key.indexOf(where + ".") === 0) { scope = tables[i]; rest = key.slice(where.length + 1); break; }
+    }
+    if (scope !== root) {
+      var row = /^spawns\[(\d+)\]/.exec(rest);
+      var tr = row ? scope.querySelectorAll("tbody tr")[Number(row[1])] : null;
+      var cell = tr && tr.querySelector('td[data-fields~="' + key.replace(/\[\d+\]/g, "[]") + '"]');
+      return cell || scope;
+    }
+    var norm = key.replace(/\[\d+\]/g, "[]");
+    var index = /\[(\d+)\][^\[]*$/.exec(key);
+    var marks = [].slice.call(root.querySelectorAll('[data-fields~="' + norm + '"]'));
+    var exact = index && marks.filter(function (n) { return n.getAttribute("data-index") === index[1]; })[0];
+    var hit = exact || marks[0];
+    if (!hit) return null;
+    return hit.closest("td") || hit.closest(".field") || hit.closest(".bui-section");
+  }
+
+  function clearServerProblems() {
+    [].slice.call(document.querySelectorAll(".bui-server-problem")).forEach(function (n) { n.remove(); });
+  }
+
+  /** Shows a 400's problems next to their fields; true when at least one found its field. */
+  function showServerProblems(message) {
+    clearServerProblems();
+    var first = null;
+    serverProblems(message).forEach(function (problem) {
+      var place = placeFor(problem.key);
+      if (!place) return;
+      var msg = note(problem.text, "bui-notice bui-warn bui-server-problem");
+      msg.setAttribute("role", "alert");
+      if (place.matches("[data-where]")) place.parentNode.insertBefore(msg, place.nextSibling); else place.appendChild(msg);
+      if (!first) first = msg;
+    });
+    if (first) first.scrollIntoView({ block: "center" });
+    return !!first;
+  }
+
   function setDraftNote() {
     draftNote.textContent = state.draftId
       ? "draft " + state.draftId + ", revision " + state.revision
@@ -1106,8 +1211,11 @@
     state.busy = true;
     buttons.forEach(function (button) { button.disabled = true; });
     say("Working…", false);
+    clearServerProblems();
     action().catch(function (error) {
-      say(error.message || "That did not work.", true);
+      var placed = error.status === 400 && showServerProblems(error.message);
+      say(placed ? "The server did not accept the quest; the fields it named are marked below. It said: "
+        + error.message : error.message || "That did not work.", true);
     }).then(function () {
       state.busy = false;
       buttons.forEach(function (button) { button.disabled = false; });
@@ -1218,7 +1326,7 @@
         return draft.model;
       });
 
-  Promise.all([load, loadTables()])
+  Promise.all([load, loadTables(), loadServerMaps()])
     .then(function (results) {
       render(results[0]);
       return refreshDrafts();

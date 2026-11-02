@@ -134,8 +134,9 @@ comparing the posted JSON byte for byte. The map picker writes `body.mapId` and 
 (`model.map.mapId`), the start area also the map record's base camp (`model.map.areaId`), and the quest
 class both its copies (body +0x0a, header +0x5c). Every input shows its offset and size, and every value
 `data/quest-fields.json` names is offered by name, with "(unconfirmed)" where the name rests on one source
-(`docs/quest-fields.md`). A map other than the blank's 26 shows an "untested" warning until the API builds
-per-map area tables (`WARN_OTHER_MAPS`). The time limit is edited in minutes (the body field counts 1 800 ticks a minute).
+(`docs/quest-fields.md`). The map picker offers only the maps `GET /api/account/quests/maps` lists (the
+server has their area tables); the others are listed, muted, as "not available yet". If that call fails,
+only map 26 is offered. A save the server refuses with 400 shows its message next to the field it names. The time limit is edited in minutes (the body field counts 1 800 ticks a minute).
 "Create a quest" on `quests.html` and on the account page's Custom quests tab opens it; the quest page no
 longer carries an edit action, and `?id=` shows the server's refusal instead of a form.
 
