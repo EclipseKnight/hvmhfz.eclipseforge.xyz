@@ -36,6 +36,10 @@ def monster_names():
 
 
 def name_of(names, monster_id):
+    """Id 0 has no monster in the table (its level is 0 too); what the game does when it draws one is not
+    known (hvmhfz_re docs/rengoku-data.md), so it is named for what it is."""
+    if monster_id == 0:
+        return "No monster (id 0)"
     return names[monster_id] if 0 < monster_id < len(names) else "Monster " + str(monster_id)
 
 
@@ -52,7 +56,7 @@ def floors_label(first, last):
 
 def chance(share):
     percent = share * 100
-    if 0 < percent < 0.5:
+    if 0 < percent < 1:  # not "< 0.5": Python rounds 0.5 to even, so 0.5% would show as "0%"
         return "under 1%"
     return f"{percent:.0f}%"
 

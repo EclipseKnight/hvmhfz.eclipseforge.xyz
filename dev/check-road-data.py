@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Checks dev/make-road-data.py on two small made-up Roads (no game data): chances from the weights,
-the same monster added up, second monsters, forced and weight-0 entries, floor runs, the second points
+the same monster added up, second monsters, forced and weight-0 entries, monster id 0, chances under 1%, floor runs, the second points
 multiplier, a mode equal to an earlier Road's, the base Road heading, escaping, and that writing the
 page only replaces the part between the markers.
 
@@ -51,6 +51,10 @@ expect("table 0 monsters", make.monsters_text(TABLES[0], NAMES),
        "Rathalos + Diablos 50%, Rathian 50%, White Fatalis (forced)")
 expect("table 1 monsters", make.monsters_text(TABLES[1], NAMES), "Diablos 75%, Gravios 25% (forced)")
 expect("tiny chance", make.chance(1 / 300), "under 1%")
+expect("half a percent", make.chance(0.005), "under 1%")
+expect("one percent", make.chance(0.01), "1%")
+expect("monster id 0", make.monsters_text([entry(1, 3), entry(0, 1, flags=4)], NAMES),
+       "Rathian 75%, No monster (id 0) 25%")
 expect("empty table", make.monsters_text([entry(11, 0)], NAMES), "none")
 
 rows = make.floor_rows(NEW["modes"][0], NAMES)
