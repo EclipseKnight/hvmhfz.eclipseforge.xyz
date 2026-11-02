@@ -120,7 +120,7 @@
 <tr><td>Base game client, 5.5 GB</td><td><a href="https://drive.google.com/drive/folders/1F_xg7qaFmG_L7AJ16vzYBG8pwlpCYSFN?usp=sharing">Community client folder on Google Drive</a>, the link maintained by the <a href="https://pastebin.com/QqAwZSTC">/mhg/ community guide</a>. Community-run, not Hunsterverse official; the folder also contains server files you do not need.</td></tr>
 <tr><td>Hunsterverse site, account and Discord</td><td><a href="https://hunstermonter.net">hunstermonter.net</a> for registration, guides, FAQ and troubleshooting, plus the Discord invite: <a href="https://discord.gg/YuE42eh">discord.gg/YuE42eh</a></td></tr>
 <tr><td>Game login page</td><td><a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a></td></tr>
-<tr><td>Hunsterverse client patch, 34.6 MB</td><td><a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> from the EclipseKnight releases page</td></tr>
+<tr><td>Hunsterverse client patch, 37.0 MB</td><td><a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> from the EclipseKnight releases page</td></tr>
 <tr><td>Mezeporta launcher</td><td><a href="https://github.com/LilButter/Mezeporta/releases">github.com/LilButter/Mezeporta/releases</a>, grab the build for your OS, v1.5.4 or newer</td></tr>
 </table>
 <div class="warn box"><b>Check the source.</b> The base client comes from the community, not from Hunsterverse. The server patch is the part Hunsterverse actually maintains, and it must be applied after the client, as in the patch step. If a link looks different from these, verify it before you run anything.</div>
@@ -149,18 +149,22 @@ ls mhf.exe mhfo.dll mhfo-hd.dll mhl.dll mhf.ini dat/mhfdat.bin</code></pre>
 <p>A clean client is about 5.2 GB and roughly 6,700 files.</p>
 
 <h2 id="patch">4. Apply the client patch</h2>
-<p>Download the server's patch, back up the five files it replaces, then overlay it.</p>
+<p>Download the server's patch, back up every game file it replaces, then overlay it.</p>
 <pre><code>BASE=&quot;https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download&quot;
 curl -L -o /tmp/Frontier_Patch.zip &quot;$BASE/client_patch/Frontier_Patch.zip&quot;
+unzip -q -o /tmp/Frontier_Patch.zip -d /tmp/fp
 
 cd ~/Games/MHFZ
-mkdir -p original-files/dat
-cp -p mhf.exe mhfo.dll mhfo-hd.dll mhl.dll original-files/
-cp -p dat/mhfdat.bin original-files/dat/
+# back up every game file the patch replaces, into original-files/ (only the first time:
+# running this again keeps the original files, not patched ones)
+(cd /tmp/fp/Frontier_Patch &amp;&amp; find . -type f) | while read -r f; do
+  if [ -e &quot;$f&quot; ] &amp;&amp; [ ! -e &quot;original-files/$f&quot; ]; then
+    mkdir -p &quot;original-files/$(dirname &quot;$f&quot;)&quot; &amp;&amp; cp -p &quot;$f&quot; &quot;original-files/$f&quot;
+  fi
+done
 
-unzip -q /tmp/Frontier_Patch.zip -d /tmp/fp
 rsync -rlt /tmp/fp/Frontier_Patch/ ~/Games/MHFZ/</code></pre>
-<p>The patch contains exactly five files: <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>dat/mhfdat.bin</code>. The copies in <code>original-files/</code> let you roll back at any time.</p>
+<p>The patch replaces <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>dat/mhfdat.bin</code>, plus 79 files with the English text of the Diva storyline and a town's dialogue (in <code>dat/load/</code>, and <code>dat/stage/st205.pac</code>). The copies in <code>original-files/</code> let you roll back at any time.</p>
 
 <h2 id="launcher">5. Install the Mezeporta launcher</h2>
 <p>Download the Linux build of the launcher and unpack it <em>next to</em> <code>dat/</code>, not inside it.</p>
@@ -250,8 +254,8 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
 <div class="tree">~/Games/MHFZ/
 ├── dat/                     game data (patched mhfdat.bin lives here)
 ├── mhf.exe  mhfo.dll  mhfo-hd.dll  mhl.dll  mhf.ini
-├── original-files/          backups of the five patched files
-│   └── dat/mhfdat.bin
+├── original-files/          backups of the files the patch replaced
+│   └── dat/               mhfdat.bin, load/, stage/st205.pac
 ├── mezeporta-bin            launcher binary
 ├── run-mezeporta.sh         stock launcher script
 ├── run-mezeporta-x11.sh     wrapper with the two Linux fixes

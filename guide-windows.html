@@ -115,7 +115,7 @@
 <tr><td>Base game client, 5.5 GB</td><td><a href="https://drive.google.com/drive/folders/1F_xg7qaFmG_L7AJ16vzYBG8pwlpCYSFN?usp=sharing">Community client folder on Google Drive</a>, the link maintained by the <a href="https://pastebin.com/QqAwZSTC">/mhg/ community guide</a>. Community-run, not Hunsterverse official; the folder also contains server files you do not need.</td></tr>
 <tr><td>Hunsterverse site, account and Discord</td><td><a href="https://hunstermonter.net">hunstermonter.net</a> for registration, guides, FAQ and troubleshooting, plus the Discord invite: <a href="https://discord.gg/YuE42eh">discord.gg/YuE42eh</a></td></tr>
 <tr><td>Game login page</td><td><a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a></td></tr>
-<tr><td>Hunsterverse client patch, 34.6 MB</td><td><a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> from the EclipseKnight releases page</td></tr>
+<tr><td>Hunsterverse client patch, 37.0 MB</td><td><a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> from the EclipseKnight releases page</td></tr>
 <tr><td>Mezeporta launcher</td><td><a href="https://github.com/LilButter/Mezeporta/releases">github.com/LilButter/Mezeporta/releases</a>, grab the build for your OS, v1.5.4 or newer</td></tr>
 <tr><td>Visual C++ 2015-2022 Redistributable, x86</td><td><a href="https://aka.ms/vs/17/release/vc_redist.x86.exe">vc_redist.x86.exe</a></td></tr>
 <tr><td>DirectX End-User Runtime, June 2010</td><td><a href="https://www.microsoft.com/download/details.aspx?id=35">microsoft.com/download/details.aspx?id=35</a></td></tr>
@@ -136,26 +136,32 @@
 └── mhf.ini</div>
 
 <h2 id="patch">3. Apply the client patch</h2>
-<p>Open PowerShell and run this. It downloads the client patch, backs up the five files it replaces, then overlays the new ones.</p>
+<p>Open PowerShell and run this. It downloads the client patch, backs up every game file the patch replaces, then overlays the new ones.</p>
 <pre><code>$game = &quot;C:\Games\MHFZ&quot;
 
-# 1. back up the files the patch replaces
-New-Item -ItemType Directory -Force -Path &quot;$game\original-files\dat&quot; | Out-Null
-Copy-Item &quot;$game\mhf.exe&quot;,&quot;$game\mhfo.dll&quot;,&quot;$game\mhfo-hd.dll&quot;,&quot;$game\mhl.dll&quot; `
-  &quot;$game\original-files\&quot; -Force
-Copy-Item &quot;$game\dat\mhfdat.bin&quot; &quot;$game\original-files\dat\&quot; -Force
-
-# 2. download and unpack the patch
+# 1. download and unpack the patch
 $patchUrl = &quot;https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/&quot; +
             &quot;download/client_patch/Frontier_Patch.zip&quot;
 $zip = &quot;$env:TEMP\Frontier_Patch.zip&quot;
 Invoke-WebRequest -Uri $patchUrl -OutFile $zip
 Expand-Archive -Path $zip -DestinationPath &quot;$env:TEMP\Frontier_Patch&quot; -Force
+$src = (Get-Item &quot;$env:TEMP\Frontier_Patch\Frontier_Patch&quot;).FullName.TrimEnd(&quot;\&quot;)
+
+# 2. back up every game file the patch replaces, into original-files\ (only the first
+#    time: running this again keeps the original files, not patched ones)
+Get-ChildItem $src -Recurse -File | ForEach-Object {
+  $rel = $_.FullName.Substring($src.Length + 1)
+  $orig = Join-Path $game $rel
+  $backup = Join-Path &quot;$game\original-files&quot; $rel
+  if ((Test-Path $orig) -and -not (Test-Path $backup)) {
+    New-Item -ItemType Directory -Force -Path (Split-Path $backup) | Out-Null
+    Copy-Item $orig $backup
+  }
+}
 
 # 3. copy the patch over the game
-$src = &quot;$env:TEMP\Frontier_Patch\Frontier_Patch\*&quot;
-Copy-Item $src -Destination $game -Recurse -Force</code></pre>
-<p>The patch replaces exactly five files: <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>dat\mhfdat.bin</code>. The copies in <code>original-files\</code> let you restore the original client at any time.</p>
+Copy-Item &quot;$src\*&quot; -Destination $game -Recurse -Force</code></pre>
+<p>The patch replaces <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>dat\mhfdat.bin</code>, plus 79 files with the English text of the Diva storyline and a town's dialogue (in <code>dat\load\</code>, and <code>dat\stage\st205.pac</code>). The copies in <code>original-files\</code> let you restore the original client at any time.</p>
 
 <h2 id="launcher">4. Install the launcher</h2>
 <p>Download <code>Mezeporta-Windows.zip</code> from the releases page and extract it into the same folder:</p>
@@ -218,7 +224,7 @@ Expand-Archive -Path $mpZip -DestinationPath &quot;C:\Games\MHFZ&quot; -Force</c
 <div class="tree">C:\Games\MHFZ\
 ├── dat\                     game data (patched mhfdat.bin)
 ├── mhf.exe  mhfo.dll  mhfo-hd.dll  mhl.dll  mhf.ini
-├── original-files\          backups of the five patched files
+├── original-files\          backups of the files the patch replaced
 │   └── dat\mhfdat.bin
 ├── Mezeporta.exe            launcher
 ├── xinput1_3.dll            controller support
