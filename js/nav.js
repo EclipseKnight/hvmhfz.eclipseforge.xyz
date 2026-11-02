@@ -1,4 +1,4 @@
-/* Site navigation, loaded by every page. On narrow screens (see the 980px rule in styles.css)
+/* Site navigation, loaded by every page. On narrow screens (see the 1160px rule in styles.css)
    the links fold behind the Menu button so the sticky bar keeps one fixed height. Without
    JavaScript the button stays hidden and the links simply wrap under the logo. */
 (function () {
@@ -28,6 +28,18 @@
   // A tap outside the bar closes the menu, as people expect from a dropdown.
   document.addEventListener("click", function (event) {
     if (header.classList.contains("open") && !header.contains(event.target)) setOpen(false);
+  });
+  // Tapping a link in the open menu closes it (a link to a spot on this page would otherwise leave
+  // the menu covering it). Focus goes back to the Menu button, since the link has just been hidden.
+  // Search opens its own dialog and takes the focus itself, so it only closes the menu.
+  menu.addEventListener("click", function (event) {
+    if (!header.classList.contains("open") || !event.target.closest) return;
+    if (event.target.closest("a")) {
+      setOpen(false);
+      button.focus();
+    } else if (event.target.closest(".nav-search")) {
+      setOpen(false);
+    }
   });
 })();
 

@@ -777,6 +777,22 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   .site-nav nav .nav-search{grid-column:1 / -1;text-align:left}
 }
 
+/* ---------- nav: folded Menu on phones and tablets (site-nav-mobile) ----------
+   Same width as the fold above (1160px). The open menu scrolls when it is taller than the screen
+   (a phone on its side), labels wrap instead of running out of their button, and every entry is at
+   least 44px tall. js/nav.js closes the menu when a link in it is tapped. */
+@media (max-width:1160px){
+  .site-nav.collapsible nav{
+    max-height:calc(100vh - var(--nav-h));max-height:calc(100dvh - var(--nav-h));
+    overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .site-nav.collapsible .navlink{
+    display:flex;align-items:center;min-height:44px;box-sizing:border-box;
+    padding:11px 12px;white-space:normal;overflow-wrap:anywhere;line-height:1.25}
+  .site-nav.collapsible .nav-group-toggle{min-height:0;padding:8px 4px 4px}
+  .site-nav.collapsible .nav-menu{gap:6px;min-width:0}
+  .site-nav.collapsible .nav-search{border:1px solid rgba(109,79,43,.5);padding:11px 12px}
+}
+
 
 
 /* Home page "What's new" (js/whatsnew.js) */
