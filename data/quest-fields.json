@@ -1,0 +1,2403 @@
+{
+ "about": "Every quest-file field the quest builder (quest-editor.html, js/quest-editor.js) and the API's QuestCodec read or write, with its struct, byte offset, size, type, range and named values. Read docs/quest-fields.md first. Checked by dev/check-quest-fields.js. Edit this file by hand.",
+ "updated": "2026-11-02",
+ "confidence": {
+  "confirmed": "offset, size and meaning agree in two or more independent sources (client trace, ReFrontier, 010 template, Erupe, a relation over all quest files)",
+  "one source": "offset and size agree (codec round trip over every quest file and the client trace); the meaning has one source",
+  "guess": "the meaning is not shown by any source"
+ },
+ "builderValues": {
+  "edits": "the builder has an input for it",
+  "shows": "the builder displays it",
+  "carried": "in the model, round-trips untouched",
+  "should edit": "must change with a field the builder edits, but the builder does not set it",
+  "not in the model": "kept as raw bytes by the codec"
+ },
+ "sizes": "size is the field's total bytes; an array has a count, and each element is size / count bytes. Offsets are hex, from the start of the struct named in struct.",
+ "structs": {
+  "header": {
+   "at": "file offset 0",
+   "size": 192
+  },
+  "body": {
+   "at": "header pointer 0 (0xc0 in every quest file; 0x16 in an event body)",
+   "size": 320
+  },
+  "startArea": {
+   "at": "header pointer 1 (+0x04)",
+   "size": 16,
+   "count": 4
+  },
+  "startItem": {
+   "at": "header pointer 2 (+0x08)",
+   "size": 4,
+   "count": 40
+  },
+  "rewardGroup": {
+   "at": "header pointer 3 (+0x0c)",
+   "size": 8,
+   "end": "u16 0xffff"
+  },
+  "rewardEntry": {
+   "at": "rewardGroup.entryOffset",
+   "size": 6,
+   "end": "u16 0xffff"
+  },
+  "smallSpawnSlot": {
+   "at": "header pointer 5 (+0x14)",
+   "size": 4,
+   "end": "u32 0"
+  },
+  "spawnArea": {
+   "at": "header pointer 6 (+0x18) for large monsters, a small spawn slot for small ones",
+   "size": 16,
+   "end": "u32 0"
+  },
+  "spawnRecord": {
+   "at": "spawnArea.spawnOffset",
+   "size": 60,
+   "end": "u16 0xffff"
+  },
+  "mapRecord": {
+   "at": "header pointer 9 (+0x24)",
+   "size": 8
+  },
+  "textTable": {
+   "at": "body.textTableOffset",
+   "size": 4,
+   "count": 8
+  },
+  "text": {
+   "at": "texts[].rawOffset",
+   "size": "the slot's room"
+  }
+ },
+ "monsterNameAliases": {
+  "note": "Names in data/quests.json 'monsters' that differ from data/monster-ids.json.",
+  "Orugaron": {
+   "ids": [
+    91,
+    92
+   ],
+   "why": "Kamu and Nono Orugaron, the pair"
+  },
+  "Volganos": {
+   "ids": [
+    75
+   ],
+   "why": "Japanese name of Lavasioth (ヴォルガノス)"
+  },
+  "Espinas Subspecies": {
+   "ids": [
+    81
+   ],
+   "why": "エスピナス亜種 = Flaming/Burning Espinas"
+  },
+  "Kuarlusepusu": {
+   "ids": [
+    105
+   ],
+   "why": "spelling of Kuarusepusu (クアルセプス)"
+  },
+  "Hypnocatrice Rare": {
+   "ids": [
+    82
+   ],
+   "why": "ヒプノック希少種 = White/Silver Hypnocatrice"
+  },
+  "Espinas Rare Species": {
+   "ids": [
+    90
+   ],
+   "why": "Erupe's name for Pearl Espinas"
+  },
+  "Dahren Mohran": {
+   "ids": [
+    140
+   ],
+   "why": "catalog error: these quests (60576, 60577 ...) hunt Harudomerugu (司銀龍)",
+   "catalogError": true
+  },
+  "Gargwa": {
+   "ids": [
+    69
+   ],
+   "why": "catalog error: Deer Chase Fest quests (シカ追い) hunt Anteka",
+   "catalogError": true
+  }
+ },
+ "unnamedAreaIds": {
+  "note": "Area ids used in data/quest-details.json (areaId = the map record's base camp) that data/area-ids.json does not name. Most are base camps listed in data/map-areas.json.",
+  "ids": [
+   10,
+   20,
+   46,
+   76,
+   89,
+   121,
+   179,
+   183,
+   245,
+   258,
+   259,
+   272,
+   273,
+   280,
+   281,
+   311,
+   342,
+   359,
+   375,
+   376,
+   380,
+   417,
+   437,
+   438,
+   446,
+   448,
+   458,
+   460
+  ]
+ },
+ "fields": [
+  {
+   "key": "header.pointers[]",
+   "label": "Table offsets (17)",
+   "section": "other",
+   "struct": "header",
+   "offset": "0x00",
+   "size": 68,
+   "type": "u32",
+   "count": 17,
+   "bits": {
+    "0-30": "offset from the file start",
+    "31": "table not walked yet (cleared by the client on first load)"
+   },
+   "values": {
+    "0": "body",
+    "1": "start areas",
+    "2": "start items",
+    "3": "rewards",
+    "4": "quest script",
+    "5": "small-monster spawn groups",
+    "6": "large-monster spawns",
+    "7": "trigger zones",
+    "8": "area rectangles",
+    "9": "map record",
+    "10": "gathering points",
+    "11": "area zones",
+    "12": "script texts",
+    "13": "arrival spots",
+    "14": "drop lists",
+    "15": "area objects",
+    "16": "object drops"
+   },
+   "notes": "The server packs pointers 3, 5 and 6 (QuestTables.pack); the builder never edits an offset.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md lines 123-145 (Header +0x0 to +0x40)",
+    "hvmhfz_rest_api QuestCodec.java:297-301, 584-586",
+    "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):217 (+0x00 only)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "header.monsterSize",
+   "label": "Large-monster size (percent)",
+   "section": "monsters",
+   "struct": "header",
+   "offset": "0x44",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 1,
+    "max": 65535
+   },
+   "seen": "70..150 (100 in 8,717 files)",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 146",
+    "hvmhfz_rest_api QuestCodec.java:302, 587",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.sizeClass",
+   "label": "Size spread class",
+   "section": "monsters",
+   "struct": "header",
+   "offset": "0x46",
+   "size": 1,
+   "type": "u8",
+   "range": {
+    "min": 0,
+    "max": 4
+   },
+   "values": {
+    "0": "100-100%",
+    "1": "100-105%",
+    "2": "95-110%",
+    "3": "87-114%",
+    "4": "85-125%"
+   },
+   "notes": "Above 4 is treated as 4.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 147",
+    "hvmhfz_rest_api QuestCodec.java:303, 588",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.monsterLevel",
+   "label": "Large-monster level",
+   "section": "monsters",
+   "struct": "header",
+   "offset": "0x48",
+   "size": 1,
+   "type": "u8",
+   "range": {
+    "min": 0,
+    "max": 255
+   },
+   "seen": "0..70",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 148",
+    "hvmhfz_rest_api QuestCodec.java:304, 589",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.objective0Points",
+   "label": "Points for the main target",
+   "section": "rewards",
+   "struct": "header",
+   "offset": "0x4c",
+   "size": 4,
+   "type": "u32",
+   "seen": "0..20,000",
+   "notes": "Unit not shown in the client code.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 149",
+    "hvmhfz_rest_api QuestCodec.java:305, 590",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.fallbackPoints",
+   "label": "Points when not cleared",
+   "section": "rewards",
+   "struct": "header",
+   "offset": "0x50",
+   "size": 4,
+   "type": "u32",
+   "seen": "15 or 0",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 150",
+    "hvmhfz_rest_api QuestCodec.java:306, 591",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.objective1Points",
+   "label": "Points for sub-target A",
+   "section": "rewards",
+   "struct": "header",
+   "offset": "0x54",
+   "size": 4,
+   "type": "u32",
+   "seen": "0..1,500",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 151",
+    "hvmhfz_rest_api QuestCodec.java:307, 592",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.objective2Points",
+   "label": "Points for sub-target B",
+   "section": "rewards",
+   "struct": "header",
+   "offset": "0x58",
+   "size": 4,
+   "type": "u32",
+   "seen": "0..400",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 152",
+    "hvmhfz_rest_api QuestCodec.java:308, 593",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.questClass",
+   "label": "Quest class (the copy the client uses)",
+   "section": "basics",
+   "struct": "header",
+   "offset": "0x5c",
+   "size": 1,
+   "type": "u8enum",
+   "range": {
+    "min": 0,
+    "max": 9
+   },
+   "values": {
+    "0": {
+     "name": "Low rank",
+     "evidence": "min HR (body +0x4e) mostly 0..22, quest level 1-4; Explore, Scout, Basics, Training lists"
+    },
+    "1": {
+     "name": "High rank",
+     "evidence": "min HR 30..91, quest level 5-8; HRP Shift, Decor, Special Event lists"
+    },
+    "2": {
+     "name": "Exercise / trial",
+     "evidence": "Hunt Exercise, Extreme Trial, Arena Exercise lists"
+    },
+    "3": {
+     "name": "HR 100 and up",
+     "evidence": "min HR 99..999; Hardcore, Superior, Zenith, Daily lists"
+    },
+    "7": {
+     "name": "G rank",
+     "evidence": "every G★ list (G★ Event, G★ Daily, G★ Exotic ...)"
+    },
+    "8": {
+     "name": "Hunting Road / Sky Corridor",
+     "evidence": "only Sky Corridor and Hunting Road quests; body +0x98 bit 7 (Erupe: Road) set in all 60 files"
+    },
+    "9": {
+     "name": "Supremacy",
+     "evidence": "Supremacy ★1-★4 lists, min HR 200/400/600/800"
+    }
+   },
+   "valuesConfidence": "one source",
+   "notes": "Value names come from the quest lists each class appears in (catalog categories and the min-HR values of 13,867 files); the client code tests 3, below 7, 8 and 9 but names nothing. The builder edits body.questClass only; this byte must be set to the same value.",
+   "builder": "should edit",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 153 (about 400 callers)",
+    "hvmhfz_re docs/quest-files.md line 299 (equals body +0x0a in 13,861 of 13,861)",
+    "hvmhfz_rest_api QuestCodec.java:309, 594",
+    "survey of the 13,867 local quest files (2026-11-02): equal to body +0x0a in 13,867 of 13,867"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "header.randomStartArea",
+   "label": "Random start area list",
+   "section": "map",
+   "struct": "header",
+   "offset": "0x5d",
+   "size": 1,
+   "type": "u8",
+   "range": {
+    "min": 0,
+    "max": 255
+   },
+   "values": {
+    "0": "every player starts in the start area (header +0x04)"
+   },
+   "notes": "Non-zero: the start area is drawn from the client's per-map list number value-1.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 154",
+    "hvmhfz_rest_api QuestCodec.java:310, 595",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.gateMode",
+   "label": "Gate mode",
+   "section": "other",
+   "struct": "header",
+   "offset": "0x5e",
+   "size": 1,
+   "type": "u8",
+   "values": {
+    "0": "off",
+    "2": "re-open after header.gateKills kills of header.gateMonster",
+    "3": "re-open at quest state 5"
+   },
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 155",
+    "hvmhfz_rest_api QuestCodec.java:311, 596"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.gateMonster",
+   "label": "Gate monster",
+   "section": "other",
+   "struct": "header",
+   "offset": "0x5f",
+   "size": 1,
+   "type": "u8",
+   "valuesFrom": "data/monster-ids.json",
+   "seen": "0 in every file",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 156",
+    "hvmhfz_rest_api QuestCodec.java:312, 597"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.gateKills",
+   "label": "Gate kill count",
+   "section": "other",
+   "struct": "header",
+   "offset": "0x60",
+   "size": 1,
+   "type": "u8",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 157",
+    "hvmhfz_rest_api QuestCodec.java:313, 598"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.secondMonsterLevel",
+   "label": "Second monster level",
+   "section": "monsters",
+   "struct": "header",
+   "offset": "0x61",
+   "size": 1,
+   "type": "u8",
+   "seen": "0..67; equals header.monsterLevel in 11,389 files",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 158",
+    "hvmhfz_rest_api QuestCodec.java:314, 599",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.specialFight",
+   "label": "Special fight selector",
+   "section": "monsters",
+   "struct": "header",
+   "offset": "0x62",
+   "size": 2,
+   "type": "u16",
+   "values": {
+    "0": "off",
+    "2": "monster 0x5c behaviour",
+    "3": "monster 0x5b behaviour"
+   },
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 159",
+    "hvmhfz_rest_api QuestCodec.java:315, 600"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.triggerGate",
+   "label": "Trigger gate",
+   "section": "other",
+   "struct": "header",
+   "offset": "0x74",
+   "size": 2,
+   "type": "u16",
+   "seen": "3 in every file",
+   "values": {
+    "3": "copy the two trigger records",
+    "4": "copy the two trigger records"
+   },
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 160",
+    "hvmhfz_rest_api QuestCodec.java:316, 601"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.dropListCount",
+   "label": "Drop list count",
+   "section": "other",
+   "struct": "header",
+   "offset": "0x78",
+   "size": 2,
+   "type": "u16",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 161",
+    "hvmhfz_rest_api QuestCodec.java:317, 602"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.zoneAreaCount",
+   "label": "Areas of the map (zone lists)",
+   "section": "map",
+   "struct": "header",
+   "offset": "0x7d",
+   "size": 1,
+   "type": "u8",
+   "notes": "One slot per area of the map; must match the map.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 162",
+    "hvmhfz_rest_api QuestCodec.java:318, 603"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.gatheringAreaCount",
+   "label": "Areas of the map (gathering lists)",
+   "section": "map",
+   "struct": "header",
+   "offset": "0x7e",
+   "size": 1,
+   "type": "u8",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 163",
+    "hvmhfz_rest_api QuestCodec.java:319, 604"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.triggerAreaCount",
+   "label": "Areas of the map (trigger lists)",
+   "section": "map",
+   "struct": "header",
+   "offset": "0x7f",
+   "size": 1,
+   "type": "u8",
+   "seen": "1..13",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 164",
+    "hvmhfz_rest_api QuestCodec.java:320, 605",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.eventKind",
+   "label": "Extra condition: event kind",
+   "section": "objectives",
+   "struct": "header",
+   "offset": "0x80",
+   "size": 2,
+   "type": "u16",
+   "values": {
+    "0": "none"
+   },
+   "seen": "0..8",
+   "notes": "The kinds are not named.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 165",
+    "hvmhfz_rest_api QuestCodec.java:321, 606"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.eventMonster",
+   "label": "Extra condition: monster",
+   "section": "objectives",
+   "struct": "header",
+   "offset": "0x82",
+   "size": 2,
+   "type": "u16",
+   "valuesFrom": "data/monster-ids.json",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 166",
+    "hvmhfz_rest_api QuestCodec.java:322, 607"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.eventThreshold",
+   "label": "Extra condition: threshold",
+   "section": "objectives",
+   "struct": "header",
+   "offset": "0x84",
+   "size": 2,
+   "type": "u16",
+   "seen": "0..4",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 167",
+    "hvmhfz_rest_api QuestCodec.java:323, 608"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "header.triggers",
+   "label": "Two trigger records",
+   "section": "other",
+   "struct": "header",
+   "offset": "0x88",
+   "size": 24,
+   "type": "bytes",
+   "notes": "2 x 12 bytes: u8 condition, u8 action, u16 id, u16 threshold, u16, u16 action parameter, u16.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 168",
+    "hvmhfz_rest_api QuestCodec.java:324, 609"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.flags",
+   "label": "Body flags (u32 view of +0x00..+0x03)",
+   "section": "other",
+   "struct": "body",
+   "offset": "0x00",
+   "size": 4,
+   "type": "bitfield",
+   "bits": {
+    "16": "season 2 (= seasonFlags bit 0)",
+    "18": "season 1 (= seasonFlags bit 2)",
+    "19": "day (= seasonFlags bit 3)",
+    "21": "most tested bit (34 places)",
+    "22": "required objectives (= seasonFlags bit 6, Erupe's name)",
+    "26": "special quest (= flagByte bit 2)"
+   },
+   "notes": "Overlaps body.seasonFlags and body.flagByte: an editor must change one view only, or the codec refuses the save (two fields disagree about a byte).",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 193",
+    "hvmhfz_rest_api QuestCodec.java:361, 613"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.seasonFlags",
+   "label": "Season and day/night",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x02",
+   "size": 1,
+   "type": "bitfield",
+   "bits": {
+    "0": "season 2 (Erupe: Spring)",
+    "1": "Erupe: Warm",
+    "2": "season 1 (Erupe: Cold)",
+    "3": "day (file name letter d; Erupe: Day)",
+    "4": "Erupe: Night",
+    "6": "required objectives (Erupe's name; objective modes 3 and 4 only occur with it)"
+   },
+   "notes": "Erupe calls bits 0-4 Spring, Warm, Cold, Day, Night but edits the next byte (see docs/quest-fields.md).",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 194",
+    "hvmhfz_re docs/quest-files.md line 328 (Erupe's bitset fits this byte bit for bit)",
+    "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):308-309",
+    "hvmhfz_rest_api QuestCodec.java:390, 614"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.flagByte",
+   "label": "Quest flag bits",
+   "section": "other",
+   "struct": "body",
+   "offset": "0x03",
+   "size": 1,
+   "type": "bitfield",
+   "bits": {
+    "0-1": "alternate season bits",
+    "2": "special quest (out of the normal lists, rule checks off)",
+    "3": "only tested with bit 2",
+    "4": "gates an info line",
+    "5": "shorter countdown after the main objective",
+    "6": "keeps the stage id in class 3 quests"
+   },
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 195",
+    "hvmhfz_rest_api QuestCodec.java:391, 615"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.level",
+   "label": "Quest level (stars)",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x04",
+   "size": 1,
+   "type": "u8",
+   "range": {
+    "min": 1,
+    "max": 8
+   },
+   "seen": "1..8",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 196",
+    "ReFrontier FrontierDataTool/Program.cs:509 (level)",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:73 (Stars)",
+    "hvmhfz_rest_api QuestCodec.java:392, 616",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.monsterGroup",
+   "label": "Monster group (list filter)",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x05",
+   "size": 1,
+   "type": "u8",
+   "range": {
+    "min": 0,
+    "max": 6
+   },
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 197",
+    "hvmhfz_rest_api QuestCodec.java:393, 617"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.listFlags",
+   "label": "Quest list row flags",
+   "section": "other",
+   "struct": "body",
+   "offset": "0x06",
+   "size": 1,
+   "type": "bitfield",
+   "seen": "0x12, 0x13, 0x14",
+   "bits": {
+    "0": "row in the 'not cleared' colour",
+    "2": "row always drawn as cleared",
+    "6": "turns off a timed-record lookup",
+    "7": "turns off the per-weapon-type setting"
+   },
+   "notes": "ReFrontier reads the same byte as an enum courseType (6 premium, 18 free?, 19 HLC?, 20 extra); the RE trace shows bit tests. Sources disagree on what it is.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 198",
+    "ReFrontier FrontierDataTool/Program.cs:511 (courseType)",
+    "hvmhfz_rest_api QuestCodec.java:394, 618"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.questClass",
+   "label": "Quest class",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x0a",
+   "size": 1,
+   "type": "u8enum",
+   "editorHint": "body +0x0a",
+   "range": {
+    "min": 0,
+    "max": 9
+   },
+   "values": {
+    "0": {
+     "name": "Low rank",
+     "evidence": "min HR (body +0x4e) mostly 0..22, quest level 1-4; Explore, Scout, Basics, Training lists"
+    },
+    "1": {
+     "name": "High rank",
+     "evidence": "min HR 30..91, quest level 5-8; HRP Shift, Decor, Special Event lists"
+    },
+    "2": {
+     "name": "Exercise / trial",
+     "evidence": "Hunt Exercise, Extreme Trial, Arena Exercise lists"
+    },
+    "3": {
+     "name": "HR 100 and up",
+     "evidence": "min HR 99..999; Hardcore, Superior, Zenith, Daily lists"
+    },
+    "7": {
+     "name": "G rank",
+     "evidence": "every G★ list (G★ Event, G★ Daily, G★ Exotic ...)"
+    },
+    "8": {
+     "name": "Hunting Road / Sky Corridor",
+     "evidence": "only Sky Corridor and Hunting Road quests; body +0x98 bit 7 (Erupe: Road) set in all 60 files"
+    },
+    "9": {
+     "name": "Supremacy",
+     "evidence": "Supremacy ★1-★4 lists, min HR 200/400/600/800"
+    }
+   },
+   "valuesConfidence": "one source",
+   "notes": "The client compares this copy once; the copy it uses is header.questClass, which the builder does not set.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 199",
+    "hvmhfz_rest_api QuestCodec.java:395, 619",
+    "survey of the 13,867 local quest files (2026-11-02): values 0, 1, 2, 3, 7, 8, 9; equal to header +0x5c in every file"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.maxHunters",
+   "label": "Max hunters",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x0b",
+   "size": 1,
+   "type": "u8",
+   "editorHint": "body +0x0b",
+   "range": {
+    "min": 0,
+    "max": 4
+   },
+   "values": {
+    "0": "4 hunters",
+    "1": "solo (skips the multi-hunter paths)",
+    "2": "2 hunters",
+    "3": "3 hunters",
+    "4": "4 hunters"
+   },
+   "bits": {
+    "0-2": "the cap; 0 means 4"
+   },
+   "seen": "0 in 12,445 files, 1 in 1,422; the blank writes 4",
+   "notes": "Only the low 3 bits are read: 8 reads as 0 (4 hunters), 9 as 1 (solo). 2, 3 and 4 appear in no file.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 200",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:77 (Players)",
+    "hvmhfz_rest_api QuestCodec.java:396, 620",
+    "survey of the 13,867 local quest files (2026-11-02)",
+    "hvmhfz_rest_api QuestBlank.java:40"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.zenny",
+   "label": "Contract fee (zenny)",
+   "section": "rewards",
+   "struct": "body",
+   "offset": "0x0c",
+   "size": 4,
+   "type": "u32",
+   "editorHint": "body +0x0c",
+   "range": {
+    "min": 0,
+    "max": 999999
+   },
+   "seen": "0..999,999",
+   "notes": "Shown as %dz on the quest info page. Max is the largest value in the files, not a client limit.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 201",
+    "ReFrontier FrontierDataTool/Program.cs:517 (fee)",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:78 (Fee)",
+    "hvmhfz_rest_api QuestCodec.java:397, 621",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.rewardMoney",
+   "label": "Main reward money",
+   "section": "rewards",
+   "struct": "body",
+   "offset": "0x10",
+   "size": 4,
+   "type": "u32",
+   "editorHint": "body +0x10",
+   "range": {
+    "min": 0,
+    "max": 999999
+   },
+   "seen": "0..990,000",
+   "notes": "Lowered by body.faintPenalty at each faint; the quest fails at 0.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 202",
+    "ReFrontier FrontierDataTool/Program.cs:518 (zennyMain)",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:79 (RewardMain)",
+    "hvmhfz_rest_api QuestCodec.java:398, 622",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.faintPenalty",
+   "label": "Faint penalty",
+   "section": "rewards",
+   "struct": "body",
+   "offset": "0x14",
+   "size": 4,
+   "type": "u32",
+   "seen": "0..330,000; 3 or 5 when body +0x97 bit 3 is set",
+   "notes": "With body.variantFlags1 bit 3 set it is the number of faints allowed instead. The 010 template calls this RewardSubA (one field off).",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 203",
+    "ReFrontier FrontierDataTool/Program.cs:519 (zennyKo)",
+    "hvmhfz_rest_api QuestCodec.java:399, 623",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objective1Money",
+   "label": "Sub-target A reward money",
+   "section": "rewards",
+   "struct": "body",
+   "offset": "0x18",
+   "size": 4,
+   "type": "u32",
+   "seen": "0..18,000",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 204",
+    "ReFrontier FrontierDataTool/Program.cs:520 (zennySubA)",
+    "hvmhfz_rest_api QuestCodec.java:400, 624",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objective2Money",
+   "label": "Sub-target B reward money",
+   "section": "rewards",
+   "struct": "body",
+   "offset": "0x1c",
+   "size": 4,
+   "type": "u32",
+   "seen": "0..6,000",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 205",
+    "ReFrontier FrontierDataTool/Program.cs:521 (zennySubB)",
+    "hvmhfz_rest_api QuestCodec.java:401, 625",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.timeLimit",
+   "label": "Time limit",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x20",
+   "size": 4,
+   "type": "u32",
+   "editorHint": "body +0x20",
+   "unit": "ticks, 30 a second (1,800 a minute)",
+   "range": {
+    "min": 1800,
+    "max": 90000
+   },
+   "seen": "18,000..90,000 (10..50 minutes); 90,000 in 13,657 files",
+   "notes": "The builder edits minutes x 1,800. The range is what the files use; longer limits are untested.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 206",
+    "ReFrontier FrontierDataTool/Program.cs:522 (time)",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:83 (TimeLimit)",
+    "hvmhfz_rest_api QuestCodec.java:402, 626",
+    "survey of the 13,867 local quest files (2026-11-02): every value a multiple of 1,800",
+    "data/quest-details.json minutes"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.mapId",
+   "label": "Map (stage)",
+   "section": "map",
+   "struct": "body",
+   "offset": "0x24",
+   "size": 2,
+   "type": "u16enum",
+   "editorHint": "body +0x24",
+   "valuesFrom": "data/map-ids.json",
+   "seen": "1..96, 68 values",
+   "unnamed": {
+    "7": "no source names it",
+    "12": "no source names it",
+    "45": "no source names it",
+    "46": "no source names it",
+    "62": "no source names it",
+    "63": "no source names it",
+    "67": "no source names it",
+    "68": "no source names it",
+    "94": "no source names it",
+    "97": "no source names it"
+   },
+   "notes": "Day and night are different map ids (3/17, 4/18, 5/19, 6/20, 11/21 ...). Must equal map.mapId, and the per-area tables (header +0x1c, +0x20, +0x28, +0x2c and the counts +0x7d..+0x7f) must be for this map.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 207",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:84 (MapIcon)",
+    "hvmhfz_rest_api QuestCodec.java:403, 627",
+    "survey of the 13,867 local quest files (2026-11-02): equals the map record's map id in 13,849 of 13,867"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.mapIdHigh",
+   "label": "Map id, high half",
+   "section": "map",
+   "struct": "body",
+   "offset": "0x26",
+   "size": 2,
+   "type": "u16",
+   "seen": "0 in every file",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 207",
+    "hvmhfz_rest_api QuestCodec.java:404, 628"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.textTableOffset",
+   "label": "Text table offset",
+   "section": "text",
+   "struct": "body",
+   "offset": "0x28",
+   "size": 4,
+   "type": "u32",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 208",
+    "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):234-238",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:85 (StringPointer)",
+    "hvmhfz_rest_api QuestCodec.java:405, 629"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.conditionNote",
+   "label": "Condition note id",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x2c",
+   "size": 1,
+   "type": "u8",
+   "values": {
+    "0": "none"
+   },
+   "notes": "Indexes a message table on the quest info page; the 010 template calls bytes +0x2c..+0x2d Restrictions.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 209",
+    "hvmhfz_rest_api QuestCodec.java:406, 630"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.questId",
+   "label": "Quest id",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x2e",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 0,
+    "max": 65535
+   },
+   "values": {
+    "0": "new quest: the server assigns the id at submit"
+   },
+   "builder": "shows",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 210",
+    "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):200-260 (loadQuestFile copies the body)",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:87 (QuestFileID)",
+    "hvmhfz_rest_api QuestCodec.java:407, 631"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objective0.type",
+   "label": "Objective type (main target)",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x30",
+   "size": 4,
+   "type": "bitfield",
+   "editorHint": "body +0x30",
+   "values": {
+    "0": "Nothing",
+    "1": "Hunt",
+    "2": "Deliver",
+    "16": "Esoteric Action",
+    "257": "Capture",
+    "513": "Slay",
+    "4098": "Deliver Flag",
+    "16388": "Break Part",
+    "32772": "Damage",
+    "98308": "Slay or Damage",
+    "131072": "Slay Total",
+    "262144": "Slay All"
+   },
+   "bits": {
+    "0": "monster target (kills counted)",
+    "1": "item target (delivery)",
+    "2": "part / damage family (0x4004, 0x8004)",
+    "8": "capture (0x100)",
+    "9": "slay (0x200)",
+    "12": "flag delivery (0x1000)",
+    "14": "break part (0x4000)",
+    "15": "damage (0x8000)",
+    "16": "slay or damage (0x10000)",
+    "17": "slay total",
+    "18": "slay all"
+   },
+   "seen": "0, 1, 2, 257, 513, 4098, 16388, 32772, 98308; 16, 131072 and 262144 appear in no file",
+   "notes": "Names for 16, 131072 and 262144 come from the overlay only and no quest file uses them.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 211",
+    "ReFrontier FrontierDataTool/Program.cs:532 (mainGoalType)",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:88 (Objective[3])",
+    "hvmhfz_rest_api QuestCodec.java:408, 655 (via 632)",
+    "survey of the 13,867 local quest files (2026-11-02)",
+    "data/objective-types.json (overlay names)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objective0.target",
+   "label": "Objective target (main target)",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x34",
+   "size": 2,
+   "type": "u16enum",
+   "valuesFrom": "data/monster-ids.json when type bit 0 or bit 2 is set; data/item-ids.json when bit 1 is set",
+   "notes": "Monster ids for Hunt/Capture/Slay/Break Part/Damage (13,619 of 13,625 named; 86 has no name), item ids for Deliver and Deliver Flag (all named).",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 212",
+    "ReFrontier FrontierDataTool/Program.cs:533",
+    "hvmhfz_rest_api QuestCodec.java:408, 656",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objective0.count",
+   "label": "Objective count (main target)",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x36",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 0,
+    "max": 65535
+   },
+   "seen": "0..175",
+   "notes": "Kills or items needed; for Break Part the number of breaks, for Damage a damage amount (up to 175).",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 213",
+    "ReFrontier FrontierDataTool/Program.cs:534",
+    "hvmhfz_rest_api QuestCodec.java:408, 657",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objective1.type",
+   "label": "Objective type (sub-target A)",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x38",
+   "size": 4,
+   "type": "bitfield",
+   "editorHint": "body +0x38",
+   "values": {
+    "0": "Nothing",
+    "1": "Hunt",
+    "2": "Deliver",
+    "16": "Esoteric Action",
+    "257": "Capture",
+    "513": "Slay",
+    "4098": "Deliver Flag",
+    "16388": "Break Part",
+    "32772": "Damage",
+    "98308": "Slay or Damage",
+    "131072": "Slay Total",
+    "262144": "Slay All"
+   },
+   "bits": {
+    "0": "monster target (kills counted)",
+    "1": "item target (delivery)",
+    "2": "part / damage family (0x4004, 0x8004)",
+    "8": "capture (0x100)",
+    "9": "slay (0x200)",
+    "12": "flag delivery (0x1000)",
+    "14": "break part (0x4000)",
+    "15": "damage (0x8000)",
+    "16": "slay or damage (0x10000)",
+    "17": "slay total",
+    "18": "slay all"
+   },
+   "seen": "0, 1, 2, 257, 513, 4098, 16388, 32772, 98308; 16, 131072 and 262144 appear in no file",
+   "notes": "Names for 16, 131072 and 262144 come from the overlay only and no quest file uses them.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 211",
+    "ReFrontier FrontierDataTool/Program.cs:535 (subAGoalType)",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:88 (Objective[3])",
+    "hvmhfz_rest_api QuestCodec.java:409, 655 (via 633)",
+    "survey of the 13,867 local quest files (2026-11-02)",
+    "data/objective-types.json (overlay names)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objective1.target",
+   "label": "Objective target (sub-target A)",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x3c",
+   "size": 2,
+   "type": "u16enum",
+   "valuesFrom": "data/monster-ids.json when type bit 0 or bit 2 is set; data/item-ids.json when bit 1 is set",
+   "notes": "Monster ids for Hunt/Capture/Slay/Break Part/Damage (13,619 of 13,625 named; 86 has no name), item ids for Deliver and Deliver Flag (all named).",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 214",
+    "ReFrontier FrontierDataTool/Program.cs:536",
+    "hvmhfz_rest_api QuestCodec.java:409, 656",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objective1.count",
+   "label": "Objective count (sub-target A)",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x3e",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 0,
+    "max": 65535
+   },
+   "seen": "0..175",
+   "notes": "Kills or items needed; for Break Part the number of breaks, for Damage a damage amount (up to 175).",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 211 (record layout)",
+    "ReFrontier FrontierDataTool/Program.cs:537",
+    "hvmhfz_rest_api QuestCodec.java:409, 657",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objective2.type",
+   "label": "Objective type (sub-target B)",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x40",
+   "size": 4,
+   "type": "bitfield",
+   "editorHint": "body +0x40",
+   "values": {
+    "0": "Nothing",
+    "1": "Hunt",
+    "2": "Deliver",
+    "16": "Esoteric Action",
+    "257": "Capture",
+    "513": "Slay",
+    "4098": "Deliver Flag",
+    "16388": "Break Part",
+    "32772": "Damage",
+    "98308": "Slay or Damage",
+    "131072": "Slay Total",
+    "262144": "Slay All"
+   },
+   "bits": {
+    "0": "monster target (kills counted)",
+    "1": "item target (delivery)",
+    "2": "part / damage family (0x4004, 0x8004)",
+    "8": "capture (0x100)",
+    "9": "slay (0x200)",
+    "12": "flag delivery (0x1000)",
+    "14": "break part (0x4000)",
+    "15": "damage (0x8000)",
+    "16": "slay or damage (0x10000)",
+    "17": "slay total",
+    "18": "slay all"
+   },
+   "seen": "0, 1, 2, 257, 513, 4098, 16388, 32772, 98308; 16, 131072 and 262144 appear in no file",
+   "notes": "Names for 16, 131072 and 262144 come from the overlay only and no quest file uses them.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 211",
+    "ReFrontier FrontierDataTool/Program.cs:538 (subBGoalType)",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:88 (Objective[3])",
+    "hvmhfz_rest_api QuestCodec.java:410, 655 (via 634)",
+    "survey of the 13,867 local quest files (2026-11-02)",
+    "data/objective-types.json (overlay names)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objective2.target",
+   "label": "Objective target (sub-target B)",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x44",
+   "size": 2,
+   "type": "u16enum",
+   "valuesFrom": "data/monster-ids.json when type bit 0 or bit 2 is set; data/item-ids.json when bit 1 is set",
+   "notes": "Monster ids for Hunt/Capture/Slay/Break Part/Damage (13,619 of 13,625 named; 86 has no name), item ids for Deliver and Deliver Flag (all named).",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 215",
+    "ReFrontier FrontierDataTool/Program.cs:539",
+    "hvmhfz_rest_api QuestCodec.java:410, 656",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objective2.count",
+   "label": "Objective count (sub-target B)",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x46",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 0,
+    "max": 65535
+   },
+   "seen": "0..175",
+   "notes": "Kills or items needed; for Break Part the number of breaks, for Damage a damage amount (up to 175).",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 211 (record layout)",
+    "ReFrontier FrontierDataTool/Program.cs:540",
+    "hvmhfz_rest_api QuestCodec.java:410, 657",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.objectiveMode",
+   "label": "Objective mode",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x48",
+   "size": 1,
+   "type": "u8enum",
+   "values": {
+    "2": "main target only (12,924 files)",
+    "3": "two objectives (703 files)",
+    "4": "three objectives (240 files)"
+   },
+   "notes": "What each mode does is only partly traced.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 216",
+    "hvmhfz_rest_api QuestCodec.java:411, 635",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.rank",
+   "label": "Minimum hunter rank to join",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x4e",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 0,
+    "max": 999
+   },
+   "seen": "0..999, 30 values; 1 x4,087, 100 x2,034, 31 x1,841",
+   "notes": "Not the overlay's rank band (data/rank-names.json uses other numbers; 100 is not in it).",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 217",
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:93 (MinJoinHR)",
+    "hvmhfz_rest_api QuestCodec.java:412, 636",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.fourthObjectiveType",
+   "label": "Fail objective type",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x54",
+   "size": 4,
+   "type": "bitfield",
+   "seen": "set in 31 files",
+   "notes": "Meeting it fails the quest. The 010 template puts MaxSR here (disagrees).",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 218",
+    "hvmhfz_rest_api QuestCodec.java:413, 637"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.fourthObjectiveTarget",
+   "label": "Fail objective target",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x58",
+   "size": 2,
+   "type": "u16",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 219",
+    "hvmhfz_rest_api QuestCodec.java:414, 638"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.fourthObjectiveCount",
+   "label": "Fail objective count",
+   "section": "objectives",
+   "struct": "body",
+   "offset": "0x5a",
+   "size": 2,
+   "type": "u16",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 219",
+    "hvmhfz_rest_api QuestCodec.java:415, 639"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.variantIndex",
+   "label": "Variant row",
+   "section": "other",
+   "struct": "body",
+   "offset": "0x93",
+   "size": 1,
+   "type": "u8",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 222",
+    "hvmhfz_rest_api QuestCodec.java:416, 640"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.iconLabelId",
+   "label": "Required item",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x94",
+   "size": 2,
+   "type": "u16enum",
+   "editorHint": "body +0x94",
+   "valuesFrom": "data/item-ids.json",
+   "values": {
+    "0": "none"
+   },
+   "notes": "Shown on the quest info page with body.iconLabelCount. Whether the item is taken when the quest starts is not traced. Set together with the count: in every file both are 0 or both are non-zero.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 223 (a name shown with the count on the info pages)",
+    "hvmhfz_rest_api QuestCodec.java:417, 641",
+    "survey of the 13,867 local quest files (2026-11-02): all 774 values are item ids",
+    "data/quest-details.json requirementItemId (quest text names the same item)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.iconLabelCount",
+   "label": "Required item count",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x96",
+   "size": 1,
+   "type": "u8",
+   "editorHint": "body +0x96",
+   "range": {
+    "min": 0,
+    "max": 255
+   },
+   "seen": "1..10 when the item is set",
+   "values": {
+    "0": "line left out"
+   },
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 224",
+    "hvmhfz_rest_api QuestCodec.java:418, 642",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.variantFlags1",
+   "label": "Variant flags 1",
+   "section": "other",
+   "struct": "body",
+   "offset": "0x97",
+   "size": 1,
+   "type": "bitfield",
+   "bits": {
+    "0": "Hidden",
+    "1": "Fix HC",
+    "2": "HC to UL",
+    "3": "G Rank (RE: special list tab / faint count)",
+    "7": "UL Fixed"
+   },
+   "notes": "Bit names are Erupe comments; the client tests bit 3 80 times. Bit 3 equals body.specialListTab in every file.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 225",
+    "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):324 (names only)",
+    "hvmhfz_rest_api QuestCodec.java:419, 643"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.variantFlags2",
+   "label": "Variant flags 2",
+   "section": "other",
+   "struct": "body",
+   "offset": "0x98",
+   "size": 1,
+   "type": "bitfield",
+   "bits": {
+    "0": "Low Conquest",
+    "1": "No Halk Pots",
+    "2": "No Cuff",
+    "3": "Timer",
+    "4": "No Active Feature",
+    "5": "Fixed Difficulty",
+    "6": "High Conquest",
+    "7": "Road (swaps the large spawns for a client table)"
+   },
+   "notes": "Bit names are Erupe comments; bit 7's table swap is from the client trace.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 226",
+    "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):325 (names only)",
+    "hvmhfz_rest_api QuestCodec.java:420, 644"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.variantFlags3",
+   "label": "Variant flags 3",
+   "section": "other",
+   "struct": "body",
+   "offset": "0x99",
+   "size": 1,
+   "type": "bitfield",
+   "bits": {
+    "0": "No Reward Skills",
+    "1": "GSR to GR",
+    "2": "No Simple Mode?",
+    "3": "No GP Skills",
+    "4": "Zenith",
+    "5": "Interception (Erupe clears it in the event list; client tests it 622 times)",
+    "6": "unknown",
+    "7": "No Sigils"
+   },
+   "notes": "Only bit 5 is confirmed by both sources; the other names are Erupe's.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 227",
+    "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):326-332 (clears bit 5)",
+    "hvmhfz_rest_api QuestCodec.java:421, 645"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.specialListTab",
+   "label": "Special list tab",
+   "section": "other",
+   "struct": "body",
+   "offset": "0xa0",
+   "size": 2,
+   "type": "u16",
+   "values": {
+    "0": "tabs 1-4",
+    "1": "tab 5 only"
+   },
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 228",
+    "hvmhfz_rest_api QuestCodec.java:422, 646"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.iconMonsters[]",
+   "label": "Quest info monster icons (5)",
+   "section": "monsters",
+   "struct": "body",
+   "offset": "0xb9",
+   "size": 5,
+   "type": "u8enum",
+   "count": 5,
+   "editorHint": "body +0xb9",
+   "valuesFrom": "data/monster-ids.json",
+   "range": {
+    "min": 0,
+    "max": 176
+   },
+   "values": {
+    "0": "end of the list"
+   },
+   "notes": "The first 0 ends the list: icons after a 0 are not shown.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 229",
+    "hvmhfz_rest_api QuestCodec.java:384-387, 647-649",
+    "survey of the 13,867 local quest files (2026-11-02): every value named; icon 1 equals the main target in 11,149 of 11,486"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.infoNumber",
+   "label": "Info page 2 number",
+   "section": "other",
+   "struct": "body",
+   "offset": "0xbe",
+   "size": 2,
+   "type": "u16",
+   "seen": "0 in every file",
+   "notes": "Printed as a plain number on info page 2; its label is panel art, so the meaning is unknown.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 230",
+    "hvmhfz_rest_api QuestCodec.java:424, 650"
+   ],
+   "confidence": "guess"
+  },
+  {
+   "key": "body.flagsAtC0",
+   "label": "Body flags at +0xc0",
+   "section": "other",
+   "struct": "body",
+   "offset": "0xc0",
+   "size": 4,
+   "type": "bitfield",
+   "bits": {
+    "1": "becomes bit 14 of the forced weapon id"
+   },
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 231",
+    "hvmhfz_rest_api QuestCodec.java:425, 651"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.hrBounds",
+   "label": "HR / SR bounds (not in the codec)",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x4a",
+   "size": 16,
+   "type": "u16",
+   "count": 8,
+   "codec": false,
+   "notes": "The 010 template names +0x4a MinHR, +0x4c MaxHR, +0x4e MinJoinHR, +0x50 MaxJoinHR, +0x52.. SR bounds; only +0x4e is traced in the client, and +0x54/+0x58 are the fail objective there.",
+   "builder": "not in the model",
+   "source": [
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:91-99"
+   ],
+   "confidence": "guess"
+  },
+  {
+   "key": "body.equipment[]",
+   "label": "Forced equipment (6 records)",
+   "section": "other",
+   "struct": "body",
+   "offset": "0x5c",
+   "size": 48,
+   "type": "bytes",
+   "count": 6,
+   "codec": false,
+   "notes": "Six 8-byte records. Record 1: +0x64 weapon id (14 bits, bit 15 weapon type, bit 14 off), +0x66 bit 15 active.",
+   "builder": "not in the model",
+   "source": [
+    "hvmhfz_re docs/quest-files.md lines 220-221"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.gRankPoints[]",
+   "label": "G rank points (3)",
+   "section": "rewards",
+   "struct": "body",
+   "offset": "0xa4",
+   "size": 12,
+   "type": "u32",
+   "count": 3,
+   "codec": false,
+   "notes": "ReFrontier reads these in the client's built-in quest table, which shares this layout; not traced for quest files.",
+   "builder": "not in the model",
+   "source": [
+    "ReFrontier FrontierDataTool/Program.cs:543-545 (mainGRP, subAGRP, subBGRP)"
+   ],
+   "confidence": "guess"
+  },
+  {
+   "key": "startAreas[].areaId",
+   "label": "Start area",
+   "section": "map",
+   "struct": "startArea",
+   "offset": "0x00",
+   "size": 2,
+   "type": "u16enum",
+   "editorHint": "header +0x04",
+   "valuesFrom": "data/area-ids.json (global area ids); data/map-areas.json gives the base camp per map",
+   "notes": "4 records of 16 bytes (one per player slot), only the u16 at +0 is read. Equals map.areaId in 12,979 of 13,867 files. header.randomStartArea overrides it.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 130",
+    "hvmhfz_rest_api QuestCodec.java:428-436, 660-665",
+    "survey of the 13,867 local quest files (2026-11-02): the 4 records are equal in every file"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "startItems[].itemId",
+   "label": "Supply item",
+   "section": "rewards",
+   "struct": "startItem",
+   "offset": "0x00",
+   "size": 2,
+   "type": "u16enum",
+   "valuesFrom": "data/item-ids.json",
+   "values": {
+    "0": "empty slot"
+   },
+   "notes": "40 slots of 4 bytes. That they are the supply box is medium in the RE notes.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 131",
+    "hvmhfz_rest_api QuestCodec.java:438-445, 667-673",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "startItems[].count",
+   "label": "Supply item count",
+   "section": "rewards",
+   "struct": "startItem",
+   "offset": "0x02",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 1,
+    "max": 99
+   },
+   "seen": "1..99",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 131",
+    "hvmhfz_rest_api QuestCodec.java:442, 671",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "map.mapId",
+   "label": "Map record: map id",
+   "section": "map",
+   "struct": "mapRecord",
+   "offset": "0x00",
+   "size": 4,
+   "type": "u32enum",
+   "valuesFrom": "data/map-ids.json",
+   "notes": "Indexes the client's per-map area lists. The builder changes body.mapId but not this one.",
+   "builder": "should edit",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 138",
+    "hvmhfz_rest_api QuestCodec.java:447-450, 675-679",
+    "survey of the 13,867 local quest files (2026-11-02): equals body +0x24 in 13,849 of 13,867"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "map.areaId",
+   "label": "Map record: base camp area",
+   "section": "map",
+   "struct": "mapRecord",
+   "offset": "0x04",
+   "size": 4,
+   "type": "u32enum",
+   "valuesFrom": "data/area-ids.json",
+   "notes": "The map's first area in 13,854 files; compared with the player's area.",
+   "builder": "should edit",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 138 (medium: base camp)",
+    "hvmhfz_rest_api QuestCodec.java:449, 678",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "rewardGroups[].groupId",
+   "label": "Reward group condition",
+   "section": "rewards",
+   "struct": "rewardGroup",
+   "offset": "0x00",
+   "size": 2,
+   "type": "u16enum",
+   "values": {
+    "32768": "always paid on a clear (0x8000)",
+    "32769": "main target reward (0x8001; 11,989 of 22,342 groups)",
+    "32770": "objective reward 2 (0x8002; sub-target A, medium)",
+    "32771": "objective reward 3 (0x8003; sub-target B, medium)",
+    "32772": "extra-condition reward (0x8004, header +0x80 counter)",
+    "32773": "extra-condition reward (0x8005)",
+    "32774": "extra-condition reward (0x8006)",
+    "41": "special condition 0x29 (client table threshold)",
+    "42": "special condition 0x2a",
+    "43": "special condition 0x2b",
+    "44": "special condition 0x2c",
+    "45": "special condition 0x2d",
+    "46": "time-based condition 0x2e",
+    "47": "condition 0x2f (setup +0x20 below 1)"
+   },
+   "notes": "Ids 0..10 fall to the routine's default case and are never paid. Other ranges (0x0b..0x23, 0x30..0x10c) are rank or count thresholds not used by any quest file. The builder numbers groups 0, 1, 2 ...",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 132",
+    "client reward routine 0x10ab79e0 (decompile, raw/quest-fields/dec)",
+    "hvmhfz_rest_api QuestCodec.java:456, 684",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "rewardGroups[].reserved",
+   "label": "Reward group reserved",
+   "section": "rewards",
+   "struct": "rewardGroup",
+   "offset": "0x02",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 0,
+    "max": 0
+   },
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 132",
+    "hvmhfz_rest_api QuestCodec.java:461, 685",
+    "survey of the 13,867 local quest files (2026-11-02): 0 in every group"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "rewardGroups[].entryOffset",
+   "label": "Reward entries offset",
+   "section": "rewards",
+   "struct": "rewardGroup",
+   "offset": "0x04",
+   "size": 4,
+   "type": "u32",
+   "notes": "Set by the server (QuestTables.pack).",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 132",
+    "hvmhfz_rest_api QuestCodec.java:462, 686"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "rewardGroups[].entries[].weight",
+   "label": "Reward chance (weight)",
+   "section": "rewards",
+   "struct": "rewardEntry",
+   "offset": "0x00",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 1,
+    "max": 100
+   },
+   "values": {
+    "65535": "end of the group (never an entry)"
+   },
+   "notes": "Read as a percentage. What the client does when a group does not add up to 100 is not traced.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 132",
+    "hvmhfz_rest_api QuestCodec.java:467, 689",
+    "survey of the 13,867 local quest files (2026-11-02): the weights of a group add up to 100 in 22,324 of 22,342 groups"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "rewardGroups[].entries[].itemId",
+   "label": "Reward item",
+   "section": "rewards",
+   "struct": "rewardEntry",
+   "offset": "0x02",
+   "size": 2,
+   "type": "u16enum",
+   "valuesFrom": "data/item-ids.json",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 132",
+    "hvmhfz_rest_api QuestCodec.java:472, 690",
+    "survey of the 13,867 local quest files (2026-11-02): every id named"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "rewardGroups[].entries[].count",
+   "label": "Reward item count",
+   "section": "rewards",
+   "struct": "rewardEntry",
+   "offset": "0x04",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 1,
+    "max": 99
+   },
+   "seen": "1..99",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 132",
+    "hvmhfz_rest_api QuestCodec.java:472, 691",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "smallSpawnGroupOffsets[]",
+   "label": "Small-monster group offsets",
+   "section": "monsters",
+   "struct": "smallSpawnSlot",
+   "offset": "0x00",
+   "size": 4,
+   "type": "u32",
+   "notes": "Ended by 0; the script's opcode 0x20 picks the group.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 134",
+    "hvmhfz_rest_api QuestCodec.java:486-492, 700-707"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "largeSpawnAreas[].areaId",
+   "label": "Large spawn record number",
+   "section": "monsters",
+   "struct": "spawnArea",
+   "offset": "0x00",
+   "size": 4,
+   "type": "u32",
+   "range": {
+    "min": 1,
+    "max": 1
+   },
+   "notes": "Not an area: the large-monster area is spawns[].areaId. The builder labels this value 'area'.",
+   "builder": "shows",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 135",
+    "hvmhfz_rest_api QuestCodec.java:508, 731",
+    "survey of the 13,867 local quest files (2026-11-02): 1 in every file, one record per file"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "smallSpawnGroups[].areas[].areaId",
+   "label": "Small spawn area",
+   "section": "monsters",
+   "struct": "spawnArea",
+   "offset": "0x00",
+   "size": 4,
+   "type": "u32enum",
+   "valuesFrom": "data/area-ids.json",
+   "notes": "The area the small monsters of this record spawn in.",
+   "builder": "shows",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 134",
+    "hvmhfz_rest_api QuestCodec.java:508, 731",
+    "survey of the 13,867 local quest files (2026-11-02): 290 values, 245,526 of 269,814 in data/area-ids.json"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "largeSpawnAreas[].reserved",
+   "label": "Spawn area reserved",
+   "section": "monsters",
+   "struct": "spawnArea",
+   "offset": "0x04",
+   "size": 4,
+   "type": "u32",
+   "alsoKeys": [
+    "smallSpawnGroups[].areas[].reserved"
+   ],
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 134",
+    "hvmhfz_rest_api QuestCodec.java:513, 732",
+    "survey of the 13,867 local quest files (2026-11-02): 0 in every record"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "largeSpawnAreas[].monsterIdsOffset",
+   "label": "Monster id list offset",
+   "section": "monsters",
+   "struct": "spawnArea",
+   "offset": "0x08",
+   "size": 4,
+   "type": "u32",
+   "alsoKeys": [
+    "smallSpawnGroups[].areas[].monsterIdsOffset"
+   ],
+   "values": {
+    "0": "none"
+   },
+   "notes": "Points to 5 u32 monster ids, then 0xffffffff. A builder-added area keeps 0 (no list); what the client does with the list is not traced.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 135",
+    "hvmhfz_rest_api QuestCodec.java:514, 733",
+    "survey of the 13,867 local quest files (2026-11-02): every sampled large list (2,774 of 2,774) is the spawn records' distinct monster ids, padded with 0 to 5, then 0xffffffff"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "largeSpawnAreas[].spawnOffset",
+   "label": "Spawn records offset",
+   "section": "monsters",
+   "struct": "spawnArea",
+   "offset": "0x0c",
+   "size": 4,
+   "type": "u32",
+   "alsoKeys": [
+    "smallSpawnGroups[].areas[].spawnOffset"
+   ],
+   "notes": "Set by the server.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md lines 134-135",
+    "hvmhfz_rest_api QuestCodec.java:515, 734"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "largeSpawnAreas[].spawns[].monsterId",
+   "label": "Monster",
+   "section": "monsters",
+   "struct": "spawnRecord",
+   "offset": "0x00",
+   "size": 2,
+   "type": "u16enum",
+   "alsoKeys": [
+    "smallSpawnGroups[].areas[].spawns[].monsterId"
+   ],
+   "valuesFrom": "data/monster-ids.json",
+   "range": {
+    "min": 1,
+    "max": 176
+   },
+   "values": {
+    "65535": "end of the records"
+   },
+   "unnamed": {
+    "29": "Erupe Mon29; 65,993 small spawn records",
+    "86": "Erupe Mon86; small spawns and 6 objectives",
+    "87": "Erupe Mon87; small spawns",
+    "88": "Erupe Mon88; small spawns",
+    "134": "Erupe Mon134; small spawns",
+    "135": "Erupe Mon135; small spawns",
+    "138": "Erupe Mon138; small spawns"
+   },
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 114",
+    "hvmhfz_rest_api QuestCodec.java:528, 737",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "largeSpawnAreas[].spawns[].count",
+   "label": "Spawn count",
+   "section": "monsters",
+   "struct": "spawnRecord",
+   "offset": "0x04",
+   "size": 1,
+   "type": "s8",
+   "alsoKeys": [
+    "smallSpawnGroups[].areas[].spawns[].count"
+   ],
+   "range": {
+    "min": 0,
+    "max": 99
+   },
+   "seen": "large: 1 (13,070) or 2 (12); small: 0..99",
+   "notes": "Signed: 128 and up read as negative. Counted down per kill.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 116",
+    "hvmhfz_rest_api QuestCodec.java:533, 738",
+    "survey of the 13,867 local quest files (2026-11-02)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "largeSpawnAreas[].spawns[].areaId",
+   "label": "Spawn area",
+   "section": "monsters",
+   "struct": "spawnRecord",
+   "offset": "0x08",
+   "size": 2,
+   "type": "u16enum",
+   "alsoKeys": [
+    "smallSpawnGroups[].areas[].spawns[].areaId"
+   ],
+   "valuesFrom": "data/area-ids.json",
+   "notes": "Read for large monsters only. Small spawns use the area record's areaId; this is 0 in all their records.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 117 (+0x18 table only)",
+    "hvmhfz_rest_api QuestCodec.java:534, 739",
+    "survey of the 13,867 local quest files (2026-11-02): large 3..449, never 1; small 0 in every record"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "largeSpawnAreas[].spawns[].position",
+   "label": "Spawn position (not in the codec)",
+   "section": "monsters",
+   "struct": "spawnRecord",
+   "offset": "0x20",
+   "size": 12,
+   "type": "f32",
+   "count": 3,
+   "codec": false,
+   "notes": "x, y, z. A builder-added record keeps 0, 0, 0.",
+   "builder": "not in the model",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 118"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "largeSpawnAreas[].spawns[].arrival",
+   "label": "Random arrival spot flag (not in the codec)",
+   "section": "monsters",
+   "struct": "spawnRecord",
+   "offset": "0x0b",
+   "size": 1,
+   "type": "u8",
+   "codec": false,
+   "values": {
+    "1": "start at a random spot of the area (header +0x34)"
+   },
+   "builder": "not in the model",
+   "source": [
+    "hvmhfz_re docs/quest-files.md line 142",
+    "survey of the 13,867 local quest files (2026-11-02): small 0/1/2, large 0"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "texts[].rawOffset",
+   "label": "Text offset",
+   "section": "text",
+   "struct": "textTable",
+   "offset": "0x00",
+   "size": 4,
+   "type": "u32",
+   "notes": "8 offsets; from the file start in a quest file, from the body start in an event body.",
+   "builder": "carried",
+   "source": [
+    "hvmhfz_re docs/quest-files.md lines 233-245",
+    "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):241-260",
+    "hvmhfz_rest_api QuestCodec.java:547-559, 745-750"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "texts[0].text",
+   "label": "Title",
+   "section": "text",
+   "struct": "text",
+   "offset": null,
+   "size": 192,
+   "type": "string (Shift-JIS, NUL-terminated)",
+   "seen": "17..55 bytes",
+   "roomInBlank": 192,
+   "notes": "the name on the quest board. Size is the room the blank gives the slot; longer text is appended to the file.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_rest_api QuestCodec.java:57-87 (slot accessors)",
+    "hvmhfz_rest_api QuestBlank.java:49-50 (room)",
+    "survey of the 13,867 local quest files (2026-11-02): sampled text of every slot",
+    "ReFrontier FrontierDataTool/Program.cs:548-551 (title, textMain, textSubA, textSubB)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "texts[1].text",
+   "label": "Main target",
+   "section": "text",
+   "struct": "text",
+   "offset": null,
+   "size": 320,
+   "type": "string (Shift-JIS, NUL-terminated)",
+   "seen": "6..28 bytes",
+   "roomInBlank": 320,
+   "notes": "the main objective line, e.g. 'Hunt 2 Bulldrome'. Size is the room the blank gives the slot; longer text is appended to the file.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_rest_api QuestCodec.java:57-87 (slot accessors)",
+    "hvmhfz_rest_api QuestBlank.java:49-50 (room)",
+    "survey of the 13,867 local quest files (2026-11-02): sampled text of every slot",
+    "ReFrontier FrontierDataTool/Program.cs:548-551 (title, textMain, textSubA, textSubB)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "texts[2].text",
+   "label": "Sub-target A",
+   "section": "text",
+   "struct": "text",
+   "offset": null,
+   "size": 96,
+   "type": "string (Shift-JIS, NUL-terminated)",
+   "seen": "4..28 bytes",
+   "roomInBlank": 96,
+   "notes": "'none' (4 bytes) when there is no sub-target. Size is the room the blank gives the slot; longer text is appended to the file.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_rest_api QuestCodec.java:57-87 (slot accessors)",
+    "hvmhfz_rest_api QuestBlank.java:49-50 (room)",
+    "survey of the 13,867 local quest files (2026-11-02): sampled text of every slot",
+    "ReFrontier FrontierDataTool/Program.cs:548-551 (title, textMain, textSubA, textSubB)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "texts[3].text",
+   "label": "Sub-target B",
+   "section": "text",
+   "struct": "text",
+   "offset": null,
+   "size": 96,
+   "type": "string (Shift-JIS, NUL-terminated)",
+   "seen": "4..28 bytes",
+   "roomInBlank": 96,
+   "notes": "'none' when there is no sub-target. Size is the room the blank gives the slot; longer text is appended to the file.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_rest_api QuestCodec.java:57-87 (slot accessors)",
+    "hvmhfz_rest_api QuestBlank.java:49-50 (room)",
+    "survey of the 13,867 local quest files (2026-11-02): sampled text of every slot",
+    "ReFrontier FrontierDataTool/Program.cs:548-551 (title, textMain, textSubA, textSubB)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "texts[4].text",
+   "label": "Clear condition",
+   "section": "text",
+   "struct": "text",
+   "offset": null,
+   "size": 320,
+   "type": "string (Shift-JIS, NUL-terminated)",
+   "seen": "16..53 bytes",
+   "roomInBlank": 320,
+   "notes": "'Complete the main target' or 'the main target, or sub-target A or B'. Size is the room the blank gives the slot; longer text is appended to the file.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_rest_api QuestCodec.java:57-87 (slot accessors)",
+    "hvmhfz_rest_api QuestBlank.java:49-50 (room)",
+    "survey of the 13,867 local quest files (2026-11-02): sampled text of every slot"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "texts[5].text",
+   "label": "Fail conditions",
+   "section": "text",
+   "struct": "text",
+   "offset": null,
+   "size": 160,
+   "type": "string (Shift-JIS, NUL-terminated)",
+   "seen": "12..53 bytes",
+   "roomInBlank": 160,
+   "notes": "'Reward money hits zero / time runs out' or 'faint 3 times / time runs out'. Size is the room the blank gives the slot; longer text is appended to the file.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_rest_api QuestCodec.java:57-87 (slot accessors)",
+    "hvmhfz_rest_api QuestBlank.java:49-50 (room)",
+    "survey of the 13,867 local quest files (2026-11-02): sampled text of every slot"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "texts[6].text",
+   "label": "Client",
+   "section": "text",
+   "struct": "text",
+   "offset": null,
+   "size": 160,
+   "type": "string (Shift-JIS, NUL-terminated)",
+   "seen": "4..18 bytes",
+   "roomInBlank": 160,
+   "notes": "who posted the quest. Size is the room the blank gives the slot; longer text is appended to the file.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_rest_api QuestCodec.java:57-87 (slot accessors)",
+    "hvmhfz_rest_api QuestBlank.java:49-50 (room)",
+    "survey of the 13,867 local quest files (2026-11-02): sampled text of every slot"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "texts[7].text",
+   "label": "Description",
+   "section": "text",
+   "struct": "text",
+   "offset": null,
+   "size": 768,
+   "type": "string (Shift-JIS, NUL-terminated)",
+   "seen": "6..246 bytes",
+   "roomInBlank": 768,
+   "notes": "the request text on the quest card. Size is the room the blank gives the slot; longer text is appended to the file.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_rest_api QuestCodec.java:57-87 (slot accessors)",
+    "hvmhfz_rest_api QuestBlank.java:49-50 (room)",
+    "survey of the 13,867 local quest files (2026-11-02): sampled text of every slot"
+   ],
+   "confidence": "confirmed"
+  }
+ ]
+}

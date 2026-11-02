@@ -88,6 +88,8 @@ dev/check-road-rewards.js checks js/road-rewards.js on made-up reward rows, with
 dev/check-site.py     checks that every page has the same nav, footer and skip link
 dev/check-builder-icons.js checks that every monster and item the builders offer has a picture file or the placeholder (node dev/check-builder-icons.js)
 dev/make-builder-data.py writes data/map-areas.json (from the client's mhfo-hd.dll) and data/item-icons.json (from the API's item-icons.tsv)
+data/quest-fields.json  every quest-file field the quest builder and the API codec touch: offset, bytes, range, value names (docs/quest-fields.md)
+dev/check-quest-fields.js checks data/quest-fields.json against the API codec, js/quest-editor.js, the site's name tables and docs/quest-fields.md
 CNAME                 hvmhfz.eclipseforge.xyz
 ```
 
