@@ -18,8 +18,10 @@ node dev/check-quest-fields.js          # exit 0 = all good, else one FAIL line 
 
 It checks that every byte `QuestCodec.java` reads or writes is a field in the JSON with the same struct,
 offset and size (it needs the API repo on this machine; `QUEST_CODEC=<path>` points it elsewhere, and it
-says so when it skips that part), that every model property `js/quest-editor.js` assigns is a field and
-every offset hint it prints ("body +0x20") is right, that every map, area, item and monster id the catalog
+says so when it skips that part), that every model property `js/quest-editor.js` assigns is a field, that
+every bytes label the builder shows is right (each control names its field with `F("key")`; the check
+makes sure the control then assigns that field, that every field marked `edits` has a label, and that
+`bytesText` in `js/builder-ui.js` prints each field's struct, offset and size as the JSON has them), that every map, area, item and monster id the catalog
 data uses has a name or is listed as a known gap, that the monster table has no id outside 1..176, that the
 objective type names agree with `data/objective-types.json`, and that this page's table has a row for every
 field with the JSON's offset and size.
@@ -66,7 +68,7 @@ question.
 
 | Key | Label | Struct | Offset | Bytes | Type | Range | Values | Builder | Confidence |
 |---|---|---|---|---|---|---|---|---|---|
-| `header.questClass` | Quest class (the copy the client uses) | header | 0x5c | 1 | u8enum | 0..9 | 0 = Low rank; 1 = High rank; 2 = Exercise / trial; 3 = HR 100 and up; 7 = G rank; 8 = Hunting Road / Sky Corridor; 9 = Supremacy (names: one source) | should edit | confirmed |
+| `header.questClass` | Quest class (the copy the client uses) | header | 0x5c | 1 | u8enum | 0..9 | 0 = Low rank; 1 = High rank; 2 = Exercise / trial; 3 = HR 100 and up; 7 = G rank; 8 = Hunting Road / Sky Corridor; 9 = Supremacy (names: one source) | edits | confirmed |
 | `body.seasonFlags` | Season and day/night | body | 0x02 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 6 (JSON) | carried | confirmed |
 | `body.level` | Quest level (stars) | body | 0x04 | 1 | u8 | 1..8 |  | carried | confirmed |
 | `body.monsterGroup` | Monster group (list filter) | body | 0x05 | 1 | u8 | 0..6 |  | carried | one source |
@@ -91,8 +93,8 @@ question.
 | `body.mapId` | Map (stage) | body | 0x24 | 2 | u16enum |  | map-ids.json | edits | confirmed |
 | `body.mapIdHigh` | Map id, high half | body | 0x26 | 2 | u16 |  |  | carried | one source |
 | `startAreas[].areaId` | Start area | startArea | 0x00 | 2 | u16enum |  | area-ids.json (global area ids); map-areas.json gives the base camp per map | edits | confirmed |
-| `map.mapId` | Map record: map id | mapRecord | 0x00 | 4 | u32enum |  | map-ids.json | should edit | confirmed |
-| `map.areaId` | Map record: base camp area | mapRecord | 0x04 | 4 | u32enum |  | area-ids.json | should edit | one source |
+| `map.mapId` | Map record: map id | mapRecord | 0x00 | 4 | u32enum |  | map-ids.json | edits | confirmed |
+| `map.areaId` | Map record: base camp area | mapRecord | 0x04 | 4 | u32enum |  | area-ids.json | edits | one source |
 
 ### Objectives
 
@@ -126,7 +128,7 @@ question.
 | `header.specialFight` | Special fight selector | header | 0x62 | 2 | u16 |  | 0 = off; 2 = monster 0x5c behaviour; 3 = monster 0x5b behaviour | carried | one source |
 | `body.iconMonsters[]` | Quest info monster icons (5) | body | 0xb9 | 5 (5 x 1) | u8enum | 0..176 | 0 = end of the list; monster-ids.json | edits | confirmed |
 | `smallSpawnGroupOffsets[]` | Small-monster group offsets | smallSpawnSlot | 0x00 | 4 | u32 |  |  | carried | confirmed |
-| `largeSpawnAreas[].areaId` | Large spawn record number | spawnArea | 0x00 | 4 | u32 | 1..1 |  | shows | one source |
+| `largeSpawnAreas[].areaId` | Large spawn record number | spawnArea | 0x00 | 4 | u32 | 1..1 |  | carried | one source |
 | `smallSpawnGroups[].areas[].areaId` | Small spawn area | spawnArea | 0x00 | 4 | u32enum |  | area-ids.json | shows | one source |
 | `largeSpawnAreas[].reserved` | Spawn area reserved | spawnArea | 0x04 | 4 | u32 |  |  | carried | confirmed |
 | `largeSpawnAreas[].monsterIdsOffset` | Monster id list offset | spawnArea | 0x08 | 4 | u32 |  | 0 = none | carried | one source |
@@ -217,8 +219,13 @@ first four, so slots 0, 6 and 7 are `confirmed` and the rest `one source`:
 
 ## What the builder gets wrong
 
-Each item: what happens, the evidence, and the fix. The builder files (`js/quest-editor.js`,
-`quest-editor.html`) belong to the `site-builder-ux` task right now, so nothing here is fixed in them.
+Each item: what happens, the evidence, and the fix. Status (2026-11-02, branch `site-builder-ux`): items
+1, 3, 4, 6-14 are fixed in the builder as described, item 2 in part (the map record follows the map; a
+quest on any map but 26 shows an "untested" warning, `WARN_OTHER_MAPS` in `js/quest-editor.js`, until the
+API swaps in per-map area tables), item 5 by the builder redesign (`data/map-areas.json` now holds every
+area of each map), item 15 before. The builder also shows every input's offset and size, and names every
+value this file names. What is left is in the API: the server-side range check of item 8 and "The codec"
+below.
 
 1. **Quest class is written to the copy the client hardly reads.** The builder sets `body.questClass`
    (+0x0a). The client's class getter `0x10aa1520` returns `header.questClass` (+0x5c) to about 400 callers;
@@ -294,7 +301,7 @@ Each item: what happens, the evidence, and the fix. The builder files (`js/quest
 15. **The monster list offered a monster called ")".** `data/monster-ids.json` had an id 177 named ")",
     which is not a monster (Erupe's table ends at 176, King Shakalaka). **Fixed here**: the entry is removed.
 
-What the builder gets right, checked: every offset it prints (11 hints, checked by the script), the time
+What the builder gets right, checked: every offset and size it shows (34 labels, checked by the script), the time
 limit unit (1,800 ticks a minute, every file a multiple of 1,800), zenny as the contract fee (RE, ReFrontier
 `fee`, 010 `Fee`), reward money, the four equal start areas, the 40-slot supply box with 0 = empty, the
 monster/item switch of the objective target (bit 1 without bit 0 = item), and Shift-JIS byte counting.

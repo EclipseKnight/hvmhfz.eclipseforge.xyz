@@ -9,8 +9,11 @@
    2. The API codec (QuestCodec.java, in the private API repo): every byte it reads or writes is a field here
       with the same struct, offset and size, and every field here marked as in the codec is written by it.
       Skipped, and said so, when the file is not on this machine.
-   3. The builder (js/quest-editor.js): every model property it assigns is a field here, and every offset
-      hint it prints ("body +0x20") is that field's offset.
+   3. The builder (js/quest-editor.js): every model property it assigns is a field here, and every bytes
+      label it shows is right. A label is F("key") (or F(["key", "key"]) for a value kept in two places) next
+      to the control: each key must be a field here, the first model property the control assigns after it
+      must be one of the keys and every key must be assigned there, and js/builder-ui.js's bytesText must
+      print each field's struct, offset and size as this file has them.
    4. The site's data: every map, area, item and monster used in data/quests.json and
       data/quest-details.json has a name, or is listed here as a known gap; the name tables hold no id
       outside the field's range; the objective type names here match data/objective-types.json.
@@ -271,6 +274,8 @@ const editor = fs.readFileSync(path.join(ROOT, "js/quest-editor.js"), "utf8");
 /* The builder's variable names for model records, and the keys they stand for. */
 const EDITOR_VARS = {
   b: ["body."],
+  header: ["header."],
+  map: ["map."],
   objective: ["body.objective0.", "body.objective1.", "body.objective2."],
   spawn: ["largeSpawnAreas[].spawns[].", "smallSpawnGroups[].areas[].spawns[]."],
   entry: ["startItems[].", "rewardGroups[].entries[]."],
@@ -323,36 +328,101 @@ while ((am = push.exec(editor))) {
   });
 }
 
-/* Offset hints: "body +0x20" next to the assignment it describes. The nearest assignment within the call
-   decides which field the hint names. Hints built at run time ("body +0x" + ...) are not checked. */
-let hints = 0;
-const hint = /"(body|header) \+0x([0-9a-f]+)\b/g;
-while ((am = hint.exec(editor))) {
-  const text = am[1] + " +0x" + am[2];
-  const from = Math.max(0, am.index - 250);
-  const window = editor.slice(from, am.index + 250);
-  const near = [];
-  const a2 = /\b([a-z]\w*)\.(\w+)\s*=(?!=)/g;
-  let w;
-  while ((w = a2.exec(window))) {
-    if (EDITOR_VARS[w[1]]) near.push({ at: from + w.index, v: w[1], prop: w[2] });
-  }
-  if (/icons\[i\]\s*=/.test(window)) near.push({ at: from + window.search(/icons\[i\]\s*=/), v: "icons", prop: "iconMonsters" });
-  if (!near.length) continue;
-  near.sort(function (x, y) { return Math.abs(x.at - am.index) - Math.abs(y.at - am.index); });
-  const pick = near[0];
-  const prefixes = pick.v === "icons" ? ["body."] : EDITOR_VARS[pick.v];
-  const f = fields.filter(function (x) {
-    return prefixes.some(function (p) { return x.key === p + pick.prop || x.key === p + pick.prop + "[]"; });
-  })[0];
-  if (!f) continue; // reported above as an unknown property
-  hints += 1;
-  const sameStruct = f.struct === am[1] && offsetOf(f) === parseInt(am[2], 16);
-  if (!sameStruct && f.editorHint !== text) {
-    fail("js/quest-editor.js:" + lineOf(am.index) + " labels " + f.key + " \"" + text + "\": quest-fields.json says " +
-      f.struct + " +" + f.offset);
-  }
+/* Bytes labels. The page draws every label from this file through F("key") in js/quest-editor.js and
+   bytesText in js/builder-ui.js, so a label is right when (a) F names the field the control writes and
+   (b) bytesText prints that field's struct, offset and size. "#" in a key stands for the record index
+   (body.objective#.type), and matches any digit here. */
+const UI = require(path.join(ROOT, "js/builder-ui.js"));
+
+function keysMatching(pattern) {
+  if (pattern.indexOf("#") < 0) return allKeys.has(pattern) ? [pattern] : [];
+  const re = new RegExp("^" + pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace("#", "\\d+") + "$");
+  return Array.from(allKeys).filter(function (k) { return re.test(k); });
 }
+
+/** The keys one assignment can stand for: "spawn.count" -> the spawn record count keys. */
+function keysOf(v, prop) {
+  if (v === "icons") return ["body.iconMonsters[]"];
+  return (EDITOR_VARS[v] || []).map(function (p) { return p + prop; }).concat(
+    (EDITOR_VARS[v] || []).map(function (p) { return p + prop + "[]"; })).filter(function (k) { return allKeys.has(k); });
+}
+
+/** The canonical key of a key or an alsoKeys alias. */
+function canonical(key) {
+  const f = fields.filter(function (x) { return x.key === key || (x.alsoKeys || []).indexOf(key) >= 0; })[0];
+  return f ? f.key : key;
+}
+
+let hints = 0;
+const labelled = new Set();
+const SPAN = 2000; // how far after F(...) the control's assignment may be (slotField sets slot.text 1.7k chars on)
+/* The editor with its comments blanked (lines kept), so a comment's example F("...") is not read as a label. */
+const code = editor.replace(/\/\*[\s\S]*?\*\//g, function (c) { return c.replace(/[^\n]/g, " "); })
+  .replace(/^(\s*)(\/\/.*)$/gm, function (all, lead, c) { return lead + c.replace(/./g, " "); });
+const fCall = /\bF\(\s*(\[\s*"[^"]*"(?:\s*,\s*"[^"]*")*\s*\]|"[^"]*")/g;
+while ((am = fCall.exec(code))) {
+  const at = lineOf(am.index);
+  const patterns = (am[1].match(/"[^"]*"/g) || []).map(function (q) { return q.slice(1, -1); });
+  const expanded = patterns.map(function (pat) {
+    const ks = keysMatching(pat).map(canonical);
+    if (!ks.length) fail("js/quest-editor.js:" + at + " labels a control with " + pat + ": no such field in quest-fields.json");
+    return ks;
+  });
+  if (expanded.some(function (ks) { return !ks.length; })) continue;
+  const after = code.slice(am.index, am.index + SPAN);
+  const assigned = [];
+  const a3 = /\b([a-z]\w*)\.(\w+)\s*=(?!=)|\b(icons)\[i\]\s*=(?!=)/g;
+  let w;
+  while ((w = a3.exec(after))) {
+    const ks = w[3] ? keysOf("icons") : keysOf(w[1], w[2]);
+    if (ks.length) assigned.push({ text: w[0].replace(/\s*=$/, ""), keys: ks.map(canonical) });
+  }
+  if (!assigned.length) { fail("js/quest-editor.js:" + at + " labels " + patterns.join(" + ") + " but no model property is assigned after it"); continue; }
+  const hit = function (ks, a) { return ks.some(function (k) { return a.keys.indexOf(k) >= 0; }); };
+  if (!expanded.some(function (ks) { return hit(ks, assigned[0]); })) {
+    fail("js/quest-editor.js:" + at + " labels " + patterns.join(" + ") + ", but the control next to it sets " + assigned[0].text);
+  }
+  expanded.forEach(function (ks, i) {
+    if (!assigned.some(function (a) { return hit(ks, a); })) {
+      fail("js/quest-editor.js:" + at + " labels " + patterns[i] + ", but the control does not set it");
+    }
+  });
+  hints += 1;
+  expanded.forEach(function (ks) { ks.forEach(function (k) { labelled.add(k); }); });
+}
+/* Fields the page mentions without editing (refText in a table such as OBJECTIVES' money). */
+const shown = /\bmoney: "([^"]+)"/g;
+while ((am = shown.exec(editor))) {
+  if (!allKeys.has(am[1])) fail("js/quest-editor.js:" + lineOf(am.index) + " shows " + am[1] + ": no such field in quest-fields.json");
+  else { hints += 1; labelled.add(am[1]); }
+}
+/* Every field the builder edits has a label. */
+fields.forEach(function (f) {
+  if (f.builder === "edits" && !labelled.has(f.key)) fail("quest-fields.json " + f.key + " is marked edits, but js/quest-editor.js shows no bytes label for it");
+});
+/* bytesText prints what this file says, for every field. */
+fields.forEach(function (f) {
+  const text = UI.bytesText({ fields: [f] });
+  const one = f.count ? f.size / f.count : f.size;
+  if (f.struct === "text") {
+    if (text.indexOf("text slot " + /\[(\d+)\]/.exec(f.key)[1] + " ") !== 0) fail("bytesText(" + f.key + ") = \"" + text + "\"");
+    return;
+  }
+  const m = /^(\w+) \+0x([0-9a-f]+) · .*?(?:× (\d+), )?(\d+) bytes?$/.exec(text);
+  if (!m || m[1] !== f.struct || parseInt(m[2], 16) !== offsetOf(f) || Number(m[4]) !== f.size) {
+    fail("bytesText(" + f.key + ") = \"" + text + "\": quest-fields.json says " + f.struct + " +" + f.offset + ", " + f.size + " bytes");
+  }
+  if (f.count) {
+    const el = UI.bytesText({ fields: [f], index: f.count - 1 });
+    const last = offsetOf(f) + (f.count - 1) * one;
+    if (el.indexOf(f.struct + " +0x" + (last < 16 ? "0" : "") + last.toString(16) + " · ") !== 0 || !/, (\d+) bytes?$/.test(el) ||
+        Number(/, (\d+) bytes?$/.exec(el)[1]) !== one) {
+      fail("bytesText(" + f.key + ", element " + (f.count - 1) + ") = \"" + el + "\"");
+    }
+  }
+});
+const pair = UI.bytesText({ fields: [field("body.questClass"), field("header.questClass")] });
+if (pair !== "body +0x0a and header +0x5c · u8, 1 byte each") fail("bytesText of the two quest class copies = \"" + pair + "\"");
 
 // ---- 4. the site's data -------------------------------------------------------------------------
 
@@ -472,4 +542,4 @@ if (problems.length) {
 const counts = {};
 fields.forEach(function (f) { counts[f.confidence] = (counts[f.confidence] || 0) + 1; });
 console.log("quest fields OK: " + fields.length + " fields (" + CONFIDENCE.map(function (c) { return (counts[c] || 0) + " " + c; }).join(", ") +
-  "); " + codecSummary + "; editor: " + editorWrites + " writes, " + hints + " offset hints");
+  "); " + codecSummary + "; editor: " + editorWrites + " writes, " + hints + " offset hints (" + labelled.size + " fields labelled)");

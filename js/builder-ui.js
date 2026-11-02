@@ -39,7 +39,69 @@
     return src || PLACEHOLDER;
   }
 
-  var shared = { PLACEHOLDER: PLACEHOLDER, setTables: setTables, monsterIcon: monsterIcon, itemIcon: itemIcon, iconFor: iconFor };
+  // ---- bytes labels: where a field sits in the file, from data/quest-fields.json -----------------
+
+  /** The type as the label shows it: "u8", "s8 (signed)", "bitfield", "Shift-JIS text". */
+  function typeName(f) {
+    var t = String(f.type || "");
+    if (/^string/.test(t)) return "Shift-JIS text";
+    var m = /^(u8|s8|u16|s16|u32|s32|f32)/.exec(t);
+    if (m) return m[1] + (m[1].charAt(0) === "s" ? " (signed)" : "");
+    return t;
+  }
+
+  function bytesWord(n) { return n + (n === 1 ? " byte" : " bytes"); }
+
+  function hex(n) {
+    var s = n.toString(16);
+    return "0x" + (s.length < 2 ? "0" + s : s);
+  }
+
+  /** "body +0x0a", the place of element `index` of an array field ("body +0xbb"), or "text slot 3". */
+  function placeOf(f, index) {
+    if (f.struct === "text") {
+      var slot = /^texts\[(\d+)\]/.exec(f.key || "");
+      return "text slot " + (slot ? slot[1] : "?");
+    }
+    var at = parseInt(f.offset, 16);
+    if (f.count && index !== undefined && index !== null) at += index * (f.size / f.count);
+    return f.struct + " +" + hex(at);
+  }
+
+  /** "u8, 1 byte", "u8 × 5, 5 bytes" for a whole array, "Shift-JIS text, room 192 bytes" for a text slot. */
+  function sizeOf(f, index) {
+    if (f.struct === "text") return typeName(f) + ", NUL-terminated";
+    var one = f.count ? f.size / f.count : f.size;
+    if (f.count && (index === undefined || index === null)) return typeName(f) + " × " + f.count + ", " + bytesWord(f.size);
+    return typeName(f) + ", " + bytesWord(one);
+  }
+
+  /**
+   * The bytes label of a control: ref is { fields: [quest-fields.json entries], index } (index = the element
+   * of an array field). One field: "body +0x0a · u8, 1 byte". Two of the same type: "body +0x0a and header
+   * +0x5c · u8, 1 byte each"; of different types: "body +0x24 · u16, 2 bytes; mapRecord +0x00 · u32, 4 bytes".
+   */
+  function bytesText(ref) {
+    var list = ref && ref.fields ? ref.fields : [];
+    if (!list.length) return "";
+    var sizes = list.map(function (f) { return sizeOf(f, ref.index); });
+    var places = list.map(function (f) { return placeOf(f, ref.index); });
+    var same = sizes.every(function (s) { return s === sizes[0]; });
+    if (same) return places.join(" and ") + " · " + sizes[0] + (list.length > 1 ? " each" : "");
+    return places.map(function (p, i) { return p + " · " + sizes[i]; }).join("; ");
+  }
+
+  /** True when the field's meaning or its value names rest on one source or a guess (quest-fields.json). */
+  function unsure(ref) {
+    var f = ref && ref.fields && ref.fields[0];
+    if (!f) return false;
+    return f.confidence !== "confirmed" || (!!f.valuesConfidence && f.valuesConfidence !== "confirmed");
+  }
+
+  var shared = {
+    PLACEHOLDER: PLACEHOLDER, setTables: setTables, monsterIcon: monsterIcon, itemIcon: itemIcon, iconFor: iconFor,
+    bytesText: bytesText, unsure: unsure
+  };
 
   if (typeof module !== "undefined" && module.exports) {
     module.exports = shared;
@@ -103,7 +165,34 @@
     return el("h3", "subhead", text);
   }
 
-  /** A labelled field: label, the control, then a help note. A picker is labelled through aria-labelledby. */
+  function refTitle(ref) {
+    return ref.fields.map(function (f) { return f.key + ": " + f.label + (f.notes ? ". " + f.notes : ""); }).join("\n");
+  }
+
+  /** The small muted bytes label of a control ("body +0x0a · u8, 1 byte"), or null without a ref. */
+  function bytesNode(ref) {
+    var text = bytesText(ref);
+    if (!text) return null;
+    var span = el("span", "bui-bytes", text);
+    span.title = refTitle(ref);
+    span.setAttribute("data-fields", ref.fields.map(function (f) { return f.key; }).join(" "));
+    if (ref.index !== undefined && ref.index !== null) span.setAttribute("data-index", String(ref.index));
+    return span;
+  }
+
+  /** The muted "(unconfirmed)" mark for a field whose name rests on one source or a guess, or null. */
+  function unsureNode(ref, why) {
+    if (!why && !unsure(ref)) return null;
+    var span = el("span", "bui-unsure", "(unconfirmed)");
+    span.title = why || "The name rests on one source or a guess (docs/quest-fields.md).";
+    return span;
+  }
+
+  /**
+   * A labelled field: label, the bytes label, the control, then a help note. A picker is labelled through
+   * aria-labelledby. opts: wide; ref ({fields, index}, see bytesText) adds the bytes label and, for a field
+   * whose name is not confirmed, "(unconfirmed)"; unsure (text) forces that mark with its reason.
+   */
   function field(labelText, control, hint, opts) {
     var o = opts || {};
     var wrap = el("div", "field" + (o.wide ? " bui-wide" : ""));
@@ -115,7 +204,11 @@
     } else if (node && node.id) {
       label.htmlFor = node.id;
     }
+    var mark = unsureNode(o.ref, o.unsure);
+    if (mark) { label.appendChild(doc.createTextNode(" ")); label.appendChild(mark); }
     wrap.appendChild(label);
+    var bytes = bytesNode(o.ref);
+    if (bytes) wrap.appendChild(bytes);
     wrap.appendChild(node);
     if (hint) wrap.appendChild(note(hint));
     return wrap;
@@ -484,7 +577,11 @@
     return api;
   }
 
-  /** A table with headers and rows of cells (each a node); an empty table says so in one row. */
+  /**
+   * A table with headers and rows of cells (each a node, or {label, cls, node, ref}); an empty table says so in
+   * one row. A cell's ref (see bytesText) puts the bytes label on the cell (shown above it on a phone) and,
+   * from the first row, under the column's header.
+   */
   function table(headers, rows, emptyText, cls) {
     var wrap = el("div", "table-wrap bui-table-wrap");
     var t = el("table", "data-table bui-table" + (cls ? " " + cls : ""));
@@ -493,8 +590,14 @@
     t.setAttribute("data-nosort", "");
     var head = el("thead");
     var tr = el("tr");
-    headers.forEach(function (h) {
+    headers.forEach(function (h, i) {
       var th = el("th", h && h.cls, h && h.label !== undefined ? h.label : h);
+      var first = rows.length ? rows[0][i] : null;
+      var ref = (h && h.ref) || (first && first.ref);
+      var mark = ref && unsureNode(ref);
+      if (mark) { th.appendChild(doc.createTextNode(" ")); th.appendChild(mark); }
+      var bytes = ref && bytesNode(ref);
+      if (bytes) th.appendChild(bytes);
       tr.appendChild(th);
     });
     head.appendChild(tr);
@@ -511,7 +614,11 @@
       var row = el("tr");
       cells.forEach(function (cell) {
         var td = el("td", cell && cell.cls);
-        if (cell && cell.label) td.setAttribute("data-label", cell.label);
+        if (cell && cell.label) td.setAttribute("data-label", cell.label + (cell.ref && unsure(cell.ref) ? " (unconfirmed)" : ""));
+        if (cell && cell.ref && bytesText(cell.ref)) {
+          td.setAttribute("data-bytes", bytesText(cell.ref));
+          td.setAttribute("data-fields", cell.ref.fields.map(function (f) { return f.key; }).join(" "));
+        }
         var node = cell && cell.node !== undefined ? cell.node : cell;
         if (node && node.el) node = node.el;
         if (node instanceof root.Node) td.appendChild(node); else if (node !== null && node !== undefined) td.textContent = String(node);

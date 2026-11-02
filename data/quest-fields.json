@@ -383,8 +383,8 @@
     }
    },
    "valuesConfidence": "one source",
-   "notes": "Value names come from the quest lists each class appears in (catalog categories and the min-HR values of 13,867 files); the client code tests 3, below 7, 8 and 9 but names nothing. The builder edits body.questClass only; this byte must be set to the same value.",
-   "builder": "should edit",
+   "notes": "Value names come from the quest lists each class appears in (catalog categories and the min-HR values of 13,867 files); the client code tests 3, below 7, 8 and 9 but names nothing. The builder sets this byte together with body.questClass.",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 153 (about 400 callers)",
     "hvmhfz_re docs/quest-files.md line 299 (equals body +0x0a in 13,861 of 13,861)",
@@ -840,7 +840,7 @@
     }
    },
    "valuesConfidence": "one source",
-   "notes": "The client compares this copy once; the copy it uses is header.questClass, which the builder does not set.",
+   "notes": "The client compares this copy once; the copy it uses is header.questClass, which the builder sets with it.",
    "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 199",
@@ -1833,8 +1833,8 @@
    "size": 4,
    "type": "u32enum",
    "valuesFrom": "data/map-ids.json",
-   "notes": "Indexes the client's per-map area lists. The builder changes body.mapId but not this one.",
-   "builder": "should edit",
+   "notes": "Indexes the client's per-map area lists. The builder sets it with body.mapId.",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 138",
     "hvmhfz_rest_api QuestCodec.java:447-450, 675-679",
@@ -1852,7 +1852,7 @@
    "type": "u32enum",
    "valuesFrom": "data/area-ids.json",
    "notes": "The map's first area in 13,854 files; compared with the player's area.",
-   "builder": "should edit",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 138 (medium: base camp)",
     "hvmhfz_rest_api QuestCodec.java:449, 678",
@@ -1884,7 +1884,7 @@
     "46": "time-based condition 0x2e",
     "47": "condition 0x2f (setup +0x20 below 1)"
    },
-   "notes": "Ids 0..10 fall to the routine's default case and are never paid. Other ranges (0x0b..0x23, 0x30..0x10c) are rank or count thresholds not used by any quest file. The builder numbers groups 0, 1, 2 ...",
+   "notes": "Ids 0..10 fall to the routine's default case and are never paid. Other ranges (0x0b..0x23, 0x30..0x10c) are rank or count thresholds not used by any quest file. The builder offers the named conditions and starts a new group at 0x8001.",
    "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 132",
@@ -2020,8 +2020,8 @@
     "min": 1,
     "max": 1
    },
-   "notes": "Not an area: the large-monster area is spawns[].areaId. The builder labels this value 'area'.",
-   "builder": "shows",
+   "notes": "Not an area: the large-monster area is spawns[].areaId. The builder writes 1 and does not show it as an area.",
+   "builder": "carried",
    "source": [
     "hvmhfz_re docs/quest-files.md line 135",
     "hvmhfz_rest_api QuestCodec.java:508, 731",

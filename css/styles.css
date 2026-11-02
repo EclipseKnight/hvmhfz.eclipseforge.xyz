@@ -1161,6 +1161,7 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .slot-lab label{margin-bottom:6px}
 .slot-count{font:600 .7rem/1.3 var(--font-ui);letter-spacing:.06em;color:var(--ink-soft);white-space:nowrap}
 .slot-count.bad{color:#7f1d17}
+.slot-count.is-end{white-space:normal}
 .editor-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .editor-actions .note-text{margin:0;flex:1 1 260px}
 .editor-actions .note-text.bad{color:#7f1d17}
@@ -1221,6 +1222,14 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .bui-table .bui-picker{min-width:180px}
 .bui-row-end{text-align:right;width:1%}
 .bui-share{font-variant-numeric:tabular-nums}
+.bui-bytes{display:block;margin:-3px 0 6px;font:400 .68rem/1.3 var(--font-ui);letter-spacing:.02em;text-transform:none;
+  color:var(--ink-soft);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.bui-unsure{font:italic 400 .68rem var(--font-ui);letter-spacing:0;text-transform:none;color:var(--ink-soft);cursor:help}
+.bui-table th .bui-bytes{margin:3px 0 0;color:inherit;opacity:.75;white-space:normal}
+.bui-table th .bui-unsure{color:inherit;opacity:.75}
+.bui-weight-sum{margin:2px 0 6px;font-size:.85rem}
+.bui-weight-sum.bad{color:#7f1d17;font-weight:600}
+.note-text.bui-notice.bui-warn{border-color:rgba(139,47,39,.5);border-left-color:var(--wax);background:#f8e4dc}
 .bui-more-settings{margin:4px 0 0}
 .bui-more-settings summary{cursor:pointer;font:700 .7rem var(--font-ui);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
 .note-text.bui-notice{padding:8px 12px;border:1px solid rgba(183,138,51,.6);border-left:4px solid var(--gold);border-radius:3px;
@@ -1242,6 +1251,11 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   .bui-table td{padding:4px 0;border:0;text-align:left}
   .bui-table td[data-label]::before{content:attr(data-label);display:block;margin-bottom:3px;font:700 .64rem/1.2 var(--font-ui);
     letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+  /* The bytes label sits between the cell's label and its control. */
+  .bui-table td[data-bytes]{display:flex;flex-direction:column}
+  .bui-table td[data-bytes]::before{order:-2}
+  .bui-table td[data-bytes]::after{content:attr(data-bytes);order:-1;display:block;margin:0 0 4px;
+    font:400 .66rem/1.3 var(--font-ui);color:var(--ink-soft);overflow-wrap:anywhere}
   .bui-table .bui-picker{min-width:0}
   .bui-table .bui-number{width:100%}
   .bui-row-end{width:auto}

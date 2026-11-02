@@ -14,21 +14,44 @@
   var el = UI.el;
   var note = UI.note;
 
-  /* The eight text slots by their index in the file, with plain labels. Title is edited under Basics. */
+  /* The eight text slots by their index in the file. The names are the labels of texts[N].text in
+     data/quest-fields.json (these are the fallback when it does not load); Title is edited under Basics. */
   var SLOTS = {
-    0: { name: "Quest name", hint: "The name the quest board shows.", rows: 1, wide: true },
-    1: { name: "Objective", hint: "What the quest asks for, as the quest list shows it.", rows: 2, wide: true },
-    2: { name: "Sub-objective A", hint: "Text of the first sub-objective. Leave it empty if there is none.", rows: 2 },
-    3: { name: "Sub-objective B", hint: "Text of the second sub-objective. Leave it empty if there is none.", rows: 2 },
-    4: { name: "Main objective", hint: "The line the quest card leads with.", rows: 2, wide: true },
-    5: { name: "Fail condition", hint: "When the quest fails, for example \"Time runs out\".", rows: 2 },
+    0: { name: "Title", hint: "The quest's name on the quest board.", rows: 1, wide: true },
+    1: { name: "Main target", hint: "The main target line, for example \"Hunt a Tigrex\".", rows: 2, wide: true },
+    2: { name: "Sub-target A", hint: "The sub-target A line. Write \"None\" when the quest has no sub-target A.", rows: 2 },
+    3: { name: "Sub-target B", hint: "The sub-target B line. Write \"None\" when the quest has no sub-target B.", rows: 2 },
+    4: { name: "Clear condition", hint: "What clears the quest, for example \"Complete the main target\".", rows: 2, wide: true },
+    5: { name: "Fail conditions", hint: "When the quest fails, for example \"Reward money hits zero / Time runs out\".", rows: 2 },
     6: { name: "Client", hint: "Who posted the quest.", rows: 1 },
-    7: { name: "Description", hint: "The text on the quest card.", rows: 4, wide: true }
+    7: { name: "Description", hint: "The request text on the quest card.", rows: 4, wide: true }
   };
   var TEXT_ORDER = [1, 4, 7, 6, 5, 2, 3];
 
   /* body +0x20 counts 30 ticks a second, so a minute is 1 800 of them. */
   var TICKS_PER_MINUTE = 1800;
+
+  /* The blank quest's per-area tables (trigger zones, area rectangles, gathering points, area zones and their
+     counts at header +0x7d..+0x7f) belong to its own map, 26 (Great Forest, day, 9 areas), whatever map is
+     chosen (docs/quest-fields.md, builder item 2). Until the API swaps in the chosen map's tables (task
+     api-quest-codec), any other map is untested: set WARN_OTHER_MAPS to false once it does. */
+  var WARN_OTHER_MAPS = true;
+  var BLANK_MAP = 26;
+
+  /* Objective types no quest file uses; their names come from the overlay only (builder item 11). */
+  var UNTESTED_TYPES = { 16: true, 131072: true, 262144: true };
+
+  /* Reward group conditions in the order the picker offers them, with the group each sits in. The names come
+     from data/quest-fields.json (rewardGroups[].groupId); ids 0..10 are never paid (builder item 6). */
+  var CONDITION_ORDER = [
+    [32769, "Objectives"], [32768, "Objectives"], [32770, "Objectives"], [32771, "Objectives"],
+    [32772, "Extra condition (header +0x80 counter)"], [32773, "Extra condition (header +0x80 counter)"],
+    [32774, "Extra condition (header +0x80 counter)"],
+    [41, "Special conditions"], [42, "Special conditions"], [43, "Special conditions"], [44, "Special conditions"],
+    [45, "Special conditions"], [46, "Special conditions"], [47, "Special conditions"]
+  ];
+  /* A new group takes the first of these its quest does not use yet: main target, then always paid. */
+  var NEW_GROUP_CONDITIONS = [32769, 32768, 32770, 32771];
 
   var params = new URLSearchParams(window.location.search);
   /* The old address for a copy of a live quest. It is kept only so the page can show the server's refusal
@@ -88,6 +111,7 @@
   var itemIds = {};
   var objectiveTypes = {};
   var monsterIds = {};
+  var fieldRef = {};
 
   function loadTables() {
     function grab(url) {
@@ -96,11 +120,62 @@
     return Promise.all([
       grab("/data/map-ids.json"), grab("/data/map-areas.json"), grab("/data/area-ids.json"),
       grab("/data/item-ids.json"), grab("/data/objective-types.json"), grab("/data/monster-ids.json"),
-      UI.loadIcons(["monsters", "items"])
+      grab("/data/quest-fields.json"), UI.loadIcons(["monsters", "items"])
     ]).then(function (r) {
       mapIds = r[0] || {}; mapAreas = r[1] || {}; areaIds = r[2] || {}; itemIds = r[3] || {};
       objectiveTypes = r[4] || {}; monsterIds = r[5] || {};
+      ((r[6] || {}).fields || []).forEach(function (f) { fieldRef[f.key] = f; });
     });
+  }
+
+  // ---- the field reference (data/quest-fields.json) ------------------------------------------
+
+  /**
+   * The quest-fields.json entries a control writes, for its bytes label and range: F("body.zenny"),
+   * F(["body.questClass", "header.questClass"]) for a value kept in two places, F("body.iconMonsters[]", 2) for
+   * one element of an array, F("texts[#].text", 3) with # standing for the index. null when the file did not
+   * load (the control then has no bytes label). dev/check-quest-fields.js checks every literal key here
+   * against the model property the control assigns next.
+   */
+  function F(keys, index) {
+    var list = [].concat(keys).map(function (k) {
+      return fieldRef[String(k).replace("#", index)];
+    }).filter(Boolean);
+    if (!list.length) return null;
+    return { fields: list, index: String(keys).indexOf("#") >= 0 ? null : index };
+  }
+
+  /** A field's bytes as text, for a field the page mentions but does not edit. */
+  function refText(key) {
+    return UI.bytesText(F(key));
+  }
+
+  /** opts with min and max from the field's range in the JSON (opts' own min and max are the fallback). */
+  function ranged(ref, opts) {
+    var r = ref && ref.fields[0].range;
+    if (r) { opts.min = r.min; opts.max = r.max; }
+    opts.ref = ref;
+    return opts;
+  }
+
+  function valueName(v) {
+    return v && typeof v === "object" ? v.name : v;
+  }
+
+  function capital(text) {
+    return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+  }
+
+  /** A labelled field with the bytes label of ref; ref comes first so the check reads it before the control. */
+  function fieldFor(ref, label, control, hint, opts) {
+    var o = opts || {};
+    o.ref = ref;
+    return UI.field(label, control, hint, o);
+  }
+
+  /** A number field ranged and labelled from ref. */
+  function numberFor(ref, label, opts, hint) {
+    return UI.numberField(label, ranged(ref, opts), hint);
   }
 
   function byLabel(a, b) {
@@ -163,6 +238,7 @@
       var count = areasForMap(id).length;
       var hint = count ? count + (count === 1 ? " area" : " areas") : "";
       if (entry.share !== undefined && entry.share !== null && entry.share < 0.5) hint += (hint ? ", " : "") + "name is a best guess";
+      if (WARN_OTHER_MAPS && id === BLANK_MAP) hint += (hint ? ", " : "") + "the blank's own map";
       return { value: id, label: mapName(id), hint: hint };
     }).sort(byLabel);
     return mapList;
@@ -197,8 +273,52 @@
   }
 
   function typeOptions() {
-    return Object.keys(objectiveTypes).map(Number).sort(function (a, b) { return a - b; })
-      .map(function (id) { return { value: id, label: id === 0 ? "Not used" : objectiveTypes[id] }; });
+    var named = (fieldRef["body.objective0.type"] || {}).values || objectiveTypes;
+    return Object.keys(named).map(Number).sort(function (a, b) { return a - b; }).map(function (id) {
+      var opt = { value: id, label: id === 0 ? "Not used" : valueName(named[id]) };
+      if (UNTESTED_TYPES[id]) opt.hint = "untested, unconfirmed: no quest file uses it";
+      return opt;
+    });
+  }
+
+  /** Quest class: the values quest-fields.json names (0, 1, 2, 3, 7, 8, 9); the names rest on one source. */
+  function classOptions() {
+    var named = (fieldRef["body.questClass"] || {}).values || {};
+    return Object.keys(named).map(Number).sort(function (a, b) { return a - b; }).map(function (id) {
+      return { value: id, label: valueName(named[id]) };
+    });
+  }
+
+  /** Max hunters: the cap is the low 3 bits, 0 also means 4 (the quest files write 0 or 1). */
+  function hunterOptions() {
+    var named = (fieldRef["body.maxHunters"] || {}).values || {};
+    var hints = { 0: "as the quest files write 4", 1: "", 2: "untested: no quest file uses it",
+      3: "untested: no quest file uses it", 4: "the blank's value; no quest file uses it" };
+    return Object.keys(named).map(Number).sort(function (a, b) { return a - b; }).map(function (id) {
+      var name = capital(String(valueName(named[id])).replace(/ \(.*\)$/, ""));
+      return { value: id, label: id === 1 ? "Solo" : "Up to " + name, hint: hints[id] || "" };
+    });
+  }
+
+  /** Reward group conditions with the JSON's names: "main target reward (0x8001; ...)" becomes the label
+      "Main target reward" and the hint "0x8001; ...". */
+  function conditionOptions() {
+    var named = (fieldRef["rewardGroups[].groupId"] || {}).values || {};
+    return CONDITION_ORDER.filter(function (c) { return named[c[0]]; }).map(function (c) {
+      var name = String(valueName(named[c[0]]));
+      var m = /^(.*?) \((.*)\)$/.exec(name);
+      return { value: c[0], label: capital(m ? m[1] : name), hint: m ? m[2] : "", group: c[1] };
+    });
+  }
+
+  function conditionLabel(id) {
+    return id <= 10 ? "Never paid (condition " + id + ")" : "Unnamed condition (" + id + ")";
+  }
+
+  function nextCondition(groups) {
+    var used = groups.map(function (g) { return g.groupId; });
+    var free = NEW_GROUP_CONDITIONS.filter(function (id) { return used.indexOf(id) === -1; });
+    return free.length ? free[0] : 32768;
   }
 
   // ---- the review panel follows every change --------------------------------------------------
@@ -222,13 +342,27 @@
     return total;
   }
 
+  /** True when the slot's string is the last one in the file: its room is only its own bytes, so any text
+      written there is put at the end of the file (builder item 10; QuestCodec.parseTexts). */
+  function lastString(slot) {
+    return (state.model.texts || []).every(function (other) { return other.offset <= slot.offset; });
+  }
+
   function slotField(slot) {
     var spec = SLOTS[slot.index] || { name: "Text " + (slot.index + 1), hint: "", rows: 2 };
+    var ref = F("texts[#].text", slot.index);
+    var name = ref ? ref.fields[0].label : spec.name;
     var wrap = el("div", "field" + (spec.wide ? " bui-wide" : ""));
     var lab = el("div", "slot-lab");
-    var label = el("label", null, spec.name);
+    var label = el("label", null, name);
     label.htmlFor = "slot-" + slot.index;
+    if (ref && UI.unsure(ref)) {
+      label.appendChild(document.createTextNode(" "));
+      label.appendChild(el("span", "bui-unsure", "(unconfirmed)"));
+      label.lastChild.title = "What this text is was read from sample quest files, one source (docs/quest-fields.md).";
+    }
     var count = el("span", "slot-count");
+    var last = typeof slot.offset === "number" && lastString(slot);
     lab.appendChild(label);
     lab.appendChild(count);
 
@@ -239,6 +373,14 @@
 
     function refresh() {
       var bytes = shiftJisBytes(area.value);
+      if (last) {
+        // The real room is the string's own NUL; the counter would say "0 of 1 bytes".
+        count.textContent = bytes + " bytes · last text in the file, so it is stored at the end of the file";
+        count.title = "This string is the last one in the file, so its room is only its own end byte: any text"
+          + " here is written at the end of the file. That is harmless.";
+        count.classList.add("is-end");
+        return;
+      }
       var over = bytes + 1 > slot.capacity;
       count.textContent = over
         ? bytes + " bytes, more than the " + slot.capacity + " this text has room for: it is stored at the end of the file"
@@ -253,6 +395,11 @@
     });
     refresh();
     wrap.appendChild(lab);
+    var bytesLabel = ref ? el("span", "bui-bytes", UI.bytesText(ref)) : null;
+    if (bytesLabel) {
+      bytesLabel.setAttribute("data-fields", ref.fields[0].key);
+      wrap.appendChild(bytesLabel);
+    }
     wrap.appendChild(area);
     if (spec.hint) wrap.appendChild(note(spec.hint));
     return wrap;
@@ -274,40 +421,72 @@
     var title = slotByIndex(model, 0);
     if (title) p.appendChild(slotField(title));
     var g = grid();
+    var timeRef = F("body.timeLimit");
+    var ticks = timeRef && timeRef.fields[0].range;
     g.appendChild(UI.numberField("Time limit", {
-      id: "meta-time", value: Math.round((b.timeLimit || 0) / TICKS_PER_MINUTE), min: 1, unit: "minutes",
+      ref: timeRef, id: "meta-time", value: Math.round((b.timeLimit || 0) / TICKS_PER_MINUTE), unit: "minutes",
+      min: ticks ? Math.ceil(ticks.min / TICKS_PER_MINUTE) : 1, max: ticks ? Math.floor(ticks.max / TICKS_PER_MINUTE) : undefined,
       onChange: writes(function (v) { b.timeLimit = v * TICKS_PER_MINUTE; })
-    }));
-    g.appendChild(UI.numberField("Players", {
-      id: "meta-players", value: b.maxHunters, min: 1, max: 4,
-      onChange: writes(function (v) { b.maxHunters = v; })
-    }, "How many hunters can join, 1 to 4."));
-    g.appendChild(UI.numberField("Contract fee", {
+    }, "The quest files use 10 to 50 minutes; longer is untested."));
+    var hunters = hunterOptions();
+    if (hunters.length) {
+      g.appendChild(fieldFor(F("body.maxHunters"), "Players", UI.picker({
+        options: hunters, value: b.maxHunters, showIds: true,
+        unknownLabel: function (v) { return "Other (value " + v + ", the game reads " + (v & 7) + ")"; },
+        onChange: writes(function (v) { b.maxHunters = v; })
+      }), "How many hunters can join. The game reads only the low 3 bits, and 0 also means 4."));
+    } else {
+      g.appendChild(numberFor(F("body.maxHunters"), "Players", {
+        id: "meta-players", value: b.maxHunters, min: 1, max: 4,
+        onChange: writes(function (v) { b.maxHunters = v; })
+      }, "How many hunters can join, 1 to 4."));
+    }
+    g.appendChild(numberFor(F("body.zenny"), "Contract fee", {
       id: "meta-zenny", value: b.zenny, min: 0, unit: "zenny",
       onChange: writes(function (v) { b.zenny = v; })
     }, "Paid to accept the quest."));
-    g.appendChild(UI.numberField("Reward money", {
+    g.appendChild(numberFor(F("body.rewardMoney"), "Reward money", {
       id: "meta-money", value: b.rewardMoney, min: 0, unit: "zenny",
       onChange: writes(function (v) { b.rewardMoney = v; })
-    }, "Paid on a clear."));
-    g.appendChild(UI.field("Item needed to enter", UI.picker({
+    }, "Paid for the main target, on a clear."));
+    var countField = null;
+    g.appendChild(fieldFor(F("body.iconLabelId"), "Item needed to enter", UI.picker({
       options: itemOptions(), value: b.iconLabelId, kind: "item", showIds: true,
-      unknownLabel: itemName, onChange: writes(function (v) { b.iconLabelId = v; })
-    }), "The quest takes this item when you accept it. None for no item."));
-    g.appendChild(UI.numberField("How many it takes", {
+      unknownLabel: itemName, onChange: writes(function (v) {
+        b.iconLabelId = v;
+        // Item and count go together: both 0 or both set, as in every quest file.
+        var count = v ? (b.iconLabelCount || 1) : 0;
+        if (count !== b.iconLabelCount) {
+          b.iconLabelCount = count;
+          if (countField) countField.input.setValue(count);
+        }
+      })
+    }), "Required to accept the quest, and shown on the quest info page with the count. Whether the game takes"
+      + " it when the quest starts is not known. None for no item."));
+    countField = numberFor(F("body.iconLabelCount"), "How many are needed", {
       id: "meta-requirement-count", value: b.iconLabelCount, min: 0,
       onChange: writes(function (v) { b.iconLabelCount = v; })
-    }));
+    }, "0 with no item, at least 1 with one.");
+    g.appendChild(countField);
     p.appendChild(g);
 
     var more = el("details", "bui-more-settings");
     more.appendChild(el("summary", null, "More settings"));
     var g2 = grid();
-    g2.appendChild(UI.numberField("Quest class", {
-      id: "meta-class", value: b.questClass, min: 0, max: 255,
-      onChange: writes(function (v) { b.questClass = v; })
-    }, "The game's class number for the quest. What each number means is not mapped yet, so keep the"
-      + " blank quest's value unless you know the one you need."));
+    var classes = classOptions();
+    if (classes.length) {
+      g2.appendChild(fieldFor(F(["body.questClass", "header.questClass"]), "Quest class", UI.picker({
+        options: classes, value: b.questClass, showIds: true,
+        unknownLabel: function (v) { return "Unnamed class (value " + v + ")"; },
+        onChange: writes(function (v) { b.questClass = v; if (model.header) model.header.questClass = v; })
+      }), "Sets both copies: the game reads the header's. The names come from the quest lists each class"
+        + " appears in; the game's code names none."));
+    } else {
+      g2.appendChild(numberFor(F(["body.questClass", "header.questClass"]), "Quest class", {
+        id: "meta-class", value: b.questClass, min: 0, max: 255,
+        onChange: writes(function (v) { b.questClass = v; if (model.header) model.header.questClass = v; })
+      }, "The game's class number for the quest."));
+    }
     more.appendChild(g2);
     p.appendChild(more);
     return p;
@@ -324,16 +503,22 @@
     return list;
   }
 
-  /** The map changed: every area list follows it, and anything left outside the new map is said in words. */
+  /** True when the chosen map is not the one the blank's per-area tables belong to (see WARN_OTHER_MAPS). */
+  function untestedMap(model) {
+    return WARN_OTHER_MAPS && Number(model.body.mapId) !== BLANK_MAP;
+  }
+
+  /** The map changed (body.mapId and the map record are already set): every area list follows it, and
+      anything left outside the new map is said in words. */
   function setMap(model, mapId) {
-    var b = model.body;
-    b.mapId = mapId;
     var areas = areasForMap(mapId);
     var lines = [];
     var starts = model.startAreas || [];
     if (areas.length && starts.length && areas.indexOf(starts[0].areaId) === -1) {
       var before = starts[0].areaId;
       starts.forEach(function (a) { a.areaId = areas[0]; });
+      // The map record's area is the base camp, kept with the start area (builder item 3).
+      if (model.map) model.map.areaId = areas[0];
       lines.push("Start area moved to " + areaName(areas[0], mapId) + ": the old one (id " + before + ") is not part of "
         + mapName(mapId) + ".");
     }
@@ -353,31 +538,48 @@
     var p = UI.section("Map and start area", "where the hunt takes place");
     var g = grid();
     var known = Object.keys(mapIds).length > 0;
+    // The map record (header pointer 9) indexes the game's per-map area lists: it always follows body.mapId.
     if (known) {
-      g.appendChild(UI.field("Map", UI.picker({
+      g.appendChild(fieldFor(F(["body.mapId", "map.mapId"]), "Map", UI.picker({
         options: mapOptions(), value: b.mapId, showIds: true,
         unknownLabel: function (v) { return "Unlisted map (id " + v + ")"; },
-        onChange: function (v) { setMap(model, v); }
-      }), "Choosing a map changes the area lists below to that map's areas."));
+        onChange: function (v) { b.mapId = v; if (model.map) model.map.mapId = v; setMap(model, v); }
+      }), "Choosing a map changes the area lists below to that map's areas. Sets the body's map and the"
+        + " map record."));
     } else {
-      g.appendChild(UI.numberField("Map", {
-        id: "meta-map", value: b.mapId, min: 0, onChange: function (v) { setMap(model, v); }
+      g.appendChild(numberFor(F(["body.mapId", "map.mapId"]), "Map", {
+        id: "meta-map", value: b.mapId, min: 0,
+        onChange: function (v) { b.mapId = v; if (model.map) model.map.mapId = v; setMap(model, v); }
       }, "The map list could not be loaded, so the map is the game's map number."));
     }
     var starts = model.startAreas || [];
     if (starts.length) {
       var options = areaOptions(b.mapId);
+      var startRef = F(["startAreas[].areaId", "map.areaId"]);
       var start = UI.picker({
         options: options, value: starts[0].areaId, showIds: true,
         unknownLabel: function (v) { return areaLabel(v, b.mapId); },
-        onChange: writes(function (v) { starts.forEach(function (a) { a.areaId = v; }); start.setProblem(""); })
+        onChange: writes(function (v) {
+          starts.forEach(function (a) { a.areaId = v; });
+          if (model.map) model.map.areaId = v;
+          start.setProblem("");
+        })
       });
       if (!areaOnMap(starts[0].areaId, b.mapId)) start.setProblem("This area is not part of the chosen map.");
-      g.appendChild(UI.field("Start area", start, options.length
+      g.appendChild(fieldFor(startRef, "Start area", start, (options.length
         ? "Where the party arrives. Most quests start in the map's first area."
-        : "This map has no known area list, so every area id is allowed."));
+        : "This map has no known area list, so every area id is allowed.")
+        + " Sets all four start records and the map record's base camp."));
     }
     p.appendChild(g);
+    if (untestedMap(model)) {
+      var warn = note("Untested on this map. The quest keeps the per-area tables (trigger zones, area"
+        + " rectangles, gathering points) of the blank's map, " + mapName(BLANK_MAP) + " (map " + BLANK_MAP
+        + "), until the server builds them for the chosen map. On another map the game may read areas that do"
+        + " not exist: test it before you rely on it, or choose " + mapName(BLANK_MAP) + ".", "bui-notice bui-warn");
+      warn.setAttribute("role", "alert");
+      p.appendChild(warn);
+    }
     if (state.mapMessage) {
       var msg = note(state.mapMessage, "bui-notice");
       msg.setAttribute("role", "status");
@@ -392,28 +594,51 @@
     return (type & 2) && !(type & 1);
   }
 
+  /* The three objective records: the main target and sub-targets A and B, each with the body field that pays
+     its reward money (builder item 14). */
+  var OBJECTIVES = [
+    { key: "objective0", name: "Main target", money: "body.rewardMoney", paid: "Reward money, under Basics" },
+    { key: "objective1", name: "Sub-target A", money: "body.objective1Money", paid: "kept from the blank, not edited here" },
+    { key: "objective2", name: "Sub-target B", money: "body.objective2Money", paid: "kept from the blank, not edited here" }
+  ];
+
+  /** The first empty picture ends the list of five, so pictures fill from the left (builder item 13). */
+  function packIcons(icons) {
+    var kept = icons.filter(function (id) { return Number(id) > 0; });
+    var moved = false;
+    for (var i = 0; i < icons.length; i++) {
+      var next = i < kept.length ? kept[i] : 0;
+      if (icons[i] !== next) moved = true;
+      icons[i] = next;
+    }
+    return moved;
+  }
+
   function objectivesSection(model) {
     var b = model.body;
     var p = UI.section("Objectives", "what the hunters must do",
-      "The first objective is the main one. The other two are optional; leave them as Not used.");
-    ["objective0", "objective1", "objective2"].forEach(function (key, index) {
-      var objective = b[key];
+      "The main target clears the quest. Sub-targets A and B are optional; leave them as Not used.");
+    OBJECTIVES.forEach(function (spec, index) {
+      var objective = b[spec.key];
       if (!objective) return;
-      p.appendChild(UI.subhead(index === 0 ? "Main objective" : "Objective " + (index + 1)));
+      p.appendChild(UI.subhead(spec.name));
+      var money = refText(spec.money);
+      if (money) p.appendChild(note("Its reward money is " + money + " (" + spec.paid + ")."));
       var g = grid();
-      g.appendChild(UI.field("Type", UI.picker({
-        options: typeOptions(), value: objective.type,
+      g.appendChild(fieldFor(F("body.objective#.type", index), "Type", UI.picker({
+        options: typeOptions(), value: objective.type, showIds: true,
         unknownLabel: function (v) { return "Other (value " + v + ")"; },
         onChange: writes(function (v) { objective.type = v; redraw("objectives"); })
-      })));
+      }), UNTESTED_TYPES[objective.type] ? "Untested: no quest file uses this type, and what its target means is"
+        + " not known." : null));
       if (objective.type !== 0) {
         var item = isItemObjective(objective.type);
-        g.appendChild(UI.field(item ? "Item" : "Monster", UI.picker({
+        g.appendChild(fieldFor(F("body.objective#.target", index), item ? "Item" : "Monster", UI.picker({
           options: item ? itemOptions() : monsterOptions(), value: objective.target, kind: item ? "item" : "monster",
           showIds: true, unknownLabel: item ? itemName : monsterName,
           onChange: writes(function (v) { objective.target = v; })
         }), item ? "The item to deliver." : "The monster this objective counts."));
-        g.appendChild(UI.numberField("How many", {
+        g.appendChild(numberFor(F("body.objective#.count", index), "How many", {
           id: "obj-" + index + "-count", value: objective.count, min: 0,
           onChange: writes(function (v) { objective.count = v; })
         }));
@@ -425,12 +650,12 @@
     if (icons.length) {
       p.appendChild(UI.subhead("Monsters on the quest card"));
       p.appendChild(note("The monster pictures the quest card and the quest page show. Usually the first is the"
-        + " main target; None leaves a slot empty."));
+        + " main target. The first empty picture ends the list, so the pictures fill from the left."));
       var g = grid();
       icons.forEach(function (id, i) {
-        g.appendChild(UI.field("Picture " + (i + 1), UI.picker({
+        g.appendChild(fieldFor(F("body.iconMonsters[]", i), "Picture " + (i + 1), UI.picker({
           options: monsterOptions(), value: id, kind: "monster", showIds: true, unknownLabel: monsterName,
-          onChange: writes(function (v) { icons[i] = v; })
+          onChange: writes(function (v) { icons[i] = v; if (packIcons(icons)) redraw("objectives"); })
         })));
       });
       p.appendChild(g);
@@ -449,21 +674,24 @@
     var mapId = model.body.mapId;
     var options = areaOptions(mapId);
     var rows = spawns.map(function (spawn, index) {
+      var areaRef = F("largeSpawnAreas[].spawns[].areaId");
       var area = options.length ? UI.picker({
         options: options, value: spawn.areaId, compact: true, showIds: true, label: "Area of " + monsterName(spawn.monsterId),
         unknownLabel: function (v) { return areaLabel(v, mapId); },
         onChange: writes(function (v) { spawn.areaId = v; area.setProblem(""); })
-      }) : UI.numberInput({ value: spawn.areaId, min: 0, label: "Area id", onChange: writes(function (v) { spawn.areaId = v; }) });
+      }) : UI.numberInput(ranged(areaRef, {
+        value: spawn.areaId, min: 0, label: "Area id", onChange: writes(function (v) { spawn.areaId = v; })
+      }));
       if (options.length && !areaOnMap(spawn.areaId, mapId)) area.setProblem("This area is not part of the chosen map: pick another.");
       return [
-        { label: "Monster", node: UI.picker({
+        { label: "Monster", ref: F("largeSpawnAreas[].spawns[].monsterId"), node: UI.picker({
           options: monsterOptions(), value: spawn.monsterId, kind: "monster", compact: true, showIds: true,
           label: "Monster", unknownLabel: monsterName, onChange: writes(function (v) { spawn.monsterId = v; })
         }) },
-        { label: "How many", node: UI.numberInput({
-          value: spawn.count, min: 0, max: 127, label: "How many", onChange: writes(function (v) { spawn.count = v; })
-        }) },
-        { label: "Area", node: area },
+        { label: "How many", ref: F("largeSpawnAreas[].spawns[].count"), node: UI.numberInput(ranged(F("largeSpawnAreas[].spawns[].count"), {
+          value: spawn.count, min: 0, max: 99, label: "How many", onChange: writes(function (v) { spawn.count = v; })
+        })) },
+        { label: "Area", ref: areaRef, node: area },
         { cls: "bui-row-end", node: UI.button("Remove", function () {
           spawns.splice(index, 1);
           redraw("monsters");
@@ -482,8 +710,11 @@
     }
     var area = model.largeSpawnAreas[0];
     var areas = areasForMap(model.body.mapId);
-    // A new monster goes to the first area past the start (usually the camp), or the start when the map has one.
-    var where = areas.length ? (areas[1] !== undefined ? areas[1] : areas[0]) : (area.areaId || 1);
+    // A new monster goes to an area of the chosen map: the first area past the base camp, else the camp. The
+    // record's own areaId (1) is a record number, not an area (builder item 4), so it is never the fallback:
+    // a map without a known area list takes the start area.
+    var starts = model.startAreas || [];
+    var where = areas.length ? (areas[1] !== undefined ? areas[1] : areas[0]) : (starts.length ? starts[0].areaId : 0);
     // The main objective's monster when it has one, else the first monster by name.
     var goal = model.body.objective0;
     var first = monsterOptions()[1];
@@ -524,13 +755,13 @@
     items.forEach(function (entry, index) {
       if (!entry.itemId && !state.supplyShown[index]) return;
       rows.push([
-        { label: "Item", node: UI.picker({
+        { label: "Item", ref: F("startItems[].itemId"), node: UI.picker({
           options: itemOptions(), value: entry.itemId, kind: "item", compact: true, showIds: true, label: "Supply item",
           unknownLabel: itemName, onChange: writes(function (v) { entry.itemId = v; })
         }) },
-        { label: "How many", node: UI.numberInput({
-          value: entry.count, min: 0, label: "How many", onChange: writes(function (v) { entry.count = v; })
-        }) },
+        { label: "How many", ref: F("startItems[].count"), node: UI.numberInput(ranged(F("startItems[].count"), {
+          value: entry.count, min: 1, label: "How many", onChange: writes(function (v) { entry.count = v; })
+        })) },
         { cls: "bui-row-end", node: UI.button("Remove", function () {
           entry.itemId = 0;
           entry.count = 0;
@@ -560,6 +791,11 @@
     return wrap;
   }
 
+  /** The sum of a group's weights; the game reads them as percent, so it should be 100 (builder item 7). */
+  function weightSum(entries) {
+    return entries.reduce(function (n, e) { return n + (e.weight > 0 ? e.weight : 0); }, 0);
+  }
+
   function rewardGroupBlock(model, groups, group, groupIndex) {
     if (!group.entries) group.entries = [];
     var entries = group.entries;
@@ -573,28 +809,50 @@
     }, "remove", "Remove reward group " + (groupIndex + 1)));
     box.appendChild(head);
 
+    var conditions = conditionOptions();
+    if (conditions.length) {
+      var condition = UI.picker({
+        options: conditions, value: group.groupId, showIds: true, unknownLabel: conditionLabel,
+        onChange: writes(function (v) { group.groupId = v; condition.setProblem(""); })
+      });
+      if (group.groupId <= 10) condition.setProblem("The game never pays a group with this condition: pick one.");
+      box.appendChild(fieldFor(F("rewardGroups[].groupId"), "Paid when", condition,
+        "The condition is the group's id: the game pays the group only when it holds."));
+    } else {
+      box.appendChild(numberFor(F("rewardGroups[].groupId"), "Paid when (condition id)", {
+        value: group.groupId, min: 0, max: 65535,
+        onChange: writes(function (v) { group.groupId = v; })
+      }, "32769 pays on the main target, 32768 on every clear; 0 to 10 are never paid."));
+    }
+
     var shareCells = [];
+    var sumLine = note("", "bui-weight-sum");
     function shares() {
-      var total = entries.reduce(function (n, e) { return n + (e.weight > 0 ? e.weight : 0); }, 0);
+      var total = weightSum(entries);
       shareCells.forEach(function (cell, i) {
         var w = entries[i].weight > 0 ? entries[i].weight : 0;
         cell.textContent = total ? Math.round((w / total) * 1000) / 10 + "%" : "–";
       });
+      var off = entries.length > 0 && total !== 100;
+      sumLine.textContent = entries.length
+        ? "Weights add up to " + total + (off ? ". The game reads them as percent, so they should add up to 100." : ", as they should.")
+        : "";
+      sumLine.classList.toggle("bad", off);
     }
     var rows = entries.map(function (entry, entryIndex) {
       var share = el("span", "bui-share");
       shareCells.push(share);
       return [
-        { label: "Item", node: UI.picker({
+        { label: "Item", ref: F("rewardGroups[].entries[].itemId"), node: UI.picker({
           options: itemOptions(), value: entry.itemId, kind: "item", compact: true, showIds: true, label: "Reward item",
           unknownLabel: itemName, onChange: writes(function (v) { entry.itemId = v; })
         }) },
-        { label: "How many", node: UI.numberInput({
-          value: entry.count, min: 0, label: "How many", onChange: writes(function (v) { entry.count = v; })
-        }) },
-        { label: "Weight", node: UI.numberInput({
-          value: entry.weight, min: 0, label: "Weight", onChange: writes(function (v) { entry.weight = v; shares(); })
-        }) },
+        { label: "How many", ref: F("rewardGroups[].entries[].count"), node: UI.numberInput(ranged(F("rewardGroups[].entries[].count"), {
+          value: entry.count, min: 1, label: "How many", onChange: writes(function (v) { entry.count = v; })
+        })) },
+        { label: "Weight (%)", ref: F("rewardGroups[].entries[].weight"), node: UI.numberInput(ranged(F("rewardGroups[].entries[].weight"), {
+          value: entry.weight, min: 1, max: 100, label: "Weight", onChange: writes(function (v) { entry.weight = v; shares(); })
+        })) },
         { label: "Share", cls: "num", node: share },
         { cls: "bui-row-end", node: UI.button("Remove", function () {
           entries.splice(entryIndex, 1);
@@ -603,8 +861,9 @@
         }, "remove", "Remove " + itemName(entry.itemId)) }
       ];
     });
-    box.appendChild(UI.table(["Item", "How many", "Weight", { label: "Share", cls: "num" }, { label: "", cls: "bui-row-end" }],
+    box.appendChild(UI.table(["Item", "How many", "Weight (%)", { label: "Share", cls: "num" }, { label: "", cls: "bui-row-end" }],
       rows, "No rewards in this group yet."));
+    box.appendChild(sumLine);
     shares();
     var actions = el("div", "bui-actions");
     actions.appendChild(UI.button("Add a reward", function () {
@@ -623,15 +882,16 @@
     p.appendChild(supplyTable(model));
 
     p.appendChild(UI.subhead("Rewards"));
-    p.appendChild(note("Each group draws its rewards by weight: a higher weight makes an item more likely, and"
-      + " Share is that item's part of the group's total. A quest submitted for testing is served with its"
-      + " rewards emptied, so a test clear pays nothing."));
+    p.appendChild(note("Each group is paid when its condition holds, and draws its rewards by weight. The game"
+      + " reads the weights as percent, so a group's weights should add up to 100; Share is each item's part of"
+      + " the group's total. A quest submitted for testing is served with its rewards emptied, so a test clear"
+      + " pays nothing."));
     var groups = model.rewardGroups || [];
     groups.forEach(function (group, i) { p.appendChild(rewardGroupBlock(model, groups, group, i)); });
     var actions = el("div", "bui-actions");
     actions.appendChild(UI.button("Add a reward group", function () {
       if (!model.rewardGroups) model.rewardGroups = [];
-      model.rewardGroups.push({ groupId: model.rewardGroups.length, reserved: 0, entryOffset: 0, entries: [] });
+      model.rewardGroups.push({ groupId: nextCondition(model.rewardGroups), reserved: 0, entryOffset: 0, entries: [] });
       redraw("rewards");
       changed();
     }, "add"));
@@ -644,7 +904,8 @@
   function textSection(model) {
     var p = UI.section("Quest text", "what the quest card says",
       "Each text has a set room in bytes: a plain letter takes 1, a Japanese character 2. Longer text is not"
-      + " cut; it is stored at the end of the file. English and Japanese only.");
+      + " cut; it is stored at the end of the file. English and Japanese only. What the texts marked"
+      + " (unconfirmed) are was read from sample quest files, not from the game's code.");
     var g = grid();
     TEXT_ORDER.forEach(function (index) {
       var slot = slotByIndex(model, index);
@@ -665,17 +926,32 @@
     if (model.startAreas && model.startAreas.length && !areaOnMap(model.startAreas[0].areaId, b.mapId)) {
       list.push("The start area is not part of the chosen map (Map and start area).");
     }
-    ["objective0", "objective1", "objective2"].forEach(function (key, i) {
-      var o = b[key];
+    if (untestedMap(model)) {
+      list.push("The quest is untested on " + mapName(b.mapId) + ": its area tables are still those of "
+        + mapName(BLANK_MAP) + " (Map and start area).");
+    }
+    if (!b.iconLabelId !== !b.iconLabelCount) {
+      list.push(b.iconLabelId ? "The item needed to enter has a count of 0 (Basics)."
+        : "The item needed to enter is None but its count is not 0 (Basics).");
+    }
+    OBJECTIVES.forEach(function (spec) {
+      var o = b[spec.key];
       if (o && o.type !== 0 && !o.target) {
-        list.push((i === 0 ? "The main objective" : "Objective " + (i + 1)) + " has no "
-          + (isItemObjective(o.type) ? "item" : "monster") + " (Objectives).");
+        list.push(spec.name + " has no " + (isItemObjective(o.type) ? "item" : "monster") + " (Objectives).");
       }
+      if (o && UNTESTED_TYPES[o.type]) list.push(spec.name + " uses a type no quest file uses: untested (Objectives).");
     });
     var off = allSpawns(model).filter(function (s) { return !areaOnMap(s.areaId, b.mapId); }).length;
     if (off) list.push(off + (off === 1 ? " monster is" : " monsters are") + " in an area that is not part of the map (Monsters).");
     var none = 0;
-    (model.rewardGroups || []).forEach(function (g) { (g.entries || []).forEach(function (e) { if (!e.itemId) none += 1; }); });
+    (model.rewardGroups || []).forEach(function (g, i) {
+      (g.entries || []).forEach(function (e) { if (!e.itemId) none += 1; });
+      if (g.groupId <= 10) list.push("Reward group " + (i + 1) + " has a condition the game never pays (Rewards).");
+      var sum = weightSum(g.entries || []);
+      if ((g.entries || []).length && sum !== 100) {
+        list.push("Reward group " + (i + 1) + ": the weights add up to " + sum + ", not 100 (Rewards).");
+      }
+    });
     if (none) list.push(none + (none === 1 ? " reward has" : " rewards have") + " no item (Rewards).");
     return list;
   }
@@ -693,13 +969,15 @@
       return o && o.type !== 0;
     }).map(function (o) {
       var what = isItemObjective(o.type) ? itemName(o.target) : monsterName(o.target);
-      return (objectiveTypes[String(o.type)] || "Objective") + ": " + o.count + " × " + what;
+      var named = ((fieldRef["body.objective0.type"] || {}).values || objectiveTypes)[String(o.type)];
+      return (valueName(named) || "Objective") + ": " + o.count + " × " + what;
     });
     var facts = [
       ["Name", title && title.text ? title.text : "(none yet)"],
       ["Map", mapName(b.mapId)],
       ["Start area", model.startAreas && model.startAreas.length ? areaName(model.startAreas[0].areaId, b.mapId) : "–"],
-      ["Time and players", Math.round((b.timeLimit || 0) / TICKS_PER_MINUTE) + " minutes, up to " + b.maxHunters + " hunters"],
+      ["Time and players", Math.round((b.timeLimit || 0) / TICKS_PER_MINUTE) + " minutes, "
+        + ((b.maxHunters & 7) === 1 ? "solo" : "up to " + ((b.maxHunters & 7) || 4) + " hunters")],
       ["Money", "fee " + Number(b.zenny || 0).toLocaleString() + " zenny, reward " + Number(b.rewardMoney || 0).toLocaleString() + " zenny"],
       ["Objectives", goals.length ? goals.join("; ") : "none set"],
       ["Monsters", spawns.length ? spawns.map(function (s) { return s.count + " × " + monsterName(s.monsterId); }).join(", ") : "none yet"],
