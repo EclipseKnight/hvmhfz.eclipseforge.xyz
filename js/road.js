@@ -12,6 +12,7 @@
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
   var Rules = window.RoadRules;
+  var Summary = window.RoadSummary;
 
   var pool = null;          // GET /api/road/pool
   var cycle = null;         // GET /api/road/cycle (null: none)
@@ -277,6 +278,37 @@
       (solo ? " (open Road " + (changes - solo) + ", solo Road " + solo + ")" : "");
   }
 
+  // Every change the Road makes, in words, for all modes (js/road-summary.js).
+  function renderChanges() {
+    var box = $("road-changes");
+    clear(box);
+    var summary = Summary.summarize(pool.base, road, monsterName);
+    $("road-changes-note").textContent = summary.count ? summary.count + (summary.count === 1 ? " change" : " changes") : "same as the base";
+    if (!summary.count) {
+      box.appendChild(el("p", "note-text", readOnly ? "This Road makes no changes: it is the base Hunting Road." : "No changes yet. Edit the floors or tables below."));
+      return;
+    }
+    function list(lines) {
+      var ul = el("ul", "road-changes");
+      lines.forEach(function (line) { ul.appendChild(el("li", null, line)); });
+      return ul;
+    }
+    if (summary.road.length) box.appendChild(list(summary.road));
+    summary.modes.forEach(function (mode) {
+      var group = el("div", "road-changes-mode");
+      group.appendChild(el("h3", null, mode.title));
+      if (mode.floors.length) {
+        group.appendChild(el("h4", null, "Floors"));
+        group.appendChild(list(mode.floors));
+      }
+      if (mode.tables.length) {
+        group.appendChild(el("h4", null, "Tables"));
+        group.appendChild(list(mode.tables));
+      }
+      box.appendChild(group);
+    });
+  }
+
   // Called after every edit: re-check, then let every drawn row catch up.
   function refresh() {
     serverProblems = null;
@@ -285,6 +317,7 @@
     recompute();
     refreshers.forEach(function (fn) { fn(); });
     renderProblems();
+    renderChanges();
     renderNotes();
   }
 
@@ -297,13 +330,7 @@
 
   function tableCount(m) { return baseMode(m).tables.length; }
 
-  function floorLabel(m, index) {
-    var floors = baseMode(m).floors;
-    var from = floors[index].floor;
-    var next = floors[index + 1];
-    if (!next) return "Floor " + from + " and up";
-    return next.floor - 1 > from ? "Floors " + from + " to " + (next.floor - 1) : "Floor " + from;
-  }
+  function floorLabel(m, index) { return Summary.floorLabel(baseMode(m).floors, index); }
 
   // The two Road points multipliers of a floor record. Any number is kept in the edits, so a value over
   // the rotation's cap (policy maxPoints) shows up as a problem instead of being dropped silently.

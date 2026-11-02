@@ -20,7 +20,8 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
 | `/changelog.html` | Rolling player changelog: "Coming next" (finished, not live), then one dated entry per live update, newest first, then known issues. Linked from the footer. Update it at every live deploy (below). |
 | `/road-vote.html` | Hunting Road rotation: phase and dates, the entries, vote or take a vote back during the vote window, results after it closes. Signed in (shows a sign-in prompt otherwise). The nav's "Hunting Road" link. Needs the saved sign-in; API `/api/road/**`. |
-| `/road.html` | Hunting Road builder: per floor its table and two Road points multipliers (capped by the policy's `maxPoints`, default 4x), per table its entries (monster, second monster, weight, forced), add an entry, reset to the base. The monster lists offer all 176 monsters the game knows (ids and names as Erupe's `common/mhfmon`, kept in `js/road-rules.js`): first the ones the live Road uses, then those new to the Road. An "Also change the solo Road" box (off by default) shows the solo Road (mode 1) to edit when the policy allows mode 1; unticking it drops those changes. Checks the rules live with `js/road-rules.js`, asks `POST /api/road/check` before submitting (POST) or saving (PUT), and won't submit while the page itself lists a problem. `?entry=<id>` opens an entry (yours to edit during submissions, others read-only). Everything about the Road itself (base, tables, policy) comes from `GET /api/road/pool` at run time; no game data is in the repo. Signed in only, `noindex`. |
+| `/road.html` | Hunting Road builder: per floor its table and two Road points multipliers (capped by the policy's `maxPoints`, default 4x), per table its entries (monster, second monster, weight, forced), add an entry, reset to the base. The monster lists offer all 176 monsters the game knows (ids and names as Erupe's `common/mhfmon`, kept in `js/road-rules.js`): first the ones the live Road uses, then those new to the Road. An "Also change the solo Road" box (off by default) shows the solo Road (mode 1) to edit when the policy allows mode 1; unticking it drops those changes. Lists every change from the base in words ("Changes from the base", `js/road-summary.js`), for the Road being built and for an entry opened from the vote page. Checks the rules live with `js/road-rules.js`, asks `POST /api/road/check` before submitting (POST) or saving (PUT), and won't submit while the page itself lists a problem. `?entry=<id>` opens an entry (yours to edit during submissions, others read-only). Everything about the Road itself (base, tables, policy) comes from `GET /api/road/pool` at run time; the builder holds no game data itself. Signed in only, `noindex`. |
+| `/road-data.html` | Hunting Road data, public and static: every Road the server has run (number, name), per floor its Road points multipliers, monster table and monsters with their chance, open and solo Road. No script: `dev/make-road-data.py` writes the tables into the page from the decoded Road files (see that file); run it again when a new Road goes live. |
 | `/road-history.html` | Past Hunting Road winners (number, name, character, votes, live from and until), public, from `/api/public/road/history`. |
 | `/admin.html` | Admin panel: gifts (Erupe distributions) and the Hunting Road rotation (rotations with entries and votes, create, change dates, close now, approve, override the winner, hide/unhide/disqualify, pause). Lists every gift with its items, claims and end, creates a gift (for everyone or one character, with rank limits, a deadline and items picked from the catalog) and ends one. Admin accounts only: the API checks `ROLE_ADMIN` on every `/api/admin/**` request; the account page links here for admins. Not in the nav, `noindex`. |
 | `/report.html` | Bug report (`#bug`) and feature request (`#feature`) forms. No sign-in. Each report becomes a task on the Kanboard board. |
@@ -44,6 +45,7 @@ admin.html            admin panel: gifts (distributions) and the Hunting Road ro
 road.html             Hunting Road builder and entry viewer
 road-vote.html        Hunting Road rotation: entries, vote, results
 road-history.html     past Hunting Road winners (public)
+road-data.html        Hunting Road data per Road and floor (public, static, written by dev/make-road-data.py)
 changelog.html        player changelog (rolling, one entry per live update)
 css/styles.css        shared guild-hall theme (leather page, parchment panels, brass trim, gold buttons)
 assets/guide/*.webp   guide screenshots, WebP
@@ -58,6 +60,7 @@ js/turnstile.js       Cloudflare Turnstile widget, shared by main.js and report.
 js/report.js          report forms: send, success, error and Discord fallback
 js/admin.js           admin panel: gift list, new gift form, end a gift (/api/admin/distributions); Hunting Road rotations (/api/admin/road)
 js/road-rules.js      Hunting Road rules in the browser (port of the Go road package); also runs under node
+js/road-summary.js    Hunting Road: a Road's changes from the base, in words (builder and entry view); also runs under node
 js/road.js            Hunting Road builder
 js/road-vote.js       Hunting Road vote page
 js/road-history.js    Hunting Road past winners
@@ -74,6 +77,9 @@ dev/check-activity.js checks js/activity.js on the made-up boards in dev/activit
 dev/check-road-rules.js  checks js/road-rules.js against the Go golden outputs (needs the base Road as JSON, see the file)
 dev/check-road-monsters.js checks the any-of-176 monsters rule and where a new monster's fields come from, on a made-up Road
 dev/check-road-policy.js checks the policy rules the Go outputs don't cover (points cap, solo Road) on a made-up Road
+dev/check-road-summary.js  checks js/road-summary.js on a small made-up Road (node dev/check-road-summary.js)
+dev/make-road-data.py writes the Road tables into road-data.html from decoded Road files (rengoku-build decode)
+dev/check-road-data.py checks dev/make-road-data.py on two small made-up Roads (python3 dev/check-road-data.py)
 dev/check-site.py     checks that every page has the same nav, footer and skip link
 CNAME                 hvmhfz.eclipseforge.xyz
 ```

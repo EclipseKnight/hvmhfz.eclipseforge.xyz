@@ -54,9 +54,10 @@ CURRENT = {
     "quest.html": "/quests.html",
     # The quest editor edits one quest, so it sits under the same catalog link.
     "quest-editor.html": "/quests.html",
-    # The Road builder and the winners list sit under the Hunting Road link (the vote page).
+    # The Road builder, the winners list and the Road data sit under the Hunting Road link (the vote page).
     "road.html": "/road-vote.html",
     "road-history.html": "/road-vote.html",
+    "road-data.html": "/road-vote.html",
     "guide-frontier-basics.html": "/guide-frontier.html",
     "guide-frontier-equipment.html": "/guide-frontier.html",
     "guide-frontier-activities.html": "/guide-frontier.html",
