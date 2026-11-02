@@ -97,122 +97,39 @@
 
 <h2 id="next">Coming next (not live yet)</h2>
 <p>Finished and tested on our test setup, but not on the server yet. These move to <a href="#live">Released updates</a> when they go live.</p>
-
-<h3>Saving</h3>
-<ul>
-<li><b>A save the server can't load:</b> the game no longer waits forever. It shows "Failed to transfer data from server. Please relog." instead.</li>
-<li><b>Small save changes</b> are no longer silently lost.</li>
-<li><b>Plates:</b> saving your plate data and plate box after clearing a plate no longer fails and leaves them out of date.</li>
-<li><b>Older characters:</b> Hunter Navi saves (about 4,800 characters have the older, smaller format) and plate saves that grow no longer fail.</li>
-<li><b>A save the server fails to store:</b> the game now keeps your change and tries again at the next autosave, instead of thinking it was saved. This covers your partner, Hunter Navi, Felynes, plates, house decoration sets and Hunting Road progress.</li>
-<li><b>Hunter Navi:</b> a failed read can no longer overwrite your Hunter Navi with a blank one.</li>
-</ul>
-
-<h3>Hunter Festival</h3>
-<ul>
-<li><b>Prize lists:</b> never longer than the game can show, so the prize screens can't freeze, even if the trials and prizes are loaded twice again.</li>
-<li><b>Trials:</b> at most 255 are sent, all the game counts, so every trial you see earns souls.</li>
-<li><b>Signing up:</b> if a vice-leader signs the guild up before the leader, the whole guild no longer shows as guildless. Each guild has one registration.</li>
-<li><b>Voting:</b> after you vote, the vote row greys out as it should.</li>
-<li><b>Delivering souls:</b> when the server can't store your souls, the game keeps them for your next delivery. Before, the server could say they were stored when they weren't.</li>
-<li><b>The final reward</b> is given once per player.</li>
-</ul>
-
-<h3>Raviente (Great Slaying)</h3>
-<ul>
-<li><b>Player limits:</b> the event's player limit now holds, so extra players can't squeeze in past it.</li>
-<li><b>One player at a time</b> on the phase vote and on the support menu, as the game expects.</li>
-<li><b>Coming back after a reset:</b> a player whose save still points at an old Raviente is no longer dropped into the running one. That split the room into two groups that didn't see each other's damage or support. The game now starts that player fresh.</li>
-<li><b>Frozen event fixed:</b> one server error could freeze damage and support for everyone on that channel until a restart.</li>
-</ul>
-
-<h3>Diva Defense</h3>
-<ul>
-<li><b>Event screens</b> answer with empty lists and rankings instead of junk, or instead of waiting forever. This covers the bonus quests, the ranking rewards and the tactics log.</li>
-<li><b>Spending Diva Defense shop coins</b> no longer leaves the exchange screen stuck.</li>
-<li><b>One step of the tactics screens</b> no longer gets stuck.</li>
-</ul>
-<p>Diva Defense itself isn't built on our server yet. These fixes stop the screens from getting stuck and filling with junk.</p>
-
-<h3>Sky Corridor (Tower)</h3>
-<ul>
-<li><b>Resetting your tower skills</b> is now saved. Before, the reset was lost.</li>
-<li><b>When the database fails,</b> the game shows its failure message instead of pretending the change worked.</li>
-</ul>
-
-<h3>Rasta (lending your hunter to others)</h3>
-<ul>
-<li><b>Your Rasta ID:</b> saving can no longer change or take over another player's Rasta ID.</li>
-<li><b>Borrowing a Rasta:</b> contracts stay as they are. Borrowing another Rasta no longer silently replaces someone's current contract.</li>
-<li><b>The 3-borrower limit:</b> a borrower who sends the same contract again no longer counts twice toward it.</li>
-</ul>
-
-<h3>Guilds and alliances</h3>
-<ul>
-<li><b>Server-side permission checks:</b> guild, alliance, festival, gift and shop actions now check that you belong to that guild, hold the needed role, and can afford the action. Normal play is unchanged.</li>
-<li><b>Removed from a guild, then acting in it:</b> leaving, or changing the comment, motto, icon or "avoid leadership" setting, now shows the failure message instead of waiting forever. So do accepting, rejecting or kicking members.</li>
-<li><b>Guild graduation</b> (leaving a rookie or return guild that way) shows the failure message, because it isn't built on our server yet. Before, the game showed you out of the guild while the server kept you in.</li>
-<li><b>Deleted alliances:</b> an alliance whose main or sub guild was deleted no longer breaks guild screens.</li>
-<li><b>Failures shown honestly:</b> disbanding, resigning, applying, creating or disbanding alliances, guild adventures, mail, message board likes and guild points now show the game's failure message when the server couldn't do them. Before, they showed as done.</li>
-<li><b>Guild adventures:</b> they can only be collected after they return, and a failed list no longer lets a guild start a second adventure.</li>
-</ul>
-
-<h3>Gifts, gacha, shops and the cafe</h3>
-<ul>
-<li><b>Gifts (distributions):</b> each one can only be claimed as many times as it allows, and only by players who qualify. Gift RP is added together with the claim.</li>
-<li><b>Gacha without prizes:</b> a gacha whose prizes couldn't be read, or that has none, no longer takes your coins or Frontier Points. The screen closes and the game gives the cost back.</li>
-<li><b>Stored gacha prizes:</b> a server error while you collect them no longer deletes them.</li>
-<li><b>Cafe items</b> that cost more than your cafe points no longer leave your points negative.</li>
-<li><b>Daily cafe bonus:</b>
-<ul>
-<li>The game's check no longer uses up the day's bonus before you claim it, so the claim now gives you the bonus.</li>
-<li>It can't be given twice because of a server error.</li>
-<li>It isn't marked as taken when the points weren't added.</li>
-</ul>
-</li>
-<li><b>Equipment appearances</b> you unlock are no longer lost when the server can't read your list first.</li>
-</ul>
-
-<h3>Signing in, the world list and lobbies</h3>
-<ul>
-<li><b>255 friends or guildmates:</b> signing in with exactly 255 (over all your characters) no longer garbles the rest of the sign-in data.</li>
-<li><b>The world list</b> is no longer dropped by the game for some numbers of worlds and channels.</li>
-<li><b>Friends who disconnected:</b> a friend or guildmate left with an old sign-in session no longer shows as on no server.</li>
-<li><b>Errors while entering a world</b> no longer leave you on the loading screen forever.</li>
-<li><b>Player search:</b> joining a player you found now takes you to the land they're in.</li>
-<li><b>Lobby search</b> shows only the lobby you asked for, and no longer crashes on some lands.</li>
-</ul>
-
-<h3>Quests and parties</h3>
-<ul>
-<li><b>Caravan scores:</b> your caravan score now posts at the end of a quest. Before, it always failed and added 0.</li>
-<li><b>Seibattle score lists</b> show clean names, with no junk at the end.</li>
-<li><b>Party counts:</b> guests in a quest party get the same party counts as the host. Before, guests always got the default, so a quest value split by party size could differ from the host's.</li>
-<li><b>Tournament quests</b> no longer get stuck when you enter one.</li>
-<li><b>Reward songs:</b>
-<ul>
-<li>Using one no longer gets stuck. It has no effect yet.</li>
-<li>The end of a quest no longer gets stuck at the step that counts them.</li>
-</ul>
-</li>
-</ul>
-
-<h3>Houses</h3>
-<ul>
-<li><b>Bookshelf:</b> visitors to your house now see your bookshelf as you do, instead of entries made up from other parts of your save. Display only; your save was never affected.</li>
-</ul>
-
-<h3>Server stability</h3>
-<ul>
-<li><b>A rare crash that could disconnect everyone</b> at once is fixed.</li>
-<li><b>Errors without crashes:</b> dozens of server errors now get a clean failure message, or an empty list, instead of a crash or a screen that waits forever.</li>
-<li><b>Hunting Road:</b> Road data that failed to load can no longer be saved over your real progress.</li>
-</ul>
+<p>Nothing is waiting right now.</p>
 
 <h2 id="live">Released updates</h2>
 <!-- Rolling log: add one h3 per live deploy at the top of this section, newest first,
      titled with the date (and "Game server update" / "Discord bot" / ...). Move the
      entries that went live out of "Coming next". Steps: docs/how-to.md in the project home. -->
+
+<h3>2 Nov 2026: Game server update: fewer stuck screens, safer saves</h3>
+<p>The game server now has every fix that was listed under "Coming next", plus a few more. Most of them stop screens that used to wait forever, and make the game show its failure message when the server can't do something, instead of pretending it worked.</p>
+<ul>
+<li><b>Saving:</b> small save changes, plate saves and older characters' Hunter Navi saves are no longer lost or refused. A save the server can't store is sent again at the next autosave, and a save it can't load shows "Failed to transfer data from server. Please relog." instead of hanging.</li>
+<li><b>Hunter Festival:</b> prize and trial lists stay within what the game can show, a guild signed up by its vice-leader no longer shows as guildless, and voting, soul deliveries and the final reward (once per player) work as they should.</li>
+<li><b>Raviente (Great Slaying):</b> the player limits hold, the phase vote and support menu take one player at a time, a player coming back after a reset starts fresh instead of splitting the room, and one server error can no longer freeze the event on a channel.</li>
+<li><b>Diva Defense:</b> its screens answer with empty lists instead of junk or a stuck screen. The event itself isn't built on our server yet.</li>
+<li><b>Sky Corridor (Tower):</b> resetting your tower skills is saved.</li>
+<li><b>Rasta:</b> saving can no longer change another player's Rasta ID, and borrowing a Rasta no longer replaces someone's contract or counts a borrower twice.</li>
+<li><b>Guilds and alliances:</b> guild actions check that you belong to the guild and hold the right role (normal play is unchanged). Actions in a guild that removed you, guild graduation and actions the server couldn't do show the failure message instead of looking done, and deleted alliances no longer break guild screens. Also fixed: guild search pages, guild emblems, disbanding a guild with open applications, recruiters accepting and rejecting applicants, member order, the scout list, older guild item boxes, message boards and the beat-class ranking rewards.</li>
+<li><b>Guild treasure hunts:</b> leaving a hunt works again, every cat shows its name, and a hunt the server couldn't store shows the failure message and keeps your RP.</li>
+<li><b>Gifts, gacha, shops and the cafe:</b> each gift can only be claimed as often as it allows, a gacha with no prizes gives the cost back, cafe points can't go negative, and the daily cafe bonus is given once and in full. Also fixed:
+<ul>
+<li>Collecting gacha prizes no longer loses the ones that didn't fit: they stay in your prize box for next time.</li>
+<li>Zenny prizes no longer pile up in your prize box and hide your other prizes (the game already gives you the zenny when you play).</li>
+<li>Box gachas give each prize once until you reset the box, as the game counts it.</li>
+<li>Step-up gacha results show the guaranteed prizes where the game marks them.</li>
+<li>Selling items for Frontier Points pays what the game shows.</li>
+</ul>
+</li>
+<li><b>Mail and houses:</b> the mail list shows full subjects and up to 40 mails. Changing part of your house interior keeps the rest. Visitors see your bookshelf as you do, and your titles and house details instead of their own.</li>
+<li><b>Signing in, worlds and lobbies:</b> signing in with 255 friends or guildmates, the world list, friends left with an old session, errors while entering a world, joining a player you found, and lobby search all work again.</li>
+<li><b>Quests and parties:</b> caravan scores post at the end of a quest, Seibattle score lists show clean names, party guests get the host's party counts, and tournament quests and reward songs no longer get stuck.</li>
+<li><b>Hunting Road:</b> the in-game Road ranking opens for hunters without a guild and finds your own entry, and Road data that failed to load can no longer be saved over your progress.</li>
+<li><b>Stability:</b> a rare crash that could disconnect everyone at once is fixed, and dozens of server errors now get a clean failure message or an empty list.</li>
+</ul>
 
 <h3>2 Nov 2026: Hunting Road data and change summaries</h3>
 <ul>
