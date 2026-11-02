@@ -1,23 +1,34 @@
 /* Quest builder: a new quest as a QuestCodec model, edited as a private draft. The server writes the
-   bytes. Nothing here opens a live quest file; every draft starts from the blank quest the API owns. */
+   bytes. Nothing here opens a live quest file; every draft starts from the blank quest the API owns.
+
+   The page is laid out in the order a quest is built: basics, map and start area, objectives, monsters and
+   their areas, rewards and supplies, text, then review and submit. Every control writes one field of the
+   model the server sent, and nothing else; the controls themselves come from js/builder-ui.js, shared with
+   the Road builder. */
 (function () {
   "use strict";
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
+  var UI = window.BuilderUI;
+  var el = UI.el;
+  var note = UI.note;
 
-  /* Slot order in the file: 0 title, 1 objective, 2 and 3 sub-quests, 4 main objective line,
-     5 fail condition, 6 client, 7 description. */
-  var SLOTS = [
-    { name: "Title", hint: "slot 0 · the name the quest counter shows", wide: true },
-    { name: "Objective", hint: "slot 1 · what the quest asks for", wide: true },
-    { name: "Sub-quest A", hint: "slot 2" },
-    { name: "Sub-quest B", hint: "slot 3" },
-    { name: "Main objective", hint: "slot 4 · the line the quest card leads with", wide: true },
-    { name: "Fail condition", hint: "slot 5" },
-    { name: "Client", hint: "slot 6 · who posted it", wide: true },
-    { name: "Description", hint: "slot 7 · the text on the quest card", wide: true }
-  ];
+  /* The eight text slots by their index in the file, with plain labels. Title is edited under Basics. */
+  var SLOTS = {
+    0: { name: "Quest name", hint: "The name the quest board shows.", rows: 1, wide: true },
+    1: { name: "Objective", hint: "What the quest asks for, as the quest list shows it.", rows: 2, wide: true },
+    2: { name: "Sub-objective A", hint: "Text of the first sub-objective. Leave it empty if there is none.", rows: 2 },
+    3: { name: "Sub-objective B", hint: "Text of the second sub-objective. Leave it empty if there is none.", rows: 2 },
+    4: { name: "Main objective", hint: "The line the quest card leads with.", rows: 2, wide: true },
+    5: { name: "Fail condition", hint: "When the quest fails, for example \"Time runs out\".", rows: 2 },
+    6: { name: "Client", hint: "Who posted the quest.", rows: 1 },
+    7: { name: "Description", hint: "The text on the quest card.", rows: 4, wide: true }
+  };
+  var TEXT_ORDER = [1, 4, 7, 6, 5, 2, 3];
+
+  /* body +0x20 counts 30 ticks a second, so a minute is 1 800 of them. */
+  var TICKS_PER_MINUTE = 1800;
 
   var params = new URLSearchParams(window.location.search);
   /* The old address for a copy of a live quest. It is kept only so the page can show the server's refusal
@@ -26,6 +37,8 @@
   var draftParam = parseInt(params.get("draft"), 10);
 
   var root = document.getElementById("editor-root");
+  var reviewBox = document.getElementById("editor-review");
+  var reviewPanel = document.getElementById("editor-review-panel");
   var titleEl = document.getElementById("editor-title");
   var subEl = document.getElementById("editor-sub");
   var statusEl = document.getElementById("editor-status");
@@ -36,7 +49,7 @@
   var submitBtn = document.getElementById("editor-submit");
   var buttons = [saveBtn, downloadBtn, submitBtn];
 
-  var state = { model: null, draftId: null, revision: 0, busy: false };
+  var state = { model: null, draftId: null, revision: 0, busy: false, mapMessage: "", supplyShown: {} };
 
   // ---- server calls --------------------------------------------------------------------------
 
@@ -67,774 +80,674 @@
     });
   }
 
-  // ---- small DOM helpers ---------------------------------------------------------------------
+  // ---- lookup tables -------------------------------------------------------------------------
 
-  function el(tag, cls, text) {
-    var node = document.createElement(tag);
-    if (cls) node.className = cls;
-    if (text !== undefined && text !== null) node.textContent = text;
-    return node;
-  }
-
-  function note(text) {
-    return el("p", "note-text", text);
-  }
-
-  function panel(title, panelNote) {
-    var section = el("section", "panel");
-    var head = el("div", "panel-head");
-    head.appendChild(el("h2", null, title));
-    if (panelNote) head.appendChild(el("span", "panel-note", panelNote));
-    section.appendChild(head);
-    return section;
-  }
-
-  function numberField(id, labelText, value, hint, onChange) {
-    var wrap = el("div", "field");
-    var label = el("label", null, labelText);
-    label.htmlFor = id;
-    var input = el("input");
-    input.id = id;
-    input.type = "number";
-    input.min = "0";
-    input.value = String(value === undefined || value === null ? 0 : value);
-    input.addEventListener("input", function () {
-      var next = parseInt(input.value, 10);
-      if (!isNaN(next)) onChange(next);
-    });
-    wrap.appendChild(label);
-    wrap.appendChild(input);
-    if (hint) wrap.appendChild(note(hint));
-    return wrap;
-  }
-
-  function actionButton(label, onClick) {
-    var button = el("button", "ghost-btn small", label);
-    button.type = "button";
-    button.addEventListener("click", onClick);
-    return button;
-  }
-
-  // ---- id lookups ---------------------------------------------------------------------------
-
-  var monsterIds = null;
-
-  function loadMonsterIds() {
-    if (monsterIds) return Promise.resolve(monsterIds);
-    return fetch("/data/monster-ids.json")
-      .then(function (res) { return res.ok ? res.json() : {}; })
-      .then(function (map) { monsterIds = map || {}; return monsterIds; })
-      .catch(function () { monsterIds = {}; return monsterIds; });
-  }
-
-  function monsterOptions(current) {
-    var options = [{ value: 0, label: "None (0)" }];
-    Object.keys(monsterIds || {}).map(Number).sort(function (a, b) {
-      return String(monsterIds[a]).localeCompare(String(monsterIds[b]));
-    }).forEach(function (id) {
-      options.push({ value: id, label: monsterIds[id] + " (" + id + ")" });
-    });
-    if (current && !(current in (monsterIds || {}))) {
-      options.push({ value: current, label: "Unlisted monster (" + current + ")" });
-    }
-    return options;
-  }
-
-  function areaOptions(current, count, mapId) {
-    var known = areasForMap(mapId);
-    if (!known.length) {
-      var top = Math.max(count || 0, current || 0, 10);
-      var simple = [];
-      for (var i = 1; i <= top; i += 1) simple.push({ value: i, label: "Area " + i });
-      return simple;
-    }
-    if (current && known.indexOf(current) === -1) known.push(current);
-    return known.sort(function (a, b) { return a - b; }).map(function (id) {
-      return { value: id, label: areaLabel(id) };
-    });
-  }
-
-
-  var mapIds = null;
-  var mapAreas = null;
-  var areaIds = null;
-  var itemIds = null;
-  var objectiveTypes = null;
-  var monsterIcons = null;
-  var itemIcons = null;
+  var mapIds = {};
+  var mapAreas = {};
+  var areaIds = {};
+  var itemIds = {};
+  var objectiveTypes = {};
+  var monsterIds = {};
 
   function loadTables() {
-    function grab(url, fallback) {
-      return fetch(url).then(function (r) { return r.ok ? r.json() : fallback; }).catch(function () { return fallback; });
+    function grab(url) {
+      return fetch(url).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
     }
     return Promise.all([
-      mapIds ? Promise.resolve(mapIds) : grab("/data/map-ids.json", {}),
-      mapAreas ? Promise.resolve(mapAreas) : grab("/data/map-areas.json", {}),
-      areaIds ? Promise.resolve(areaIds) : grab("/data/area-ids.json", {}),
-      itemIds ? Promise.resolve(itemIds) : grab("/data/item-ids.json", {}),
-      objectiveTypes ? Promise.resolve(objectiveTypes) : grab("/data/objective-types.json", {}),
-      monsterIds ? Promise.resolve(monsterIds) : grab("/data/monster-ids.json", {}),
-      monsterIcons ? Promise.resolve(monsterIcons) : grab("/data/monster-icons.json", {}),
-      itemIcons ? Promise.resolve(itemIcons) : grab("/data/item-icons.json", {})
+      grab("/data/map-ids.json"), grab("/data/map-areas.json"), grab("/data/area-ids.json"),
+      grab("/data/item-ids.json"), grab("/data/objective-types.json"), grab("/data/monster-ids.json"),
+      UI.loadIcons(["monsters", "items"])
     ]).then(function (r) {
-      mapIds = mapIds || r[0]; mapAreas = mapAreas || r[1]; areaIds = areaIds || r[2]; itemIds = itemIds || r[3];
-      objectiveTypes = objectiveTypes || r[4];
-      monsterIds = monsterIds || r[5];
-      monsterIcons = monsterIcons || r[6];
-      itemIcons = itemIcons || r[7];
-      return true;
+      mapIds = r[0] || {}; mapAreas = r[1] || {}; areaIds = r[2] || {}; itemIds = r[3] || {};
+      objectiveTypes = r[4] || {}; monsterIds = r[5] || {};
     });
   }
 
-  function areaLabel(id) {
-    var name = areaIds && areaIds[String(id)];
-    return name || ("Area " + id);
+  function byLabel(a, b) {
+    return a.label.localeCompare(b.label, undefined, { numeric: true }) || a.value - b.value;
+  }
+
+  var monsterList = null;
+  /** None, then every monster the game knows by name (ids 1 to 176), by name. */
+  function monsterOptions() {
+    if (monsterList) return monsterList;
+    var list = Object.keys(monsterIds).map(Number).filter(function (id) {
+      return id > 0 && id <= 176 && /[A-Za-z]/.test(monsterIds[id]);
+    }).map(function (id) { return { value: id, label: monsterIds[id] }; }).sort(byLabel);
+    monsterList = [{ value: 0, label: "None" }].concat(list);
+    return monsterList;
+  }
+
+  var itemList = null;
+  /** None, then all items by name. */
+  function itemOptions() {
+    if (itemList) return itemList;
+    var list = Object.keys(itemIds).map(Number).filter(function (id) { return id > 0; })
+      .map(function (id) { return { value: id, label: itemIds[id] }; }).sort(byLabel);
+    itemList = [{ value: 0, label: "None" }].concat(list);
+    return itemList;
+  }
+
+  function itemName(id) {
+    return Number(id) ? (itemIds[String(id)] || "Unlisted item (id " + id + ")") : "None";
+  }
+
+  function monsterName(id) {
+    return Number(id) ? (monsterIds[String(id)] || "Unlisted monster (id " + id + ")") : "None";
   }
 
   function areasForMap(mapId) {
-    var list = (mapAreas && mapAreas[String(mapId)]) || [];
-    return list.slice();
+    return (mapAreas[String(mapId)] || []).slice();
   }
 
-  function itemLabel(id) {
-    var name = itemIds && itemIds[String(id)];
-    return name || ("Item " + id);
+  /** "Day" or "Night" from the name of the map's first area, when its name says. */
+  function timeOfDay(mapId) {
+    var first = areasForMap(mapId)[0];
+    var name = first !== undefined ? areaIds[String(first)] || "" : "";
+    var m = name.match(/\b(Day|Night)$/);
+    return m ? m[1].toLowerCase() : "";
   }
 
-  function loadMapIds() {
-    if (mapIds) return Promise.resolve(mapIds);
-    return fetch("/data/map-ids.json")
-      .then(function (res) { return res.ok ? res.json() : {}; })
-      .then(function (map) { mapIds = map || {}; return mapIds; })
-      .catch(function () { mapIds = {}; return mapIds; });
+  function mapName(mapId) {
+    var entry = mapIds[String(mapId)];
+    var name = entry && entry.name && entry.name !== "None" ? entry.name : "Unnamed map";
+    var time = timeOfDay(mapId);
+    return time ? name + ", " + time : name;
   }
 
-  function mapOptions(current) {
-    var options = [];
-    Object.keys(mapIds || {}).map(Number).sort(function (a, b) { return a - b; }).forEach(function (id) {
+  var mapList = null;
+  function mapOptions() {
+    if (mapList) return mapList;
+    mapList = Object.keys(mapIds).map(Number).map(function (id) {
       var entry = mapIds[id] || {};
-      options.push({ value: id, label: (entry.name || ("Map " + id)) + " (" + id + ")" });
-    });
-    if (current && !(String(current) in (mapIds || {}))) {
-      options.unshift({ value: current, label: "Map " + current });
-    }
-    return options;
+      var count = areasForMap(id).length;
+      var hint = count ? count + (count === 1 ? " area" : " areas") : "";
+      if (entry.share !== undefined && entry.share !== null && entry.share < 0.5) hint += (hint ? ", " : "") + "name is a best guess";
+      return { value: id, label: mapName(id), hint: hint };
+    }).sort(byLabel);
+    return mapList;
   }
 
-  function selectField(id, labelText, value, hint, options, onChange) {
-    var wrap = el("div", "field");
-    var label = el("label", null, labelText);
-    label.htmlFor = id;
-    var select = el("select");
-    select.id = id;
-    options.forEach(function (opt) {
-      var option = el("option", null, opt.label);
-      option.value = String(opt.value);
-      if (Number(opt.value) === Number(value)) option.selected = true;
-      select.appendChild(option);
-    });
-    select.addEventListener("change", function () { onChange(parseInt(select.value, 10)); });
-    wrap.appendChild(label);
-    wrap.appendChild(select);
-    if (hint) wrap.appendChild(note(hint));
-    return wrap;
+  /** An area's name without the map's own name in front ("Area 3, day"). */
+  function areaName(areaId, mapId) {
+    var name = areaIds[String(areaId)];
+    if (!name || /^Loading/.test(name)) return "Unnamed area";
+    var entry = mapIds[String(mapId)];
+    var prefix = entry && entry.name ? entry.name + " - " : null;
+    if (prefix && name.indexOf(prefix) === 0) name = name.slice(prefix.length);
+    return name.split(" - ").join(", ");
   }
 
-
-
-
-  function cellPicker(value, options, onChange, iconFn) {
-    var cell = el("td", "monster-cell");
-    cell.appendChild(makePicker(value, options, onChange, iconFn, true));
-    return cell;
+  /** The areas of one map, its first area (where quests start) first, then by name. */
+  function areaOptions(mapId) {
+    var areas = areasForMap(mapId);
+    if (!areas.length) return [];
+    var first = { value: areas[0], label: areaName(areas[0], mapId), hint: "first area of the map" };
+    var rest = areas.slice(1).map(function (id) { return { value: id, label: areaName(id, mapId) }; }).sort(byLabel);
+    return [first].concat(rest);
   }
 
-  function monsterCell(spawn) {
-    var cell = el("td", "monster-cell");
-    var img = iconImg(monsterIcon(spawn.monsterId), "monster icon");
-    var select = el("select", "cell-input");
-    monsterOptions(spawn.monsterId).forEach(function (opt) {
-      var option = el("option", null, opt.label);
-      option.value = String(opt.value);
-      if (Number(opt.value) === Number(spawn.monsterId)) option.selected = true;
-      select.appendChild(option);
-    });
-    select.addEventListener("change", function () {
-      spawn.monsterId = parseInt(select.value, 10);
-      var next = monsterIcon(spawn.monsterId);
-      if (next) { img.src = next; img.className = "pick-icon"; } else { img.removeAttribute("src"); img.className = "pick-icon is-empty"; }
-    });
-    cell.appendChild(img);
-    cell.appendChild(select);
-    return cell;
+  function areaOnMap(areaId, mapId) {
+    var areas = areasForMap(mapId);
+    return !areas.length || areas.indexOf(Number(areaId)) !== -1;
   }
 
-  function cellCombo(value, options, onChange, display) {
-    var cell = el("td", "item-cell");
-    var listId = "items-" + Math.random().toString(36).slice(2, 8);
-    var input = el("input", "cell-input");
-    input.setAttribute("list", listId);
-    input.value = display ? display(value) : String(value);
-    var list = el("datalist");
-    list.id = listId;
-    options.forEach(function (opt) { var o = el("option"); o.value = opt.label; list.appendChild(o); });
-    function commitCell() {
-      var raw = input.value.trim();
-      var m = raw.match(/\((\d+)\)\s*$/);
-      var next = m ? parseInt(m[1], 10) : parseInt(raw, 10);
-      if (!isNaN(next)) { onChange(next); input.value = display ? display(next) : String(next); }
-    }
-    input.addEventListener("change", commitCell);
-    input.addEventListener("blur", commitCell);
-    cell.appendChild(input);
-    cell.appendChild(list);
-    return cell;
+  function areaLabel(areaId, mapId) {
+    return areaName(areaId, mapId) + " (id " + areaId + ")";
   }
 
-  function itemCell(value, onChange) {
-    var cell = el("td", "item-cell");
-    var input = el("input", "cell-input");
-    input.type = "number";
-    input.min = "0";
-    input.value = String(value === undefined || value === null ? 0 : value);
-    var label = el("span", "cell-name", itemLabel(value));
-    input.addEventListener("input", function () {
-      var next = parseInt(input.value, 10);
-      if (!isNaN(next)) { onChange(next); label.textContent = itemLabel(next); }
-    });
-    cell.appendChild(input);
-    cell.appendChild(label);
-    return cell;
+  function typeOptions() {
+    return Object.keys(objectiveTypes).map(Number).sort(function (a, b) { return a - b; })
+      .map(function (id) { return { value: id, label: id === 0 ? "Not used" : objectiveTypes[id] }; });
   }
 
-  function cellSelect(value, options, onChange) {
-    var cell = el("td");
-    var select = el("select", "cell-input");
-    options.forEach(function (opt) {
-      var option = el("option", null, opt.label);
-      option.value = String(opt.value);
-      if (Number(opt.value) === Number(value)) option.selected = true;
-      select.appendChild(option);
-    });
-    select.addEventListener("change", function () { onChange(parseInt(select.value, 10)); });
-    cell.appendChild(select);
-    return cell;
+  // ---- the review panel follows every change --------------------------------------------------
+
+  var reviewTimer = null;
+  function changed() {
+    clearTimeout(reviewTimer);
+    reviewTimer = setTimeout(renderReview, 120);
   }
 
-  function cellInput(value, onChange) {
-    var cell = el("td");
-    var input = el("input", "cell-input");
-    input.type = "number";
-    input.min = "0";
-    input.value = String(value === undefined || value === null ? 0 : value);
-    input.addEventListener("input", function () {
-      var next = parseInt(input.value, 10);
-      if (!isNaN(next)) onChange(next);
-    });
-    cell.appendChild(input);
-    return cell;
+  /** Wraps a model write so the review panel follows it. */
+  function writes(fn) {
+    return function (v) { fn(v); changed(); };
   }
 
-  function cellAction(label, onClick) {
-    var cell = el("td");
-    cell.appendChild(actionButton(label, onClick));
-    return cell;
-  }
+  // ---- shared bits ---------------------------------------------------------------------------
 
-  function table(headers, rows) {
-    var wrap = el("div", "table-wrap");
-    var t = el("table", "data-table");
-    // An editable table must not be re-ordered by the site's table sorter: a sorted row would sit next to
-    // the wrong label while its inputs stayed bound to the record they were built from.
-    t.setAttribute("data-nosort", "");
-    var head = el("thead");
-    var row = el("tr");
-    headers.forEach(function (name) { row.appendChild(el("th", "num", name)); });
-    head.appendChild(row);
-    t.appendChild(head);
-    var tb = el("tbody");
-    if (!rows.length) {
-      var empty = el("tr");
-      var td = el("td", "empty-cell", "Nothing in this table yet.");
-      td.colSpan = headers.length;
-      empty.appendChild(td);
-      tb.appendChild(empty);
-    } else {
-      rows.forEach(function (cells) {
-        var tr = el("tr");
-        cells.forEach(function (cell) { tr.appendChild(cell); });
-        tb.appendChild(tr);
-      });
-    }
-    t.appendChild(tb);
-    wrap.appendChild(t);
-    return wrap;
-  }
-
-  /** Shift-JIS bytes: one for ASCII, two for everything else a quest string can hold. */
   function shiftJisBytes(text) {
     var total = 0;
-    for (var i = 0; i < text.length; i++) {
-      total += text.charCodeAt(i) < 0x80 ? 1 : 2;
-    }
+    for (var i = 0; i < text.length; i++) total += text.charCodeAt(i) < 0x80 ? 1 : 2;
     return total;
   }
 
-  // ---- panels --------------------------------------------------------------------------------
-
-  function slotField(slot, spec) {
-    var wrap = el("div", "field");
+  function slotField(slot) {
+    var spec = SLOTS[slot.index] || { name: "Text " + (slot.index + 1), hint: "", rows: 2 };
+    var wrap = el("div", "field" + (spec.wide ? " bui-wide" : ""));
     var lab = el("div", "slot-lab");
     var label = el("label", null, spec.name);
     label.htmlFor = "slot-" + slot.index;
     var count = el("span", "slot-count");
-    count.id = "count-" + slot.index;
     lab.appendChild(label);
     lab.appendChild(count);
 
-    var area = el("textarea");
+    var area = el(spec.rows === 1 ? "input" : "textarea");
     area.id = "slot-" + slot.index;
-    area.setAttribute("rows", spec.wide ? "3" : "2");
+    if (spec.rows === 1) area.type = "text"; else area.setAttribute("rows", String(spec.rows));
     area.value = slot.text || "";
 
     function refresh() {
       var bytes = shiftJisBytes(area.value);
       var over = bytes + 1 > slot.capacity;
-      count.textContent = bytes + " / " + slot.capacity + " bytes" + (over ? " · appended to the file" : "");
+      count.textContent = over
+        ? bytes + " bytes, more than the " + slot.capacity + " this text has room for: it is stored at the end of the file"
+        : bytes + " of " + slot.capacity + " bytes";
       count.classList.toggle("bad", over);
     }
 
     area.addEventListener("input", function () {
       slot.text = area.value;
       refresh();
+      changed();
     });
     refresh();
-
     wrap.appendChild(lab);
     wrap.appendChild(area);
     if (spec.hint) wrap.appendChild(note(spec.hint));
     return wrap;
   }
 
-  function textPanel(model) {
-    var p = panel("Text", "eight slots · room in bytes");
-    p.appendChild(note("A slot has the room the file gives it. Text that does not fit is appended to the"
-      + " end of the file and the slot repointed, so nothing is cut; the client's quest buffer is the"
-      + " only ceiling. Japanese and plain ASCII only."));
-    var grid = null;
-    model.texts.forEach(function (slot, i) {
-      var spec = SLOTS[i] || { name: "Slot " + i, hint: "" };
-      var holder = p;
-      if (!spec.wide) {
-        if (!grid) {
-          grid = el("div", "editor-grid");
-          p.appendChild(grid);
-        }
-        holder = grid;
-      } else {
-        grid = null;
-      }
-      holder.appendChild(slotField(slot, spec));
-    });
-    return p;
+  function slotByIndex(model, index) {
+    return (model.texts || []).filter(function (s) { return s.index === index; })[0];
   }
 
-  /* body +0x20 counts 30 ticks a second, so a minute is 1 800 of them (verified against the site's
-     own minutes for every quest checked). */
-  var TICKS_PER_MINUTE = 1800;
+  function grid() {
+    return el("div", "editor-grid");
+  }
 
-  function metadataPanel(model) {
-    var p = panel("Map and rules", "environment, limits and payout");
+  // ---- 1. basics -----------------------------------------------------------------------------
+
+  function basicsSection(model) {
     var b = model.body;
-    var grid = el("div", "editor-grid");
-    grid.appendChild(numberField("meta-time", "Time limit (minutes)",
-      Math.round((b.timeLimit || 0) / TICKS_PER_MINUTE), "body +0x20 · 1 800 ticks a minute",
-      function (v) { b.timeLimit = v * TICKS_PER_MINUTE; }));
-    grid.appendChild(numberField("meta-zenny", "Zenny", b.zenny, "body +0x0c · contract fee",
-      function (v) { b.zenny = v; }));
-    grid.appendChild(numberField("meta-money", "Reward money", b.rewardMoney, "body +0x10",
-      function (v) { b.rewardMoney = v; }));
-    grid.appendChild(numberField("meta-players", "Max players", b.maxHunters, "body +0x0b",
-      function (v) { b.maxHunters = v; }));
-    grid.appendChild(numberField("meta-class", "Quest class", b.questClass, "body +0x0a",
-      function (v) { b.questClass = v; }));
-    if (mapIds && Object.keys(mapIds).length) {
-      grid.appendChild(selectField("meta-map", "Map (environment)", b.mapId,
-        "body +0x24 · named from the quest text that mentions each region",
-        mapOptions(b.mapId), function (v) { b.mapId = v; }));
-    } else {
-      grid.appendChild(numberField("meta-map", "Map (environment)", b.mapId, "body +0x24",
-        function (v) { b.mapId = v; }));
-    }
-    if (model.startAreas && model.startAreas.length) {
-      grid.appendChild(selectField("meta-start-area", "Start area", model.startAreas[0].areaId,
-        "header +0x04 · where the party lands",
-        areaOptions(model.startAreas[0].areaId, 10, b.mapId),
-        function (v) { model.startAreas.forEach(function (a) { a.areaId = v; }); }));
-    }
-    var qwrap = el("div", "field");
-    qwrap.appendChild(el("label", null, "Requirement item (0 = none)"));
-    qwrap.appendChild(makePicker(b.iconLabelId, itemOptions(), function (v) { b.iconLabelId = v; }, itemIcon, false));
-    qwrap.appendChild(note("body +0x94 · the item the quest consumes on entry"));
-    grid.appendChild(qwrap);
-    grid.appendChild(numberField("meta-requirement-count", "Requirement count", b.iconLabelCount,
-      "body +0x96 · how many the quest takes", function (v) { b.iconLabelCount = v; }));
-    p.appendChild(grid);
-    p.appendChild(note("Map names are not mapped yet, so the map is a number: the client's own stage id."
-      + " The server assigns the quest id when you submit, so it is 0 here."
-      + " " + String(model.layout).toLowerCase().replace("_", " ") + " layout · " + model.length
-      + " bytes as it stands."));
+    var p = UI.section("Basics", "name, time and money");
+    var title = slotByIndex(model, 0);
+    if (title) p.appendChild(slotField(title));
+    var g = grid();
+    g.appendChild(UI.numberField("Time limit", {
+      id: "meta-time", value: Math.round((b.timeLimit || 0) / TICKS_PER_MINUTE), min: 1, unit: "minutes",
+      onChange: writes(function (v) { b.timeLimit = v * TICKS_PER_MINUTE; })
+    }));
+    g.appendChild(UI.numberField("Players", {
+      id: "meta-players", value: b.maxHunters, min: 1, max: 4,
+      onChange: writes(function (v) { b.maxHunters = v; })
+    }, "How many hunters can join, 1 to 4."));
+    g.appendChild(UI.numberField("Contract fee", {
+      id: "meta-zenny", value: b.zenny, min: 0, unit: "zenny",
+      onChange: writes(function (v) { b.zenny = v; })
+    }, "Paid to accept the quest."));
+    g.appendChild(UI.numberField("Reward money", {
+      id: "meta-money", value: b.rewardMoney, min: 0, unit: "zenny",
+      onChange: writes(function (v) { b.rewardMoney = v; })
+    }, "Paid on a clear."));
+    g.appendChild(UI.field("Item needed to enter", UI.picker({
+      options: itemOptions(), value: b.iconLabelId, kind: "item", showIds: true,
+      unknownLabel: itemName, onChange: writes(function (v) { b.iconLabelId = v; })
+    }), "The quest takes this item when you accept it. None for no item."));
+    g.appendChild(UI.numberField("How many it takes", {
+      id: "meta-requirement-count", value: b.iconLabelCount, min: 0,
+      onChange: writes(function (v) { b.iconLabelCount = v; })
+    }));
+    p.appendChild(g);
+
+    var more = el("details", "bui-more-settings");
+    more.appendChild(el("summary", null, "More settings"));
+    var g2 = grid();
+    g2.appendChild(UI.numberField("Quest class", {
+      id: "meta-class", value: b.questClass, min: 0, max: 255,
+      onChange: writes(function (v) { b.questClass = v; })
+    }, "The game's class number for the quest. What each number means is not mapped yet, so keep the"
+      + " blank quest's value unless you know the one you need."));
+    more.appendChild(g2);
+    p.appendChild(more);
     return p;
   }
+
+  // ---- 2. map and start area -----------------------------------------------------------------
+
+  function allSpawns(model) {
+    var list = [];
+    (model.largeSpawnAreas || []).forEach(function (area) { (area.spawns || []).forEach(function (s) { list.push(s); }); });
+    (model.smallSpawnGroups || []).forEach(function (group) {
+      (group.areas || []).forEach(function (area) { (area.spawns || []).forEach(function (s) { list.push(s); }); });
+    });
+    return list;
+  }
+
+  /** The map changed: every area list follows it, and anything left outside the new map is said in words. */
+  function setMap(model, mapId) {
+    var b = model.body;
+    b.mapId = mapId;
+    var areas = areasForMap(mapId);
+    var lines = [];
+    var starts = model.startAreas || [];
+    if (areas.length && starts.length && areas.indexOf(starts[0].areaId) === -1) {
+      var before = starts[0].areaId;
+      starts.forEach(function (a) { a.areaId = areas[0]; });
+      lines.push("Start area moved to " + areaName(areas[0], mapId) + ": the old one (id " + before + ") is not part of "
+        + mapName(mapId) + ".");
+    }
+    var off = allSpawns(model).filter(function (s) { return !areaOnMap(s.areaId, mapId); }).length;
+    if (off) {
+      lines.push(off + (off === 1 ? " monster is" : " monsters are") + " in an area that is not part of " + mapName(mapId)
+        + ". " + (off === 1 ? "It is" : "They are") + " marked under Monsters: pick one of this map's areas.");
+    }
+    state.mapMessage = lines.join(" ");
+    redraw("map");
+    redraw("monsters");
+    changed();
+  }
+
+  function mapSection(model) {
+    var b = model.body;
+    var p = UI.section("Map and start area", "where the hunt takes place");
+    var g = grid();
+    var known = Object.keys(mapIds).length > 0;
+    if (known) {
+      g.appendChild(UI.field("Map", UI.picker({
+        options: mapOptions(), value: b.mapId, showIds: true,
+        unknownLabel: function (v) { return "Unlisted map (id " + v + ")"; },
+        onChange: function (v) { setMap(model, v); }
+      }), "Choosing a map changes the area lists below to that map's areas."));
+    } else {
+      g.appendChild(UI.numberField("Map", {
+        id: "meta-map", value: b.mapId, min: 0, onChange: function (v) { setMap(model, v); }
+      }, "The map list could not be loaded, so the map is the game's map number."));
+    }
+    var starts = model.startAreas || [];
+    if (starts.length) {
+      var options = areaOptions(b.mapId);
+      var start = UI.picker({
+        options: options, value: starts[0].areaId, showIds: true,
+        unknownLabel: function (v) { return areaLabel(v, b.mapId); },
+        onChange: writes(function (v) { starts.forEach(function (a) { a.areaId = v; }); start.setProblem(""); })
+      });
+      if (!areaOnMap(starts[0].areaId, b.mapId)) start.setProblem("This area is not part of the chosen map.");
+      g.appendChild(UI.field("Start area", start, options.length
+        ? "Where the party arrives. Most quests start in the map's first area."
+        : "This map has no known area list, so every area id is allowed."));
+    }
+    p.appendChild(g);
+    if (state.mapMessage) {
+      var msg = note(state.mapMessage, "bui-notice");
+      msg.setAttribute("role", "status");
+      p.appendChild(msg);
+    }
+    return p;
+  }
+
+  // ---- 3. objectives -------------------------------------------------------------------------
+
+  function isItemObjective(type) {
+    return (type & 2) && !(type & 1);
+  }
+
+  function objectivesSection(model) {
+    var b = model.body;
+    var p = UI.section("Objectives", "what the hunters must do",
+      "The first objective is the main one. The other two are optional; leave them as Not used.");
+    ["objective0", "objective1", "objective2"].forEach(function (key, index) {
+      var objective = b[key];
+      if (!objective) return;
+      p.appendChild(UI.subhead(index === 0 ? "Main objective" : "Objective " + (index + 1)));
+      var g = grid();
+      g.appendChild(UI.field("Type", UI.picker({
+        options: typeOptions(), value: objective.type,
+        unknownLabel: function (v) { return "Other (value " + v + ")"; },
+        onChange: writes(function (v) { objective.type = v; redraw("objectives"); })
+      })));
+      if (objective.type !== 0) {
+        var item = isItemObjective(objective.type);
+        g.appendChild(UI.field(item ? "Item" : "Monster", UI.picker({
+          options: item ? itemOptions() : monsterOptions(), value: objective.target, kind: item ? "item" : "monster",
+          showIds: true, unknownLabel: item ? itemName : monsterName,
+          onChange: writes(function (v) { objective.target = v; })
+        }), item ? "The item to deliver." : "The monster this objective counts."));
+        g.appendChild(UI.numberField("How many", {
+          id: "obj-" + index + "-count", value: objective.count, min: 0,
+          onChange: writes(function (v) { objective.count = v; })
+        }));
+      }
+      p.appendChild(g);
+    });
+
+    var icons = b.iconMonsters || [];
+    if (icons.length) {
+      p.appendChild(UI.subhead("Monsters on the quest card"));
+      p.appendChild(note("The monster pictures the quest card and the quest page show. Usually the first is the"
+        + " main target; None leaves a slot empty."));
+      var g = grid();
+      icons.forEach(function (id, i) {
+        g.appendChild(UI.field("Picture " + (i + 1), UI.picker({
+          options: monsterOptions(), value: id, kind: "monster", showIds: true, unknownLabel: monsterName,
+          onChange: writes(function (v) { icons[i] = v; })
+        })));
+      });
+      p.appendChild(g);
+    }
+    return p;
+  }
+
+  // ---- 4. monsters and their areas -----------------------------------------------------------
 
   function spawnsOf(area) {
     if (!area.spawns) area.spawns = [];
     return area.spawns;
   }
 
-
-
-  // A searchable picker: the input accepts a name or an id, and the datalist offers every known name.
-  // Used where a plain select would hold 16,701 options (items).
-  function comboField(id, labelText, value, hint, options, onChange, display) {
-    var wrap = el("div", "field");
-    var label = el("label", null, labelText);
-    label.htmlFor = id;
-    var listId = id + "-list";
-    var input = el("input");
-    input.id = id;
-    input.setAttribute("list", listId);
-    input.value = display ? display(value) : String(value === undefined || value === null ? 0 : value);
-    var list = el("datalist");
-    list.id = listId;
-    options.forEach(function (opt) {
-      var option = el("option");
-      option.value = opt.label;
-      list.appendChild(option);
-    });
-    function commit() {
-      var raw = input.value.trim();
-      var match = raw.match(/\((\d+)\)\s*$/);
-      var next = match ? parseInt(match[1], 10) : parseInt(raw, 10);
-      if (!isNaN(next)) { onChange(next); input.value = display ? display(next) : String(next); }
-    }
-    input.addEventListener("change", commit);
-    input.addEventListener("blur", commit);
-    wrap.appendChild(label);
-    wrap.appendChild(input);
-    wrap.appendChild(list);
-    if (hint) wrap.appendChild(note(hint));
-    return wrap;
-  }
-
-  var itemOptionCache = null;
-
-  function itemOptions() {
-    if (itemOptionCache) return itemOptionCache;
-    itemOptionCache = Object.keys(itemIds || {}).map(Number).sort(function (a, b) {
-      return String(itemIds[a]).localeCompare(String(itemIds[b]));
-    }).map(function (id) { return { value: id, label: itemIds[id] + " (" + id + ")" }; });
-    return itemOptionCache;
-  }
-
-  function itemDisplay(id) {
-    return itemIds && itemIds[String(id)] ? itemIds[String(id)] + " (" + id + ")" : "Item " + id;
-  }
-
-
-  function monsterIcon(id) {
-    return (monsterIcons && monsterIcons[String(id)]) || "";
-  }
-
-  function itemIcon(id) {
-    return (itemIcons && itemIcons[String(id)]) || "";
-  }
-
-  function iconImg(src, alt) {
-    var img = el("img", "pick-icon");
-    img.alt = alt || "";
-    if (src) img.src = src; else img.className += " is-empty";
-    return img;
-  }
-
-
-  // A picker with icons: a button showing the current choice, and a popup with a search box and a list.
-  // Native selects cannot draw images inside their options, which is why this exists.
-  function makePicker(value, options, onChange, iconFn, compact) {
-    var wrap = el(compact ? "span" : "div", compact ? "picker picker-compact" : "picker");
-    var button = el("button", "picker-btn");
-    button.type = "button";
-    var icon = el("img", "pick-icon");
-    var label = el("span", "picker-label");
-    button.appendChild(icon);
-    button.appendChild(label);
-
-    var pop = el("div", "picker-pop");
-    pop.hidden = true;
-    var search = el("input", "picker-search");
-    search.type = "search";
-    search.placeholder = "Search";
-    var list = el("div", "picker-list");
-    pop.appendChild(search);
-    pop.appendChild(list);
-
-    var current = value;
-    var rows = [];
-
-    function paint() {
-      var src = iconFn ? iconFn(current) : "";
-      if (src) { icon.src = src; icon.className = "pick-icon"; } else { icon.removeAttribute("src"); icon.className = "pick-icon is-empty"; }
-      var found = options.filter(function (o) { return Number(o.value) === Number(current); })[0];
-      label.textContent = found ? found.label : "None";
-    }
-
-    function choose(next) {
-      current = next;
-      onChange(next);
-      paint();
-      pop.hidden = true;
-    }
-
-    function fill(term) {
-      list.textContent = "";
-      var needle = (term || "").toLowerCase();
-      var shown = 0;
-      options.forEach(function (opt) {
-        if (shown >= 150) return;
-        if (needle && opt.label.toLowerCase().indexOf(needle) === -1) return;
-        shown += 1;
-        var row = el("button", "picker-row");
-        row.type = "button";
-        var img = el("img", "pick-icon");
-        var src = iconFn ? iconFn(opt.value) : "";
-        if (src) img.src = src; else img.className += " is-empty";
-        row.appendChild(img);
-        row.appendChild(el("span", null, opt.label));
-        if (Number(opt.value) === Number(current)) row.className += " is-on";
-        row.addEventListener("click", function () { choose(Number(opt.value)); });
-        list.appendChild(row);
-      });
-      if (!shown) list.appendChild(el("p", "note-text", "No match."));
-    }
-
-    button.addEventListener("click", function () {
-      pop.hidden = !pop.hidden;
-      if (!pop.hidden) { search.value = ""; fill(""); search.focus(); }
-    });
-    search.addEventListener("input", function () { fill(search.value); });
-    document.addEventListener("click", function (event) {
-      if (!wrap.contains(event.target)) pop.hidden = true;
-    });
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") pop.hidden = true;
-    });
-
-    wrap.appendChild(button);
-    wrap.appendChild(pop);
-    paint();
-    return wrap;
-  }
-
-  function typeOptions(current) {
-    var options = [];
-    Object.keys(objectiveTypes || {}).map(Number).sort(function (a, b) { return a - b; })
-      .forEach(function (id) {
-        options.push({ value: id, label: objectiveTypes[id] + " (" + id + ")" });
-      });
-    if (!(String(current) in (objectiveTypes || {}))) {
-      options.unshift({ value: current, label: "Type " + current });
-    }
-    return options;
-  }
-
-  function objectivesPanel(model) {
-    var p = panel("Objectives", "what the quest asks for");
-    var b = model.body;
-    ["objective0", "objective1", "objective2"].forEach(function (key, index) {
-      var objective = b[key];
-      if (!objective) return;
-      p.appendChild(el("h3", "subhead", "Objective " + (index + 1)));
-      var grid = el("div", "editor-grid");
-      grid.appendChild(selectField("obj-" + index + "-type", "Type", objective.type,
-        "body +0x" + (0x30 + index * 8).toString(16) + " · the objective kind",
-        typeOptions(objective.type), function (v) { objective.type = v; render(model, state.quest); }));
-      if (objective.type & 2 && !(objective.type & 1)) {
-        var iwrap = el("div", "field");
-        iwrap.appendChild(el("label", null, "Item target"));
-        iwrap.appendChild(makePicker(objective.target, itemOptions(),
-          function (v) { objective.target = v; }, itemIcon, false));
-        iwrap.appendChild(note("the item the objective counts"));
-        grid.appendChild(iwrap);
-      } else {
-        var mwrap = el("div", "field");
-        var mlabel = el("label", null, "Monster target");
-        mwrap.appendChild(mlabel);
-        mwrap.appendChild(makePicker(objective.target, monsterOptions(objective.target),
-          function (v) { objective.target = v; }, monsterIcon, false));
-        mwrap.appendChild(note("the monster the objective counts"
-          + (objective.type === 0 ? " · pick a type above first" : "")));
-        grid.appendChild(mwrap);
-      }
-      grid.appendChild(numberField("obj-" + index + "-count", "Count", objective.count,
-        "how many are needed", function (v) { objective.count = v; }));
-      p.appendChild(grid);
-    });
-    p.appendChild(note("Type values are the client's own objective bitfield: Hunt, Slay, Capture, Deliver,"
-      + " Break Part, Damage and so on."));
-    return p;
-  }
-
-
-  function iconMonstersPanel(model) {
-    var p = panel("Quest page icons", "the monster icons the info page shows");
-    var icons = (model.body && model.body.iconMonsters) || [];
-    var grid = el("div", "editor-grid");
-    icons.forEach(function (id, i) {
-      grid.appendChild(selectField("icon-mon-" + i, "Icon " + (i + 1), id,
-        i === 0 ? "body +0xb9 · usually the objective target" : "body +0x" + (0xb9 + i).toString(16),
-        monsterOptions(id), function (v) { icons[i] = v; }));
-    });
-    p.appendChild(grid);
-    return p;
-  }
-
-  function supplyPanel(model) {
-    var p = panel("Supply box", "items handed out at departure");
-    var items = model.startItems || [];
-    var shown = 0;
-    var grid = el("div", "editor-grid");
-    items.forEach(function (entry, index) {
-      if (!entry.itemId) return;
-      shown += 1;
-      var swrap = el("div", "field");
-      swrap.appendChild(el("label", null, "Item " + shown));
-      swrap.appendChild(makePicker(entry.itemId, itemOptions(),
-        function (v) { entry.itemId = v; }, itemIcon, false));
-      grid.appendChild(swrap);
-      grid.appendChild(numberField("supply-count-" + index, "Count", entry.count, "how many",
-        function (v) { entry.count = v; }));
-    });
-    if (!shown) p.appendChild(note("This quest hands out no supply items."));
-    p.appendChild(grid);
-    p.appendChild(note("Clearing an item sets its id to 0, which removes it from the box."));
-    return p;
-  }
-
-
-  function itemCellWithIcon(entry) {
-    var cell = cellCombo(entry.itemId, itemOptions(), function (v) { entry.itemId = v; }, itemDisplay);
-    var icon = itemIcon(entry.itemId);
-    if (icon) cell.insertBefore(iconImg(icon, "item icon"), cell.firstChild);
-    return cell;
-  }
-
-  function spawnTable(spawns, model) {
-    var rows = (spawns || []).map(function (spawn) {
-      var index = spawns.indexOf(spawn);
+  function spawnTable(model, spawns) {
+    var mapId = model.body.mapId;
+    var options = areaOptions(mapId);
+    var rows = spawns.map(function (spawn, index) {
+      var area = options.length ? UI.picker({
+        options: options, value: spawn.areaId, compact: true, showIds: true, label: "Area of " + monsterName(spawn.monsterId),
+        unknownLabel: function (v) { return areaLabel(v, mapId); },
+        onChange: writes(function (v) { spawn.areaId = v; area.setProblem(""); })
+      }) : UI.numberInput({ value: spawn.areaId, min: 0, label: "Area id", onChange: writes(function (v) { spawn.areaId = v; }) });
+      if (options.length && !areaOnMap(spawn.areaId, mapId)) area.setProblem("This area is not part of the chosen map: pick another.");
       return [
-        cellPicker(spawn.monsterId, monsterOptions(spawn.monsterId),
-          function (v) { spawn.monsterId = v; }, monsterIcon),
-        cellInput(spawn.count, function (v) { spawn.count = v; }),
-        cellSelect(spawn.areaId, areaOptions(spawn.areaId, spawns.length + 4, model.body.mapId), function (v) { spawn.areaId = v; }),
-        cellAction("Remove", function () {
+        { label: "Monster", node: UI.picker({
+          options: monsterOptions(), value: spawn.monsterId, kind: "monster", compact: true, showIds: true,
+          label: "Monster", unknownLabel: monsterName, onChange: writes(function (v) { spawn.monsterId = v; })
+        }) },
+        { label: "How many", node: UI.numberInput({
+          value: spawn.count, min: 0, max: 127, label: "How many", onChange: writes(function (v) { spawn.count = v; })
+        }) },
+        { label: "Area", node: area },
+        { cls: "bui-row-end", node: UI.button("Remove", function () {
           spawns.splice(index, 1);
-          rebuild();
-        })
+          redraw("monsters");
+          changed();
+        }, "remove", "Remove " + monsterName(spawn.monsterId)) }
       ];
     });
-    return table(["Monster", "Count", "Area", ""], rows);
-  }
-
-  function defaultMonsterId() {
-    // Id 0 is "None", which is not a monster; the list is keyed by id, so the first real one is the default.
-    var keys = Object.keys(monsterIds || {}).map(Number).filter(function (id) { return id > 0; }).sort(function (a, b) {
-      return a - b;
-    });
-    return keys.length ? keys[0] : 1;
+    return UI.table(["Monster", "How many", "Area", { label: "", cls: "bui-row-end" }], rows, "No monsters here yet.");
   }
 
   /** Adds a monster to the first large spawn area, creating that area when the quest has none. */
-  function addMonster() {
-    var model = state.model;
+  function addMonster(model) {
     if (!model.largeSpawnAreas) model.largeSpawnAreas = [];
     if (!model.largeSpawnAreas.length) {
       model.largeSpawnAreas.push({ areaId: 1, reserved: 0, monsterIdsOffset: 0, spawnOffset: 0, spawns: [] });
     }
     var area = model.largeSpawnAreas[0];
-    spawnsOf(area).push({ monsterId: defaultMonsterId(), count: 1, areaId: area.areaId || 1 });
-    rebuild();
+    var areas = areasForMap(model.body.mapId);
+    // A new monster goes to the first area past the start (usually the camp), or the start when the map has one.
+    var where = areas.length ? (areas[1] !== undefined ? areas[1] : areas[0]) : (area.areaId || 1);
+    // The main objective's monster when it has one, else the first monster by name.
+    var goal = model.body.objective0;
+    var first = monsterOptions()[1];
+    var monster = goal && goal.type !== 0 && !isItemObjective(goal.type) && goal.target ? goal.target : (first ? first.value : 1);
+    spawnsOf(area).push({ monsterId: monster, count: 1, areaId: where });
+    redraw("monsters");
+    changed();
   }
 
-  function spawnPanel(model) {
-    var p = panel("Monsters and spawns", "per area");
+  function monstersSection(model) {
+    var p = UI.section("Monsters and their areas", "who appears, and where");
     if (!model.header) {
-      p.appendChild(note("This file is an event body: it carries no spawn tables of its own."));
+      p.appendChild(note("This quest has no monster tables of its own."));
       return p;
     }
-    var areas = model.largeSpawnAreas || [];
-    if (!areas.length) {
-      p.appendChild(note("No monsters yet. Add one and it goes into area 1; change the area in its row."));
-    }
-    areas.forEach(function (area) {
-      p.appendChild(el("h3", "subhead", "Large spawns · area " + area.areaId));
-      p.appendChild(spawnTable(spawnsOf(area)));
-    });
+    p.appendChild(note("Each row puts monsters in one area of the chosen map. The areas offered are the map's own."));
+    var large = model.largeSpawnAreas || [];
+    p.appendChild(UI.subhead("Large monsters"));
+    if (!large.length) p.appendChild(UI.table(["Monster", "How many", "Area", ""], [], "No monsters yet."));
+    large.forEach(function (area) { p.appendChild(spawnTable(model, spawnsOf(area))); });
+    var actions = el("div", "bui-actions");
+    actions.appendChild(UI.button("Add a monster", function () { addMonster(model); }, "add"));
+    p.appendChild(actions);
     (model.smallSpawnGroups || []).forEach(function (group, i) {
-      (group.areas || []).forEach(function (area) {
-        p.appendChild(el("h3", "subhead", "Small spawns · group " + (i + 1) + " · area " + area.areaId));
-        p.appendChild(spawnTable(spawnsOf(area)));
+      (group.areas || []).forEach(function (area, j) {
+        p.appendChild(UI.subhead("Small monsters, set " + (i + 1) + (group.areas.length > 1 ? ", part " + (j + 1) : "")));
+        p.appendChild(spawnTable(model, spawnsOf(area)));
       });
     });
-    p.appendChild(actionButton("Add monster", addMonster));
     return p;
   }
 
-  function rewardPanel(model) {
-    var p = panel("Rewards", "groups and their entries");
-    var groups = model.rewardGroups || [];
-    if (!groups.length) {
-      p.appendChild(note("No reward table yet. Add a group, then entries inside it."));
+  // ---- 5. rewards and supplies ---------------------------------------------------------------
+
+  function supplyTable(model) {
+    var items = model.startItems || [];
+    var rows = [];
+    items.forEach(function (entry, index) {
+      if (!entry.itemId && !state.supplyShown[index]) return;
+      rows.push([
+        { label: "Item", node: UI.picker({
+          options: itemOptions(), value: entry.itemId, kind: "item", compact: true, showIds: true, label: "Supply item",
+          unknownLabel: itemName, onChange: writes(function (v) { entry.itemId = v; })
+        }) },
+        { label: "How many", node: UI.numberInput({
+          value: entry.count, min: 0, label: "How many", onChange: writes(function (v) { entry.count = v; })
+        }) },
+        { cls: "bui-row-end", node: UI.button("Remove", function () {
+          entry.itemId = 0;
+          entry.count = 0;
+          delete state.supplyShown[index];
+          redraw("rewards");
+          changed();
+        }, "remove", "Remove " + itemName(entry.itemId)) }
+      ]);
+    });
+    var free = -1;
+    for (var i = 0; i < items.length; i++) {
+      if (!items[i].itemId && !state.supplyShown[i]) { free = i; break; }
     }
-    groups.forEach(function (group, groupIndex) {
-      if (!group.entries) group.entries = [];
-      var head = el("div", "panel-head");
-      head.appendChild(el("h3", "subhead", "Group " + (group.groupId + 1) + " · id " + group.groupId));
-      head.appendChild(actionButton("Add entry", function () {
-        if (!group.entries) group.entries = [];
-        group.entries.push({ weight: 1, itemId: 0, count: 1 });
-        rebuild();
-      }));
-      p.appendChild(head);
-      var entries = group.entries || [];
-      var rows = entries.map(function (entry, entryIndex) {
-        return [
-          cellInput(entry.weight, function (v) { entry.weight = v; }),
-          cellPicker(entry.itemId, itemOptions(), function (v) { entry.itemId = v; }, itemIcon),
-          cellInput(entry.count, function (v) { entry.count = v; }),
-          cellAction("Remove", function () {
-            entries.splice(entryIndex, 1);
-            rebuild();
-          })
-        ];
+    var wrap = el("div");
+    wrap.appendChild(UI.table(["Item", "How many", { label: "", cls: "bui-row-end" }], rows, "The supply box is empty."));
+    var actions = el("div", "bui-actions");
+    var add = UI.button("Add a supply item", function () {
+      state.supplyShown[free] = true;
+      items[free].count = 1;
+      redraw("rewards");
+      changed();
+    }, "add");
+    add.disabled = free === -1 || !items.length;
+    actions.appendChild(add);
+    if (items.length && free === -1) actions.appendChild(note("The supply box is full (" + items.length + " items)."));
+    wrap.appendChild(actions);
+    return wrap;
+  }
+
+  function rewardGroupBlock(model, groups, group, groupIndex) {
+    if (!group.entries) group.entries = [];
+    var entries = group.entries;
+    var box = el("div", "bui-group-block");
+    var head = el("div", "bui-group-head");
+    head.appendChild(UI.subhead("Reward group " + (groupIndex + 1)));
+    head.appendChild(UI.button("Remove group", function () {
+      groups.splice(groupIndex, 1);
+      redraw("rewards");
+      changed();
+    }, "remove", "Remove reward group " + (groupIndex + 1)));
+    box.appendChild(head);
+
+    var shareCells = [];
+    function shares() {
+      var total = entries.reduce(function (n, e) { return n + (e.weight > 0 ? e.weight : 0); }, 0);
+      shareCells.forEach(function (cell, i) {
+        var w = entries[i].weight > 0 ? entries[i].weight : 0;
+        cell.textContent = total ? Math.round((w / total) * 1000) / 10 + "%" : "–";
       });
-      p.appendChild(table(["Weight", "Item id", "Count", ""], rows));
-      if (groups.length > 1) {
-        p.appendChild(actionButton("Remove group " + (groupIndex + 1), function () {
-          groups.splice(groupIndex, 1);
-          rebuild();
-        }));
+    }
+    var rows = entries.map(function (entry, entryIndex) {
+      var share = el("span", "bui-share");
+      shareCells.push(share);
+      return [
+        { label: "Item", node: UI.picker({
+          options: itemOptions(), value: entry.itemId, kind: "item", compact: true, showIds: true, label: "Reward item",
+          unknownLabel: itemName, onChange: writes(function (v) { entry.itemId = v; })
+        }) },
+        { label: "How many", node: UI.numberInput({
+          value: entry.count, min: 0, label: "How many", onChange: writes(function (v) { entry.count = v; })
+        }) },
+        { label: "Weight", node: UI.numberInput({
+          value: entry.weight, min: 0, label: "Weight", onChange: writes(function (v) { entry.weight = v; shares(); })
+        }) },
+        { label: "Share", cls: "num", node: share },
+        { cls: "bui-row-end", node: UI.button("Remove", function () {
+          entries.splice(entryIndex, 1);
+          redraw("rewards");
+          changed();
+        }, "remove", "Remove " + itemName(entry.itemId)) }
+      ];
+    });
+    box.appendChild(UI.table(["Item", "How many", "Weight", { label: "Share", cls: "num" }, { label: "", cls: "bui-row-end" }],
+      rows, "No rewards in this group yet."));
+    shares();
+    var actions = el("div", "bui-actions");
+    actions.appendChild(UI.button("Add a reward", function () {
+      entries.push({ weight: 1, itemId: 0, count: 1 });
+      redraw("rewards");
+      changed();
+    }, "add"));
+    box.appendChild(actions);
+    return box;
+  }
+
+  function rewardsSection(model) {
+    var p = UI.section("Rewards and supplies", "what hunters get");
+    p.appendChild(UI.subhead("Supply box"));
+    p.appendChild(note("Items handed out when the quest starts."));
+    p.appendChild(supplyTable(model));
+
+    p.appendChild(UI.subhead("Rewards"));
+    p.appendChild(note("Each group draws its rewards by weight: a higher weight makes an item more likely, and"
+      + " Share is that item's part of the group's total. A quest submitted for testing is served with its"
+      + " rewards emptied, so a test clear pays nothing."));
+    var groups = model.rewardGroups || [];
+    groups.forEach(function (group, i) { p.appendChild(rewardGroupBlock(model, groups, group, i)); });
+    var actions = el("div", "bui-actions");
+    actions.appendChild(UI.button("Add a reward group", function () {
+      if (!model.rewardGroups) model.rewardGroups = [];
+      model.rewardGroups.push({ groupId: model.rewardGroups.length, reserved: 0, entryOffset: 0, entries: [] });
+      redraw("rewards");
+      changed();
+    }, "add"));
+    p.appendChild(actions);
+    return p;
+  }
+
+  // ---- 6. text -------------------------------------------------------------------------------
+
+  function textSection(model) {
+    var p = UI.section("Quest text", "what the quest card says",
+      "Each text has a set room in bytes: a plain letter takes 1, a Japanese character 2. Longer text is not"
+      + " cut; it is stored at the end of the file. English and Japanese only.");
+    var g = grid();
+    TEXT_ORDER.forEach(function (index) {
+      var slot = slotByIndex(model, index);
+      if (slot) g.appendChild(slotField(slot));
+    });
+    p.appendChild(g);
+    return p;
+  }
+
+  // ---- 7. review -----------------------------------------------------------------------------
+
+  function problems(model) {
+    var b = model.body;
+    var list = [];
+    var title = slotByIndex(model, 0);
+    if (title && !String(title.text || "").trim()) list.push("The quest has no name (Basics).");
+    if (!b.timeLimit) list.push("The time limit is 0 minutes (Basics).");
+    if (model.startAreas && model.startAreas.length && !areaOnMap(model.startAreas[0].areaId, b.mapId)) {
+      list.push("The start area is not part of the chosen map (Map and start area).");
+    }
+    ["objective0", "objective1", "objective2"].forEach(function (key, i) {
+      var o = b[key];
+      if (o && o.type !== 0 && !o.target) {
+        list.push((i === 0 ? "The main objective" : "Objective " + (i + 1)) + " has no "
+          + (isItemObjective(o.type) ? "item" : "monster") + " (Objectives).");
       }
     });
-    p.appendChild(actionButton("Add reward group", function () {
-      if (!model.rewardGroups) model.rewardGroups = [];
-      model.rewardGroups.push({
-        groupId: model.rewardGroups.length, reserved: 0, entryOffset: 0, entries: []
-      });
-      rebuild();
-    }));
-    p.appendChild(note("Item ids are the client's own table indices. A submitted quest is served with"
-      + " its rewards emptied, so a test clear pays nothing."));
-    return p;
+    var off = allSpawns(model).filter(function (s) { return !areaOnMap(s.areaId, b.mapId); }).length;
+    if (off) list.push(off + (off === 1 ? " monster is" : " monsters are") + " in an area that is not part of the map (Monsters).");
+    var none = 0;
+    (model.rewardGroups || []).forEach(function (g) { (g.entries || []).forEach(function (e) { if (!e.itemId) none += 1; }); });
+    if (none) list.push(none + (none === 1 ? " reward has" : " rewards have") + " no item (Rewards).");
+    return list;
+  }
+
+  function renderReview() {
+    var model = state.model;
+    if (!model || !reviewBox) return;
+    var b = model.body;
+    reviewBox.textContent = "";
+    var title = slotByIndex(model, 0);
+    var spawns = allSpawns(model);
+    var supplies = (model.startItems || []).filter(function (e) { return e.itemId; }).length;
+    var rewards = (model.rewardGroups || []).reduce(function (n, g) { return n + (g.entries || []).length; }, 0);
+    var goals = ["objective0", "objective1", "objective2"].map(function (key) { return b[key]; }).filter(function (o) {
+      return o && o.type !== 0;
+    }).map(function (o) {
+      var what = isItemObjective(o.type) ? itemName(o.target) : monsterName(o.target);
+      return (objectiveTypes[String(o.type)] || "Objective") + ": " + o.count + " × " + what;
+    });
+    var facts = [
+      ["Name", title && title.text ? title.text : "(none yet)"],
+      ["Map", mapName(b.mapId)],
+      ["Start area", model.startAreas && model.startAreas.length ? areaName(model.startAreas[0].areaId, b.mapId) : "–"],
+      ["Time and players", Math.round((b.timeLimit || 0) / TICKS_PER_MINUTE) + " minutes, up to " + b.maxHunters + " hunters"],
+      ["Money", "fee " + Number(b.zenny || 0).toLocaleString() + " zenny, reward " + Number(b.rewardMoney || 0).toLocaleString() + " zenny"],
+      ["Objectives", goals.length ? goals.join("; ") : "none set"],
+      ["Monsters", spawns.length ? spawns.map(function (s) { return s.count + " × " + monsterName(s.monsterId); }).join(", ") : "none yet"],
+      ["Supplies and rewards", supplies + (supplies === 1 ? " supply item, " : " supply items, ") + rewards + (rewards === 1 ? " reward" : " rewards")]
+    ];
+    var dl = el("dl", "bui-review");
+    facts.forEach(function (f) {
+      dl.appendChild(el("dt", null, f[0]));
+      dl.appendChild(el("dd", null, f[1]));
+    });
+    reviewBox.appendChild(dl);
+    var list = problems(model);
+    if (list.length) {
+      reviewBox.appendChild(note("Worth fixing before you test (none of these stop a save):", "bui-warn-head"));
+      var ul = el("ul", "bui-problems");
+      list.forEach(function (text) { ul.appendChild(el("li", null, text)); });
+      reviewBox.appendChild(ul);
+    } else {
+      reviewBox.appendChild(note("Nothing to fix that this page can see. The server checks the quest again when you save.", "bui-ok"));
+    }
+  }
+
+  // ---- drawing -------------------------------------------------------------------------------
+
+  var SECTIONS = [
+    ["basics", basicsSection], ["map", mapSection], ["objectives", objectivesSection], ["monsters", monstersSection],
+    ["rewards", rewardsSection], ["text", textSection]
+  ];
+  var drawn = {};
+
+  function panels(model) {
+    root.textContent = "";
+    drawn = {};
+    SECTIONS.forEach(function (s) {
+      drawn[s[0]] = s[1](model);
+      root.appendChild(drawn[s[0]]);
+    });
+    if (reviewPanel) reviewPanel.hidden = false;
+    renderReview();
+  }
+
+  /** Redraws one section after a row was added or removed, or the map changed; the model holds every field. */
+  function redraw(key) {
+    if (!state.model || !drawn[key]) return;
+    var builder = SECTIONS.filter(function (s) { return s[0] === key; })[0][1];
+    var next = builder(state.model);
+    root.replaceChild(next, drawn[key]);
+    drawn[key] = next;
   }
 
   // ---- state and actions ---------------------------------------------------------------------
@@ -846,7 +759,7 @@
 
   function setDraftNote() {
     draftNote.textContent = state.draftId
-      ? "draft #" + state.draftId + " · revision " + state.revision
+      ? "draft " + state.draftId + ", revision " + state.revision
       : "not saved yet";
   }
 
@@ -897,7 +810,7 @@
       anchor.click();
       anchor.remove();
       setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
-      say("Downloaded new-quest.bin — that is the file the server would serve.", false);
+      say("Downloaded new-quest.bin, the file exactly as the server would serve it.", false);
     });
   }
 
@@ -925,9 +838,10 @@
 
   function fail(message) {
     root.textContent = "";
-    var p = panel("The builder could not open a quest");
+    var p = UI.section("The builder could not open a quest");
     p.appendChild(note(message));
     root.appendChild(p);
+    if (reviewPanel) reviewPanel.hidden = true;
     buttons.forEach(function (button) { button.disabled = true; });
     titleEl.textContent = "New quest";
     subEl.textContent = "Start again from /quest-editor.html for a blank quest.";
@@ -937,7 +851,16 @@
 
   function when(iso) {
     var date = new Date(iso);
-    return isNaN(date) ? "-" : date.toLocaleDateString();
+    return isNaN(date) ? "–" : date.toLocaleDateString();
+  }
+
+  function draftsMessage(text) {
+    draftsBody.textContent = "";
+    var tr = el("tr");
+    var td = el("td", "empty-cell", text);
+    td.colSpan = 3;
+    tr.appendChild(td);
+    draftsBody.appendChild(tr);
   }
 
   function refreshDrafts() {
@@ -945,25 +868,13 @@
     return api("/api/account/quest-drafts").then(body).then(function (rows) {
       renderDrafts(rows || []);
     }).catch(function () {
-      draftsBody.innerHTML = "";
-      var tr = el("tr");
-      var td = el("td", "empty-cell", "Your drafts could not be loaded.");
-      td.colSpan = 3;
-      tr.appendChild(td);
-      draftsBody.appendChild(tr);
+      draftsMessage("Your drafts could not be loaded.");
     });
   }
 
   function renderDrafts(rows) {
-    draftsBody.innerHTML = "";
-    if (!rows.length) {
-      var empty = el("tr");
-      var cell = el("td", "empty-cell", "No drafts yet.");
-      cell.colSpan = 3;
-      empty.appendChild(cell);
-      draftsBody.appendChild(empty);
-      return;
-    }
+    if (!rows.length) { draftsMessage("No drafts yet."); return; }
+    draftsBody.textContent = "";
     rows.forEach(function (row) {
       var tr = el("tr");
       var name = el("td");
@@ -983,23 +894,6 @@
 
   // ---- render --------------------------------------------------------------------------------
 
-  function panels(model) {
-    root.textContent = "";
-    root.appendChild(objectivesPanel(model));
-    root.appendChild(textPanel(model));
-    root.appendChild(metadataPanel(model));
-    root.appendChild(iconMonstersPanel(model));
-    root.appendChild(supplyPanel(model));
-    root.appendChild(spawnPanel(model));
-    root.appendChild(rewardPanel(model));
-  }
-
-  /** Redraws the panels after a row was added or removed; the model holds every field. */
-  function rebuild() {
-    if (!state.model) return;
-    panels(state.model);
-  }
-
   function render(model) {
     state.model = model;
     if (!model.largeSpawnAreas) model.largeSpawnAreas = [];
@@ -1007,11 +901,8 @@
     panels(model);
     titleEl.textContent = "New quest";
     document.title = "Hunsterverse MHFZ: New quest";
-    subEl.textContent = state.draftId
-      ? "Draft #" + state.draftId + ", revision " + state.revision + ". The server assigns the quest id at"
-        + " submit; nothing here touches a live quest file."
-      : "A new quest. Save keeps it as a draft under your account; the server assigns the quest id at"
-        + " submit.";
+    subEl.textContent = "Work down the page: basics, map, objectives, monsters, rewards and text, then review and"
+      + " submit at the end. The server assigns the quest id when you submit.";
     buttons.forEach(function (button) { button.disabled = false; });
     say("", false);
     setDraftNote();

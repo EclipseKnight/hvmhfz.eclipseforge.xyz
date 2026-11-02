@@ -845,22 +845,6 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .admin-desc{display:block;margin-top:3px;font-weight:400;font-size:.82rem;color:var(--ink-soft)}
 .admin-items-cell{max-width:340px}
 .admin-table tr.is-ended td{opacity:.55}
-.picker{position:relative;display:inline-block;max-width:100%}
-.picker-btn{display:flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--line);background:var(--parchment-2);color:var(--ink);border-radius:3px;font:inherit;font-size:.88rem;cursor:pointer;max-width:100%}
-.picker-btn:hover{border-color:var(--gold)}
-.picker-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.picker-pop{position:absolute;z-index:60;top:calc(100% + 4px);left:0;width:300px;max-width:80vw;background:var(--parchment);border:1px solid var(--line);border-radius:4px;box-shadow:0 10px 24px rgba(0,0,0,.18);padding:8px}
-.picker-search{width:100%;padding:7px 8px;margin-bottom:6px;border:1px solid var(--line);border-radius:3px;font:inherit;font-size:.85rem}
-.picker-list{max-height:260px;overflow:auto}
-.picker-row{display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border:0;background:none;text-align:left;font:inherit;font-size:.85rem;color:var(--ink);cursor:pointer;border-radius:3px}
-.picker-row:hover{background:rgba(183,138,51,.14)}
-.picker-row.is-on{background:rgba(183,138,51,.2);font-weight:600}
-.picker-compact .picker-btn{padding:4px 6px;font-size:.82rem}
-.picker-compact .picker-pop{width:260px}
-.pick-icon{width:22px;height:22px;object-fit:contain;vertical-align:middle;margin-right:6px;border-radius:3px;background:rgba(0,0,0,.06)}
-.pick-icon.is-empty{opacity:.25}
-.monster-cell .pick-icon{display:inline-block}
-.item-cell{white-space:nowrap}
 .ended-group{margin-top:12px;border-top:1px solid rgba(189,166,122,.5);padding-top:10px}
 .ended-group summary{cursor:pointer;font-family:var(--display,serif);letter-spacing:.06em;text-transform:uppercase;font-size:.74rem;color:var(--ink-soft)}
 .ended-group summary:hover{color:var(--ink)}
@@ -884,15 +868,14 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .road-problems{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}
 .road-problems li{padding:8px 12px;border:1px solid rgba(139,47,39,.35);border-left:4px solid var(--wax);
   border-radius:3px;background:rgba(139,47,39,.07);font-size:.9rem;color:var(--ink)}
-.road-problems .badge{margin-right:8px}
+.road-problems li.is-ok{border-color:rgba(46,91,78,.4);border-left-color:var(--teal);background:rgba(46,91,78,.08)}
 .road-modes{margin-bottom:14px}
 .road-floors{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px 14px}
 .road-floor{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:6px 10px;
   border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.5)}
 .road-floor-name{font:600 .82rem var(--font-ui);color:var(--ink)}
-.road-floor select{width:auto;min-width:96px}
 .road-floor-points{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 14px;font:.78rem var(--font-ui);color:var(--ink-soft)}
-.road-floor-points input{width:5.5em;min-height:32px;padding:4px 6px;margin-left:4px}
+.road-floor-points label{display:flex;align-items:center;gap:6px}
 .road-solo{margin-bottom:10px}
 .road-solo label{display:flex;gap:8px;align-items:center;font:600 .85rem var(--font-ui);color:var(--ink)}
 .road-solo input{width:auto}
@@ -905,12 +888,7 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .road-table.has-problem summary{color:var(--wax)}
 .road-table-body{padding:10px 12px}
 .road-entries td{white-space:normal;vertical-align:middle}
-.road-entries select{display:block;width:100%;min-width:140px}
-.road-entries input[type="number"]{width:92px}
-.road-entries input[type="checkbox"]{width:auto}
-.road-json{margin:14px 0 0}
-.road-json pre{margin:8px 0 0;padding:10px 12px;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:3px;
-  background:var(--parchment-3);color:var(--ink);font-size:.78rem}
+.road-entries input[type="checkbox"]{width:22px;height:22px}
 .road-changes{margin:0 0 12px;padding:0 0 0 20px;display:grid;gap:4px;color:var(--ink);overflow-wrap:anywhere}
 .road-changes-mode h3{margin:4px 0 8px;font:700 .95rem var(--font-ui);color:var(--ink)}
 .road-changes-mode h4{margin:10px 0 6px;font:700 .64rem/1.2 var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
@@ -1186,7 +1164,87 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .editor-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .editor-actions .note-text{margin:0;flex:1 1 260px}
 .editor-actions .note-text.bad{color:#7f1d17}
-.cell-input{width:6.5em;min-height:0;padding:6px 8px;font-size:.85rem}
 @media (max-width:560px){
   .editor-grid{grid-template-columns:minmax(0,1fr)}
+}
+
+/* ---------- builders: shared controls (js/builder-ui.js), used by road.html and quest-editor.html ---------- */
+.bui-section .editor-grid{margin-top:4px}
+.bui-wide{grid-column:1/-1}
+/* The picker: a button that shows the choice with its icon, and one popup list per page. */
+.bui-picker{display:block;max-width:100%;min-width:0}
+.bui-picker-btn{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:6px 10px;text-align:left;
+  font:inherit;font-size:.95rem;color:var(--ink);background:var(--parchment-3);border:1px solid var(--line);border-radius:3px;
+  box-shadow:inset 0 1px 2px rgba(80,55,25,.12);cursor:pointer}
+.bui-picker-btn:hover{border-color:var(--gold)}
+.bui-picker-btn:focus-visible{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--gold)}
+.bui-picker-btn[disabled]{cursor:not-allowed;opacity:.65}
+.bui-picker.is-compact .bui-picker-btn{min-height:40px;padding:4px 8px;font-size:.88rem}
+.bui-picker.is-invalid .bui-picker-btn{border-color:var(--wax);box-shadow:0 0 0 2px rgba(139,47,39,.25);background:#f8e4dc}
+.bui-value{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bui-caret{flex:0 0 auto;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;
+  border-top:6px solid var(--ink-soft)}
+.bui-icon-slot{display:inline-flex;flex:0 0 auto}
+.bui-icon{flex:0 0 auto;width:28px;height:28px;object-fit:contain;border-radius:3px}
+.bui-icon.is-blank{display:inline-block;width:0;margin-right:-8px}
+.bui-pop{position:fixed;z-index:200;display:flex;flex-direction:column;background:var(--parchment-3);color:var(--ink);
+  border:1px solid var(--line);border-radius:4px;box-shadow:0 12px 28px rgba(0,0,0,.35);padding:8px;overflow:hidden}
+.bui-pop[hidden]{display:none}
+.bui-search{flex:0 0 auto;width:100%;margin:0 0 6px}
+.bui-search[hidden]{display:none}
+.bui-list{flex:1 1 auto;min-height:0;overflow:auto;margin:0;padding:0;list-style:none;outline:none}
+.bui-option{display:flex;align-items:center;gap:10px;min-height:42px;padding:5px 8px;border-radius:3px;cursor:pointer;font-size:.92rem}
+.bui-option:hover{background:rgba(183,138,51,.14)}
+.bui-option.is-active{background:rgba(183,138,51,.26);box-shadow:inset 3px 0 0 var(--gold)}
+.bui-option.is-on{font-weight:700}
+.bui-name{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.bui-hint,.bui-id{flex:0 0 auto;font:.72rem var(--font-ui);color:var(--ink-soft)}
+.bui-group{padding:8px 8px 4px;font:700 .64rem/1.2 var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.bui-empty{padding:10px 8px;color:var(--ink-soft);font-size:.9rem}
+.bui-more{margin:6px 0 0;font-size:.8rem}
+/* Number inputs: the same size everywhere, red when the value is refused (the title says why). */
+.bui-number{width:7em;max-width:100%}
+.field .bui-number{width:100%}
+.bui-number.is-invalid{border-color:var(--wax);box-shadow:0 0 0 2px rgba(139,47,39,.25)}
+.bui-unit-wrap{display:flex;align-items:center;gap:8px}
+.bui-unit-wrap .bui-number{flex:1 1 auto;min-width:0}
+.bui-unit{flex:0 0 auto;font:.82rem var(--font-ui);color:var(--ink-soft)}
+/* Add and remove buttons. */
+.bui-btn.bui-add::before{content:"+";margin-right:6px;font-weight:700}
+.bui-btn.bui-remove::before{content:"\00D7";margin-right:5px;font-weight:700}
+.bui-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0 4px}
+.bui-actions .note-text{margin:0}
+.bui-group-block{margin:0 0 18px}
+.bui-group-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.bui-group-head .subhead{margin:16px 0 8px}
+.bui-table td{white-space:normal;vertical-align:middle}
+.bui-table .bui-picker{min-width:180px}
+.bui-row-end{text-align:right;width:1%}
+.bui-share{font-variant-numeric:tabular-nums}
+.bui-more-settings{margin:4px 0 0}
+.bui-more-settings summary{cursor:pointer;font:700 .7rem var(--font-ui);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
+.note-text.bui-notice{padding:8px 12px;border:1px solid rgba(183,138,51,.6);border-left:4px solid var(--gold);border-radius:3px;
+  background:rgba(183,138,51,.12);color:var(--ink)}
+.bui-review{display:grid;grid-template-columns:minmax(120px,max-content) minmax(0,1fr);gap:6px 18px;margin:0 0 14px}
+.bui-review dt{font:700 .68rem/1.6 var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.bui-review dd{margin:0;color:var(--ink);overflow-wrap:anywhere}
+.bui-problems{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}
+.bui-problems li{padding:8px 12px;border:1px solid rgba(139,47,39,.35);border-left:4px solid var(--wax);border-radius:3px;
+  background:rgba(139,47,39,.07);font-size:.9rem}
+.note-text.bui-warn-head{margin-bottom:6px;color:var(--ink);font-weight:600}
+.note-text.bui-ok{color:var(--teal)}
+@media (max-width:640px){
+  /* Editable tables become one card per row on a phone, each cell under its own label: no sideways scroll. */
+  .bui-table-wrap{overflow:visible;border:0;background:none}
+  .bui-table,.bui-table tbody,.bui-table tr,.bui-table td{display:block;width:100%}
+  .bui-table thead{display:none}
+  .bui-table tr{margin:0 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.55)}
+  .bui-table td{padding:4px 0;border:0;text-align:left}
+  .bui-table td[data-label]::before{content:attr(data-label);display:block;margin-bottom:3px;font:700 .64rem/1.2 var(--font-ui);
+    letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+  .bui-table .bui-picker{min-width:0}
+  .bui-table .bui-number{width:100%}
+  .bui-row-end{width:auto}
+  .bui-review{grid-template-columns:minmax(0,1fr)}
+  .bui-review dd{margin-bottom:6px}
 }

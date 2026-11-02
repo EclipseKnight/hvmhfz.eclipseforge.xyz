@@ -119,10 +119,19 @@ does not fit its room is appended at the end of the file and the slot repointed,
 result is refused past the client's 32 KB quest buffer, and text Shift-JIS cannot hold is refused with the
 character named.
 
-**Page.** `quest-editor.html` with `js/quest-editor.js`: a Draft panel (save, download, submit, the account's
-drafts as links to `?draft=<id>`) then Text, Metadata, Monsters and spawns (Add monster, Remove), and Rewards
-(Add reward group, Add entry, Remove). Fields are bound straight onto the model, so what is posted is the
-model the server sent. The time limit is edited in minutes (the body field counts 1 800 ticks a minute).
+**Page.** `quest-editor.html` with `js/quest-editor.js`, laid out in the order a quest is built (2 Nov 2026):
+Your drafts (links to `?draft=<id>`), Basics (name, time limit, players, contract fee, reward money, item
+needed to enter; quest class under "More settings"), Map and start area, Objectives (with the quest card's
+monster pictures), Monsters and their areas, Rewards and supplies (supply box, reward groups with each item's
+share of the group's weight), Quest text, then Review and submit (a summary, the problems the page can see,
+and save, download, submit). Choosing a map refreshes every area list to that map's areas
+(`data/map-areas.json`, the client's own per-map lists, written by `dev/make-builder-data.py`): a start area
+outside the new map moves to the map's first area, and monsters left outside it are marked and listed, with
+the reason in words. The controls (pickers with icons, number inputs, add and remove buttons) come from
+`js/builder-ui.js`, shared with the Road builder. Fields are bound straight onto the model, so what is posted
+is the model the server sent; the layout change was checked by building the same quest before and after and
+comparing the posted JSON byte for byte. The map picker writes `body.mapId` only, as before: the header's
+map record (`model.map`) is not edited by the page. The time limit is edited in minutes (the body field counts 1 800 ticks a minute).
 "Create a quest" on `quests.html` and on the account page's Custom quests tab opens it; the quest page no
 longer carries an edit action, and `?id=` shows the server's refusal instead of a form.
 

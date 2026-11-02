@@ -24,7 +24,8 @@
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
-    <script src="/js/quest-editor.js?v=9" defer></script>
+    <script src="/js/builder-ui.js?v=1" defer></script>
+    <script src="/js/quest-editor.js?v=10" defer></script>
   </head>
 
   <body class="public-page">
@@ -86,24 +87,14 @@
 
       <section class="panel" id="editor-draft-panel">
         <div class="panel-head">
-          <h2>Draft</h2>
+          <h2>Your drafts</h2>
           <span class="panel-note" id="editor-draft-note">not saved yet</span>
         </div>
-        <p class="note-text">You are building a new quest from nothing. Nothing here reads or changes a live
-          quest file. Save keeps this draft on the server under your account; Download gives you the .bin
-          exactly as the server would serve it. Submit puts it in your quest counter as a testing quest that
-          only you can load, and the server assigns its quest id; the sandbox copy has its rewards emptied.</p>
-        <div class="editor-actions">
-          <button class="btn btn-primary btn-small" id="editor-save" type="button" disabled>Save draft</button>
-          <button class="ghost-btn small" id="editor-download" type="button" disabled>Download .bin</button>
-          <button class="ghost-btn small" id="editor-submit" type="button" disabled>Submit for testing</button>
-          <span class="note-text" id="editor-status" role="status" aria-live="polite"></span>
-        </div>
-        <h3 class="subhead">Your drafts</h3>
-        <p class="note-text">A draft is yours until you submit it. Open one to carry on building.</p>
+        <p class="note-text">You build a new quest from nothing; nothing here reads or changes a live quest file.
+          A draft stays private to your account until you submit it. Open one to carry on building.</p>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>Quest</th><th>Revision</th><th>Last saved</th></tr></thead>
+            <thead><tr><th>Quest</th><th class="num">Revision</th><th>Last saved</th></tr></thead>
             <tbody id="editor-drafts"><tr><td colspan="3" class="empty-cell">Loading your drafts.</td></tr></tbody>
           </table>
         </div>
@@ -113,6 +104,23 @@
         <p class="skeleton-line w60"></p>
         <p class="skeleton-line w40"></p>
       </div>
+
+      <section class="panel bui-section" id="editor-review-panel" hidden>
+        <div class="panel-head">
+          <h2>Review and submit</h2>
+          <span class="panel-note">save, download or test</span>
+        </div>
+        <div id="editor-review" aria-live="polite"></div>
+        <p class="note-text">Save draft keeps the quest on the server under your account. Download gives you the
+          .bin exactly as the server would serve it. Submit for testing puts it in your quest counter as a testing
+          quest only you can load; the server assigns its quest id, and the testing copy pays no rewards.</p>
+        <div class="editor-actions">
+          <button class="btn btn-primary btn-small" id="editor-save" type="button" disabled>Save draft</button>
+          <button class="ghost-btn small" id="editor-download" type="button" disabled>Download .bin</button>
+          <button class="ghost-btn small" id="editor-submit" type="button" disabled>Submit for testing</button>
+          <span class="note-text" id="editor-status" role="status" aria-live="polite"></span>
+        </div>
+      </section>
     </main>
 
     <footer class="site-foot">

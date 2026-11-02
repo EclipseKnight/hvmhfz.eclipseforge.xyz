@@ -13,6 +13,7 @@
   var TOKEN_KEY = "hvmhfz.token";
   var Rules = window.RoadRules;
   var Summary = window.RoadSummary;
+  var UI = window.BuilderUI; // shared builder controls (js/builder-ui.js), the same as the Quest builder's
 
   var pool = null;          // GET /api/road/pool
   var cycle = null;         // GET /api/road/cycle (null: none)
@@ -28,7 +29,7 @@
   var readOnly = false;
   var refreshers = [];      // one function per drawn row; each updates its row from `road` and `problems`
   var openTables = {};      // "mode:table" -> true while its <details> is open
-  var monsterSelect = null; // a prebuilt <select> of the monsters, cloned for each row
+  var monsterOptions = null; // the picker's monster list, built once: [with None, without None]
   var timer = null;
 
   /* ---------- helpers ---------- */
@@ -256,20 +257,14 @@
       return true;
     });
     all.forEach(function (p) {
-      var item = el("li");
-      item.appendChild(el("span", "badge", p.rule));
-      item.appendChild(document.createTextNode(p.message));
+      var item = el("li", null, p.message);
+      item.title = "Rule: " + p.rule;
       list.appendChild(item);
     });
     $("road-problems-note").textContent = all.length ? all.length + (all.length === 1 ? " problem" : " problems") : "no problems found";
     if (!all.length) {
-      var ok = el("li", "empty-state", "No problems found. The server also checks the file size when you submit.");
-      ok.style.borderLeftColor = "var(--teal)";
-      ok.style.background = "rgba(46,91,78,.08)";
-      ok.style.borderColor = "rgba(46,91,78,.4)";
-      list.appendChild(ok);
+      list.appendChild(el("li", "is-ok", "No problems found. The server also checks the file size when you submit."));
     }
-    $("road-json").textContent = JSON.stringify(edits, null, 2);
     function count(me) { return me ? (me.floors || []).length + (me.entries || []).length : 0; }
     var changes = (edits.modes || []).reduce(function (n, me) { return n + count(me); }, 0);
     var solo = count(modeEdit(1, false));
@@ -338,20 +333,14 @@
     var box = el("div", "road-floor-points");
     var inputs = [["points", "Points ×"], ["points2", "Second points ×"]].map(function (pair) {
       var field = pair[0];
-      var label = el("label", null, pair[1] + " ");
-      var input = el("input");
-      input.type = "number";
-      input.min = "0.01";
-      input.max = String(policyList("maxPoints"));
-      input.step = "any";
-      input.setAttribute("aria-label", pair[1].replace(" ×", " multiplier") + " for record " + number);
-      input.disabled = !modeAllowed || policyList("floorFields").indexOf(field) < 0;
-      input.addEventListener("input", function () {
-        var n = Number(input.value);
-        if (input.value === "" || !isFinite(n)) return;
-        setFloorField(m, number, field, n);
-        refreshSoon();
+      var label = el("label", null, pair[1]);
+      // Any number is passed on: a value the rules refuse (0, or over the cap) is listed under Checks.
+      var input = UI.numberInput({
+        step: "any",
+        label: pair[1].replace(" ×", " multiplier") + " for record " + number,
+        onChange: function (n) { setFloorField(m, number, field, n); refreshSoon(); }
       });
+      input.disabled = !modeAllowed || policyList("floorFields").indexOf(field) < 0;
       label.appendChild(input);
       box.appendChild(label);
       return { field: field, input: input };
@@ -366,7 +355,7 @@
         inputs.forEach(function (x) {
           var value = fe && fe[x.field] !== undefined ? fe[x.field] : f[x.field];
           if (value !== f[x.field]) changed = true;
-          if (document.activeElement !== x.input) x.input.value = String(value);
+          x.input.setValue(value);
         });
         return changed;
       }
@@ -386,26 +375,23 @@
       var number = index + 1;
       var row = el("div", "road-floor");
       row.appendChild(el("span", "road-floor-name", "Record " + number + ": " + floorLabel(m, index).toLowerCase()));
-      var select = el("select");
-      select.setAttribute("aria-label", "Table for record " + number);
-      select.disabled = !allowed;
-      select.addEventListener("change", function () {
-        setFloorField(m, number, "table", Number(select.value));
-        refreshSoon();
-        // the row's own class and the selected value follow `road` in refresh
+      // the row's own class and the chosen table follow `road` in refresh
+      var select = UI.picker({
+        options: [], value: base.table, compact: true, label: "Table for record " + number, disabled: !allowed,
+        unknownLabel: function (t) { return "Table " + t; },
+        onChange: function (t) { setFloorField(m, number, "table", t); refreshSoon(); }
       });
-      row.appendChild(select);
-      var open = el("button", "ghost-btn small", "Open");
-      open.type = "button";
-      open.title = "Open this floor's table below";
-      open.addEventListener("click", function () {
+      row.appendChild(select.el);
+      var open = UI.button("Open", function () {
         var t = road.modes[m].floors[index].table;
         var details = $("road-table-" + m + "-" + t);
         if (!details) return;
         details.open = true;
         details.scrollIntoView({ block: "start" });
       });
+      open.title = "Open this floor's table below";
       row.appendChild(open);
+      var tableOptions = [];
       var points = pointsInputs(m, number, modeAllowed);
       row.appendChild(points.box);
       box.appendChild(row);
@@ -413,11 +399,12 @@
       refreshers.push(function () {
         var f = road.modes[m].floors[index];
         var count = Math.max(tableCount(m), f ? f.table + 1 : 0);
-        if (select.options.length !== count) {
-          clear(select);
-          for (var t = 0; t < count; t++) select.appendChild(new Option("Table " + t, String(t)));
+        if (tableOptions.length !== count) {
+          tableOptions = [];
+          for (var t = 0; t < count; t++) tableOptions.push({ value: t, label: "Table " + t });
+          select.setOptions(tableOptions);
         }
-        select.value = String(f.table);
+        select.setValue(f.table);
         var refused = points.refresh(f);
         row.classList.toggle("is-changed", refused || f.table !== base.table || f.points !== base.points || f.points2 !== base.points2);
         row.classList.toggle("has-problem", problemHere(function (p) { return p.mode === m && p.floor === number; }));
@@ -428,37 +415,26 @@
   /* ---------- tables ---------- */
 
   // Any of the 176 known monsters may go on the Road (owner, 2026-10-28). The ones the live Road uses come
-  // first; the others are new to the Road, so they are listed apart.
-  function buildMonsterSelect() {
-    monsterSelect = el("select");
-    monsterSelect.appendChild(new Option("None", "0"));
+  // first; the others are new to the Road, so they are listed apart. Each option shows the monster's icon.
+  function buildMonsterOptions() {
     var onRoad = {};
     Rules.monsters(pool.base).forEach(function (id) { onRoad[id] = true; });
-    var groups = [el("optgroup"), el("optgroup")];
-    groups[0].label = "On the Road now";
-    groups[1].label = "New to the Road";
     var ids = [];
     for (var id = 1; id <= Rules.KNOWN_MONSTERS; id++) ids.push(id);
-    ids.sort(function (a, b) { return monsterName(a).localeCompare(monsterName(b)) || a - b; }).forEach(function (id) {
-      groups[onRoad[id] ? 0 : 1].appendChild(new Option(monsterName(id) + " (" + id + ")", String(id)));
+    ids.sort(function (a, b) {
+      return (onRoad[a] ? 0 : 1) - (onRoad[b] ? 0 : 1) || monsterName(a).localeCompare(monsterName(b)) || a - b;
     });
-    groups.forEach(function (group) { if (group.firstChild) monsterSelect.appendChild(group); });
+    var list = ids.map(function (i) {
+      return { value: i, label: monsterName(i), group: onRoad[i] ? "On the Road now" : "New to the Road" };
+    });
+    monsterOptions = [[{ value: 0, label: "None" }].concat(list), list];
   }
 
-  // A copy of the monster list (setMonsterValue picks the value; an id the list does not know stays visible).
-  function monsterSelectFor(withNone, label) {
-    var select = monsterSelect.cloneNode(true);
-    if (!withNone) select.removeChild(select.firstChild);
-    select.setAttribute("aria-label", label);
-    return select;
-  }
-
-  function setMonsterValue(select, id) {
-    var value = String(id);
-    var known = false;
-    for (var i = 0; i < select.options.length; i++) if (select.options[i].value === value) known = true;
-    if (!known) select.appendChild(new Option(monsterName(id) + " (" + id + ")", value));
-    select.value = value;
+  function monsterPicker(withNone, label, disabled, onChange) {
+    return UI.picker({
+      options: monsterOptions[withNone ? 0 : 1], value: 0, kind: "monster", compact: true, showIds: true,
+      label: label, disabled: disabled, unknownLabel: monsterName, onChange: onChange
+    });
   }
 
   function entryRow(m, t, e) {
@@ -467,39 +443,33 @@
     var fields = policyList("entryFields");
     function can(field) { return editable && fields.indexOf(field) >= 0; }
 
-    row.appendChild(el("td", "rank", String(e)));
-    var monsterCell = el("td");
-    var monster = monsterSelectFor(false, "Monster of entry " + e);
-    monster.disabled = !can("monster");
-    monster.addEventListener("change", function () { setEntryField(m, t, e, "monster", Number(monster.value)); refreshSoon(); });
-    monsterCell.appendChild(monster);
-    row.appendChild(monsterCell);
-
-    var secondCell = el("td");
-    var second = monsterSelectFor(true, "Second monster of entry " + e);
-    second.disabled = !can("monster2");
-    second.addEventListener("change", function () { setEntryField(m, t, e, "monster2", Number(second.value)); refreshSoon(); });
-    secondCell.appendChild(second);
-    row.appendChild(secondCell);
-
-    var weightCell = el("td");
-    var weight = el("input");
-    weight.type = "number";
-    weight.min = "0";
-    weight.max = String(policyList("maxWeight"));
-    weight.step = "1";
-    weight.setAttribute("aria-label", "Weight of entry " + e);
-    weight.disabled = !can("weight");
-    weight.addEventListener("input", function () {
-      var n = Number(weight.value);
-      if (weight.value === "" || !Number.isInteger(n) || n < 0) return;
-      setEntryField(m, t, e, "weight", n);
-      refreshSoon();
+    function cell(label, node, cls) {
+      var td = el("td", cls);
+      td.setAttribute("data-label", label);
+      if (node) td.appendChild(node);
+      row.appendChild(td);
+      return td;
+    }
+    cell("Entry", document.createTextNode(String(e)), "rank");
+    var monster = monsterPicker(false, "Monster of entry " + e, !can("monster"), function (v) {
+      setEntryField(m, t, e, "monster", v); refreshSoon();
     });
-    weightCell.appendChild(weight);
-    row.appendChild(weightCell);
+    cell("Monster", monster.el);
+    var second = monsterPicker(true, "Second monster of entry " + e, !can("monster2"), function (v) {
+      setEntryField(m, t, e, "monster2", v); refreshSoon();
+    });
+    cell("Second monster", second.el);
+
+    // Whole numbers from 0 are passed on; one over the rotation's maximum is listed under Checks.
+    var weight = UI.numberInput({
+      min: 0, label: "Weight of entry " + e,
+      onChange: function (n) { setEntryField(m, t, e, "weight", n); refreshSoon(); }
+    });
+    weight.disabled = !can("weight");
+    cell("Weight", weight);
 
     var forcedCell = el("td");
+    forcedCell.setAttribute("data-label", "Forced");
     var forced = el("input");
     forced.type = "checkbox";
     forced.setAttribute("aria-label", "Forced entry " + e);
@@ -508,16 +478,15 @@
     forcedCell.appendChild(forced);
     row.appendChild(forcedCell);
 
-    var level = el("td", "num");
-    row.appendChild(level);
+    var level = cell("Level", null, "num");
 
     refreshers.push(function () {
       var en = road.modes[m].tables[t][e];
       if (!en) { row.hidden = true; return; }
       row.hidden = false;
-      setMonsterValue(monster, en.monster);
-      setMonsterValue(second, en.monster2);
-      if (document.activeElement !== weight) weight.value = String(en.weight);
+      monster.setValue(en.monster);
+      second.setValue(en.monster2);
+      weight.setValue(en.weight);
       forced.checked = (en.flags & Rules.FLAG_FORCED) !== 0;
       level.textContent = String(en.level);
       var base = baseEntry(m, t, e);
@@ -532,10 +501,12 @@
   function drawTableBody(m, t, body) {
     clear(body);
     var wrap = el("div", "table-wrap");
-    var table = el("table", "data-table road-entries");
+    var table = el("table", "data-table bui-table road-entries");
+    table.setAttribute("data-nosort", "");
+    wrap.className += " bui-table-wrap";
     var head = el("thead");
     var tr = el("tr");
-    ["#", "Monster", "Second monster", "Weight", "Forced", "Level"].forEach(function (label, i) {
+    ["Entry", "Monster", "Second monster", "Weight", "Forced", "Level"].forEach(function (label, i) {
       tr.appendChild(el("th", i === 5 ? "num" : null, label));
     });
     head.appendChild(tr);
@@ -545,13 +516,10 @@
     wrap.appendChild(table);
     body.appendChild(wrap);
 
-    var actions = el("div", "admin-actions");
-    var add = el("button", "ghost-btn small", "Add an entry");
-    add.type = "button";
-    var remove = el("button", "ghost-btn small", "Remove the last added entry");
-    remove.type = "button";
-    var reset = el("button", "ghost-btn small", "Reset this table to the base");
-    reset.type = "button";
+    var actions = el("div", "bui-actions");
+    var add = UI.button("Add an entry", function () { addEntry(m, t); refresh(); }, "add");
+    var remove = UI.button("Remove the last added entry", function () { removeLastAdded(m, t); refresh(); }, "remove");
+    var reset = UI.button("Reset this table to the base", function () { resetTable(m, t); refresh(); });
     actions.appendChild(add);
     actions.appendChild(remove);
     actions.appendChild(reset);
@@ -575,9 +543,6 @@
       remove.disabled = !allowed || extra <= 0;
       reset.disabled = !allowed;
     });
-    add.addEventListener("click", function () { addEntry(m, t); refresh(); });
-    remove.addEventListener("click", function () { removeLastAdded(m, t); refresh(); });
-    reset.addEventListener("click", function () { resetTable(m, t); refresh(); });
     refreshers.forEach(function (fn) { fn(); }); // fill the rows just drawn from the current Road
   }
 
@@ -856,6 +821,7 @@
       request("/api/road/pool"),
       request("/api/road/cycle"),
       request("/api/account/characters").catch(function (error) { if (error.message === "signin") throw error; return []; }),
+      UI.loadIcons(["monsters"]),
       id ? request("/api/road/entries/" + encodeURIComponent(id)) : Promise.resolve(null),
       draftId ? request("/api/account/road-drafts/" + encodeURIComponent(draftId)).catch(function () { return null; }) : Promise.resolve(null)
     ];
@@ -863,8 +829,8 @@
       pool = data[0];
       cycle = data[1];
       characters = data[2] || [];
-      entry = data[3];
-      var draft = data[4];
+      entry = data[4];
+      var draft = data[5];
       currentDraft = draft ? draft.id : null;
       if (!pool || !pool.base || !pool.monsters) throw Object.assign(new Error("The Road data is not available."), { server: true });
 
@@ -877,7 +843,7 @@
       if (parsed.problem) alertBox("This entry's changes could not be read: " + parsed.problem.message);
       readOnly = !!entry && !(entry.mine && cycle && cycle.state === "submitting" && cycle.id === entry.cycleId);
 
-      buildMonsterSelect();
+      buildMonsterOptions();
       $("road-name").value = entry ? entry.name || "" : (draft ? draft.name || "" : "");
       $("road-description").value = entry ? entry.description || "" : "";
       $("road-name").disabled = readOnly;
