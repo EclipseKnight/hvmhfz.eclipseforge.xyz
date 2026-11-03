@@ -28,7 +28,8 @@ function exists(rel) { return fs.existsSync(path.join(ROOT, rel)); }
 // (id 164) got a minimal page from our own data (data/monsters/shagaru-magala.json, "ferias": false).
 const NO_PAGE = {};
 // Monster ids of data/monster-ids.json that are no monster to give a page: an NPC, a placeholder name,
-// and Mi Ru, which no quest uses and the guide has no data for.
+// and Mi Ru, which no quest uses and the guide has no data for (its Musou version, "musou-mi-ru", has a name-only
+// page without an id: the five Musou monsters of player report #26 have no ids of their own).
 const NO_PAGE_IDS = { 10: "Veggie Elder (NPC)", 100: "Unknown", 113: "Mi Ru (no guide data)" };
 
 const problems = [];
@@ -95,6 +96,13 @@ Object.keys(monsterIds).forEach(function (id) {
 });
 Object.keys(byId).forEach(function (id) {
   if (!(id in monsterIds)) fail("index: id " + id + " (on " + byId[id].join(", ") + ") is not in data/monster-ids.json");
+});
+
+// Player report #26: the Musou versions with no id of their own keep their pages.
+["pariapuria", "zinogre", "guanzorumu", "mi-ru", "elzelion"].forEach(function (k) {
+  const slug = "musou-" + k;
+  if (!index.some(function (m) { return m.slug === slug; })) fail("index: " + slug + " (player report #26) is missing");
+  if (!fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8").includes("monster.html?m=" + slug + "<")) fail("sitemap.xml: " + slug + " is missing");
 });
 
 problems.forEach(function (p) { console.log("FAIL: " + p); });

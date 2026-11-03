@@ -2847,5 +2847,70 @@
   "ids": [
    174
   ]
+ },
+ {
+  "slug": "musou-pariapuria",
+  "name": "Musou Pariapuria",
+  "category": "Flying Wyvern",
+  "icon": null,
+  "zone": null,
+  "hasHitzones": false,
+  "hasDrops": false,
+  "variants": [],
+  "iconKind": "render",
+  "render": null,
+  "ids": []
+ },
+ {
+  "slug": "musou-zinogre",
+  "name": "Musou Zinogre",
+  "category": "Fanged Wyvern",
+  "icon": null,
+  "zone": null,
+  "hasHitzones": false,
+  "hasDrops": false,
+  "variants": [],
+  "iconKind": "render",
+  "render": null,
+  "ids": []
+ },
+ {
+  "slug": "musou-guanzorumu",
+  "name": "Musou Guanzorumu",
+  "category": "Elder Dragon",
+  "icon": null,
+  "zone": null,
+  "hasHitzones": false,
+  "hasDrops": false,
+  "variants": [],
+  "iconKind": "render",
+  "render": null,
+  "ids": []
+ },
+ {
+  "slug": "musou-mi-ru",
+  "name": "Musou Mi Ru",
+  "category": "Elder Dragon",
+  "icon": null,
+  "zone": null,
+  "hasHitzones": false,
+  "hasDrops": false,
+  "variants": [],
+  "iconKind": "render",
+  "render": null,
+  "ids": []
+ },
+ {
+  "slug": "musou-elzelion",
+  "name": "Musou Elzelion",
+  "category": "Elder Dragon",
+  "icon": null,
+  "zone": null,
+  "hasHitzones": false,
+  "hasDrops": false,
+  "variants": [],
+  "iconKind": "render",
+  "render": null,
+  "ids": []
  }
 ]
