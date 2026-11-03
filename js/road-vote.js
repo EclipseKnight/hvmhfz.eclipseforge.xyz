@@ -206,6 +206,43 @@
   var SCHEDULE = "Each rotation takes Roads for 14 days, then holds a 7-day vote; the winner goes live when the vote"
     + " closes. A new rotation opens every 14 days, so one takes submissions while the one before it is voted on.";
 
+  function dateRows(dl, c) {
+    clear(dl);
+    [["Submissions open", c.submitOpens], ["Submissions close, voting starts", c.voteOpens || c.submitCloses],
+     ["Voting closes", c.voteCloses], ["Winner goes live", c.liveFrom || c.voteCloses]].forEach(function (row) {
+      if (!row[1]) return;
+      var box = el("div");
+      box.appendChild(el("dt", null, row[0]));
+      box.appendChild(el("dd", null, formatDate(row[1])));
+      dl.appendChild(box);
+    });
+  }
+
+  /* GET /api/public/road/cycle: the phase and dates, no entries. 404 (older API) and 204 (no cycle yet)
+     leave the page as it is without it. */
+  function publicCycle() {
+    return fetch(API + "/api/public/road/cycle", { cache: "no-store" })
+      .then(function (response) {
+        if (response.status !== 200) return null;
+        return response.json();
+      })
+      .then(function (c) {
+        if (!c || typeof c.number !== "number") return;
+        $("vote-cycle").hidden = false;
+        $("vote-cycle-head").textContent = "Rotation " + c.number;
+        var text = (STATES[c.state] || c.state || "") + ".";
+        if (c.name && (c.state === "live" || c.state === "approved")) text += " Winner: \u201c" + c.name + "\u201d.";
+        if (c.paused) text += " New rotations are paused for now.";
+        $("vote-cycle-text").textContent = text;
+        dateRows($("vote-cycle-dates"), c);
+        var n = c.next;
+        $("vote-next-text").textContent = n ? "Next up" + (n.number ? ", rotation " + n.number : "") + ": " + (STATES[n.state] || n.state || "") + "." : "";
+        if (n) dateRows($("vote-next-dates"), n); else clear($("vote-next-dates"));
+        $("vote-next-text").hidden = !n;
+      })
+      .catch(function () {});
+  }
+
   function publicView(message) {
     alertBox(message || "");
     $("vote-signin").hidden = false;
@@ -215,6 +252,8 @@
     $("vote-phase-text").textContent = "Loading";
     clear($("vote-phase"));
     $("vote-limits").textContent = SCHEDULE;
+    $("vote-cycle").hidden = true;
+    publicCycle();
     return fetch(API + "/api/public/road/versions", { cache: "no-store" })
       .then(function (response) {
         if (!response.ok) throw new Error("HTTP " + response.status);

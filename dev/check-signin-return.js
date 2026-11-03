@@ -47,6 +47,12 @@ const CYCLE = { id: 9, number: 4, state: "submitting", paused: false, submitOpen
   submitCloses: "2026-11-06T00:00:00Z", voteCloses: "2026-11-13T00:00:00Z", limits: { entriesPerAccount: 1, votesPerAccount: 3 },
   myEntries: [], myVotes: [] };
 
+const PUBLIC_CYCLE = { number: 4, name: null, state: "submitting", submitOpens: "2026-10-23T00:00:00Z",
+  submitCloses: "2026-11-06T00:00:00Z", voteOpens: "2026-11-06T00:00:00Z", voteCloses: "2026-11-13T00:00:00Z",
+  liveFrom: null, liveUntil: null, paused: false,
+  next: { number: 3, name: null, state: "voting", submitOpens: "2026-10-09T00:00:00Z", submitCloses: "2026-10-23T00:00:00Z",
+    voteOpens: "2026-10-23T00:00:00Z", voteCloses: "2026-10-30T00:00:00Z", liveFrom: "2026-10-30T00:00:00Z", liveUntil: null } };
+
 const failures = [];
 const check = (label, ok, detail) => { if (!ok) failures.push(label + (detail ? ": " + detail : "")); };
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Methods": "*" };
@@ -68,7 +74,12 @@ async function open(browser, token, opts) {
     const signed = (req.headers().authorization || "") === "Bearer " + TOKEN;
     let status = 200;
     let body = "[]";
-    if (p === "/api/public/road/versions") body = JSON.stringify(o.versions || VERSIONS);
+    if (p === "/api/public/road/cycle") {
+      // o.cycle: undefined = the public cycle, "missing" = old API (404), "none" = no cycle yet (204), or an object
+      if (o.cycle === "missing") { status = 404; body = ""; }
+      else if (o.cycle === "none") { status = 204; body = ""; }
+      else body = JSON.stringify(o.cycle || PUBLIC_CYCLE);
+    } else if (p === "/api/public/road/versions") body = JSON.stringify(o.versions || VERSIONS);
     else if (p.startsWith("/api/public/")) body = "[]";
     else if (!signed) { status = 401; body = "{}"; }
     else if (p === "/api/account") body = "{}";
@@ -150,6 +161,14 @@ async function roadPage(browser, base) {
   check("road signed out: live since", /Live since/.test(phase) && /2026/.test(phase), phase);
   check("road signed out: schedule", /14 days/.test(await r.page.textContent("#vote-limits")));
   check("road signed out: vote box", await r.page.isVisible("#vote-signin"));
+  await r.page.waitForFunction(() => !document.getElementById("vote-cycle").hidden, null, { timeout: 5000 }).catch(() => {});
+  check("road signed out: rotation head", (await r.page.textContent("#vote-cycle-head")) === "Rotation 4");
+  check("road signed out: phase in words", (await r.page.textContent("#vote-cycle-text")) === "Submissions are open.", await r.page.textContent("#vote-cycle-text"));
+  const local = await r.page.evaluate(() => new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date("2026-11-13T00:00:00Z")));
+  const dates = await r.page.textContent("#vote-cycle-dates");
+  check("road signed out: dates in local time", dates.includes(local) && /Voting closes/.test(dates), dates);
+  check("road signed out: next rotation", /Next up, rotation 3: Voting is open\./.test(await r.page.textContent("#vote-next-text"))
+    && /Winner goes live/.test(await r.page.textContent("#vote-next-dates")));
   check("road signed out: no entries panel", await r.page.isHidden("#vote-entries-panel"));
   const signin = await r.page.getAttribute("#vote-signin a.btn", "href");
   check("road signed out: sign-in comes back", signin === "/?next=%2Froad-vote.html#login-form", signin);
@@ -171,6 +190,24 @@ async function roadPage(browser, base) {
   await r.page.waitForFunction(() => /could not be loaded/.test(document.getElementById("vote-phase-text").textContent), null, { timeout: 5000 }).catch(() => {});
   check("road signed out: archive down", /could not be loaded/.test(await r.page.textContent("#vote-phase-text")));
   check("road signed out, archive down: vote box", await r.page.isVisible("#vote-signin"));
+  await r.page.close();
+
+  // the cycle endpoint missing (old API, 404), empty (204) or without a next rotation
+  for (const [tag, cycle] of [["404", "missing"], ["204", "none"]]) {
+    r = await open(browser, null, { cycle });
+    await r.page.goto(base + "/road-vote.html");
+    await r.page.waitForFunction(() => /Sky Ladder/.test(document.getElementById("vote-phase-text").textContent), null, { timeout: 5000 }).catch(() => {});
+    await r.page.waitForTimeout(300);
+    check("road cycle " + tag + ": current view", /Sky Ladder/.test(await r.page.textContent("#vote-phase-text")) && await r.page.isVisible("#vote-signin"));
+    check("road cycle " + tag + ": no rotation block", await r.page.isHidden("#vote-cycle"));
+    check("road cycle " + tag + ": errors", r.errors.length === 0, r.errors.join("; "));
+    await r.page.close();
+  }
+  r = await open(browser, null, { cycle: Object.assign({}, PUBLIC_CYCLE, { next: null, paused: true, state: "voting" }) });
+  await r.page.goto(base + "/road-vote.html");
+  await r.page.waitForFunction(() => !document.getElementById("vote-cycle").hidden, null, { timeout: 5000 }).catch(() => {});
+  check("road cycle: voting, paused", /^Voting is open\. New rotations are paused/.test(await r.page.textContent("#vote-cycle-text")));
+  check("road cycle: no next", await r.page.isHidden("#vote-next-text"));
   await r.page.close();
 
   // expired sign-in: the same public view
