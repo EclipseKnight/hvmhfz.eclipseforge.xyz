@@ -97,7 +97,9 @@ dev/check-road-summary.js  checks js/road-summary.js on a small made-up Road (no
 dev/make-road-data.py writes the Road tables into road-data.html from decoded Road files (rengoku-build decode)
 dev/check-road-data.py checks dev/make-road-data.py on two small made-up Roads (python3 dev/check-road-data.py)
 dev/check-road-rewards.js checks js/road-rewards.js on made-up reward rows, with and without boards
-dev/check-site.py     checks that every page has the same nav, footer and skip link
+dev/site-shell.py     writes the skip link, nav and footer into every page from dev/shell/ (nav.html, footer.html, pages.json)
+dev/check-site.py     checks that every page is in sync with dev/shell/, has the skip link and the shared scripts
+dev/check-site-shell.py checks dev/site-shell.py on a small made-up site
 dev/check-links.py    checks every local link, picture and anchor, the query parameters detail links use (the target page must read them; monster and quest ids must exist), links built in js/*.js, files scripts name, and sitemap.xml (python3 dev/check-links.py)
 dev/make-quest-monsters.py writes each quest's monsters in data/quests.json from its Japanese objective, in the field guide's names
 dev/check-catalog-monsters.js checks that every quest catalog monster has a monster page, that make-quest-monsters.py has run, and the monster index (node dev/check-catalog-monsters.js)
@@ -117,12 +119,25 @@ Static site, no build step. Push to `main` and GitHub Pages serves it.
 
 ## Site shell
 
-There are no templates: every page carries its own copy of the same header nav and footer.
+The skip link, header nav and footer come from one source in `dev/shell/`; `dev/site-shell.py` writes them
+into every page, between `<!-- site-shell:header ... -->` / `<!-- /site-shell:header -->` and
+`<!-- site-shell:footer ... -->` / `<!-- /site-shell:footer -->`. Don't edit a page between those markers:
+the next run overwrites it, and `dev/check-site.py` fails while a page differs from the source.
+
+- `dev/shell/nav.html`: the skip link and header nav, with nothing marked current.
+- `dev/shell/footer.html`: the footer.
+- `dev/shell/pages.json`: one line per page: `page` (file), `group` (the menu it sits under, or `null`),
+  `label` (its short name), `title` (its `<title>`, unescaped; must match the page) and `current` (the nav
+  link it marks, or `null`). The script marks that link `aria-current="page"` and its menu button
+  `is-current`, and checks that `group` is that menu.
+
+The script also adds `<script src="/js/search.js" defer></script>` before `</body>` on a page that doesn't
+load it. It keeps everything else on the page (head, main, scripts).
 
 - Nav, same on every page: four menus and three links.
-  - **Database:** Monsters, Catalog, Set builder.
+  - **Database:** Monsters, Catalog, Quests, Set builder.
   - **Community:** Hunters, Guilds, Leaderboards, Hunting Road.
-  - **Server:** Worlds, Events, Changelog.
+  - **Server:** Worlds, Events, Changelog, API.
   - **Guides:** Windows guide, Linux guide, Roads guide, Frontier guide.
   - Then Report, Account and Discord. `js/search.js` adds the Search button in front.
 
@@ -135,15 +150,21 @@ There are no templates: every page carries its own copy of the same header nav a
   `wide` to their `main` and use the screen up to `--wrap-wide` (1760px); reading pages (guides, changelog, report)
   keep `--wrap` (1120px). Below 1340px the nav folds behind the Menu button.
 - Each page also has the skip link (`<a class="skip-link" href="#content">`), a `main` with `id="content"`,
-  the footer `footer.site-foot` (with the Privacy link), `/css/styles.css`, `/js/nav.js`, `/js/background.js` and `/js/consent.js`.
+  the footer `footer.site-foot` (with the Privacy link), `/css/styles.css`, `/js/nav.js`, `/js/background.js`, `/js/consent.js` and `/js/search.js`.
 - The bar is sticky. Below 980px wide `js/nav.js` folds the links behind a Menu button; without JavaScript
   they wrap into a grid under the logo.
 
-To change the nav or footer, change it on every page and in `NAV` in `dev/check-site.py`, then run:
+To change the menu or footer: edit `dev/shell/nav.html` or `dev/shell/footer.html`, then run the script.
+To add a page: write it with any skip link + `<header class="site-nav">` and `<footer class="site-foot">`
+(the script puts the markers around them), add its line to `dev/shell/pages.json`, then run:
 
 ```
+python3 dev/site-shell.py      # rewrites the pages that are out of date; "site shell in sync"
 python3 dev/check-site.py      # "site shell OK", exit code 0
+python3 dev/check-site-shell.py  # tests the script itself on a made-up site
 ```
+
+A branch that conflicts in a page's header or footer: take either side, then run `python3 dev/site-shell.py`.
 
 It also reports local links and images that point at missing files.
 

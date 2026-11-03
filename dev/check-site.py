@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """Checks that every page shares the same site shell.
 
-The site has no templates: each page carries its own copy of the nav and footer.
-This script keeps those copies in step. For every *.html page in the site root it checks:
-  - the header nav has the same links, in the same order, as NAV below;
-  - at most one nav link is marked aria-current, and it is the one the page should mark;
-  - the footer is identical on every page;
-  - the page has the skip link, a main#content, styles.css, nav.js, background.js and consent.js;
+Each page carries a copy of the skip link, header nav and footer, written by dev/site-shell.py from
+dev/shell/ (nav.html, footer.html, pages.json). For every *.html page in the site root it checks:
+  - the page is in dev/shell/pages.json, and its shell is exactly what dev/site-shell.py would write
+    (same nav, the right link marked aria-current, same footer); every Frontier guide page marks the
+    "Frontier guide" link;
+  - the page has the skip link, a main#content, styles.css, nav.js, background.js, consent.js and search.js;
   - the footer links the privacy policy;
   - every local href/src points at a file that exists, and so does every picture in js/background.js.
 
 Usage: python3 dev/check-site.py   (exit code 0 = all good, 1 = problems, listed)
 """
+import importlib.util
 import pathlib
 import re
 import sys
@@ -19,60 +20,24 @@ from html.parser import HTMLParser
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
-# The one nav, in order. Change it here and on every page together.
-NAV = [
-    ("/monsters.html", "Monsters"),
-    ("/catalog.html", "Catalog"),
-    ("/quests.html", "Quests"),
-    ("/set-builder.html", "Set builder"),
-    ("/hunters.html", "Hunters"),
-    ("/guilds.html", "Guilds"),
-    ("/leaderboards.html", "Leaderboards"),
-    ("/road-vote.html", "Hunting Road"),
-    ("/worlds.html", "Worlds"),
-    ("/events.html", "Events"),
-    ("/changelog.html", "Changelog"),
-    ("/api.html", "API"),
-    ("/guide-windows.html", "Windows guide"),
-    ("/guide-linux.html", "Linux guide"),
-    ("/guide-roads.html", "Roads guide"),
-    ("/guide-frontier.html", "Frontier guide"),
-    ("/report.html", "Report"),
-    ("/account.html", "Account"),
-    ("https://discord.gg/YuE42eh", "Discord"),
-]
-# Which nav link a page marks as current. Pages not listed mark their own link; None marks nothing.
-CURRENT = {
-    "index.html": None,
-    "404.html": None,
-    # The admin page is not in the nav; the account page links it for admins.
-    "admin.html": None,
-    # The privacy policy is linked from the footer and the cookie banner, not the nav.
-    "privacy.html": None,
-    # One monster's page sits under the Monsters guide.
-    "monster.html": "/monsters.html",
-    "quest.html": "/quests.html",
-    # The quest editor edits one quest, so it sits under the same catalog link.
-    "quest-editor.html": "/quests.html",
-    # The Road builder, the winners list and the Road data sit under the Hunting Road link (the vote page).
-    "road.html": "/road-vote.html",
-    "road-history.html": "/road-vote.html",
-    "road-data.html": "/road-vote.html",
-}
+# The shell itself (skip link, header nav, footer) comes from dev/shell/ and is written into the
+# pages by dev/site-shell.py; this checks that every page is in sync with it.
+sys.dont_write_bytecode = True  # no __pycache__ in the site
+spec = importlib.util.spec_from_file_location("site_shell", ROOT / "dev" / "site-shell.py")
+site_shell = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(site_shell)
 
 
 class PageParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.stack = []          # open tags: (tag, attrs)
-        self.nav_links = []      # (href, text, aria-current)
         self.footer = []         # footer markup, as a list of tokens
         self.local_refs = []
         self.ids = set()
         self.classes = set()
         self.scripts = []
         self.stylesheets = []
-        self._link = None
 
     def _inside(self, tag, cls=None):
         return any(t == tag and (cls is None or cls in (a.get("class") or "").split()) for t, a in self.stack)
@@ -92,15 +57,10 @@ class PageParser(HTMLParser):
             self.stylesheets.append(attrs.get("href"))
         if self._inside("footer", "site-foot"):
             self.footer.append(("start", tag, tuple(sorted(attrs.items()))))
-        if tag == "a" and self._inside("header", "site-nav") and self._inside("nav"):
-            self._link = [attrs.get("href"), "", attrs.get("aria-current")]
         if tag not in ("img", "meta", "link", "br", "input", "hr"):
             self.stack.append((tag, attrs))
 
     def handle_endtag(self, tag):
-        if tag == "a" and self._link is not None:
-            self.nav_links.append((self._link[0], self._link[1].strip(), self._link[2]))
-            self._link = None
         if self._inside("footer", "site-foot"):
             self.footer.append(("end", tag))
         # Void tags written as <img /> also arrive here; only close tags that are open.
@@ -109,8 +69,6 @@ class PageParser(HTMLParser):
                 pass
 
     def handle_data(self, data):
-        if self._link is not None:
-            self._link[1] += data
         if self._inside("footer", "site-foot") and data.strip():
             self.footer.append(("text", " ".join(data.split())))
 
@@ -126,16 +84,6 @@ def check(root):
         page = PageParser()
         page.feed(path.read_text(encoding="utf-8"))
 
-        links = [(href, text) for href, text, _ in page.nav_links]
-        if links != NAV:
-            problems.append(f"{name}: nav links differ from NAV: {links}")
-        current = [href for href, _, cur in page.nav_links if cur == "page"]
-        # Every Frontier handbook page sits under the handbook's one nav link.
-        default = "/guide-frontier.html" if name.startswith("guide-frontier-") else "/" + name
-        expected = CURRENT.get(name, default)
-        if current != ([expected] if expected else []):
-            problems.append(f"{name}: aria-current on {current or 'nothing'}, expected {expected or 'nothing'}")
-
         footers[name] = page.footer
         if "skip-link" not in page.classes:
             problems.append(f"{name}: no skip link")
@@ -143,7 +91,7 @@ def check(root):
             problems.append(f"{name}: no element with id=content for the skip link")
         if "/css/styles.css" not in page.stylesheets:
             problems.append(f"{name}: does not load /css/styles.css")
-        for script in ("/js/nav.js", "/js/background.js", "/js/consent.js"):
+        for script in ("/js/nav.js", "/js/background.js", "/js/consent.js", "/js/search.js"):
             if script not in page.scripts:
                 problems.append(f"{name}: does not load {script}")
         for ref in page.local_refs:
@@ -153,14 +101,17 @@ def check(root):
             if not (root / target.lstrip("/")).is_file():
                 problems.append(f"{name}: {ref} does not exist")
 
-    first = pages[0].name
     for name, footer in footers.items():
         if not footer:
             problems.append(f"{name}: no footer.site-foot")
-        elif footer != footers[first]:
-            problems.append(f"{name}: footer differs from {first}")
-    if footers and ("start", "a", (("href", "/privacy.html"),)) not in footers[first]:
-        problems.append(f"{first}: footer has no link to /privacy.html")
+    if 'href="/privacy.html"' not in (root / "dev/shell/footer.html").read_text(encoding="utf-8"):
+        problems.append("dev/shell/footer.html: no link to /privacy.html")
+    shell = site_shell.load(root)
+    for name, entry in shell["pages"].items():
+        # Every Frontier handbook page sits under the handbook's one nav link.
+        if name.startswith("guide-frontier") and entry.get("current") != "/guide-frontier.html":
+            problems.append(f"dev/shell/pages.json: {name} should mark /guide-frontier.html as current")
+    problems += site_shell.problems(root, write=False)
 
     # The background pictures: the quoted names in the IMAGES list of js/background.js.
     listed = re.search(r"var IMAGES = \[(.*?)\];", (root / "js/background.js").read_text(encoding="utf-8"), re.S)

@@ -29,6 +29,7 @@
   </head>
 
   <body class="public-page">
+    <!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->
     <a class="skip-link" href="#content">Skip to content</a>
     <header class="site-nav">
       <div class="wrap">
@@ -36,7 +37,7 @@
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
         <nav id="site-menu" aria-label="Main">
           <div class="nav-group">
-            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-database">Database</button>
             <div class="nav-menu" id="nav-database">
               <a class="navlink" href="/monsters.html">Monsters</a>
               <a class="navlink" href="/catalog.html">Catalog</a>
@@ -77,6 +78,7 @@
         </nav>
       </div>
     </header>
+    <!-- /site-shell:header -->
 
     <main id="content" class="wrap page wide">
       <header class="page-head">
@@ -90,6 +92,7 @@
       </div>
     </main>
 
+    <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
     <footer class="site-foot">
       <div class="wrap">
         <nav class="foot-links" aria-label="Footer">
@@ -107,6 +110,7 @@
         <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
       </div>
     </footer>
+    <!-- /site-shell:footer -->
     <script src="/js/search.js" defer></script>
   </body>
 </html>
