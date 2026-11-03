@@ -7,7 +7,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | Path | What it does |
 |---|---|
 | `/` | Home: a hero with two buttons ("New here? Start playing" to the New here row, "Already playing? Sign in" to the form), the sign-in form beside it (after the tiles on screens below 1160px), one row of tiles per audience (New here, Play, Community, Tools, Account; each tile a guide card picture or monster icon that is already on the site) and "What's new". After a successful login it hands over to `?next=` when that is a path on this site (`js/signin-next.js`: starts with `/`, no `//`, no backslash, scheme, space or control character, not the home page itself; the form then says why, e.g. "Sign in to use the Quest builder"), else to `/account.html`. |
-| `/account.html` | Signed in view: overview (with the Hunting Road rewards and a character picker to claim them), characters, storage, hunt log, guild and account. Without a valid session it sends the visitor to `/?next=/account.html...#login-form`, and back after sign-in; signing out goes to `/`. |
+| `/account.html` | Signed in view: overview (with the Hunting Road rewards and a character picker to claim them), characters, storage, hunt log, guild, custom quests, backups and account. Backups: download a character's backup zip, import a file into a character (preview, then confirm) and the account's imports; "coming soon" until the API has the account endpoints (`docs/character-backup-web.md`). Without a valid session it sends the visitor to `/?next=/account.html...#login-form`, and back after sign-in; signing out goes to `/`. |
 | `/monsters.html` | Monster field guide: search by name or species, cards link to full hitzone, HP and drop pages. `?q=` opens it searching. Hunt counts match the server's by monster id (`ids` in `data/monsters/index.json`). |
 | `/monster.html?m=slug` | One monster: hitzones normal and enraged, HP by level, stagger limits, maps, every carve table, Henshu/GR/Zenith forms, and a link to its quests. `slug` is `data/monsters/<slug>.json`; older links with the entry's `oldSlug` or `formerSlugs` still open it. An entry made from our own data instead of the field guide's tables (Shagaru Magala, id 164, Mi Ru, id 113, Unknown, id 100, and the five Musou versions without ids of their own, `musou-pariapuria`, `-zinogre`, `-guanzorumu`, `-mi-ru`, `-elzelion`: name, quests, a short `about` note, optional `questsHref`/`questsLabel` for the quest link; `"ferias": false` drops the Ferias credit) shows empty tables. |
 | `/events.html` | Live server events, the event quest pool and the Festa prize table. |
@@ -38,7 +38,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 
 ```
 index.html            home and sign in
-account.html          signed in account view (tabs: overview, characters, storage, hunts, guild, account)
+account.html          signed in account view (tabs: overview, characters, storage, hunts, guild, custom quests, backups, account)
 guilds.html           guild directory and detail
 hunters.html          hunter directory and profile
 leaderboards.html     timed hunt leaderboards and guild RP
@@ -84,6 +84,8 @@ js/road-vote.js       Hunting Road vote page
 js/road-history.js    Hunting Road past winners
 js/road-rewards.js    Hunting Road rewards on the account page: labels and the claim body per board (design, score); also runs under node
 js/account.js         account page, including storage and hunt log
+js/account-backup.js  account page, Backups tab: download, import with preview and confirm, import history (docs/character-backup-web.md)
+js/backup-file.js     backup zips: writes the bot's /backup layout from the API's answer, reads our zips, older zips and Erupe export JSON for an import; also runs under node
 js/guilds.js          guild directory and detail
 js/hunters.js         hunter directory and profile
 js/leaderboards.js    leaderboards, from /api/public/leaderboards/hunts and the guild list
@@ -122,6 +124,8 @@ dev/check-quest-fields.js checks data/quest-fields.json against the API codec, j
 dev/check-exact-links.js checks in headless Chromium, against a fake API with and without the ids API 5b6d085 added, that hunter and guild names link by id (else by name) and that a refused quest upload or Road draft save shows the API's message (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-exact-links.js)
 dev/check-signin-next.js checks js/signin-next.js: same-site paths only, hostile values refused (node dev/check-signin-next.js)
 dev/check-report-signin.js checks in headless Chromium, against a fake API, report.html: signed out or expired shows the Sign in button (back to the report page) and no forms, signed in sends the token, a 401 asks to sign in again and keeps what was typed (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-report-signin.js)
+dev/check-backup-file.js checks js/backup-file.js on made-up zips and JSON, with Python's zipfile (node dev/check-backup-file.js)
+dev/check-account-backup.js checks the account page's Backups tab in headless Chromium against a fake API: coming soon on 404, download, preview, cancel, confirm, history, refusals (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-account-backup.js)
 dev/check-signin-return.js checks in headless Chromium, against a fake API, that signed-out visits to the Road builder, Quest builder and account page land on the sign-in form with ?next= and a note, that a saved sign-in goes on to next (never off the site), and road-vote.html's public view (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-signin-return.js)
 dev/check-sky.js     checks sky-corridor.html and the hunter Sky Corridor tab in headless Chromium against a fake API (sample data, empty, 404, tracking off), with screenshots to dev-shots/ (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-sky.js)
 dev/check-quest-maps.js checks the quest builder in headless Chromium against a fake API: only the server's maps can be chosen, a 400 shows next to its field, no unnamed areas (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-quest-maps.js)
@@ -260,7 +264,7 @@ that is not fixed on live yet.
 All read through `https://api.hvmhfz.eclipseforge.xyz`.
 
 - Public: `/api/public/summary`, `/guilds`, `/guilds/{id}`, `/hunters`, `/hunters/{id}`, `/catalog/items`, `/catalog/equipment`, `/worlds`, `/monsters`, `/activity`.
-- Account (JWT): `/api/account`, `/characters`, `/guilds`, `/discord`, `/characters/{id}/storage`, `/characters/{id}/hunts`.
+- Account (JWT): `/api/account`, `/characters`, `/guilds`, `/discord`, `/characters/{id}/storage`, `/characters/{id}/hunts`; for the Backups tab (not in the API yet, `docs/character-backup-web.md`) `/characters/{id}/backup`, `/characters/import/preview`, `/characters/import`, `/characters/imports`.
 
 - Feedback (JWT; signed-out requests get 401 once API task `api-feedback-signin` is live): `POST /api/feedback`, used by `report.html`.
 

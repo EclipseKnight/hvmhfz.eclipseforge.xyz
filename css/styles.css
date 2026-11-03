@@ -1363,3 +1363,12 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
   .sky-districts{grid-template-columns:1fr}
   .sky-bars li{grid-template-columns:minmax(0,1fr) 56px auto}
 }
+
+/* Account page, Backups tab (js/account-backup.js) */
+.backup-preview{margin:18px 0;padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:3px;background:var(--parchment-3)}
+.backup-target{margin:0 0 6px;font-weight:700;color:var(--ink)}
+.backup-warnings{margin:0 0 14px;padding:8px 12px 8px 28px;border:1px solid rgba(139,47,39,.35);border-radius:3px;background:#f8e4dc;color:var(--ink);font-size:.9rem}
+.backup-problems{margin:8px 0 0;padding-left:20px}
+.backup-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.backup-download{white-space:nowrap}
+.backup-fact{font-weight:700;color:var(--ink)}

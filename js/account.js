@@ -4,7 +4,7 @@
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
-  var TABS = ["overview", "characters", "storage", "hunts", "guild", "quests", "account"];
+  var TABS = ["overview", "characters", "storage", "hunts", "guild", "quests", "backups", "account"];
 
   var state = {
     account: null,

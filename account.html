@@ -110,6 +110,7 @@
         <a class="tab" id="tab-hunts" role="tab" aria-controls="panel-hunts" aria-selected="false" href="#hunts">Hunts</a>
         <a class="tab" id="tab-guild" role="tab" aria-controls="panel-guild" aria-selected="false" href="#guild">Guild <span class="tab-count" id="count-guild"></span></a>
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests</a>
+        <a class="tab" id="tab-backups" role="tab" aria-controls="panel-backups" aria-selected="false" href="#backups">Backups</a>
         <a class="tab" id="tab-account" role="tab" aria-controls="panel-account" aria-selected="false" href="#account">Account</a>
       </nav>
 
@@ -330,6 +331,59 @@
 
       </section>
 
+      <!-- Backups: js/account-backup.js; files made and read by js/backup-file.js -->
+      <section class="tab-panel" id="panel-backups" role="tabpanel" aria-labelledby="tab-backups" hidden>
+        <section class="panel" id="backup-panel" aria-live="polite">
+          <div class="panel-head">
+            <h2>Backups</h2>
+            <span class="panel-note" id="backup-note">checking</span>
+          </div>
+          <p class="note-text" id="backup-soon" hidden>Backups on the website are coming soon. Until then, use <code>/backup</code> and <code>/import</code> in our Discord.</p>
+          <div id="backup-live" hidden>
+            <p class="form-alert" id="backup-alert" hidden></p>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>Hunter</th><th>ID</th><th>HR</th><th>GR</th><th>Last login</th><th data-nosort>Backup</th></tr></thead>
+                <tbody id="backup-characters"></tbody>
+              </table>
+            </div>
+
+            <p class="subhead">Import a backup</p>
+            <p class="note-text">Our backup zip, an older backup, or a character export JSON from a newer Erupe server. You see exactly what changes before anything is written. Log out of the game first.</p>
+            <div class="field"><label for="import-file">Backup file</label><input id="import-file" type="file" accept=".zip,.json,application/zip,application/json" /></div>
+            <p class="note-text" id="import-file-note" aria-live="polite"></p>
+            <div class="field"><label for="import-target">Import into</label><select id="import-target"></select></div>
+            <button type="button" class="btn btn-primary btn-small" id="import-preview-btn">Preview</button>
+
+            <div class="backup-preview" id="import-preview" hidden>
+              <p class="form-alert" id="import-preview-alert" hidden></p>
+              <div class="preview-body"></div>
+              <div class="backup-actions">
+                <button type="button" class="btn btn-primary btn-small" id="import-confirm">Confirm import</button>
+                <button type="button" class="ghost-btn dark" id="import-cancel">Cancel</button>
+              </div>
+            </div>
+            <p class="road-ok" id="import-done" hidden></p>
+
+            <p class="subhead">Imports on this account</p>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>When</th><th>Character</th><th>File</th><th>What changed</th><th>From</th></tr></thead>
+                <tbody id="import-history"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="backup-about">
+          <div class="panel-head"><h2>What is in your backup</h2></div>
+          <p class="note-text">A backup holds your character's save files: equipment, item box and pouch, zenny, Hunter and G Rank progress, Road points and your equipped Road skills, your house layout, your Partner, Felynes, decoration sets, plates, Hunter Navi, story progress and favourite quests. Download it here, or use <code>/backup</code> in our Discord, which DMs you one zip per character.</p>
+          <p class="note-text">It does <strong>not</strong> hold what the server keeps for you: your warehouse, the shared item box of your account, your guild and its box, your Road skill levels, your Road and Sky Corridor records, rewards you already claimed, titles, mail and friends.</p>
+          <p class="note-text">Importing replaces your character's save files with the ones in the file. Log out first. Your server-side data stays as it is: anything you moved to your warehouse or guild box after the backup is still there. Road skill levels go back to what they were when the backup was made if the file is our own unchanged backup of that same character; any other file clears them, and you buy them again with the Road points in the save. Every import is logged.</p>
+          <p class="note-text">Taking your character to another server: our backup works on servers running the ZZ client, and its <code>character.json</code> is in the export format newer Erupe servers use. Ask that server's staff how they import saves.</p>
+        </section>
+      </section>
+
       <!-- Account -->
       <section class="tab-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" hidden>
         <section class="panel" id="road-pref-panel">
@@ -408,7 +462,9 @@
     <script src="/js/quest-submissions.js?v=1"></script>
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>
-    <script src="/js/account.js?v=4"></script>
+    <script src="/js/account.js?v=5"></script>
+    <script src="/js/backup-file.js?v=1"></script>
+    <script src="/js/account-backup.js?v=1"></script>
     <script src="/js/search.js" defer></script>
   </body>
 </html>
