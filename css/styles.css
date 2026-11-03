@@ -358,10 +358,24 @@ a.badge:hover{border-color:var(--gold)}
 .steps li::before{content:counter(step);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
   border:1px solid var(--gold);background:rgba(232,200,119,.08);color:var(--gold-bright);font:700 .85rem var(--font-ui)}
 .steps strong{color:var(--parchment)}
-.explore{padding-bottom:64px}
-.explore h2{margin:0 0 16px;font:700 .74rem var(--font-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
-.explore .tile-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
-.explore .tile h3::after{content:" \2192";color:var(--gold-ink)}
+/* Home page routes (index.html): the hero and the sign-in box side by side, then one row of tiles per
+   audience. On narrow screens (below 1160px, see the end of this file) the tiles come before the sign-in box. */
+.home{grid-template-areas:"hero login" "routes routes"}
+.home .hero{grid-area:hero}
+.home .login-box{grid-area:login}
+.home .routes{grid-area:routes}
+.routes h2{margin:0 0 6px;font:700 .74rem var(--font-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.route-row{display:grid;grid-template-columns:180px minmax(0,1fr);gap:12px 24px;align-items:start;
+  padding:16px 0;border-top:1px solid rgba(201,162,39,.22)}
+.route-head h3{margin:0;font-size:1.2rem;color:var(--parchment)}
+.route-head p{margin:4px 0 0;font-size:.88rem;color:var(--text-dim)}
+.route-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.route-tile{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:12px}
+.route-tile img{flex:none;width:48px;height:48px;object-fit:cover;border-radius:2px;border:1px solid var(--line);background:#2a1c10}
+.route-tile-icon img{object-fit:contain;padding:4px}
+.route-tile strong{display:block;font-size:1rem}
+.route-tile strong::after{content:" \2192";color:var(--gold-ink)}
+.route-tile .tile-meta{display:block;font-size:.82rem;line-height:1.35}
 
 .login-box{
   width:100%;padding:38px 36px 32px;position:relative;color:var(--ink);
@@ -830,7 +844,14 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 /* Small phones: the Cloudflare check in the sign-in box is a fixed 300px, so below 380px the page and
    the box give up some side padding to keep it inside the screen. */
 @media (max-width:1160px){
-  .home{grid-template-columns:minmax(0,1fr)}
+  .home{grid-template-columns:minmax(0,1fr);grid-template-areas:"hero" "routes" "login"}
+  .route-tiles{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+}
+@media (max-width:720px){
+  .route-row{grid-template-columns:minmax(0,1fr)}
+  .route-tiles{grid-template-columns:minmax(0,1fr);gap:8px}
+  .route-tile{flex-direction:row;align-items:center;gap:12px;padding:10px 12px}
+  .route-tile img{width:44px;height:44px}
 }
 @media (max-width:380px){
   .wrap{padding-left:12px;padding-right:12px}

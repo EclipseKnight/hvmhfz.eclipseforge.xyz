@@ -8,7 +8,9 @@ dev/shell/ (nav.html, footer.html, pages.json). For every *.html page in the sit
     "Frontier guide" link;
   - the page has the skip link, a main#content, styles.css, nav.js, background.js, consent.js and search.js;
   - the footer links the privacy policy;
-  - every local href/src points at a file that exists, and so does every picture in js/background.js.
+  - every local href/src points at a file that exists, and so does every picture in js/background.js;
+  - everything dev/check-nav.py checks (pages reachable from home, breadcrumbs, search, titles, sitemap,
+    and every internal link through dev/check-links.py).
 
 Usage: python3 dev/check-site.py   (exit code 0 = all good, 1 = problems, listed)
 """
@@ -143,6 +145,12 @@ def check(root):
 
 if __name__ == "__main__":
     found = check(ROOT)
+    # Navigation: every page in pages.json, at most 2 clicks from home, breadcrumbs, search, titles,
+    # sitemap and every internal link (dev/check-nav.py, which runs dev/check-links.py).
+    spec = importlib.util.spec_from_file_location("check_nav", ROOT / "dev" / "check-nav.py")
+    check_nav = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(check_nav)
+    found += check_nav.problems()
     for line in found:
         print(line)
     print(f"{len(found)} problem(s)" if found else "site shell OK")

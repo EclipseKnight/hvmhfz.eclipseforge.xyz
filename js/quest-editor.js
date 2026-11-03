@@ -1286,7 +1286,7 @@
     if (!model.rewardGroups) model.rewardGroups = [];
     panels(model);
     titleEl.textContent = "New quest";
-    document.title = "Hunsterverse MHFZ: New quest";
+    document.title = "New quest · Hunsterverse";
     subEl.textContent = "Work down the page: basics, map, objectives, monsters, rewards and text, then review and"
       + " submit at the end. The server assigns the quest id when you submit.";
     buttons.forEach(function (button) { button.disabled = false; });

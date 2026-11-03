@@ -6,7 +6,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 
 | Path | What it does |
 |---|---|
-| `/` | Home: how to start playing (guides, steps) and sign in. After a successful login it hands over to `/account.html`. |
+| `/` | Home: a hero with two buttons ("New here? Start playing" to the New here row, "Already playing? Sign in" to the form), the sign-in form beside it (after the tiles on screens below 1160px), one row of tiles per audience (New here, Play, Community, Tools, Account; each tile a guide card picture or monster icon that is already on the site) and "What's new". After a successful login it hands over to `/account.html`. |
 | `/account.html` | Signed in view: overview (with the Hunting Road rewards and a character picker to claim them), characters, storage, hunt log, guild and account. Redirects to `/` without a valid session. |
 | `/monsters.html` | Monster field guide: search by name or species, cards link to full hitzone, HP and drop pages. `?q=` opens it searching. Hunt counts match the server's by monster id (`ids` in `data/monsters/index.json`). |
 | `/monster.html?m=slug` | One monster: hitzones normal and enraged, HP by level, stagger limits, maps, every carve table, Henshu/GR/Zenith forms, and a link to its quests. `slug` is `data/monsters/<slug>.json`; older links with the entry's `oldSlug` or `formerSlugs` still open it. |
@@ -98,7 +98,8 @@ dev/make-road-data.py writes the Road tables into road-data.html from decoded Ro
 dev/check-road-data.py checks dev/make-road-data.py on two small made-up Roads (python3 dev/check-road-data.py)
 dev/check-road-rewards.js checks js/road-rewards.js on made-up reward rows, with and without boards
 dev/site-shell.py     writes the skip link, nav, breadcrumbs and footer into every page from dev/shell/ (nav.html, footer.html, pages.json)
-dev/check-site.py     checks that every page is in sync with dev/shell/, has the skip link and the shared scripts
+dev/check-site.py     checks that every page is in sync with dev/shell/, has the skip link and the shared scripts, then runs dev/check-nav.py
+dev/check-nav.py      checks every page is in pages.json, at most 2 clicks from home, has breadcrumbs, search, one <h1> and a "Page · Hunsterverse" title, the sitemap (every indexable page, monsters by current slug), and runs check-links.py (--self-test: on a made-up site)
 dev/check-site-shell.py checks dev/site-shell.py on a small made-up site
 dev/check-links.py    checks every local link, picture and anchor, the query parameters detail links use (the target page must read them; monster and quest ids must exist), links built in js/*.js, files scripts name, and sitemap.xml (python3 dev/check-links.py)
 dev/make-quest-monsters.py writes each quest's monsters in data/quests.json from its Japanese objective, in the field guide's names
@@ -128,7 +129,8 @@ the next run overwrites it, and `dev/check-site.py` fails while a page differs f
 - `dev/shell/nav.html`: the skip link and header nav, with nothing marked current.
 - `dev/shell/footer.html`: the footer.
 - `dev/shell/pages.json`: one line per page: `page` (file), `group` (the menu it sits under, or `null`),
-  `label` (its short name), `title` (its `<title>`, unescaped; must match the page) and `current` (the nav
+  `label` (its short name), `title` (its `<title>`, unescaped; must match the page; always "Page · Hunsterverse", guide sections
+  "Section · Frontier guide · Hunsterverse", and the same for titles scripts set) and `current` (the nav
   link it marks, or `null`). The script marks that link `aria-current="page"` and its menu button
   `is-current`, and checks that `group` is that menu. Optional: `trail` (`[label, href]` crumbs between the
   group and the page, e.g. a guide section's chapter), `item: true` (a detail page: its script puts the item's

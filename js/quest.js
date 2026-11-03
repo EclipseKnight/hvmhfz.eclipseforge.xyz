@@ -46,7 +46,9 @@
 
   function render(quest, details, links) {
     main.textContent = "";
-    document.title = "Hunsterverse MHFZ: " + quest.name;
+    document.title = quest.name + " · Hunsterverse";
+    var placeholder = document.getElementById("quest-head");
+    if (placeholder) placeholder.hidden = true; // the quest's own heading follows
     if (window.HvCrumbs) window.HvCrumbs.item(quest.name);
 
     var head = el("header", "page-head");

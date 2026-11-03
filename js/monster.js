@@ -185,7 +185,8 @@
   }
 
   function render(detail) {
-    document.title = detail.name + " | Hunsterverse monsters";
+    document.title = detail.name + " · Hunsterverse";
+    document.getElementById("monster-head").hidden = true; // the monster's own heading follows
     if (window.HvCrumbs) window.HvCrumbs.item(detail.name);
     clear(root);
 
@@ -321,6 +322,7 @@
   function fail(message) {
     var loading = document.getElementById("monster-loading");
     if (loading) loading.hidden = true;
+    document.getElementById("monster-head").hidden = true;
     clear(root);
     var panel = el("section", "panel");
     panel.appendChild(el("h1", null, "Monster not found"));
