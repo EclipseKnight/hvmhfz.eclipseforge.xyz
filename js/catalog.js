@@ -107,5 +107,9 @@
     load();
   });
 
+  // ?q= opens the catalog searching for an item (a monster page's drop tables and the site search link here).
+  state.q = (new URLSearchParams(window.location.search).get("q") || "").trim();
+  document.getElementById("catalog-search").value = state.q;
+
   load();
 })();

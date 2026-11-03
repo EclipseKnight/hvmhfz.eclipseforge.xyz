@@ -478,6 +478,13 @@ Object.keys(details).forEach(function (qid) {
   if (d.requirementItemId && !(String(d.requirementItemId) in items)) miss("item", d.requirementItemId, qid);
 });
 const monsterNames = new Set(Object.keys(monsters).map(function (id) { return monsters[id]; }));
+// The catalog uses the field guide's names (dev/make-quest-monsters.py); a guide entry with game ids
+// (data/monsters/index.json "ids") names those ids. dev/check-catalog-monsters.js checks the pages.
+readJson("data/monsters/index.json").forEach(function (m) { if ((m.ids || []).length) monsterNames.add(m.name); });
+const NO_GUIDE_PAGE = { "Shagaru Magala": 164 }; // in data/monster-ids.json, no guide page yet
+Object.keys(NO_GUIDE_PAGE).forEach(function (name) {
+  if (monsters[NO_GUIDE_PAGE[name]] === name) monsterNames.add(name);
+});
 const aliases = ref.monsterNameAliases || {};
 const catalogErrors = {};
 quests.forEach(function (q) {

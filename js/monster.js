@@ -221,6 +221,10 @@
     }
     title.appendChild(document.createTextNode(detail.name));
     info.appendChild(title);
+    // The quest catalog lists monsters by the guide's names (dev/make-quest-monsters.py).
+    var quests = el("a", "ghost-btn small", "Quests with " + detail.name);
+    quests.href = "/quests.html?monster=" + encodeURIComponent(detail.name);
+    info.appendChild(quests);
     var forms = [];
     if (detail.variantStats) detail.variantStats.forEach(function (v) { forms.push(v); });
     if (forms.length) {
@@ -337,10 +341,13 @@
     }
 
     // Slugs are the English names now. An older link (or a Discord post from before the rename) still
-    // names the old slug, so the index's oldSlug is checked before giving up.
+    // names the old slug (oldSlug), or the short English one used from 28 to 29 Oct 2026 (formerSlugs),
+    // so the index is checked before giving up.
     load(slug).then(render).catch(function () {
       fetch("/data/monsters/index.json").then(function (r) { return r.json(); }).then(function (list) {
-        var hit = (list || []).filter(function (m) { return m.oldSlug === slug || m.slug === slug; })[0];
+        var hit = (list || []).filter(function (m) {
+          return m.oldSlug === slug || (m.formerSlugs || []).indexOf(slug) !== -1;
+        })[0];
         if (!hit) throw new Error("unknown");
         return load(hit.slug).then(render);
       }).catch(function () { fail("That monster is not in the database."); });

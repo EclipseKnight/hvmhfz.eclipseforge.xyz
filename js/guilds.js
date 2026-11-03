@@ -188,34 +188,59 @@
     };
   }
 
-  var id = new URLSearchParams(window.location.search).get("id");
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get("id");
   if (id) {
     request("/api/public/guilds/" + encodeURIComponent(id)).then(detail).catch(function () {
+      // The list, working, under a note: a stale link should not leave a dead page.
       document.getElementById("list-view").hidden = false;
+      wireList();
+      loadList();
       document.getElementById("guild-results").textContent = "Guild not found";
     });
     return;
   }
 
-  document.getElementById("guild-search").addEventListener("input", debounce(function (event) {
-    state.q = event.target.value.trim();
-    state.page = 0;
-    loadList();
-  }, 250));
+  // ?name= comes from a hunter's profile (the API names the guild but sends no guild id): the one guild
+  // with exactly that name opens; two or none open the list searching for it.
+  var byName = (params.get("name") || "").trim();
+  if (byName) {
+    state.q = byName;
+    document.getElementById("guild-search").value = byName;
+    request("/api/public/guilds?q=" + encodeURIComponent(byName) + "&sort=" + state.sort + "&page=0&size=" + state.size)
+      .then(function (data) {
+        var exact = (data.items || []).filter(function (g) { return g.name === byName; });
+        if (exact.length !== 1) throw new Error("not one guild");
+        return request("/api/public/guilds/" + encodeURIComponent(exact[0].id)).then(function (guild) {
+          if (window.history && history.replaceState) history.replaceState(null, "", "/guilds.html?id=" + exact[0].id);
+          detail(guild);
+        });
+      })
+      .catch(function () { loadList(); });
+  }
 
-  document.getElementById("guild-sort").addEventListener("change", function (event) {
-    state.sort = event.target.value;
-    state.page = 0;
-    loadList();
-  });
+  wireList();
+  if (!byName) loadList();
 
-  document.getElementById("guild-prev").addEventListener("click", function () {
-    if (state.page > 0) { state.page -= 1; loadList(); }
-  });
-  document.getElementById("guild-next").addEventListener("click", function () {
-    state.page += 1;
-    loadList();
-  });
+  function wireList() {
+    document.getElementById("guild-search").addEventListener("input", debounce(function (event) {
+      state.q = event.target.value.trim();
+      state.page = 0;
+      loadList();
+    }, 250));
 
-  loadList();
+    document.getElementById("guild-sort").addEventListener("change", function (event) {
+      state.sort = event.target.value;
+      state.page = 0;
+      loadList();
+    });
+
+    document.getElementById("guild-prev").addEventListener("click", function () {
+      if (state.page > 0) { state.page -= 1; loadList(); }
+    });
+    document.getElementById("guild-next").addEventListener("click", function () {
+      state.page += 1;
+      loadList();
+    });
+  }
 })();

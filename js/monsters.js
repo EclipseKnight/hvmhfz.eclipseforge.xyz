@@ -6,37 +6,19 @@
   var TOKEN_KEY = "hvmhfz.token";
   var state = { q: "", category: "", size: "", sort: "name" };
   var all = [];
-  var kills = {};      // server wide, by normalized server name
-  var mine = null;     // the signed-in player's hunts over all characters, by normalized server name
-
-  /* The field guide's names come from the Ferias data; the server's kill log uses Erupe's names.
-     Where they differ, this maps the guide's slug to the server's name. */
-  var SERVER_NAME = {
-    mira: "Fatalis", miraval: "Crimson Fatalis", miraru: "White Fatalis",
-    kushasabi: "Rusted Kushala Daora",
-    aquraj: "Aqra Jebia", aqura: "Aqra Vashimu",
-    hipu: "Hypnocatrice", hipusiro: "White Hypnoc",
-    vol: "Lavasioth", volaka: "Red Lavasioth",
-    espcya: "Burning Espinas", espsiro: "Pearl Espinas",
-    olgk: "Kamu Orugaron", olgn: "Nono Orugaron",
-    goglf_r: "Gougarf", goglf_l: "Gougarf",   // Lolo and Ray are hunted together as Gougarf
-    elze: "Eruzerion", lavieG: "Berserk Raviente",
-    dolem1: "Block1 Duremudira", dolem2: "Block2 Duremudira", dolem: "Musou Duremudira",
-    bogaK: "Musou Bogabadorumu", zeruK: "Musou Zerureusu", nalgaK: "Blinking Nargacuga", joeK: "Savage Deviljho"
-  };
-  /* The four Musou entries are all called "Musou" in the guide's data. */
-  var DISPLAY_NAME = {
-    bogaK: "Musou Bogabadorumu", zeruK: "Musou Zerureusu", nalgaK: "Musou Nargacuga", joeK: "Musou Deviljho"
-  };
+  var kills = {};      // server wide, by the game's monster id
+  var mine = null;     // the signed-in player's hunts over all characters, by the game's monster id
 
   /* Small monsters (the guide's "Other" group, apart from King Shakalaka) are not in the server's kill
      log, so they get no hunt count. */
   function isSmall(monster) {
-    return monster.category === "Other" && monster.slug !== "cyacyaKing";
+    return monster.category === "Other" && monster.slug !== "king-shakalaka";
   }
 
-  function serverKey(monster) {
-    return norm(SERVER_NAME[monster.slug] || monster.name);
+  /* The server counts hunts by the game's monster id; a guide entry lists its ids (index.json "ids").
+     Lolo and Ray Gougarf share one id (they are hunted together), so both show the pair's count. */
+  function count(counts, monster) {
+    return (monster.ids || []).reduce(function (sum, id) { return sum + (counts[id] || 0); }, 0);
   }
 
   function signedIn() {
@@ -57,10 +39,6 @@
   }
 
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
-
-  function norm(value) {
-    return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-  }
 
   function num(value) {
     return value === null || value === undefined ? "-" : Number(value).toLocaleString();
@@ -103,7 +81,6 @@
     tile.appendChild(link);
     if (isSmall(monster)) return tile;
 
-    var key = serverKey(monster);
     var stat = el("div", "tile-stat");
     function line(value, label, extra) {
       var row = el("span", "tile-stat-line" + (extra ? " " + extra : ""));
@@ -111,8 +88,8 @@
       row.appendChild(el("span", "tile-stat-label", label));
       stat.appendChild(row);
     }
-    line(kills[key], "on the server");
-    if (mine) line(mine[key], "by you", "tile-stat-mine");
+    line(count(kills, monster), "on the server");
+    if (mine) line(count(mine, monster), "by you", "tile-stat-mine");
     tile.appendChild(stat);
     return tile;
   }
@@ -131,8 +108,8 @@
     rows.sort(function (a, b) {
       if (state.sort === "kills" || (state.sort === "mine" && mine)) {
         var counts = state.sort === "mine" ? mine : kills;
-        var ka = isSmall(a) ? -1 : counts[serverKey(a)] || 0;
-        var kb = isSmall(b) ? -1 : counts[serverKey(b)] || 0;
+        var ka = isSmall(a) ? -1 : count(counts, a);
+        var kb = isSmall(b) ? -1 : count(counts, b);
         if (ka !== kb) return kb - ka;
       }
       return a.name.localeCompare(b.name);
@@ -157,7 +134,6 @@
     fetch("/data/monsters/index.json")
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        data.forEach(function (m) { if (DISPLAY_NAME[m.slug]) m.name = DISPLAY_NAME[m.slug]; });
         all = data;
         document.getElementById("monster-total").textContent = data.length;
         fillCategories();
@@ -170,7 +146,7 @@
     fetch(API + "/api/public/monsters?limit=300")
       .then(function (r) { return r.json(); })
       .then(function (list) {
-        list.forEach(function (m) { kills[norm(m.name)] = m.kills; });
+        list.forEach(function (m) { kills[m.id] = (kills[m.id] || 0) + Number(m.kills || 0); });
         render();
       })
       .catch(function () { /* counts are optional */ });
@@ -197,8 +173,7 @@
         var totals = {};
         hunts.forEach(function (h) {
           (h.monsters || []).forEach(function (m) {
-            var key = norm(m.name);
-            totals[key] = (totals[key] || 0) + Number(m.kills || 0);
+            totals[m.id] = (totals[m.id] || 0) + Number(m.kills || 0);
           });
         });
         mine = totals;
@@ -224,6 +199,10 @@
     state.sort = event.target.value;
     render();
   });
+
+  // ?q= opens the guide searching (links from pages that know only a name, e.g. a monster without a page).
+  state.q = (new URLSearchParams(window.location.search).get("q") || "").trim();
+  document.getElementById("monster-search").value = state.q;
 
   load();
 })();

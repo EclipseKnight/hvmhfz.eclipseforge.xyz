@@ -59,7 +59,8 @@
     tr.appendChild(el("td", "cell-sub muted", item.note || "-"));
 
     var actions = el("td");
-    if (item.status === "pending") {
+    // New submissions are "testing" (the API sets nothing else before a decision); "pending" is older rows.
+    if (item.status === "testing" || item.status === "pending") {
       var approve = el("button", "btn btn-primary btn-small", "Publish");
       approve.type = "button";
       approve.addEventListener("click", function () { decide(item.id, true, ""); });

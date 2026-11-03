@@ -356,8 +356,11 @@ all in the API repo; 1-3 and 5 are fixed in `hvmhfz_rest_api` `a3aca9a` (live si
 
 ## Catalog data errors found on the way
 
-`data/quests.json` (the quest catalog, not the builder) names monsters in several spellings. Six map to an
-id and are listed as aliases in the JSON (Orugaron, Volganos, Espinas Subspecies, Kuarlusepusu, Hypnocatrice
-Rare, Espinas Rare Species). Two are wrong and the check prints them as notes: "Dahren Mohran" on 37 quests
-that hunt Harudomerugu (ハルドメルグ, id 140), and "Gargwa" on 8 quests that hunt Anteka (ガウシカ, id 69).
-They should be fixed where the catalog is generated.
+`data/quests.json` (the quest catalog, not the builder) used to name monsters from the English objective:
+other spellings than the field guide (Orugaron, Kuarlusepusu, Espinas Rare Species ...), subspecies lost
+(リオレウス希少種 listed as "Azure Rathalos", ゲリョス亜種 as "Gypceros") and two plain errors ("Dahren Mohran"
+on 37 Harudomerugu quests, "Gargwa" on 8 Anteka quests); 1,566 quests listed none. Fixed on 2026-11-02:
+`dev/make-quest-monsters.py` writes every quest's monsters from its Japanese objective, in the field guide's
+names (`data/monsters/index.json`, whose `ids` give each one's monster ids), and
+`dev/check-catalog-monsters.js` checks that each has a monster page. The JSON's `monsterNameAliases` is
+empty now. Shagaru Magala (id 164, 12 quests) has no guide page yet.

@@ -78,58 +78,7 @@
   }
  },
  "monsterNameAliases": {
-  "note": "Names in data/quests.json 'monsters' that differ from data/monster-ids.json.",
-  "Orugaron": {
-   "ids": [
-    91,
-    92
-   ],
-   "why": "Kamu and Nono Orugaron, the pair"
-  },
-  "Volganos": {
-   "ids": [
-    75
-   ],
-   "why": "Japanese name of Lavasioth (ヴォルガノス)"
-  },
-  "Espinas Subspecies": {
-   "ids": [
-    81
-   ],
-   "why": "エスピナス亜種 = Flaming/Burning Espinas"
-  },
-  "Kuarlusepusu": {
-   "ids": [
-    105
-   ],
-   "why": "spelling of Kuarusepusu (クアルセプス)"
-  },
-  "Hypnocatrice Rare": {
-   "ids": [
-    82
-   ],
-   "why": "ヒプノック希少種 = White/Silver Hypnocatrice"
-  },
-  "Espinas Rare Species": {
-   "ids": [
-    90
-   ],
-   "why": "Erupe's name for Pearl Espinas"
-  },
-  "Dahren Mohran": {
-   "ids": [
-    140
-   ],
-   "why": "catalog error: these quests (60576, 60577 ...) hunt Harudomerugu (司銀龍)",
-   "catalogError": true
-  },
-  "Gargwa": {
-   "ids": [
-    69
-   ],
-   "why": "catalog error: Deer Chase Fest quests (シカ追い) hunt Anteka",
-   "catalogError": true
-  }
+  "note": "Other spellings of monster names in data/quests.json 'monsters', with their ids (data/monster-ids.json). None are left: dev/make-quest-monsters.py writes the field guide's names (data/monsters/index.json, whose 'ids' give each one's ids)."
  },
  "unnamedAreaIds": {
   "note": "Area ids used in data/quest-details.json (areaId = the map record's base camp) that data/area-ids.json does not name. Most are base camps listed in data/map-areas.json.",

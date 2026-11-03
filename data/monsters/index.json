@@ -12,7 +12,10 @@
   ],
   "oldSlug": "abio",
   "iconKind": "wiki",
-  "render": "abiorugu.webp"
+  "render": "abiorugu.webp",
+  "ids": [
+   104
+  ]
  },
  {
   "slug": "akantor",
@@ -28,7 +31,10 @@
   ],
   "oldSlug": "akamu",
   "iconKind": "render",
-  "render": "akantor.webp"
+  "render": "akantor.webp",
+  "ids": [
+   77
+  ]
  },
  {
   "slug": "akura-jebia",
@@ -43,7 +49,13 @@
   ],
   "oldSlug": "aquraj",
   "iconKind": "wiki",
-  "render": "akurajebia.webp"
+  "render": "akurajebia.webp",
+  "ids": [
+   84
+  ],
+  "serverNames": [
+   "Aqra Jebia"
+  ]
  },
  {
   "slug": "akura-vashimu",
@@ -60,7 +72,13 @@
   ],
   "oldSlug": "aqura",
   "iconKind": "wiki",
-  "render": "akuravashimu.webp"
+  "render": "akuravashimu.webp",
+  "ids": [
+   83
+  ],
+  "serverNames": [
+   "Aqra Vashimu"
+  ]
  },
  {
   "slug": "amatsu",
@@ -75,7 +93,10 @@
   ],
   "oldSlug": null,
   "iconKind": "wiki",
-  "render": "amatsu.webp"
+  "render": "amatsu.webp",
+  "ids": [
+   165
+  ]
  },
  {
   "slug": "anorupatisu",
@@ -90,7 +111,10 @@
   ],
   "oldSlug": "anolu",
   "iconKind": "wiki",
-  "render": "anorupatisu.webp"
+  "render": "anorupatisu.webp",
+  "ids": [
+   109
+  ]
  },
  {
   "slug": "anteka",
@@ -102,7 +126,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "gau",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   69
+  ]
  },
  {
   "slug": "apceros",
@@ -114,7 +141,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "apuke",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   25
+  ]
  },
  {
   "slug": "aptonoth",
@@ -126,7 +156,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "apono",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   12
+  ]
  },
  {
   "slug": "aruganosu",
@@ -139,7 +172,10 @@
   "variants": [],
   "oldSlug": "volgin",
   "iconKind": "render",
-  "render": "aruganosu.webp"
+  "render": "aruganosu.webp",
+  "ids": [
+   120
+  ]
  },
  {
   "slug": "ashen-lao-shan-lung",
@@ -152,7 +188,10 @@
   "variants": [],
   "oldSlug": "raoao",
   "iconKind": "wiki",
-  "render": "ashenlao-shanlung.webp"
+  "render": "ashenlao-shanlung.webp",
+  "ids": [
+   50
+  ]
  },
  {
   "slug": "azure-rathalos",
@@ -167,7 +206,10 @@
   ],
   "oldSlug": "reusuao",
   "iconKind": "wiki",
-  "render": "azurerathalos.webp"
+  "render": "azurerathalos.webp",
+  "ids": [
+   49
+  ]
  },
  {
   "slug": "barioth",
@@ -182,7 +224,10 @@
   ],
   "oldSlug": "berio",
   "iconKind": "wiki",
-  "render": "barioth.webp"
+  "render": "barioth.webp",
+  "ids": [
+   151
+  ]
  },
  {
   "slug": "baruragaru",
@@ -198,7 +243,10 @@
   ],
   "oldSlug": "bal",
   "iconKind": "wiki",
-  "render": "baruragaru.webp"
+  "render": "baruragaru.webp",
+  "ids": [
+   121
+  ]
  },
  {
   "slug": "basarios",
@@ -215,7 +263,10 @@
   ],
   "oldSlug": "basa",
   "iconKind": "wiki",
-  "render": "basarios.webp"
+  "render": "basarios.webp",
+  "ids": [
+   22
+  ]
  },
  {
   "slug": "berserk-laviente",
@@ -227,7 +278,16 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "lavieG",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "formerSlugs": [
+   "berserk"
+  ],
+  "ids": [
+   149
+  ],
+  "serverNames": [
+   "Berserk Raviente"
+  ]
  },
  {
   "slug": "berukyurosu",
@@ -242,7 +302,10 @@
   ],
   "oldSlug": "beru",
   "iconKind": "wiki",
-  "render": "berukyurosu.webp"
+  "render": "berukyurosu.webp",
+  "ids": [
+   85
+  ]
  },
  {
   "slug": "fatalis",
@@ -257,7 +320,10 @@
   ],
   "oldSlug": "mira",
   "iconKind": "render",
-  "render": "blackfatalis.webp"
+  "render": "fatalis.webp",
+  "ids": [
+   2
+  ]
  },
  {
   "slug": "black-diablos",
@@ -272,7 +338,10 @@
   ],
   "oldSlug": "deakuro",
   "iconKind": "wiki",
-  "render": "blackdiablos.webp"
+  "render": "blackdiablos.webp",
+  "ids": [
+   43
+  ]
  },
  {
   "slug": "black-gravios",
@@ -287,7 +356,10 @@
   ],
   "oldSlug": "gurakuro",
   "iconKind": "wiki",
-  "render": "blackgravios.webp"
+  "render": "blackgravios.webp",
+  "ids": [
+   47
+  ]
  },
  {
   "slug": "blango",
@@ -299,7 +371,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "bura",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   61
+  ]
  },
  {
   "slug": "blangonga",
@@ -316,7 +391,10 @@
   ],
   "oldSlug": "dodobura",
   "iconKind": "wiki",
-  "render": "blangonga.webp"
+  "render": "blangonga.webp",
+  "ids": [
+   51
+  ]
  },
  {
   "slug": "blue-yian-kut-ku",
@@ -331,7 +409,10 @@
   ],
   "oldSlug": "kukkuao",
   "iconKind": "wiki",
-  "render": "blueyiankut-ku.webp"
+  "render": "blueyiankut-ku.webp",
+  "ids": [
+   38
+  ]
  },
  {
   "slug": "bogabadorumu",
@@ -344,7 +425,10 @@
   "variants": [],
   "oldSlug": "boga",
   "iconKind": "wiki",
-  "render": "zenith_bogabadorumu.webp"
+  "render": "zenith_bogabadorumu.webp",
+  "ids": [
+   170
+  ]
  },
  {
   "slug": "brachydios",
@@ -359,7 +443,10 @@
   ],
   "oldSlug": "buraki",
   "iconKind": "wiki",
-  "render": "brachydios.webp"
+  "render": "brachydios.webp",
+  "ids": [
+   148
+  ]
  },
  {
   "slug": "breeding-season-hypnocatrice",
@@ -374,7 +461,16 @@
   ],
   "oldSlug": "hipuao",
   "iconKind": "wiki",
-  "render": "breedingseasonhypnoc.webp"
+  "render": "breedingseasonhypnoc.webp",
+  "formerSlugs": [
+   "bright-hypnoc"
+  ],
+  "ids": [
+   78
+  ],
+  "serverNames": [
+   "Bright Hypnoc"
+  ]
  },
  {
   "slug": "bulldrome",
@@ -391,7 +487,10 @@
   ],
   "oldSlug": "dosburu",
   "iconKind": "wiki",
-  "render": "bulldrome.webp"
+  "render": "bulldrome.webp",
+  "ids": [
+   68
+  ]
  },
  {
   "slug": "bullfango",
@@ -403,7 +502,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "buru",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   5
+  ]
  },
  {
   "slug": "burukku",
@@ -415,7 +517,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "brook",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   97
+  ]
  },
  {
   "slug": "cactus",
@@ -433,14 +538,22 @@
  {
   "slug": "shogun-ceanataur",
   "name": "Shogun Ceanataur",
-  "category": "Other",
+  "category": "Carapaceon",
   "icon": "shogun-ceanataur.png",
-  "zone": null,
+  "zone": "shogunceanataur.webp",
   "hasHitzones": true,
   "hasDrops": true,
-  "variants": [],
-  "oldSlug": "yao",
-  "iconKind": "wiki"
+  "variants": [
+   "Henshu",
+   "GR",
+   "Corridor & Road"
+  ],
+  "oldSlug": "syougun",
+  "iconKind": "wiki",
+  "render": "shogunceanataur.webp",
+  "ids": [
+   67
+  ]
  },
  {
   "slug": "cephadrome",
@@ -456,7 +569,10 @@
   ],
   "oldSlug": "dosgare",
   "iconKind": "wiki",
-  "render": "cephadrome.webp"
+  "render": "cephadrome.webp",
+  "ids": [
+   8
+  ]
  },
  {
   "slug": "cephalos",
@@ -468,7 +584,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "gare",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   34
+  ]
  },
  {
   "slug": "chameleos",
@@ -483,7 +602,10 @@
   ],
   "oldSlug": "oo",
   "iconKind": "wiki",
-  "render": "chameleos.webp"
+  "render": "chameleos.webp",
+  "ids": [
+   59
+  ]
  },
  {
   "slug": "conga",
@@ -495,7 +617,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "konga",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   62
+  ]
  },
  {
   "slug": "congalala",
@@ -511,7 +636,10 @@
   ],
   "oldSlug": "babakonga",
   "iconKind": "wiki",
-  "render": "congalala.webp"
+  "render": "congalala.webp",
+  "ids": [
+   52
+  ]
  },
  {
   "slug": "crimson-fatalis",
@@ -526,7 +654,10 @@
   ],
   "oldSlug": "miraval",
   "iconKind": "render",
-  "render": "crimsonfatalis.webp"
+  "render": "crimsonfatalis.webp",
+  "ids": [
+   36
+  ]
  },
  {
   "slug": "daimyo-hermitaur",
@@ -543,7 +674,10 @@
   ],
   "oldSlug": "daimyo",
   "iconKind": "wiki",
-  "render": "daimyohermitaur.webp"
+  "render": "daimyohermitaur.webp",
+  "ids": [
+   48
+  ]
  },
  {
   "slug": "deviljho",
@@ -558,7 +692,10 @@
   ],
   "oldSlug": "joe",
   "iconKind": "wiki",
-  "render": "deviljho.webp"
+  "render": "deviljho.webp",
+  "ids": [
+   147
+  ]
  },
  {
   "slug": "diablos",
@@ -574,7 +711,10 @@
   ],
   "oldSlug": "dea",
   "iconKind": "wiki",
-  "render": "diablos.webp"
+  "render": "diablos.webp",
+  "ids": [
+   14
+  ]
  },
  {
   "slug": "diorex",
@@ -589,7 +729,10 @@
   ],
   "oldSlug": "dio",
   "iconKind": "wiki",
-  "render": "diorex.webp"
+  "render": "diorex.webp",
+  "ids": [
+   127
+  ]
  },
  {
   "slug": "disufiroa",
@@ -602,7 +745,10 @@
   "variants": [],
   "oldSlug": "disf",
   "iconKind": "wiki",
-  "render": "disufiroa.webp"
+  "render": "disufiroa.webp",
+  "ids": [
+   107
+  ]
  },
  {
   "slug": "doragyurosu",
@@ -618,7 +764,10 @@
   ],
   "oldSlug": "doragyu",
   "iconKind": "wiki",
-  "render": "doragyurosu.webp"
+  "render": "doragyurosu.webp",
+  "ids": [
+   95
+  ]
  },
  {
   "slug": "duremudira-1st",
@@ -631,7 +780,13 @@
   "variants": [],
   "oldSlug": "dolem1",
   "iconKind": "render",
-  "render": "duremudirafirstdistrict.webp"
+  "render": "duremudirafirstdistrict.webp",
+  "ids": [
+   132
+  ],
+  "serverNames": [
+   "Block1 Duremudira"
+  ]
  },
  {
   "slug": "duremudira-2nd",
@@ -644,7 +799,13 @@
   "variants": [],
   "oldSlug": "dolem2",
   "iconKind": "render",
-  "render": "duremudirafirstdistrict.webp"
+  "render": "duremudirafirstdistrict.webp",
+  "ids": [
+   145
+  ],
+  "serverNames": [
+   "Block2 Duremudira"
+  ]
  },
  {
   "slug": "dyuragaua",
@@ -660,7 +821,10 @@
   ],
   "oldSlug": "dura",
   "iconKind": "wiki",
-  "render": "dyuragaua.webp"
+  "render": "dyuragaua.webp",
+  "ids": [
+   94
+  ]
  },
  {
   "slug": "egyurasu",
@@ -673,7 +837,10 @@
   "variants": [],
   "oldSlug": "egura",
   "iconKind": "render",
-  "render": null
+  "render": null,
+  "ids": [
+   157
+  ]
  },
  {
   "slug": "elzelion",
@@ -686,7 +853,13 @@
   "variants": [],
   "oldSlug": "elze",
   "iconKind": "wiki",
-  "render": "elzelion.webp"
+  "render": "elzelion.webp",
+  "ids": [
+   166
+  ],
+  "serverNames": [
+   "Eruzerion"
+  ]
  },
  {
   "slug": "erupe",
@@ -698,7 +871,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": null,
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   98
+  ]
  },
  {
   "slug": "espinas",
@@ -716,7 +892,10 @@
   ],
   "oldSlug": "esp",
   "iconKind": "wiki",
-  "render": "espinas.webp"
+  "render": "espinas.webp",
+  "ids": [
+   80
+  ]
  },
  {
   "slug": "farunokku",
@@ -729,7 +908,10 @@
   "variants": [],
   "oldSlug": "faru",
   "iconKind": "wiki",
-  "render": "farunokku.webp"
+  "render": "farunokku.webp",
+  "ids": [
+   114
+  ]
  },
  {
   "slug": "felyne",
@@ -741,7 +923,10 @@
   "hasDrops": false,
   "variants": [],
   "oldSlug": "airu",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   9
+  ]
  },
  {
   "slug": "forokururu",
@@ -756,7 +941,10 @@
   ],
   "oldSlug": "folo",
   "iconKind": "wiki",
-  "render": "forokururu.webp"
+  "render": "forokururu.webp",
+  "ids": [
+   125
+  ]
  },
  {
   "slug": "garuba-daora",
@@ -771,7 +959,10 @@
   ],
   "oldSlug": "galba",
   "iconKind": "wiki",
-  "render": "garubadaora.webp"
+  "render": "garubadaora.webp",
+  "ids": [
+   128
+  ]
  },
  {
   "slug": "gasurabazura",
@@ -787,7 +978,10 @@
   ],
   "oldSlug": "gasra",
   "iconKind": "wiki",
-  "render": "gasurabazura.webp"
+  "render": "gasurabazura.webp",
+  "ids": [
+   142
+  ]
  },
  {
   "slug": "gendrome",
@@ -803,7 +997,10 @@
   ],
   "oldSlug": "dosgene",
   "iconKind": "wiki",
-  "render": "gendrome.webp"
+  "render": "gendrome.webp",
+  "ids": [
+   28
+  ]
  },
  {
   "slug": "genprey",
@@ -815,7 +1012,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "gene",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   13
+  ]
  },
  {
   "slug": "giaorugu",
@@ -830,7 +1030,10 @@
   ],
   "oldSlug": "giao",
   "iconKind": "wiki",
-  "render": "giaorugu.webp"
+  "render": "giaorugu.webp",
+  "ids": [
+   112
+  ]
  },
  {
   "slug": "giaprey",
@@ -842,7 +1045,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "giano",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   35
+  ]
  },
  {
   "slug": "gogomoa",
@@ -857,7 +1063,10 @@
   ],
   "oldSlug": "gogo",
   "iconKind": "wiki",
-  "render": "gogomoa.webp"
+  "render": "gogomoa.webp",
+  "ids": [
+   101
+  ]
  },
  {
   "slug": "gold-rathian",
@@ -873,7 +1082,10 @@
   ],
   "oldSlug": "reiakin",
   "iconKind": "wiki",
-  "render": "goldrathian.webp"
+  "render": "goldrathian.webp",
+  "ids": [
+   42
+  ]
  },
  {
   "slug": "gore-magala",
@@ -888,7 +1100,10 @@
   ],
   "oldSlug": "goa",
   "iconKind": "wiki",
-  "render": "goremagala.webp"
+  "render": "goremagala.webp",
+  "ids": [
+   162
+  ]
  },
  {
   "slug": "goruganosu",
@@ -901,7 +1116,10 @@
   "variants": [],
   "oldSlug": "volkin",
   "iconKind": "render",
-  "render": "goruganosu.webp"
+  "render": "goruganosu.webp",
+  "ids": [
+   119
+  ]
  },
  {
   "slug": "gravios",
@@ -919,7 +1137,10 @@
   ],
   "oldSlug": "gura",
   "iconKind": "wiki",
-  "render": "gravios.webp"
+  "render": "gravios.webp",
+  "ids": [
+   17
+  ]
  },
  {
   "slug": "great-thunderbug",
@@ -931,7 +1152,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "raikou",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   56
+  ]
  },
  {
   "slug": "green-plesioth",
@@ -946,7 +1170,10 @@
   ],
   "oldSlug": "ganomidori",
   "iconKind": "wiki",
-  "render": "greenplesioth.webp"
+  "render": "greenplesioth.webp",
+  "ids": [
+   46
+  ]
  },
  {
   "slug": "guanzorumu",
@@ -961,7 +1188,10 @@
   ],
   "oldSlug": "guan",
   "iconKind": "wiki",
-  "render": "guanzorumu.webp"
+  "render": "guanzorumu.webp",
+  "ids": [
+   154
+  ]
  },
  {
   "slug": "gureadomosu",
@@ -976,7 +1206,10 @@
   ],
   "oldSlug": "glare",
   "iconKind": "wiki",
-  "render": "gureadomosu.webp"
+  "render": "gureadomosu.webp",
+  "ids": [
+   139
+  ]
  },
  {
   "slug": "gurenzeburu",
@@ -991,7 +1224,10 @@
   ],
   "oldSlug": "guren",
   "iconKind": "wiki",
-  "render": "gurenzeburu.webp"
+  "render": "gurenzeburu.webp",
+  "ids": [
+   96
+  ]
  },
  {
   "slug": "gypceros",
@@ -1008,7 +1244,10 @@
   ],
   "oldSlug": "geryo",
   "iconKind": "wiki",
-  "render": "gypceros.webp"
+  "render": "gypceros.webp",
+  "ids": [
+   20
+  ]
  },
  {
   "slug": "harudomerugu",
@@ -1024,7 +1263,10 @@
   ],
   "oldSlug": "hald",
   "iconKind": "wiki",
-  "render": "harudomerugu.webp"
+  "render": "harudomerugu.webp",
+  "ids": [
+   140
+  ]
  },
  {
   "slug": "hornetaur",
@@ -1036,7 +1278,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "kanta",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   24
+  ]
  },
  {
   "slug": "hypnocatrice",
@@ -1054,7 +1299,13 @@
   ],
   "oldSlug": "hipu",
   "iconKind": "wiki",
-  "render": "hypnoc.webp"
+  "render": "hypnoc.webp",
+  "formerSlugs": [
+   "hypnoc"
+  ],
+  "ids": [
+   74
+  ]
  },
  {
   "slug": "hyujikiki",
@@ -1069,7 +1320,10 @@
   ],
   "oldSlug": "hyuji",
   "iconKind": "wiki",
-  "render": "hyujikiki.webp"
+  "render": "hyujikiki.webp",
+  "ids": [
+   110
+  ]
  },
  {
   "slug": "inagami",
@@ -1085,7 +1339,10 @@
   ],
   "oldSlug": "ina",
   "iconKind": "wiki",
-  "render": "inagami.webp"
+  "render": "inagami.webp",
+  "ids": [
+   129
+  ]
  },
  {
   "slug": "iodrome",
@@ -1101,7 +1358,10 @@
   ],
   "oldSlug": "dosios",
   "iconKind": "wiki",
-  "render": "iodrome.webp"
+  "render": "iodrome.webp",
+  "ids": [
+   31
+  ]
  },
  {
   "slug": "ioprey",
@@ -1113,7 +1373,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "ios",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   30
+  ]
  },
  {
   "slug": "kamu-orugaron",
@@ -1128,7 +1391,13 @@
   ],
   "oldSlug": "olgk",
   "iconKind": "wiki",
-  "render": "kamuorugaron.webp"
+  "render": "kamuorugaron.webp",
+  "formerSlugs": [
+   "kamu"
+  ],
+  "ids": [
+   91
+  ]
  },
  {
   "slug": "kelbi",
@@ -1140,7 +1409,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "kerubi",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   3
+  ]
  },
  {
   "slug": "keoaruboru",
@@ -1153,7 +1425,10 @@
   "variants": [],
   "oldSlug": "keoa",
   "iconKind": "wiki",
-  "render": "keoaruboru.webp"
+  "render": "keoaruboru.webp",
+  "ids": [
+   160
+  ]
  },
  {
   "slug": "khezu",
@@ -1170,7 +1445,10 @@
   ],
   "oldSlug": "furu",
   "iconKind": "wiki",
-  "render": "khezu.webp"
+  "render": "khezu.webp",
+  "ids": [
+   15
+  ]
  },
  {
   "slug": "king-shakalaka",
@@ -1183,7 +1461,10 @@
   "variants": [],
   "oldSlug": "cyacyaKing",
   "iconKind": "render",
-  "render": null
+  "render": null,
+  "ids": [
+   176
+  ]
  },
  {
   "slug": "kirin",
@@ -1198,7 +1479,10 @@
   ],
   "oldSlug": null,
   "iconKind": "wiki",
-  "render": "kirin.webp"
+  "render": "kirin.webp",
+  "ids": [
+   33
+  ]
  },
  {
   "slug": "kokomoa",
@@ -1211,7 +1495,10 @@
   "variants": [],
   "oldSlug": "koko",
   "iconKind": "render",
-  "render": null
+  "render": null,
+  "ids": [
+   102
+  ]
  },
  {
   "slug": "kuarusepusu",
@@ -1226,7 +1513,10 @@
   ],
   "oldSlug": "qual",
   "iconKind": "wiki",
-  "render": "kuarusepusu.webp"
+  "render": "kuarusepusu.webp",
+  "ids": [
+   105
+  ]
  },
  {
   "slug": "kushala-daora",
@@ -1241,7 +1531,10 @@
   ],
   "oldSlug": "kusha",
   "iconKind": "wiki",
-  "render": "kushaladaora.webp"
+  "render": "kushaladaora.webp",
+  "ids": [
+   54
+  ]
  },
  {
   "slug": "kusubami",
@@ -1253,7 +1546,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "kusb",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   143
+  ]
  },
  {
   "slug": "lao-shan-lung",
@@ -1266,7 +1562,10 @@
   "variants": [],
   "oldSlug": "rao",
   "iconKind": "wiki",
-  "render": "lao-shanlung.webp"
+  "render": "lao-shanlung.webp",
+  "ids": [
+   7
+  ]
  },
  {
   "slug": "lolo-gougarf",
@@ -1281,7 +1580,16 @@
   ],
   "oldSlug": "goglf_r",
   "iconKind": "render",
-  "render": "lologougarf.webp"
+  "render": "lologougarf.webp",
+  "formerSlugs": [
+   "lolo"
+  ],
+  "ids": [
+   123
+  ],
+  "serverNames": [
+   "Gougarf"
+  ]
  },
  {
   "slug": "lunastra",
@@ -1296,7 +1604,10 @@
   ],
   "oldSlug": "nana",
   "iconKind": "wiki",
-  "render": "lunastra.webp"
+  "render": "lunastra.webp",
+  "ids": [
+   64
+  ]
  },
  {
   "slug": "melynx",
@@ -1308,7 +1619,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "merura",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   23
+  ]
  },
  {
   "slug": "meraginasu",
@@ -1323,7 +1637,10 @@
   ],
   "oldSlug": "mera",
   "iconKind": "wiki",
-  "render": "meraginasu.webp"
+  "render": "meraginasu.webp",
+  "ids": [
+   126
+  ]
  },
  {
   "slug": "midogaron",
@@ -1338,7 +1655,10 @@
   ],
   "oldSlug": "mido",
   "iconKind": "wiki",
-  "render": "midogaron.webp"
+  "render": "midogaron.webp",
+  "ids": [
+   111
+  ]
  },
  {
   "slug": "monoblos",
@@ -1353,7 +1673,10 @@
   ],
   "oldSlug": "mono",
   "iconKind": "wiki",
-  "render": "monoblos.webp"
+  "render": "monoblos.webp",
+  "ids": [
+   26
+  ]
  },
  {
   "slug": "mosswine",
@@ -1365,20 +1688,28 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "mos",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   4
+  ]
  },
  {
   "slug": "duremudira-musou",
   "name": "Duremudira (Musou)",
-  "category": "Flying Wyvern",
-  "icon": "musou_bogabadorumu.webp",
-  "zone": "musou_bogabadorumu.webp",
+  "category": "Elder Dragon",
+  "icon": "musou_duremudira.webp",
+  "zone": "musou_duremudira.webp",
   "hasHitzones": true,
   "hasDrops": false,
   "variants": [],
-  "oldSlug": "bogaK",
+  "oldSlug": "dolem",
   "iconKind": "render",
-  "render": "musou_bogabadorumu.webp"
+  "ids": [
+   167
+  ],
+  "serverNames": [
+   "Musou Duremudira"
+  ]
  },
  {
   "slug": "nargacuga",
@@ -1393,7 +1724,10 @@
   ],
   "oldSlug": "nalga",
   "iconKind": "wiki",
-  "render": "nargacuga.webp"
+  "render": "nargacuga.webp",
+  "ids": [
+   159
+  ]
  },
  {
   "slug": "nono-orugaron",
@@ -1408,7 +1742,13 @@
   ],
   "oldSlug": "olgn",
   "iconKind": "wiki",
-  "render": "nonoorugaron.webp"
+  "render": "nonoorugaron.webp",
+  "formerSlugs": [
+   "nono"
+  ],
+  "ids": [
+   92
+  ]
  },
  {
   "slug": "odibatorasu",
@@ -1423,7 +1763,10 @@
   ],
   "oldSlug": "odiva",
   "iconKind": "wiki",
-  "render": "odibatorasu.webp"
+  "render": "odibatorasu.webp",
+  "ids": [
+   106
+  ]
  },
  {
   "slug": "orange-espinas",
@@ -1439,7 +1782,13 @@
   ],
   "oldSlug": "espcya",
   "iconKind": "wiki",
-  "render": "orangeespinas.webp"
+  "render": "orangeespinas.webp",
+  "ids": [
+   81
+  ],
+  "serverNames": [
+   "Burning Espinas"
+  ]
  },
  {
   "slug": "pariapuria",
@@ -1455,7 +1804,10 @@
   ],
   "oldSlug": "paria",
   "iconKind": "wiki",
-  "render": "pariapuria.webp"
+  "render": "pariapuria.webp",
+  "ids": [
+   89
+  ]
  },
  {
   "slug": "pink-rathian",
@@ -1470,7 +1822,10 @@
   ],
   "oldSlug": "reiasa",
   "iconKind": "wiki",
-  "render": "pinkrathian.webp"
+  "render": "pinkrathian.webp",
+  "ids": [
+   37
+  ]
  },
  {
   "slug": "plesioth",
@@ -1487,7 +1842,10 @@
   ],
   "oldSlug": "gano",
   "iconKind": "wiki",
-  "render": "plesioth.webp"
+  "render": "plesioth.webp",
+  "ids": [
+   21
+  ]
  },
  {
   "slug": "poborubarumu",
@@ -1502,7 +1860,10 @@
   ],
   "oldSlug": "pobol",
   "iconKind": "wiki",
-  "render": "poborubarumu.webp"
+  "render": "poborubarumu.webp",
+  "ids": [
+   131
+  ]
  },
  {
   "slug": "poison-light-bug",
@@ -1527,7 +1888,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": null,
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   117
+  ]
  },
  {
   "slug": "pokaradon",
@@ -1540,7 +1904,10 @@
   "variants": [],
   "oldSlug": null,
   "iconKind": "wiki",
-  "render": "pokaradon.webp"
+  "render": "pokaradon.webp",
+  "ids": [
+   115
+  ]
  },
  {
   "slug": "popo",
@@ -1552,7 +1919,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": null,
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   70
+  ]
  },
  {
   "slug": "purple-gypceros",
@@ -1568,7 +1938,10 @@
   ],
   "oldSlug": "geryoao",
   "iconKind": "wiki",
-  "render": "purplegypceros.webp"
+  "render": "purplegypceros.webp",
+  "ids": [
+   39
+  ]
  },
  {
   "slug": "rajang",
@@ -1585,7 +1958,10 @@
   ],
   "oldSlug": "ra",
   "iconKind": "wiki",
-  "render": "rajang.webp"
+  "render": "rajang.webp",
+  "ids": [
+   53
+  ]
  },
  {
   "slug": "rappy",
@@ -1598,7 +1974,10 @@
   "variants": [],
   "oldSlug": "lappy",
   "iconKind": "render",
-  "render": null
+  "render": null,
+  "ids": [
+   175
+  ]
  },
  {
   "slug": "rathalos",
@@ -1615,7 +1994,10 @@
   ],
   "oldSlug": "reusu",
   "iconKind": "wiki",
-  "render": "rathalos.webp"
+  "render": "rathalos.webp",
+  "ids": [
+   11
+  ]
  },
  {
   "slug": "rathian",
@@ -1631,7 +2013,9 @@
   ],
   "oldSlug": "reia",
   "iconKind": "wiki",
-  "render": "rathian.webp"
+  "ids": [
+   1
+  ]
  },
  {
   "slug": "raviente",
@@ -1644,7 +2028,10 @@
   "variants": [],
   "oldSlug": "lavie",
   "iconKind": "wiki",
-  "render": "raviente.webp"
+  "render": "raviente.webp",
+  "ids": [
+   93
+  ]
  },
  {
   "slug": "ray-gougarf",
@@ -1659,7 +2046,16 @@
   ],
   "oldSlug": "goglf_l",
   "iconKind": "render",
-  "render": "raygougarf.webp"
+  "render": "raygougarf.webp",
+  "formerSlugs": [
+   "ray"
+  ],
+  "ids": [
+   123
+  ],
+  "serverNames": [
+   "Gougarf"
+  ]
  },
  {
   "slug": "rebidiora",
@@ -1672,7 +2068,10 @@
   "variants": [],
   "oldSlug": "levy",
   "iconKind": "wiki",
-  "render": "rebidiora.webp"
+  "render": "rebidiora.webp",
+  "ids": [
+   108
+  ]
  },
  {
   "slug": "red-khezu",
@@ -1687,7 +2086,10 @@
   ],
   "oldSlug": "furuaka",
   "iconKind": "wiki",
-  "render": "redkhezu.webp"
+  "render": "redkhezu.webp",
+  "ids": [
+   45
+  ]
  },
  {
   "slug": "red-volganos",
@@ -1702,7 +2104,13 @@
   ],
   "oldSlug": "volaka",
   "iconKind": "render",
-  "render": "redvolganos.webp"
+  "render": "redvolganos.webp",
+  "ids": [
+   79
+  ],
+  "serverNames": [
+   "Red Lavasioth"
+  ]
  },
  {
   "slug": "remobra",
@@ -1714,7 +2122,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "gabu",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   63
+  ]
  },
  {
   "slug": "rock",
@@ -1743,7 +2154,10 @@
   ],
   "oldSlug": "ruco",
   "iconKind": "wiki",
-  "render": "rukodiora.webp"
+  "render": "rukodiora.webp",
+  "ids": [
+   99
+  ]
  },
  {
   "slug": "rusted-kushala-daora",
@@ -1756,7 +2170,13 @@
   "variants": [],
   "oldSlug": "kushasabi",
   "iconKind": "wiki",
-  "render": "rustedkushaladaora.webp"
+  "render": "rustedkushaladaora.webp",
+  "formerSlugs": [
+   "rusted"
+  ],
+  "ids": [
+   60
+  ]
  },
  {
   "slug": "seregios",
@@ -1771,7 +2191,10 @@
   ],
   "oldSlug": "sell",
   "iconKind": "wiki",
-  "render": "seregios.webp"
+  "render": "seregios.webp",
+  "ids": [
+   169
+  ]
  },
  {
   "slug": "shakalaka",
@@ -1783,7 +2206,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "cyacya",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   57
+  ]
  },
  {
   "slug": "shantien",
@@ -1796,7 +2222,10 @@
   "variants": [],
   "oldSlug": "shan",
   "iconKind": "wiki",
-  "render": "shantien.webp"
+  "render": "shantien.webp",
+  "ids": [
+   116
+  ]
  },
  {
   "slug": "shen-gaoren",
@@ -1809,7 +2238,10 @@
   "variants": [],
   "oldSlug": "shen",
   "iconKind": "render",
-  "render": "shengaoren.webp"
+  "render": "shengaoren.webp",
+  "ids": [
+   55
+  ]
  },
  {
   "slug": "silver-hypnocatrice",
@@ -1824,7 +2256,16 @@
   ],
   "oldSlug": "hipusiro",
   "iconKind": "wiki",
-  "render": "whitehypnoc.webp"
+  "render": "whitehypnoc.webp",
+  "formerSlugs": [
+   "silver-hypnoc"
+  ],
+  "ids": [
+   82
+  ],
+  "serverNames": [
+   "White Hypnoc"
+  ]
  },
  {
   "slug": "silver-rathalos",
@@ -1840,7 +2281,10 @@
   ],
   "oldSlug": "reusugin",
   "iconKind": "wiki",
-  "render": "silverrathalos.webp"
+  "render": "silverrathalos.webp",
+  "ids": [
+   41
+  ]
  },
  {
   "slug": "stygian-zinogre",
@@ -1855,7 +2299,10 @@
   ],
   "oldSlug": "zingoku",
   "iconKind": "wiki",
-  "render": "stygianzinogre.webp"
+  "render": "stygianzinogre.webp",
+  "ids": [
+   153
+  ]
  },
  {
   "slug": "taikun-zamuza",
@@ -1870,7 +2317,10 @@
   ],
   "oldSlug": "taikun",
   "iconKind": "wiki",
-  "render": "taikunzamuza.webp"
+  "render": "taikunzamuza.webp",
+  "ids": [
+   103
+  ]
  },
  {
   "slug": "teostra",
@@ -1885,7 +2335,10 @@
   ],
   "oldSlug": "teo",
   "iconKind": "wiki",
-  "render": "teostra.webp"
+  "render": "teostra.webp",
+  "ids": [
+   65
+  ]
  },
  {
   "slug": "tigrex",
@@ -1903,7 +2356,10 @@
   ],
   "oldSlug": "tiga",
   "iconKind": "wiki",
-  "render": "tigrex.webp"
+  "render": "tigrex.webp",
+  "ids": [
+   76
+  ]
  },
  {
   "slug": "toa-tesukatora",
@@ -1918,7 +2374,10 @@
   ],
   "oldSlug": "toa",
   "iconKind": "wiki",
-  "render": "toatesukatora.webp"
+  "render": "toatesukatora.webp",
+  "ids": [
+   150
+  ]
  },
  {
   "slug": "toridcless",
@@ -1934,7 +2393,10 @@
   ],
   "oldSlug": "torid",
   "iconKind": "wiki",
-  "render": "toridcless.webp"
+  "render": "toridcless.webp",
+  "ids": [
+   141
+  ]
  },
  {
   "slug": "uragaan",
@@ -1949,7 +2411,10 @@
   ],
   "oldSlug": "ura",
   "iconKind": "wiki",
-  "render": "uragaan.webp"
+  "render": "uragaan.webp",
+  "ids": [
+   152
+  ]
  },
  {
   "slug": "uruki",
@@ -1961,7 +2426,14 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "ulky",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   124,
+   173
+  ],
+  "serverNames": [
+   "Costumed Uruki"
+  ]
  },
  {
   "slug": "varusaburosu",
@@ -1976,7 +2448,10 @@
   ],
   "oldSlug": "valsa",
   "iconKind": "wiki",
-  "render": "varusaburosu.webp"
+  "render": "varusaburosu.webp",
+  "ids": [
+   130
+  ]
  },
  {
   "slug": "velocidrome",
@@ -1993,7 +2468,10 @@
   ],
   "oldSlug": "dosran",
   "iconKind": "wiki",
-  "render": "velocidrome.webp"
+  "render": "velocidrome.webp",
+  "ids": [
+   27
+  ]
  },
  {
   "slug": "velociprey",
@@ -2005,7 +2483,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "ran",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   16
+  ]
  },
  {
   "slug": "vespoid",
@@ -2017,7 +2498,10 @@
   "hasDrops": true,
   "variants": [],
   "oldSlug": "rango",
-  "iconKind": "wiki"
+  "iconKind": "wiki",
+  "ids": [
+   19
+  ]
  },
  {
   "slug": "volganos",
@@ -2034,7 +2518,13 @@
   ],
   "oldSlug": "vol",
   "iconKind": "render",
-  "render": "volganos.webp"
+  "render": "volganos.webp",
+  "ids": [
+   75
+  ],
+  "serverNames": [
+   "Lavasioth"
+  ]
  },
  {
   "slug": "voljang",
@@ -2049,7 +2539,10 @@
   ],
   "oldSlug": "Vau",
   "iconKind": "wiki",
-  "render": "voljang.webp"
+  "render": "voljang.webp",
+  "ids": [
+   158
+  ]
  },
  {
   "slug": "white-fatalis",
@@ -2064,7 +2557,10 @@
   ],
   "oldSlug": "miraru",
   "iconKind": "render",
-  "render": "whitefatalis.webp"
+  "render": "whitefatalis.webp",
+  "ids": [
+   71
+  ]
  },
  {
   "slug": "white-espinas",
@@ -2079,7 +2575,13 @@
   ],
   "oldSlug": "espsiro",
   "iconKind": "render",
-  "render": "whiteespinas.webp"
+  "render": "whiteespinas.webp",
+  "ids": [
+   90
+  ],
+  "serverNames": [
+   "Pearl Espinas"
+  ]
  },
  {
   "slug": "white-monoblos",
@@ -2094,7 +2596,10 @@
   ],
   "oldSlug": "monosiro",
   "iconKind": "wiki",
-  "render": "whitemonoblos.webp"
+  "render": "whitemonoblos.webp",
+  "ids": [
+   44
+  ]
  },
  {
   "slug": "yama-kurai",
@@ -2109,7 +2614,10 @@
   ],
   "oldSlug": "yamac",
   "iconKind": "wiki",
-  "render": "yamakurai.webp"
+  "render": "yamakurai.webp",
+  "ids": [
+   144
+  ]
  },
  {
   "slug": "yama-tsukami",
@@ -2122,7 +2630,10 @@
   "variants": [],
   "oldSlug": "yama",
   "iconKind": "render",
-  "render": null
+  "render": null,
+  "ids": [
+   58
+  ]
  },
  {
   "slug": "yian-garuga",
@@ -2139,7 +2650,10 @@
   ],
   "oldSlug": "garuru",
   "iconKind": "wiki",
-  "render": "yiangaruga.webp"
+  "render": "yiangaruga.webp",
+  "ids": [
+   40
+  ]
  },
  {
   "slug": "yian-kut-ku",
@@ -2155,7 +2669,10 @@
   ],
   "oldSlug": "kukku",
   "iconKind": "wiki",
-  "render": "yiankut-ku.webp"
+  "render": "yiankut-ku.webp",
+  "ids": [
+   6
+  ]
  },
  {
   "slug": "zenaserisu",
@@ -2168,7 +2685,10 @@
   "variants": [],
   "oldSlug": "zena",
   "iconKind": "wiki",
-  "render": "zenaserisu.webp"
+  "render": "zenaserisu.webp",
+  "ids": [
+   161
+  ]
  },
  {
   "slug": "zerureusu",
@@ -2183,7 +2703,10 @@
   ],
   "oldSlug": "zeru",
   "iconKind": "wiki",
-  "render": "zerureusu.webp"
+  "render": "zerureusu.webp",
+  "ids": [
+   122
+  ]
  },
  {
   "slug": "zinogre",
@@ -2198,6 +2721,116 @@
   ],
   "oldSlug": "zin",
   "iconKind": "wiki",
-  "render": "zinogre.webp"
+  "render": "zinogre.webp",
+  "ids": [
+   146
+  ]
+ },
+ {
+  "slug": "ceanataur",
+  "name": "Ceanataur",
+  "category": "Other",
+  "icon": "ceanataur.webp",
+  "zone": null,
+  "hasHitzones": true,
+  "hasDrops": true,
+  "variants": [],
+  "oldSlug": "yao",
+  "iconKind": "render",
+  "ids": [
+   73
+  ]
+ },
+ {
+  "slug": "hermitaur",
+  "name": "Hermitaur",
+  "category": "Other",
+  "icon": null,
+  "zone": null,
+  "hasHitzones": true,
+  "hasDrops": true,
+  "variants": [],
+  "oldSlug": "gami",
+  "ids": [
+   66
+  ]
+ },
+ {
+  "slug": "musou-bogabadorumu",
+  "name": "Musou Bogabadorumu",
+  "category": "Flying Wyvern",
+  "icon": "musou_bogabadorumu.webp",
+  "zone": "musou_bogabadorumu.webp",
+  "hasHitzones": true,
+  "hasDrops": false,
+  "variants": [],
+  "oldSlug": "bogaK",
+  "iconKind": "render",
+  "formerSlugs": [
+   "musou"
+  ],
+  "ids": [
+   172
+  ]
+ },
+ {
+  "slug": "musou-deviljho",
+  "name": "Musou Deviljho",
+  "category": "Brute Wyvern",
+  "icon": "musou_deviljho.webp",
+  "zone": "musou_deviljho.webp",
+  "hasHitzones": true,
+  "hasDrops": true,
+  "variants": [],
+  "oldSlug": "joeK",
+  "iconKind": "render",
+  "formerSlugs": [
+   "musou-joeK"
+  ],
+  "ids": [
+   155
+  ],
+  "serverNames": [
+   "Savage Deviljho"
+  ]
+ },
+ {
+  "slug": "musou-nargacuga",
+  "name": "Musou Nargacuga",
+  "category": "Flying Wyvern",
+  "icon": "musou_nargacuga.webp",
+  "zone": "musou_nargacuga.webp",
+  "hasHitzones": true,
+  "hasDrops": true,
+  "variants": [],
+  "oldSlug": "nalgaK",
+  "iconKind": "render",
+  "formerSlugs": [
+   "musou-nalgaK"
+  ],
+  "ids": [
+   163
+  ],
+  "serverNames": [
+   "Blinking Nargacuga"
+  ]
+ },
+ {
+  "slug": "musou-zerureusu",
+  "name": "Musou Zerureusu",
+  "category": "Flying Wyvern",
+  "icon": "musou_zerureusu.webp",
+  "zone": "musou_zerureusu.webp",
+  "hasHitzones": true,
+  "hasDrops": false,
+  "variants": [],
+  "oldSlug": "zeruK",
+  "iconKind": "render",
+  "formerSlugs": [
+   "musou-zeruK"
+  ],
+  "ids": [
+   174
+  ]
  }
 ]

@@ -416,7 +416,7 @@
 
     var band = [
       ["TIME PLAYED", playtime(hunter.playtimeSeconds)],
-      ["WEAPONS USED", String((hunter.weapons || []).filter(function (w) { return w.seconds > 0; }).length)],
+      ["WEAPONS USED", String((hunter.weaponTime || []).filter(function (w) { return w.seconds > 0; }).length)],
       ["HUNTS LOGGED", num(hunter.totalKills)]
     ];
     var bwid = (W - 120 - 28) / 3;
@@ -601,7 +601,7 @@
     badges.appendChild(el("span", "badge", hunter.female ? "Female" : "Male"));
     if (hunter.guildName) {
       var guildBadge = el("a", "badge good", hunter.guildName + (hunter.guildRank ? " · " + hunter.guildRank : ""));
-      guildBadge.href = "/guilds.html";
+      guildBadge.href = "/guilds.html?name=" + encodeURIComponent(hunter.guildName);
       badges.appendChild(guildBadge);
     }
     head.appendChild(badges);
@@ -726,7 +726,9 @@
       var tbody = el("tbody");
       hunter.topMonsters.forEach(function (monster) {
         var tr = el("tr");
-        tr.appendChild(el("td", null, monster.name));
+        var nameCell = el("td");
+        nameCell.appendChild(MonsterLinks.anchor(monster));
+        tr.appendChild(nameCell);
         tr.appendChild(el("td", "num", num(monster.kills)));
         tbody.appendChild(tr);
       });
@@ -746,42 +748,66 @@
     };
   }
 
-  var id = new URLSearchParams(window.location.search).get("id");
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get("id");
   if (id) {
     request("/api/public/hunters/" + encodeURIComponent(id)).then(detail).catch(function () {
+      // The list, working, under a note: a stale link should not leave a dead page.
       document.getElementById("list-view").hidden = false;
+      startList("");
       document.getElementById("hunter-results").textContent = "Hunter not found";
     });
     return;
   }
 
-  // ?q= opens the list already searching for a name (the live board on the Worlds page links here when
-  // the API gives it no character id).
-  var query = (new URLSearchParams(window.location.search).get("q") || "").trim();
-  if (query) {
-    state.q = query;
-    document.getElementById("hunter-search").value = query;
+  // ?name= comes from pages that know a hunter only by name (party members in the quest log, the weapon
+  // board, the recent quests on the Worlds page: the API sends no character id there). The one hunter
+  // with exactly that name opens their profile; two or none open the list searching for it.
+  var byName = (params.get("name") || "").trim();
+  if (byName) {
+    request("/api/public/hunters?q=" + encodeURIComponent(byName) + "&sort=hr&page=0&size=" + state.size)
+      .then(function (data) {
+        var exact = (data.items || []).filter(function (h) { return h.name === byName; });
+        if (exact.length !== 1) throw new Error("not one hunter");
+        return request("/api/public/hunters/" + encodeURIComponent(exact[0].id)).then(function (hunter) {
+          if (window.history && history.replaceState) history.replaceState(null, "", "/hunters.html?id=" + exact[0].id);
+          detail(hunter);
+        });
+      })
+      .catch(function () { startList(byName); });
+    return;
   }
 
-  document.getElementById("hunter-search").addEventListener("input", debounce(function (event) {
-    state.q = event.target.value.trim();
-    state.page = 0;
-    loadList();
-  }, 250));
+  // ?q= opens the list already searching for a name (the live board on the Worlds page links here when
+  // the API gives it no character id).
+  startList((params.get("q") || "").trim());
 
-  document.getElementById("hunter-sort").addEventListener("change", function (event) {
-    state.sort = event.target.value;
-    state.page = 0;
-    loadList();
-  });
+  function startList(query) {
+    if (query) {
+      state.q = query;
+      document.getElementById("hunter-search").value = query;
+    }
 
-  document.getElementById("hunter-prev").addEventListener("click", function () {
-    if (state.page > 0) { state.page -= 1; loadList(); }
-  });
-  document.getElementById("hunter-next").addEventListener("click", function () {
-    state.page += 1;
-    loadList();
-  });
+    document.getElementById("hunter-search").addEventListener("input", debounce(function (event) {
+      state.q = event.target.value.trim();
+      state.page = 0;
+      loadList();
+    }, 250));
 
-  loadList();
+    document.getElementById("hunter-sort").addEventListener("change", function (event) {
+      state.sort = event.target.value;
+      state.page = 0;
+      loadList();
+    });
+
+    document.getElementById("hunter-prev").addEventListener("click", function () {
+      if (state.page > 0) { state.page -= 1; loadList(); }
+    });
+    document.getElementById("hunter-next").addEventListener("click", function () {
+      state.page += 1;
+      loadList();
+    });
+
+    loadList();
+  }
 })();

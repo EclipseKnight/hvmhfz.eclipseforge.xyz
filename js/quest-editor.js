@@ -1315,6 +1315,7 @@
     }).catch(function (error) {
       fail(error.message);
     });
+    refreshDrafts(); // the drafts list under the refusal still loads
     return;
   }
 

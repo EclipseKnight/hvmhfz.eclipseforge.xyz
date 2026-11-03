@@ -8,13 +8,15 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 |---|---|
 | `/` | Home: how to start playing (guides, steps) and sign in. After a successful login it hands over to `/account.html`. |
 | `/account.html` | Signed in view: overview (with the Hunting Road rewards and a character picker to claim them), characters, storage, hunt log, guild and account. Redirects to `/` without a valid session. |
-| `/monsters.html` | Monster field guide: search by name or species, cards link to full hitzone, HP and drop pages. |
-| `/monster.html?m=slug` | One monster: hitzones normal and enraged, HP by level, stagger limits, maps, every carve table, Henshu/GR/Zenith forms. |
+| `/monsters.html` | Monster field guide: search by name or species, cards link to full hitzone, HP and drop pages. `?q=` opens it searching. Hunt counts match the server's by monster id (`ids` in `data/monsters/index.json`). |
+| `/monster.html?m=slug` | One monster: hitzones normal and enraged, HP by level, stagger limits, maps, every carve table, Henshu/GR/Zenith forms, and a link to its quests. `slug` is `data/monsters/<slug>.json`; older links with the entry's `oldSlug` or `formerSlugs` still open it. |
 | `/events.html` | Live server events, the event quest pool and the Festa prize table. |
-| `/guilds.html` | Guild directory: search, sort by RP, members, newest or name. `?id=` opens a guild with roster and board. |
-| `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile; `?q=` opens the list searching for a name. |
+| `/guilds.html` | Guild directory: search, sort by RP, members, newest or name. `?id=` opens a guild with roster and board; `?name=` opens the one guild of that exact name (else the list, searching). |
+| `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile; `?name=` opens the one hunter of that exact name (else the list, searching), for pages the API gives no character id; `?q=` opens the list searching for a name. |
 | `/leaderboards.html` | Timed hunt boards: top hunters, top guilds (hunts by current members) and most hunted monsters for this week, last week, this month, last month and all time (UTC; weeks start Monday), from `/api/public/leaderboards/hunts`; plus guild RP. `#<board>-<period>` picks one (`#hunters-week`, `#guilds-month`, `#monsters-all`, `#rp`); the old `#hr`, `#gr` and `#guilds` links still land on a board. Tied scores share a rank. |
-| `/catalog.html` | Item and equipment catalog with section chips and search. |
+| `/catalog.html` | Item and equipment catalog with section chips and search. `?q=` opens it searching (monster drop tables link here). |
+| `/quests.html` | Quest catalog from `data/quests.json`: every quest file, search and filters, monster icons linking to their pages. `?q=` opens it searching, `?monster=<guide name>` filtered to one monster. |
+| `/quest.html?id=N` | One quest: category, area, objective, time, rewards money, monsters (each to its page), description, tracked runs. |
 | `/worlds.html` | Live world status, the live board (who is online, in town or on a quest and which quest, and who is questing together, from `/api/public/activity`; each name links to its hunter profile by `charId`, or to the Hunters page searching for it when the answer has no `charId`) and server wide hunt totals, refreshed every 30 seconds. |
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
@@ -82,6 +84,7 @@ js/guilds.js          guild directory and detail
 js/hunters.js         hunter directory and profile
 js/leaderboards.js    leaderboards, from /api/public/leaderboards/hunts and the guild list
 js/catalog.js         catalog browsing
+js/monster-links.js   a monster's field guide link from the server's id or name or the guide's name (data/monsters/index.json); used by the quest pages, leaderboards, hunters, account and worlds; also runs under node
 js/worlds.js          world status polling
 js/activity.js        live board on the Worlds page (/api/public/activity); its pure part also runs under node
 dev/mock-feedback.py  local stand-in for POST /api/feedback (testing only)
@@ -95,6 +98,9 @@ dev/make-road-data.py writes the Road tables into road-data.html from decoded Ro
 dev/check-road-data.py checks dev/make-road-data.py on two small made-up Roads (python3 dev/check-road-data.py)
 dev/check-road-rewards.js checks js/road-rewards.js on made-up reward rows, with and without boards
 dev/check-site.py     checks that every page has the same nav, footer and skip link
+dev/check-links.py    checks every local link, picture and anchor, the query parameters detail links use (the target page must read them; monster and quest ids must exist), links built in js/*.js, files scripts name, and sitemap.xml (python3 dev/check-links.py)
+dev/make-quest-monsters.py writes each quest's monsters in data/quests.json from its Japanese objective, in the field guide's names
+dev/check-catalog-monsters.js checks that every quest catalog monster has a monster page, that make-quest-monsters.py has run, and the monster index (node dev/check-catalog-monsters.js)
 dev/check-builder-icons.js checks that every monster and item the builders offer has a picture file or the placeholder (node dev/check-builder-icons.js)
 dev/make-builder-data.py writes data/map-areas.json (from the client's mhfo-hd.dll) and data/item-icons.json (from the API's item-icons.tsv)
 data/map-ids.json     every map id's own name (place plus day/night, version or district), group, quest count and confidence (docs/maps.md)

@@ -77,7 +77,7 @@
       rows: function (data) { return data.monsters; },
       score: function (m) { return [m.kills]; },
       columns: [
-        ["Monster", function (m) { return m.name || "Unknown"; }],
+        ["Monster", function (m) { return MonsterLinks.anchor(m); }],
         ["Hunts", function (m) { return num(m.kills); }, "num"]
       ]
     },

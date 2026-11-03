@@ -114,7 +114,10 @@
         return { title: i.name, sub: i.slot === "item" ? "Item" : "Equipment", href: "/catalog.html?q=" + encodeURIComponent(i.name) };
       }));
       addGroup("Monster hunt counts", (data.monsters || []).map(function (m) {
-        return { title: m.name, sub: Number(m.kills).toLocaleString() + " hunts", href: "/monsters.html?q=" + encodeURIComponent(m.name) };
+        // The server's monster id is in the guide's index ("ids"); a monster without a page opens the guide's search.
+        var page = (monsters || []).filter(function (g) { return (g.ids || []).indexOf(m.id) !== -1; })[0];
+        return { title: m.name, sub: Number(m.kills).toLocaleString() + " hunts",
+                 href: page ? "/monster.html?m=" + encodeURIComponent(page.slug) : "/monsters.html?q=" + encodeURIComponent(m.name) };
       }));
     }
 

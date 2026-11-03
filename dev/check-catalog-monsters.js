@@ -1,0 +1,105 @@
+#!/usr/bin/env node
+/* Checks that every monster the quest catalog lists has a monster page, and that the field guide's index
+   (data/monsters/index.json) holds together.
+
+   1. Every name in data/quests.json "monsters" resolves, the way the quest pages resolve it
+      (js/monster-links.js), to an index entry whose data file data/monsters/<slug>.json exists; except
+      the known gaps below (monsters of the game the guide has no page for yet).
+   2. data/quests.json is what dev/make-quest-monsters.py writes (run it with --check).
+   3. The index: each entry has its data file and the file the same name, every picture it names exists,
+      slugs and old slugs are unique, every link form monster.html accepts (slug, oldSlug, formerSlugs)
+      opens the entry, and every monster id of data/monster-ids.json belongs to an entry or is a known gap.
+
+   Usage: node dev/check-catalog-monsters.js     Exit code 0 = OK, 1 = problems, listed one per line. */
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+const childProcess = require("child_process");
+
+const ROOT = path.resolve(__dirname, "..");
+const MonsterLinks = require(path.join(ROOT, "js/monster-links.js"));
+
+function readJson(rel) { return JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8")); }
+function exists(rel) { return fs.existsSync(path.join(ROOT, rel)); }
+
+// In the game, no field guide page yet (the guide's data comes from the Ferias tables, which these lack).
+// A name here must not have a page: when one is added, take it out of this list.
+const NO_PAGE = { "Shagaru Magala": 164 };
+// Monster ids of data/monster-ids.json that are no monster to give a page: an NPC, a placeholder name,
+// and the two above.
+const NO_PAGE_IDS = { 10: "Veggie Elder (NPC)", 100: "Unknown", 113: "Mi Ru (no guide data)", 164: "Shagaru Magala" };
+
+const problems = [];
+const fail = function (message) { problems.push(message); };
+
+const index = readJson("data/monsters/index.json");
+const quests = readJson("data/quests.json").quests;
+const monsterIds = readJson("data/monster-ids.json");
+const links = MonsterLinks.build(index);
+
+// ---- 1. catalog names ----
+const unresolved = {};
+let mentions = 0;
+quests.forEach(function (quest) {
+  (quest.monsters || []).forEach(function (name) {
+    mentions += 1;
+    const hit = links.find(name);
+    if (hit && hit.name !== name) fail("quest " + quest.id + ": \"" + name + "\" is not the guide's name (\"" + hit.name + "\"); run dev/make-quest-monsters.py");
+    if (hit && !exists("data/monsters/" + hit.slug + ".json")) fail("quest " + quest.id + ": \"" + name + "\" -> monster.html?m=" + hit.slug + ", which has no data file");
+    if (!hit && !(name in NO_PAGE)) (unresolved[name] = unresolved[name] || []).push(quest.id);
+    if (hit && name in NO_PAGE) fail("\"" + name + "\" has a page now: take it out of NO_PAGE in dev/check-catalog-monsters.js");
+  });
+});
+Object.keys(unresolved).forEach(function (name) {
+  const ids = unresolved[name];
+  fail("\"" + name + "\" (" + ids.length + " quests, e.g. " + ids.slice(0, 3).join(", ") + ") has no monster page");
+});
+
+// ---- 2. the generator has run ----
+const gen = childProcess.spawnSync("python3", [path.join(ROOT, "dev/make-quest-monsters.py"), "--check"], { encoding: "utf8" });
+if (gen.status !== 0) fail((gen.stdout || gen.stderr || "dev/make-quest-monsters.py --check failed").trim());
+
+// ---- 3. the index ----
+const forms = {};
+index.forEach(function (m) {
+  const file = "data/monsters/" + m.slug + ".json";
+  if (!exists(file)) { fail("index: " + m.slug + " has no " + file); return; }
+  const data = readJson(file);
+  if (data.name !== m.name) fail("index: " + m.slug + " is \"" + m.name + "\" in the index, \"" + data.name + "\" in its file");
+  [["icons", m.icon], ["icons", m.render], ["zones", m.zone], ["icons", data.icon], ["icons", data.render], ["zones", data.zone]]
+    .forEach(function (pic) {
+      if (pic[1] && !exists("assets/monsters/" + pic[0] + "/" + pic[1])) fail("index: " + m.slug + " names assets/monsters/" + pic[0] + "/" + pic[1] + ", which is missing");
+    });
+  [m.slug, m.oldSlug].concat(m.formerSlugs || []).forEach(function (form) {
+    if (!form) return;
+    if (forms[form] && forms[form] !== m.slug) fail("index: link form \"" + form + "\" opens both " + forms[form] + " and " + m.slug);
+    forms[form] = m.slug;
+  });
+});
+// monster.html?m=<form>: the file of that name, else the index entry whose oldSlug or formerSlugs has it
+// (js/monster.js). Every form must open the entry it belongs to.
+Object.keys(forms).forEach(function (form) {
+  const direct = exists("data/monsters/" + form + ".json");
+  const viaIndex = index.filter(function (m) { return m.oldSlug === form || (m.formerSlugs || []).indexOf(form) !== -1; })[0];
+  const opens = direct ? form : viaIndex ? viaIndex.slug : null;
+  if (opens !== forms[form]) fail("monster.html?m=" + form + " opens " + opens + ", not " + forms[form]);
+});
+const byId = {};
+index.forEach(function (m) { (m.ids || []).forEach(function (id) { (byId[id] = byId[id] || []).push(m.slug); }); });
+Object.keys(monsterIds).forEach(function (id) {
+  if (Number(id) === 0) return;
+  if (!byId[id] && !(id in NO_PAGE_IDS)) fail("data/monster-ids.json " + id + " (" + monsterIds[id] + ") is on no index entry (\"ids\")");
+  if (byId[id] && id in NO_PAGE_IDS) fail("monster id " + id + " has a page now: take it out of NO_PAGE_IDS");
+});
+Object.keys(byId).forEach(function (id) {
+  if (!(id in monsterIds)) fail("index: id " + id + " (on " + byId[id].join(", ") + ") is not in data/monster-ids.json");
+});
+
+problems.forEach(function (p) { console.log("FAIL: " + p); });
+if (problems.length) {
+  console.log(problems.length + " problem(s)");
+  process.exit(1);
+}
+console.log("catalog monsters OK: " + mentions + " mentions in " + quests.length + " quests, " + index.length +
+  " guide entries; known gaps without a page: " + Object.keys(NO_PAGE).map(function (n) { return n + " (id " + NO_PAGE[n] + ")"; }).join(", "));

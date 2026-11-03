@@ -9,14 +9,22 @@ not fetched.
 Pages whose own script reads location.hash (tabs and boards picked by "#name", e.g. account.html,
 leaderboards.html) handle their fragments in the browser: those fragments are counted, not checked.
 
-Usage: python3 dev/check-links.py [page.html ...]   (no pages = the whole site)
+Detail links (a page with a query, e.g. /monster.html?m=akantor, /hunters.html?name=x) must use a
+parameter the target page's own scripts read (URLSearchParams ... .get("m")): one they don't read lands
+on the plain list page. Where the site holds the data, the value must exist too: monster.html?m= a slug,
+oldSlug or formerSlugs of data/monsters/index.json (what js/monster.js opens), quest.html?id= a quest of
+data/quests.json. The same is checked for links built in js/*.js ("/page.html?param=" strings) and for
+sitemap.xml; and every "/assets/", "/data/", "/js/" or "/css/" file a script names must exist.
+
+Usage: python3 dev/check-links.py [page.html ...]   (no pages = the whole site, its scripts and the sitemap)
 Exit code 0 = no broken links, 1 = problems, listed one per line.
 """
+import json
 import pathlib
 import re
 import sys
 from html.parser import HTMLParser
-from urllib.parse import unquote, urlsplit
+from urllib.parse import parse_qsl, unquote, urlsplit
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -91,6 +99,102 @@ def resolve(base, value):
     return target, unquote(parts.fragment)
 
 
+# Scripts on every page that read no query of the page's own (activity.js and report.js read ?api= only
+# on localhost, a test hook, and it counts like any other read).
+_params = {}
+PARAM_READ = re.compile(r'(?:params|URLSearchParams\([^()]*\))\.get\(\s*"(\w+)"')
+
+
+def params_read(target):
+    """The query parameters a page's own scripts read."""
+    if target not in _params:
+        names = set()
+        for src in parse(target).scripts:
+            script = ROOT / src.split("?")[0].lstrip("/")
+            if script.is_file() and script.suffix == ".js":
+                names |= set(PARAM_READ.findall(script.read_text(encoding="utf-8")))
+        _params[target] = names
+    return _params[target]
+
+
+_valid = {}
+
+
+def valid_values():
+    """Values the site's own data says exist, per (page, parameter)."""
+    if not _valid:
+        index = json.loads((ROOT / "data/monsters/index.json").read_text(encoding="utf-8"))
+        forms = set()
+        for m in index:
+            forms |= {m["slug"], m.get("oldSlug")} | set(m.get("formerSlugs") or [])
+        forms.discard(None)
+        quests = json.loads((ROOT / "data/quests.json").read_text(encoding="utf-8"))["quests"]
+        _valid[("monster.html", "m")] = forms
+        _valid[("quest.html", "id")] = {str(q["id"]) for q in quests}
+    return _valid
+
+
+NUMERIC = {("hunters.html", "id"), ("guilds.html", "id")}  # API ids: checked for form only
+
+
+def check_query(where, value, target, query):
+    """Problems with the query of a link to a local page."""
+    problems = []
+    if not query or target.suffix != ".html":
+        return problems
+    page = target.name
+    read = params_read(target)
+    for key, val in parse_qsl(query, keep_blank_values=True):
+        if key not in read:
+            problems.append(f"{where}: {value} -> {page} does not read ?{key}= (it opens the plain page)")
+            continue
+        if not val:  # a link builder's prefix ("/quest.html?id=" + id): the key is what can be checked
+            continue
+        allowed = valid_values().get((page, key))
+        if allowed is not None and val not in allowed:
+            problems.append(f"{where}: {value} -> no {key}={val!r} in the site's data, {page} shows 'not found'")
+        if (page, key) in NUMERIC and not val.isdigit():
+            problems.append(f"{where}: {value} -> {key} must be a number")
+    return problems
+
+
+LINK_IN_JS = re.compile(r'["\'](/[\w-]+\.html)\?([^"\'#]*)["\']')
+FILE_IN_JS = re.compile(r'["\'](/(?:assets|data|js|css)/[^"\'?#\s]*\.[a-z0-9]+)["\']', re.I)
+
+
+def check_scripts():
+    """Links built in the scripts: the page exists, it reads the parameter, and named files exist."""
+    problems = []
+    for script in sorted((ROOT / "js").glob("*.js")):
+        name = script.relative_to(ROOT)
+        for number, line in enumerate(script.read_text(encoding="utf-8").splitlines(), 1):
+            for path, query in LINK_IN_JS.findall(line):
+                target = ROOT / path.lstrip("/")
+                if not target.is_file():
+                    problems.append(f"{name}:{number}: link {path} -> missing file")
+                    continue
+                problems += check_query(f"{name}:{number}", path + "?" + query, target, query)
+            for path in FILE_IN_JS.findall(line):
+                if not (ROOT / path.lstrip("/")).is_file():
+                    problems.append(f"{name}:{number}: {path} -> missing file")
+    return problems
+
+
+def check_sitemap():
+    problems = []
+    sitemap = ROOT / "sitemap.xml"
+    for number, line in enumerate(sitemap.read_text(encoding="utf-8").splitlines(), 1):
+        for loc in re.findall(r"<loc>https://hvmhfz\.eclipseforge\.xyz(/[^<]*)</loc>", line):
+            hit = resolve(sitemap, loc)
+            if not hit[0].is_file():
+                problems.append(f"sitemap.xml:{number}: {loc} -> missing file")
+                continue
+            if "noindex" in hit[0].read_text(encoding="utf-8"):
+                problems.append(f"sitemap.xml:{number}: {loc} -> the page says noindex")
+            problems += check_query(f"sitemap.xml:{number}", loc, hit[0], urlsplit(loc).query)
+    return problems
+
+
 def check_page(path, skipped):
     problems = []
     page = parse(path)
@@ -103,6 +207,8 @@ def check_page(path, skipped):
         if not target.is_file():
             problems.append(f"{name}:{line}: {key} {value} -> missing file")
             continue
+        if key == "href":
+            problems += check_query(f"{name}:{line}", value, target, urlsplit(value).query)
         if fragment and target.suffix == ".html" and fragment not in parse(target).ids:
             if hash_routed(parse(target)):
                 skipped.append(value)
@@ -129,9 +235,11 @@ def main(args):
     if not args:
         for css in sorted((ROOT / "css").glob("*.css")):
             problems += check_css(css)
+        problems += check_scripts()
+        problems += check_sitemap()
     for p in problems:
         print(p)
-    print(f"{len(pages)} page(s) checked, " + (f"{len(problems)} broken link(s)" if problems else "no broken links")
+    print(f"{len(pages)} page(s)" + ("" if args else ", the scripts and the sitemap") + " checked, " + (f"{len(problems)} broken link(s)" if problems else "no broken links")
           + f" ({len(skipped)} fragment(s) left to page scripts)")
     return 1 if problems else 0
 

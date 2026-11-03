@@ -44,7 +44,7 @@
     main.appendChild(panel);
   }
 
-  function render(quest, details, byName) {
+  function render(quest, details, links) {
     main.textContent = "";
     document.title = "Hunsterverse MHFZ: " + quest.name;
 
@@ -52,7 +52,7 @@
     head.appendChild(el("p", "kicker", "Hunsterverse · Quest"));
     head.appendChild(el("h1", null, quest.name));
     var sub = el("p", "page-sub");
-    sub.appendChild(el("a", null, quest.category)).href = "/quests.html?category=" + encodeURIComponent(quest.category);
+    sub.appendChild(el("a", null, quest.category)).href = "/quests.html?q=" + encodeURIComponent(quest.category);
     if (quest.area) {
       sub.appendChild(document.createTextNode(" · "));
       sub.appendChild(el("span", null, quest.area));
@@ -128,18 +128,16 @@
       var mon = section("Monsters", "what the objective names");
       var grid = el("div", "quest-monsters");
       quest.monsters.forEach(function (name) {
-        var tile = el("a", "monster-tile");
-        var slug = slugFor(name, byName);
-        tile.href = slug ? "/monster.html?m=" + encodeURIComponent(slug) : "/monsters.html?q=" + encodeURIComponent(name);
-        if (slug) {
-          var entry = byName[name] || byName[SYNONYMS[name]] ||
-            Object.keys(byName).map(function (k) { return byName[k]; }).filter(function (m) { return m.slug === slug; })[0];
-          if (entry && entry.icon) {
-            var img = el("img");
-            img.src = "/assets/monsters/icons/" + entry.icon;
-            img.alt = name;
-            tile.appendChild(img);
-          }
+        // Every name is the field guide's (dev/make-quest-monsters.py); one without a page is plain text.
+        var entry = links.find(name);
+        var tile = el(entry ? "a" : "div", "monster-tile");
+        if (entry) tile.href = links.href(entry);
+        else tile.title = "No field guide page yet";
+        if (entry && entry.icon) {
+          var img = el("img");
+          img.src = "/assets/monsters/icons/" + entry.icon;
+          img.alt = name;
+          tile.appendChild(img);
         }
         tile.appendChild(el("span", null, name));
         grid.appendChild(tile);
@@ -176,32 +174,15 @@
     fail("The address needs a quest id, for example /quest.html?id=23250.");
     return;
   }
-  var SYNONYMS = { "Fatalis": "Black", "Crimson Fatalis": "Crimson", "White Fatalis": "White",
-    "Berserk Laviente": "Berserk lavieG", "Laviente": "Berserk lavieG" };
-
-  function slugFor(name, byName) {
-    var hit = byName[name] || byName[SYNONYMS[name]];
-    if (hit) return hit.slug;
-    var key = name.toLowerCase().replace(/[^a-z0-9]+/g, "");
-    var names = Object.keys(byName);
-    for (var i = 0; i < names.length; i++) {
-      if (names[i].toLowerCase().replace(/[^a-z0-9]+/g, "") === key) return byName[names[i]].slug;
-    }
-    return null;
-  }
-
   Promise.all([
     fetch("/data/quests.json", { cache: "no-cache" }).then(function (r) { return r.json(); }),
-    fetch("/data/monsters/index.json", { cache: "no-cache" }).then(function (r) { return r.json(); })
-      .catch(function () { return []; }),
+    MonsterLinks.load(),
     fetch("/data/quest-details.json", { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : {}; })
       .catch(function () { return {}; })
   ]).then(function (results) {
     var quest = (results[0].quests || []).filter(function (q) { return q.id === id; })[0];
     if (!quest) { fail("No quest with id " + id + " on this server."); return; }
-    var byName = {};
-    (results[1] || []).forEach(function (m) { byName[m.name] = m; });
-    render(quest, results[2][String(id)], byName);
+    render(quest, results[2][String(id)], results[1]);
   }).catch(function (error) {
     fail("The quest could not be loaded (" + error.message + ").");
   });

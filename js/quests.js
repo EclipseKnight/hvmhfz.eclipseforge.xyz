@@ -3,7 +3,7 @@
   "use strict";
 
   var PAGE = 40;
-  var state = { all: [], shown: [], page: 0, q: "", rank: "", type: "", area: "", monster: "", icons: {} };
+  var state = { all: [], shown: [], page: 0, q: "", rank: "", type: "", area: "", monster: "", links: null };
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -40,30 +40,6 @@
     for (var i = 0; i < RANKS.length; i++) text = text.replace(RANKS[i][0], " ");
     text = text.replace(/Quest|Event|クエスト/gi, " ").replace(/\s+/g, " ").trim();
     return text || "Other";
-  }
-
-  function slug(name) {
-    return name.toLowerCase().replace(/[^a-z0-9]+/g, "");
-  }
-
-  /** The monster index names a few elders oddly ("Black" for Fatalis, slug "mira"); map those here. */
-  var SYNONYMS = {
-    "Fatalis": "Black", "Crimson Fatalis": "Crimson", "White Fatalis": "White",
-    "Berserk Laviente": "Berserk lavieG", "Laviente": "Berserk lavieG"
-  };
-
-  function iconFor(name) {
-    var hit = state.icons[name] || state.icons[SYNONYMS[name]];
-    if (hit) return hit;
-    var key = slug(name);
-    var names = Object.keys(state.icons);
-    for (var i = 0; i < names.length; i++) {
-      if (slug(names[i]) === key) return state.icons[names[i]];
-    }
-    for (var i = 0; i < names.length; i++) {
-      if (names[i].toLowerCase().indexOf(name.toLowerCase()) === 0) return state.icons[names[i]];
-    }
-    return null;
   }
 
   function fill(select, values, label) {
@@ -119,13 +95,14 @@
       var monCell = el("td", "monster-icons");
       if (!quest.monsters.length) monCell.appendChild(el("span", "muted", "-"));
       quest.monsters.forEach(function (name) {
-        var icon = iconFor(name);
-        var link = el("a", "monster-chip");
-        link.href = "/monster.html?m=" + encodeURIComponent((icon && icon.slug) || slug(name));
-        link.title = name;
-        if (icon && icon.icon) {
+        // Every name is the field guide's (dev/make-quest-monsters.py); one without a page is plain text.
+        var hit = state.links.find(name);
+        var link = el(hit ? "a" : "span", "monster-chip");
+        if (hit) link.href = state.links.href(hit);
+        link.title = hit ? name : name + " (no field guide page yet)";
+        if (hit && hit.icon) {
           var img = el("img");
-          img.src = "/assets/monsters/icons/" + icon.icon;
+          img.src = "/assets/monsters/icons/" + hit.icon;
           img.alt = name;
           img.loading = "lazy";
           link.appendChild(img);
@@ -161,8 +138,8 @@
   }
 
   function start() {
-    get("/data/monsters/index.json").then(function (list) {
-      list.forEach(function (m) { state.icons[m.name] = m; });
+    MonsterLinks.load().then(function (links) {
+      state.links = links;
       return get("/data/quests.json");
     }).then(function (data) {
       state.all = data.quests.map(function (q) {
@@ -184,9 +161,21 @@
       fill(document.getElementById("quest-area"), Object.keys(areas).sort(), "Any area");
       fill(document.getElementById("quest-monster"), Object.keys(monsters).sort(), "Any monster");
 
-      state.shown = state.all;
-      render();
+      // ?q= opens the catalog searching (the quest page's category link), ?monster= filtered to one
+      // monster (a monster page's quest link).
+      var params = new URLSearchParams(window.location.search);
+      state.q = (params.get("q") || "").trim();
+      document.getElementById("quest-search").value = state.q;
+      var monster = params.get("monster") || "";
+      if (monsters[monster]) {
+        state.monster = monster;
+        document.getElementById("quest-monster").value = monster;
+      } else if (monster) {
+        state.q = monster; // no quest lists it: the search says so instead of showing every quest
+        document.getElementById("quest-search").value = monster;
+      }
       wire();
+      apply();
     }).catch(function (error) {
       fail("The quest catalog could not load (" + error.message + ").");
     });

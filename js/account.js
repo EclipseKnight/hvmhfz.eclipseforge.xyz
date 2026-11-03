@@ -4,7 +4,7 @@
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
-  var TABS = ["overview", "characters", "storage", "hunts", "guild", "account"];
+  var TABS = ["overview", "characters", "storage", "hunts", "guild", "quests", "account"];
 
   var state = {
     account: null,
@@ -713,7 +713,9 @@
     } else {
       data.monsters.forEach(function (monster) {
         var row = el("tr");
-        row.appendChild(el("td", null, monster.name));
+        var nameCell = el("td");
+        nameCell.appendChild(MonsterLinks.anchor(monster));
+        row.appendChild(nameCell);
         row.appendChild(el("td", "num", amount(monster.kills)));
         body.appendChild(row);
       });
@@ -775,6 +777,8 @@
       wallet("stat-gzenny", "-");
       wallet("stat-cp", "-");
       wallet("stat-stamps", "-");
+      renderHunts({ totalKills: 0, monsters: [], recent: [] }); // the hunt log's own "nothing recorded" rows
+      document.getElementById("hunts-note").textContent = "no characters";
     }
 
     var storageSearch = document.getElementById("storage-search");
@@ -829,7 +833,7 @@
     var tags = ["Gift list: " + gift.listName,
       "up to " + gift.timesAcceptable + " take" + (gift.timesAcceptable === 1 ? "" : "s") + " each"];
     if (gift.targeted) tags.push("only for " + gift.targetedTo);
-    item.appendChild(el("p", "note-text", tags.join(" ")));
+    item.appendChild(el("p", "note-text", tags.join(" · ")));
     if (gift.items.length) {
       var list = el("ul", "gift-list");
       gift.items.forEach(function (giftItem) { list.appendChild(giftRow(giftItem)); });

@@ -89,7 +89,7 @@
             note.appendChild(el("b", null, session.username));
             note.appendChild(document.createTextNode(": this report is signed with your account. Your Discord isn't linked yet; "));
             var link = el("a", null, "link it");
-            link.href = "/account.html#account";
+            link.href = "/account.html#overview"; // the Discord link command is on the Overview tab
             note.appendChild(link);
             note.appendChild(document.createTextNode(" so we can message you about it."));
           });

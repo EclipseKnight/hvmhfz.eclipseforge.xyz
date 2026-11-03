@@ -58,7 +58,9 @@
     monsters.forEach(function (monster, index) {
       var row = el("tr");
       row.appendChild(el("td", "rank", String(index + 1)));
-      row.appendChild(el("td", null, monster.name));
+      var nameCell = el("td");
+      nameCell.appendChild(MonsterLinks.anchor(monster));
+      row.appendChild(nameCell);
       row.appendChild(el("td", "num", Number(monster.kills).toLocaleString()));
       body.appendChild(row);
     });

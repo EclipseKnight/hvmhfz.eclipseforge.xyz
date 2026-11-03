@@ -150,7 +150,7 @@
     head.appendChild(search);
     questPanel.appendChild(head);
     questPanel.appendChild(el("p", "panel-note",
-      (data.questCount || quests.length) + " event quests have been loaded on this server. Showing the most recent 40; quest names live in the client, so ids are listed as the server sees them."));
+      (data.questCount || quests.length) + " event quests have been loaded on this server. Showing the most recent 40; each id opens the quest's page."));
     var questBody = el("div");
     questPanel.appendChild(questBody);
     root.appendChild(questPanel);
@@ -162,7 +162,9 @@
       var rows = quests.filter(function (q1) {
         return !q || String(q1.questId).indexOf(q) !== -1 || String(q1.questType).indexOf(q) !== -1;
       }).slice(0, 40).map(function (q1) {
-        return [String(q1.questId), "Type " + q1.questType, q1.maxPlayers || "-", date(q1.startTime)];
+        var link = el("a", null, String(q1.questId)); // the quest catalog has every quest file's page
+        link.href = "/quest.html?id=" + encodeURIComponent(q1.questId);
+        return [link, "Type " + q1.questType, q1.maxPlayers || "-", date(q1.startTime)];
       });
       if (!rows.length) {
         questBody.appendChild(el("p", "empty-state", "No event quest matches that filter."));
