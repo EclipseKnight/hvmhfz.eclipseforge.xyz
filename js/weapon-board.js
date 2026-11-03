@@ -38,6 +38,29 @@
       var weapons = data.weapons || [];
       var total = data.seconds || weapons.reduce(function (n, w) { return n + w.seconds; }, 0);
       while (body.firstChild) body.removeChild(body.firstChild);
+      // The bar chart above the table: each weapon's share of all tracked time, longest bar = most used.
+      var bars = document.getElementById("weapon-board-bars");
+      if (bars) {
+        while (bars.firstChild) bars.removeChild(bars.firstChild);
+        var most = weapons.reduce(function (m, w) { return Math.max(m, w.seconds || 0); }, 0);
+        weapons.forEach(function (weapon) {
+          var item = el("li", weapon.seconds ? null : "is-zero");
+          var label = el("span", "wb-name");
+          label.appendChild(icon(weapon.weapon));
+          label.appendChild(document.createTextNode(weapon.weapon));
+          item.appendChild(label);
+          var track = el("span", "wb-track");
+          var fill = el("span", "wb-fill");
+          fill.style.width = most ? Math.max(weapon.seconds ? 1.5 : 0, (weapon.seconds / most) * 100) + "%" : "0";
+          track.appendChild(fill);
+          item.appendChild(track);
+          var pct = total ? (100 * weapon.seconds / total).toFixed(1) + "%" : "-";
+          var value = el("span", "wb-value", time(weapon.seconds) + " · " + pct);
+          value.title = (weapon.hunters || 0) + ((weapon.hunters || 0) === 1 ? " hunter" : " hunters");
+          item.appendChild(value);
+          bars.appendChild(item);
+        });
+      }
       weapons.forEach(function (weapon, index) {
         var tr = el("tr");
         tr.appendChild(el("td", "num", String(index + 1)));
