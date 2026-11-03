@@ -1282,3 +1282,14 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   .bui-review{grid-template-columns:minmax(0,1fr)}
   .bui-review dd{margin-bottom:6px}
 }
+
+/* ---------- breadcrumbs (shared) ----------
+   Markup: <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li> ...
+   <li aria-current="page">This page</li></ol></nav>. Used by the Frontier guide pages first. */
+.breadcrumbs ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 0;
+  font:600 .78rem/1.4 var(--font-ui);letter-spacing:.04em;color:var(--text-dim)}
+.breadcrumbs li{display:flex;align-items:center;min-width:0}
+.breadcrumbs li + li::before{content:"\203A";margin:0 9px;color:var(--text-faint)}
+.breadcrumbs a{color:var(--gold-bright)}
+.breadcrumbs [aria-current]{color:var(--text-light);overflow-wrap:anywhere}
+@media print{.breadcrumbs{display:none}}

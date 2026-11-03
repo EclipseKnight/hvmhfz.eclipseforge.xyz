@@ -65,7 +65,7 @@
               <a class="navlink" href="/guide-windows.html">Windows guide</a>
               <a class="navlink" href="/guide-linux.html" aria-current="page">Linux guide</a>
               <a class="navlink" href="/guide-roads.html">Roads guide</a>
-              <a class="navlink" href="/guide-frontier.html">Frontier handbook</a>
+              <a class="navlink" href="/guide-frontier.html">Frontier guide</a>
             </div>
           </div>
           <a class="navlink" href="/report.html">Report</a>
@@ -325,6 +325,16 @@ gst-inspect-1.0 autoaudiosink &gt;/dev/null &amp;&amp; echo "audio sink ok"</cod
 <h3>The wrapper is the same everywhere</h3>
 <p><code>GDK_BACKEND=x11</code> matters on Wayland desktops of any distribution, and <code>WEBKIT_DMABUF_RENDERER_FORCE_SHM=1</code> matters on NVIDIA. On X11, or on AMD and Intel graphics, you can usually leave both out, but keeping them costs nothing.</p>
 
+<h2 id="english">Appendix: English text and language</h2>
+<p>MHF-Z is a Japanese game. The English translation is not a separate installer: it lives inside <code>mhl.dll</code>, the client's text layer, and the patch also replaces the files with the Diva storyline and one town's dialogue (step 4).</p>
+<p><b>What the client patch already does.</b> The Hunsterverse patch ships its own <code>mhl.dll</code>, so a normal install from <a href="#patch">step 4</a> is already translated. If your menus are English, leave this file alone.</p>
+<p><b>If your game is in Japanese.</b> Something overwrote the patched DLL, or the patch step was skipped. Run step 4 again: it puts the patched <code>mhl.dll</code> back and keeps your first backup in <code>original-files/</code>. Check that it is the patched one:</p>
+<pre><code>cd ~/Games/MHFZ
+cmp mhl.dll /tmp/fp/Frontier_Patch/mhl.dll &amp;&amp; echo "patched mhl.dll"</code></pre>
+<p><b>Coverage is partial.</b> Some item names, NPC dialogue and event text stay Japanese even with the English DLL in place. That is the translation, not a broken install.</p>
+<p><b>Fonts.</b> If Japanese text shows as boxes, install your distribution's CJK fonts (<code>fonts-noto-cjk</code> on Debian and Ubuntu, <code>noto-fonts-cjk</code> on Arch, <code>google-noto-sans-cjk-fonts</code> on Fedora) and start the launcher with <code>LANG=ja_JP.UTF-8</code>.</p>
+<p>The <a href="/guide-windows.html#english">Windows guide's appendix</a> also covers swapping in a translation pack's own <code>mhl.dll</code>; the same warnings apply here.</p>
+
 <h2 id="discord">Appendix: Discord linking and bot commands</h2>
 <p>Linking your game account to Discord gives you character backups and the bot commands. The account page does the linking:</p>
 <ol>
@@ -353,7 +363,7 @@ gst-inspect-1.0 autoaudiosink &gt;/dev/null &amp;&amp; echo "audio sink ok"</cod
           <a href="/guide-windows.html">Windows guide</a>
           <a href="/guide-linux.html">Linux guide</a>
           <a href="/guide-roads.html">Roads guide</a>
-          <a href="/guide-frontier.html">Frontier handbook</a>
+          <a href="/guide-frontier.html">Frontier guide</a>
           <a href="/changelog.html">Changelog</a>
           <a href="/api.html">API</a>
           <a href="/report.html">Report a problem</a>

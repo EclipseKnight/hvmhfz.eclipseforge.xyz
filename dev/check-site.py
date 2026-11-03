@@ -36,7 +36,7 @@ NAV = [
     ("/guide-windows.html", "Windows guide"),
     ("/guide-linux.html", "Linux guide"),
     ("/guide-roads.html", "Roads guide"),
-    ("/guide-frontier.html", "Frontier handbook"),
+    ("/guide-frontier.html", "Frontier guide"),
     ("/report.html", "Report"),
     ("/account.html", "Account"),
     ("https://discord.gg/YuE42eh", "Discord"),

@@ -7,13 +7,7 @@
   display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 .hb-layout main.sheet{margin:0;max-width:none}
 
-/* breadcrumbs */
-.hb-crumbs ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 0;
-  font:600 .78rem/1.4 var(--font-ui);letter-spacing:.04em;color:var(--text-dim)}
-.hb-crumbs li{display:flex;align-items:center;min-width:0}
-.hb-crumbs li + li::before{content:"\203A";margin:0 9px;color:var(--text-faint)}
-.hb-crumbs a{color:var(--gold-bright)}
-.hb-crumbs [aria-current]{color:var(--text-light);overflow-wrap:anywhere}
+/* breadcrumbs: shared, in css/styles.css ("breadcrumbs" section) */
 
 /* side column: on this page + all sections */
 .hb-side{display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -53,9 +47,24 @@ main.sheet .hb-table{overflow-x:auto;margin:1.2em 0;max-width:100%}
 main.sheet .hb-table table{margin:0;min-width:100%;width:auto}
 main.sheet .hb-table td,main.sheet .hb-table th{white-space:normal}
 
-/* On Hunsterverse notes */
-main.sheet .hv-note{border-left-color:var(--wax)}
+/* "On Hunsterverse" notes: one per section, comparing the guide (old official servers) with our server.
+   Markup: <aside class="box hv-note hv-same|hv-diff|hv-missing|hv-unknown" id="hv-<section id>">
+   <p><strong class="hv-verdict">Works the same.</strong> ...</p></aside>. The verdict is in the text, the
+   colour only repeats it. guide-frontier-hunsterverse.html links each note by its id. */
+main.sheet .hv-note{border-left-color:var(--wax);scroll-margin-top:calc(var(--nav-h, 64px) + 16px)}
 main.sheet .hv-note::before{content:"ON HUNSTERVERSE";color:var(--wax)}
+main.sheet .hv-verdict{display:inline-block;margin-right:.35em;padding:1px 8px;border-radius:999px;
+  font:700 .7rem/1.6 var(--font-ui);letter-spacing:.06em;text-transform:uppercase;vertical-align:.1em;
+  color:#fff8e8;background:var(--wax)}
+main.sheet .hv-same{border-left-color:var(--teal)}
+main.sheet .hv-same .hv-verdict{background:var(--teal)}
+main.sheet .hv-diff{border-left-color:var(--wax)}
+main.sheet .hv-missing{border-left-color:var(--blue)}
+main.sheet .hv-missing .hv-verdict{background:var(--blue)}
+main.sheet .hv-unknown{border-left-style:dashed;border-left-color:var(--ink-soft)}
+main.sheet .hv-unknown .hv-verdict{background:var(--ink-soft)}
+/* comparison page: verdict counts and the table */
+.hv-table td:first-child{white-space:nowrap}
 main.sheet .box > :last-child{margin-bottom:0}
 main.sheet .box > :first-child{margin-top:0}
 
@@ -93,7 +102,7 @@ main.sheet .box > :first-child{margin-top:0}
 
 @media (min-width:1100px){
   .hb-layout{grid-template-columns:250px minmax(0,1fr);column-gap:28px;align-items:start}
-  .hb-crumbs{grid-column:1 / -1}
+  .hb-layout > .breadcrumbs{grid-column:1 / -1}
   .hb-layout.hb-wide{grid-template-columns:minmax(0,1fr);max-width:1100px}
   .hb-side{position:sticky;top:calc(var(--nav-h) + 14px);max-height:calc(100vh - var(--nav-h) - 28px);overflow-y:auto;
     scrollbar-width:thin}
@@ -101,7 +110,7 @@ main.sheet .box > :first-child{margin-top:0}
 }
 @media (max-width:720px){
   .hb-layout{padding:0;margin-top:14px;gap:10px}
-  .hb-crumbs,.hb-side{padding:0 14px}
+  .hb-layout > .breadcrumbs,.hb-side{padding:0 14px}
   .hb-pager{grid-template-columns:1fr}
   .hb-pager .hb-next{grid-column:1}
 }
@@ -115,6 +124,15 @@ main.sheet .box > :first-child{margin-top:0}
   .hb-tile-body span{font-size:.84rem}
 }
 @media print{
-  .hb-side,.hb-crumbs,.hb-pager{display:none}
+  .hb-side,.hb-pager{display:none}
   .hb-layout{display:block;margin:0;padding:0}
 }
+main.sheet .hv-pill{display:inline-block;padding:1px 8px;border-radius:999px;white-space:nowrap;
+  font:700 .66rem/1.6 var(--font-ui);letter-spacing:.06em;text-transform:uppercase;color:#fff8e8;background:var(--wax)}
+main.sheet .hv-pill.hv-same{background:var(--teal)}
+main.sheet .hv-pill.hv-missing{background:var(--blue)}
+main.sheet .hv-pill.hv-unknown{background:var(--ink-soft)}
+main.sheet .hv-counts{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:8px 18px}
+main.sheet .hv-table td{vertical-align:top}
+main.sheet .hv-table td > p{margin:.35em 0 0}
+main.sheet .hv-table td > p:first-of-type{display:inline;margin:0}
