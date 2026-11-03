@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
-"""Writes the site shell (skip link, header nav, footer) into every page.
+"""Writes the site shell (skip link, header nav, breadcrumbs, footer) into every page.
 
 The sources, in dev/shell/:
   - nav.html     the skip link and header nav, with no page marked as current;
   - footer.html  the footer;
   - pages.json   one entry per *.html page in the site root:
                  page (file name), group (the menu it sits under, or null), label (its short name),
-                 title (its <title>, unescaped) and current (the nav link it marks, or null).
+                 title (its <title>, unescaped) and current (the nav link it marks, or null);
+                 optional: trail (a list of [label, href] crumbs between the group and the page),
+                 item (true: the last crumb is a stand-in the page's script replaces with the item's
+                 name, see HvCrumbs in js/nav.js) and crumbs (false: no breadcrumbs, the home page).
 
 Each page holds the shell between marker comments:
     <!-- site-shell:header ... -->  ...  <!-- /site-shell:header -->
     <!-- site-shell:footer ... -->  ...  <!-- /site-shell:footer -->
 A page without markers gets them around its existing skip link + <header class="site-nav"> and
-its <footer class="site-foot">. In the header, the page's `current` link gets aria-current="page"
+its <footer class="site-foot">. The breadcrumbs (Home › group › trail › page) go between
+    <!-- site-shell:crumbs ... -->  ...  <!-- /site-shell:crumbs -->
+replacing, on a page without those markers, its <nav class="breadcrumbs"> line, else written as the
+first thing in its <main id="content">; the old "Hunsterverse · X" kicker line is removed. In the header, the page's `current` link gets aria-current="page"
 and the button of the menu holding it the class is-current. A page that does not load
 /js/search.js gets it before </body>. Everything else on the page (head, main, scripts) is kept.
 
@@ -35,6 +41,9 @@ MARKERS = {
     "footer": ("<!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->",
                "<!-- /site-shell:footer -->"),
 }
+CRUMBS = ("<!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->",
+          "<!-- /site-shell:crumbs -->")
+KICKER = re.compile(r'^[ \t]*<p class="kicker">Hunsterverse · [^<]*</p>[ \t]*\n', re.M)
 # Where the shell sits on a page that has no markers yet.
 UNMARKED = {
     "header": re.compile(r'^[ \t]*<a class="skip-link".*?</header>[ \t]*\n', re.S | re.M),
@@ -118,6 +127,53 @@ def put(text, name, part, block):
     return text.replace(found[0], wrapped, 1)
 
 
+def crumbs_for(entry):
+    """The breadcrumb trail of a page: Home › group › trail › page, or None for no breadcrumbs."""
+    if entry.get("crumbs") is False:
+        return None
+    esc = html.escape
+    items = ['<li><a href="/">Home</a></li>']
+    if entry.get("group"):
+        items.append(f'<li>{esc(entry["group"])}</li>')
+    for label, href in entry.get("trail") or []:
+        items.append(f'<li><a href="{esc(href)}">{esc(label)}</a></li>')
+    item = " data-crumb-item" if entry.get("item") else ""
+    items.append(f'<li aria-current="page"{item}>{esc(entry["label"])}</li>')
+    return f'<nav class="breadcrumbs" aria-label="Breadcrumb"><ol>{"".join(items)}</ol></nav>'
+
+
+def put_crumbs(text, name, entry):
+    start, end = CRUMBS
+    text = KICKER.sub("", text)  # the breadcrumbs replace the old "Hunsterverse · X" line
+    marked = re.compile(r"^([ \t]*)" + re.escape(start) + r".*?" + re.escape(end) + r"[ \t]*\n", re.S | re.M)
+    found = list(marked.finditer(text))
+    if len(found) > 1:
+        raise ShellError(f"{name}: {len(found)} crumbs markers")
+    nav = crumbs_for(entry)
+    if found:
+        at, pad = found[0], found[0].group(1)
+    else:
+        if nav is None:
+            return text
+        at = list(re.finditer(r'^([ \t]*)<nav class="breadcrumbs".*?</nav>[ \t]*\n', text, re.S | re.M))
+        if len(at) > 1:
+            raise ShellError(f"{name}: {len(at)} breadcrumbs, not markers")
+        if at:
+            at, pad = at[0], at[0].group(1)
+        else:
+            main = list(re.finditer(r'^([ \t]*)<main\b[^>]*\bid="content"[^>]*>([ \t]*\n([ \t]*))?', text, re.M))
+            if len(main) != 1:
+                raise ShellError(f'{name}: no breadcrumbs markers and {len(main)} <main id="content"> tags')
+            main = main[0]
+            if main.group(2) is not None:  # main on a line of its own: a line above its first child
+                pad, spot, lead = main.group(3), main.start(3), ""
+            else:  # content right after <main>: the crumbs go on lines of their own
+                pad, spot, lead = main.group(1) + "  ", main.end(), "\n"
+            return text[:spot] + f"{lead}{pad}{start}\n{pad}{nav}\n{pad}{end}\n" + text[spot:]
+    block = "" if nav is None else f"{pad}{start}\n{pad}{nav}\n{pad}{end}\n"
+    return text[:at.start()] + block + text[at.end():]
+
+
 def render(text, name, shell):
     """The page text with its shell written in."""
     entry = shell["pages"].get(name)
@@ -129,6 +185,7 @@ def render(text, name, shell):
                          f'pages.json says {entry.get("title")!r}')
     text = put(text, name, "header", header_for(shell["nav"], entry))
     text = put(text, name, "footer", shell["footer"])
+    text = put_crumbs(text, name, entry)
     if not re.search(r'<script src="/js/search\.js"', text):
         if text.count("</body>") != 1:
             raise ShellError(f"{name}: no single </body> to add the search script before")

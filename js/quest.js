@@ -47,9 +47,9 @@
   function render(quest, details, links) {
     main.textContent = "";
     document.title = "Hunsterverse MHFZ: " + quest.name;
+    if (window.HvCrumbs) window.HvCrumbs.item(quest.name);
 
     var head = el("header", "page-head");
-    head.appendChild(el("p", "kicker", "Hunsterverse · Quest"));
     head.appendChild(el("h1", null, quest.name));
     var sub = el("p", "page-sub");
     sub.appendChild(el("a", null, quest.category)).href = "/quests.html?q=" + encodeURIComponent(quest.category);

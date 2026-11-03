@@ -43,7 +43,7 @@
   });
 })();
 
-/* The nav menus (Database, Community, Server, Guides). Hover opens them on a wide screen (CSS);
+/* The nav menus (Guides, Database, Hunting Road, Community, Server). Hover opens them on a wide screen (CSS);
    this adds click and keyboard: the button toggles its menu, Escape or a click elsewhere closes it,
    and opening one closes the others. In the folded Menu the groups are always open (CSS). */
 (function () {
@@ -85,3 +85,52 @@
     groups.forEach(function (group) { if (!group.contains(event.target)) setOpen(group, false); });
   });
 })();
+
+/* The account button at the end of the bar (dev/shell/nav.html): "Sign in" by default, which goes to
+   /account.html (that page sends a visitor who is not signed in to the sign-in form). With a saved
+   sign-in that has not expired (the same test as js/main.js) it reads "My account"; without one it
+   goes straight to the sign-in form on the home page. */
+(function () {
+  "use strict";
+
+  var link = document.querySelector(".site-nav .nav-account");
+  if (!link) return;
+  var signedIn = false;
+  try {
+    var token = localStorage.getItem("hvmhfz.token");
+    if (token) {
+      var payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+      signedIn = payload.exp * 1000 > Date.now() + 30000;
+    }
+  } catch (error) {
+    signedIn = false;
+  }
+  if (signedIn) link.textContent = "My account";
+  else if (link.getAttribute("aria-current") !== "page") link.href = "/#login-form";
+})();
+
+/* Breadcrumbs on a detail page (one monster, quest, hunter or guild): HvCrumbs.item(name) puts the
+   item's name last. The trail itself comes from dev/shell/pages.json (dev/site-shell.py). If its last
+   crumb is a stand-in (data-crumb-item) the name replaces it; otherwise that crumb (the list page)
+   becomes a link and the name is added after it. Calling it again only changes the name. */
+window.HvCrumbs = {
+  item: function (name) {
+    var list = document.querySelector("nav.breadcrumbs ol");
+    if (!list || !name) return;
+    var last = list.lastElementChild;
+    if (!last) return;
+    if (!last.hasAttribute("data-crumb-item")) {
+      var link = document.createElement("a");
+      link.href = location.pathname;
+      link.textContent = last.textContent;
+      last.textContent = "";
+      last.removeAttribute("aria-current");
+      last.appendChild(link);
+      last = document.createElement("li");
+      last.setAttribute("aria-current", "page");
+      last.setAttribute("data-crumb-item", "");
+      list.appendChild(last);
+    }
+    last.textContent = name;
+  }
+};

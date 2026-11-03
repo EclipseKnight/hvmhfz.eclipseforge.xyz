@@ -93,6 +93,7 @@
     var head = el("header", "page-head");
     head.appendChild(el("p", "kicker", "Guild"));
     head.appendChild(el("h1", null, guild.name));
+    if (window.HvCrumbs) window.HvCrumbs.item(guild.name);
 
     var badges = el("div", "badge-row");
     badges.appendChild(el("span", "badge", guild.members + " members"));

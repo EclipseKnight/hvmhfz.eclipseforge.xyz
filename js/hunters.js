@@ -596,6 +596,7 @@
     var head = el("header", "page-head");
     head.appendChild(el("p", "kicker", "Hunter"));
     head.appendChild(el("h1", null, hunter.name));
+    if (window.HvCrumbs) window.HvCrumbs.item(hunter.name);
     var badges = el("div", "badge-row");
     badges.appendChild(el("span", "badge", hunter.weapon || "Unknown weapon"));
     badges.appendChild(el("span", "badge", hunter.female ? "Female" : "Male"));

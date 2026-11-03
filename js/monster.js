@@ -186,6 +186,7 @@
 
   function render(detail) {
     document.title = detail.name + " | Hunsterverse monsters";
+    if (window.HvCrumbs) window.HvCrumbs.item(detail.name);
     clear(root);
 
     var hero = el("header", "monster-hero");

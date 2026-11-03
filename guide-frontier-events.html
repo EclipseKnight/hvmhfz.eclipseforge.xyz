@@ -37,12 +37,31 @@
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
         <nav id="site-menu" aria-label="Main">
           <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/guide-frontier.html" aria-current="page">Frontier guide</a>
+            </div>
+          </div>
+          <div class="nav-group">
             <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
             <div class="nav-menu" id="nav-database">
               <a class="navlink" href="/monsters.html">Monsters</a>
-              <a class="navlink" href="/catalog.html">Catalog</a>
               <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
               <a class="navlink" href="/set-builder.html">Set builder</a>
+              <a class="navlink" href="/quest-editor.html">Quest builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-road">Hunting Road</button>
+            <div class="nav-menu" id="nav-road">
+              <a class="navlink" href="/road-vote.html">Rotation and vote</a>
+              <a class="navlink" href="/road.html">Road builder</a>
+              <a class="navlink" href="/road-history.html">Past winners</a>
+              <a class="navlink" href="/road-data.html">Road data</a>
+              <a class="navlink" href="/guide-roads.html">Roads in game</a>
             </div>
           </div>
           <div class="nav-group">
@@ -51,7 +70,7 @@
               <a class="navlink" href="/hunters.html">Hunters</a>
               <a class="navlink" href="/guilds.html">Guilds</a>
               <a class="navlink" href="/leaderboards.html">Leaderboards</a>
-              <a class="navlink" href="/road-vote.html">Hunting Road</a>
+              <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
             </div>
           </div>
           <div class="nav-group">
@@ -60,28 +79,19 @@
               <a class="navlink" href="/worlds.html">Worlds</a>
               <a class="navlink" href="/events.html">Events</a>
               <a class="navlink" href="/changelog.html">Changelog</a>
-              <a class="navlink" href="/api.html">API</a>
+              <a class="navlink" href="/report.html">Report a problem</a>
             </div>
           </div>
-          <div class="nav-group">
-            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
-            <div class="nav-menu" id="nav-guides">
-              <a class="navlink" href="/guide-windows.html">Windows guide</a>
-              <a class="navlink" href="/guide-linux.html">Linux guide</a>
-              <a class="navlink" href="/guide-roads.html">Roads guide</a>
-              <a class="navlink" href="/guide-frontier.html" aria-current="page">Frontier guide</a>
-            </div>
-          </div>
-          <a class="navlink" href="/report.html">Report</a>
-          <a class="navlink nav-cta" href="/account.html">Account</a>
-          <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+          <a class="navlink nav-cta nav-account" href="/account.html">Sign in</a>
         </nav>
       </div>
     </header>
     <!-- /site-shell:header -->
 
 <div class="hb-layout">
-<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/guide-frontier.html">Frontier guide</a></li><li><a href="/guide-frontier.html#activities">Things to do</a></li><li aria-current="page">Regular Events</li></ol></nav>
+<!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
+<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Guides</li><li><a href="/guide-frontier.html">Frontier guide</a></li><li><a href="/guide-frontier.html#activities">Things to do</a></li><li aria-current="page">Regular Events</li></ol></nav>
+<!-- /site-shell:crumbs -->
 <aside class="hb-side" aria-label="Guide contents">
 <details class="hb-panel hb-toc"><summary>On this page</summary>
 <ol>
@@ -1122,16 +1132,34 @@
     <footer class="site-foot">
       <div class="wrap">
         <nav class="foot-links" aria-label="Footer">
-          <a href="/guide-windows.html">Windows guide</a>
-          <a href="/guide-linux.html">Linux guide</a>
-          <a href="/guide-roads.html">Roads guide</a>
-          <a href="/guide-frontier.html">Frontier guide</a>
-          <a href="/changelog.html">Changelog</a>
-          <a href="/api.html">API</a>
-          <a href="/report.html">Report a problem</a>
-          <a href="/privacy.html">Privacy</a>
-          <a href="https://discord.gg/YuE42eh">Discord</a>
-          <a href="https://hunstermonter.net">hunstermonter.net</a>
+          <div class="foot-col">
+            <h2 class="foot-head">Guides</h2>
+            <a href="/guide-windows.html">Windows guide</a>
+            <a href="/guide-linux.html">Linux guide</a>
+            <a href="/guide-frontier.html">Frontier guide</a>
+            <a href="/guide-roads.html">Roads in game</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Explore</h2>
+            <a href="/monsters.html">Monsters</a>
+            <a href="/quests.html">Quests</a>
+            <a href="/catalog.html">Catalog</a>
+            <a href="/leaderboards.html">Leaderboards</a>
+            <a href="/road-vote.html">Hunting Road</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Server</h2>
+            <a href="/changelog.html">Changelog</a>
+            <a href="/worlds.html">Worlds</a>
+            <a href="/report.html">Report a problem</a>
+            <a href="/api.html">API</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">About</h2>
+            <a href="/privacy.html">Privacy</a>
+            <a href="https://discord.gg/YuE42eh">Discord</a>
+            <a href="https://hunstermonter.net">hunstermonter.net</a>
+          </div>
         </nav>
         <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
       </div>

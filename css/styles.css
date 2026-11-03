@@ -78,7 +78,7 @@ code{background:#241811;color:#f5e9cb;border:1px solid #4a3722;border-radius:2px
 .site-nav .navlink:hover{color:var(--gold-bright);background:rgba(232,200,119,.08)}
 .site-nav .navlink[aria-current="page"]{color:var(--gold-bright);background:rgba(232,200,119,.12);
   box-shadow:inset 0 -2px 0 var(--gold)}
-/* Account is the one call to action in the bar */
+/* Sign in / My account (js/nav.js sets the label) is the one call to action in the bar, at its end */
 .site-nav .nav-cta{border-color:var(--frame);color:var(--gold-bright);margin-left:6px}
 .site-nav .nav-cta:hover{border-color:var(--gold)}
 .nav-toggle{display:none;margin-left:auto;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;
@@ -94,8 +94,12 @@ code{background:#241811;color:#f5e9cb;border:1px solid #4a3722;border-radius:2px
   background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.35));
   color:var(--text-faint);font:.8rem/1.6 var(--font-ui);letter-spacing:.02em;text-align:center}
 .site-foot p{margin:10px 0 0}
-.foot-links{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px}
-.foot-links a{color:var(--text-dim);border:0}
+.foot-links{display:grid;grid-template-columns:repeat(4,minmax(0,max-content));justify-content:center;gap:20px 64px;
+  text-align:left}
+.foot-col{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0}
+.foot-head{margin:0 0 3px;font:700 .68rem/1.3 var(--font-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.foot-links a{color:var(--text-dim);border:0;padding:2px 0}
+@media (max-width:720px){.foot-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 24px}}
 .foot-links a:hover{color:var(--gold-bright)}
 
 /* ---------- page background ---------- */
@@ -538,7 +542,7 @@ main.sheet footer::before{content:"MHFZ";display:inline-grid;place-items:center;
   .mbox-main{grid-template-columns:1fr}
   .mbox-grid{max-width:100%}
 }
-/* Below this width (1160px: Search, four menus, Report, Account, Discord) the bar no longer fits on one line: it folds behind the Menu button
+/* Below this width (1160px: Search, five menus and Sign in) the bar no longer fits on one line: it folds behind the Menu button
    (js/nav.js adds .collapsible). Without JavaScript they wrap into a grid under the logo. */
 @media (max-width:1160px){
   .site-nav .wrap{flex-wrap:wrap;height:auto;min-height:var(--nav-h)}
@@ -746,7 +750,7 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   background:rgba(255,250,236,.55);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:3px}
 .report-signer:empty{display:none}
 
-/* ---------- nav menus (Database, Community, Server, Guides) ----------
+/* ---------- nav menus (Guides, Database, Hunting Road, Community, Server) ----------
    On a wide screen each group is a button with a small menu under it: it opens on hover, and on
    click or keyboard through js/nav.js. When the bar folds behind the Menu button (or without
    JavaScript) every group shows its links under a small label instead. */
@@ -791,6 +795,8 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   .site-nav.collapsible .nav-group-toggle{min-height:0;padding:8px 4px 4px}
   .site-nav.collapsible .nav-menu{gap:6px;min-width:0}
   .site-nav.collapsible .nav-search{border:1px solid rgba(109,79,43,.5);padding:11px 12px}
+  .site-nav nav{align-items:start}  /* menus of different lengths side by side: labels on one line */
+  .site-nav nav .nav-account{grid-column:1 / -1;justify-content:center}
 }
 
 
@@ -1293,3 +1299,10 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .breadcrumbs a{color:var(--gold-bright)}
 .breadcrumbs [aria-current]{color:var(--text-light);overflow-wrap:anywhere}
 @media print{.breadcrumbs{display:none}}
+/* Written by dev/site-shell.py as the first thing in a page's main (the guide pages have their own spot);
+   on the parchment sheet the colours follow its ink. */
+main > .breadcrumbs{margin:0 0 14px}
+main.sheet > .breadcrumbs{margin:0 0 22px}
+main.sheet > .breadcrumbs ol{color:var(--ink-soft)}
+main.sheet > .breadcrumbs a{color:var(--gold-ink)}
+main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
