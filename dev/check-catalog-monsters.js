@@ -24,11 +24,12 @@ function readJson(rel) { return JSON.parse(fs.readFileSync(path.join(ROOT, rel),
 function exists(rel) { return fs.existsSync(path.join(ROOT, rel)); }
 
 // In the game, no field guide page yet (the guide's data comes from the Ferias tables, which these lack).
-// A name here must not have a page: when one is added, take it out of this list.
-const NO_PAGE = { "Shagaru Magala": 164 };
+// A name here must not have a page: when one is added, take it out of this list. Empty since Shagaru Magala
+// (id 164) got a minimal page from our own data (data/monsters/shagaru-magala.json, "ferias": false).
+const NO_PAGE = {};
 // Monster ids of data/monster-ids.json that are no monster to give a page: an NPC, a placeholder name,
-// and the two above.
-const NO_PAGE_IDS = { 10: "Veggie Elder (NPC)", 100: "Unknown", 113: "Mi Ru (no guide data)", 164: "Shagaru Magala" };
+// and Mi Ru, which no quest uses and the guide has no data for.
+const NO_PAGE_IDS = { 10: "Veggie Elder (NPC)", 100: "Unknown", 113: "Mi Ru (no guide data)" };
 
 const problems = [];
 const fail = function (message) { problems.push(message); };
@@ -102,4 +103,4 @@ if (problems.length) {
   process.exit(1);
 }
 console.log("catalog monsters OK: " + mentions + " mentions in " + quests.length + " quests, " + index.length +
-  " guide entries; known gaps without a page: " + Object.keys(NO_PAGE).map(function (n) { return n + " (id " + NO_PAGE[n] + ")"; }).join(", "));
+  " guide entries; known gaps without a page: " + (Object.keys(NO_PAGE).map(function (n) { return n + " (id " + NO_PAGE[n] + ")"; }).join(", ") || "none"));

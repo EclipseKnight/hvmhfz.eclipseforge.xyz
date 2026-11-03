@@ -1,5 +1,7 @@
-/* Hunting Road: this rotation's phase, the entries, voting and the results. Needs the saved sign-in
-   (the same JWT as the other pages). Endpoints: /api/road/cycle, /entries, /votes, /results. */
+/* Hunting Road: this rotation's phase, the entries, voting and the results, with the saved sign-in (the same
+   JWT as the other pages). Endpoints: /api/road/cycle, /entries, /votes, /results. Signed out (or once the
+   sign-in has expired) it shows the Road live now from the public /api/public/road/versions, how a rotation
+   runs, and asks for the sign-in only to vote: the rotation itself (/api/road/cycle) is not public. */
 (function () {
   "use strict";
 
@@ -82,7 +84,8 @@
 
   function showError(error) {
     if (error.message === "signin") {
-      alertBox("Your sign-in has expired. Sign in again on the home page.");
+      $("vote-entries-panel").hidden = true;
+      publicView("Your sign-in has expired. Sign in again to vote.");
     } else {
       alertBox(error.server ? error.message : "The API did not answer. Try again in a moment.");
     }
@@ -198,6 +201,52 @@
     });
   }
 
+  /* ---------- signed out: public data only ---------- */
+
+  var SCHEDULE = "Each rotation takes Roads for 14 days, then holds a 7-day vote; the winner goes live when the vote"
+    + " closes. A new rotation opens every 14 days, so one takes submissions while the one before it is voted on.";
+
+  function publicView(message) {
+    alertBox(message || "");
+    $("vote-signin").hidden = false;
+    $("vote-phase-panel").hidden = false;
+    $("vote-phase-head").textContent = "The Road live now";
+    $("vote-phase-note").textContent = "";
+    $("vote-phase-text").textContent = "Loading";
+    clear($("vote-phase"));
+    $("vote-limits").textContent = SCHEDULE;
+    return fetch(API + "/api/public/road/versions", { cache: "no-store" })
+      .then(function (response) {
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        return response.json();
+      })
+      .then(function (list) {
+        var live = (Array.isArray(list) ? list : []).filter(function (v) { return v && v.live; })[0];
+        if (!live) {
+          $("vote-phase-text").textContent = "The server has not reported its live Road yet.";
+          return;
+        }
+        var name = live.name || "Road";
+        var text = "\u201c" + name + "\u201d is the Hunting Road in game now";
+        if (live.cycle > 0) text += ", the winner of rotation " + live.cycle;
+        else if (live.always || live.cycle < 0) text += ", the server's original Road";
+        if (live.author) text += ", by " + live.author;
+        $("vote-phase-text").textContent = text + ".";
+        var phase = $("vote-phase");
+        var rows = [["Live since", formatDate(live.firstLiveAt)]];
+        if (live.cycle > 0) rows.push(["Rotation", String(live.cycle)]);
+        rows.forEach(function (row) {
+          var box = el("div");
+          box.appendChild(el("dt", null, row[0]));
+          box.appendChild(el("dd", null, row[1]));
+          phase.appendChild(box);
+        });
+      })
+      .catch(function () {
+        $("vote-phase-text").textContent = "The live Road could not be loaded right now. Try again in a moment.";
+      });
+  }
+
   /* ---------- boot ---------- */
 
   function showResults() {
@@ -237,7 +286,7 @@
 
   function start() {
     if (!token()) {
-      $("vote-signin").hidden = false;
+      publicView();
       return;
     }
     load();

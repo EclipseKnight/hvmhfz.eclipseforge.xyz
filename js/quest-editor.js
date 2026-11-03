@@ -86,7 +86,7 @@
     opts.headers = headers;
     return fetch(API + path, opts).then(function (res) {
       if (res.status === 401) {
-        window.location.replace("/account.html");
+        window.HvNext.toSignin(); // back here after sign-in (js/signin-next.js)
         throw new Error("Sign in to use the quest builder.");
       }
       return res;
@@ -1297,7 +1297,7 @@
   // ---- boot ----------------------------------------------------------------------------------
 
   if (!token()) {
-    window.location.replace("/account.html");
+    window.HvNext.toSignin();
     return;
   }
 

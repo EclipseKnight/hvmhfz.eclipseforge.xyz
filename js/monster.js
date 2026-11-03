@@ -227,6 +227,8 @@
     var quests = el("a", "ghost-btn small", "Quests with " + detail.name);
     quests.href = "/quests.html?monster=" + encodeURIComponent(detail.name);
     info.appendChild(quests);
+    // A short note for an entry made from our own data, not the field guide's tables (e.g. Shagaru Magala).
+    if (detail.about) info.appendChild(el("p", "panel-note monster-about", detail.about));
     var forms = [];
     if (detail.variantStats) detail.variantStats.forEach(function (v) { forms.push(v); });
     if (forms.length) {
@@ -307,6 +309,11 @@
     }
     root.appendChild(dropsPanel(detail.drops));
 
+    if (detail.ferias === false) { // not from the Ferias tables: no credit line for them
+      renderForms(detail);
+      document.getElementById("monster-loading").hidden = true;
+      return;
+    }
     var credit = el("p", "panel-note monster-credit");
     credit.appendChild(document.createTextNode("Monster data from the "));
     var link = el("a", null, "MHF-Z Ferias English Project");

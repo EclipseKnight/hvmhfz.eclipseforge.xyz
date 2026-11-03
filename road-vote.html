@@ -101,23 +101,26 @@
           <a class="ghost-btn small" href="/road-history.html">Past winners</a>
           <a class="ghost-btn small" href="/road-data.html">Road data</a>
           <a class="ghost-btn small" href="/leaderboards.html#road">Leaderboard</a>
+          <a class="ghost-btn small" href="/guide-roads.html">Roads in game</a>
         </p>
       </header>
 
       <p class="form-alert" id="vote-alert" hidden></p>
       <p class="road-ok" id="vote-notice" hidden></p>
 
-      <section class="panel" id="vote-signin" hidden>
-        <div class="panel-head"><h2>Sign in</h2></div>
-        <p class="note-text">Sign in with your Hunsterverse account to see this rotation's entries and to vote.</p>
-        <a class="btn btn-primary" href="/">Sign in</a>
-      </section>
-
       <section class="panel" id="vote-phase-panel" hidden aria-live="polite">
         <div class="panel-head"><h2 id="vote-phase-head">This rotation</h2><span class="panel-note" id="vote-phase-note"></span></div>
         <p id="vote-phase-text"></p>
         <dl class="road-phase" id="vote-phase"></dl>
         <p class="note-text" id="vote-limits"></p>
+      </section>
+
+      <section class="panel" id="vote-signin" hidden>
+        <div class="panel-head"><h2>Vote</h2></div>
+        <p class="note-text">Sign in with your Hunsterverse account to see this rotation's entries and dates, submit a Road and vote.
+          Anyone can look at the <a href="/road-history.html">past winners</a>, the <a href="/road-data.html">Road data</a>
+          and <a href="/guide-roads.html">how to pick a Road in game</a>.</p>
+        <a class="btn btn-primary" href="/?next=%2Froad-vote.html#login-form">Sign in to vote</a>
       </section>
 
       <section class="panel" id="vote-entries-panel" hidden>
@@ -169,7 +172,7 @@
     </footer>
     <!-- /site-shell:footer -->
 
-    <script src="/js/road-vote.js"></script>
+    <script src="/js/road-vote.js?v=2"></script>
     <script src="/js/search.js" defer></script>
   </body>
 </html>

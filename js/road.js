@@ -862,7 +862,7 @@
 
   function start() {
     if (!sessionOk()) {
-      window.location.replace("/");
+      window.HvNext.toSignin(); // back here after sign-in (js/signin-next.js)
       return;
     }
     $("road-form").addEventListener("submit", onSubmit);
@@ -887,7 +887,7 @@
     load().catch(function (error) {
       $("road-app").hidden = true;
       if (error.message === "signin") {
-        window.location.replace("/");
+        window.HvNext.toSignin(); // back here after sign-in (js/signin-next.js)
       } else if (error.status === 404) {
         alertBox("That entry does not exist, or it was hidden.");
       } else {

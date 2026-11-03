@@ -17,6 +17,16 @@ const loginTurnstile = window.HvTurnstile.mount(document.getElementById("turnsti
     }
 });
 
+// "Sign in to use the Quest builder" when a page sent the visitor here with ?next=.
+(function () {
+    const text = window.HvNext.note(window.location.search);
+    const box = document.getElementById("login-next");
+    if (text && box) {
+        box.textContent = text;
+        box.hidden = false;
+    }
+})();
+
 function showWarning(message) {
     const warning = document.getElementById("login-warning");
     if (!warning) return;
@@ -171,8 +181,9 @@ async function displayActivationCode(userData) {
     accessToken = userData.accessToken;
     saveSession(accessToken);
 
-    // The account page owns the Discord linking step, so hand over immediately.
-    window.location.replace("/account.html");
+    // Back to the page that sent the visitor here (js/signin-next.js), else the account page, which owns
+    // the Discord linking step.
+    window.location.replace(window.HvNext.target(window.location.search));
 }
 
 function appendAccountLink() {
@@ -211,7 +222,7 @@ if (storedSessionValid()) {
         headers: { Authorization: "Bearer " + localStorage.getItem(TOKEN_KEY) }
     }).then(function (response) {
         if (response.ok) {
-            window.location.replace("/account.html");
+            window.location.replace(window.HvNext.target(window.location.search));
         } else if (response.status === 401) {
             localStorage.removeItem(TOKEN_KEY);
         }

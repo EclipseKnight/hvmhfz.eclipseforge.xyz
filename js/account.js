@@ -48,7 +48,7 @@
     }).then(function (response) {
       if (response.status === 401) {
         clearToken();
-        window.location.replace("/");
+        window.HvNext.toSignin(); // back here after sign-in (js/signin-next.js)
         throw new Error("unauthenticated");
       }
       if (!response.ok) {
@@ -979,7 +979,7 @@
   function load() {
     if (!sessionValid()) {
       clearToken();
-      window.location.replace("/");
+      window.HvNext.toSignin();
       return;
     }
 

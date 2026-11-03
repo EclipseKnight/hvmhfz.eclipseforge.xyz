@@ -1106,6 +1106,21 @@
   ]
  },
  {
+  "slug": "shagaru-magala",
+  "name": "Shagaru Magala",
+  "category": "Elder Dragon",
+  "icon": null,
+  "zone": null,
+  "hasHitzones": false,
+  "hasDrops": false,
+  "variants": [],
+  "iconKind": "render",
+  "render": null,
+  "ids": [
+   164
+  ]
+ },
+ {
   "slug": "goruganosu",
   "name": "Goruganosu",
   "category": "Piscine Wyvern",
