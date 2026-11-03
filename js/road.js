@@ -108,9 +108,10 @@
 
   function policyList(key) { return Rules.policyValue(pool.policy, key); }
 
-  // Erupe's names (js/road-rules.js) for the 176 known ids, so the page names a monster as the server does.
+  // The field guide's names for the 176 known ids (js/road-rules.js displayName: Erupe's, or the guide's where they
+  // differ), so the builder names a monster as the monster pages and the game do.
   function monsterName(id) {
-    if (id >= 1 && id <= Rules.KNOWN_MONSTERS) return Rules.MONSTER_NAMES[id];
+    if (id >= 1 && id <= Rules.KNOWN_MONSTERS) return Rules.displayName(id);
     var found = pool.monsters.filter(function (m) { return m.id === id; })[0];
     return found ? found.name : "Unknown monster " + id;
   }

@@ -270,7 +270,7 @@
  },
  {
   "slug": "berserk-laviente",
-  "name": "Berserk Laviente",
+  "name": "Berserk Raviente",
   "category": "Elder Dragon",
   "icon": "berserk-laviente.png",
   "zone": null,
@@ -286,7 +286,7 @@
    149
   ],
   "serverNames": [
-   "Berserk Raviente"
+   "Berserk Laviente"
   ]
  },
  {
@@ -718,7 +718,7 @@
  },
  {
   "slug": "diorex",
-  "name": "Diorex",
+  "name": "Diorekkusu",
   "category": "Flying Wyvern",
   "icon": "diorex.png",
   "zone": "diorex.webp",
@@ -732,6 +732,9 @@
   "render": "diorex.webp",
   "ids": [
    127
+  ],
+  "serverNames": [
+   "Diorex"
   ]
  },
  {
@@ -773,13 +776,13 @@
   "slug": "duremudira-1st",
   "name": "Duremudira (1st)",
   "category": "Elder Dragon",
-  "icon": "duremudirafirstdistrict.webp",
+  "icon": "duremudira.png",
   "zone": "duremudirafirstdistrict.webp",
   "hasHitzones": true,
   "hasDrops": false,
   "variants": [],
   "oldSlug": "dolem1",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": "duremudirafirstdistrict.webp",
   "ids": [
    132
@@ -792,13 +795,13 @@
   "slug": "duremudira-2nd",
   "name": "Duremudira (2nd)",
   "category": "Elder Dragon",
-  "icon": "duremudirafirstdistrict.webp",
+  "icon": "duremudira.png",
   "zone": "duremudirafirstdistrict.webp",
   "hasHitzones": true,
   "hasDrops": false,
   "variants": [],
   "oldSlug": "dolem2",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": "duremudirafirstdistrict.webp",
   "ids": [
    145
@@ -1109,12 +1112,12 @@
   "slug": "shagaru-magala",
   "name": "Shagaru Magala",
   "category": "Elder Dragon",
-  "icon": null,
+  "icon": "shagaru-magala.png",
   "zone": null,
   "hasHitzones": false,
   "hasDrops": false,
   "variants": [],
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": null,
   "ids": [
    164
@@ -1586,7 +1589,7 @@
   "slug": "lolo-gougarf",
   "name": "Lolo Gougarf",
   "category": "Fanged Beast",
-  "icon": "lologougarf.webp",
+  "icon": "gougarf.png",
   "zone": "lologougarf.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -1594,7 +1597,7 @@
    "GR"
   ],
   "oldSlug": "goglf_r",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": "lologougarf.webp",
   "formerSlugs": [
    "lolo"
@@ -1712,19 +1715,20 @@
   "slug": "duremudira-musou",
   "name": "Duremudira (Musou)",
   "category": "Elder Dragon",
-  "icon": "musou_duremudira.webp",
+  "icon": "duremudira.png",
   "zone": "musou_duremudira.webp",
   "hasHitzones": true,
   "hasDrops": false,
   "variants": [],
   "oldSlug": "dolem",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "ids": [
    167
   ],
   "serverNames": [
    "Musou Duremudira"
-  ]
+  ],
+  "render": "musou_duremudira.webp"
  },
  {
   "slug": "nargacuga",
@@ -2052,7 +2056,7 @@
   "slug": "ray-gougarf",
   "name": "Ray Gougarf",
   "category": "Fanged Beast",
-  "icon": "raygougarf.webp",
+  "icon": "gougarf.png",
   "zone": "raygougarf.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -2060,7 +2064,7 @@
    "GR"
   ],
   "oldSlug": "goglf_l",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": "raygougarf.webp",
   "formerSlugs": [
    "ray"
@@ -2110,7 +2114,7 @@
   "slug": "red-volganos",
   "name": "Red Volganos",
   "category": "Piscine Wyvern",
-  "icon": "redvolganos.webp",
+  "icon": "red-volganos.png",
   "zone": "redvolganos.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -2118,7 +2122,7 @@
    "GR"
   ],
   "oldSlug": "volaka",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": "redvolganos.webp",
   "ids": [
    79
@@ -2522,7 +2526,7 @@
   "slug": "volganos",
   "name": "Volganos",
   "category": "Piscine Wyvern",
-  "icon": "volganos.webp",
+  "icon": "volganos.png",
   "zone": "volganos.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -2532,7 +2536,7 @@
    "Corridor & Road"
   ],
   "oldSlug": "vol",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": "volganos.webp",
   "ids": [
    75
@@ -2581,7 +2585,7 @@
   "slug": "white-espinas",
   "name": "White Espinas",
   "category": "Flying Wyvern",
-  "icon": "whiteespinas.webp",
+  "icon": "white-espinas.png",
   "zone": "whiteespinas.webp",
   "hasHitzones": true,
   "hasDrops": true,
@@ -2589,7 +2593,7 @@
    "GR"
   ],
   "oldSlug": "espsiro",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": "whiteespinas.webp",
   "ids": [
    90
@@ -2745,22 +2749,23 @@
   "slug": "ceanataur",
   "name": "Ceanataur",
   "category": "Other",
-  "icon": "ceanataur.webp",
+  "icon": "ceanataur.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "yao",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "ids": [
    73
-  ]
+  ],
+  "render": "ceanataur.webp"
  },
  {
   "slug": "hermitaur",
   "name": "Hermitaur",
   "category": "Other",
-  "icon": null,
+  "icon": "hermitaur.png",
   "zone": null,
   "hasHitzones": true,
   "hasDrops": true,
@@ -2768,37 +2773,39 @@
   "oldSlug": "gami",
   "ids": [
    66
-  ]
+  ],
+  "iconKind": "wiki"
  },
  {
   "slug": "musou-bogabadorumu",
   "name": "Musou Bogabadorumu",
   "category": "Flying Wyvern",
-  "icon": "musou_bogabadorumu.webp",
+  "icon": "bogabadorumu.png",
   "zone": "musou_bogabadorumu.webp",
   "hasHitzones": true,
   "hasDrops": false,
   "variants": [],
   "oldSlug": "bogaK",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "formerSlugs": [
    "musou"
   ],
   "ids": [
    172
-  ]
+  ],
+  "render": "musou_bogabadorumu.webp"
  },
  {
   "slug": "musou-deviljho",
   "name": "Musou Deviljho",
   "category": "Brute Wyvern",
-  "icon": "musou_deviljho.webp",
+  "icon": "deviljho.png",
   "zone": "musou_deviljho.webp",
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "joeK",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "formerSlugs": [
    "musou-joeK"
   ],
@@ -2807,19 +2814,20 @@
   ],
   "serverNames": [
    "Savage Deviljho"
-  ]
+  ],
+  "render": "musou_deviljho.webp"
  },
  {
   "slug": "musou-nargacuga",
   "name": "Musou Nargacuga",
   "category": "Flying Wyvern",
-  "icon": "musou_nargacuga.webp",
+  "icon": "nargacuga.png",
   "zone": "musou_nargacuga.webp",
   "hasHitzones": true,
   "hasDrops": true,
   "variants": [],
   "oldSlug": "nalgaK",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "formerSlugs": [
    "musou-nalgaK"
   ],
@@ -2828,36 +2836,38 @@
   ],
   "serverNames": [
    "Blinking Nargacuga"
-  ]
+  ],
+  "render": "musou_nargacuga.webp"
  },
  {
   "slug": "musou-zerureusu",
   "name": "Musou Zerureusu",
   "category": "Flying Wyvern",
-  "icon": "musou_zerureusu.webp",
+  "icon": "zerureusu.png",
   "zone": "musou_zerureusu.webp",
   "hasHitzones": true,
   "hasDrops": false,
   "variants": [],
   "oldSlug": "zeruK",
-  "iconKind": "render",
+  "iconKind": "wiki",
   "formerSlugs": [
    "musou-zeruK"
   ],
   "ids": [
    174
-  ]
+  ],
+  "render": "musou_zerureusu.webp"
  },
  {
   "slug": "musou-pariapuria",
   "name": "Musou Pariapuria",
   "category": "Flying Wyvern",
-  "icon": null,
+  "icon": "pariapuria.png",
   "zone": null,
   "hasHitzones": false,
   "hasDrops": false,
   "variants": [],
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": null,
   "ids": []
  },
@@ -2865,12 +2875,12 @@
   "slug": "musou-zinogre",
   "name": "Musou Zinogre",
   "category": "Fanged Wyvern",
-  "icon": null,
+  "icon": "zinogre.png",
   "zone": null,
   "hasHitzones": false,
   "hasDrops": false,
   "variants": [],
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": null,
   "ids": []
  },
@@ -2878,12 +2888,12 @@
   "slug": "musou-guanzorumu",
   "name": "Musou Guanzorumu",
   "category": "Elder Dragon",
-  "icon": null,
+  "icon": "guanzorumu.png",
   "zone": null,
   "hasHitzones": false,
   "hasDrops": false,
   "variants": [],
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": null,
   "ids": []
  },
@@ -2891,12 +2901,12 @@
   "slug": "musou-mi-ru",
   "name": "Musou Mi Ru",
   "category": "Elder Dragon",
-  "icon": null,
+  "icon": "mi-ru.png",
   "zone": null,
   "hasHitzones": false,
   "hasDrops": false,
   "variants": [],
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": null,
   "ids": []
  },
@@ -2904,13 +2914,43 @@
   "slug": "musou-elzelion",
   "name": "Musou Elzelion",
   "category": "Elder Dragon",
-  "icon": null,
+  "icon": "elzelion.png",
   "zone": null,
   "hasHitzones": false,
   "hasDrops": false,
   "variants": [],
-  "iconKind": "render",
+  "iconKind": "wiki",
   "render": null,
   "ids": []
+ },
+ {
+  "slug": "mi-ru",
+  "name": "Mi Ru",
+  "category": "Elder Dragon",
+  "icon": "mi-ru.png",
+  "zone": null,
+  "hasHitzones": false,
+  "hasDrops": false,
+  "variants": [],
+  "iconKind": "wiki",
+  "render": null,
+  "ids": [
+   113
+  ]
+ },
+ {
+  "slug": "unknown",
+  "name": "Unknown",
+  "category": "Flying Wyvern",
+  "icon": "unknown.png",
+  "zone": null,
+  "hasHitzones": false,
+  "hasDrops": false,
+  "variants": [],
+  "iconKind": "wiki",
+  "render": null,
+  "ids": [
+   100
+  ]
  }
 ]

@@ -1,0 +1,833 @@
+{
+ "about": "Where each wiki-style monster icon in assets/monsters/icons comes from: the Monster Hunter Fandom wiki's FrontierGen icons (owner, 2026-11-03: wiki icons are allowed), 64x64 PNG as the wiki serves them (&format=original). sha1 is our file's; dev/check-wiki-names.py checks it, so a swapped or replaced icon shows up. Musou pages use their base monster's icon, as the wiki does for its Musou and Zenith entries.",
+ "icons": {
+  "abiorugu.png": {
+   "wiki": "File:FrontierGen-Abiorugu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/5/5f/FrontierGen-Abiorugu_Icon.png/revision/latest?cb=20160325034017",
+   "match": "same picture, re-encoded",
+   "sha1": "451ec8739d877c49cda3ca4c3f1d76f2fbbf9582"
+  },
+  "akura-jebia.png": {
+   "wiki": "File:FrontierGen-Akura Jebia Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/7/70/FrontierGen-Akura_Jebia_Icon.png/revision/latest?cb=20160325034018",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "6920c51684a55bc61a939c79c125466c4565c9ac"
+  },
+  "akura-vashimu.png": {
+   "wiki": "File:FrontierGen-Akura Vashimu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/0/0f/FrontierGen-Akura_Vashimu_Icon.png/revision/latest?cb=20160325034018",
+   "match": "same file",
+   "sha1": "32a8f923d2c63194067a7eaa8c5a188a1f3f2209"
+  },
+  "amatsu.png": {
+   "wiki": "File:FrontierGen-Amatsu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/3/3c/FrontierGen-Amatsu_Icon.png/revision/latest?cb=20171013061209",
+   "match": "same picture, re-encoded",
+   "sha1": "1d32c26ddc624f1da8c7972d3f07f5df9a91d7d9"
+  },
+  "anorupatisu.png": {
+   "wiki": "File:FrontierGen-Anorupatisu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/0/00/FrontierGen-Anorupatisu_Icon.png/revision/latest?cb=20160325034019",
+   "match": "same file",
+   "sha1": "b98cd8e3e68b99573f6c6b8693eb32f77f50cee1"
+  },
+  "anteka.png": {
+   "wiki": "File:FrontierGen-Anteka Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/0/01/FrontierGen-Anteka_Icon.png/revision/latest?cb=20160325034026",
+   "match": "same picture, re-encoded",
+   "sha1": "bbd3250110f19a7474cd263b08b52bfe3410ce99"
+  },
+  "apceros.png": {
+   "wiki": "File:FrontierGen-Apceros Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/f/fe/FrontierGen-Apceros_Icon.png/revision/latest?cb=20160325034026",
+   "match": "same picture, re-encoded",
+   "sha1": "096ef338df4fac71463e4180344bbd4977872789"
+  },
+  "aptonoth.png": {
+   "wiki": "File:FrontierGen-Aptonoth Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/b/be/FrontierGen-Aptonoth_Icon.png/revision/latest?cb=20160325034027",
+   "match": "same picture, re-encoded",
+   "sha1": "dc9881953a0e69bf5b148a812706803990e6712f"
+  },
+  "ashen-lao-shan-lung.png": {
+   "wiki": "File:FrontierGen-Ashen Lao-Shan Lung Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/90/FrontierGen-Ashen_Lao-Shan_Lung_Icon.png/revision/latest?cb=20160325034027",
+   "match": "same picture, re-encoded",
+   "sha1": "814051e4a17990bcd938d0bebac8755bcebeec89"
+  },
+  "azure-rathalos.png": {
+   "wiki": "File:FrontierGen-Azure Rathalos Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/b/ba/FrontierGen-Azure_Rathalos_Icon.png/revision/latest?cb=20160325034028",
+   "match": "same file",
+   "sha1": "48870e49550972f541d9460d14162ea41087752d"
+  },
+  "barioth.png": {
+   "wiki": "File:FrontierGen-Barioth Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/4/41/FrontierGen-Barioth_Icon.png/revision/latest?cb=20160325034029",
+   "match": "same file",
+   "sha1": "6b1fe03851adbe5635cb6c96b69a7b3acc54705e"
+  },
+  "baruragaru.png": {
+   "wiki": "File:FrontierGen-Baruragaru Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/a/a0/FrontierGen-Barlagual_Icon.png/revision/latest?cb=20160325034233",
+   "match": "same picture, re-encoded",
+   "sha1": "6ad34b32d9c04fb39c2b1fec4e4263a5cab96e7e"
+  },
+  "basarios.png": {
+   "wiki": "File:FrontierGen-Basarios Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/f/fe/FrontierGen-Basarios_Icon.png/revision/latest?cb=20160325034234",
+   "match": "same picture, re-encoded",
+   "sha1": "98019d1de596a0daec4211f05cf0d8f1ac00e86c"
+  },
+  "berserk-laviente.png": {
+   "wiki": "File:FrontierGen-Berserk Laviente Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/3/30/FrontierGen-Berserk_Laviente_Icon.png/revision/latest?cb=20160325034234",
+   "match": "same picture, re-encoded",
+   "sha1": "373b57eae6287d38815190055e60a33a61e32bb0"
+  },
+  "berukyurosu.png": {
+   "wiki": "File:FrontierGen-Berukyurosu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/f/fe/FrontierGen-Berukyurosu_Icon.png/revision/latest?cb=20160325034234",
+   "match": "same file",
+   "sha1": "e401fbcf988e8c2e7d85407a8175290b5d736973"
+  },
+  "black-diablos.png": {
+   "wiki": "File:FrontierGen-Black Diablos Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/b/b6/FrontierGen-Black_Diablos_Icon.png/revision/latest?cb=20160325034235",
+   "match": "same picture, re-encoded",
+   "sha1": "96be74a160cfa849a4ee5f5358feaaaa3e52287b"
+  },
+  "black-gravios.png": {
+   "wiki": "File:FrontierGen-Black Gravios Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/9d/FrontierGen-Black_Gravios_Icon.png/revision/latest?cb=20160325034235",
+   "match": "same picture, re-encoded",
+   "sha1": "6edb928216b462c2fc88bc363c07254aa04fd152"
+  },
+  "blango.png": {
+   "wiki": "File:FrontierGen-Blango Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/1/18/FrontierGen-Blango_Icon.png/revision/latest?cb=20160325034236",
+   "match": "same picture, re-encoded",
+   "sha1": "953e22e129633b2773c08891f7c87d74a42b0416"
+  },
+  "blangonga.png": {
+   "wiki": "File:FrontierGen-Blangonga Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/2/26/FrontierGen-Blangonga_Icon.png/revision/latest?cb=20160325034237",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "d8143b93dcfbe5929e2a2cc0d7aed3f378e9f493"
+  },
+  "blue-yian-kut-ku.png": {
+   "wiki": "File:FrontierGen-Blue Yian Kut-Ku Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/8/8e/FrontierGen-Blue_Yian_Kut-Ku_Icon.png/revision/latest?cb=20160325034238",
+   "match": "same picture, re-encoded",
+   "sha1": "5083f79ca93929369c0311bdb693a0ae2f5eff4d"
+  },
+  "bogabadorumu.png": {
+   "wiki": "File:FrontierGen-Bogabadorumu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/1/1d/FrontierGen-Bogabadorumu_Icon.png/revision/latest?cb=20180926085448",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "a85c7bf2d9200a457fe45dbe340105852de5ec89"
+  },
+  "brachydios.png": {
+   "wiki": "File:FrontierGen-Brachydios Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/6/66/FrontierGen-Brachydios_Icon.png/revision/latest?cb=20160325034238",
+   "match": "same picture, re-encoded",
+   "sha1": "8108b03402d0f8108e3b16940bfb8143fb1c5f92"
+  },
+  "breeding-season-hypnocatrice.png": {
+   "wiki": "File:FrontierGen-Breeding Season Hypnocatrice Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/9f/FrontierGen-Breeding_Season_Hypnocatrice_Icon.png/revision/latest?cb=20160325034430",
+   "match": "same picture, re-encoded",
+   "sha1": "cf0d39e7eec2702f2de1975daaf0fc9d401c9411"
+  },
+  "bulldrome.png": {
+   "wiki": "File:FrontierGen-Bulldrome Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/b/b2/FrontierGen-Bulldrome_Icon.png/revision/latest?cb=20160325034430",
+   "match": "same picture, re-encoded",
+   "sha1": "c47080bc683d45f90834b650cb4c5b1821e62dd4"
+  },
+  "bullfango.png": {
+   "wiki": "File:FrontierGen-Bullfango Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/8/82/FrontierGen-Bullfango_Icon.png/revision/latest?cb=20160325034431",
+   "match": "same picture, re-encoded",
+   "sha1": "39b3071167d96680f23a274e0dfcfe82fdb063b6"
+  },
+  "burukku.png": {
+   "wiki": "File:FrontierGen-Burukku Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/9c/FrontierGen-Burukku_Icon.png/revision/latest?cb=20160325034431",
+   "match": "same picture, re-encoded",
+   "sha1": "f78b1791da5980cb2f41db38e2bb9d895c698d69"
+  },
+  "ceanataur.png": {
+   "wiki": "File:FrontierGen-Ceanataur Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/6/68/FrontierGen-Ceanataur_Icon.png/revision/latest?cb=20160325034431",
+   "match": "same file",
+   "sha1": "d81b09218e3453d3ed6e8129ee6f155a0ce6241a"
+  },
+  "cephadrome.png": {
+   "wiki": "File:FrontierGen-Cephadrome Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/f/f5/FrontierGen-Cephadrome_Icon.png/revision/latest?cb=20160325034432",
+   "match": "same picture, re-encoded",
+   "sha1": "3e6fed09c48c3eaaf4b5f7a3954e22977a4e7b0f"
+  },
+  "cephalos.png": {
+   "wiki": "File:FrontierGen-Cephalos Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/4/4a/FrontierGen-Cephalos_Icon.png/revision/latest?cb=20160325034433",
+   "match": "same picture, re-encoded",
+   "sha1": "7df8092a81aacad616a81cff27e648aadd0d0033"
+  },
+  "chameleos.png": {
+   "wiki": "File:FrontierGen-Chameleos Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/b/b4/FrontierGen-Chameleos_Icon.png/revision/latest?cb=20160325034433",
+   "match": "same picture, re-encoded",
+   "sha1": "03a90687f1b447eef250c2c68e9f0622d77f688c"
+  },
+  "conga.png": {
+   "wiki": "File:FrontierGen-Conga Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/e/e4/FrontierGen-Conga_Icon.png/revision/latest?cb=20160325034434",
+   "match": "same picture, re-encoded",
+   "sha1": "fc631774aa67591d6d1bb8f61bc38e22d0d99bc8"
+  },
+  "congalala.png": {
+   "wiki": "File:FrontierGen-Congalala Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/b/bd/FrontierGen-Congalala_Icon.png/revision/latest?cb=20160325034434",
+   "match": "same picture, re-encoded",
+   "sha1": "6b82b1cf56e03de02ab5643bd78de2ca41929e8a"
+  },
+  "daimyo-hermitaur.png": {
+   "wiki": "File:FrontierGen-Daimyo Hermitaur Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/f/f1/FrontierGen-Daimyo_Hermitaur_Icon.png/revision/latest?cb=20160325035147",
+   "match": "same file",
+   "sha1": "60adde42b0c0aba148a04f39ca83361c5ee41a84"
+  },
+  "deviljho.png": {
+   "wiki": "File:FrontierGen-Deviljho Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/f/f5/FrontierGen-Deviljho_Icon.png/revision/latest?cb=20160325035147",
+   "match": "same picture, re-encoded",
+   "sha1": "5adfb573fc7fbea48c63f878a4bb0c0d945a89ad"
+  },
+  "diablos.png": {
+   "wiki": "File:FrontierGen-Diablos Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/0/0f/FrontierGen-Diablos_Icon.png/revision/latest?cb=20160405053707",
+   "match": "same picture, re-encoded",
+   "sha1": "3d4ce16b63b04ec6a8e9b20a4122b7b7ae22804f"
+  },
+  "diorex.png": {
+   "wiki": "File:FrontierGen-Diorekkusu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/2/2b/FrontierGen-Diorekkusu_Icon.png/revision/latest?cb=20160325035148",
+   "match": "same picture, re-encoded",
+   "sha1": "2c8dcd888e2de5f461ed169acbd334b364034811"
+  },
+  "disufiroa.png": {
+   "wiki": "File:FrontierGen-Disufiroa Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/94/FrontierGen-Disufiroa_Icon.png/revision/latest?cb=20160325035148",
+   "match": "same picture, re-encoded",
+   "sha1": "414d89bccdc8d38a59344e0d668b8797be101afb"
+  },
+  "doragyurosu.png": {
+   "wiki": "File:FrontierGen-Doragyurosu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/c/c7/FrontierGen-Doragyurosu_Icon.png/revision/latest?cb=20160325035148",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "e35c0ea6196f7334d0a5e4e93589f219dff170b3"
+  },
+  "duremudira.png": {
+   "wiki": "File:FrontierGen-Duremudira Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/c/c7/FrontierGen-Duremudira_Icon.png/revision/latest?cb=20160325035148",
+   "match": "same file",
+   "sha1": "6f389bc530a78185a878e45c5a42db8211b089ef"
+  },
+  "dyuragaua.png": {
+   "wiki": "File:FrontierGen-Dyuragaua Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/92/FrontierGen-Dyuragaua_Icon.png/revision/latest?cb=20160325035149",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "43c475ca32211a123fc2f7c9d638b6c488a4830c"
+  },
+  "elzelion.png": {
+   "wiki": "File:FrontierGen-Eruzerion Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/0/0a/FrontierGen-Eruzerion_Icon.png/revision/latest?cb=20170706034844",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "e5b61d39e170cc223d57e83b8b752dca3ca2399c"
+  },
+  "erupe.png": {
+   "wiki": "File:FrontierGen-Erupe Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/1/13/FrontierGen-Erupe_Icon.png/revision/latest?cb=20160325035149",
+   "match": "same picture, re-encoded",
+   "sha1": "8ec3ce58719f68444f6084a3344467fa5125cc4e"
+  },
+  "espinas.png": {
+   "wiki": "File:FrontierGen-Espinas Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/a/ad/FrontierGen-Espinas_Icon.png/revision/latest?cb=20160325035149",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "d5e7623eee697d84e21eec193af0f70b96a5bd21"
+  },
+  "farunokku.png": {
+   "wiki": "File:FrontierGen-Farunokku Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/6/65/FrontierGen-Farunokku_Icon.png/revision/latest?cb=20160325035400",
+   "match": "same picture, re-encoded",
+   "sha1": "1ad940d2c786e1dee9a1604260f177656e3d1c12"
+  },
+  "felyne.png": {
+   "wiki": "File:FrontierGen-Felyne Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/2/2f/FrontierGen-Felyne_Icon.png/revision/latest?cb=20160325035401",
+   "match": "same picture, re-encoded",
+   "sha1": "fd84a1149b3a3109fca75d909150bb8f04d0664c"
+  },
+  "forokururu.png": {
+   "wiki": "File:FrontierGen-Forokururu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/3/3c/FrontierGen-Forokururu_Icon.png/revision/latest?cb=20160325035401",
+   "match": "same picture, re-encoded",
+   "sha1": "cbe10fe902768f4a6f1144dfe8c889cb71fae212"
+  },
+  "garuba-daora.png": {
+   "wiki": "File:FrontierGen-Garuba Daora Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/4/42/FrontierGen-Garuba_Daora_Icon.png/revision/latest?cb=20160325035402",
+   "match": "same file",
+   "sha1": "f7084f366d9da6d3d5aff40910669461c4f9d32c"
+  },
+  "gasurabazura.png": {
+   "wiki": "File:FrontierGen-Gasurabazura Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/2/26/FrontierGen-Gasurabazura_Icon.png/revision/latest?cb=20160325035403",
+   "match": "same picture, re-encoded",
+   "sha1": "33711b72a01b915dbe9dcd1e631394f394382347"
+  },
+  "gendrome.png": {
+   "wiki": "File:FrontierGen-Gendrome Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/5/58/FrontierGen-Gendrome_Icon.png/revision/latest?cb=20160325035403",
+   "match": "same picture, re-encoded",
+   "sha1": "3e3ebc500e17a15d5fb9c416ce32d446843f2807"
+  },
+  "genprey.png": {
+   "wiki": "File:FrontierGen-Genprey Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/5/5d/FrontierGen-Genprey_Icon.png/revision/latest?cb=20160325035404",
+   "match": "same picture, re-encoded",
+   "sha1": "e77726190120f737e390295cc91df5232f8be73c"
+  },
+  "giaorugu.png": {
+   "wiki": "File:FrontierGen-Giaorugu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/3/3b/FrontierGen-Giaorugu_Icon.png/revision/latest?cb=20160325035404",
+   "match": "same picture, re-encoded",
+   "sha1": "12419ac9e3053fcbe5371e7776dcb81c3b9782f6"
+  },
+  "giaprey.png": {
+   "wiki": "File:FrontierGen-Giaprey Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/b/bf/FrontierGen-Giaprey_Icon.png/revision/latest?cb=20160325035806",
+   "match": "same picture, re-encoded",
+   "sha1": "79dd42f25a0b1f0a102cafd85624257d64504d57"
+  },
+  "gogomoa.png": {
+   "wiki": "File:FrontierGen-Gogomoa Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/a/ad/FrontierGen-Gogomoa_Icon.png/revision/latest?cb=20160325035807",
+   "match": "same file",
+   "sha1": "a0504fa69eb98d4029d15ddaec162b911a3ecf14"
+  },
+  "gold-rathian.png": {
+   "wiki": "File:FrontierGen-Gold Rathian Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/9f/FrontierGen-Gold_Rathian_Icon.png/revision/latest?cb=20160325035807",
+   "match": "same picture, re-encoded",
+   "sha1": "9ddc9356ddf9cd9f1981447ff11929784409a3b9"
+  },
+  "gore-magala.png": {
+   "wiki": "File:FrontierGen-Gore Magala Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/3/35/FrontierGen-Gore_Magala_Icon.png/revision/latest?cb=20161212134958",
+   "match": "same picture, re-encoded",
+   "sha1": "e40f4dfa72153b796ab62dddb155b5351077f9da"
+  },
+  "gougarf.png": {
+   "wiki": "File:FrontierGen-Gougarf Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/e/ec/FrontierGen-Gougarf_Icon.png/revision/latest?cb=20160325035807",
+   "match": "same file",
+   "sha1": "bed4a54518c4a0b9473f65a10fb2973104bda843"
+  },
+  "gravios.png": {
+   "wiki": "File:FrontierGen-Gravios Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/5/54/FrontierGen-Gravios_Icon.png/revision/latest?cb=20160325035807",
+   "match": "same file",
+   "sha1": "3f5f75e7cdaf0f5b44aeca4bdcd53fc85e3e62fa"
+  },
+  "great-thunderbug.png": {
+   "wiki": "File:FrontierGen-Great Thunderbug Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/c/c5/FrontierGen-Great_Thunderbug_Icon.png/revision/latest?cb=20160325035808",
+   "match": "same picture, re-encoded",
+   "sha1": "3d0d473be5106dbf3876a52ef12c3344bf705dbb"
+  },
+  "green-plesioth.png": {
+   "wiki": "File:FrontierGen-Green Plesioth Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/f/f2/FrontierGen-Green_Plesioth_Icon.png/revision/latest?cb=20160325035808",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "9c7ea7bd836d8118ac74867d5e1f7c7e2a3ab284"
+  },
+  "guanzorumu.png": {
+   "wiki": "File:FrontierGen-Guanzorumu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/3/37/FrontierGen-Guanzorumu_Icon.png/revision/latest?cb=20160421233442",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "03b4d360561cf5c9010b666bfdb57911078d2b50"
+  },
+  "gureadomosu.png": {
+   "wiki": "File:FrontierGen-Gureadomosu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/d/d1/FrontierGen-Gureadomosu_Icon.png/revision/latest?cb=20160325035808",
+   "match": "same picture, re-encoded",
+   "sha1": "a5744499cd652f70926c71df19cb7ff55dc0d408"
+  },
+  "gurenzeburu.png": {
+   "wiki": "File:FrontierGen-Gurenzeburu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/d/d3/FrontierGen-Gurenzeburu_Icon.png/revision/latest?cb=20160325035808",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "36101ef0d0e58344cfbc619d715fb15d94ca0ea3"
+  },
+  "gypceros.png": {
+   "wiki": "File:FrontierGen-Gypceros Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/1/1e/FrontierGen-Gypceros_Icon.png/revision/latest?cb=20160325035808",
+   "match": "same picture, re-encoded",
+   "sha1": "e4b8e2077c71b25c9f93281f9d4754ab26d4ffca"
+  },
+  "harudomerugu.png": {
+   "wiki": "File:FrontierGen-Harudomerugu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/c/cb/FrontierGen-Harudomerugu_Icon.png/revision/latest?cb=20160325040048",
+   "match": "same picture, re-encoded",
+   "sha1": "e0380d3fa8d89c7d92d955ef3b04b7ea4e6ac14c"
+  },
+  "hermitaur.png": {
+   "wiki": "File:FrontierGen-Hermitaur Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/6/68/FrontierGen-Hermitaur_Icon.png/revision/latest?cb=20160325040049",
+   "match": "same file",
+   "sha1": "4f06bee64937d7fbf13486d905301ade06d6fdfe"
+  },
+  "hornetaur.png": {
+   "wiki": "File:FrontierGen-Hornetaur Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/4/4f/FrontierGen-Hornetaur_Icon.png/revision/latest?cb=20160325040050",
+   "match": "same picture, re-encoded",
+   "sha1": "77684691e10212c1c9de92d84751d0dc7936afa3"
+  },
+  "hypnocatrice.png": {
+   "wiki": "File:FrontierGen-Hypnocatrice Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/f/f0/FrontierGen-Hypnocatrice_Icon.png/revision/latest?cb=20160325040051",
+   "match": "same picture, re-encoded",
+   "sha1": "3dc20f786acc725ab3c22d3427eeb94c6b1de2c3"
+  },
+  "hyujikiki.png": {
+   "wiki": "File:FrontierGen-Hyujikiki Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/93/FrontierGen-Hyujikiki_Icon.png/revision/latest?cb=20160325040053",
+   "match": "same picture, re-encoded",
+   "sha1": "5f9d4dc14797af1660cfe0fb8c46f020877624fb"
+  },
+  "inagami.png": {
+   "wiki": "File:FrontierGen-Inagami Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/3/35/FrontierGen-Inagami_Icon.png/revision/latest?cb=20160325040054",
+   "match": "same picture, re-encoded",
+   "sha1": "c7cb490d97330b85979a518bbde2fb49da2785dd"
+  },
+  "iodrome.png": {
+   "wiki": "File:FrontierGen-Iodrome Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/2/25/FrontierGen-Iodrome_Icon.png/revision/latest?cb=20160325040054",
+   "match": "same picture, re-encoded",
+   "sha1": "02e9a198e2cf4ef98b1d17f6759e170ff7f9ca19"
+  },
+  "ioprey.png": {
+   "wiki": "File:FrontierGen-Ioprey Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/4/4a/FrontierGen-Ioprey_Icon.png/revision/latest?cb=20160325040055",
+   "match": "same picture, re-encoded",
+   "sha1": "cafd8e94e509b5a14afd5699f0f5faea73d39b11"
+  },
+  "kamu-orugaron.png": {
+   "wiki": "File:FrontierGen-Kamu Orugaron Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/2/25/FrontierGen-Kamu_Orugaron_Icon.png/revision/latest?cb=20160325040055",
+   "match": "same picture, re-encoded",
+   "sha1": "7e0266d8818bc6dd8fdb9a49479714c1e73e9749"
+  },
+  "kelbi.png": {
+   "wiki": "File:FrontierGen-Kelbi Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/a/a7/FrontierGen-Kelbi_Icon.png/revision/latest?cb=20160325040229",
+   "match": "same picture, re-encoded",
+   "sha1": "9c96302b1db47fc5cc43936434d44d8f209bddaf"
+  },
+  "keoaruboru.png": {
+   "wiki": "File:FrontierGen-Keoaruboru Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/8/85/FrontierGen-Keoaruboru_Icon.png/revision/latest?cb=20170209000149",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "be7b27b948a907256ba59f3a7d19156311319a73"
+  },
+  "khezu.png": {
+   "wiki": "File:FrontierGen-Khezu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/e/eb/FrontierGen-Khezu_Icon.png/revision/latest?cb=20160325040229",
+   "match": "same picture, re-encoded",
+   "sha1": "481cea5260156ee2652510a070b7bf354d1df6a0"
+  },
+  "kirin.png": {
+   "wiki": "File:FrontierGen-Kirin Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/2/2d/FrontierGen-Kirin_Icon.png/revision/latest?cb=20160325040230",
+   "match": "same picture, re-encoded",
+   "sha1": "34d1deae22ea37fd67d8a102d0a89b5fa84fcaff"
+  },
+  "kuarusepusu.png": {
+   "wiki": "File:FrontierGen-Kuarusepusu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/7/76/FrontierGen-Kuarusepusu_Icon.png/revision/latest?cb=20160325040230",
+   "match": "same picture, re-encoded",
+   "sha1": "e5a4f7301339d9f5b700bbeefc69e2b6cc8a44d4"
+  },
+  "kushala-daora.png": {
+   "wiki": "File:FrontierGen-Kushala Daora Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/c/ce/FrontierGen-Kushala_Daora_Icon.png/revision/latest?cb=20160325040231",
+   "match": "same picture, re-encoded",
+   "sha1": "958d3f9d56ae907f4685f46df66ebe118292b37a"
+  },
+  "kusubami.png": {
+   "wiki": "File:FrontierGen-Kusubami Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/5/5c/FrontierGen-Kusubami_Icon.png/revision/latest?cb=20160325040231",
+   "match": "same file",
+   "sha1": "d98b8ee57ee1e2aaa8a199be36278ff0bcf1820c"
+  },
+  "lao-shan-lung.png": {
+   "wiki": "File:FrontierGen-Lao-Shan Lung Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/5/5f/FrontierGen-Lao-Shan_Lung_Icon.png/revision/latest?cb=20160325040232",
+   "match": "same picture, re-encoded",
+   "sha1": "b82fad8a4b8738e7ab20f14530f3c10d9dc3fda8"
+  },
+  "lunastra.png": {
+   "wiki": "File:FrontierGen-Lunastra Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/1/18/FrontierGen-Lunastra_Icon.png/revision/latest?cb=20160325040723",
+   "match": "same picture, re-encoded",
+   "sha1": "32c2e1ddf8728da8f6cf147819eba3a8ad2364cd"
+  },
+  "melynx.png": {
+   "wiki": "File:FrontierGen-Melynx Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/90/FrontierGen-Melynx_Icon.png/revision/latest?cb=20160325040724",
+   "match": "same picture, re-encoded",
+   "sha1": "fb3e823845d457a401d396da0cdeb42e352b11a1"
+  },
+  "meraginasu.png": {
+   "wiki": "File:FrontierGen-Meraginasu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/1/10/FrontierGen-Meraginasu_Icon.png/revision/latest?cb=20160325040724",
+   "match": "same picture, re-encoded",
+   "sha1": "0f8eea63c94cd095948dd3efbe4e4aa1ead273fd"
+  },
+  "mi-ru.png": {
+   "wiki": "File:FrontierGen-Mi Ru Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/0/0e/FrontierGen-Mi_Ru_Icon.png/revision/latest?cb=20160325040724",
+   "match": "same file",
+   "sha1": "9c7da889f85bce9ef364ab529a667154f2e6f543"
+  },
+  "midogaron.png": {
+   "wiki": "File:FrontierGen-Midogaron Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/a/a7/FrontierGen-Midogaron_Icon.png/revision/latest?cb=20160325040724",
+   "match": "same picture, re-encoded",
+   "sha1": "66cb8fd364d51cc6468f76c91f9d1b19006bd3c3"
+  },
+  "monoblos.png": {
+   "wiki": "File:FrontierGen-Monoblos Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/2/22/FrontierGen-Monoblos_Icon.png/revision/latest?cb=20160405053704",
+   "match": "same picture, re-encoded",
+   "sha1": "db3ad27976216b6557523c004b63db712b867408"
+  },
+  "mosswine.png": {
+   "wiki": "File:FrontierGen-Mosswine Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/99/FrontierGen-Mosswine_Icon.png/revision/latest?cb=20160325040725",
+   "match": "same picture, re-encoded",
+   "sha1": "72b3aba559d219803308202a2a3dfb44f7b1ede8"
+  },
+  "nargacuga.png": {
+   "wiki": "File:FrontierGen-Nargacuga Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/c/cb/FrontierGen-Nargacuga_Icon.png/revision/latest?cb=20160421233901",
+   "match": "same picture, re-encoded",
+   "sha1": "501ed88d0134b1ab94e12e2adb03a595e8aea7af"
+  },
+  "nono-orugaron.png": {
+   "wiki": "File:FrontierGen-Nono Orugaron Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/9c/FrontierGen-Nono_Orugaron_Icon.png/revision/latest?cb=20160325040725",
+   "match": "same picture, re-encoded",
+   "sha1": "cade8e1736afd76c425577a9fea5fd8ba011153b"
+  },
+  "odibatorasu.png": {
+   "wiki": "File:FrontierGen-Odibatorasu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/3/33/FrontierGen-Odibatorasu_Icon.png/revision/latest?cb=20160325040725",
+   "match": "same picture, re-encoded",
+   "sha1": "57698ac3b63005f35713e797656479e7b54fc1b1"
+  },
+  "orange-espinas.png": {
+   "wiki": "File:FrontierGen-Espinas Subspecies Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/7/71/FrontierGen-Flaming_Espinas_Icon.png/revision/latest?cb=20160325035359",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "809dec9c18a99d761826a13a5fa5d28875a4a520"
+  },
+  "pariapuria.png": {
+   "wiki": "File:FrontierGen-Pariapuria Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/97/FrontierGen-Pariapuria_Icon.png/revision/latest?cb=20160325040725",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "6617f48854efcbdc0ca9e220ca0cec42a17a099d"
+  },
+  "pink-rathian.png": {
+   "wiki": "File:FrontierGen-Pink Rathian Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/99/FrontierGen-Pink_Rathian_Icon.png/revision/latest?cb=20160325040913",
+   "match": "same picture, re-encoded",
+   "sha1": "a467d4ecc1f3c0e038a00f1bbaa741c9805efef4"
+  },
+  "plesioth.png": {
+   "wiki": "File:FrontierGen-Plesioth Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/f/f1/FrontierGen-Plesioth_Icon.png/revision/latest?cb=20160325040914",
+   "match": "same picture, re-encoded",
+   "sha1": "f0bd4cd4082d51e5baba1d83aafdd1c6d5aaa0ea"
+  },
+  "poborubarumu.png": {
+   "wiki": "File:FrontierGen-Poborubarumu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/8/86/FrontierGen-Poborubarumu_Icon.png/revision/latest?cb=20160325040914",
+   "match": "same picture, re-encoded",
+   "sha1": "3d9fb77df9a699df803b9aab59efdd585e793676"
+  },
+  "pokara.png": {
+   "wiki": "File:FrontierGen-Pokara Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/2/2f/FrontierGen-Pokara_Icon.png/revision/latest?cb=20160325040915",
+   "match": "same file",
+   "sha1": "7839c5fdc66659b3a81e6440f628d75a0a3a2b68"
+  },
+  "pokaradon.png": {
+   "wiki": "File:FrontierGen-Pokaradon Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/92/FrontierGen-Pokaradon_Icon.png/revision/latest?cb=20160325040916",
+   "match": "same picture, re-encoded",
+   "sha1": "331e8a0dca95d257de67fb35499922b470ae03f4"
+  },
+  "popo.png": {
+   "wiki": "File:FrontierGen-Popo Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/b/bf/FrontierGen-Popo_Icon.png/revision/latest?cb=20160325040917",
+   "match": "same picture, re-encoded",
+   "sha1": "a2ecf9eb29a19d27162f07dc2a72b49b1cba617d"
+  },
+  "purple-gypceros.png": {
+   "wiki": "File:FrontierGen-Purple Gypceros Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/d/d9/FrontierGen-Purple_Gypceros_Icon.png/revision/latest?cb=20160325040917",
+   "match": "same picture, re-encoded",
+   "sha1": "767650ae80d62deff991aa01c2a62040c318adb2"
+  },
+  "rajang.png": {
+   "wiki": "File:FrontierGen-Rajang Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/0/00/FrontierGen-Rajang_Icon.png/revision/latest?cb=20160325040919",
+   "match": "same picture, re-encoded",
+   "sha1": "ecaef901abac13b88e2b4ac3c98090b1a8bbad2c"
+  },
+  "rathalos.png": {
+   "wiki": "File:FrontierGen-Rathalos Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/b/b0/FrontierGen-Rathalos_Icon.png/revision/latest?cb=20160325040920",
+   "match": "same picture, re-encoded",
+   "sha1": "72e9cdafb44770fc1d65b6c8a4a51aa8cad9d1ca"
+  },
+  "rathian.png": {
+   "wiki": "File:FrontierGen-Rathian Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/5/51/FrontierGen-Rathian_Icon.png/revision/latest?cb=20160325041035",
+   "match": "same picture, re-encoded",
+   "sha1": "f4fcc09cbc3490481f0dd85458800b8c2cd3046f"
+  },
+  "raviente.png": {
+   "wiki": "File:FrontierGen-Laviente Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/0/09/FrontierGen-Laviente_Icon.png/revision/latest?cb=20160325040234",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "206cfcb1e9c02fc25d54fdc93d17eb6a850080d3"
+  },
+  "rebidiora.png": {
+   "wiki": "File:FrontierGen-Rebidiora Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/a/a6/FrontierGen-Rebidiora_Icon.png/revision/latest?cb=20160325041036",
+   "match": "same picture, re-encoded",
+   "sha1": "85d93af5fd9b99729107b319ea9ce28331c48802"
+  },
+  "red-khezu.png": {
+   "wiki": "File:FrontierGen-Red Khezu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/7/78/FrontierGen-Red_Khezu_Icon.png/revision/latest?cb=20160325041037",
+   "match": "same picture, re-encoded",
+   "sha1": "53883ccbe145d6a1cae5b68ac9299dabf0d20f8d"
+  },
+  "red-volganos.png": {
+   "wiki": "File:FrontierGen-Lavasioth Subspecies Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/4/47/FrontierGen-Lavasioth_Subspecies_Icon.png/revision/latest?cb=20160325040234",
+   "match": "same file",
+   "sha1": "597e1801c9ab91b0bbfb669e2f09da9f518d89a0"
+  },
+  "remobra.png": {
+   "wiki": "File:FrontierGen-Remobra Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/7/71/FrontierGen-Remobra_Icon.png/revision/latest?cb=20160325041038",
+   "match": "same picture, re-encoded",
+   "sha1": "c6145feef902b05dff4b666d07d359dd7766972a"
+  },
+  "rukodiora.png": {
+   "wiki": "File:FrontierGen-Rukodiora Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/7/78/FrontierGen-Rukodiora_Icon.png/revision/latest?cb=20160325041038",
+   "match": "same file",
+   "sha1": "74d96c7878f1365250fbc317d3edd98f4bdc0d36"
+  },
+  "rusted-kushala-daora.png": {
+   "wiki": "File:FrontierGen-Rusted Kushala Daora Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/d/d8/FrontierGen-Rusted_Kushala_Daora_Icon.png/revision/latest?cb=20160325041039",
+   "match": "same picture, re-encoded",
+   "sha1": "562ba9cc41b6b9f5d77dfc8ea01bbc94bca2b8ca"
+  },
+  "seregios.png": {
+   "wiki": "File:FrontierGen-Seregios Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/9b/FrontierGen-Seregios_Icon.png/revision/latest?cb=20180524183230",
+   "match": "same picture, re-encoded",
+   "sha1": "607ad8b46836aac363d22b6008567adeb574d864"
+  },
+  "shagaru-magala.png": {
+   "wiki": "File:FrontierGen-Shagaru Magala Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/c/c9/FrontierGen-Shagaru_Magala_Icon.png/revision/latest?cb=20170707004808",
+   "match": "same file",
+   "sha1": "877160e079832adbb166fd781d3a404961f7b976"
+  },
+  "shakalaka.png": {
+   "wiki": "File:FrontierGen-Shakalaka Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/7/75/FrontierGen-Shakalaka_Icon.png/revision/latest?cb=20160325041040",
+   "match": "same picture, re-encoded",
+   "sha1": "f6547afac6cdc1dbecdffd881497c792c77b9726"
+  },
+  "shantien.png": {
+   "wiki": "File:FrontierGen-Shantien Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/8/8b/FrontierGen-Shantien_Icon.png/revision/latest?cb=20160325041040",
+   "match": "same file",
+   "sha1": "6eb3d63fbb4595e3113608ec3c1be2bfc83ad883"
+  },
+  "shogun-ceanataur.png": {
+   "wiki": "File:FrontierGen-Shogun Ceanataur Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/c/c8/FrontierGen-Shogun_Ceanataur_Icon.png/revision/latest?cb=20160325041041",
+   "match": "same picture, re-encoded",
+   "sha1": "b013f05942f802e1002942eb5ce1c4cf1bb6e634"
+  },
+  "silver-hypnocatrice.png": {
+   "wiki": "File:FrontierGen-Silver Hypnocatrice Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/a/a0/FrontierGen-Silver_Hypnocatrice_Icon.png/revision/latest?cb=20160325040052",
+   "match": "same picture, re-encoded",
+   "sha1": "d83b6824da1ee387c6a786fa1d7ca72a762a54e2"
+  },
+  "silver-rathalos.png": {
+   "wiki": "File:FrontierGen-Silver Rathalos Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/3/39/FrontierGen-Silver_Rathalos_Icon.png/revision/latest?cb=20160325041042",
+   "match": "same picture, re-encoded",
+   "sha1": "0ca8814ec806657bce2dbc6e08256d86003a5012"
+  },
+  "stygian-zinogre.png": {
+   "wiki": "File:FrontierGen-Stygian Zinogre Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/e/ed/FrontierGen-Stygian_Zinogre_Icon.png/revision/latest?cb=20160923234355",
+   "match": "same picture, re-encoded",
+   "sha1": "c887c5238a5d05729fa99b569d0a817f4d6d9dad"
+  },
+  "taikun-zamuza.png": {
+   "wiki": "File:FrontierGen-Taikun Zamuza Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/1/12/FrontierGen-Taikun_Zamuza_Icon.png/revision/latest?cb=20160325041245",
+   "match": "same file",
+   "sha1": "0ea036db2400369a11f45f154626920c2aaebaf7"
+  },
+  "teostra.png": {
+   "wiki": "File:FrontierGen-Teostra Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/4/4b/FrontierGen-Teostra_Icon.png/revision/latest?cb=20160325041246",
+   "match": "older revision of the wiki file (same monster, checked by eye 2026-11-03)",
+   "sha1": "6eb923c469d485ec9d062fc43700dd366230202a"
+  },
+  "tigrex.png": {
+   "wiki": "File:FrontierGen-Tigrex Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/e/e5/FrontierGen-Tigrex_Icon.png/revision/latest?cb=20160325041247",
+   "match": "same picture, re-encoded",
+   "sha1": "df38024c68986b9d6b823f9a34d5974f5d6e1802"
+  },
+  "toa-tesukatora.png": {
+   "wiki": "File:FrontierGen-Toa Tesukatora Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/f/f5/FrontierGen-Toa_Tesukatora_Icon.png/revision/latest?cb=20160325041247",
+   "match": "same picture, re-encoded",
+   "sha1": "648edbb90acdc68c50aba4dd9d711476fb4edf5e"
+  },
+  "toridcless.png": {
+   "wiki": "File:FrontierGen-Toridcless Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/f/f3/FrontierGen-Toridcless_Icon.png/revision/latest?cb=20160325041249",
+   "match": "same picture, re-encoded",
+   "sha1": "48a582a54868d7aef1a80841a07f6d954f2b36fa"
+  },
+  "unknown.png": {
+   "wiki": "File:FrontierGen-Unknown Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/5/5d/FrontierGen-Unknown_Icon.png/revision/latest?cb=20160325041250",
+   "match": "same file",
+   "sha1": "d22bb7e2d046baf306e16852e4024b246575f759"
+  },
+  "uragaan.png": {
+   "wiki": "File:FrontierGen-Uragaan Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/92/FrontierGen-Uragaan_Icon.png/revision/latest?cb=20160325041251",
+   "match": "same picture, re-encoded",
+   "sha1": "424f23ca9f9616532f193b70c458aa0e38c68875"
+  },
+  "uruki.png": {
+   "wiki": "File:FrontierGen-Uruki Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/3/3c/FrontierGen-Uruki_Icon.png/revision/latest?cb=20160325041251",
+   "match": "same file",
+   "sha1": "b2986ad263118a4dd36db2ca73205ceb6f5e0ec9"
+  },
+  "varusaburosu.png": {
+   "wiki": "File:FrontierGen-Varusaburosu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/7/78/FrontierGen-Varusaburosu_Icon.png/revision/latest?cb=20160325041252",
+   "match": "same file",
+   "sha1": "f379fb17a57da65e14302fd43da71ab87223ec7e"
+  },
+  "velocidrome.png": {
+   "wiki": "File:FrontierGen-Velocidrome Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/5/51/FrontierGen-Velocidrome_Icon.png/revision/latest?cb=20160325041253",
+   "match": "same picture, re-encoded",
+   "sha1": "d8d0a01e2bfdf565ca4fa575c87b8eb5bced796f"
+  },
+  "velociprey.png": {
+   "wiki": "File:FrontierGen-Velociprey Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/a/ad/FrontierGen-Velociprey_Icon.png/revision/latest?cb=20160325041639",
+   "match": "same picture, re-encoded",
+   "sha1": "9200bac7249e21df529f8fd795a82a01f7b72dd7"
+  },
+  "vespoid.png": {
+   "wiki": "File:FrontierGen-Vespoid Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/7/7e/FrontierGen-Vespoid_Icon.png/revision/latest?cb=20160325042028",
+   "match": "same picture, re-encoded",
+   "sha1": "b8f0d7a5e9a80439973a46ac2a3d5b65d4503f1d"
+  },
+  "volganos.png": {
+   "wiki": "File:FrontierGen-Lavasioth Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/b/b2/FrontierGen-Lavasioth_Icon.png/revision/latest?cb=20160325040233",
+   "match": "same file",
+   "sha1": "caf69e9993506a0c7a48d379404a10a3a18480aa"
+  },
+  "voljang.png": {
+   "wiki": "File:FrontierGen-Voljang Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/e/e1/FrontierGen-Voljang_Icon.png/revision/latest?cb=20160923234356",
+   "match": "same file",
+   "sha1": "09b773643512e9d882f3a11cabdd07de322e7cd6"
+  },
+  "white-espinas.png": {
+   "wiki": "File:FrontierGen-Espinas Rare Species Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/c/cf/FrontierGen-Espinas_Rare_Species_Icon.png/revision/latest?cb=20160325035359",
+   "match": "same file",
+   "sha1": "c5176ea3256271dd690299f3e6ea5d820c54e80e"
+  },
+  "white-monoblos.png": {
+   "wiki": "File:FrontierGen-White Monoblos Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/2/20/FrontierGen-White_Monoblos_Icon.png/revision/latest?cb=20160325042029",
+   "match": "same picture, re-encoded",
+   "sha1": "68d6c65582a1e1ffa4c98b4e5f1da8f35988db4e"
+  },
+  "yian-garuga.png": {
+   "wiki": "File:FrontierGen-Yian Garuga Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/7/75/FrontierGen-Yian_Garuga_Icon.png/revision/latest?cb=20160325042330",
+   "match": "same picture, re-encoded",
+   "sha1": "f0fed1d633be996cefbf47840bd539eeb6454e2f"
+  },
+  "yian-kut-ku.png": {
+   "wiki": "File:FrontierGen-Yian Kut-Ku Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/3/32/FrontierGen-Yian_Kut-Ku_Icon.png/revision/latest?cb=20160325042330",
+   "match": "same picture, re-encoded",
+   "sha1": "ac1dcef39d928720ec4057e9d18c907af5a48399"
+  },
+  "zenaserisu.png": {
+   "wiki": "File:FrontierGen-Zenaserisu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/a/a5/FrontierGen-Zenaserisu_Icon.png/revision/latest?cb=20161212134959",
+   "match": "same file",
+   "sha1": "588e6b003538d1253d25d806c5333e521ae5ac50"
+  },
+  "zerureusu.png": {
+   "wiki": "File:FrontierGen-Zerureusu Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/9/9a/FrontierGen-Zerureusu_Icon.png/revision/latest?cb=20160325042331",
+   "match": "same picture, re-encoded",
+   "sha1": "5c67146be226aca86f879ca7286e6ea4396d6ae1"
+  },
+  "zinogre.png": {
+   "wiki": "File:FrontierGen-Zinogre Icon.png",
+   "url": "https://static.wikia.nocookie.net/monsterhunter/images/2/2b/FrontierGen-Zinogre_Icon.png/revision/latest?cb=20160325042331",
+   "match": "same picture, re-encoded",
+   "sha1": "517099f8866ace46b30b63303bb8776eaaa35ae2"
+  }
+ }
+}

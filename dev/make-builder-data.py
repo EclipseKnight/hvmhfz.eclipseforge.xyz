@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Writes the two lookup tables the Quest builder needs and the site cannot derive by itself.
+"""Writes the lookup tables the Quest builder needs and the site cannot derive by itself.
 
-  python3 dev/make-builder-data.py --dll <mhfo-hd.dll> --item-tsv <item-icons.tsv>
+  python3 dev/make-builder-data.py --dll <mhfo-hd.dll> --item-tsv <item-icons.tsv> --dat <mhfdat.bin, decompressed>
 
 --dll       the client's mhfo-hd.dll (the unpacked one from the owner's client; it is never copied here).
             Writes data/map-areas.json: per map id, the ids of its areas, in the client's own order (the
@@ -13,7 +13,14 @@
             /assets/items/<name>.webp. Items with no icon name are left out; the builders draw the neutral
             placeholder for them (dev/check-builder-icons.js lists them).
 
-Either option may be given alone. Only the standard library is used.
+--dat       the English client's dat/mhfdat.bin, decompressed (e.g. `mono ReFrontier.exe mhfdat.bin`; the patch's file,
+            never copied here). Rewrites the names in data/item-ids.json with the game's own: the client keeps a
+            pointer at 0x100 to a table of one pointer per item id to its cp932 name. The current name stays where
+            the game's is still Japanese, a placeholder ("(dummy)", "－－－"), or has a "?" the current name has not
+            (a character the patch could not write in cp932, e.g. "Bow Hiden? Red" for "Bow Hiden· Red"). Run it
+            when a new client patch changes item names; dev/check-wiki-names.py says nothing about items.
+
+Any of the options may be given alone. Only the standard library is used.
 """
 import argparse
 import json
@@ -94,17 +101,57 @@ def item_icons(tsv):
     print("data/item-icons.json: %d items" % len(ordered))
 
 
+def game_text_kept(game, current):
+    """Why the current name stays instead of the game's, or None to take the game's."""
+    if any("\u3000" <= ch <= "\u9fff" or "\uff00" <= ch <= "\uffef" for ch in game):
+        return "Japanese"
+    if not game.strip() or "dummy" in game.lower() or not game.strip("-－ "):
+        return "placeholder"
+    if "?" in game and "?" not in current:
+        return "unwritable character"
+    return None
+
+
+def item_names(dat):
+    data = open(dat, "rb").read()
+    path = os.path.join(ROOT, "data", "item-ids.json")
+    names = json.load(open(path, encoding="utf-8"))
+    table = struct.unpack_from("<I", data, 0x100)[0]
+    taken, kept = 0, {}
+    for key in names:
+        item = int(key)
+        if item == 0:
+            continue  # "None", the empty slot
+        at = struct.unpack_from("<I", data, table + 4 * item)[0]
+        if not 0 < at < len(data):
+            sys.exit("item %d: name pointer 0x%x outside the file: is this the decompressed mhfdat.bin?" % (item, at))
+        game = data[at:data.index(b"\0", at)].decode("cp932", "replace").replace("\n", " ")
+        why = game_text_kept(game, names[key])
+        if why:
+            kept[why] = kept.get(why, 0) + 1
+        elif game != names[key]:
+            names[key] = game
+            taken += 1
+    with open(path, "w", encoding="utf-8") as out:
+        json.dump(names, out, ensure_ascii=False, separators=(",", ":"))
+    print("data/item-ids.json: %d names, %d changed to the game's; kept: %s" % (
+        len(names), taken, ", ".join("%d %s" % (n, why) for why, n in sorted(kept.items())) or "none"))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--dll")
     parser.add_argument("--item-tsv")
+    parser.add_argument("--dat")
     args = parser.parse_args()
-    if not args.dll and not args.item_tsv:
-        parser.error("give --dll, --item-tsv or both")
+    if not args.dll and not args.item_tsv and not args.dat:
+        parser.error("give --dll, --item-tsv, --dat or several")
     if args.dll:
         map_areas(args.dll)
     if args.item_tsv:
         item_icons(args.item_tsv)
+    if args.dat:
+        item_names(args.dat)
 
 
 if __name__ == "__main__":

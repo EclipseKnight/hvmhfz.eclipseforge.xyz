@@ -11,8 +11,8 @@ the numbers and names are those of /api/public/road/history. Decode each one, th
   python3 dev/make-road-data.py 0 "Zenith Road" zenith.json -1 "Original Road" original.json
 
 Give the Roads newest first. Run it again when a new Road goes live. With --check it only says whether
-the page is up to date (exit code 1 when not). The monster names come from js/road-rules.js, so the page
-names monsters as the builder does.
+the page is up to date (exit code 1 when not). The monster names come from js/road-rules.js (MONSTER_NAMES with
+GUIDE_NAMES on top), so the page names monsters as the builder does.
 """
 import html
 import json
@@ -29,10 +29,15 @@ MODE_TITLES = {0: "Open Road", 1: "Solo Road"}
 
 
 def monster_names():
-    """Erupe's monster table, as js/road-rules.js keeps it (index = monster id)."""
+    """The names the Road builder shows (index = monster id): Erupe's monster table as js/road-rules.js keeps it,
+    with its GUIDE_NAMES (the field guide's name where Erupe's differs) on top."""
     text = (ROOT / "js/road-rules.js").read_text(encoding="utf-8")
     listed = re.search(r"var MONSTER_NAMES = \[(.*?)\];", text, re.S)
-    return re.findall(r'"([^"]*)"', listed.group(1))
+    names = re.findall(r'"([^"]*)"', listed.group(1))
+    guide = re.search(r"var GUIDE_NAMES = \{(.*?)\};", text, re.S)
+    for monster_id, name in re.findall(r'(\d+): "([^"]*)"', guide.group(1)):
+        names[int(monster_id)] = name
+    return names
 
 
 def name_of(names, monster_id):

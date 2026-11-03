@@ -27,10 +27,10 @@ function exists(rel) { return fs.existsSync(path.join(ROOT, rel)); }
 // A name here must not have a page: when one is added, take it out of this list. Empty since Shagaru Magala
 // (id 164) got a minimal page from our own data (data/monsters/shagaru-magala.json, "ferias": false).
 const NO_PAGE = {};
-// Monster ids of data/monster-ids.json that are no monster to give a page: an NPC, a placeholder name,
-// and Mi Ru, which no quest uses and the guide has no data for (its Musou version, "musou-mi-ru", has a name-only
-// page without an id: the five Musou monsters of player report #26 have no ids of their own).
-const NO_PAGE_IDS = { 10: "Veggie Elder (NPC)", 100: "Unknown", 113: "Mi Ru (no guide data)" };
+// Monster ids of data/monster-ids.json that are no monster to give a page: an NPC. Mi Ru (113) and Unknown (100)
+// have name-only pages since the wiki cross-check (2026-11-03); the five Musou monsters of player report #26 have
+// name-only pages without ids of their own.
+const NO_PAGE_IDS = { 10: "Veggie Elder (NPC)" };
 
 const problems = [];
 const fail = function (message) { problems.push(message); };

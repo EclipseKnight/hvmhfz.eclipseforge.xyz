@@ -92,7 +92,8 @@ NO_PAGE = {"シャガルマガラ": "Shagaru Magala"}
 # Names in the old lists that the guide spells differently (used only when the objective names nothing).
 OLD_NAMES = {"Kuarlusepusu": "Kuarusepusu", "Eruzerion": "Elzelion", "Lavasioth": "Volganos",
              "Espinas Subspecies": "Orange Espinas", "Espinas Rare Species": "White Espinas",
-             "Hypnocatrice Rare": "Silver Hypnocatrice", "Dahren Mohran": "Harudomerugu", "Gargwa": "Anteka"}
+             "Hypnocatrice Rare": "Silver Hypnocatrice", "Dahren Mohran": "Harudomerugu", "Gargwa": "Anteka",
+             "Diorex": "Diorekkusu", "Berserk Laviente": "Berserk Raviente"}
 
 
 def monsters_in(objective, names):

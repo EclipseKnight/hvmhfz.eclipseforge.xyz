@@ -14,7 +14,7 @@ One entry per map id in `map-areas.json`:
 
 | Key | Meaning |
 |---|---|
-| `name` | the map's name, unique: the place, then what makes this copy different (`Volcano (night)`, `Ancient Tower 2`, `Sky Corridor, 3rd District, short`). Place names are the game's English ones from the area names; where the quest text uses another word it is in `note` (Gorge is "Canyon" in quest text) |
+| `name` | the map's name, unique: the place, then what makes this copy different (`Volcano (night)`, `Ancient Tower 2`, `Sky Corridor, 3rd District, short`). Place names are the English client's own (its location list, below), else the area names; where the quest text or a wiki uses another word it is in `note` (Gorge is "Canyon" in our translated quest text) |
 | `base` | only for maps whose areas are in `data/area-ids.json`: the place as those area names write it (`Volcano - Area 3 - Day`), so the builder can drop it from the area labels |
 | `group` | the dropdown group: Field maps, Arenas and battle stages, Towers, Forts and sieges, Raviente, Road and special, Unused / untested (maps no quest file uses; always and only those) |
 | `quests` | how many quests in `data/quest-details.json` use the map |
@@ -34,15 +34,28 @@ Sources:
 - **wiki** (2026-11-02): monsterhunterwiki.org and wikiwiki.jp field pages. They give names, area counts and
   Japanese names but no ids, so every match is by description and confidence is not raised by it. It moved
   Gorge to Canyon (峡谷), Solitude Island/Isle to Solitary Isles (絶島) and Top of the Great Forest to Great
-  Forest Canopy (樹海頂部), and gave the muted Japanese name (`ja` in `map-ids.json`). Kept: Battlefield
-  (8, 69; the wiki says Battleground, 決戦場). Not found, so no name or `ja`: 10, 25, 33, 34, 36-39, 45, 46,
+  Forest Canopy (樹海頂部) (all three moved back on 2026-11-03, see **client** below), and gave the muted
+  Japanese name (`ja` in `map-ids.json`). Kept: Battlefield (8, 69; the wiki says Battleground, 決戦場). Not found, so no name or `ja`: 10, 25, 33, 34, 36-39, 45, 46,
   70, 72, 74, 76-78, 82-85.
+- **client** (2026-11-03): the English client's own location list in `dat/mhfpac.bin` (the released patch's,
+  decoded; the quest list and the quest info screen use it): Fortress, Forest & Hills, Desert, Swamp, Volcano,
+  Jungle, Castle Schrade, Battlefield, Arena, Snowy Mountains, Town, Tower, Great Forest, Gorge, Great Arena,
+  Top of Great Forest, Balloon, Solitude Island, Highlands, Competition Arena, Interceptor's Base, Tidal Island,
+  Polar Sea, World's End, Exploration Ship, Flower Field, Deep Crater, Bamboo Forest, White Lake, Solitude
+  Island Depths, Cloud Viewing Fort, Painted Falls, Sanctuary, Hunting Road, Sacred Pinnacle, Historical Site.
+  It gave Gorge, Solitude Island, Top of Great Forest, Interceptor's Base, Historical Site and Battlefield (8;
+  the area ids 88 and 197 too). It names places, not maps, so the copies keep our own suffixes. Kept on purpose:
+  Ancient Tower (the list's "Tower", kept apart from the Sky Corridor's tower areas), Forest and Hills (the
+  game writes both that and "Forest & Hills"), Large Airship (63, Shantien's map: not matched to the list's
+  "Balloon" or "Exploration Ship" yet). `dev/check-wiki-names.py` compares the place names with the Monster
+  Hunter Fandom wiki's Frontier location list (`data/wiki-names.json`).
 - **id pattern**: night copies follow their day map: 2-6 and 11 are day, 16-21 the same places at night,
   then 12/22, 1/23, 9/24 and 10/25 pair up the same way; where the areas carry no Day/Night name the pairing
   is the only evidence.
 
-Not used, and why: the client's own map name text (body `+0x24` indexes it, RE `quest-files.md`) is
-behind code not decompiled yet, so no name here is the game's own label for the map. Erupe and the 010
+Not used, and why: the client's own per-map name text (body `+0x24` indexes it, RE `quest-files.md`) is
+behind code not decompiled yet, so no map name here is the game's own label for that map (the place names
+are, see **client**). Erupe and the 010
 templates have no map names.
 
 Totals (2026-11-02): 81 maps used by quests (52 confirmed, 26 likely, 3 guesses), 16 used by no quest file.
@@ -68,8 +81,8 @@ What is less than the overlay says, marked in the name itself:
 - Day or night is left out where only the map id pattern says it (Dundorma Fort, the night Fortress, the
   Caravan Blimp).
 - "Unused area (no name in any table)": ids 266-271, 284, 285, 287, 381-385, which the overlay lists as
-  "Absent"; only unused maps have them. "Solitary Isles - part not named": the seven island areas the
-  overlay calls only "Solitude Island" (now Solitary Isles).
+  "Absent"; only unused maps have them. "Solitude Island - part not named": the seven island areas the
+  overlay calls only "Solitude Island".
 
 ## The maps
 
@@ -82,7 +95,7 @@ What is less than the overlay says, marked in the name itself:
 | 5 | Volcano (day) | Field maps | 10 | 235 | area-ids, quest text | confirmed | the original Volcano, Areas 1-8 |
 | 6 | Jungle (day) | Field maps | 11 | 478 | area-ids, quest text | confirmed |  |
 | 7 | Castle Schrade | Arenas and battle stages | 2 | 15 | overlay areas, quest text | confirmed | Fatalis; quest names say Castle Schrade (シュレイド城) |
-| 8 | Crimson Battleground | Arenas and battle stages | 2 | 10 | overlay areas, quest text, wiki | likely | Crimson Fatalis (紅き怒りを追撃せよ); the Volcano secret area then the battleground; the wiki calls it Battleground (決戦場), our quest text says Battlefield; Japanese: 決戦場 |
+| 8 | Battlefield (Crimson Fatalis) | Arenas and battle stages | 2 | 10 | overlay areas, quest text, wiki, client | likely | Crimson Fatalis (紅き怒りを追撃せよ); the Volcano secret area then the battlefield; the English client's location list says Battlefield, the wikis Battleground (決戦場); Japanese: 決戦場 |
 | 9 | Arena (day) | Arenas and battle stages | 2 | 122 | overlay areas, quest text, wiki | likely | quest text says Arena (闘技場); weak wiki match: Great Arena (大闘技場), unresolved |
 | 10 | Felyne Arena (day) | Arenas and battle stages | 2 | 14 | overlay areas, quest text | likely | the Arena base camp with another fight area; Felyne and Melynx, Velocidrome quests |
 | 11 | Snowy Mountains (day) | Field maps | 10 | 295 | area-ids, quest text | confirmed |  |
@@ -105,32 +118,32 @@ What is less than the overlay says, marked in the name itself:
 | 28 | Volcano with Areas 9-10 (day) | Field maps | 12 | 129 | area-ids, quest text | confirmed | the later Volcano: adds Areas 9 and 10 (Volganos, Midogaron) |
 | 29 | Volcano with Areas 9-10 (night) | Field maps | 12 | 116 | area-ids, quest text | confirmed | the later Volcano: adds Areas 9 and 10 (Volganos, Midogaron) |
 | 30 | Jungle, Area 10 only (Sleep Learning) | Raviente, Road and special | 1 | 2 | area-ids, quest text | confirmed | one area; used by the two Sleep Learning quests |
-| 31 | Canyon (day) | Field maps | 7 | 179 | area-ids, quest text, wiki | confirmed | quest text and the wiki call it Canyon (峡谷); Japanese: 峡谷 |
-| 32 | Canyon (night) | Field maps | 7 | 166 | area-ids, quest text, wiki | confirmed | quest text and the wiki call it Canyon (峡谷); Japanese: 峡谷 |
-| 33 | Unused test stage, PvP Room (day) | Unused / untested | 6 | 0 | overlay areas | guess | odd mix: two Interception Base areas, an Arena base camp, Cities Map, PvP Room |
+| 31 | Gorge (day) | Field maps | 7 | 179 | area-ids, quest text, wiki, client | confirmed | the English client's location list says Gorge, as the Fandom wiki does; monsterhunterwiki.org and our translated quest text say Canyon (峡谷); Japanese: 峡谷 |
+| 32 | Gorge (night) | Field maps | 7 | 166 | area-ids, quest text, wiki, client | confirmed | the English client's location list says Gorge, as the Fandom wiki does; monsterhunterwiki.org and our translated quest text say Canyon (峡谷); Japanese: 峡谷 |
+| 33 | Unused test stage, PvP Room (day) | Unused / untested | 6 | 0 | overlay areas | guess | odd mix: two Interceptor's Base areas, an Arena base camp, Cities Map, PvP Room |
 | 34 | Unused test stage, Halk Area (night) | Unused / untested | 6 | 0 | overlay areas | guess | night copy of map 33 with Halk Area |
 | 35 | Battlefield (Akantor) | Arenas and battle stages | 2 | 62 | overlay areas, quest text | confirmed | quest names say Battlefield; Akantor |
 | 36 | Unused stage, areas 266 and 268 | Unused / untested | 2 | 0 | overlay areas | guess | no table names its areas |
 | 37 | Unused stage, areas 267 and 269 | Unused / untested | 2 | 0 | overlay areas | guess | no table names its areas |
 | 38 | Unused stage, areas 266 and 270 | Unused / untested | 2 | 0 | overlay areas | guess | no table names its areas |
 | 39 | Unused stage, areas 267 and 271 | Unused / untested | 2 | 0 | overlay areas | guess | no table names its areas |
-| 40 | Interception Base, 2 areas (day) | Unused / untested | 2 | 0 | overlay areas, wiki | likely | base camp and Area 1 of the Interception Base; Japanese: 迎撃拠点 |
-| 41 | Interception Base, 2 areas (night) | Unused / untested | 2 | 0 | overlay areas, wiki | likely | base camp and Area 1 of the Interception Base; Japanese: 迎撃拠点 |
-| 42 | Solitary Isles, whole island (set 1) | Unused / untested | 7 | 0 | overlay areas, wiki | likely | Raviente: campaign tent, balloon and the isles; Japanese: 絶島 |
-| 43 | Solitary Isles, whole island (set 2) | Unused / untested | 7 | 0 | overlay areas, wiki | likely | Raviente: the other copy of the island areas; Japanese: 絶島 |
-| 44 | Great Forest Canopy | Arenas and battle stages | 2 | 159 | overlay areas, quest text, wiki | likely | two areas; Doragyurosu and the Exotic (G★8) quests; Japanese: 樹海頂部 |
+| 40 | Interceptor's Base, 2 areas (day) | Unused / untested | 2 | 0 | overlay areas, wiki, client | likely | base camp and Area 1 of the Interceptor's Base; Interceptor's Base is the English client's word; Japanese: 迎撃拠点 |
+| 41 | Interceptor's Base, 2 areas (night) | Unused / untested | 2 | 0 | overlay areas, wiki, client | likely | base camp and Area 1 of the Interceptor's Base; Interceptor's Base is the English client's word; Japanese: 迎撃拠点 |
+| 42 | Solitude Island, whole island (set 1) | Unused / untested | 7 | 0 | overlay areas, wiki, client | likely | Raviente: campaign tent, balloon and the isles; Solitude Island is the English client's word; Japanese: 絶島 |
+| 43 | Solitude Island, whole island (set 2) | Unused / untested | 7 | 0 | overlay areas, wiki, client | likely | Raviente: the other copy of the island areas; Solitude Island is the English client's word; Japanese: 絶島 |
+| 44 | Top of Great Forest | Arenas and battle stages | 2 | 159 | overlay areas, quest text, wiki, client | likely | two areas; Doragyurosu and the Exotic (G★8) quests; Top of Great Forest is the English client's word (Fandom wiki: Great Forest Peak); Japanese: 樹海頂部 |
 | 45 | Caravan Blimp (day) | Raviente, Road and special | 1 | 1 | overlay areas | guess | one area; one Caravan (インター) quest with no title |
 | 46 | Caravan Blimp (night) | Raviente, Road and special | 1 | 3 | overlay areas | guess | one area; three Caravan (インター) quests with no title |
-| 47 | Solitary Isle 1 (Raviente) | Raviente, Road and special | 2 | 3 | overlay areas, quest text, wiki | confirmed | Great Slaying: the balloon and isle 1; Japanese: 絶島 |
-| 48 | Solitary Isle 2 (Raviente) | Raviente, Road and special | 2 | 3 | overlay areas, quest text, wiki | confirmed | Great Slaying: the balloon and isle 2; Japanese: 絶島 |
-| 49 | Solitary Isle 3 (Raviente) | Raviente, Road and special | 2 | 7 | overlay areas, quest text, wiki | confirmed | Great Slaying: the balloon and isle 3; Japanese: 絶島 |
+| 47 | Solitude Island 1 (Raviente) | Raviente, Road and special | 2 | 3 | overlay areas, quest text, wiki, client | confirmed | Great Slaying: the balloon and isle 1; Solitude Island is the English client's word; Japanese: 絶島 |
+| 48 | Solitude Island 2 (Raviente) | Raviente, Road and special | 2 | 3 | overlay areas, quest text, wiki, client | confirmed | Great Slaying: the balloon and isle 2; Solitude Island is the English client's word; Japanese: 絶島 |
+| 49 | Solitude Island 3 (Raviente) | Raviente, Road and special | 2 | 7 | overlay areas, quest text, wiki, client | confirmed | Great Slaying: the balloon and isle 3; Solitude Island is the English client's word; Japanese: 絶島 |
 | 50 | Highlands (day) | Field maps | 8 | 188 | area-ids, quest text | confirmed |  |
 | 51 | Highlands (night) | Field maps | 8 | 210 | area-ids, quest text | confirmed |  |
 | 52 | Ancient Tower 1 with Area 9 | Towers | 10 | 134 | overlay areas, quest text, wiki | likely | Tower 1 plus the Tower 1 Area 9 summit; Stygian Zinogre, mostly G rank; Japanese: 塔 |
 | 53 | Arena with moat (day) | Arenas and battle stages | 2 | 443 | overlay areas, quest text, wiki | likely | the busy G rank arena: daily, Idaten and Great Arena quests; weak wiki match: the Season 10 new Great Arena (新大闘技場) |
 | 54 | Arena with moat (night) | Arenas and battle stages | 2 | 436 | overlay areas, quest text, wiki | likely | the busy G rank arena: daily, Idaten and Great Arena quests; weak wiki match: the Season 10 new Great Arena (新大闘技場) |
-| 55 | Interception Base (day) | Forts and sieges | 4 | 132 | overlay areas, quest text, wiki | confirmed | Intercept quests (迎撃); Japanese: 迎撃拠点 |
-| 56 | Interception Base (night) | Forts and sieges | 4 | 126 | overlay areas, quest text, wiki | confirmed | Intercept quests (迎撃); Japanese: 迎撃拠点 |
+| 55 | Interceptor's Base (day) | Forts and sieges | 4 | 132 | overlay areas, quest text, wiki, client | confirmed | Intercept quests (迎撃); Interceptor's Base is the English client's word; Japanese: 迎撃拠点 |
+| 56 | Interceptor's Base (night) | Forts and sieges | 4 | 126 | overlay areas, quest text, wiki, client | confirmed | Intercept quests (迎撃); Interceptor's Base is the English client's word; Japanese: 迎撃拠点 |
 | 57 | Tidal Island (day) | Field maps | 6 | 162 | area-ids, quest text, wiki | confirmed | Japanese: 潮島 |
 | 58 | Tidal Island (night) | Field maps | 6 | 136 | area-ids, quest text, wiki | confirmed | Japanese: 潮島 |
 | 59 | Tidal Island (dusk) | Field maps | 6 | 22 | area-ids, quest text, wiki | likely | its own six areas, one "Orange Area 5"; quest names say dusk (黄昏); Japanese: 潮島 |
@@ -171,4 +184,4 @@ What is less than the overlay says, marked in the name itself:
 | 94 | Shagaru Magala's arena | Arenas and battle stages | 2 | 12 | overlay areas, quest text | confirmed | Shagaru Magala |
 | 95 | Hunting Road | Raviente, Road and special | 2 | 2 | area-ids, quest text | confirmed | area names say Hunter's Road |
 | 96 | Amatsu's arena | Arenas and battle stages | 2 | 8 | overlay areas, quest text | confirmed | Amatsu |
-| 97 | Historic Site (Musou) | Arenas and battle stages | 2 | 25 | overlay areas, quest text, wiki | likely | Musou quests (遷悠) against many monsters; Japanese: 古跡 |
+| 97 | Historical Site (Musou) | Arenas and battle stages | 2 | 25 | overlay areas, quest text, wiki, client | likely | Musou quests (遷悠) against many monsters; Historical Site is the English client's word; Japanese: 古跡 |

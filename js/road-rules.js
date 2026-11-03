@@ -70,6 +70,20 @@
   ];
   var KNOWN_MONSTERS = MONSTER_NAMES.length - 1; // 176
 
+  // What the pages show (the Road builder, road-data.html): the field guide's name (data/monsters/index.json,
+  // the English client's own word where it has one) where Erupe's differs. Display only: the rules, their
+  // messages and dev/check-road-rules.js keep MONSTER_NAMES. dev/check-wiki-names.py keeps this table equal
+  // to the guide. Gougarf (123) and Costumed Uruki (173) keep Erupe's name: the guide has no single page for them.
+  var GUIDE_NAMES = {
+    75: "Volganos", 79: "Red Volganos", 81: "Orange Espinas", 90: "White Espinas", 100: "Unknown",
+    132: "Duremudira (1st)", 145: "Duremudira (2nd)", 155: "Musou Deviljho", 163: "Musou Nargacuga",
+    166: "Elzelion", 167: "Duremudira (Musou)", 172: "Musou Bogabadorumu", 174: "Musou Zerureusu"
+  };
+
+  function displayName(id) {
+    return GUIDE_NAMES[id] || MONSTER_NAMES[id];
+  }
+
   // Ids 1 to KNOWN_MONSTERS, as extra: every monster the game knows (Go road.AllMonsters).
   function allMonsters() {
     var ids = {};
@@ -527,6 +541,8 @@
     MAX_POINTS: MAX_POINTS,
     MONSTER_NAMES: MONSTER_NAMES,
     KNOWN_MONSTERS: KNOWN_MONSTERS,
+    GUIDE_NAMES: GUIDE_NAMES,
+    displayName: displayName,
     allMonsters: allMonsters,
     parseEdits: parseEdits,
     parseProblem: parseProblem,
