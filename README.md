@@ -28,6 +28,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/road-vote.html` | Hunting Road rotation: phase and dates, the entries, vote or take a vote back during the vote window, results after it closes, with the saved sign-in. Signed out (or expired) it shows the Road live now from the public `/api/public/road/versions` (the rotation itself, `/api/road/cycle`, needs the sign-in), how a rotation runs, links to Past winners, Road data and Roads in game, and a "Sign in to vote" button that comes back here. The nav's "Hunting Road › Rotation and vote" link. Needs the saved sign-in; API `/api/road/**`. |
 | `/road.html` | Hunting Road builder: per floor its table and two Road points multipliers (capped by the policy's `maxPoints`, default 4x), per table its entries (monster, second monster, weight, forced), add an entry, reset to the base. The monster pickers (`js/builder-ui.js`, with each monster's icon and a search box) offer all 176 monsters the game knows (ids and names as Erupe's `common/mhfmon`, kept in `js/road-rules.js`): first the ones the live Road uses, then those new to the Road. An "Also change the solo Road" box (off by default) shows the solo Road (mode 1) to edit when the policy allows mode 1; unticking it drops those changes. Lists every change from the base in words ("Changes from the base", `js/road-summary.js`), for the Road being built and for an entry opened from the vote page. Checks the rules live with `js/road-rules.js`, asks `POST /api/road/check` before submitting (POST) or saving (PUT), and won't submit while the page itself lists a problem. `?entry=<id>` opens an entry (yours to edit during submissions, others read-only). Everything about the Road itself (base, tables, policy) comes from `GET /api/road/pool` at run time; the builder holds no game data itself. Signed in only (signed out it sends the visitor to `/?next=/road.html...` and back after sign-in), `noindex`. |
 | `/road-data.html` | Hunting Road data, public and static: every Road the server has run (number, name), per floor its Road points multipliers, monster table and monsters with their chance, open and solo Road. No script: `dev/make-road-data.py` writes the tables into the page from the decoded Road files (see that file); run it again when a new Road goes live. |
+| `/sky-corridor.html` | Sky Corridor (the Tower), public, from `/api/public/sky/*` (`js/sky.js`, `js/sky-corridor.js`): the town's Duremudira progress per district as bars toward the goals (districts 3 and 4 counted but not shown in town), totals and the last clear; the hunter boards (floors or Duremudira clears, all districts or one, all time or this week: hunters with a clear since Monday 00:00 UTC, still with their all-time totals); the 33 guild missions by page and the guilds with their page's three missions; the present box milestones with how many reached and received each; what the Tower is and how to get in, with links to the Frontier guide. An API without these endpoints (404) or without the tables (`tracking: false`) shows "Sky Corridor stats are coming soon". The hunter profile's Sky Corridor tab (`#sky`) comes from `/api/public/sky/hunter/{id}` and stays hidden on a 404 or when the hunter has nothing there. |
 | `/road-history.html` | Past Hunting Road winners (number, name, character, votes, live from and until), public, from `/api/public/road/history`. |
 | `/admin.html` | Admin panel: gifts (Erupe distributions) and the Hunting Road rotation (rotations with entries and votes, create, change dates, close now, approve, override the winner, hide/unhide/disqualify, pause). Lists every gift with its items, claims and end, creates a gift (for everyone or one character, with rank limits, a deadline and items picked from the catalog) and ends one. Admin accounts only: the API checks `ROLE_ADMIN` on every `/api/admin/**` request; the account page links here for admins. Not in the nav, `noindex`. |
 | `/report.html` | Bug report (`#bug`) and feature request (`#feature`) forms. No sign-in. Each report becomes a task on the Kanboard board. |
@@ -53,6 +54,7 @@ admin.html            admin panel: gifts (distributions) and the Hunting Road ro
 road.html             Hunting Road builder and entry viewer
 road-vote.html        Hunting Road rotation: entries, vote, results
 road-history.html     past Hunting Road winners (public)
+sky-corridor.html     Sky Corridor: town progress, boards, guild missions, present box (public)
 road-data.html        Hunting Road data per Road and floor (public, static, written by dev/make-road-data.py)
 changelog.html        player changelog (rolling, one entry per live update)
 css/styles.css        shared guild-hall theme (leather page, parchment panels, brass trim, gold buttons)
@@ -84,6 +86,8 @@ js/account.js         account page, including storage and hunt log
 js/guilds.js          guild directory and detail
 js/hunters.js         hunter directory and profile
 js/leaderboards.js    leaderboards, from /api/public/leaderboards/hunts and the guild list
+js/sky.js            Sky Corridor: API calls, labels and the hunter profile's Sky Corridor tab; its helpers also run under node
+js/sky-corridor.js   Sky Corridor page: town progress, boards, guild missions, present box
 js/catalog.js         catalog browsing
 js/monster-links.js   a monster's field guide link from the server's id or name or the guide's name (data/monsters/index.json); used by the quest pages, leaderboards, hunters, account and worlds; also runs under node
 js/worlds.js          world status polling
@@ -113,6 +117,7 @@ dev/check-quest-fields.js checks data/quest-fields.json against the API codec, j
 dev/check-exact-links.js checks in headless Chromium, against a fake API with and without the ids API 5b6d085 added, that hunter and guild names link by id (else by name) and that a refused quest upload or Road draft save shows the API's message (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-exact-links.js)
 dev/check-signin-next.js checks js/signin-next.js: same-site paths only, hostile values refused (node dev/check-signin-next.js)
 dev/check-signin-return.js checks in headless Chromium, against a fake API, that signed-out visits to the Road builder, Quest builder and account page land on the sign-in form with ?next= and a note, that a saved sign-in goes on to next (never off the site), and road-vote.html's public view (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-signin-return.js)
+dev/check-sky.js     checks sky-corridor.html and the hunter Sky Corridor tab in headless Chromium against a fake API (sample data, empty, 404, tracking off), with screenshots to dev-shots/ (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-sky.js)
 dev/check-quest-maps.js checks the quest builder in headless Chromium against a fake API: only the server's maps can be chosen, a 400 shows next to its field, no unnamed areas (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-quest-maps.js)
 dev/check-links.py    checks every local link, picture and #anchor on the site (python3 dev/check-links.py [pages])
 dev/make-hv-summary.py writes the comparison tables of guide-frontier-hunsterverse.html from the guide's notes (--check: one note per section, page up to date)
@@ -152,7 +157,7 @@ load it. It keeps everything else on the page (head, main, scripts).
   own words (Worlds as the bot's `/worlds`, Windows/Linux guide as its `/guide`, Hunting Road and Road).
   - **Guides:** Windows guide, Linux guide, Frontier guide.
   - **Database:** Monsters, Quests, Catalog, Set builder, Quest builder.
-  - **Hunting Road:** Rotation and vote, Road builder, Past winners, Road data, Roads in game (`guide-roads.html`).
+  - **Hunting Road:** Rotation and vote, Road builder, Past winners, Road data, Roads in game (`guide-roads.html`), Sky Corridor.
   - **Community:** Hunters, Guilds, Leaderboards, Discord.
   - **Server:** Worlds, Events, Changelog, Report a problem.
   - Then the account button (`a.nav-account`): "Sign in" to `/account.html` in the HTML; `js/nav.js` makes it

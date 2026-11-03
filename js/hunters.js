@@ -626,13 +626,16 @@
     actions.appendChild(copy);
     view.appendChild(actions);
 
-    // Tabs: the profile and the hunter card (#card, or #card-<frame>).
+    // Tabs: the profile, the Sky Corridor (#sky; only once /api/public/sky/hunter/{id} has something
+    // to show: hidden on a 404, an older API or no progress) and the hunter card (#card, or #card-<frame>).
     var tabs = el("div", "tabs");
     tabs.setAttribute("role", "tablist");
     var profilePanel = el("div", "tab-panel");
+    var skyPanel = el("div", "tab-panel");
     var cardPanel = el("section", "panel tab-panel");
     var cardBuilt = false;
-    [["profile", "Profile", profilePanel], ["card", "Hunter card", cardPanel]].forEach(function (def) {
+    var skyReady = false;
+    [["profile", "Profile", profilePanel], ["sky", "Sky Corridor", skyPanel], ["card", "Hunter card", cardPanel]].forEach(function (def) {
       var tab = el("a", "tab", def[1]);
       tab.id = "tab-" + def[0];
       tab.href = "#" + def[0];
@@ -644,12 +647,18 @@
     });
     view.appendChild(tabs);
     view.appendChild(profilePanel);
+    view.appendChild(skyPanel);
     view.appendChild(cardPanel);
+    var skyTab = document.getElementById("tab-sky");
+    skyTab.hidden = true;
     function showTab() {
       var card = /^#card/.test(location.hash);
-      profilePanel.hidden = card;
+      var sky = !card && skyReady && location.hash === "#sky";
+      profilePanel.hidden = card || sky;
+      skyPanel.hidden = !sky;
       cardPanel.hidden = !card;
-      document.getElementById("tab-profile").setAttribute("aria-selected", card ? "false" : "true");
+      document.getElementById("tab-profile").setAttribute("aria-selected", card || sky ? "false" : "true");
+      skyTab.setAttribute("aria-selected", sky ? "true" : "false");
       document.getElementById("tab-card").setAttribute("aria-selected", card ? "true" : "false");
       if (card && !cardBuilt) {
         cardBuilt = true;
@@ -658,6 +667,15 @@
     }
     window.addEventListener("hashchange", showTab);
     showTab();
+    if (window.Sky) {
+      window.Sky.request("/api/public/sky/hunter/" + encodeURIComponent(hunter.id)).then(function (sky) {
+        if (!window.Sky.hunterHasData(sky)) return;
+        skyPanel.appendChild(window.Sky.hunterPanel(sky));
+        skyReady = true;
+        skyTab.hidden = false;
+        showTab();
+      }).catch(function () {});
+    }
     view = profilePanel; // the profile sections below go in the Profile tab
 
     var panel = el("section", "panel");
