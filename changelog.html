@@ -91,20 +91,24 @@
 <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Server</li><li aria-current="page">Changelog</li></ol></nav>
 <!-- /site-shell:crumbs -->
 <h1>Server changelog</h1>
-<p class="lead">Every update to Hunsterverse, newest first. A new entry is added each time an update goes live.</p>
-<p class="meta">Last update listed: 2 November 2026. Page updated 2 November 2026. Found a problem that isn't listed? <a href="/report.html">Report it</a>.</p>
+<p class="lead">Every update to Hunsterverse, newest first, by month and day. Each day groups its changes by topic, and each change shows when it went live.</p>
+<p class="meta">Last update listed: 3 November 2026. Page updated 3 November 2026. Found a problem that isn't listed? <a href="/report.html">Report it</a>.</p>
 
-<div class="toc">
+<nav class="toc cl-toc" aria-label="Changelog contents">
 <strong>Contents</strong>
 <ol>
 <li><a href="#next">Coming next (not live yet)</a></li>
-<li><a href="#live">Released updates</a></li>
+<li><a href="#live">Released updates</a>
+<div class="cl-toc-month"><a href="#m-2026-11">November 2026</a>: <a href="#d-2026-11-03">3 Nov</a> · <a href="#d-2026-11-02">2 Nov</a></div>
+<div class="cl-toc-month"><a href="#m-2026-10">October 2026</a>: <a href="#d-2026-10-30">30 Oct</a> · <a href="#d-2026-10-29">29 Oct</a> · <a href="#d-2026-10-28">28 Oct</a> · <a href="#d-2026-10-27">27 Oct</a> · <a href="#d-2026-10-26">26 Oct</a> · <a href="#d-2026-10-25">25 Oct</a> · <a href="#d-2026-10-23">23 Oct</a></div>
+</li>
 <li><a href="#known">Known issues</a></li>
 </ol>
-</div>
+</nav>
 
 <div class="box note">
-<p><b>Released updates</b> are on the server, one dated entry per update. <b>Coming next</b> is finished and tested, but not on the server yet. It goes live at a future server restart.</p>
+<p><b>Released updates</b> are on the server, grouped by day and topic. <b>Coming next</b> is finished and tested, but not on the server yet. It goes live at a future server restart.</p>
+<p>Each change shows when it went live, in UTC (and in your own time zone when your browser runs JavaScript). A change with only a date has no recorded time.</p>
 <p>Where a fix says "the game waited forever", the game was waiting for an answer the server never sent, or the server answered in a form the game couldn't read. You saw a stuck "communicating" screen, or a list full of junk.</p>
 <p>Most fixes come from checking exactly what the game expects from the server, so we don't have to guess. Only fixes we are sure of go live.</p>
 </div>
@@ -114,90 +118,81 @@
 <p>Nothing is waiting right now.</p>
 
 <h2 id="live">Released updates</h2>
-<!-- Rolling log: add one h3 per live deploy at the top of this section, newest first,
-     titled with the date (and "Game server update" / "Discord bot" / ...). Move the
-     entries that went live out of "Coming next". Steps: docs/how-to.md in the project home. -->
+<!-- Rolling log, newest first: month (h3, section.cl-month) > day (h4, section.cl-day, id d-YYYY-MM-DD)
+     > topic (h5, section.cl-topic, id d-YYYY-MM-DD-<topic>). Every change of a day about the same topic goes under
+     one topic; each <li> starts with its release time: <time class="cl-when" datetime="YYYY-MM-DDTHH:MMZ">
+     D Mon YYYY, HH:MM UTC</time>, or the date only (datetime="YYYY-MM-DD", class "cl-when cl-date") when the
+     time is not recorded. Add the day's topics to the line under its heading and the day to the contents.
+     Move the entries that went live out of "Coming next". Steps: README.md, "Changelog". -->
 
-<h3>3 Nov 2026 (late night): Client patch: a longer Sky Corridor, skill icons and costs, tower items in English</h3>
+<section class="cl-month" id="m-2026-11" aria-labelledby="m-2026-11-h">
+<h3 class="cl-month-title" id="m-2026-11-h">November 2026</h3>
+
+<section class="cl-day" id="d-2026-11-03" aria-labelledby="d-2026-11-03-h">
+<h4 class="cl-day-title" id="d-2026-11-03-h"><a class="cl-anchor" href="#d-2026-11-03">Tuesday 3 November 2026</a></h4>
+<p class="cl-topics"><a href="#d-2026-11-03-sky-corridor">Sky Corridor</a> · <a href="#d-2026-11-03-client-patch">Client patch</a> · <a href="#d-2026-11-03-gacha">Gacha</a></p>
+<section class="cl-topic" id="d-2026-11-03-sky-corridor" aria-labelledby="d-2026-11-03-sky-corridor-h">
+<h5 class="cl-topic-title" id="d-2026-11-03-sky-corridor-h"><a class="cl-anchor" href="#d-2026-11-03-sky-corridor">Sky Corridor</a></h5>
 <ul>
-<li><b>Longer full-map tower:</b> &quot;Urgent 1st/2nd District (Full Map)&quot; now climbs three floors of random rooms before Duremudira (one before). <b>Everyone in the party needs this patch</b>, or players get different floors.</li>
-<li><b>Skills:</b> the restored tower skills have their original icons back, Attack, Defense, Care, Pharmacist and the Guardian skills use the original tower costs and ranks, and you can equip skills worth up to 150 cost points (180 with Cost Books) instead of 100.</li>
-<li><b>Tower items in English:</b> about 160 more texts: tower item descriptions (gems, sigils, fossils, gears, potions) and the Tower and Duremudira weapons and armour.</li>
-<li><b>New to test:</b> the longer tower and the bigger skill budget have not been played before. Tell us in Discord if a run crashes or the skill menu misbehaves.</li>
-<li><b>How to get it:</b> the Mezeporta launcher downloads it at its next update check, or download <code>Frontier_Patch.zip</code> (50.9 MB) from the setup guide and unzip it over your game folder.</li>
+<li><time class="cl-when" datetime="2026-11-03T20:41Z">3 Nov 2026, 20:41 UTC</time> <b>Longer full-map tower:</b> &quot;Urgent 1st/2nd District (Full Map)&quot; now climbs three floors of random rooms before Duremudira (one before). <b>Everyone in the party needs this patch</b>, or players get different floors.</li>
+<li><time class="cl-when" datetime="2026-11-03T20:41Z">3 Nov 2026, 20:41 UTC</time> <b>Skills:</b> the restored tower skills have their original icons back, Attack, Defense, Care, Pharmacist and the Guardian skills use the original tower costs and ranks, and you can equip skills worth up to 150 cost points (180 with Cost Books) instead of 100.</li>
+<li><time class="cl-when" datetime="2026-11-03T20:41Z">3 Nov 2026, 20:41 UTC</time> <b>Tower items in English:</b> about 160 more texts: tower item descriptions (gems, sigils, fossils, gears, potions) and the Tower and Duremudira weapons and armour.</li>
+<li><time class="cl-when" datetime="2026-11-03T20:41Z">3 Nov 2026, 20:41 UTC</time> <b>New to test:</b> the longer tower and the bigger skill budget have not been played before. Tell us in Discord if a run crashes or the skill menu misbehaves.</li>
+<li><time class="cl-when" datetime="2026-11-03T18:38Z">3 Nov 2026, 18:38 UTC</time> <b>13 old tower skills back</b> in the Hunting Road Skills menu (35 skills now): Vitality of Hope, Stamina, Flame, Shock, Blunt and Cut Protection, Technique, Negotiation, Gunner, Partbreaker, Treasure, Encounter and Trap Evasion, with the original costs and ranks. Not all have been tried in game yet: tell us if one does nothing.</li>
+<li><time class="cl-when" datetime="2026-11-03T18:38Z">3 Nov 2026, 18:38 UTC</time> <b>Skill books for everyone:</b> Road Respec, SP Book and Cost Book in the Hunting Road shop can now be bought at any rank.</li>
+<li><time class="cl-when" datetime="2026-11-03T18:07Z">3 Nov 2026, 18:07 UTC</time> <b>Tower difficulty builds up:</b> each cleared tower run (as a guild member) now raises your floor record, at 3 times the original pace, so the next run starts harder; the party leader&#x27;s record sets the difficulty. Full strength comes after about 20 to 27 cleared runs.</li>
+<li><time class="cl-when" datetime="2026-11-03T17:29Z">3 Nov 2026, 17:29 UTC</time> <b>About 200 more lines of English</b> inside the Sky Corridor: the special floor and next floor dialogs, frozen and suspicious rooms, floor messages, the Tower Felyne, guide and manager, the tower shop, Ancient Treasures, Tower Skills and Tower Requests, and the results screen. Nothing that was English before changed.</li>
+<li><time class="cl-when" datetime="2026-11-03T16:38Z">3 Nov 2026, 16:38 UTC</time> <b>Weekly boss theme and random small monsters:</b> each week the tower floors draw from a different set of bosses for each district, and small monsters are rolled at random where a room has spawn points.</li>
+<li><time class="cl-when" datetime="2026-11-03T16:58Z">3 Nov 2026, 16:58 UTC</time> <b>Sky Corridor counter:</b> quests that cannot load are hidden again, and the full-map quests are named &quot;(Full Map)&quot;.</li>
+<li><time class="cl-when" datetime="2026-11-03T15:52Z">3 Nov 2026, 15:52 UTC</time> <b>Full tower maps:</b> &quot;Urgent 1st District (Full Map)&quot; and &quot;Urgent 2nd District (Full Map)&quot; on the tower counter now always load the full tower, with its floors before Duremudira. Before, the game swapped them for the short Duremudira-only version once you had done any short tower quest (a bug in the game). The short &quot;Urgent 1st/2nd District Request&quot; quests are unchanged.</li>
+<li><time class="cl-when" datetime="2026-11-03T15:52Z">3 Nov 2026, 15:52 UTC</time> <b>Everyone in the party needs this patch</b>, or players can end up on different maps.</li>
+<li><time class="cl-when" datetime="2026-11-03T15:34Z">3 Nov 2026, 15:34 UTC</time> <b>Tower floors change every week</b> (from 3 Nov), different for each district.</li>
+<li><time class="cl-when" datetime="2026-11-03T15:18Z">3 Nov 2026, 15:18 UTC</time> <b>Sky Corridor counter:</b> the Prologue, the 3rd and 4th District Surveys and the Urgent Investigation Request are no longer listed. Their tower floors are missing from every known copy of the game, so they could only crash or kick you. The counter now lists Urgent 1st and 2nd District Request, The Guardian of the Abyss, The Brutal Thunder of Oblivion and the two Hunting Road quests.</li>
+<li><time class="cl-when" datetime="2026-11-03T14:23Z">3 Nov 2026, 14:23 UTC</time> <b>Only real clears count:</b> a tower run counts as a clear for the Sky Corridor page, guild missions and the present box only when the quest was actually cleared; failed runs no longer count.</li>
+<li><time class="cl-when" datetime="2026-11-03T14:10Z">3 Nov 2026, 14:10 UTC</time> <b>Sky Corridor counter:</b> the &quot;Unused&quot; quest, which crashed the game after two floors, is no longer listed.</li>
+<li><time class="cl-when" datetime="2026-11-03T13:17Z">3 Nov 2026, 13:17 UTC</time> <b>Tower floor tables:</b> the server now sends the tower&#x27;s floor tables for runs that never asked for them, after a party crashed two floors into a tower quest.</li>
+<li><time class="cl-when" datetime="2026-11-03T03:41Z">3 Nov 2026, 03:41 UTC</time> <b>Sky Corridor (Tower):</b> the tower is open, so its counter and district quests can be taken.</li>
+<li><time class="cl-when" datetime="2026-11-03T03:41Z">3 Nov 2026, 03:41 UTC</time> <b>Guild tower missions:</b> clearing a tower quest as a guild member now counts toward your guild&#x27;s tower missions, and the next page of missions opens once all three are done. Every mission goal is half the original, for faster progress.</li>
+<li><time class="cl-when" datetime="2026-11-03T03:41Z">3 Nov 2026, 03:41 UTC</time> <b>Duremudira progress in town:</b> the tower info screen and the town&#x27;s messages now follow everyone&#x27;s tower clears and floors, instead of numbers that never moved. A district reaches its Duremudira goal at 25 clears and its last stage at 100 floors.</li>
+<li><time class="cl-when" datetime="2026-11-03T03:41Z">3 Nov 2026, 03:41 UTC</time> <b>Tower present box:</b> the box now has rewards: Tower Medals and Ancient Gold Debris at 1, 5, 10, 20, 30, 50 and 100 floors climbed and at 1, 3, 5, 10 and 25 tower quests cleared, once per character. Floors and clears count only while you are in a guild (the game reports them only then).</li>
 </ul>
-
-<h3>3 Nov 2026 (night): Client patch: old tower skills are back, and thousands more English item names</h3>
+</section>
+<section class="cl-topic" id="d-2026-11-03-client-patch" aria-labelledby="d-2026-11-03-client-patch-h">
+<h5 class="cl-topic-title" id="d-2026-11-03-client-patch-h"><a class="cl-anchor" href="#d-2026-11-03-client-patch">Client patch</a></h5>
 <ul>
-<li><b>13 old tower skills back</b> in the Hunting Road Skills menu (35 skills now): Vitality of Hope, Stamina, Flame, Shock, Blunt and Cut Protection, Technique, Negotiation, Gunner, Partbreaker, Treasure, Encounter and Trap Evasion, with the original costs and ranks. Not all have been tried in game yet: tell us if one does nothing.</li>
-<li><b>Item and gear names in English:</b> the patch used to replace the community client&#x27;s item data with an older copy, which turned about 50,000 item and gear texts back to Japanese. It now keeps all of the community&#x27;s English and adds the patch&#x27;s own.</li>
-<li><b>Skill books for everyone:</b> Road Respec, SP Book and Cost Book in the Hunting Road shop can now be bought at any rank.</li>
-<li><b>How to get it:</b> the Mezeporta launcher downloads it at its next update check, or download <code>Frontier_Patch.zip</code> from the setup guide and unzip it over your game folder.</li>
+<li><time class="cl-when" datetime="2026-11-03T18:38Z">3 Nov 2026, 18:38 UTC</time> <b>Item and gear names in English:</b> the patch used to replace the community client&#x27;s item data with an older copy, which turned about 50,000 item and gear texts back to Japanese. It now keeps all of the community&#x27;s English and adds the patch&#x27;s own.</li>
+<li><time class="cl-when" datetime="2026-11-03T16:58Z">3 Nov 2026, 16:58 UTC</time> <b>Fixed:</b> earlier today two game text files in the patch were built from an older, more Japanese copy of the game and turned a lot of text back to Japanese. They are now built on the same English files the community client uses: everything that was English stays English (checked line by line), and about 320 more lines are translated (Gacha Felyne, Sky Corridor, conquest, achievements, guild hall, cafe).</li>
+<li><time class="cl-when" datetime="2026-11-03T16:24Z">3 Nov 2026, 16:24 UTC</time> <b>Automatic patch:</b> when the Mezeporta launcher checks for updates, it now downloads the latest Hunsterverse client patch for you, the same files as <code>Frontier_Patch.zip</code> on the setup guide. Every new patch comes out on both.</li>
+<li><time class="cl-when" datetime="2026-11-03T16:24Z">3 Nov 2026, 16:24 UTC</time> <b>Slow connection?</b> If the launcher says &quot;Patcher failed to connect&quot;, download <code>Frontier_Patch.zip</code> from the setup guide (<a href="/guide-windows.html">Windows</a>, <a href="/guide-linux.html">Linux</a>) and unzip it over your game folder by hand; the launcher then has nothing left to download.</li>
+<li><time class="cl-when" datetime="2026-11-03T14:10Z">3 Nov 2026, 14:10 UTC</time> <b>More English text:</b> about 390 more lines of the game are now in English: the Gacha Felyne&#x27;s menus and help, the Sky Corridor screens (tower info, skills, floors, fainting and rescue), conquest and caravan, achievements, house pets, the guild hall and the cafe.</li>
+<li class="cl-howto"><b>How to get the 3 Nov patches:</b> the Mezeporta launcher downloads the newest one at its next update check (since 16:24 UTC). Or download <code>Frontier_Patch.zip</code> (50.9 MB) again from the setup guide (<a href="/guide-windows.html">Windows</a>, <a href="/guide-linux.html">Linux</a>) and unzip it over your game folder. If something looks wrong, tell us in Discord.</li>
 </ul>
-
-<h3>3 Nov 2026 (night): Client patch: the Sky Corridor in English</h3>
+</section>
+<section class="cl-topic" id="d-2026-11-03-gacha" aria-labelledby="d-2026-11-03-gacha-h">
+<h5 class="cl-topic-title" id="d-2026-11-03-gacha-h"><a class="cl-anchor" href="#d-2026-11-03-gacha">Gacha</a></h5>
 <ul>
-<li><b>About 200 more lines of English</b> inside the Sky Corridor: the special floor and next floor dialogs, frozen and suspicious rooms, floor messages, the Tower Felyne, guide and manager, the tower shop, Ancient Treasures, Tower Skills and Tower Requests, and the results screen. Nothing that was English before changed.</li>
-<li><b>How to get it:</b> the Mezeporta launcher downloads it at its next update check, or download <code>Frontier_Patch.zip</code> from the setup guide and unzip it over your game folder.</li>
+<li><time class="cl-when" datetime="2026-11-03T15:18Z">3 Nov 2026, 15:18 UTC</time> <b>Gacha:</b> after opening Point Redemption from a Gacha Felyne, you can leave the gacha screen again. The game used to wait forever for banner pictures from Capcom&#x27;s old website.</li>
+<li><time class="cl-when" datetime="2026-11-03T03:41Z">3 Nov 2026, 03:41 UTC</time> <b>Gacha screen:</b> you can leave the gacha screen again. It used to wait forever for banner pictures from a site that no longer exists; the gachas now show without pictures.</li>
+<li><time class="cl-when" datetime="2026-11-03T03:41Z">3 Nov 2026, 03:41 UTC</time> <b>Step-up gacha:</b> steps that list guaranteed items or a bonus now give them.</li>
 </ul>
+</section>
+</section>
 
-<h3>3 Nov 2026 (late): Client patch: English text restored, plus about 320 more lines</h3>
+<section class="cl-day" id="d-2026-11-02" aria-labelledby="d-2026-11-02-h">
+<h4 class="cl-day-title" id="d-2026-11-02-h"><a class="cl-anchor" href="#d-2026-11-02">Monday 2 November 2026</a></h4>
+<p class="cl-topics"><a href="#d-2026-11-02-game-server">Game server</a> · <a href="#d-2026-11-02-sky-corridor">Sky Corridor</a> · <a href="#d-2026-11-02-hunting-road">Hunting Road</a> · <a href="#d-2026-11-02-client-patch">Client patch</a></p>
+<section class="cl-topic" id="d-2026-11-02-game-server" aria-labelledby="d-2026-11-02-game-server-h">
+<h5 class="cl-topic-title" id="d-2026-11-02-game-server-h"><a class="cl-anchor" href="#d-2026-11-02-game-server">Game server</a></h5>
+<p><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> The game server now has every fix that was listed under "Coming next", plus a few more. Most of them stop screens that used to wait forever, and make the game show its failure message when the server can't do something, instead of pretending it worked.</p>
 <ul>
-<li><b>Fixed:</b> earlier today two game text files in the patch were built from an older, more Japanese copy of the game and turned a lot of text back to Japanese. They are now built on the same English files the community client uses: everything that was English stays English (checked line by line), and about 320 more lines are translated (Gacha Felyne, Sky Corridor, conquest, achievements, guild hall, cafe).</li>
-<li><b>Sky Corridor counter:</b> quests that cannot load are hidden again, and the full-map quests are named &quot;(Full Map)&quot;.</li>
-<li><b>How to get it:</b> the Mezeporta launcher downloads it at its next update check. Or download <code>Frontier_Patch.zip</code> from the setup guide (<a href="/guide-windows.html">Windows</a>, <a href="/guide-linux.html">Linux</a>) and unzip it over your game folder.</li>
-</ul>
-
-<h3>3 Nov 2026: The Mezeporta launcher now updates the client patch</h3>
-<ul>
-<li><b>Automatic patch:</b> when the Mezeporta launcher checks for updates, it now downloads the latest Hunsterverse client patch for you, the same files as <code>Frontier_Patch.zip</code> on the setup guide. Every new patch comes out on both.</li>
-<li><b>Slow connection?</b> If the launcher says &quot;Patcher failed to connect&quot;, download <code>Frontier_Patch.zip</code> from the setup guide (<a href="/guide-windows.html">Windows</a>, <a href="/guide-linux.html">Linux</a>) and unzip it over your game folder by hand; the launcher then has nothing left to download.</li>
-</ul>
-
-<h3>3 Nov 2026 (evening): Client patch: the full Sky Corridor tower maps</h3>
-<ul>
-<li><b>Full tower maps:</b> &quot;Urgent 1st District (Full Map)&quot; and &quot;Urgent 2nd District (Full Map)&quot; on the tower counter now always load the full tower, with its floors before Duremudira. Before, the game swapped them for the short Duremudira-only version once you had done any short tower quest (a bug in the game). The short &quot;Urgent 1st/2nd District Request&quot; quests are unchanged.</li>
-<li><b>Everyone in the party needs this patch</b>, or players can end up on different maps.</li>
-<li><b>Tower floors change every week</b> (from 3 Nov), different for each district.</li>
-<li><b>How to get it:</b> download <code>Frontier_Patch.zip</code> again from the setup guide (<a href="/guide-windows.html">Windows</a>, <a href="/guide-linux.html">Linux</a>) and copy it over your game folder.</li>
-</ul>
-
-<h3>3 Nov 2026 (later): Client patch: gacha Point Redemption fix, only working tower quests listed</h3>
-<ul>
-<li><b>Gacha:</b> after opening Point Redemption from a Gacha Felyne, you can leave the gacha screen again. The game used to wait forever for banner pictures from Capcom&#x27;s old website.</li>
-<li><b>Sky Corridor counter:</b> the Prologue, the 3rd and 4th District Surveys and the Urgent Investigation Request are no longer listed. Their tower floors are missing from every known copy of the game, so they could only crash or kick you. The counter now lists Urgent 1st and 2nd District Request, The Guardian of the Abyss, The Brutal Thunder of Oblivion and the two Hunting Road quests.</li>
-<li><b>How to get it:</b> download <code>Frontier_Patch.zip</code> again from the setup guide (<a href="/guide-windows.html">Windows</a>, <a href="/guide-linux.html">Linux</a>) and copy it over your game folder.</li>
-</ul>
-
-<h3>3 Nov 2026: Client patch: more English, and the broken "Unused" tower quest is gone</h3>
-<ul>
-<li><b>More English text:</b> about 390 more lines of the game are now in English: the Gacha Felyne&#x27;s menus and help, the Sky Corridor screens (tower info, skills, floors, fainting and rescue), conquest and caravan, achievements, house pets, the guild hall and the cafe.</li>
-<li><b>Sky Corridor counter:</b> the &quot;Unused&quot; quest, which crashed the game after two floors, is no longer listed.</li>
-<li><b>How to get it:</b> download <code>Frontier_Patch.zip</code> again from the setup guide (<a href="/guide-windows.html">Windows</a>, <a href="/guide-linux.html">Linux</a>) and copy it over your game folder as before. If something looks wrong, tell us in Discord.</li>
-</ul>
-
-<h3>3 Nov 2026: Game server update: the Sky Corridor is open, and you can leave the gacha screen</h3>
-<ul>
-<li><b>Gacha screen:</b> you can leave the gacha screen again. It used to wait forever for banner pictures from a site that no longer exists; the gachas now show without pictures.</li>
-<li><b>Sky Corridor (Tower):</b> the tower is open, so its counter and district quests can be taken.</li>
-<li><b>Guild tower missions:</b> clearing a tower quest as a guild member now counts toward your guild&#x27;s tower missions, and the next page of missions opens once all three are done. Every mission goal is half the original, for faster progress.</li>
-<li><b>Duremudira progress in town:</b> the tower info screen and the town&#x27;s messages now follow everyone&#x27;s tower clears and floors, instead of numbers that never moved. A district reaches its Duremudira goal at 25 clears and its last stage at 100 floors.</li>
-<li><b>Tower present box:</b> the box now has rewards: Tower Medals and Ancient Gold Debris at 1, 5, 10, 20, 30, 50 and 100 floors climbed and at 1, 3, 5, 10 and 25 tower quests cleared, once per character. Floors and clears count only while you are in a guild (the game reports them only then).</li>
-<li><b>Step-up gacha:</b> steps that list guaranteed items or a bonus now give them.</li>
-</ul>
-
-<h3>2 Nov 2026: Game server update: fewer stuck screens, safer saves</h3>
-<p>The game server now has every fix that was listed under "Coming next", plus a few more. Most of them stop screens that used to wait forever, and make the game show its failure message when the server can't do something, instead of pretending it worked.</p>
-<ul>
-<li><b>Saving:</b> small save changes, plate saves and older characters' Hunter Navi saves are no longer lost or refused. A save the server can't store is sent again at the next autosave, and a save it can't load shows "Failed to transfer data from server. Please relog." instead of hanging.</li>
-<li><b>Hunter Festival:</b> prize and trial lists stay within what the game can show, a guild signed up by its vice-leader no longer shows as guildless, and voting, soul deliveries and the final reward (once per player) work as they should.</li>
-<li><b>Raviente (Great Slaying):</b> the player limits hold, the phase vote and support menu take one player at a time, a player coming back after a reset starts fresh instead of splitting the room, and one server error can no longer freeze the event on a channel.</li>
-<li><b>Diva Defense:</b> its screens answer with empty lists instead of junk or a stuck screen. The event itself isn't built on our server yet.</li>
-<li><b>Sky Corridor (Tower):</b> resetting your tower skills is saved.</li>
-<li><b>Rasta:</b> saving can no longer change another player's Rasta ID, and borrowing a Rasta no longer replaces someone's contract or counts a borrower twice.</li>
-<li><b>Guilds and alliances:</b> guild actions check that you belong to the guild and hold the right role (normal play is unchanged). Actions in a guild that removed you, guild graduation and actions the server couldn't do show the failure message instead of looking done, and deleted alliances no longer break guild screens. Also fixed: guild search pages, guild emblems, disbanding a guild with open applications, recruiters accepting and rejecting applicants, member order, the scout list, older guild item boxes, message boards and the beat-class ranking rewards.</li>
-<li><b>Guild treasure hunts:</b> leaving a hunt works again, every cat shows its name, and a hunt the server couldn't store shows the failure message and keeps your RP.</li>
-<li><b>Gifts, gacha, shops and the cafe:</b> each gift can only be claimed as often as it allows, a gacha with no prizes gives the cost back, cafe points can't go negative, and the daily cafe bonus is given once and in full. Also fixed:
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Saving:</b> small save changes, plate saves and older characters' Hunter Navi saves are no longer lost or refused. A save the server can't store is sent again at the next autosave, and a save it can't load shows "Failed to transfer data from server. Please relog." instead of hanging.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Hunter Festival:</b> prize and trial lists stay within what the game can show, a guild signed up by its vice-leader no longer shows as guildless, and voting, soul deliveries and the final reward (once per player) work as they should.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Raviente (Great Slaying):</b> the player limits hold, the phase vote and support menu take one player at a time, a player coming back after a reset starts fresh instead of splitting the room, and one server error can no longer freeze the event on a channel.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Diva Defense:</b> its screens answer with empty lists instead of junk or a stuck screen. The event itself isn't built on our server yet.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Rasta:</b> saving can no longer change another player's Rasta ID, and borrowing a Rasta no longer replaces someone's contract or counts a borrower twice.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Guilds and alliances:</b> guild actions check that you belong to the guild and hold the right role (normal play is unchanged). Actions in a guild that removed you, guild graduation and actions the server couldn't do show the failure message instead of looking done, and deleted alliances no longer break guild screens. Also fixed: guild search pages, guild emblems, disbanding a guild with open applications, recruiters accepting and rejecting applicants, member order, the scout list, older guild item boxes, message boards and the beat-class ranking rewards.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Guild treasure hunts:</b> leaving a hunt works again, every cat shows its name, and a hunt the server couldn't store shows the failure message and keeps your RP.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Gifts, gacha, shops and the cafe:</b> each gift can only be claimed as often as it allows, a gacha with no prizes gives the cost back, cafe points can't go negative, and the daily cafe bonus is given once and in full. Also fixed:
 <ul>
 <li>Collecting gacha prizes no longer loses the ones that didn't fit: they stay in your prize box for next time.</li>
 <li>Zenny prizes no longer pile up in your prize box and hide your other prizes (the game already gives you the zenny when you play).</li>
@@ -206,23 +201,28 @@
 <li>Selling items for Frontier Points pays what the game shows.</li>
 </ul>
 </li>
-<li><b>Mail and houses:</b> the mail list shows full subjects and up to 40 mails. Changing part of your house interior keeps the rest. Visitors see your bookshelf as you do, and your titles and house details instead of their own.</li>
-<li><b>Signing in, worlds and lobbies:</b> signing in with 255 friends or guildmates, the world list, friends left with an old session, errors while entering a world, joining a player you found, and lobby search all work again.</li>
-<li><b>Quests and parties:</b> caravan scores post at the end of a quest, Seibattle score lists show clean names, party guests get the host's party counts, and tournament quests and reward songs no longer get stuck.</li>
-<li><b>Hunting Road:</b> the in-game Road ranking opens for hunters without a guild and finds your own entry, and Road data that failed to load can no longer be saved over your progress.</li>
-<li><b>Stability:</b> a rare crash that could disconnect everyone at once is fixed, and dozens of server errors now get a clean failure message or an empty list.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Mail and houses:</b> the mail list shows full subjects and up to 40 mails. Changing part of your house interior keeps the rest. Visitors see your bookshelf as you do, and your titles and house details instead of their own.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Signing in, worlds and lobbies:</b> signing in with 255 friends or guildmates, the world list, friends left with an old session, errors while entering a world, joining a player you found, and lobby search all work again.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Quests and parties:</b> caravan scores post at the end of a quest, Seibattle score lists show clean names, party guests get the host's party counts, and tournament quests and reward songs no longer get stuck.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Stability:</b> a rare crash that could disconnect everyone at once is fixed, and dozens of server errors now get a clean failure message or an empty list.</li>
 </ul>
-
-<h3>2 Nov 2026: Hunting Road data and change summaries</h3>
+</section>
+<section class="cl-topic" id="d-2026-11-02-sky-corridor" aria-labelledby="d-2026-11-02-sky-corridor-h">
+<h5 class="cl-topic-title" id="d-2026-11-02-sky-corridor-h"><a class="cl-anchor" href="#d-2026-11-02-sky-corridor">Sky Corridor</a></h5>
 <ul>
-<li><b>Road data page:</b> every Road the server has run, with each floor's points multiplier and the chance of each monster, for the open and the solo Road (<a href="/road-data.html">Road data</a>).</li>
-<li><b>See what a Road changes:</b> the Road builder now lists, in words, what your Road changes from the original. Entries you open from the vote page get the same list, so you can compare designs before you vote.</li>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Sky Corridor (Tower):</b> resetting your tower skills is saved.</li>
 </ul>
-
-<h3>2 Nov 2026: Hunting Road rewards by place</h3>
-<p>Every Road voted on this site now pays two rewards, by place: one for the design vote and one for the floor clear board. The first one is the Road of round 1, after voting closes on 17 Nov 2026.</p>
+</section>
+<section class="cl-topic" id="d-2026-11-02-hunting-road" aria-labelledby="d-2026-11-02-hunting-road-h">
+<h5 class="cl-topic-title" id="d-2026-11-02-hunting-road-h"><a class="cl-anchor" href="#d-2026-11-02-hunting-road">Hunting Road</a></h5>
 <ul>
-<li><b>Places 1 to 50 are paid on each board:</b>
+<li><time class="cl-when" datetime="2026-11-02T19:19Z">2 Nov 2026, 19:19 UTC</time> <b>Hunting Road:</b> the in-game Road ranking opens for hunters without a guild and finds your own entry, and Road data that failed to load can no longer be saved over your progress.</li>
+<li><time class="cl-when" datetime="2026-11-02T18:29Z">2 Nov 2026, 18:29 UTC</time> <b>Road data page:</b> every Road the server has run, with each floor's points multiplier and the chance of each monster, for the open and the solo Road (<a href="/road-data.html">Road data</a>).</li>
+<li><time class="cl-when" datetime="2026-11-02T18:29Z">2 Nov 2026, 18:29 UTC</time> <b>See what a Road changes:</b> the Road builder now lists, in words, what your Road changes from the original. Entries you open from the vote page get the same list, so you can compare designs before you vote.</li>
+</ul>
+<p><time class="cl-when" datetime="2026-11-02T18:29Z">2 Nov 2026, 18:29 UTC</time> Every Road voted on this site now pays two rewards, by place: one for the design vote and one for the floor clear board. The first one is the Road of round 1, after voting closes on 17 Nov 2026.</p>
+<ul>
+<li><time class="cl-when" datetime="2026-11-02T18:29Z">2 Nov 2026, 18:29 UTC</time> <b>Places 1 to 50 are paid on each board:</b>
 <ul>
 <li>1st: 100,000 zenny, 5,000 Frontier Points and 50 gacha coins.</li>
 <li>2nd: 75,000 zenny, 3,000 Frontier Points and 30 gacha coins.</li>
@@ -231,153 +231,211 @@
 <li>11th to 50th: 10,000 zenny and 500 Frontier Points.</li>
 </ul>
 </li>
-<li><b>Design vote:</b> your place in the vote, the winner first. Places are fixed when the winning Road goes live. An account counts once, with its best entry.</li>
-<li><b>Floor clear board:</b> your place on the Road's open (group) board, counting the floors you climbed while it was the live Road. Places are fixed when the next Road replaces it, and you can claim from then. An account counts once, with its best hunter. The solo board doesn't pay.</li>
-<li><b>Claiming:</b> on the <a href="/account.html">account page</a>, each reward shows its board, your place and tier. Claim each one once, for the character of your choice; it arrives in the in-game gift list. If a floor board isn't final yet, the page says so: try again later.</li>
+<li><time class="cl-when" datetime="2026-11-02T18:29Z">2 Nov 2026, 18:29 UTC</time> <b>Design vote:</b> your place in the vote, the winner first. Places are fixed when the winning Road goes live. An account counts once, with its best entry.</li>
+<li><time class="cl-when" datetime="2026-11-02T18:29Z">2 Nov 2026, 18:29 UTC</time> <b>Floor clear board:</b> your place on the Road's open (group) board, counting the floors you climbed while it was the live Road. Places are fixed when the next Road replaces it, and you can claim from then. An account counts once, with its best hunter. The solo board doesn't pay.</li>
+<li><time class="cl-when" datetime="2026-11-02T18:29Z">2 Nov 2026, 18:29 UTC</time> <b>Claiming:</b> on the <a href="/account.html">account page</a>, each reward shows its board, your place and tier. Claim each one once, for the character of your choice; it arrives in the in-game gift list. If a floor board isn't final yet, the page says so: try again later.</li>
 </ul>
-
-<h3>2 Nov 2026: Client patch: more of the game in English</h3>
+</section>
+<section class="cl-topic" id="d-2026-11-02-client-patch" aria-labelledby="d-2026-11-02-client-patch-h">
+<h5 class="cl-topic-title" id="d-2026-11-02-client-patch-h"><a class="cl-anchor" href="#d-2026-11-02-client-patch">Client patch</a></h5>
 <ul>
-<li><b>The Diva storyline at the Prayer Fountain is in English:</b> every dialogue scene, the chapter list and the episode titles.</li>
-<li><b>One town's NPC dialogue is in English</b> (stage 205, about 3,800 lines).</li>
-<li><b>Download the patch again</b> to get it (<a href="/guide-windows.html#patch">Windows</a>, <a href="/guide-linux.html#patch">Linux</a>). The guides now back up every file the patch replaces, so you can still restore the original client.</li>
+<li><time class="cl-when cl-date" datetime="2026-11-02">2 Nov 2026</time> <b>The Diva storyline at the Prayer Fountain is in English:</b> every dialogue scene, the chapter list and the episode titles.</li>
+<li><time class="cl-when cl-date" datetime="2026-11-02">2 Nov 2026</time> <b>One town's NPC dialogue is in English</b> (stage 205, about 3,800 lines).</li>
+<li><time class="cl-when" datetime="2026-11-02T15:07Z">2 Nov 2026, 15:07 UTC</time> <b>Download the patch again</b> to get it (<a href="/guide-windows.html#patch">Windows</a>, <a href="/guide-linux.html#patch">Linux</a>). The guides now back up every file the patch replaces, so you can still restore the original client.</li>
 </ul>
+</section>
+</section>
 
-<h3>30 Oct 2026: Quest builder</h3>
-      <ul>
-        <li><b>Start from blank:</b> the editor now builds a new quest instead of copying a live one. It opens with eight empty text slots, no monsters, no rewards and no start items, a 50-minute limit and room for four players. The reward and monster tables have their own room in the file, so you add entries and monsters as rows instead of thinking about byte offsets.</li>
-        <li><b>Live quests are not editable:</b> the "Edit a copy" button is gone from quest pages, and the server refuses to hand out a live quest's file or start a draft from one. Building happens on new quests only.</li>
-        <li><b>Your drafts, listed:</b> the Draft panel lists every draft on your account with its revision and last save, so you can reopen one and carry on where you stopped.</li>
-        <li><b>Where to start:</b> "Create a quest" sits on the <a href="/quests.html">quest catalog</a> and on the account page's Custom quests tab.</li>
-        <li><b>Same road into the game:</b> Download gives the exact .bin the server would serve, and Submit puts the quest in your own counter as a testing quest under the id the server assigns, with its rewards emptied until an admin publishes it.</li>
-      </ul>
+</section>
 
-<h3>30 Oct 2026: Quest editor</h3>
-      <ul>
-        <li><b>Edit a copy of any quest:</b> this was the first version of the page and was replaced by the quest builder the same day, so the copy action is gone. It opened a quest's own file as a form: the eight text slots with the room each one has, time limit, zenny, reward money, party size, quest class, monster spawns and the reward groups.</li>
-        <li><b>Drafts:</b> Save keeps a private draft on your account and the live quest file is never changed; opening the editor again brings the draft back at the revision you saved.</li>
-        <li><b>Longer text is not cut:</b> a line that does not fit its slot is appended to the end of the file and the slot repointed, the same way the quest titles were translated, up to the game's 32 KB quest buffer. The server writes every byte, so what you download is what the game will read.</li>
-        <li><b>Download and test:</b> Download gives you the exact .bin the server would serve. Submit puts the quest in your own quest counter as a testing quest that only your account can load, with its rewards emptied, and queues it for an admin to publish.</li>
-      </ul>
+<section class="cl-month" id="m-2026-10" aria-labelledby="m-2026-10-h">
+<h3 class="cl-month-title" id="m-2026-10-h">October 2026</h3>
 
-<h3>29 Oct 2026: Quest catalog and English quest text</h3>
-      <ul>
-        <li><b>Quest catalog:</b> every quest on the server, searchable by name, monster, area, rank and type, with monster icons and 40 per page (<a href="/quests.html">/quests.html</a>).</li>
-        <li><b>English quest titles:</b> all 9,157 quest names are translated and written into the game's own quest files, so the quest counter and the site agree. Files were patched in place at the same size, with a full backup taken first.</li>
-        <li><b>Quest pages:</b> each quest has its own page with category, area, objective, time limit, reward money, client and the monsters it names, each linked to its monster page.</li>
-        <li><b>Monster names checked against the wiki:</b> 蛮竜 is Gurenzeburu and Zamuza is Taikun Zamuza; titles that used the wrong name and the game's own "Emporer" spelling are corrected in place.</li>
-      </ul>
-
-      <h3>29 Oct 2026: Quest logs for every hunter</h3>
-      <ul>
-        <li><b>Hunter profile:</b> a quest log under the Profile tab, newest first, 20 per page, with the result, time in the quest and clear time.</li>
-        <li><b>Account Hunts tab:</b> the same log for whichever character you pick.</li>
-        <li><b>Party:</b> each logged quest names the other hunters who were in it at the same time. Quest and hunter names link to their pages.</li>
-      </ul>
-
-      <h3>29 Oct 2026: Worlds page and quest outcomes</h3>
-      <ul>
-        <li><b>Who's online</b> now sits above the player count graph, and each hunter on a quest shows how long they have been in it.</li>
-        <li><b>Quest log panel:</b> clears, fails, average time in quest and average clear time for the last 24 hours, plus the latest quests and the most run.</li>
-        <li><b>Outcomes recorded:</b> the game server now stores whether a quest was cleared or failed and its clear time; older stays stay blank because the server never saw their end.</li>
-      </ul>
-
-      <h3>29 Oct 2026: Admin and security</h3>
-      <ul>
-        <li><b>Audit log in the database:</b> one collapsible block per server run, with its date and time and only the actions from that run; the file stays as a fallback.</li>
-        <li><b>Sign-in limit:</b> 20 attempts per address every 10 minutes on top of Turnstile.</li>
-        <li><b>CORS narrowed</b> on signed-in endpoints to the site origin, and a Discord secret that was being printed to the service log was removed. The bot also no longer lets a player name ping @everyone.</li>
-      </ul>
-
-      <h3>29 Oct 2026: New launcher button and dialog art</h3>
+<section class="cl-day" id="d-2026-10-30" aria-labelledby="d-2026-10-30-h">
+<h4 class="cl-day-title" id="d-2026-10-30-h"><a class="cl-anchor" href="#d-2026-10-30">Friday 30 October 2026</a></h4>
+<p class="cl-topics"><a href="#d-2026-10-30-quests">Quests</a> · <a href="#d-2026-10-30-frontier-guide">Frontier guide</a></p>
+<section class="cl-topic" id="d-2026-10-30-quests" aria-labelledby="d-2026-10-30-quests-h">
+<h5 class="cl-topic-title" id="d-2026-10-30-quests-h"><a class="cl-anchor" href="#d-2026-10-30-quests">Quests</a></h5>
 <ul>
-<li><b>Launcher:</b> the buttons are now a leather band and the popup dialogs a torn parchment with a speech bubble for the message, in both the classic and PS4 styles. The labels and buttons still draw on top, so the "Sign in", "Start game" and dialog buttons read exactly as before.</li>
-<li><b>Classic style:</b> each button has a slightly darker hover state, so a click reads clearly.</li>
-<li><b>Updating screen:</b> the parchment is also the background while the launcher updates the game.</li>
-<li><b>No download:</b> the launcher fetches these images from the game server each time it starts.</li>
+<li><time class="cl-when" datetime="2026-10-30T22:39Z">30 Oct 2026, 22:39 UTC</time> <b>Start from blank:</b> the editor now builds a new quest instead of copying a live one. It opens with eight empty text slots, no monsters, no rewards and no start items, a 50-minute limit and room for four players. The reward and monster tables have their own room in the file, so you add entries and monsters as rows instead of thinking about byte offsets.</li>
+<li><time class="cl-when" datetime="2026-10-30T22:39Z">30 Oct 2026, 22:39 UTC</time> <b>Live quests are not editable:</b> the "Edit a copy" button is gone from quest pages, and the server refuses to hand out a live quest's file or start a draft from one. Building happens on new quests only.</li>
+<li><time class="cl-when" datetime="2026-10-30T22:39Z">30 Oct 2026, 22:39 UTC</time> <b>Your drafts, listed:</b> the Draft panel lists every draft on your account with its revision and last save, so you can reopen one and carry on where you stopped.</li>
+<li><time class="cl-when" datetime="2026-10-30T22:39Z">30 Oct 2026, 22:39 UTC</time> <b>Where to start:</b> "Create a quest" sits on the <a href="/quests.html">quest catalog</a> and on the account page's Custom quests tab.</li>
+<li><time class="cl-when" datetime="2026-10-30T22:39Z">30 Oct 2026, 22:39 UTC</time> <b>Same road into the game:</b> Download gives the exact .bin the server would serve, and Submit puts the quest in your own counter as a testing quest under the id the server assigns, with its rewards emptied until an admin publishes it.</li>
+<li><time class="cl-when" datetime="2026-10-30T22:39Z">30 Oct 2026, 22:39 UTC</time> The quest editor went live: blank quests, monster and area dropdowns, drafts, download, and submit for testing.</li>
+<li><time class="cl-when" datetime="2026-10-30T22:21Z">30 Oct 2026, 22:21 UTC</time> Every quest page now shows the translated description plus the true original Japanese under it, and a requirement row where a quest has an entry item.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-30">30 Oct 2026</time> In game, all eight quest text slots are English: titles, objectives, subquests, main objective, fail condition, client and description.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-30">30 Oct 2026</time> <b>Edit a copy of any quest:</b> this was the first version of the page and was replaced by the quest builder the same day, so the copy action is gone. It opened a quest's own file as a form: the eight text slots with the room each one has, time limit, zenny, reward money, party size, quest class, monster spawns and the reward groups.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-30">30 Oct 2026</time> <b>Drafts:</b> Save keeps a private draft on your account and the live quest file is never changed; opening the editor again brings the draft back at the revision you saved.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-30">30 Oct 2026</time> <b>Longer text is not cut:</b> a line that does not fit its slot is appended to the end of the file and the slot repointed, the same way the quest titles were translated, up to the game's 32 KB quest buffer. The server writes every byte, so what you download is what the game will read.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-30">30 Oct 2026</time> <b>Download and test:</b> Download gives you the exact .bin the server would serve. Submit puts the quest in your own quest counter as a testing quest that only your account can load, with its rewards emptied, and queues it for an admin to publish.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-30">30 Oct 2026</time> Custom quests can be submitted from the Account page and are reviewed in a new Custom quests tab in the admin panel. Approved quests appear under Event and are served reward-stripped.</li>
 </ul>
-
-<h3>29 Oct 2026: Hunting Road leaderboard</h3>
+</section>
+<section class="cl-topic" id="d-2026-10-30-frontier-guide" aria-labelledby="d-2026-10-30-frontier-guide-h">
+<h5 class="cl-topic-title" id="d-2026-10-30-frontier-guide-h"><a class="cl-anchor" href="#d-2026-10-30-frontier-guide">Frontier guide</a></h5>
 <ul>
-<li><b>Game server:</b> each floor you clear on the Hunting Road is now recorded. <a href="/leaderboards.html#road">Leaderboards</a> ranks every rotation: the highest floor reached in one run wins, and whoever got there first wins a tie. The open Road and the Solo Road have their own boards. When a rotation ends you can still open its board.</li>
-<li><b>Before this update:</b> floors reached earlier still show on your in-game record page, but they do not count on a rotation's board.</li>
+<li><time class="cl-when" datetime="2026-10-30T17:50Z">30 Oct 2026, 17:50 UTC</time> The Frontier handbook is on the site: four chapters covering progression, gear, activities and reference, rewritten from Fist's guide for live servers with notes wherever this server differs.</li>
 </ul>
+</section>
+</section>
 
-<h3>28 Oct 2026: Hunter profiles from the Worlds board</h3>
+<section class="cl-day" id="d-2026-10-29" aria-labelledby="d-2026-10-29-h">
+<h4 class="cl-day-title" id="d-2026-10-29-h"><a class="cl-anchor" href="#d-2026-10-29">Thursday 29 October 2026</a></h4>
+<p class="cl-topics"><a href="#d-2026-10-29-launcher">Launcher</a> · <a href="#d-2026-10-29-quests">Quests</a> · <a href="#d-2026-10-29-hunting-road">Hunting Road</a> · <a href="#d-2026-10-29-quest-logs-and-the-worlds-page">Quest logs and the Worlds page</a> · <a href="#d-2026-10-29-account-and-security">Account and security</a></p>
+<section class="cl-topic" id="d-2026-10-29-launcher" aria-labelledby="d-2026-10-29-launcher-h">
+<h5 class="cl-topic-title" id="d-2026-10-29-launcher-h"><a class="cl-anchor" href="#d-2026-10-29-launcher">Launcher</a></h5>
 <ul>
-<li><b>Click a name:</b> on the live board on the <a href="/worlds.html">Worlds</a> page, each hunter's name, in the list and in the parties, now opens that hunter's profile directly.</li>
-<li><b>Same name in a party:</b> if two hunters on the same world share a name, that name opens a <a href="/hunters.html">Hunters</a> search for it instead.</li>
+<li><time class="cl-when" datetime="2026-10-29T23:19Z">29 Oct 2026, 23:19 UTC</time> The PS4 style of the Mezeporta launcher now uses an animated 1920 x 1080 background, served from the game server like the classic one.</li>
+<li><time class="cl-when" datetime="2026-10-29T23:19Z">29 Oct 2026, 23:19 UTC</time> Existing launchers pick it up on their next launch; no download or game restart needed.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Launcher:</b> the buttons are now a leather band and the popup dialogs a torn parchment with a speech bubble for the message, in both the classic and PS4 styles. The labels and buttons still draw on top, so the "Sign in", "Start game" and dialog buttons read exactly as before.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Classic style:</b> each button has a slightly darker hover state, so a click reads clearly.</li>
+<li><time class="cl-when" datetime="2026-10-29T03:50Z">29 Oct 2026, 03:50 UTC</time> <b>Updating screen:</b> the parchment is also the background while the launcher updates the game.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>No download:</b> the launcher fetches these images from the game server each time it starts.</li>
 </ul>
-
-<h3>28 Oct 2026: Quest parties on the Worlds board</h3>
+</section>
+<section class="cl-topic" id="d-2026-10-29-quests" aria-labelledby="d-2026-10-29-quests-h">
+<h5 class="cl-topic-title" id="d-2026-10-29-quests-h"><a class="cl-anchor" href="#d-2026-10-29-quests">Quests</a></h5>
 <ul>
-<li><b>Who's questing together:</b> the live board on the <a href="/worlds.html">Worlds</a> page now lists the parties on each world: which quest, and which hunters are in it. Hunters in a party get an "In party" tag in the list.</li>
-<li>Quests are listed by their number, as the server sees them. "Quest loading…" means the party has just left and the quest is still loading.</li>
+<li><time class="cl-when" datetime="2026-10-29T17:47Z">29 Oct 2026, 17:47 UTC</time> <b>Quest catalog:</b> every quest on the server, searchable by name, monster, area, rank and type, with monster icons and 40 per page (<a href="/quests.html">/quests.html</a>).</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>English quest titles:</b> all 9,157 quest names are translated and written into the game's own quest files, so the quest counter and the site agree. Files were patched in place at the same size, with a full backup taken first.</li>
+<li><time class="cl-when" datetime="2026-10-29T18:37Z">29 Oct 2026, 18:37 UTC</time> <b>Quest pages:</b> each quest has its own page with category, area, objective, time limit, reward money, client and the monsters it names, each linked to its monster page.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Monster names checked against the wiki:</b> 蛮竜 is Gurenzeburu and Zamuza is Taikun Zamuza; titles that used the wrong name and the game's own "Emporer" spelling are corrected in place.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> Every quest page shows tracked runs: attempts, clears, fails, abandoned, clear rate and average clear time.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> Quest objectives, client names and descriptions are translated throughout: 5,461 objectives, 7,164 descriptions and 1,819 clients now read in English on the catalog and quest pages.</li>
 </ul>
-
-<h3>28 Oct 2026: New launcher banners and background</h3>
+</section>
+<section class="cl-topic" id="d-2026-10-29-hunting-road" aria-labelledby="d-2026-10-29-hunting-road-h">
+<h5 class="cl-topic-title" id="d-2026-10-29-hunting-road-h"><a class="cl-anchor" href="#d-2026-10-29-hunting-road">Hunting Road</a></h5>
 <ul>
-<li><b>Four new banners</b> rotate at the top right of the Mezeporta launcher, in place of the placeholders. Click one to open its page: <b>Feeling Lucky?</b> (the <a href="/">home page</a>), <b>Weekly Leaderboards</b> (<a href="/leaderboards.html">Leaderboards</a>), <b>Custom Road Challenge</b> (<a href="/road.html">Road builder</a>) and <b>Set Builder</b> (<a href="/set-builder.html">Set Builder</a>).</li>
-<li><b>A new background:</b> the classic launcher now shows the Hunsterverse background picture behind the login box, in place of the placeholder.</li>
-<li>Nothing to install: the launcher loads them from the server the next time you open it. There was no server restart.</li>
+<li><time class="cl-when" datetime="2026-10-29T02:19Z">29 Oct 2026, 02:19 UTC</time> <b>Game server:</b> each floor you clear on the Hunting Road is now recorded. <a href="/leaderboards.html#road">Leaderboards</a> ranks every rotation: the highest floor reached in one run wins, and whoever got there first wins a tie. The open Road and the Solo Road have their own boards. When a rotation ends you can still open its board.</li>
+<li><time class="cl-when" datetime="2026-10-29T02:19Z">29 Oct 2026, 02:19 UTC</time> <b>Before this update:</b> floors reached earlier still show on your in-game record page, but they do not count on a rotation's board.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> The Road board has an Attempts column beside Floors climbed, so effort and depth are both visible, split by open and solo Road.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <code>/roadparty</code> posts a message with Join and Leave. Joining checks your account is linked and has a hunter, then switches your saved Road to the party's Road, up to four hunters.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> The Original Road no longer reads as retired anywhere: it is always available, and the date shown now reads as when its board was frozen.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Rounds with no entries:</b> if nobody sends a Road in a round, the next Road is drawn at random from the past winners and the two base Roads (the Zenith Road and the Original Road), and never the Road that is live right now. Before, a round with no entries had no winner.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Removed winners:</b> if a past winner is hidden or disqualified, any upcoming round that drew it draws again.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> The server records which Road each client was served. When the room's Road changes, anyone still holding a different one is returned to town automatically, because the client only reads the Road file on town entry.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> No more telling the party to step back and hoping: the reload is guaranteed before the next quest.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> The Road builder keeps drafts on your account, so a half-finished Road survives a closed browser and can be picked up from another machine.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> The Account page can save the Road you play. Erupe pins it when you open a quest room, and a room can still override it with <code>!road</code> for that session.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> Road history keeps every version with its dates and hash, so old Roads stay playable and their records stay readable.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> Every Road the server has run is listed on the Road history page with its dates, status and hash.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> When a Road retires its board is frozen as the original board; anything climbed afterwards goes to a separate revisit board, so going back never overwrites a record.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> In game, a quest room can pick its Road: type <code>!road</code> to list what is installed, <code>!road 2</code> to choose, <code>!road clear</code> to return to the live Road. Everyone steps back to town once so the client reloads it.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> A scheduled job freezes the board the moment a rotation is replaced, so nothing depends on remembering to do it by hand.</li>
 </ul>
-
-<h3>28 Oct 2026: Who's online, live on the website</h3>
+</section>
+<section class="cl-topic" id="d-2026-10-29-quest-logs-and-the-worlds-page" aria-labelledby="d-2026-10-29-quest-logs-and-the-worlds-page-h">
+<h5 class="cl-topic-title" id="d-2026-10-29-quest-logs-and-the-worlds-page-h"><a class="cl-anchor" href="#d-2026-10-29-quest-logs-and-the-worlds-page">Quest logs and the Worlds page</a></h5>
 <ul>
-<li><b>Live board:</b> the <a href="/worlds.html">Worlds</a> page now shows who is online right now: how many hunters are online, in town and on a quest, and a list of each character, their world, whether they are in town or on a quest, and which quest. It refreshes every 30 seconds.</li>
-<li>The Worlds board shows each hunter's Discord display name when their account is linked.</li>
-<li>Quests are listed by their number, as the server sees them: quest names live in the game client. "Departing" means the hunter has just left for a quest that is still loading.</li>
-<li>The game server restarted once for this, at 05:47 UTC, while nobody was online.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Hunter profile:</b> a quest log under the Profile tab, newest first, 20 per page, with the result, time in the quest and clear time.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Account Hunts tab:</b> the same log for whichever character you pick.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Party:</b> each logged quest names the other hunters who were in it at the same time. Quest and hunter names link to their pages.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Who's online</b> now sits above the player count graph, and each hunter on a quest shows how long they have been in it.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Quest log panel:</b> clears, fails, average time in quest and average clear time for the last 24 hours, plus the latest quests and the most run.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Outcomes recorded:</b> the game server now stores whether a quest was cleared or failed and its clear time; older stays stay blank because the server never saw their end.</li>
 </ul>
-
-<h3>28 Oct 2026: A new launcher header</h3>
+</section>
+<section class="cl-topic" id="d-2026-10-29-account-and-security" aria-labelledby="d-2026-10-29-account-and-security-h">
+<h5 class="cl-topic-title" id="d-2026-10-29-account-and-security-h"><a class="cl-anchor" href="#d-2026-10-29-account-and-security">Account and security</a></h5>
 <ul>
-<li><b>The Mezeporta launcher's ZZ header</b> is now the animated Hunsterverse logo, in place of the placeholder. It shows in both the classic and the PS4 style.</li>
-<li>Nothing to install: the launcher loads it from the server the next time you open it. There was no server restart.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Audit log in the database:</b> one collapsible block per server run, with its date and time and only the actions from that run; the file stays as a fallback.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>Sign-in limit:</b> 20 attempts per address every 10 minutes on top of Turnstile.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-29">29 Oct 2026</time> <b>CORS narrowed</b> on signed-in endpoints to the site origin, and a Discord secret that was being printed to the service log was removed. The bot also no longer lets a player name ping @everyone.</li>
 </ul>
+</section>
+</section>
 
-<h3>28 Oct 2026: Hunting Road, ready for more monsters</h3>
+<section class="cl-day" id="d-2026-10-28" aria-labelledby="d-2026-10-28-h">
+<h4 class="cl-day-title" id="d-2026-10-28-h"><a class="cl-anchor" href="#d-2026-10-28">Wednesday 28 October 2026</a></h4>
+<p class="cl-topics"><a href="#d-2026-10-28-worlds-page">Worlds page</a> · <a href="#d-2026-10-28-launcher">Launcher</a> · <a href="#d-2026-10-28-hunting-road">Hunting Road</a></p>
+<section class="cl-topic" id="d-2026-10-28-worlds-page" aria-labelledby="d-2026-10-28-worlds-page-h">
+<h5 class="cl-topic-title" id="d-2026-10-28-worlds-page-h"><a class="cl-anchor" href="#d-2026-10-28-worlds-page">Worlds page</a></h5>
 <ul>
-<li><b>Behind the scenes:</b> the server tool that puts the winning Road in the game now accepts any of the game's 176 monsters, not only the ones the Road already uses. A monster new to a table gets its level and settings from that table's other monsters.</li>
-<li><b>Nothing changes in the builder yet:</b> the <a href="/road.html">Road builder</a> still offers the Road's current monsters. More monsters come to the builder in a later update.</li>
-<li>The current Road and the vote dates are unchanged, and there was no server restart.</li>
+<li><time class="cl-when" datetime="2026-10-28T21:44Z">28 Oct 2026, 21:44 UTC</time> <b>Click a name:</b> on the live board on the <a href="/worlds.html">Worlds</a> page, each hunter's name, in the list and in the parties, now opens that hunter's profile directly.</li>
+<li><time class="cl-when" datetime="2026-10-28T21:44Z">28 Oct 2026, 21:44 UTC</time> <b>Same name in a party:</b> if two hunters on the same world share a name, that name opens a <a href="/hunters.html">Hunters</a> search for it instead.</li>
+<li><time class="cl-when" datetime="2026-10-28T14:52Z">28 Oct 2026, 14:52 UTC</time> <b>Who's questing together:</b> the live board on the <a href="/worlds.html">Worlds</a> page now lists the parties on each world: which quest, and which hunters are in it. Hunters in a party get an "In party" tag in the list.</li>
+<li><time class="cl-when" datetime="2026-10-28T14:52Z">28 Oct 2026, 14:52 UTC</time> Quests are listed by their number, as the server sees them. "Quest loading…" means the party has just left and the quest is still loading.</li>
+<li><time class="cl-when" datetime="2026-10-28T05:53Z">28 Oct 2026, 05:53 UTC</time> <b>Live board:</b> the <a href="/worlds.html">Worlds</a> page now shows who is online right now: how many hunters are online, in town and on a quest, and a list of each character, their world, whether they are in town or on a quest, and which quest. It refreshes every 30 seconds.</li>
+<li><time class="cl-when" datetime="2026-10-28T05:53Z">28 Oct 2026, 05:53 UTC</time> The Worlds board shows each hunter's Discord display name when their account is linked.</li>
+<li><time class="cl-when" datetime="2026-10-28T05:53Z">28 Oct 2026, 05:53 UTC</time> Quests are listed by their number, as the server sees them: quest names live in the game client. "Departing" means the hunter has just left for a quest that is still loading.</li>
+<li><time class="cl-when" datetime="2026-10-28T05:47Z">28 Oct 2026, 05:47 UTC</time> The game server restarted once for this, at 05:47 UTC, while nobody was online.</li>
 </ul>
-
-<h3>27 Oct 2026: A new Hunting Road</h3>
-<p>The winning Road design is now the group Hunting Road for the current rotation. It stays until the first Road voted on this site replaces it, after voting closes on 17 Nov 2026 (<a href="/road-vote.html">Hunting Road</a>). The solo Road is unchanged.</p>
+</section>
+<section class="cl-topic" id="d-2026-10-28-launcher" aria-labelledby="d-2026-10-28-launcher-h">
+<h5 class="cl-topic-title" id="d-2026-10-28-launcher-h"><a class="cl-anchor" href="#d-2026-10-28-launcher">Launcher</a></h5>
 <ul>
-<li><b>New monsters on every floor:</b> every floor now draws from the same 20 Zenith monsters: Rathalos, Khezu, Daimyo Hermitaur, Blangonga, Hypnocatrice, Tigrex, Espinas, Aqra Vashimu, Hyujikiki, Giaorugu, Midogaron, Rukodiora, Plesioth, Toridcless, Bogabadorumu, Doragyurosu, Gasurabazura, Gravios, Baruragaru and Harudomerugu (floor 56 offers 11 of them). Doragyurosu, Gasurabazura, Gravios, Baruragaru and Harudomerugu no longer have to be unlocked first. White Fatalis no longer appears on every 10th floor.</li>
-<li><b>Floor 60 fixed:</b> in the design as sent, floor 60's Blangonga was set to the wrong form. We fixed it before release: it's the Zenith Blangonga, like every other monster on that floor.</li>
-<li><b>More Road points:</b> the points multiplier is now x2 on floors 1-9, x3 on 11-19, x4 on 21-29, x5 on 31-39 and x6 from floor 41 (it was x1 to x4). Every 10th floor is a bonus floor: x10 on floor 10, x15 on 20, x20 on 30 and x25 on 40, 50 and 60.</li>
-<li>Still 60 floors: after floor 60 you go back to floor 41, as before.</li>
+<li><time class="cl-when" datetime="2026-10-28T13:11Z">28 Oct 2026, 13:11 UTC</time> <b>Four new banners</b> rotate at the top right of the Mezeporta launcher, in place of the placeholders. Click one to open its page: <b>Feeling Lucky?</b> (the <a href="/">home page</a>), <b>Weekly Leaderboards</b> (<a href="/leaderboards.html">Leaderboards</a>), <b>Custom Road Challenge</b> (<a href="/road.html">Road builder</a>) and <b>Set Builder</b> (<a href="/set-builder.html">Set Builder</a>).</li>
+<li><time class="cl-when cl-date" datetime="2026-10-28">28 Oct 2026</time> <b>A new background:</b> the classic launcher now shows the Hunsterverse background picture behind the login box, in place of the placeholder.</li>
+<li><time class="cl-when" datetime="2026-10-28T13:11Z">28 Oct 2026, 13:11 UTC</time> Nothing to install: the launcher loads them from the server the next time you open it. There was no server restart.</li>
+<li><time class="cl-when" datetime="2026-10-28T04:28Z">28 Oct 2026, 04:28 UTC</time> <b>The Mezeporta launcher's ZZ header</b> is now the animated Hunsterverse logo, in place of the placeholder. It shows in both the classic and the PS4 style.</li>
+<li><time class="cl-when" datetime="2026-10-28T04:28Z">28 Oct 2026, 04:28 UTC</time> Nothing to install: the launcher loads it from the server the next time you open it. There was no server restart.</li>
 </ul>
-
-<h3>27 Oct 2026: Hunting Road, built by players</h3>
+</section>
+<section class="cl-topic" id="d-2026-10-28-hunting-road" aria-labelledby="d-2026-10-28-hunting-road-h">
+<h5 class="cl-topic-title" id="d-2026-10-28-hunting-road-h"><a class="cl-anchor" href="#d-2026-10-28-hunting-road">Hunting Road</a></h5>
 <ul>
-<li>Build your own Hunting Road on the website (<a href="/road.html">Road builder</a>, signed in). For each table, pick which monsters it offers, how often, and which one is always offered. Then pick which table each floor uses. The builder checks your Road as you edit, so a Road that would break the game can't be sent.</li>
-<li>Every two weeks there's a new Road. You get two weeks to send your Road and one week to vote (<a href="/road-vote.html">Hunting Road</a>). Then the winner becomes the open Hunting Road for everyone, with no server restart. The first round is open now: send your Road until 10 Nov 2026, 18:00 UTC, vote until 17 Nov 2026, 18:00 UTC.</li>
-<li>Past winners are listed with their creator's character (<a href="/road-history.html">Road history</a>).</li>
-<li>The winner gets a reward to claim on the account page, for the character of their choice.</li>
-<li>Also fixed: searching hunters, guilds and the item catalog on the website works again. Before, typing did nothing.</li>
+<li><time class="cl-when" datetime="2026-10-28T00:24Z">28 Oct 2026, 00:24 UTC</time> <b>Behind the scenes:</b> the server tool that puts the winning Road in the game now accepts any of the game's 176 monsters, not only the ones the Road already uses. A monster new to a table gets its level and settings from that table's other monsters.</li>
+<li><time class="cl-when" datetime="2026-10-28T00:24Z">28 Oct 2026, 00:24 UTC</time> <b>Nothing changes in the builder yet:</b> the <a href="/road.html">Road builder</a> still offers the Road's current monsters. More monsters come to the builder in a later update.</li>
+<li><time class="cl-when" datetime="2026-10-28T00:24Z">28 Oct 2026, 00:24 UTC</time> The current Road and the vote dates are unchanged, and there was no server restart.</li>
 </ul>
+</section>
+</section>
 
-<h3>27 Oct 2026: Hunsterverse launcher (API mode)</h3>
+<section class="cl-day" id="d-2026-10-27" aria-labelledby="d-2026-10-27-h">
+<h4 class="cl-day-title" id="d-2026-10-27-h"><a class="cl-anchor" href="#d-2026-10-27">Tuesday 27 October 2026</a></h4>
+<p class="cl-topics"><a href="#d-2026-10-27-hunting-road">Hunting Road</a> · <a href="#d-2026-10-27-website">Website</a> · <a href="#d-2026-10-27-launcher">Launcher</a></p>
+<section class="cl-topic" id="d-2026-10-27-hunting-road" aria-labelledby="d-2026-10-27-hunting-road-h">
+<h5 class="cl-topic-title" id="d-2026-10-27-hunting-road-h"><a class="cl-anchor" href="#d-2026-10-27-hunting-road">Hunting Road</a></h5>
+<p><time class="cl-when" datetime="2026-10-27T20:10Z">27 Oct 2026, 20:10 UTC</time> The winning Road design is now the group Hunting Road for the current rotation. It stays until the first Road voted on this site replaces it, after voting closes on 17 Nov 2026 (<a href="/road-vote.html">Hunting Road</a>). The solo Road is unchanged.</p>
 <ul>
-<li><b>The Mezeporta launcher's API mode works on Hunsterverse.</b> Set the server's Launcher Port to <code>8080</code> and leave Mode on <b>API</b> (see the <a href="/guide-windows.html#server">Windows</a> or <a href="/guide-linux.html#server">Linux</a> guide).</li>
-<li>The launcher now shows Hunsterverse news, banners and links, and your mail and unclaimed gifts. The artwork is a placeholder for now.</li>
-<li>SignV1 mode (Launcher Port <code>53312</code>) still works as before.</li>
-<li><b>Linux players:</b> keep the Wine prefix outside the game folder. A prefix in <code>Mezeporta/WinePrefix</code> makes the launcher's update step fail ("Patcher failed to manage files in game folder"). The <a href="/guide-linux.html#prefix">Linux guide, step 6</a> shows how to move it.</li>
+<li><time class="cl-when" datetime="2026-10-27T20:10Z">27 Oct 2026, 20:10 UTC</time> <b>New monsters on every floor:</b> every floor now draws from the same 20 Zenith monsters: Rathalos, Khezu, Daimyo Hermitaur, Blangonga, Hypnocatrice, Tigrex, Espinas, Aqra Vashimu, Hyujikiki, Giaorugu, Midogaron, Rukodiora, Plesioth, Toridcless, Bogabadorumu, Doragyurosu, Gasurabazura, Gravios, Baruragaru and Harudomerugu (floor 56 offers 11 of them). Doragyurosu, Gasurabazura, Gravios, Baruragaru and Harudomerugu no longer have to be unlocked first. White Fatalis no longer appears on every 10th floor.</li>
+<li><time class="cl-when" datetime="2026-10-27T20:10Z">27 Oct 2026, 20:10 UTC</time> <b>Floor 60 fixed:</b> in the design as sent, floor 60's Blangonga was set to the wrong form. We fixed it before release: it's the Zenith Blangonga, like every other monster on that floor.</li>
+<li><time class="cl-when" datetime="2026-10-27T20:10Z">27 Oct 2026, 20:10 UTC</time> <b>More Road points:</b> the points multiplier is now x2 on floors 1-9, x3 on 11-19, x4 on 21-29, x5 on 31-39 and x6 from floor 41 (it was x1 to x4). Every 10th floor is a bonus floor: x10 on floor 10, x15 on 20, x20 on 30 and x25 on 40, 50 and 60.</li>
+<li><time class="cl-when" datetime="2026-10-27T20:10Z">27 Oct 2026, 20:10 UTC</time> Still 60 floors: after floor 60 you go back to floor 41, as before.</li>
+<li><time class="cl-when" datetime="2026-10-27T18:23Z">27 Oct 2026, 18:23 UTC</time> Build your own Hunting Road on the website (<a href="/road.html">Road builder</a>, signed in). For each table, pick which monsters it offers, how often, and which one is always offered. Then pick which table each floor uses. The builder checks your Road as you edit, so a Road that would break the game can't be sent.</li>
+<li><time class="cl-when" datetime="2026-10-27T18:23Z">27 Oct 2026, 18:23 UTC</time> Every two weeks there's a new Road. You get two weeks to send your Road and one week to vote (<a href="/road-vote.html">Hunting Road</a>). Then the winner becomes the open Hunting Road for everyone, with no server restart. The first round is open now: send your Road until 10 Nov 2026, 18:00 UTC, vote until 17 Nov 2026, 18:00 UTC.</li>
+<li><time class="cl-when" datetime="2026-10-27T18:23Z">27 Oct 2026, 18:23 UTC</time> Past winners are listed with their creator's character (<a href="/road-history.html">Road history</a>).</li>
+<li><time class="cl-when" datetime="2026-10-27T18:23Z">27 Oct 2026, 18:23 UTC</time> The winner gets a reward to claim on the account page, for the character of their choice.</li>
 </ul>
+</section>
+<section class="cl-topic" id="d-2026-10-27-website" aria-labelledby="d-2026-10-27-website-h">
+<h5 class="cl-topic-title" id="d-2026-10-27-website-h"><a class="cl-anchor" href="#d-2026-10-27-website">Website</a></h5>
+<ul>
+<li><time class="cl-when" datetime="2026-10-27T18:23Z">27 Oct 2026, 18:23 UTC</time> Also fixed: searching hunters, guilds and the item catalog on the website works again. Before, typing did nothing.</li>
+</ul>
+</section>
+<section class="cl-topic" id="d-2026-10-27-launcher" aria-labelledby="d-2026-10-27-launcher-h">
+<h5 class="cl-topic-title" id="d-2026-10-27-launcher-h"><a class="cl-anchor" href="#d-2026-10-27-launcher">Launcher</a></h5>
+<ul>
+<li><time class="cl-when" datetime="2026-10-27T02:59Z">27 Oct 2026, 02:59 UTC</time> <b>The Mezeporta launcher's API mode works on Hunsterverse.</b> Set the server's Launcher Port to <code>8080</code> and leave Mode on <b>API</b> (see the <a href="/guide-windows.html#server">Windows</a> or <a href="/guide-linux.html#server">Linux</a> guide).</li>
+<li><time class="cl-when" datetime="2026-10-27T02:59Z">27 Oct 2026, 02:59 UTC</time> The launcher now shows Hunsterverse news, banners and links, and your mail and unclaimed gifts. The artwork is a placeholder for now.</li>
+<li><time class="cl-when" datetime="2026-10-27T02:59Z">27 Oct 2026, 02:59 UTC</time> SignV1 mode (Launcher Port <code>53312</code>) still works as before.</li>
+<li><time class="cl-when" datetime="2026-10-27T04:25Z">27 Oct 2026, 04:25 UTC</time> <b>Linux players:</b> keep the Wine prefix outside the game folder. A prefix in <code>Mezeporta/WinePrefix</code> makes the launcher's update step fail ("Patcher failed to manage files in game folder"). The <a href="/guide-linux.html#prefix">Linux guide, step 6</a> shows how to move it.</li>
+</ul>
+</section>
+</section>
 
-<h3>26 Oct 2026: Hunter Festival data cleaned up</h3>
+<section class="cl-day" id="d-2026-10-26" aria-labelledby="d-2026-10-26-h">
+<h4 class="cl-day-title" id="d-2026-10-26-h"><a class="cl-anchor" href="#d-2026-10-26">Monday 26 October 2026</a></h4>
+<p class="cl-topics"><a href="#d-2026-10-26-hunter-festival">Hunter Festival</a></p>
+<section class="cl-topic" id="d-2026-10-26-hunter-festival" aria-labelledby="d-2026-10-26-hunter-festival-h">
+<h5 class="cl-topic-title" id="d-2026-10-26-hunter-festival-h"><a class="cl-anchor" href="#d-2026-10-26-hunter-festival">Hunter Festival</a></h5>
 <p>The Hunter Festival (Hunter Festa) is the event where guilds are split into two teams (blue and red) and earn souls from festival trials. The winning team gets the prize screens and winner quests.</p>
 <ul>
-<li><b>The problem:</b> the server's festival trials and prizes had been loaded three times over. The prize lists became too long for the game, so every prize screen at the festival counter would have frozen. The game also only counts up to 255 trials, so most of the 369 trials earned no souls.</li>
-<li><b>The fix:</b> we removed the exact duplicates before the prize phase opened. 123 trials and 120 prizes remain, all unique. Votes already cast still count.</li>
+<li><time class="cl-when" datetime="2026-10-26T04:37Z">26 Oct 2026, 04:37 UTC</time> <b>The problem:</b> the server's festival trials and prizes had been loaded three times over. The prize lists became too long for the game, so every prize screen at the festival counter would have frozen. The game also only counts up to 255 trials, so most of the 369 trials earned no souls.</li>
+<li><time class="cl-when" datetime="2026-10-26T04:37Z">26 Oct 2026, 04:37 UTC</time> <b>The fix:</b> we removed the exact duplicates before the prize phase opened. 123 trials and 120 prizes remain, all unique. Votes already cast still count.</li>
 </ul>
+</section>
+</section>
 
-<h3>25 Oct 2026: Discord bot back online</h3>
-<p>The FrontierBot was offline: Discord changed its rules for large servers. It's back and now uses slash commands (type <code>/</code> in Discord):</p>
+<section class="cl-day" id="d-2026-10-25" aria-labelledby="d-2026-10-25-h">
+<h4 class="cl-day-title" id="d-2026-10-25-h"><a class="cl-anchor" href="#d-2026-10-25">Sunday 25 October 2026</a></h4>
+<p class="cl-topics"><a href="#d-2026-10-25-discord-bot">Discord bot</a></p>
+<section class="cl-topic" id="d-2026-10-25-discord-bot" aria-labelledby="d-2026-10-25-discord-bot-h">
+<h5 class="cl-topic-title" id="d-2026-10-25-discord-bot-h"><a class="cl-anchor" href="#d-2026-10-25-discord-bot">Discord bot</a></h5>
+<p><time class="cl-when" datetime="2026-10-25T05:16Z">25 Oct 2026, 05:16 UTC</time> The FrontierBot was offline: Discord changed its rules for large servers. It's back and now uses slash commands (type <code>/</code> in Discord):</p>
 <table>
 <tr><th>Command</th><th>What it does</th></tr>
 <tr><td><code>/link</code></td><td>Link your game account to Discord, with the code from the account site</td></tr>
@@ -388,20 +446,26 @@
 <tr><td><code>/worldstats</code></td><td>The worlds and who is online</td></tr>
 <tr><td><code>/uinfo</code></td><td>A user's accounts and characters</td></tr>
 </table>
-<p>Also fixed:</p>
+<p><time class="cl-when" datetime="2026-10-25T05:52Z">25 Oct 2026, 05:52 UTC</time> Also fixed:</p>
 <ul>
-<li><code>/resetpassword</code> with a password the account site doesn't accept no longer gets stuck retrying.</li>
-<li><code>/link</code> with a wrong code now says it failed. Before, it said it had worked.</li>
+<li><time class="cl-when" datetime="2026-10-25T05:52Z">25 Oct 2026, 05:52 UTC</time> <code>/resetpassword</code> with a password the account site doesn't accept no longer gets stuck retrying.</li>
+<li><time class="cl-when" datetime="2026-10-25T05:52Z">25 Oct 2026, 05:52 UTC</time> <code>/link</code> with a wrong code now says it failed. Before, it said it had worked.</li>
 </ul>
+</section>
+</section>
 
-<h3>23 Oct 2026: Game server upgrade</h3>
-<p>The server software (Erupe, the open-source MHF server) moved to a newer version from August 2025, with our own fixes on top.</p>
+<section class="cl-day" id="d-2026-10-23" aria-labelledby="d-2026-10-23-h">
+<h4 class="cl-day-title" id="d-2026-10-23-h"><a class="cl-anchor" href="#d-2026-10-23">Friday 23 October 2026</a></h4>
+<p class="cl-topics"><a href="#d-2026-10-23-game-server">Game server</a> · <a href="#d-2026-10-23-gifts">Gifts</a></p>
+<section class="cl-topic" id="d-2026-10-23-game-server" aria-labelledby="d-2026-10-23-game-server-h">
+<h5 class="cl-topic-title" id="d-2026-10-23-game-server-h"><a class="cl-anchor" href="#d-2026-10-23-game-server">Game server</a></h5>
+<p><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> The server software (Erupe, the open-source MHF server) moved to a newer version from August 2025, with our own fixes on top.</p>
 <p><b>From the newer Erupe:</b></p>
 <ul>
-<li><b>Weekly login stamps work again.</b> The stamp card had failed at every check since about 11 October (around 3,300 database errors). There have been none since the upgrade.</li>
-<li><b>Guild Poogie outfits:</b> unlocking an outfit for your guild's Poogie now saves correctly. Before, the outfit could unlock wrongly or not at all.</li>
-<li><b>Joining a party's quest:</b> if the host's data never arrives, the game no longer waits forever. The server now gives up after about 10 seconds.</li>
-<li><b>Stability:</b>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Weekly login stamps work again.</b> The stamp card had failed at every check since about 11 October (around 3,300 database errors). There have been none since the upgrade.</li>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Guild Poogie outfits:</b> unlocking an outfit for your guild's Poogie now saves correctly. Before, the outfit could unlock wrongly or not at all.</li>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Joining a party's quest:</b> if the host's data never arrives, the game no longer waits forever. The server now gives up after about 10 seconds.</li>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Stability:</b>
 <ul>
 <li>Fixed a crash when many players loaded quests at the same time.</li>
 <li>Fixed problems in how the server sends data.</li>
@@ -411,22 +475,27 @@
 </ul>
 <p><b>Our own fixes:</b></p>
 <ul>
-<li><b>Guild missions:</b> setting, cancelling and counting a guild mission target. The game used to read leftover memory instead of the server's answer.</li>
-<li><b>Guild applications:</b> the game now gets the answer it expects when you apply to a guild.</li>
-<li><b>Guild actions the server doesn't know</b> no longer leave the game waiting with no answer.</li>
-<li><b>Guild scouting:</b> the "refuse scouts" setting and an empty scout list now load properly.</li>
-<li><b>Diva Defense:</b> prayer gems, collecting items and adding Diva points now get answers the game can read.</li>
-<li><b>Big guilds:</b> the guild hunt list holds up to 127 entries, all the game can show. With 128 or more it failed to load at all.</li>
-<li><b>Order rankings and the daily cafe-point check</b> now answer in the form the game reads.</li>
-<li><b>Hidden packet mix-ups (four):</b> prayer gems, Diva Defense items, removing a message board post, and the guild's Sky Corridor (Tower) requests each sent more data than the server read. The leftover bytes scrambled whatever the game sent next. Now all of it is read.</li>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Guild missions:</b> setting, cancelling and counting a guild mission target. The game used to read leftover memory instead of the server's answer.</li>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Guild applications:</b> the game now gets the answer it expects when you apply to a guild.</li>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Guild actions the server doesn't know</b> no longer leave the game waiting with no answer.</li>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Guild scouting:</b> the "refuse scouts" setting and an empty scout list now load properly.</li>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Diva Defense:</b> prayer gems, collecting items and adding Diva points now get answers the game can read.</li>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Big guilds:</b> the guild hunt list holds up to 127 entries, all the game can show. With 128 or more it failed to load at all.</li>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Order rankings and the daily cafe-point check</b> now answer in the form the game reads.</li>
+<li><time class="cl-when" datetime="2026-10-23T12:51Z">23 Oct 2026, 12:51 UTC</time> <b>Hidden packet mix-ups (four):</b> prayer gems, Diva Defense items, removing a message board post, and the guild's Sky Corridor (Tower) requests each sent more data than the server read. The leftover bytes scrambled whatever the game sent next. Now all of it is read.</li>
 </ul>
-
-<h3>23 Oct 2026: Poogie Dressup! gift fixed</h3>
-<p>The "Poogie Dressup!" gift in the gift list should give Poogie outfits 1-30, but it had been gifting one empty outfit. Up to about 2,500 characters claimed it and got nothing.</p>
+</section>
+<section class="cl-topic" id="d-2026-10-23-gifts" aria-labelledby="d-2026-10-23-gifts-h">
+<h5 class="cl-topic-title" id="d-2026-10-23-gifts-h"><a class="cl-anchor" href="#d-2026-10-23-gifts">Gifts</a></h5>
+<p><time class="cl-when cl-date" datetime="2026-10-23">23 Oct 2026</time> The "Poogie Dressup!" gift in the gift list should give Poogie outfits 1-30, but it had been gifting one empty outfit. Up to about 2,500 characters claimed it and got nothing.</p>
 <ul>
-<li>It now gives all 30 outfits. We tested it: the outfits arrive and can be equipped.</li>
-<li>It can be claimed twice, so anyone who already got the empty gift can claim it again.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-23">23 Oct 2026</time> It now gives all 30 outfits. We tested it: the outfits arrive and can be equipped.</li>
+<li><time class="cl-when cl-date" datetime="2026-10-23">23 Oct 2026</time> It can be claimed twice, so anyone who already got the empty gift can claim it again.</li>
 </ul>
+</section>
+</section>
+
+</section>
 
 <h2 id="known">Known issues</h2>
 <ul>
@@ -435,74 +504,6 @@
 <li><b>Raviente rewards:</b> if you leave before the phase vote and the event resets, you can come back to "the event is over" with no reward. A fix is planned.</li>
 <li><b>Not built on our server yet:</b> Diva Defense, reward song effects, tournaments and guild graduation. The fixes above stop them from getting stuck, but they don't work yet.</li>
 </ul>
-<article class="entry">
-          <div class="entry-head"><h3>Quest text, requirements and the editor</h3><time datetime="2026-10-30">30 Oct 2026</time></div>
-          <ul>
-            <li>Every quest page now shows the translated description plus the true original Japanese under it, and a requirement row where a quest has an entry item.</li>
-            <li>The quest editor went live: blank quests, monster and area dropdowns, drafts, download, and submit for testing.</li>
-            <li>In game, all eight quest text slots are English: titles, objectives, subquests, main objective, fail condition, client and description.</li>
-          </ul>
-        </article>
-<article class="entry">
-          <div class="entry-head"><h3>Frontier handbook, and custom quest approval</h3><time datetime="2026-10-30">30 Oct 2026</time></div>
-          <ul>
-            <li>The Frontier handbook is on the site: four chapters covering progression, gear, activities and reference, rewritten from Fist's guide for live servers with notes wherever this server differs.</li>
-            <li>Custom quests can be submitted from the Account page and are reviewed in a new Custom quests tab in the admin panel. Approved quests appear under Event and are served reward-stripped.</li>
-          </ul>
-        </article>
-<article class="entry">
-          <div class="entry-head"><h3>Attempts are tracked, on quests and on the Road</h3><time datetime="2026-10-29">29 Oct 2026</time></div>
-          <ul>
-            <li>Every quest page shows tracked runs: attempts, clears, fails, abandoned, clear rate and average clear time.</li>
-            <li>The Road board has an Attempts column beside Floors climbed, so effort and depth are both visible, split by open and solo Road.</li>
-          </ul>
-        </article>
-<article class="entry">
-          <div class="entry-head"><h3>Road parties from Discord, and the Original Road is always open</h3><time datetime="2026-10-29">29 Oct 2026</time></div>
-          <ul>
-            <li><code>/roadparty</code> posts a message with Join and Leave. Joining checks your account is linked and has a hunter, then switches your saved Road to the party's Road, up to four hunters.</li>
-            <li>The Original Road no longer reads as retired anywhere: it is always available, and the date shown now reads as when its board was frozen.</li>
-            <li><b>Rounds with no entries:</b> if nobody sends a Road in a round, the next Road is drawn at random from the past winners and the two base Roads (the Zenith Road and the Original Road), and never the Road that is live right now. Before, a round with no entries had no winner.</li>
-            <li><b>Removed winners:</b> if a past winner is hidden or disqualified, any upcoming round that drew it draws again.</li>
-          </ul>
-        </article>
-<article class="entry">
-          <div class="entry-head"><h3>New PS4 launcher background</h3><time datetime="2026-10-29">29 Oct 2026</time></div>
-          <ul>
-            <li>The PS4 style of the Mezeporta launcher now uses an animated 1920 x 1080 background, served from the game server like the classic one.</li>
-            <li>Existing launchers pick it up on their next launch; no download or game restart needed.</li>
-          </ul>
-        </article>
-<article class="entry">
-          <div class="entry-head"><h3>Changing a room's Road now moves everyone onto it</h3><time datetime="2026-10-29">29 Oct 2026</time></div>
-          <ul>
-            <li>The server records which Road each client was served. When the room's Road changes, anyone still holding a different one is returned to town automatically, because the client only reads the Road file on town entry.</li>
-            <li>No more telling the party to step back and hoping: the reload is guaranteed before the next quest.</li>
-          </ul>
-        </article>
-<article class="entry">
-          <div class="entry-head"><h3>Quest text in English, and a drafts workspace for Roads</h3><time datetime="2026-10-29">29 Oct 2026</time></div>
-          <ul>
-            <li>Quest objectives, client names and descriptions are translated throughout: 5,461 objectives, 7,164 descriptions and 1,819 clients now read in English on the catalog and quest pages.</li>
-            <li>The Road builder keeps drafts on your account, so a half-finished Road survives a closed browser and can be picked up from another machine.</li>
-          </ul>
-        </article>
-<article class="entry">
-          <div class="entry-head"><h3>Saved Road preference and a drafts-friendly Road page</h3><time datetime="2026-10-29">29 Oct 2026</time></div>
-          <ul>
-            <li>The Account page can save the Road you play. Erupe pins it when you open a quest room, and a room can still override it with <code>!road</code> for that session.</li>
-            <li>Road history keeps every version with its dates and hash, so old Roads stay playable and their records stay readable.</li>
-          </ul>
-        </article>
-<article class="entry">
-          <div class="entry-head"><h3>Roads you can choose, and a board that survives a rotation</h3><time datetime="2026-10-29">29 Oct 2026</time></div>
-          <ul>
-            <li>Every Road the server has run is listed on the Road history page with its dates, status and hash.</li>
-            <li>When a Road retires its board is frozen as the original board; anything climbed afterwards goes to a separate revisit board, so going back never overwrites a record.</li>
-            <li>In game, a quest room can pick its Road: type <code>!road</code> to list what is installed, <code>!road 2</code> to choose, <code>!road clear</code> to return to the live Road. Everyone steps back to town once so the client reloads it.</li>
-            <li>A scheduled job freezes the board the moment a rotation is replaced, so nothing depends on remembering to do it by hand.</li>
-          </ul>
-        </article>
 </main>
     <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
     <footer class="site-foot">
@@ -541,6 +542,7 @@
       </div>
     </footer>
     <!-- /site-shell:footer -->
+<script src="/js/changelog-times.js" defer></script>
 <script src="/js/search.js" defer></script>
 </body>
 </html>
