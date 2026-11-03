@@ -52,7 +52,8 @@ async function open(browser, token, o) {
   page.on("pageerror", (e) => errors.push(e.message));
   if (token) await page.addInitScript((t) => localStorage.setItem("hvmhfz.token", t), token);
   await page.addInitScript(() => {
-    window.turnstile = { render: () => "w1", getResponse: () => "ts-ok", reset: () => {} };
+    // render marks its slot: js/turnstile.js mounts the widget on a 250 ms poll, so send() waits for it.
+    window.turnstile = { render: (slot) => { slot.dataset.fakeWidget = "1"; return "w1"; }, getResponse: () => "ts-ok", reset: () => {} };
   });
   await page.route("https://challenges.cloudflare.com/**", (route) => route.abort());
   await page.route("https://api.hvmhfz.eclipseforge.xyz/**", (route) => {
@@ -82,7 +83,8 @@ async function fillBug(page) {
 }
 
 async function send(page, formSel) {
-  await page.waitForFunction((s) => !document.querySelector(s + " .report-fields").disabled, formSel);
+  await page.waitForFunction((s) => !document.querySelector(s + " .report-fields").disabled
+    && document.querySelector(s + " .turnstile-slot").dataset.fakeWidget === "1", formSel);
   await page.click(formSel + " .report-send");
   await page.waitForSelector(formSel + " .report-status:not([hidden])", { timeout: 5000 });
   return page.textContent(formSel + " .report-status");
