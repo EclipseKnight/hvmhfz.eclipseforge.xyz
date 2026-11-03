@@ -5,7 +5,7 @@
     python3 -m http.server 8000                      # in another terminal
     open http://localhost:8000/report.html?api=http://localhost:8099
 
-status is the HTTP code every submission gets: 201 (success), 400, 403 or 429 (errors the
+status is the HTTP code every submission gets: 201 (success), 400, 401 (sign-in refused), 403 or 429 (errors the
 player can fix), 413 (attachments too large), 502 (service down: Discord fallback). Each report
 is printed, with the name and size of each attached file (the files themselves are not kept).
 Run it from the repo root. Never used by the live site.
@@ -42,7 +42,7 @@ class Handler(BaseHTTPRequestHandler):
     def cors(self):
         self.send_header("Access-Control-Allow-Origin", self.headers.get("Origin") or "*")
         self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
     def do_OPTIONS(self):
         self.send_response(204)

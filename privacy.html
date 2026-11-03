@@ -129,11 +129,12 @@
 <p>Attached pictures are re-encoded before they are stored, which removes hidden details such as a phone's location. Our servers run on Oracle Cloud.</p>
 
 <h2 id="cookies">Cookies and browser storage</h2>
-<p>This site sets <b>no cookies</b> of its own and uses <b>no trackers, analytics or ads</b>. It keeps two items in your browser's local storage, both needed for the site to work:</p>
+<p>This site sets <b>no cookies</b> of its own and uses <b>no trackers, analytics or ads</b>. It keeps two items in your browser's local storage, both needed for the site to work, and, only if your sign-in runs out while you send a report, the text you had typed in this tab's session storage:</p>
 <table>
 <thead><tr><th>Name</th><th>Kind</th><th>What it is for</th><th>How long</th></tr></thead>
 <tbody>
 <tr><td><code>hvmhfz.token</code></td><td>Local storage, essential</td><td>Keeps you signed in after you sign in</td><td>Until you sign out, or 7 days</td></tr>
+<tr><td><code>hvmhfz.report-draft</code></td><td>Session storage, essential</td><td>Keeps what you typed in a report if your sign-in runs out, so you can sign in again and send it</td><td>Until you send the report or close the tab</td></tr>
 <tr><td><code>hvmhfz.consent</code></td><td>Local storage, essential</td><td>Remembers your answer to the cookie banner</td><td>12 months, then we ask again</td></tr>
 </tbody>
 </table>

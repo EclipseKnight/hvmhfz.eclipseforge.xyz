@@ -13,7 +13,8 @@
     "/road.html": "Sign in to use the Road builder.",
     "/quest-editor.html": "Sign in to use the Quest builder.",
     "/account.html": "Sign in to open your account.",
-    "/road-vote.html": "Sign in to vote for the next Hunting Road."
+    "/road-vote.html": "Sign in to vote for the next Hunting Road.",
+    "/report.html": "Sign in to report a problem."
   };
 
   /* The path when it is a same-site path, else "". */

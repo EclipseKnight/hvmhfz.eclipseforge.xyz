@@ -2,8 +2,11 @@
    REST API, which checks Turnstile and rate limits, then creates a task on the Kanboard board.
    With attachments the same JSON goes as the "report" part of a multipart upload, next to the
    files. When the API can't be reached, the player gets their report as text to post on Discord.
-   A signed-in player's report carries their sign-in token, and the API signs the task with that
-   account and its linked Discord. Nobody types their own name, so nobody can sign as someone else. */
+   Only signed-in accounts can report: a signed-out visitor sees a short explanation and a Sign in
+   button (back to this page, js/signin-next.js) instead of the forms. The report carries the sign-in
+   token, and the API signs the task with that account and its linked Discord. Nobody types their own
+   name, so nobody can sign as someone else. If the API answers 401 (the sign-in ran out), what was typed
+   is kept in sessionStorage and put back after signing in again. */
 (function () {
   "use strict";
 
@@ -50,7 +53,7 @@
     }
   }
 
-  /* "Signed in as X: this report is signed with your account and your linked Discord." */
+  /* "Signed in as X: this report is signed with your account and your linked Discord." (signed in only) */
   function showSigner(session) {
     var notes = document.querySelectorAll("[data-signer]");
     function fill(build) {
@@ -58,16 +61,6 @@
         while (note.firstChild) note.removeChild(note.firstChild);
         build(note);
       });
-    }
-    if (!session) {
-      fill(function (note) {
-        note.appendChild(document.createTextNode("You are not signed in, so this report won't say who sent it. "));
-        var link = el("a", null, "Sign in");
-        link.href = "/";
-        note.appendChild(link);
-        note.appendChild(document.createTextNode(" first to sign it with your account and your linked Discord, so we can follow up."));
-      });
-      return;
     }
     function signed(discordText) {
       fill(function (note) {
@@ -96,6 +89,52 @@
         }
       })
       .catch(function () { /* the account line above stays */ });
+  }
+
+  /* The sign-in address that comes back to this page (and its #bug or #feature). */
+  function signinHref() {
+    var here = window.location.pathname + window.location.search + window.location.hash;
+    return window.HvNext ? window.HvNext.signinUrl(here) : "/#login-form";
+  }
+
+  /* What was typed, kept in sessionStorage per form while the sign-in is redone (this tab only). */
+  var DRAFT_KEY = "hvmhfz.report-draft";
+  var DRAFT_FIELDS = ["title", "platform", "description", "steps", "expected", "reason"];
+
+  function drafts() {
+    try {
+      var all = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || "{}");
+      return all && typeof all === "object" ? all : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function saveDraft(type, body) {
+    try {
+      var all = drafts();
+      all[type] = {};
+      DRAFT_FIELDS.forEach(function (name) { if (body[name]) all[type][name] = body[name]; });
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(all));
+    } catch (error) { /* storage blocked: the form on this page still has the text */ }
+  }
+
+  function clearDraft(type) {
+    try {
+      var all = drafts();
+      delete all[type];
+      if (Object.keys(all).length) sessionStorage.setItem(DRAFT_KEY, JSON.stringify(all));
+      else sessionStorage.removeItem(DRAFT_KEY);
+    } catch (error) { /* nothing to clear */ }
+  }
+
+  function restoreDraft(form) {
+    var draft = drafts()[form.getAttribute("data-type")];
+    if (!draft) return;
+    DRAFT_FIELDS.forEach(function (name) {
+      var field = form.elements.namedItem(name);
+      if (field && typeof draft[name] === "string" && !field.value) field.value = draft[name];
+    });
   }
 
   function discordLink(text) {
@@ -149,6 +188,18 @@
     nodes.forEach(function (node) { status.appendChild(node); });
     status.hidden = false;
     status.scrollIntoView({ block: "nearest" });
+  }
+
+  /* No valid sign-in (it ran out, or the API refused it): keep what was typed, ask to sign in again. */
+  function showSignInAgain(form, body) {
+    saveDraft(body.type, body);
+    try { localStorage.removeItem(TOKEN_KEY); } catch (error) { /* ignore */ }
+    var link = el("a", "btn btn-primary", "Sign in again");
+    link.href = signinHref();
+    showStatus(form, "error", [
+      el("p", null, "Your sign-in has run out, so the report was not sent. Sign in again; what you typed is kept and you come back to this page (attached files have to be chosen again)."),
+      link
+    ]);
   }
 
   function showSuccess(form, taskId, attachmentsFailed) {
@@ -236,11 +287,16 @@
       }
     });
     fields.disabled = false;
+    restoreDraft(form);
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       var body = readForm(form);
       var files = chosenFiles(form);
+      if (!signIn()) {
+        showSignInAgain(form, body);
+        return;
+      }
       var fileProblem = checkFiles(files);
       if (fileProblem) {
         showError(form, fileProblem);
@@ -260,7 +316,12 @@
           return response.json().catch(function () { return {}; }).then(function (data) {
             showSuccess(form, data.taskId, data.attachmentsFailed);
             form.reset();
+            clearDraft(body.type);
           });
+        }
+        if (response.status === 401) {
+          showSignInAgain(form, body);
+          return;
         }
         var message = errorMessage(response.status);
         if (message) showError(form, message);
@@ -275,6 +336,16 @@
     });
   }
 
-  Array.prototype.forEach.call(document.querySelectorAll(".report-form"), setUp);
-  showSigner(signIn());
+  var session = signIn();
+  if (session) {
+    Array.prototype.forEach.call(document.querySelectorAll(".report-form"), setUp);
+    showSigner(session);
+  } else {
+    // Signed out (or expired): explain and offer the sign-in, no forms, no spam check.
+    var panel = document.getElementById("report-signin");
+    var signin = document.getElementById("report-signin-link");
+    if (signin) signin.href = signinHref();
+    Array.prototype.forEach.call(document.querySelectorAll(".report-panel, .report-jump"), function (node) { node.hidden = true; });
+    if (panel) panel.hidden = false;
+  }
 })();

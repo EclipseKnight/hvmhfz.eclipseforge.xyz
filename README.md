@@ -31,7 +31,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/sky-corridor.html` | Sky Corridor (the Tower), public, from `/api/public/sky/*` (`js/sky.js`, `js/sky-corridor.js`): the town's Duremudira progress per district as bars toward the goals (districts 3 and 4 counted but not shown in town), totals and the last clear; the hunter boards (floors or Duremudira clears, all districts or one, all time or this week: hunters with a clear since Monday 00:00 UTC, still with their all-time totals); the 33 guild missions by page and the guilds with their page's three missions; the present box milestones with how many reached and received each; what the Tower is and how to get in, with links to the Frontier guide. An API without these endpoints (404) or without the tables (`tracking: false`) shows "Sky Corridor stats are coming soon". The hunter profile's Sky Corridor tab (`#sky`) comes from `/api/public/sky/hunter/{id}` and stays hidden on a 404 or when the hunter has nothing there. |
 | `/road-history.html` | Past Hunting Road winners (number, name, character, votes, live from and until), public, from `/api/public/road/history`. |
 | `/admin.html` | Admin panel: gifts (Erupe distributions) and the Hunting Road rotation (rotations with entries and votes, create, change dates, close now, approve, override the winner, hide/unhide/disqualify, pause). Lists every gift with its items, claims and end, creates a gift (for everyone or one character, with rank limits, a deadline and items picked from the catalog) and ends one. Admin accounts only: the API checks `ROLE_ADMIN` on every `/api/admin/**` request; the account page links here for admins. Not in the nav, `noindex`. |
-| `/report.html` | Bug report (`#bug`) and feature request (`#feature`) forms. No sign-in. Each report becomes a task on the Kanboard board. |
+| `/report.html` | Bug report (`#bug`) and feature request (`#feature`) forms, for signed-in accounts only: signed out (or expired) the page shows why and a Sign in button that comes back here (`/?next=/report.html...`) and no forms; a 401 from the API (sign-in ran out) asks to sign in again and keeps what was typed (`sessionStorage` `hvmhfz.report-draft`, put back in the form after sign-in). Each report becomes a task on the Kanboard board. |
 | `/privacy.html` | Privacy and cookies: what the site, API, game server and bot keep, why and how long, the browser storage it uses (`hvmhfz.token`, `hvmhfz.consent`; no cookies of its own), other services (GitHub Pages, Cloudflare Turnstile, the set builder embed, Discord) and players' rights. Linked from the footer and the cookie banner. Update it when the site starts storing or sending anything new. |
 
 ## Layout
@@ -72,7 +72,7 @@ js/changelog-times.js changelog: adds the visitor's local time after each UTC re
 js/main.js            login, saved session; after sign-in goes to ?next= (js/signin-next.js) or the account page
 js/signin-next.js     sign-in return: which ?next= paths are followed, the form's note, and the sign-in address the Road builder, Quest builder and account page send signed-out visitors to; also runs under node
 js/turnstile.js       Cloudflare Turnstile widget, shared by main.js and report.js
-js/report.js          report forms: send, success, error and Discord fallback
+js/report.js          report forms: signed-in only (else the Sign in panel), send, success, error, 401 (sign in again, draft kept) and Discord fallback
 js/admin.js           admin panel: gift list, new gift form, end a gift (/api/admin/distributions); Hunting Road rotations (/api/admin/road)
 js/road-rules.js      Hunting Road rules in the browser (port of the Go road package); also runs under node
 js/road-summary.js    Hunting Road: a Road's changes from the base, in words (builder and entry view); also runs under node
@@ -121,6 +121,7 @@ data/quest-fields.json  every quest-file field the quest builder and the API cod
 dev/check-quest-fields.js checks data/quest-fields.json against the API codec, js/quest-editor.js, the site's name tables and docs/quest-fields.md
 dev/check-exact-links.js checks in headless Chromium, against a fake API with and without the ids API 5b6d085 added, that hunter and guild names link by id (else by name) and that a refused quest upload or Road draft save shows the API's message (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-exact-links.js)
 dev/check-signin-next.js checks js/signin-next.js: same-site paths only, hostile values refused (node dev/check-signin-next.js)
+dev/check-report-signin.js checks in headless Chromium, against a fake API, report.html: signed out or expired shows the Sign in button (back to the report page) and no forms, signed in sends the token, a 401 asks to sign in again and keeps what was typed (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-report-signin.js)
 dev/check-signin-return.js checks in headless Chromium, against a fake API, that signed-out visits to the Road builder, Quest builder and account page land on the sign-in form with ?next= and a note, that a saved sign-in goes on to next (never off the site), and road-vote.html's public view (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-signin-return.js)
 dev/check-sky.js     checks sky-corridor.html and the hunter Sky Corridor tab in headless Chromium against a fake API (sample data, empty, 404, tracking off), with screenshots to dev-shots/ (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-sky.js)
 dev/check-quest-maps.js checks the quest builder in headless Chromium against a fake API: only the server's maps can be chosen, a 400 shows next to its field, no unnamed areas (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-quest-maps.js)
@@ -261,7 +262,7 @@ All read through `https://api.hvmhfz.eclipseforge.xyz`.
 - Public: `/api/public/summary`, `/guilds`, `/guilds/{id}`, `/hunters`, `/hunters/{id}`, `/catalog/items`, `/catalog/equipment`, `/worlds`, `/monsters`, `/activity`.
 - Account (JWT): `/api/account`, `/characters`, `/guilds`, `/discord`, `/characters/{id}/storage`, `/characters/{id}/hunts`.
 
-- Feedback (no sign-in): `POST /api/feedback`, used by `report.html`.
+- Feedback (JWT; signed-out requests get 401 once API task `api-feedback-signin` is live): `POST /api/feedback`, used by `report.html`.
 
 Character storage and hunt endpoints are scoped to the signed in user; another account's character returns 404. Save data is decoded in memory and never stored or exposed raw.
 
@@ -284,11 +285,12 @@ Character storage and hunt endpoints are scoped to the signed in user; another a
 
 Optional fields are sent as empty strings.
 
-**Who sent it:** when the player is signed in (the home page's token in `localStorage`,
-`hvmhfz.token`), the page sends it as `Authorization: Bearer ...` and the API signs the task
+**Who sent it:** the page only shows the forms to a signed-in player (the home page's token in
+`localStorage`, `hvmhfz.token`; the API answers 401 to signed-out requests, a 401 on send makes the
+page ask to sign in again, keeping the text in `sessionStorage` until the report is sent). It sends it as `Authorization: Bearer ...` and the API signs the task
 with that account and its linked Discord ("Reported by"). Nothing the form says about the sender
 is used, so nobody can sign a report as someone else. The form shows who it will be signed as,
-from `/api/account`. Signed out, the task says "Not signed in". Needs API `api-feedback-signed`
+from `/api/account`. Needs API `api-feedback-signed`
 or later (the CORS rule for `/api/feedback` allows the `Authorization` header).
 
 Attachments (optional, both forms): up to 3 files of 2 MB each, PNG, JPEG or GIF images or `.txt`
@@ -351,11 +353,11 @@ Open `http://localhost:8000/worlds.html?api=http://localhost:8099` (the override
 ### Testing the report page locally
 
 ```
-python3 dev/mock-feedback.py 201 8099     # or 400, 403, 413, 429, 502
+python3 dev/mock-feedback.py 201 8099     # or 400, 401, 403, 413, 429, 502
 python3 -m http.server 8000
 ```
 
-Open `http://localhost:8000/report.html?api=http://localhost:8099`. The `?api=` override and
+Put a sign-in token in the browser first (sign in on the home page, or `localStorage.setItem("hvmhfz.token", ...)` with any JWT-shaped value whose `exp` is in the future), else the page shows only the Sign in button. Open `http://localhost:8000/report.html?api=http://localhost:8099`. The `?api=` override and
 Cloudflare's always-pass test Turnstile key are only used on `localhost` and `127.0.0.1`; the live
 site always uses the real API and key.
 
