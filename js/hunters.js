@@ -601,7 +601,10 @@
     badges.appendChild(el("span", "badge", hunter.female ? "Female" : "Male"));
     if (hunter.guildName) {
       var guildBadge = el("a", "badge good", hunter.guildName + (hunter.guildRank ? " · " + hunter.guildRank : ""));
-      guildBadge.href = "/guilds.html?name=" + encodeURIComponent(hunter.guildName);
+      // the exact guild when the API sends guildId (from 5b6d085), else the one guild of that name
+      guildBadge.href = typeof hunter.guildId === "number" && hunter.guildId > 0
+        ? "/guilds.html?id=" + hunter.guildId
+        : "/guilds.html?name=" + encodeURIComponent(hunter.guildName);
       badges.appendChild(guildBadge);
     }
     head.appendChild(badges);

@@ -106,6 +106,7 @@ dev/make-builder-data.py writes data/map-areas.json (from the client's mhfo-hd.d
 data/map-ids.json     every map id's own name (place plus day/night, version or district), group, quest count and confidence (docs/maps.md)
 data/quest-fields.json  every quest-file field the quest builder and the API codec touch: offset, bytes, range, value names (docs/quest-fields.md)
 dev/check-quest-fields.js checks data/quest-fields.json against the API codec, js/quest-editor.js, the site's name tables and docs/quest-fields.md
+dev/check-exact-links.js checks in headless Chromium, against a fake API with and without the ids API 5b6d085 added, that hunter and guild names link by id (else by name) and that a refused quest upload or Road draft save shows the API's message (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-exact-links.js)
 dev/check-quest-maps.js checks the quest builder in headless Chromium against a fake API: only the server's maps can be chosen, a 400 shows next to its field, no unnamed areas (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-quest-maps.js)
 dev/check-links.py    checks every local link, picture and #anchor on the site (python3 dev/check-links.py [pages])
 dev/make-hv-summary.py writes the comparison tables of guide-frontier-hunsterverse.html from the guide's notes (--check: one note per section, page up to date)

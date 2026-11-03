@@ -33,8 +33,8 @@ changes needed"), **out of bounds** (files of another task).
 
 | # | Problem | Where | Cause | Status |
 |---|---|---|---|---|
-| 1 | Hunter names in the quest log's party column, the weapon board and the Worlds page's recent quests open the hunter list, not the hunter | `js/questlog.js:106`, `js/weapon-board.js:55`, `js/worlds-quests.js:85` | they link `/hunters.html?name=`; `js/hunters.js` read only `?id=` and `?q=` | fixed: `hunters.js` reads `?name=` and opens the one hunter of that exact name (two or none: the list, searching). API: send the character id (A1, A2) |
-| 2 | A hunter profile's guild badge opens the guild list | `js/hunters.js:604` | linked `/guilds.html`; the profile has no guild id | fixed: `/guilds.html?name=`, which `js/guilds.js` now resolves like 1. API: `guildId` (A3) |
+| 1 | Hunter names in the quest log's party column, the weapon board and the Worlds page's recent quests open the hunter list, not the hunter | `js/questlog.js:106`, `js/weapon-board.js:55`, `js/worlds-quests.js:85` | they link `/hunters.html?name=`; `js/hunters.js` read only `?id=` and `?q=` | fixed: `hunters.js` reads `?name=` and opens the one hunter of that exact name (two or none: the list, searching). API: send the character id (A1, A2): done, see "API changes needed" |
+| 2 | A hunter profile's guild badge opens the guild list | `js/hunters.js:604` | linked `/guilds.html`; the profile has no guild id | fixed: `/guilds.html?name=`, which `js/guilds.js` now resolves like 1. API: `guildId` (A3): done |
 | 3 | 9 monster pages say "That monster is not in the database": Hypnocatrice, Breeding Season Hypnocatrice, Silver Hypnocatrice, Kamu and Nono Orugaron, Lolo and Ray Gougarf, Berserk Laviente, Rusted Kushala Daora; their cards, the search and every link to them landed there | `data/monsters/index.json` | the 29 Oct rename (60fc0d7) gave the index new slugs but left the data files under the old ones (`hypnoc.json` ...) | fixed: files renamed to the index slugs; the short slugs of 28 to 29 Oct still open them (`formerSlugs`, `js/monster.js`) |
 | 4 | "Shogun Ceanataur" in the guide was Ceanataur's page (the small crab, "Small monster", no hunt count); the real Shogun Ceanataur page (3 forms) was unlisted, `?m=syougun` said not found | `data/monsters/index.json` | the same merge renamed the Ceanataur entry (yao) instead of keeping both | fixed: both entries, each with its own file |
 | 5 | "Duremudira (Musou)" in the guide was Musou Bogabadorumu's page with its icon; the real Musou Duremudira page had Bogabadorumu's icon | `data/monsters/index.json`, `data/monsters/duremudira-musou.json` | same merge | fixed |
@@ -83,14 +83,22 @@ nothing and with a closed rotation. No JavaScript exception, and no call to an e
 | 28 | The quest builder opened with `?id=` says "Loading your drafts." forever under the refusal | `js/quest-editor.js:1310` | returned before loading the drafts | fixed |
 | 29 | Hunt log of an account with no characters: empty stat cards, no note | `js/account.js:775` | only the storage tab was reset | fixed: zeros, "No hunts recorded", "no characters" |
 | 30 | Gift tag line "Gift list: Normal up to 1 take each" | `js/account.js:834` | joined with a space | fixed: " · " |
-| 31 | A refused quest upload or Road draft save shows a generic message (or "Unexpected end of JSON input") instead of the API's reason | `js/quest-submissions.js:69`; API `quest/QuestSubmissionController.java:85-118`, `road/RoadDraftController.java:44-110` | the API throws `ResponseStatusException` with no handler there; its own comment (`QuestDraftController.java:250-254`) says that becomes a bare 401 | API (A5) |
-| 32 | The Road builder's points cap (4x) is a site default only; the API neither sends `maxPoints` in the policy nor checks it (allows up to 100) | `js/road-rules.js:94`; API `road/PolicyRules.java:29-39`, `:62-67` | not built on the API side (the README already says so) | API (A4); harmless while `points` is not in `road.edit.floor-fields` |
+| 31 | A refused quest upload or Road draft save shows a generic message (or "Unexpected end of JSON input") instead of the API's reason | `js/quest-submissions.js:69`; API `quest/QuestSubmissionController.java:85-118`, `road/RoadDraftController.java:44-110` | the API throws `ResponseStatusException` with no handler there; its own comment (`QuestDraftController.java:250-254`) says that becomes a bare 401 | fixed: API 5b6d085 answers with status and message (A5); `js/quest-submissions.js` and `js/road-drafts.js` show that message, and a plain sentence for a bare 401/413 or an answer that is not JSON |
+| 32 | The Road builder's points cap (4x) is a site default only; the API neither sends `maxPoints` in the policy nor checks it (allows up to 100) | `js/road-rules.js:94`; API `road/PolicyRules.java:29-39`, `:62-67` | not built on the API side (the README already says so) | API (A4): `maxPoints` sent and checked from API 5b6d085; the site already read it; harmless while `points` is not in `road.edit.floor-fields` |
 | 33 | A moderator (not admin) probably can't reach the admin Server and Audit tabs: `js/admin.js` asks the admin-only `/api/admin/distributions/options` first | `js/admin.js` start | not tried (the fake token is an admin) | left: unverified, read only |
 
 ## API changes needed
 
 API repo `hvmhfz_rest_api`, files at `a3aca9a`. A1 to A3 make links exact (the site falls back to a name
-search until then); A4 and A5 come from the signed-in sweep:
+search until then); A4 and A5 come from the signed-in sweep.
+
+**Status (2026-11-03): all five are in API main 5b6d085** (additive only, about to be deployed), and the site
+uses them: `worlds-quests.js` and `questlog.js` link the row's `charId` and each `partyMembers` entry,
+`weapon-board.js` the top hunter's `charId`, `hunters.js` the guild badge's `guildId`
+(`/hunters.html?id=`, `/guilds.html?id=`); each keeps the `?name=` link when the field is missing, so the site
+works before and after the deploy (`dev/check-exact-links.js` runs both against a fake API;
+`dev/check-links.py` fails a script that links `?name=` without `?id=`). A4: the site already read
+`maxPoints`. A5: the quest upload note and the Road draft note show the API's message. Original text:
 
 - **A1.** `GET /api/public/quests/recent` and `GET /api/public/quests/hunter/{charId}`
   (`activity/QuestLogController.java`): add `charId` to each row (`recent` selects `qs.char_id` already,

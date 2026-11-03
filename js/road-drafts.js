@@ -19,6 +19,24 @@
     note.classList.toggle("bad", !!bad);
   }
 
+  // The API's own reason when it sends one ({"message": ...}, from API 5b6d085 on), else a sentence for the status.
+  function refusal(status, body) {
+    if (body && typeof body.message === "string" && body.message) return body.message;
+    if (status === 401) return "Your sign-in has run out. Sign in again and retry.";
+    if (status === 413) return "That draft is too big to save.";
+    return "Could not save the draft (HTTP " + status + "). Try again in a moment.";
+  }
+
+  // Resolves to the JSON body; a refused answer throws an Error whose message is the reason.
+  function sent(r) {
+    if (r.ok) return r.json();
+    return r.json().catch(function () { return null; }).then(function (body) {
+      var error = new Error(refusal(r.status, body));
+      error.refused = true;
+      throw error;
+    });
+  }
+
   function when(iso) {
     var d = new Date(iso);
     return isNaN(d) ? "" : d.toLocaleString();
@@ -88,14 +106,13 @@
       method: method,
       headers: { Authorization: "Bearer " + token(), "Content-Type": "application/json" },
       body: body
-    }).then(function (r) {
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
-    }).then(function (d) {
+    }).then(sent).then(function (d) {
       if (window.roadDraftSaved && d.id) window.roadDraftSaved(d.id);
       say("Draft saved.", false);
       load();
-    }).catch(function () { say("Could not save the draft. Try again in a moment.", true); })
+    }).catch(function (error) {
+      say(error.refused ? error.message : "Could not save the draft. Try again in a moment.", true);
+    })
       .then(function () { save.disabled = false; });
   });
 
@@ -114,15 +131,14 @@
       method: id ? "PUT" : "POST",
       headers: { Authorization: "Bearer " + token(), "Content-Type": "application/json" },
       body: JSON.stringify({ name: state.name, data: state.edits })
-    }).then(function (r) {
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
-    }).then(function (d) {
+    }).then(sent).then(function (d) {
       lastSent = blob;
       if (window.roadDraftSaved && d.id) window.roadDraftSaved(d.id);
       say("Saved " + new Date().toLocaleTimeString(), false);
       load();
-    }).catch(function () { say("Autosave is waiting for a connection.", true); });
+    }).catch(function (error) {
+      say(error.refused ? "Autosave refused: " + error.message : "Autosave is waiting for a connection.", true);
+    });
   }
   window.setInterval(autosave, 15000);
 

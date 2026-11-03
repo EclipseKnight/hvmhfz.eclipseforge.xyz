@@ -21,6 +21,15 @@
     note.classList.toggle("bad", !!bad);
   }
 
+  // The API's own reason when it sends one ({"message": ...}, from API 5b6d085 on: 400 bad file, 413 too
+  // big, 409 duplicate ...), else a plain sentence for the status. A 401 here means the sign-in ran out.
+  function refusal(status, body) {
+    if (body && typeof body.message === "string" && body.message) return body.message;
+    if (status === 401) return "Your sign-in has run out. Sign in again and retry.";
+    if (status === 413) return "That file is too big.";
+    return "The server refused it (HTTP " + status + ").";
+  }
+
   function when(iso) {
     var d = new Date(iso);
     return isNaN(d) ? "-" : d.toLocaleDateString();
@@ -71,9 +80,11 @@
         headers: { Authorization: "Bearer " + token(), "Content-Type": "application/json" },
         body: JSON.stringify({ title: title.value.trim(), fileBase64: base64 })
       }).then(function (r) {
-        return r.json().then(function (body) { return { ok: r.ok, body: body }; });
+        return r.json().catch(function () { return null; }).then(function (body) {
+          return { ok: r.ok, status: r.status, body: body };
+        });
       }).then(function (res) {
-        if (!res.ok) throw new Error(res.body && res.body.message ? res.body.message : "The server refused it.");
+        if (!res.ok) throw new Error(refusal(res.status, res.body));
         say("Submitted. An admin will review it.", false);
         file.value = "";
         title.value = "";

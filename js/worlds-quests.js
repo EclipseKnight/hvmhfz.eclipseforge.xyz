@@ -31,6 +31,13 @@
     return at.toLocaleDateString();
   }
 
+  // The exact hunter when the API sent the character id (API from 5b6d085), else the one hunter of that
+  // name (/hunters.html?name=), which the page resolves, or the list searching for it.
+  function hunterHref(name, charId) {
+    if (typeof charId === "number" && charId > 0 && Math.floor(charId) === charId) return "/hunters.html?id=" + charId;
+    return "/hunters.html?name=" + encodeURIComponent(name);
+  }
+
   function stat(id, value) {
     var card = document.getElementById(id);
     if (!card) return;
@@ -82,7 +89,7 @@
       var hunter = el("td", "cell-name");
       if (row.hunter) {
         var link = el("a", null, row.hunter);
-        link.href = "/hunters.html?name=" + encodeURIComponent(row.hunter);
+        link.href = hunterHref(row.hunter, row.charId);
         hunter.appendChild(link);
       } else {
         hunter.textContent = "-";
@@ -102,11 +109,21 @@
       result.appendChild(el("span", "badge " + (row.result === "clear" ? "good" : row.result === "fail" ? "bad" : ""), label));
       tr.appendChild(result);
       var partyCell = el("td", "quest-party");
-      (row.party || []).forEach(function (member, index) {
+      // partyMembers (API from 5b6d085) link the exact hunter; the bare names of party stay plain text
+      var members = Array.isArray(row.partyMembers)
+        ? row.partyMembers.filter(function (m) { return m && typeof m.name === "string"; })
+        : (row.party || []).map(function (name) { return { name: name }; });
+      members.forEach(function (member, index) {
         if (index) partyCell.appendChild(document.createTextNode(", "));
-        partyCell.appendChild(document.createTextNode(member));
+        if (member.charId) {
+          var plink = el("a", null, member.name);
+          plink.href = hunterHref(member.name, member.charId);
+          partyCell.appendChild(plink);
+        } else {
+          partyCell.appendChild(document.createTextNode(member.name));
+        }
       });
-      if (!(row.party || []).length) partyCell.textContent = "Solo";
+      if (!members.length) partyCell.textContent = "Solo";
       tr.appendChild(partyCell);
       tr.appendChild(el("td", "num", duration(row.durationSeconds)));
       tr.appendChild(el("td", "num", row.clearSeconds === null || row.clearSeconds === undefined ? "-" : duration(row.clearSeconds)));

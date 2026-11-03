@@ -14,7 +14,8 @@ parameter the target page's own scripts read (URLSearchParams ... .get("m")): on
 on the plain list page. Where the site holds the data, the value must exist too: monster.html?m= a slug,
 oldSlug or formerSlugs of data/monsters/index.json (what js/monster.js opens), quest.html?id= a quest of
 data/quests.json. The same is checked for links built in js/*.js ("/page.html?param=" strings) and for
-sitemap.xml; and every "/assets/", "/data/", "/js/" or "/css/" file a script names must exist.
+sitemap.xml; a script that links a hunter or guild by ?name= must also link it by ?id= (the name is the
+fallback for an API answer without the id); and every "/assets/", "/data/", "/js/" or "/css/" file a script names must exist.
 
 Usage: python3 dev/check-links.py [page.html ...]   (no pages = the whole site, its scripts and the sitemap)
 Exit code 0 = no broken links, 1 = problems, listed one per line.
@@ -162,11 +163,20 @@ LINK_IN_JS = re.compile(r'["\'](/[\w-]+\.html)\?([^"\'#]*)["\']')
 FILE_IN_JS = re.compile(r'["\'](/(?:assets|data|js|css)/[^"\'?#\s]*\.[a-z0-9]+)["\']', re.I)
 
 
+# A script that links a hunter or guild by name (?name=) must also link it by id (?id=): the name is only
+# the fallback for an API answer without the id, and a name shared by two hunters opens the list.
+EXACT_FALLBACK = {"/hunters.html", "/guilds.html"}
+
+
 def check_scripts():
     """Links built in the scripts: the page exists, it reads the parameter, and named files exist."""
     problems = []
     for script in sorted((ROOT / "js").glob("*.js")):
         name = script.relative_to(ROOT)
+        text = script.read_text(encoding="utf-8")
+        for page in sorted(EXACT_FALLBACK):
+            if re.search(re.escape(page) + r"\?name=", text) and not re.search(re.escape(page) + r"\?id=", text):
+                problems.append(f"{name}: links {page}?name= but never {page}?id= (use the id when the API sends it)")
         for number, line in enumerate(script.read_text(encoding="utf-8").splitlines(), 1):
             for path, query in LINK_IN_JS.findall(line):
                 target = ROOT / path.lstrip("/")

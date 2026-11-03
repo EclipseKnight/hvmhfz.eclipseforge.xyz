@@ -33,6 +33,21 @@
     return el("span", "badge", "No result");
   }
 
+  // The exact hunter when the API sent the character id (API from 5b6d085), else the one hunter of that
+  // name (/hunters.html?name=), which the page resolves, or the list searching for it.
+  function hunterHref(name, charId) {
+    if (typeof charId === "number" && charId > 0 && Math.floor(charId) === charId) return "/hunters.html?id=" + charId;
+    return "/hunters.html?name=" + encodeURIComponent(name);
+  }
+
+  // Party members as {name, charId}: partyMembers when the API sends it, else the bare names of party.
+  function partyOf(row) {
+    if (Array.isArray(row.partyMembers)) {
+      return row.partyMembers.filter(function (m) { return m && typeof m.name === "string"; });
+    }
+    return (row.party || []).map(function (name) { return { name: name }; });
+  }
+
   function mount(container, charId, options) {
     if (!container || !charId) return;
     var state = { page: 0, total: 0, rows: [] };
@@ -100,13 +115,14 @@
         res.appendChild(badge(quest.result));
         row.appendChild(res);
         var party = el("td", "quest-party");
-        (quest.party || []).forEach(function (member, index) {
+        var members = partyOf(quest);
+        members.forEach(function (member, index) {
           if (index) party.appendChild(document.createTextNode(", "));
-          var link = el("a", null, member);
-          link.href = "/hunters.html?name=" + encodeURIComponent(member);
+          var link = el("a", null, member.name);
+          link.href = hunterHref(member.name, member.charId);
           party.appendChild(link);
         });
-        if (!(quest.party || []).length) party.textContent = "Solo";
+        if (!members.length) party.textContent = "Solo";
         row.appendChild(party);
         row.appendChild(el("td", "num", duration(quest.durationSeconds)));
         row.appendChild(el("td", "num", quest.clearSeconds === null || quest.clearSeconds === undefined

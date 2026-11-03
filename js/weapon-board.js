@@ -52,7 +52,10 @@
         (weapon.top || []).forEach(function (hunter, i) {
           if (i) top.appendChild(document.createTextNode(", "));
           var link = el("a", null, hunter.hunter);
-          link.href = "/hunters.html?name=" + encodeURIComponent(hunter.hunter);
+          // the exact hunter when the API sends charId (from 5b6d085), else the one hunter of that name
+          link.href = typeof hunter.charId === "number" && hunter.charId > 0
+            ? "/hunters.html?id=" + hunter.charId
+            : "/hunters.html?name=" + encodeURIComponent(hunter.hunter);
           link.title = time(hunter.seconds);
           top.appendChild(link);
         });
