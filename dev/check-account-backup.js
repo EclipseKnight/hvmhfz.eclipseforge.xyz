@@ -190,7 +190,7 @@ async function flows(browser, base, shots) {
 
   // import our zip: preview, cancel
   await choose(page, name, saved);
-  check("file note: our backup", /Our backup \(with its manifest\), 2 parts: Aldra \(id 10\)/.test(await text(page, "#import-file-note")),
+  check("file note: our backup", /Our backup zip \(with its manifest\), 2 parts: Aldra \(id 10\)/.test(await text(page, "#import-file-note")),
     await text(page, "#import-file-note"));
   await previewInto(page, 10);
   const pv = await text(page, "#import-preview");
@@ -234,7 +234,7 @@ async function flows(browser, base, shots) {
   const oldZip = Files.zip([{ name: "2026-10-23_12-00-00_savedata.bin", data: new TextEncoder().encode("old") },
     { name: "2026-10-23_12-00-00_platebox.bin", data: new Uint8Array(0) }]);
   await choose(page, "old.zip", oldZip);
-  check("old zip: note", /Save files without a manifest, 1 part\. Skipped: 2026-10-23_12-00-00_platebox\.bin \(empty\)/.test(await text(page, "#import-file-note")),
+  check("old zip: note", /Save files without a manifest \(another server's zip, or an older backup of ours\), 1 part\. Skipped: 2026-10-23_12-00-00_platebox\.bin \(empty\)/.test(await text(page, "#import-file-note")),
     await text(page, "#import-file-note"));
   await previewInto(page, 10);
   const old = await text(page, "#import-preview");

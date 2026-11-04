@@ -1497,6 +1497,20 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
 .backup-download{white-space:nowrap}
 .backup-fact{font-weight:700;color:var(--ink)}
 
+/* Account page, Transfer tab: the transfer wizard (js/account-transfer.js). Steps open one after another;
+   done ones get a gold rule, the current one a wax rule. */
+.wizard{list-style:none;margin:0;padding:0}
+.wizard-step{margin:0 0 14px;padding:4px 0 4px 16px;border-left:4px solid var(--line)}
+.wizard-step[data-state="done"]{border-left-color:var(--gold)}
+.wizard-step[data-state="current"]{border-left-color:var(--wax)}
+.wizard-title{margin:0 0 8px;font:700 .95rem var(--font-ui);color:var(--ink)}
+.wizard-list{margin:0 0 10px;padding-left:20px}
+.wizard-list li{margin:0 0 4px}
+.wizard-choice{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.wizard-choice label{display:flex;gap:8px;align-items:baseline;font-size:.9rem;color:var(--ink)}
+.wizard-choice select{max-width:100%}
+.wizard-step .backup-preview:empty{display:none}
+
 /* ---------- play page: three checklists (play.html, js/play.js) ---------- */
 .play-paths{margin:0 0 30px;grid-template-columns:repeat(3,minmax(0,1fr))}
 .play-card{scroll-margin-top:84px}

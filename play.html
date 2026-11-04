@@ -443,10 +443,6 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
         <p class="note-text">Only saves from the ZZ client work. A character from an older client version (G or earlier) cannot be imported.</p>
 
         <ol class="play-steps">
-          <li data-step="tr-setup">
-            <label><input type="checkbox" /> <span class="play-step-title">Set up the game first</span></label>
-            <p>Follow the <a href="#windows">Windows</a> or <a href="#linux">Linux</a> checklist up to your first login. The import only goes into a character that was played once, so create a throwaway character, walk into town and quit.</p>
-          </li>
           <li data-step="tr-file">
             <label><input type="checkbox" /> <span class="play-step-title">Get your file from the old server</span></label>
             <p>What you need depends on where your character is now:</p>
@@ -464,13 +460,17 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
             </div>
           </li>
           <li data-step="tr-site">
-            <label><input type="checkbox" /> <span class="play-step-title">Log out of the game, then import on the account page</span></label>
-            <p>Sign in with your game account, open the Backups tab, choose the file and the character to import into, press Preview to see what changes, then Confirm.</p>
-            <a class="btn btn-secondary btn-small" href="/account.html#backups">Account page, Backups tab</a>
+            <label><input type="checkbox" /> <span class="play-step-title">Turn the file into a character with the transfer wizard</span></label>
+            <p>Sign in with your game account, or create one, then give the wizard your file. It shows what is in the file, makes it a new character on your account (or replaces the save of one you have), and logs it. No throwaway character, and nothing to install first.</p>
+            <a class="btn btn-secondary btn-small" href="/account.html#transfer">Start the transfer wizard</a>
+          </li>
+          <li data-step="tr-setup">
+            <label><input type="checkbox" /> <span class="play-step-title">Install the game and log in</span></label>
+            <p>Follow the <a href="#windows">Windows</a> or <a href="#linux">Linux</a> checklist, log in with the same account and pick your character in the list.</p>
           </li>
           <li data-step="tr-discord">
             <label><input type="checkbox" /> <span class="play-step-title">Or import with Discord</span></label>
-            <p>On the account page, copy your link command and run it in the <a href="https://discord.gg/YuE42eh" rel="noopener">Hunsterverse Discord</a>: <code>/link</code> with your code. Then run <code>/import</code>, attach the file and choose the character.</p>
+            <p>Into a character that was played once. On the account page, copy your link command and run it in the <a href="https://discord.gg/YuE42eh" rel="noopener">Hunsterverse Discord</a>: <code>/link</code> with your code. Then run <code>/import</code>, attach the file and choose the character.</p>
             <button type="button" class="ghost-btn small" hidden data-copy="/link code:">Copy /link</button>
             <button type="button" class="ghost-btn small" hidden data-copy="/import backup:">Copy /import</button>
           </li>

@@ -25,6 +25,8 @@
   var MAX_BIN_BYTES = 1024 * 1024;      // largest part (the API's largest, platedata, is about 432 KB)
   var MAX_JSON_BYTES = 4 * 1024 * 1024; // an export carries every part in base64
   var MAX_FILES = 20;                   // a backup has at most 15 parts and 3 other files
+  /* Every save Erupe stores starts with this (nullcomp's header, "cmp 20110113" padded to 16 bytes). */
+  var NULLCOMP = [0x63, 0x6d, 0x70, 0x20, 0x32, 0x30, 0x31, 0x31, 0x30, 0x31, 0x31, 0x33, 0x20, 0x20, 0x20, 0x00];
 
   function fail(message) {
     var error = new Error(message);
@@ -251,9 +253,32 @@
     return json;
   }
 
+  function startsWith(bytes, prefix) {
+    if (bytes.length < prefix.length) return false;
+    for (var i = 0; i < prefix.length; i++) if (bytes[i] !== prefix[i]) return false;
+    return true;
+  }
+
+  /* A single save file, not in a zip (savedata.bin, or a launcher's savedata download): the part its name says,
+     else savedata when it starts with nullcomp's header. Null when it is neither. */
+  function bareFile(name, bytes) {
+    if (startsWith(bytes, [0x50, 0x4b])) return null;   // "PK": a zip
+    var part = partFor(baseName(name));
+    if (!part && startsWith(bytes, NULLCOMP)) part = "savedata";
+    if (!part) return null;
+    if (!bytes.length) throw fail("That file is empty.");
+    if (bytes.length > MAX_BIN_BYTES) throw fail("That file is over 1 MB: it is not a save file.");
+    var parts = {};
+    parts[part] = bytesToBase64(bytes);
+    return { kind: "bare", body: { parts: parts }, manifestInfo: null,
+      files: [{ name: baseName(name), status: part }] };
+  }
+
   /* What a chosen file holds, as the import body (without characterId):
-     {kind: "backup" | "files" | "export", body: {parts, manifest, signature} or {erupeExport},
-      files: [{name, status}], manifestInfo: the manifest as JSON (or null)}. */
+     {kind: "backup" | "files" | "export" | "bare", body: {parts, manifest, signature} or {erupeExport},
+      files: [{name, status}], manifestInfo: the manifest as JSON (or null)}. "backup": our zip with its manifest;
+     "files": a zip of save files without one (another server's, or an older backup); "export": a newer Erupe
+     server's character export JSON (alone or in a zip); "bare": one save file on its own. */
   function readImportFile(name, bytes) {
     var lower = String(name || "").toLowerCase();
     if (/\.json$/.test(lower) || (bytes.length && bytes[0] === 0x7b)) {
@@ -263,6 +288,9 @@
       return Promise.resolve({ kind: "export", body: { erupeExport: json }, manifestInfo: null,
         files: [{ name: baseName(name), status: "character export" }] });
     }
+    var bare;
+    try { bare = bareFile(name, bytes); } catch (e) { return Promise.reject(e); }
+    if (bare) return Promise.resolve(bare);
     var entries;
     try { entries = unzip(bytes); } catch (e) { return Promise.reject(e); }
     var parts = {};

@@ -111,9 +111,9 @@ async function main() {
   check("slots shown when on", (await page.locator("[data-slot]:visible").count()) === 3);
   check("slot link set", (await page.locator('[data-slot="full"] a').getAttribute("href")) .startsWith("https://"));
 
-  // the transfer table and the Backups link
+  // the transfer table and the transfer wizard link (account page, Transfer tab)
   check("transfer table rows", (await page.locator("#transfer .play-sources tbody tr").count()) >= 4);
-  check("Backups link", (await page.locator('#transfer a[href="/account.html#backups"]').count()) === 1);
+  check("transfer wizard link", (await page.locator('#transfer a[href="/account.html#transfer"]').count()) === 1);
 
   // "More help": the sections kept from the old guides, closed until asked for, opened by an address or a link
   const helpIds = ["windows-patch", "windows-trouble", "linux-packages", "linux-patch", "linux-prefix", "linux-wrapper", "linux-trouble", "language", "discord"];

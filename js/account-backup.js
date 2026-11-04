@@ -3,7 +3,10 @@
    js/backup-file.js; the API checks and logs every import (docs/character-backup-web.md).
 
    Until the API has the account endpoints, GET /api/account/characters/imports answers 404 and the tab says
-   backups are coming soon instead of showing errors. */
+   backups are coming soon instead of showing errors.
+
+   The transfer wizard (js/account-transfer.js) shows its previews with this tab's renderer and words:
+   window.HvImportView. */
 (function () {
   "use strict";
   var API = "https://api.hvmhfz.eclipseforge.xyz";
@@ -61,6 +64,14 @@
     "erupe-export": "A character export from a newer Erupe server."
   };
 
+  /* What a chosen file is (Files.readImportFile's kind). */
+  var KINDS = {
+    backup: "Our backup zip (with its manifest)",
+    files: "Save files without a manifest (another server's zip, or an older backup of ours)",
+    export: "A character export from a newer Erupe server",
+    bare: "A single save file, not in a zip"
+  };
+
   var POLICIES = {
     restore: "They go back to what they were when the backup was made.",
     clear: "They are cleared: buy them again with the Road points in the save.",
@@ -113,6 +124,15 @@
     }
     if (status === 409 && /never played/i.test(message)) {
       return { text: "That character was never played. Log in with it once, then import." };
+    }
+    if (status === 409 && /already has \d+ characters/i.test(message)) {
+      var count = /already has (\d+)/i.exec(message)[1];
+      return { text: "Your account already has " + count + " characters, the most the game shows. Import into one of " +
+        "them instead, or delete one in the game first." };
+    }
+    if (status === 400 && /needs the save/i.test(message)) {
+      return { text: "This file has no save (savedata), so it can't become a new character. It can only update parts " +
+        "of a character you already have." };
     }
     if (status === 400 && problems.length) {
       return { text: "This file can't be imported, so nothing was changed. What failed the checks:", list: problems };
@@ -270,20 +290,24 @@
     }).then(function (result) {
       if (!fileInput.files || fileInput.files[0] !== file) return; // another file was chosen meanwhile
       chosen = result;
-      var kinds = { backup: "Our backup (with its manifest)", files: "Save files without a manifest",
-        export: "A character export from a newer Erupe server" };
-      var count = result.body.parts ? Object.keys(result.body.parts).length : null;
-      var text = kinds[result.kind] + (count !== null ? ", " + count + (count === 1 ? " part" : " parts") : "");
-      var from = result.manifestInfo;
-      if (from && from.name) text += ": " + from.name + " (id " + from.characterId + ")" +
-        (from.exportedAt ? ", made " + when(from.exportedAt) : "");
-      var skipped = result.files.filter(function (f) { return / skipped$/.test(f.status); });
-      if (skipped.length) text += ". Skipped: " + skipped.map(function (f) { return f.name + " (" + f.status.replace(/, skipped$/, "") + ")"; }).join(", ");
-      sayFile(text + ".", false);
+      var text = describeFile(result);
+      sayFile(text, false);
     }).catch(function (error) {
       if (!fileInput.files || fileInput.files[0] !== file) return;
       sayFile(error && error.player ? error.message : "That file can't be read.", true);
     });
+  }
+
+  /* One line on what a file read by Files.readImportFile holds, for the player. */
+  function describeFile(result) {
+    var count = result.body.parts ? Object.keys(result.body.parts).length : null;
+    var text = KINDS[result.kind] + (count !== null ? ", " + count + (count === 1 ? " part" : " parts") : "");
+    var from = result.manifestInfo;
+    if (from && from.name) text += ": " + from.name + " (id " + from.characterId + ")" +
+      (from.exportedAt ? ", made " + when(from.exportedAt) : "");
+    var skipped = result.files.filter(function (f) { return / skipped$/.test(f.status); });
+    if (skipped.length) text += ". Skipped: " + skipped.map(function (f) { return f.name + " (" + f.status.replace(/, skipped$/, "") + ")"; }).join(", ");
+    return text + ".";
   }
 
   function requestBody() {
@@ -342,10 +366,10 @@
     if (plan.source === "ours-other-character" && plan.manifest) {
       out.push("This backup is of another character" + (plan.manifest.name ? " (" + plan.manifest.name +
         (plan.manifest.characterId ? ", id " + plan.manifest.characterId : "") + ")" : "") +
-        ". " + plan.characterName + " becomes a copy of it.");
+        ". " + (plan.newCharacter ? "The new character is a copy of it." : plan.characterName + " becomes a copy of it."));
     }
     if (plan.source === "modified") out.push("The file was changed after the backup was made, so it counts as any other file.");
-    if (after && after.name && plan.characterName && after.name !== plan.characterName) {
+    if (!plan.newCharacter && after && after.name && plan.characterName && after.name !== plan.characterName) {
       out.push("The save in the file is the hunter " + after.name + ", not " + plan.characterName + ".");
     }
     if (!plan.save) out.push("The file has no save, only the parts listed below change.");
@@ -356,9 +380,18 @@
   }
 
   function renderPlan(plan) {
-    var box = preview.querySelector(".preview-body");
+    renderPlanInto(preview.querySelector(".preview-body"), plan);
+  }
+
+  /* The plan of a preview (or of a done import) in box. A plan with newCharacter is an import into a new
+     character (POST /api/account/characters/import-new/preview): there is nothing "now". */
+  function renderPlanInto(box, plan) {
     clear(box);
-    box.appendChild(el("p", "backup-target", "Into " + plan.characterName + " (id " + plan.characterId + ")"));
+    var fresh = plan.newCharacter;
+    box.appendChild(el("p", "backup-target", fresh
+      ? "A new character: " + plan.characterName + (plan.characterId ? " (id " + plan.characterId + ")" : "") +
+        ", slot " + (fresh.charactersBefore + 1) + " of " + fresh.maxCharacters + " on your account"
+      : "Into " + plan.characterName + " (id " + plan.characterId + ")"));
     box.appendChild(el("p", "note-text", SOURCES[plan.source] || plan.sourceNote || plan.source));
 
     var alert = alerts(plan);
@@ -391,7 +424,7 @@
       tr.appendChild(el("td", null, partLabel(p.part)));
       tr.appendChild(el("td", "num", bytes(p.oldSize)));
       tr.appendChild(el("td", "num", bytes(p.newSize)));
-      tr.appendChild(el("td", "muted", p.action === "same" ? "no change" : "replaced"));
+      tr.appendChild(el("td", "muted", p.action === "same" ? "no change" : p.action === "new" ? "new" : "replaced"));
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
@@ -435,8 +468,10 @@
     if (skills) {
       var line = el("p", "note-text backup-skills");
       line.dataset.policy = skills.policy;
-      line.textContent = "Road skill levels: " + skills.levelsBefore + " now, " + skills.levelsAfter + " after. " +
-        (POLICIES[skills.policy] || skills.policy);
+      line.textContent = fresh
+        ? "Road skill levels: none. A new character starts without them: buy them with the Road points in the save."
+        : "Road skill levels: " + skills.levelsBefore + " now, " + skills.levelsAfter + " after. " +
+          (POLICIES[skills.policy] || skills.policy);
       box.appendChild(line);
     }
 
@@ -446,7 +481,7 @@
       rows.push(["Not imported", plan.ignored.map(function (i) { return i.part + " (" + i.reason + ")"; }).join("; ")]);
     }
     if (plan.notRestored && plan.notRestored.length) {
-      rows.push(["Stays as it is", plan.notRestored.join(", ")]);
+      rows.push([fresh ? "Does not come with it" : "Stays as it is", plan.notRestored.join(", ")]);
     }
     dl(details, rows);
     if (rows.length) box.appendChild(details);
@@ -499,7 +534,8 @@
       [when(row.at), (row.characterName || "?") + " (id " + row.characterId + ")",
        (SOURCES[row.source] || row.source || "-").replace(/\.$/, ""),
        parts.length + (parts.length === 1 ? " part" : " parts") + ", Road skill levels " + skills,
-       (row.endpoint === "web" ? "website" : "Discord") + (row.undoneAt ? ", undone by an admin " + when(row.undoneAt) : "")]
+       ({ web: "website", "web-new": "website, as a new character" }[row.endpoint] || "Discord") +
+         (row.undoneAt ? (row.endpoint === "web-new" ? ", removed by an admin " : ", undone by an admin ") + when(row.undoneAt) : "")]
         .forEach(function (v) { tr.appendChild(el("td", null, v)); });
       history.appendChild(tr);
     });
@@ -513,6 +549,15 @@
       return true;
     });
   }
+
+  /* ---------- shared with the transfer wizard ---------- */
+
+  window.HvImportView = {
+    renderPlan: renderPlanInto,
+    refusal: refusal,
+    describeFile: describeFile,
+    reloadHistory: loadHistory
+  };
 
   /* ---------- start ---------- */
 

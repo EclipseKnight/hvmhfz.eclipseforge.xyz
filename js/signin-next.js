@@ -8,8 +8,10 @@
   var SITE = "https://hvmhfz.eclipseforge.xyz";
   var FALLBACK = "/account.html";
 
-  /* What the home page says above the form, by the page that sent the visitor. */
+  /* What the home page says above the form, by the page that sent the visitor (a page and tab first, e.g.
+     "/account.html#transfer", then the page alone). */
   var NOTES = {
+    "/account.html#transfer": "Sign in, or create an account, to bring your character over.",
     "/road.html": "Sign in to use the Road builder.",
     "/quest-editor.html": "Sign in to use the Quest builder.",
     "/account.html": "Sign in to open your account.",
@@ -47,7 +49,9 @@
     var next = "";
     try { next = safe(new URLSearchParams(search || "").get("next") || ""); } catch (error) { next = ""; }
     if (!next) return "";
-    return NOTES[next.split(/[?#]/)[0]] || "Sign in to continue.";
+    var path = next.split(/[?#]/)[0];
+    var hash = next.indexOf("#") >= 0 ? next.slice(next.indexOf("#")) : "";
+    return NOTES[path + hash] || NOTES[path] || "Sign in to continue.";
   }
 
   /* The sign-in address that returns to path. */
