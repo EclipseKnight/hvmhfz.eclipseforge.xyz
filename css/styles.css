@@ -693,6 +693,8 @@ main.sheet footer::before{content:"MHFZ";display:inline-grid;place-items:center;
 .event-tile{position:relative;gap:6px}
 .event-tile h2{margin:0}
 .event-live{position:absolute;top:10px;right:10px;background:#2f5d2a;color:#eaf6df;border-color:#2f5d2a}
+.event-next{margin:0 0 14px;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:3px;
+  background:rgba(255,250,236,.6);color:var(--ink);font:600 .95rem var(--font-ui)}
 .prize-name{display:inline-flex;align-items:center;gap:8px}
 .prize-name img{width:24px;height:24px;object-fit:contain}
 .panel-head-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
@@ -925,6 +927,31 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
   background:rgba(183,138,51,.12);font:.85rem var(--font-body);color:var(--ink)}
 .admin-chip button{border:0;background:none;cursor:pointer;font-size:1rem;line-height:1;padding:2px 6px;color:var(--ink-soft)}
 .admin-chip button:hover,.admin-chip button:focus-visible{color:var(--wax)}
+
+/* the Events tab: the calendar strip (js/admin-events.js) */
+.cal-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.45);margin:0 0 14px}
+.cal-strip{min-width:760px;padding:4px 10px 8px 100px}
+.cal-body{position:relative}
+.cal-ticks{position:relative;height:22px;border-bottom:1px solid var(--line)}
+.cal-tick{position:absolute;top:3px;font:600 .68rem var(--font-ui);color:var(--ink-soft);padding-left:3px;border-left:1px solid var(--line);white-space:nowrap}
+.cal-lane{position:relative;height:34px;margin-top:6px}
+.cal-lane-name{position:absolute;left:-92px;top:9px;font:700 .64rem var(--font-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.cal-bar{position:absolute;top:2px;height:30px;padding:0;border:1px solid rgba(43,33,24,.35);border-radius:3px;cursor:pointer;
+  overflow:hidden;background:rgba(183,138,51,.25);text-align:left;font:600 .74rem var(--font-ui);color:var(--ink)}
+.cal-bar:hover,.cal-bar:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.cal-core{display:block;height:100%;padding:7px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(183,138,51,.75)}
+.cal-festa{background:rgba(139,47,39,.22)}.cal-festa .cal-core{background:rgba(139,47,39,.6);color:#fff7ec}
+.cal-diva{background:rgba(58,107,140,.22)}.cal-diva .cal-core{background:rgba(58,107,140,.7);color:#f3f8fc}
+.cal-vs_bracket{background:rgba(46,91,78,.22)}.cal-vs_bracket .cal-core{background:rgba(46,91,78,.7);color:#eef8f3}
+.cal-speedrun_cup{background:rgba(183,138,51,.25)}.cal-speedrun_cup .cal-core{background:rgba(183,138,51,.8)}
+.cal-now{position:absolute;top:22px;bottom:0;width:0;border-left:2px dashed var(--wax);pointer-events:none}
+.cal-detail{margin:0 0 14px;padding:12px 16px;border:1px solid var(--line);border-left:6px solid var(--gold);border-radius:3px;background:rgba(255,250,236,.6)}
+.cal-detail .subhead{margin-top:0}
+.cal-phases,.cal-soon{margin:6px 0 10px;padding-left:20px;font-size:.9rem;color:var(--ink)}
+.cal-anytime{grid-column:1 / -1;margin:4px 0}
+.cal-check{display:inline-flex;gap:6px;align-items:center;font:600 .8rem var(--font-ui);color:var(--ink-soft)}
+.cal-actions{display:flex;flex-wrap:wrap;gap:6px}
+.link-btn{border:0;background:none;padding:0;cursor:pointer;font:inherit;color:var(--gold-ink);text-decoration:underline}
 
 
 /* ---------- Hunting Road (road.html, road-vote.html, road-history.html, account and admin blocks) ---------- */

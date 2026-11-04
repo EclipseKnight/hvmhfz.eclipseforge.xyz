@@ -226,6 +226,23 @@
 
   function push(list, item) { if (item) list.push(item); }
 
+  /* ---- the event calendar (/api/public/events/calendar): one featured event at a time ---- */
+
+  function longDate(ms) {
+    return new Intl.DateTimeFormat(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(ms));
+  }
+
+  // "Now: <event> (to <date>). Next: <event> from <date>." from the calendar's current and next featured
+  // runs; null when the calendar has neither (the API is older, or nothing is planned).
+  function calendarLine(calendar) {
+    if (!calendar) return null;
+    var parts = [];
+    var cur = calendar.current, next = calendar.next;
+    if (cur && cur.name && ms(cur.coreEndsAt) !== null) parts.push("Now: " + cur.name + " (to " + longDate(ms(cur.coreEndsAt)) + ").");
+    if (next && next.name && ms(next.startsAt) !== null) parts.push("Next: " + next.name + " from " + longDate(ms(next.startsAt)) + ".");
+    return parts.length ? parts.join(" ") : null;
+  }
+
   function runningEvents(festa, current, bracket) {
     return eventCards(current, festa, Date.now(), bracket);
   }
@@ -248,7 +265,7 @@
     return card;
   }
 
-  function render(data, festa, current, bracket) {
+  function render(data, festa, current, bracket, calendar) {
     var root = document.getElementById("events-root");
     clear(root);
 
@@ -260,6 +277,12 @@
     note.appendChild(tournaments);
     note.appendChild(document.createTextNode("."));
     panel.appendChild(note);
+    var line = calendarLine(calendar);
+    if (line) {
+      var next = el("p", "event-next", line);
+      next.id = "events-next";
+      panel.appendChild(next);
+    }
     var grid = el("div", "tile-grid event-grid");
     runningEvents(festa, current, bracket).forEach(function (e) { grid.appendChild(eventCard(e)); });
     panel.appendChild(grid);
@@ -362,11 +385,11 @@
   }
 
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { staticCards: staticCards, eventCards: eventCards, cardFromRow: cardFromRow, shortDate: shortDate };
+    module.exports = { staticCards: staticCards, eventCards: eventCards, cardFromRow: cardFromRow, shortDate: shortDate, calendarLine: calendarLine };
   }
   if (typeof document === "undefined") return;
 
-  // The festival, the schedules and the VS bracket are optional: an API without them (404, error) still
+  // The festival, the schedules, the VS bracket and the calendar are optional: an API without them (404, error) still
   // shows the page, with today's static cards.
   function optional(path) {
     return fetch(API + path)
@@ -376,13 +399,14 @@
   var festaRequest = optional("/api/public/festa");
   var currentRequest = optional("/api/public/events/current");
   var bracketRequest = optional("/api/public/vs-bracket/current");
+  var calendarRequest = optional("/api/public/events/calendar");
 
   fetch(API + "/api/public/events")
     .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)); })
     .then(function (data) {
-      return Promise.all([festaRequest, currentRequest, bracketRequest]).then(function (extra) {
+      return Promise.all([festaRequest, currentRequest, bracketRequest, calendarRequest]).then(function (extra) {
         quests = data.quests || [];
-        render(data, extra[0], extra[1], extra[2]);
+        render(data, extra[0], extra[1], extra[2], extra[3]);
       });
     })
     .catch(function () {
