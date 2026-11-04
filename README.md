@@ -19,9 +19,8 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/quests.html` | Quest catalog from `data/quests.json`: every quest file, search and filters, monster icons linking to their pages. `?q=` opens it searching, `?monster=<guide name>` filtered to one monster. |
 | `/quest.html?id=N` | One quest: category, area, objective, time, rewards money, monsters (each to its page), description, tracked runs. |
 | `/worlds.html` | Live world status, the live board (who is online, in town or on a quest and which quest, and who is questing together, from `/api/public/activity`; each name links to its hunter profile by `charId`, or to the Hunters page searching for it when the answer has no `charId`) and server wide hunt totals, refreshed every 30 seconds. |
-| `/play.html` | Play: three cards, each a numbered checklist with one download per step: New on Windows, Linux / Steam Deck (marked not tested yet) and Bringing a character from another server (a "where to get your file" table per source type, then the account page's Backups tab or Discord `/link` and `/import`). Ticks are kept in this browser (`localStorage` `hvmhfz.play`, `js/play.js`, listed in `privacy.html`); Copy buttons for the server settings (name, host, launcher and game port, from `docs/launcher.md`) and the Discord commands. Marked slots for the one-click installer and our own full download stay hidden until `SLOTS` in `js/play.js` has the flag on and a URL. Every route for a new player ends here: the home page (main button, sign-in box, "Start playing", "New on Windows", "Linux / Steam Deck" and "Bringing a character" tiles, to the card anchors `#windows`, `#linux`, `#transfer`), the Frontier guide, the 404 page, the Guides menu and the footer. The old setup guides are linked only from the Play steps (deep links to their sections), the nav and the footer. |
-| `/guide-windows.html` | Windows setup guide, the detailed reference reached from the Play page's steps: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. Opens with a "New here? Start at Play" box (Play, the installer beta slot, the three Play cards). |
-| `/guide-linux.html` | Linux setup guide, the detailed reference reached from the Play page's steps: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. Same "New here? Start at Play" box. |
+| `/play.html` | Play: three cards, each a numbered checklist with one download per step: New on Windows, Linux / Steam Deck (marked not tested yet) and Bringing a character from another server (a "where to get your file" table per source type, then the account page's Backups tab or Discord `/link` and `/import`). Ticks are kept in this browser (`localStorage` `hvmhfz.play`, `js/play.js`, listed in `privacy.html`); Copy buttons for the server settings (name, host, launcher and game port, from `docs/launcher.md`) and the Discord commands. Marked slots for the one-click installer and our own full download stay hidden until `SLOTS` in `js/play.js` has the flag on and a URL. Every route for a new player ends here: the home page (main button, sign-in box, "Start playing", "New on Windows", "Linux / Steam Deck" and "Bringing a character" tiles, to the card anchors `#windows`, `#linux`, `#transfer`), the Frontier guide, the 404 page, the Guides menu and the footer. Each card ends with collapsible "More help" sections (`<details>`, ids `windows-patch`, `windows-trouble`, `linux-packages`, `linux-patch`, `linux-prefix`, `linux-wrapper`, `linux-trouble`), and a last panel holds `#language` (English and Japanese text) and `#discord` (linking and bot commands); `js/play.js` opens the one a link or address points at. The setup guides that used to hold this text are now only redirect pages (see below). |
+| `/guide-windows.html`, `/guide-linux.html` | Redirect pages for the old Windows and Linux guides (the setup guides were folded into the Play page, 4 Nov 2026). Meta refresh to `/play.html#windows` / `#linux`, canonical, noindex, a visible "This guide moved to Play" link, and a small inline script that maps the old `#anchors` (`#patch`, `#trouble`, `#prefix`, `#english`, `#discord`, ...) to the matching Play card or "More help" section. Not in the nav, the footer or the sitemap. |
 | `/guide-frontier.html` | Frontier guide, landing page: one card per section (picture and one line), grouped in five chapters (`#start`, `#gear`, `#reference`, `#progression`, `#activities`), plus links to our own guides, the comparison page and the credit to the original guide's author. In the nav under Guides ("Frontier guide"), and a card and a step on the home page. |
 | `/guide-frontier-<section>.html` | One guide section each, 18 in reading order: `basics`, `guild`, `house`, `menus`, `items`, `item-box`, `weapons`, `armour`, `transcend`, `monsters`, `tools`, `hunter-rank`, `g-rank-start`, `g-rank`, `zenith`, `quests-food`, `events`, `hunters-road`. Each has breadcrumbs, a side column with "On this page" and "All sections" (sticky on wide screens, folded above the text on phones), the text with its pictures, previous/next links and the credit. Rewritten from Fist's guide (saved as a PDF in January 2022; owner: credit the author by name, don't link the original or its resources). Every section ends with an "On Hunsterverse" note comparing it with our server. |
 | `/guide-frontier-hunsterverse.html` | Hunsterverse vs the old servers: a short summary of the differences, the course perks every account has, and one table row per section note (generated by `dev/make-hv-summary.py`). Linked from the landing page and every page's credit. |
@@ -47,8 +46,8 @@ leaderboards.html     timed hunt leaderboards and guild RP
 catalog.html          item and equipment catalog
 worlds.html           world status, live board and hunt totals
 play.html            Play: Windows, Linux / Steam Deck and character transfer checklists
-guide-windows.html    Windows guide
-guide-linux.html      Linux guide
+guide-windows.html    redirect to /play.html#windows (old Windows guide)
+guide-linux.html      redirect to /play.html#linux (old Linux guide)
 report.html           bug report and feature request forms
 guide-frontier.html   Frontier guide landing page (cards per section)
 guide-frontier-*.html Frontier guide sections (18), the comparison page and three moved-page notices
@@ -67,7 +66,8 @@ assets/guide/<section>/ Frontier guide pictures, WebP, one folder per handbook s
 css/guide-frontier.css Frontier guide layout only (side column, pictures, cards, previous/next, "On Hunsterverse" notes)
 assets/backgrounds/   page background pictures (rules and sizes in its README.md)
 assets/favicon.png    site icon
-js/play.js            Play page: saved ticks, copy buttons, hidden installer and full download slots (also loaded by the Windows and Linux guides for the installer slot in their "Start at Play" box)
+js/play.js            Play page: saved ticks, copy buttons, hidden installer and full download slots and opening the "More help" section a link points at
+js/guide-moved.js     the old Windows and Linux guide pages: forwards an old address and its #anchor to the matching Play card or section
 js/nav.js             site nav: the four menus, and the Menu button on narrow screens
 js/background.js      page background: a random picture from assets/backgrounds/ per page load, dark and blurred
 js/consent.js         cookie banner (Accept/Decline, kept in localStorage hvmhfz.consent); runs held-back optional scripts after Accept
@@ -185,8 +185,8 @@ The script also adds `<script src="/js/search.js" defer></script>` before `</bod
 load it. It keeps everything else on the page (head, main, scripts).
 
 - Nav, same on every page: five menus and the account button. Labels use the game's and the Discord bot's
-  own words (Worlds as the bot's `/worlds`, Windows/Linux guide as its `/guide`, Hunting Road and Road).
-  - **Guides:** Play, Windows guide, Linux guide, Frontier guide.
+  own words (Worlds as the bot's `/worlds`, Hunting Road and Road).
+  - **Guides:** Play, Frontier guide.
   - **Database:** Monsters, Quests, Catalog, Set builder, Quest builder.
   - **Hunting Road:** Rotation and vote, Road builder, Past winners, Road data, Roads in game (`guide-roads.html`), Sky Corridor.
   - **Community:** Hunters, Guilds, Leaderboards, Discord.

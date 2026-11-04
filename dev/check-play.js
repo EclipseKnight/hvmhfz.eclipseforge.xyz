@@ -3,8 +3,9 @@
    each; ticks are kept in localStorage (hvmhfz.play) and come back after a reload; the progress count and
    the "clear the ticks" button; the copy buttons put the server settings on the clipboard; the installer and
    full download slots are hidden until their flag and URL are set (the test serves js/play.js with them
-   switched on); the home page's main button and the "New here" tiles go to /play.html (cards by anchor); the Windows and Linux
-   guides open with a Start at Play box. Needs Playwright:
+   switched on); the home page's main button and the "New here" tiles go to /play.html (cards by anchor); the "More help"
+   sections (troubleshooting, patch, Linux per distribution, language, Discord commands) and the way a link or address
+   opens one; the old Windows and Linux guides are only redirect pages that send each old #anchor to Play. Needs Playwright:
 
      NODE_PATH=/root/work/pw-tools/node_modules node dev/check-play.js
      SHOTS=dev-shots NODE_PATH=... node dev/check-play.js   (also saves screenshots)
@@ -114,6 +115,36 @@ async function main() {
   check("transfer table rows", (await page.locator("#transfer .play-sources tbody tr").count()) >= 4);
   check("Backups link", (await page.locator('#transfer a[href="/account.html#backups"]').count()) === 1);
 
+  // "More help": the sections kept from the old guides, closed until asked for, opened by an address or a link
+  const helpIds = ["windows-patch", "windows-trouble", "linux-packages", "linux-patch", "linux-prefix", "linux-wrapper", "linux-trouble", "language", "discord"];
+  for (const id of helpIds) {
+    check("help section " + id + " is a closed <details>", await page.locator("details#" + id).evaluate((el) => el.open === false).catch(() => false));
+  }
+  check("Windows troubleshooting has the 'Patcher failed to connect' and login rows",
+    /Patcher failed to connect/.test(await page.locator("#windows-trouble").textContent()) && /Login fails/.test(await page.locator("#windows-trouble").textContent()));
+  check("Windows patch script is there", /Invoke-WebRequest/.test(await page.locator("#windows-patch").textContent()) && !/EclipseKnightt/.test(await page.locator("#windows-patch").innerHTML()));
+  const linuxPk = await page.locator("#linux-packages").textContent();
+  check("Linux packages has every distribution", ["Arch", "Debian and Ubuntu", "Fedora", "openSUSE", "Any other distribution"].every((d) => linuxPk.includes(d)));
+  check("Linux prefix and wrapper have their commands", /mezeporta-setup-arch\.sh/.test(await page.locator("#linux-prefix").textContent()) && /GDK_BACKEND=x11/.test(await page.locator("#linux-wrapper").textContent()));
+  const lt = await page.locator("#linux-trouble").textContent();
+  check("Linux troubleshooting rows", ["Error 71", "Patcher failed to manage files", "Patcher failed to connect", "Login fails"].every((t) => lt.includes(t)));
+  check("language section says Japanese text", /Japanese text shows as boxes/.test(await page.locator("#language").textContent()));
+  const dc = await page.locator("#discord").textContent();
+  check("Discord section commands", ["/link", "/backup", "/import", "/password"].every((c) => dc.includes(c)));
+  // a link to an id inside a closed section, and an address with the id, open it
+  await page.locator('#windows-trouble a[href="#windows-patch"]').first().evaluate((a) => a.scrollIntoView());
+  await page.locator("#windows-trouble > summary").click();
+  await page.locator('#windows-trouble a[href="#windows-patch"]').first().click();
+  check("a link to a help section opens it", await page.locator("#windows-patch").evaluate((el) => el.open));
+  await page.goto(base + "/play.html#linux-prefix");
+  check("an address opens the help section it names", await page.locator("#linux-prefix").evaluate((el) => el.open));
+  check("only that section opened", !(await page.locator("#linux-wrapper").evaluate((el) => el.open)));
+  await page.goto(base + "/play.html#windows-server");
+  check("step anchors exist", (await page.locator("li#windows-server, li#linux-server, li#windows-launcher, li#linux-launcher").count()) === 4);
+  // every in-page link of Play points at an id of the page
+  const dead = await page.evaluate(() => [...document.querySelectorAll('a[href^="#"]')].map((a) => a.getAttribute("href").slice(1)).filter((id) => id && !document.getElementById(id)));
+  check("every in-page link has its target", dead.length === 0, dead.join(" "));
+
   // links into the page: the paths and the card anchors
   await page.goto(base + "/play.html#linux");
   check("anchor opens the Linux card", (await page.locator("#linux").isVisible()));
@@ -138,20 +169,54 @@ async function main() {
   check("home New here tiles go to Play cards", ["/play.html#windows", "/play.html#linux", "/play.html#transfer"].every((h) => hrefs.includes(h)), hrefs.join(" "));
   check("home New here row has no old guide", !hrefs.some((h) => /guide-(windows|linux)/.test(h)), hrefs.join(" "));
   check("home sign-in box links to Play", (await page.locator(".login-box a[href='/play.html']").count()) === 1);
-  // the old setup guides open with a Start at Play box: Play, the three cards, and the installer slot (hidden
-  // by default, shown from js/play.js's flag, with that flag's URL)
-  for (const [guide, slot] of [["guide-windows.html", "installer"], ["guide-linux.html", "installer-linux"]]) {
-    await page.goto(base + "/" + guide);
-    const start = page.locator("#start-at-play");
-    check(guide + " Start at Play box", (await start.count()) === 1);
-    const links = await start.locator("a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    check(guide + " box links", ["/play.html", "/play.html#windows", "/play.html#linux", "/play.html#transfer"].every((h) => links.includes(h)), links.join(" "));
-    check(guide + " box is above the contents", await page.evaluate(() => document.querySelector("#start-at-play").compareDocumentPosition(document.querySelector(".toc")) & Node.DOCUMENT_POSITION_FOLLOWING));
-    const s = start.locator("[data-slot='" + slot + "']");
-    check(guide + " installer slot shown", await s.isVisible());
-    check(guide + " installer link", /^https:\/\/github\.com\/EclipseKnight\/.*\/installer\//.test((await s.locator("[data-slot-link]").getAttribute("href")) || ""));
-    if (shots) await page.screenshot({ path: path.join(shots, guide.replace(".html", "") + "-1280.png"), clip: { x: 0, y: 0, width: 1280, height: 900 } });
+  // the old setup guides are redirect pages: noindex, canonical, a meta refresh to the card, a visible link, no
+  // Play checklist of their own; each old #anchor (and no anchor, and an unknown one) lands on its Play id
+  const moved = {
+    "guide-windows.html": { card: "windows", map: { patch: "windows-patch", trouble: "windows-trouble", layout: "windows-trouble",
+      launcher: "windows-launcher", server: "windows-server", english: "language", discord: "discord", need: "windows", "": "windows" } },
+    "guide-linux.html": { card: "linux", map: { packages: "linux-packages", other: "linux-packages", patch: "linux-patch",
+      prefix: "linux-prefix", settings: "linux-prefix", wrapper: "linux-wrapper", trouble: "linux-trouble", launcher: "linux-launcher",
+      server: "linux-server", english: "language", discord: "discord", layout: "linux", "": "linux" } },
+  };
+  const playIds = await (async () => { await page.goto(base + "/play.html"); return new Set(await page.evaluate(() => [...document.querySelectorAll("[id]")].map((e) => e.id))); })();
+  for (const [guide, info] of Object.entries(moved)) {
+    const raw = fs.readFileSync(path.join(root, guide), "utf8");
+    check(guide + " is noindex", /<meta name="robots" content="noindex"/.test(raw));
+    check(guide + " canonical is Play", raw.includes('<link rel="canonical" href="https://hvmhfz.eclipseforge.xyz/play.html" />'));
+    check(guide + " meta refresh 0 to the card", raw.includes('<meta http-equiv="refresh" content="0; url=/play.html#' + info.card + '"'));
+    check(guide + " has no guide text left", raw.length < 8000, String(raw.length));
+    for (const [oldAnchor, id] of Object.entries(info.map)) {
+      check(guide + "#" + oldAnchor + " goes to an id on Play (" + id + ")", playIds.has(id));
+      await page.goto(base + "/" + guide + (oldAnchor ? "#" + oldAnchor : ""));
+      await page.waitForURL("**/play.html**");
+      check(guide + "#" + oldAnchor + " lands on #" + id, new URL(page.url()).hash === "#" + id, page.url());
+    }
+    await page.goto(base + "/" + guide + "#no-such-anchor");
+    await page.waitForURL("**/play.html**");
+    check(guide + " unknown anchor opens the card", new URL(page.url()).hash === "#" + info.card, page.url());
+    // without JavaScript the page stays visible, with its link to the card
+    const plain = await context.browser().newContext({ javaScriptEnabled: false });
+    const p2 = await plain.newPage();
+    await p2.goto(base + "/" + guide, { waitUntil: "commit" }).catch(() => {});
+    await p2.waitForURL("**/play.html**", { timeout: 5000 }).catch(() => {});
+    check(guide + " meta refresh works without JavaScript", new URL(p2.url()).pathname === "/play.html" && new URL(p2.url()).hash === "#" + info.card, p2.url());
+    await plain.close();
   }
+  // the redirect page shows a visible link to the card
+  for (const guide of Object.keys(moved)) {
+    const html = fs.readFileSync(path.join(root, guide), "utf8");
+    check(guide + " has the visible 'This guide moved to Play' link", html.includes(">This guide moved to Play</a>") && html.includes('href="/play.html#' + moved[guide].card + '"'));
+  }
+  // the nav and the footer do not list them any more
+  for (const where of ["#site-menu", ".site-foot"]) {
+    await page.goto(base + "/play.html");
+    check(where + " has no old guide link", (await page.locator(where + ' a[href^="/guide-windows"], ' + where + ' a[href^="/guide-linux"]').count()) === 0);
+  }
+  // no page outside the redirect pages links the old guides, except the changelog's history
+  for (const f of fs.readdirSync(root).filter((n) => n.endsWith(".html") && !(n in moved) && n !== "changelog.html")) {
+    check(f + " does not link an old guide", !/href="\/guide-(windows|linux)\.html/.test(fs.readFileSync(path.join(root, f), "utf8")));
+  }
+
   // the Roads guide is not a setup guide: no Windows / Linux switch
   await page.goto(base + "/guide-roads.html");
   check("roads guide has no setup switch", (await page.locator(".guide-switch").count()) === 0);

@@ -1,32 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Play MHF-Z on Windows · Hunsterverse</title>
-<meta name="description" content="Set up Monster Hunter Frontier Z on Windows with the Mezeporta launcher and join Hunsterverse." />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Hunsterverse" />
-    <meta property="og:title" content="Play MHF-Z on Windows · Hunsterverse" />
-    <meta property="og:description" content="Set up Monster Hunter Frontier Z on Windows with the Mezeporta launcher and join Hunsterverse." />
-    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/guide-windows.html" />
-    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-windows.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Play MHF-Z on Windows · Hunsterverse" />
-    <meta name="twitter:description" content="Set up Monster Hunter Frontier Z on Windows with the Mezeporta launcher and join Hunsterverse." />
-    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-windows.png" />
-<meta name="theme-color" content="#150e09" />
-<link rel="icon" href="/assets/favicon.png" />
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Windows guide moved · Hunsterverse</title>
+    <meta name="description" content="The Windows guide moved to the Play page: the Windows checklist, with the troubleshooting and the commands under More help." />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://hvmhfz.eclipseforge.xyz/play.html" />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
-<link rel="stylesheet" href="/css/styles.css" />
-<script src="/js/nav.js" defer></script>
-<script src="/js/background.js" defer></script>
-<script src="/js/consent.js" defer></script>
-<script src="/js/play.js" defer></script>
-</head>
-<body class="guide guide-windows">
+    <link rel="stylesheet" href="/css/styles.css" />
+    <!-- Old links and anchors go to the matching Play card or section. A blocking script, before the meta refresh,
+         so it runs first; the meta refresh is the fallback for a browser without JavaScript. -->
+    <script src="/js/guide-moved.js"></script>
+    <meta http-equiv="refresh" content="0; url=/play.html#windows" />
+    <script src="/js/nav.js" defer></script>
+    <script src="/js/background.js" defer></script>
+    <script src="/js/consent.js" defer></script>
+  </head>
+
+  <body class="public-page">
     <!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->
     <a class="skip-link" href="#content">Skip to content</a>
     <header class="site-nav">
@@ -37,9 +31,7 @@
           <div class="nav-group">
             <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
             <div class="nav-menu" id="nav-guides">
-              <a class="navlink" href="/play.html">Play</a>
-              <a class="navlink" href="/guide-windows.html" aria-current="page">Windows guide</a>
-              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/play.html" aria-current="page">Play</a>
               <a class="navlink" href="/guide-frontier.html">Frontier guide</a>
             </div>
           </div>
@@ -89,211 +81,19 @@
     </header>
     <!-- /site-shell:header -->
 
-    <div class="guide-switch">
-      <span>Guide</span>
-      <a href="/guide-windows.html" aria-current="page">Windows</a>
-      <a href="/guide-linux.html">Linux</a>
-    </div>
+    <main id="content" class="wrap page">
+      <!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Guides</li><li><a href="/play.html">Play</a></li><li aria-current="page">Windows guide (moved)</li></ol></nav>
+      <!-- /site-shell:crumbs -->
+      <header class="page-head">
+        <h1>Windows guide moved</h1>
+        <p class="page-sub">The Windows setup steps, the troubleshooting and the commands are now on the Play page.</p>
+      </header>
+      <section class="panel">
+        <p><a class="btn btn-primary" href="/play.html#windows">This guide moved to Play</a></p>
+      </section>
+    </main>
 
-<main id="content" class="sheet">
-<!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
-<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Guides</li><li aria-current="page">Windows guide</li></ol></nav>
-<!-- /site-shell:crumbs -->
-<h1>Monster Hunter Frontier Z on Windows</h1>
-<p class="lead">Mezeporta launcher and the Hunsterverse server, nothing else.</p>
-<p class="meta">Tested with Mezeporta v1.5.4 and Windows 10/11. Launcher by LilButter, client patch by EclipseKnight. For the Linux version, see the <a href="/guide-linux.html">Linux guide</a>.</p>
-
-<div class="start box" id="start-at-play">
-<p><strong>New here? Start at <a href="/play.html">Play</a>.</strong> It has a short checklist for each path, with one download per step. This guide is the detailed reference: every command, the screenshots and the troubleshooting.</p>
-<div class="play-slot" data-slot="installer" hidden>
-<p><strong>One-click installer (beta)</strong> Sets up the client, our patch and the launcher with Hunsterverse already added, then you press REGISTER in the launcher. Not yet tried on many PCs: if it fails, use the steps below and tell us in Discord.</p>
-<a class="btn btn-primary btn-small" data-slot-link href="/play.html" rel="noopener">Download the installer</a>
-</div>
-<p class="start-links"><a class="btn btn-secondary btn-small" href="/play.html#windows">New on Windows</a> <a class="btn btn-secondary btn-small" href="/play.html#linux">Linux / Steam Deck</a> <a class="btn btn-secondary btn-small" href="/play.html#transfer">Bringing a character</a></p>
-</div>
-
-<div class="toc">
-<strong>Contents</strong>
-<ol>
-<li><a href="#need">What you need</a></li>
-<li><a href="#client">Put the client in place</a></li>
-<li><a href="#patch">Apply the client patch</a></li>
-<li><a href="#launcher">Install the launcher</a></li>
-<li><a href="#firstrun">First run</a></li>
-<li><a href="#server">Add the Hunsterverse server</a></li>
-<li><a href="#play">Log in and play</a></li>
-<li><a href="#trouble">Troubleshooting</a></li>
-<li><a href="#layout">Files and folders</a></li>
-</ol>
-<p class="toc-appendix"><a href="#english">Appendix: English text and language</a> &nbsp;·&nbsp; <a href="#discord">Appendix: Discord linking and bot commands</a></p>
-</div>
-
-<h2 id="need">1. What you need</h2>
-<ul>
-<li>Windows 10 or 11, 64-bit.</li>
-<li>The MHF-Z client, the folder named <code>Monster Hunter Frontier Online</code> (about 5.5 GB), containing <code>dat/</code>, <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>mhf.ini</code>.</li>
-<li>About 8 GB of free space on the drive you install to.</li>
-<li>A Hunsterverse account. You create it yourself in the Mezeporta launcher (step 7): press <b>REGISTER</b> and choose a username and password.</li>
-</ul>
-<p><b>Where to get everything.</b></p>
-<table>
-<tr><th>What</th><th>Where to get it</th></tr>
-<tr><td>Base game client, 5.5 GB</td><td><a href="https://drive.google.com/drive/folders/1F_xg7qaFmG_L7AJ16vzYBG8pwlpCYSFN?usp=sharing">Community client folder on Google Drive</a>, the link maintained by the <a href="https://pastebin.com/QqAwZSTC">/mhg/ community guide</a>. Community-run, not Hunsterverse official; the folder also contains server files you do not need.</td></tr>
-<tr><td>Hunsterverse Discord</td><td>Help, announcements and the bot commands: <a href="https://discord.gg/YuE42eh">discord.gg/YuE42eh</a></td></tr>
-<tr><td>Hunsterverse website</td><td><a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a>: sign in with your game account to see your characters, make backups and get your Discord link code. You do not need it to play.</td></tr>
-<tr><td>Hunsterverse client patch, 50.9 MB</td><td><a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> from the EclipseKnight releases page. Apply it by hand as in step 3, before the first launch: on a slow connection the launcher cannot download it for you (see the box in step 3).</td></tr>
-<tr><td>Mezeporta launcher</td><td><a href="https://github.com/LilButter/Mezeporta/releases">github.com/LilButter/Mezeporta/releases</a>, grab the build for your OS, v1.5.4 or newer</td></tr>
-<tr><td>Visual C++ 2015-2022 Redistributable, x86</td><td><a href="https://aka.ms/vs/17/release/vc_redist.x86.exe">vc_redist.x86.exe</a></td></tr>
-<tr><td>DirectX End-User Runtime, June 2010</td><td><a href="https://www.microsoft.com/download/details.aspx?id=35">microsoft.com/download/details.aspx?id=35</a></td></tr>
-</table>
-<div class="warn box"><b>Check the source.</b> The base client comes from the community, not from Hunsterverse. The server patch is the part Hunsterverse actually maintains, and it must be applied after the client, as in the patch step. If a link looks different from these, verify it before you run anything.</div>
-
-<div class="note box"><b>Do not install into Program Files.</b> Windows protects that folder, and the launcher writes into its own game directory. Use something like <code>C:\Games\MHFZ</code>.</div>
-
-<h2 id="client">2. Put the client in place</h2>
-<p>Copy (do not move) your client folder to <code>C:\Games\MHFZ</code>, so that <code>dat</code> and <code>mhf.exe</code> sit directly inside it:</p>
-<div class="tree">C:\Games\MHFZ\
-├── dat\
-│   └── mhfdat.bin
-├── mhf.exe
-├── mhfo.dll
-├── mhfo-hd.dll
-├── mhl.dll
-└── mhf.ini</div>
-
-<h2 id="patch">3. Apply the client patch</h2>
-<div class="warn box"><b>Slow connection? Download the patch yourself, now.</b> When the Mezeporta launcher checks for updates it has to download the patch (<code>Frontier_Patch.zip</code>, 50.9 MB) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>&quot;Patcher failed to connect&quot;</b>. Do not wait for that: download <a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> in your browser (or let the script below do it) and apply it <b>before you open the launcher for the first time</b>. With the files already in place the launcher has nothing left to download. The same trick works for later patch releases: download the new zip by hand and unzip it over the game folder.</div>
-<p>Open PowerShell and run this. It downloads the client patch, backs up every game file the patch replaces, then overlays the new ones.</p>
-<pre><code>$game = &quot;C:\Games\MHFZ&quot;
-
-# 1. download and unpack the patch
-$patchUrl = &quot;https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/&quot; +
-            &quot;download/client_patch/Frontier_Patch.zip&quot;
-$zip = &quot;$env:TEMP\Frontier_Patch.zip&quot;
-Invoke-WebRequest -Uri $patchUrl -OutFile $zip
-Expand-Archive -Path $zip -DestinationPath &quot;$env:TEMP\Frontier_Patch&quot; -Force
-$src = (Get-Item &quot;$env:TEMP\Frontier_Patch\Frontier_Patch&quot;).FullName.TrimEnd(&quot;\&quot;)
-
-# 2. back up every game file the patch replaces, into original-files\ (only the first
-#    time: running this again keeps the original files, not patched ones)
-Get-ChildItem $src -Recurse -File | ForEach-Object {
-  $rel = $_.FullName.Substring($src.Length + 1)
-  $orig = Join-Path $game $rel
-  $backup = Join-Path &quot;$game\original-files&quot; $rel
-  if ((Test-Path $orig) -and -not (Test-Path $backup)) {
-    New-Item -ItemType Directory -Force -Path (Split-Path $backup) | Out-Null
-    Copy-Item $orig $backup
-  }
-}
-
-# 3. copy the patch over the game
-Copy-Item &quot;$src\*&quot; -Destination $game -Recurse -Force</code></pre>
-<p>The patch replaces <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>dat\mhfdat.bin</code>, plus 79 files with the English text of the Diva storyline and a town's dialogue (in <code>dat\load\</code>, and <code>dat\stage\st205.pac</code>). The copies in <code>original-files\</code> let you restore the original client at any time.</p>
-
-<h2 id="launcher">4. Install the launcher</h2>
-<p>Download <code>Mezeporta-Windows.zip</code> from the releases page and extract it into the same folder:</p>
-<pre><code>$mpUrl = &quot;https://github.com/LilButter/Mezeporta/releases/&quot; +
-         &quot;download/v1.5.4/Mezeporta-Windows.zip&quot;
-$mpZip = &quot;$env:TEMP\Mezeporta-Windows.zip&quot;
-Invoke-WebRequest -Uri $mpUrl -OutFile $mpZip
-Expand-Archive -Path $mpZip -DestinationPath &quot;C:\Games\MHFZ&quot; -Force</code></pre>
-<p>Afterwards <code>Mezeporta.exe</code> and the <code>Mezeporta</code> folder must sit next to <code>dat</code>, not inside a subfolder. If the zip unpacked into a nested folder, move the contents up one level.</p>
-<p>Also install these two Microsoft runtimes, which the game engine needs:</p>
-<ul>
-<li><b>Visual C++ 2015-2022 Redistributable, x86</b>: <a href="https://aka.ms/vs/17/release/vc_redist.x86.exe">vc_redist.x86.exe</a></li>
-<li><b>DirectX End-User Runtime (June 2010)</b>: <a href="https://www.microsoft.com/download/details.aspx?id=35">microsoft.com/download/details.aspx?id=35</a></li>
-</ul>
-
-<h2 id="firstrun">5. First run</h2>
-<p>Double-click <code>Mezeporta.exe</code>. The first window has no server configured yet:</p>
-<figure><img alt="Mezeporta first run" src="/assets/guide/win-firstrun.webp"><figcaption>First run: add a server to get started.</figcaption></figure>
-
-<div class="warn box"><b>Windows may warn about the launcher.</b> It is not code-signed, so SmartScreen can show "Windows protected your PC", and some antivirus products flag the game's DLLs. Only continue if you downloaded from the official releases page. If your antivirus quarantines a file, restore it and add an exclusion for <code>C:\Games\MHFZ</code>. Do not disable your antivirus entirely. Exclude the game folder before you apply the patch: <code>mhf.exe</code> is the file most often flagged, and a quarantine in the middle of a copy leaves the install half patched.</div>
-
-<p>Open <b>Configure Settings</b> if you want to change the theme or language. On Windows there is no Wine prefix to configure, so the Linux-specific options do not apply.</p>
-<figure><img alt="Settings tabs" src="/assets/guide/win-settings_tabs.webp"><figcaption>Settings tabs. Server Mode is not here, it belongs to each server.</figcaption></figure>
-
-<h2 id="server">6. Add the Hunsterverse server</h2>
-<p>Press <b>ADD A SERVER</b> and enter:</p>
-<table>
-<tr><th>Field</th><th>Value</th></tr>
-<tr><td>Name</td><td><code>Hunsterverse</code></td></tr>
-<tr><td>Host</td><td><code>129.213.54.221</code></td></tr>
-<tr><td>Launcher Port</td><td><code>8080</code></td></tr>
-<tr><td>Game Port</td><td><code>53310</code></td></tr>
-<tr><td>Mode</td><td><b>API</b> (the default)</td></tr>
-<tr><td>Version</td><td><code>ZZ</code></td></tr>
-</table>
-<figure><img alt="Add a Server dialog" src="/assets/guide/win-addserver.webp"><figcaption>The Add a Server dialog, with the API / SignV1 switch at the bottom. Leave it on API.</figcaption></figure>
-<div class="note box"><b>API mode shows the Hunsterverse launcher:</b> news, banners, your mail and unclaimed gifts. If API mode won't log in, use the fallback: Launcher Port <code>53312</code> and Mode <b>SignV1</b>. It logs in and plays the same, without the news and banners.</div>
-
-<h2 id="play">7. Log in and play</h2>
-<p>Select Hunsterverse in the <b>Server Selection</b> dropdown, type your own account name and password, and press <b>LOG IN</b>. Choose a character, then launch.</p>
-<p><b>No account yet?</b> In the Mezeporta launcher press <b>REGISTER</b>, choose a username and password, then log in with them. Do not just type a new name into LOG IN: in API mode (the default) the server refuses a name that does not exist.</p>
-<div class="warn box"><b>Usernames and passwords are case-sensitive.</b> Always type them exactly the same way: <code>Hunter</code> and <code>hunter</code> are different names, and logging in with other capitalisation does not open your account (it can look like a lost save).</div>
-<figure><img alt="Login screen" src="/assets/guide/win-login.webp"><figcaption>Login with the server selected. The username is redacted in this screenshot.</figcaption></figure>
-<p>The launcher window closes when the game starts. That is normal. The game window is titled <code>MONSTER HUNTER FRONTIER Z</code>.</p>
-
-<h2 id="trouble">8. Troubleshooting</h2>
-<table>
-<tr><th>Symptom</th><th>Fix</th></tr>
-<tr><td><code>d3dx9_43.dll</code> was not found</td><td>Install the DirectX End-User Runtime (June 2010). Windows 10/11 do not ship the old D3DX libraries.</td></tr>
-<tr><td><code>VCRUNTIME140.dll</code> or <code>MSVCP140.dll</code> missing</td><td>Install the x86 Visual C++ 2015-2022 redistributable. The game is 32-bit, so the x86 package is the one that matters.</td></tr>
-<tr><td>SmartScreen blocks the launcher</td><td>More info, then Run anyway, but only for a file downloaded from the official releases page.</td></tr>
-<tr><td>Antivirus deletes <code>mhfo.dll</code> or <code>Mezeporta.exe</code></td><td>Restore it from quarantine, then exclude <code>C:\Games\MHFZ</code>. Keep real-time protection on.</td></tr>
-<tr><td>Launcher opens, game does not appear</td><td>Confirm <code>mhf.exe</code> sits next to <code>dat</code>. If the client is in a nested folder, the launcher cannot find it.</td></tr>
-<tr><td>Login fails or character list is empty</td><td>Check that the username and password are exactly as you registered them (case-sensitive) and that the server entry matches step 6: host <code>129.213.54.221</code>, launcher port <code>8080</code>, game port <code>53310</code>, mode API. Still refused? Use the fallback from step 6: launcher port <code>53312</code> and mode SignV1. A name you never registered is refused in API mode: press REGISTER first.</td></tr>
-<tr><td>&quot;Patcher failed to connect&quot; when the launcher checks for updates</td><td>The connection is too slow for the launcher (under about 3 MB/s). Download <code>Frontier_Patch.zip</code> yourself and unzip it over the game folder, as in step 3.</td></tr>
-<tr><td>Controller not detected</td><td>The launcher ships <code>xinput1_3.dll</code> and <code>XInputPlus.ini</code>. Enable controller support in settings and keep those files in the game folder.</td></tr>
-<tr><td>Japanese text shows as boxes</td><td>Install the Japanese language pack: Settings, Time and language, Language and region, Add a language, Japanese.</td></tr>
-<tr><td>Want the original client back</td><td>Copy everything from <code>C:\Games\MHFZ\original-files\</code> back over the game folder.</td></tr>
-</table>
-
-<h2 id="layout">9. Files and folders</h2>
-<div class="tree">C:\Games\MHFZ\
-├── dat\                     game data (patched mhfdat.bin)
-├── mhf.exe  mhfo.dll  mhfo-hd.dll  mhl.dll  mhf.ini
-├── original-files\          backups of the files the patch replaced
-│   └── dat\mhfdat.bin
-├── Mezeporta.exe            launcher
-├── xinput1_3.dll            controller support
-├── XInputPlus.ini
-└── Mezeporta\               launcher settings, fonts, cache
-    └── config.json          server list and settings</div>
-
-<div class="tip box"><b>Updating the launcher later:</b> extract a newer <code>Mezeporta-Windows.zip</code> over the same folder. Your <code>Mezeporta\config.json</code> keeps the server list and settings, so back that folder up before a major update.</div>
-
-
-<h2 id="english">Appendix: English text and language</h2>
-<p>MHF-Z is a Japanese game. The English translation is not a separate installer: the text lives in the game's data files in <code>dat\</code> (<code>mhfdat.bin</code>, <code>mhfpac.bin</code>, <code>mhfinf.bin</code> and the files in <code>dat\load\</code>). The Mezeporta launcher starts the game itself and never loads <code>mhl.dll</code> (that file belonged to the old Capcom launcher), so replacing <code>mhl.dll</code> changes nothing in game.</p>
-<p><b>What the client patch already does.</b> The patch from step 3 replaces <code>dat\mhfdat.bin</code> and adds the English Diva storyline and a town's dialogue. If your menus are English, you are done.</p>
-<p><b>If your game is in Japanese.</b> The patch step was skipped, or something put the original files back. Run step 3 again: it overlays the patched files and keeps your first backup in <code>original-files\</code>. The community client of step 1 already carries most of the English menus; a client copied from somewhere else may not.</p>
-<p><b>Coverage is partial.</b> Not everything is translated. Item names, NPC dialogue and event text often stay Japanese. That is the translation, not a broken install.</p>
-<p><b>Fonts.</b> If Japanese text shows as boxes, install <code>noto-fonts-cjk</code> and start the launcher with <code>LANG=ja_JP.UTF-8</code> on Linux, or add the Japanese language pack on Windows (Settings, Time and language, Language and region, Add a language).</p>
-<div class="warn box"><b>Two warnings from old client guides.</b> Do not apply the hosts-file trick that circulates with the client pack: it points Capcom hostnames at 127.0.0.1, it is meant for self-hosted Erupe servers, and it will break name resolution for Hunsterverse. And Locale Emulator is only needed if the game refuses to start without a Japanese locale: Mezeporta launches the game itself, so try without it first.</div>
-
-<h2 id="discord">Appendix: Discord linking and bot commands</h2>
-<p>Linking your game account to Discord gives you character backups and the bot commands. The account page does the linking:</p>
-<ol>
-<li>Open <a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a>.</li>
-<li>Sign in with the same username and password you use in the game.</li>
-<li>The Overview tab shows the command <code>/link code:&lt;code&gt;</code>, with your own code in it. In the Hunsterverse Discord type <code>/link</code> and paste the code into the code box.</li>
-</ol>
-<p>Once linked, these slash commands work in the Hunsterverse Discord. The old <code>!f</code> commands are gone; type the <code>/</code> and pick the command from the list:</p>
-<table>
-<tr><th>Command</th><th>What it does</th></tr>
-<tr><td><code>/link code:&lt;code&gt;</code></td><td>Links your game account to your Discord account. The code comes from the account page and is valid for 24 hours.</td></tr>
-<tr><td><code>/backup</code></td><td>Sends you a zip backup of one of your characters in a DM (you pick the character).</td></tr>
-<tr><td><code>/import backup:&lt;file&gt;</code></td><td>Restores a character from a backup. Attach the zip <code>/backup</code> sent you <b>as it is</b> (do not extract it), or an Erupe export JSON from another server. You pick the target character, see a preview and confirm. Log out of the game first, and play the target character once before you import into it.</td></tr>
-<tr><td><code>/password password:&lt;new&gt; confirm_password:&lt;new&gt; username:&lt;account&gt;</code></td><td>Sets a new password for your game account (6 to 40 characters). Only you see the answer. This is the only way to reset a forgotten password, and only on an account that is linked to Discord.</td></tr>
-</table>
-<div class="note box"><b>Backups are a zip: send it as it is.</b> Do not extract it and do not attach single BIN files. The account page's Backups tab can also download and import them (it says so when that is not available yet).</div>
-
-<footer>
-<p><b>Credits:</b> Mezeporta launcher by LilButter. Client patch by EclipseKnight for Hunsterverse. Monster Hunter Frontier Z is a Capcom game; this guide only covers running a private server client.</p>
-<p>Screenshots show Mezeporta v1.5.4. The launcher layout is the same on Windows, apart from the Linux-only Wine options.</p>
-</footer>
-</main>
     <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
     <footer class="site-foot">
       <div class="wrap">
@@ -301,8 +101,6 @@ Expand-Archive -Path $mpZip -DestinationPath &quot;C:\Games\MHFZ&quot; -Force</c
           <div class="foot-col">
             <h2 class="foot-head">Guides</h2>
             <a href="/play.html">Play</a>
-            <a href="/guide-windows.html">Windows guide</a>
-            <a href="/guide-linux.html">Linux guide</a>
             <a href="/guide-frontier.html">Frontier guide</a>
             <a href="/guide-roads.html">Roads in game</a>
           </div>
@@ -332,6 +130,6 @@ Expand-Archive -Path $mpZip -DestinationPath &quot;C:\Games\MHFZ&quot; -Force</c
       </div>
     </footer>
     <!-- /site-shell:footer -->
-  <script src="/js/search.js" defer></script>
-</body>
+      <script src="/js/search.js" defer></script>
+  </body>
 </html>

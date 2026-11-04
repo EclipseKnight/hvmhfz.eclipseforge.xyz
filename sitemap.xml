@@ -15,8 +15,6 @@
   <url><loc>https://hvmhfz.eclipseforge.xyz/tournaments.html</loc><priority>0.7</priority></url>
   <url><loc>https://hvmhfz.eclipseforge.xyz/changelog.html</loc><priority>0.7</priority></url>
   <url><loc>https://hvmhfz.eclipseforge.xyz/play.html</loc><priority>0.9</priority></url>
-  <url><loc>https://hvmhfz.eclipseforge.xyz/guide-windows.html</loc><priority>0.8</priority></url>
-  <url><loc>https://hvmhfz.eclipseforge.xyz/guide-linux.html</loc><priority>0.8</priority></url>
   <url><loc>https://hvmhfz.eclipseforge.xyz/guide-frontier.html</loc><priority>0.8</priority></url>
   <url><loc>https://hvmhfz.eclipseforge.xyz/guide-frontier-basics.html</loc><priority>0.6</priority></url>
   <url><loc>https://hvmhfz.eclipseforge.xyz/guide-frontier-guild.html</loc><priority>0.6</priority></url>

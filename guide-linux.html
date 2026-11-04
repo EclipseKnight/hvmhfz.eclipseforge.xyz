@@ -1,32 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Play MHF-Z on Linux · Hunsterverse</title>
-<meta name="description" content="Set up Monster Hunter Frontier Z on Linux with Wine, the Mezeporta launcher and Hunsterverse." />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Hunsterverse" />
-    <meta property="og:title" content="Play MHF-Z on Linux · Hunsterverse" />
-    <meta property="og:description" content="Set up Monster Hunter Frontier Z on Linux with Wine, the Mezeporta launcher and Hunsterverse." />
-    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/guide-linux.html" />
-    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-linux.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Play MHF-Z on Linux · Hunsterverse" />
-    <meta name="twitter:description" content="Set up Monster Hunter Frontier Z on Linux with Wine, the Mezeporta launcher and Hunsterverse." />
-    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/guide-linux.png" />
-<meta name="theme-color" content="#150e09" />
-<link rel="icon" href="/assets/favicon.png" />
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linux guide moved · Hunsterverse</title>
+    <meta name="description" content="The Linux guide moved to the Play page: the Linux / Steam Deck checklist, with the troubleshooting and the commands under More help." />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://hvmhfz.eclipseforge.xyz/play.html" />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
-<link rel="stylesheet" href="/css/styles.css" />
-<script src="/js/nav.js" defer></script>
-<script src="/js/background.js" defer></script>
-<script src="/js/consent.js" defer></script>
-<script src="/js/play.js" defer></script>
-</head>
-<body class="guide guide-linux">
+    <link rel="stylesheet" href="/css/styles.css" />
+    <!-- Old links and anchors go to the matching Play card or section. A blocking script, before the meta refresh,
+         so it runs first; the meta refresh is the fallback for a browser without JavaScript. -->
+    <script src="/js/guide-moved.js"></script>
+    <meta http-equiv="refresh" content="0; url=/play.html#linux" />
+    <script src="/js/nav.js" defer></script>
+    <script src="/js/background.js" defer></script>
+    <script src="/js/consent.js" defer></script>
+  </head>
+
+  <body class="public-page">
     <!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->
     <a class="skip-link" href="#content">Skip to content</a>
     <header class="site-nav">
@@ -37,9 +31,7 @@
           <div class="nav-group">
             <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
             <div class="nav-menu" id="nav-guides">
-              <a class="navlink" href="/play.html">Play</a>
-              <a class="navlink" href="/guide-windows.html">Windows guide</a>
-              <a class="navlink" href="/guide-linux.html" aria-current="page">Linux guide</a>
+              <a class="navlink" href="/play.html" aria-current="page">Play</a>
               <a class="navlink" href="/guide-frontier.html">Frontier guide</a>
             </div>
           </div>
@@ -89,302 +81,19 @@
     </header>
     <!-- /site-shell:header -->
 
-    <div class="guide-switch">
-      <span>Guide</span>
-      <a href="/guide-windows.html">Windows</a>
-      <a href="/guide-linux.html" aria-current="page">Linux</a>
-    </div>
+    <main id="content" class="wrap page">
+      <!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Guides</li><li><a href="/play.html">Play</a></li><li aria-current="page">Linux guide (moved)</li></ol></nav>
+      <!-- /site-shell:crumbs -->
+      <header class="page-head">
+        <h1>Linux guide moved</h1>
+        <p class="page-sub">The Linux setup steps, the troubleshooting and the commands are now on the Play page.</p>
+      </header>
+      <section class="panel">
+        <p><a class="btn btn-primary" href="/play.html#linux">This guide moved to Play</a></p>
+      </section>
+    </main>
 
-<main id="content" class="sheet">
-<!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
-<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Guides</li><li aria-current="page">Linux guide</li></ol></nav>
-<!-- /site-shell:crumbs -->
-<h1>Monster Hunter Frontier Z on Linux</h1>
-<p class="lead">Mezeporta launcher, a Wine prefix, and the Hunsterverse private server.</p>
-<p class="meta">Tested on CachyOS (Arch) with KDE Plasma 6 on Wayland, NVIDIA RTX 3060 Ti, Mezeporta v1.5.4. Client patch by EclipseKnightt, launcher by LilButter.</p>
-
-<div class="start box" id="start-at-play">
-<p><strong>New here? Start at <a href="/play.html">Play</a>.</strong> It has a short checklist for each path, with one download per step. This guide is the detailed reference: every command, the screenshots and the troubleshooting.</p>
-<div class="play-slot" data-slot="installer-linux" hidden>
-<p><strong>One-click installer (beta)</strong> A script that sets up everything and adds Hunsterverse to the launcher. Run it with <code>bash install-hunsterverse.sh</code>. Steam Deck is not tested yet; if it fails, use the steps below and tell us in Discord.</p>
-<a class="btn btn-primary btn-small" data-slot-link href="/play.html" rel="noopener">Download the installer</a>
-</div>
-<p class="start-links"><a class="btn btn-secondary btn-small" href="/play.html#windows">New on Windows</a> <a class="btn btn-secondary btn-small" href="/play.html#linux">Linux / Steam Deck</a> <a class="btn btn-secondary btn-small" href="/play.html#transfer">Bringing a character</a></p>
-</div>
-
-<div class="toc">
-<strong>Contents</strong>
-<ol>
-<li><a href="#need">What you need</a></li>
-<li><a href="#packages">Packages and 32-bit support</a></li>
-<li><a href="#client">Copy the game client</a></li>
-<li><a href="#patch">Apply the client patch</a></li>
-<li><a href="#launcher">Install the Mezeporta launcher</a></li>
-<li><a href="#prefix">Create the Wine prefix</a></li>
-<li><a href="#wrapper">Launch wrapper (two Linux fixes)</a></li>
-<li><a href="#settings">Set the launcher options</a></li>
-<li><a href="#server">Add the Hunsterverse server</a></li>
-<li><a href="#play">Log in and launch</a></li>
-<li><a href="#trouble">Troubleshooting</a></li>
-<li><a href="#layout">Files and folders</a></li>
-<li><a href="#other">Other distributions</a></li>
-</ol>
-<p class="toc-appendix"><a href="#english">Appendix: English text and language</a> &nbsp;·&nbsp; <a href="#discord">Appendix: Discord linking and bot commands</a></p>
-</div>
-
-<h2 id="need">1. What you need</h2>
-<ul>
-<li>A Windows copy of the MHF-Z client, the folder named <code>Monster Hunter Frontier Online</code> (about 5.5 GB). It must contain <code>dat/</code>, <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>mhf.ini</code>.</li>
-<li>An Arch-based distribution (CachyOS, EndeavourOS, Manjaro, plain Arch).</li>
-<li>About 12 GB of free disk: 5.5 GB client, 0.8 GB prefix, plus backups.</li>
-<li>A Hunsterverse account. You create it yourself in the Mezeporta launcher (step 10): press <b>REGISTER</b> and choose a username and password. Nobody else needs to see them.</li>
-</ul>
-
-<p><b>Where to get everything.</b></p>
-<table>
-<tr><th>What</th><th>Where to get it</th></tr>
-<tr><td>Base game client, 5.5 GB</td><td><a href="https://drive.google.com/drive/folders/1F_xg7qaFmG_L7AJ16vzYBG8pwlpCYSFN?usp=sharing">Community client folder on Google Drive</a>, the link maintained by the <a href="https://pastebin.com/QqAwZSTC">/mhg/ community guide</a>. Community-run, not Hunsterverse official; the folder also contains server files you do not need.</td></tr>
-<tr><td>Hunsterverse Discord</td><td>Help, announcements and the bot commands: <a href="https://discord.gg/YuE42eh">discord.gg/YuE42eh</a></td></tr>
-<tr><td>Hunsterverse website</td><td><a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a>: sign in with your game account to see your characters, make backups and get your Discord link code. You do not need it to play.</td></tr>
-<tr><td>Hunsterverse client patch, 50.9 MB</td><td><a href="https://github.com/EclipseKnightt/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> from the EclipseKnightt releases page. Apply it by hand as in step 4, before the first launch: on a slow connection the launcher cannot download it for you (see the box in step 4).</td></tr>
-<tr><td>Mezeporta launcher</td><td><a href="https://github.com/LilButter/Mezeporta/releases">github.com/LilButter/Mezeporta/releases</a>, grab the build for your OS, v1.5.4 or newer</td></tr>
-</table>
-<div class="warn box"><b>Check the source.</b> The base client comes from the community, not from Hunsterverse. The server patch is the part Hunsterverse actually maintains, and it must be applied after the client, as in the patch step. If a link looks different from these, verify it before you run anything.</div>
-
-<div class="note box"><b>Keep your original client.</b> Everything here works on a copy. The Windows folder is never modified, and the patch step backs up every file it replaces.</div>
-
-<h2 id="packages">2. Packages and 32-bit support</h2>
-<p>MHF-Z is a 32-bit game, so Wine needs the multilib repository. Check it:</p>
-<pre><code>grep -q '^\[multilib\]' /etc/pacman.conf &amp;&amp; echo "multilib enabled" || echo "multilib NOT enabled"</code></pre>
-<p>If it is not enabled, edit <code>/etc/pacman.conf</code>, uncomment both the <code>[multilib]</code> header and the <code>Include = /etc/pacman.d/mirrorlist</code> line under it, then refresh:</p>
-<pre><code>sudo pacman -Sy</code></pre>
-<p>Install the runtime dependencies:</p>
-<pre><code>sudo pacman -Syu --needed wine winetricks cabextract p7zip fuse2 \
-  gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad \
-  gst-plugins-ugly gst-plugin-pipewire gst-libav \
-  vulkan-tools mesa-utils gamemode</code></pre>
-<p>If everything is already installed, this is a no-op. You do not need a full system upgrade for this game.</p>
-
-<h2 id="client">3. Copy the game client</h2>
-<p>Put it in <code>~/Games/MHFZ</code>. Replace the source path with wherever your copy lives, including a mounted Windows drive.</p>
-<pre><code>mkdir -p ~/Games/MHFZ
-rsync -rlt --info=progress2 "/path/to/Monster Hunter Frontier Online/" ~/Games/MHFZ/</code></pre>
-<p>Verify the six required files exist:</p>
-<pre><code>cd ~/Games/MHFZ
-ls mhf.exe mhfo.dll mhfo-hd.dll mhl.dll mhf.ini dat/mhfdat.bin</code></pre>
-<p>A clean client is about 5.2 GB and roughly 6,700 files.</p>
-
-<h2 id="patch">4. Apply the client patch</h2>
-<div class="warn box"><b>Slow connection? Download the patch yourself, now.</b> When the Mezeporta launcher checks for updates it has to download the patch (<code>Frontier_Patch.zip</code>, 50.9 MB) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>&quot;Patcher failed to connect&quot;</b>. Do not wait for that: download <a href="https://github.com/EclipseKnightt/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> in your browser (or let the commands below do it) and apply it <b>before you open the launcher for the first time</b>. With the files already in place the launcher has nothing left to download. The same trick works for later patch releases: download the new zip by hand and unzip it over the game folder.</div>
-<p>Download the server's patch, back up every game file it replaces, then overlay it.</p>
-<pre><code>BASE=&quot;https://github.com/EclipseKnightt/hvmhfz.eclipseforge.xyz/releases/download&quot;
-curl -L -o /tmp/Frontier_Patch.zip &quot;$BASE/client_patch/Frontier_Patch.zip&quot;
-unzip -q -o /tmp/Frontier_Patch.zip -d /tmp/fp
-
-cd ~/Games/MHFZ
-# back up every game file the patch replaces, into original-files/ (only the first time:
-# running this again keeps the original files, not patched ones)
-(cd /tmp/fp/Frontier_Patch &amp;&amp; find . -type f) | while read -r f; do
-  if [ -e &quot;$f&quot; ] &amp;&amp; [ ! -e &quot;original-files/$f&quot; ]; then
-    mkdir -p &quot;original-files/$(dirname &quot;$f&quot;)&quot; &amp;&amp; cp -p &quot;$f&quot; &quot;original-files/$f&quot;
-  fi
-done
-
-rsync -rlt /tmp/fp/Frontier_Patch/ ~/Games/MHFZ/</code></pre>
-<p>The patch replaces <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>dat/mhfdat.bin</code>, plus 79 files with the English text of the Diva storyline and a town's dialogue (in <code>dat/load/</code>, and <code>dat/stage/st205.pac</code>). The copies in <code>original-files/</code> let you roll back at any time.</p>
-
-<h2 id="launcher">5. Install the Mezeporta launcher</h2>
-<p>Download the Linux build of the launcher and unpack it <em>next to</em> <code>dat/</code>, not inside it.</p>
-<pre><code>MURL=&quot;https://github.com/LilButter/Mezeporta/releases/download/v1.5.4&quot;
-curl -L -o /tmp/Mezeporta-Linux.zip &quot;$MURL/Mezeporta-Linux.zip&quot;
-
-unzip -q /tmp/Mezeporta-Linux.zip -d ~/Games/MHFZ
-chmod +x ~/Games/MHFZ/run-mezeporta.sh ~/Games/MHFZ/mezeporta-bin</code></pre>
-<p>Afterwards the folder looks like this: <code>dat/</code>, <code>mhf.ini</code>, <code>mhfo.dll</code>, <code>mezeporta-bin</code>, <code>run-mezeporta.sh</code>, <code>Mezeporta/</code>. Check newer releases before you start; anything v1.5.4 or newer works the same way.</p>
-
-<h2 id="prefix">6. Create the Wine prefix</h2>
-<p>The bundled script creates a Wine prefix and installs DXVK, <code>d3dcompiler_47</code> and the Visual C++ runtime into it. Put the prefix <b>outside the game folder</b>:</p>
-<pre><code>cd ~/Games/MHFZ
-bash SetupDeps/mezeporta-setup-arch.sh --prefix "$HOME/Games/MHFZ-prefix"</code></pre>
-<div class="warn box"><b>Don't use the launcher's portable prefix</b> (<code>--portable-prefix</code>, or <code>Mezeporta/WinePrefix</code> inside the game folder). Before it installs a server update, the launcher searches the whole game folder and follows links. A prefix inside the folder links to your whole disk (its <code>z:</code> drive), so the update fails with "Patcher failed to manage files in game folder". The launcher can also rename unrelated backup files elsewhere on the disk. Already have the portable prefix? Move it out once, then set the Custom Prefix in step 8:
-<pre><code>mv ~/Games/MHFZ/Mezeporta/WinePrefix ~/Games/MHFZ-prefix</code></pre></div>
-<p class="meta" style="border:0;padding:0;margin:-.6em 0 1.2em">The release zip ships this script as <code>mezeporta-setup-arch.sh</code>. If you downloaded the copy from the repository it is called <code>install-deps-arch.sh</code>; they are the same file.</p>
-<p>This creates <code>~/Games/MHFZ-prefix</code> (about 800 MB). Add <code>--controller-fix</code> if you use a gamepad:</p>
-<pre><code>bash SetupDeps/mezeporta-setup-arch.sh --prefix "$HOME/Games/MHFZ-prefix" --controller-fix</code></pre>
-<p>Verify at the end:</p>
-<pre><code>bash SetupDeps/mezeporta-setup-arch.sh --verify</code></pre>
-
-<h2 id="wrapper">7. Launch wrapper (two Linux fixes)</h2>
-<p>On KDE Wayland with an NVIDIA card, the launcher window needs two environment variables. Create this small wrapper in the game folder:</p>
-<pre><code>cat &gt; ~/Games/MHFZ/run-mezeporta-x11.sh &lt;&lt;'EOF'
-#!/usr/bin/env sh
-export GDK_BACKEND=x11
-export WEBKIT_DMABUF_RENDERER_FORCE_SHM=1
-exec "$(dirname "$0")/run-mezeporta.sh" "$@"
-EOF
-chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
-<p>Why each one:</p>
-<table>
-<tr><th>Variable</th><th>Problem it solves</th></tr>
-<tr><td><code>GDK_BACKEND=x11</code></td><td>Without it the launcher dies at startup with <code>Gdk-Message: Error 71 (Protocol error) dispatching to Wayland display</code>.</td></tr>
-<tr><td><code>WEBKIT_DMABUF_RENDERER_FORCE_SHM=1</code></td><td>Without it the window opens but stays blank, because WebKitGTK cannot allocate a GBM buffer on the NVIDIA driver (<code>Failed to create GBM buffer ... Invalid argument</code>).</td></tr>
-</table>
-<div class="warn box"><b>Do not start the launcher from a systemd transient unit.</b> The launcher exits once it hands off to the game, and the default <code>KillMode=control-group</code> then kills the game process with it. The game dies about 10 seconds after the launcher window closes. Start it from a terminal, a desktop shortcut, or with <code>setsid nohup</code>.</div>
-
-<h2 id="settings">8. Set the launcher options</h2>
-<p>Run the wrapper and wait for the launcher window:</p>
-<pre><code>~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
-<p>On first run it shows the empty state:</p>
-<figure><img alt="Mezeporta first run" src="/assets/guide/linux-firstrun.webp"><figcaption>First run: no server configured yet.</figcaption></figure>
-
-<p>Open <b>Configure Settings</b>, then the <b>Advanced</b> tab. Set <b>Wine Prefix</b> to <b>Custom Prefix</b> and <b>Custom Prefix Path</b> to <code>~/Games/MHFZ-prefix</code> (not Portable, see the warning in step 6).</p>
-<figure><img alt="Settings, Advanced tab" src="/assets/guide/linux-settings_advanced.webp"><figcaption>Settings, Advanced. This screenshot still shows Portable: choose Custom Prefix instead.</figcaption></figure>
-
-<p>The other tabs hold cosmetic options. <b>Server Mode</b> is not here: it is a property of each server and is chosen when you add or edit one.</p>
-<figure><img alt="Settings tabs" src="/assets/guide/linux-settings_tabs.webp"><figcaption>Settings tabs: Launcher, Version, Screen, Graphics, Audio, Controls, Advanced.</figcaption></figure>
-
-<h2 id="server">9. Add the Hunsterverse server</h2>
-<p>Back on the main screen press <b>ADD A SERVER</b> and fill it in like this:</p>
-<table>
-<tr><th>Field</th><th>Value</th></tr>
-<tr><td>Name</td><td><code>Hunsterverse</code></td></tr>
-<tr><td>Host</td><td><code>129.213.54.221</code></td></tr>
-<tr><td>Launcher Port</td><td><code>8080</code></td></tr>
-<tr><td>Game Port</td><td><code>53310</code></td></tr>
-<tr><td>Mode</td><td><b>API</b> (the default)</td></tr>
-<tr><td>Version</td><td><code>ZZ</code></td></tr>
-</table>
-<figure><img alt="Add a Server dialog" src="/assets/guide/linux-addserver.webp"><figcaption>The Add a Server dialog. Leave the API / SignV1 switch on API.</figcaption></figure>
-<div class="note box"><b>API mode shows the Hunsterverse launcher:</b> news, banners, your mail and unclaimed gifts. If API mode won't log in, use the fallback: Launcher Port <code>53312</code> and Mode <b>SignV1</b>. It logs in and plays the same, without the news and banners.</div>
-
-<h2 id="play">10. Log in and launch</h2>
-<p>Select Hunsterverse in the <b>Server Selection</b> dropdown, type your own account name and password, and press <b>LOG IN</b>. Pick a character, then launch.</p>
-<p><b>No account yet?</b> In the Mezeporta launcher press <b>REGISTER</b>, choose a username and password, then log in with them. Do not just type a new name into LOG IN: in API mode (the default) the server refuses a name that does not exist.</p>
-<div class="warn box"><b>Usernames and passwords are case-sensitive.</b> Always type them exactly the same way: <code>Hunter</code> and <code>hunter</code> are different names, and logging in with other capitalisation does not open your account (it can look like a lost save).</div>
-<figure><img alt="Login screen" src="/assets/guide/linux-login.webp"><figcaption>Login with Hunsterverse selected. The username field is redacted in this screenshot.</figcaption></figure>
-<p>The launcher window closes when the game starts. That is normal, as long as you did not start the launcher inside a systemd unit (see step 7). The game window is titled <code>MONSTER HUNTER FRONTIER Z</code>.</p>
-
-<h2 id="trouble">11. Troubleshooting</h2>
-<table>
-<tr><th>Symptom</th><th>Cause and fix</th></tr>
-<tr><td>Launcher exits instantly with <code>Gdk-Message: Error 71</code></td><td>Native Wayland path. Start it through the wrapper with <code>GDK_BACKEND=x11</code>.</td></tr>
-<tr><td>Launcher window is blank or black</td><td>WebKitGTK GBM failure on NVIDIA. Add <code>WEBKIT_DMABUF_RENDERER_FORCE_SHM=1</code>. <code>WEBKIT_DISABLE_DMABUF_RENDERER</code> and <code>WEBKIT_DISABLE_COMPOSITING_MODE</code> do <em>not</em> fix this one.</td></tr>
-<tr><td>Launcher closes and nothing appears, every time</td><td>The launcher is being run under <code>systemd-run</code>. Its unit is killed together with the game when the launcher exits. Start it directly, or with <code>setsid nohup</code>.</td></tr>
-<tr><td>Game starts then quits after a few seconds</td><td>Check <code>journalctl --user -u &lt;unit&gt;</code> if you used a unit, otherwise run the launcher from a terminal and read the output. A DXVK or Wine error appears there.</td></tr>
-<tr><td>Text in game is boxes or garbage</td><td>Install <code>noto-fonts-cjk</code>, enable <code>ja_JP.UTF-8</code> in <code>/etc/locale.gen</code>, run <code>sudo locale-gen</code>, then start with <code>LANG=ja_JP.UTF-8 ~/Games/MHFZ/run-mezeporta-x11.sh</code>.</td></tr>
-<tr><td>No sound</td><td>Install <code>gst-plugin-pipewire</code> and <code>gst-plugins-good</code>, then re-run the <code>--verify</code> step.</td></tr>
-<tr><td><code>Patcher failed to manage files in game folder</code> (API mode)</td><td>The Wine prefix is inside the game folder (<code>Mezeporta/WinePrefix</code>, the launcher's portable prefix). The launcher patcher walks the game folder for <code>.mezeb</code> backups and follows symlinks; the prefix contains <code>dosdevices/z: -&gt; /</code>, so the walk reaches the rest of the disk and aborts with <code>Permission denied</code>. Move the prefix out, <code>mv ~/Games/MHFZ/Mezeporta/WinePrefix ~/Games/MHFZ-prefix</code>, and set a Custom Prefix (step 8). Or use SignV1 (launcher port <code>53312</code>), which skips the patcher.</td></tr>
-<tr><td>&quot;Patcher failed to connect&quot; when the launcher checks for updates</td><td>The connection is too slow for the launcher (under about 3 MB/s). Download <code>Frontier_Patch.zip</code> yourself and unzip it over the game folder, as in step 4.</td></tr>
-<tr><td>Login fails or the server is refused</td><td>Check that the username and password are exactly as you registered them (case-sensitive) and that the server entry matches step 9. A name you never registered is refused in API mode: press REGISTER first. Still refused? Use the fallback from step 9: launcher port <code>53312</code> and mode SignV1.</td></tr>
-<tr><td>Wrong or broken prefix</td><td>Delete <code>~/Games/MHFZ-prefix</code> and re-run the <code>--prefix</code> step. Your game files are untouched.</td></tr>
-<tr><td>Want vanilla files back</td><td>Copy everything from <code>~/Games/MHFZ/original-files/</code> back over the game folder.</td></tr>
-</table>
-
-<h2 id="layout">12. Files and folders</h2>
-<div class="tree">~/Games/MHFZ/
-├── dat/                     game data (patched mhfdat.bin lives here)
-├── mhf.exe  mhfo.dll  mhfo-hd.dll  mhl.dll  mhf.ini
-├── original-files/          backups of the files the patch replaced
-│   └── dat/               mhfdat.bin, load/, stage/st205.pac
-├── mezeporta-bin            launcher binary
-├── run-mezeporta.sh         stock launcher script
-├── run-mezeporta-x11.sh     wrapper with the two Linux fixes
-├── SetupDeps/               dependency scripts
-└── Mezeporta/
-    ├── config.json          launcher settings and server list
-    ├── fonts/  audio/  WebView/
-    └── (no WinePrefix here: the prefix lives in ~/Games/MHFZ-prefix)</div>
-
-<h2 id="other">13. Other distributions</h2>
-<p>Everything after the packages is distro independent: the game folder, the patch, the launcher, the wrapper and the server settings are identical everywhere. Only package names and the prefix bootstrap change.</p>
-
-<h3>Debian and Ubuntu</h3>
-<pre><code>sudo dpkg --add-architecture i386
-sudo apt update
-sudo apt install wine wine32:i386 winetricks cabextract p7zip-full \
-  gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
-  gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
-  gstreamer1.0-pipewire vulkan-tools mesa-utils gamemode</code></pre>
-<p>The release zip ships a matching script, so you can skip the manual prefix steps:</p>
-<pre><code>cd ~/Games/MHFZ
-bash SetupDeps/mezeporta-setup-ubuntu.sh --prefix "$HOME/Games/MHFZ-prefix" --controller-fix
-bash SetupDeps/mezeporta-setup-ubuntu.sh --verify</code></pre>
-<p>Drop <code>--controller-fix</code> if you play with mouse and keyboard. Keep the prefix <b>outside</b> the game folder, as in <a href="#prefix">step 6</a> (do not use <code>--portable-prefix</code>), and set it as the Custom Prefix in step 8. The repo copy of this script is named <code>install-deps-ubuntu.sh</code>; it is the same file.</p>
-<div class="note box"><b>Ubuntu Wine version.</b> Ubuntu 24.04 ships Wine 9.0, which is new enough for DXVK. Ubuntu 22.04 ships 6.x, which is too old: use the WineHQ repository or a Kron4ek build. Check with <code>wine --version</code>, you want 9.0 or newer.</div>
-
-<h3>Fedora</h3>
-<pre><code>sudo dnf install wine winetricks cabextract p7zip \
-  gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-bad-free \
-  gstreamer1-plugins-ugly gstreamer1-plugin-pipewire \
-  vulkan-tools glx-utils gamemode</code></pre>
-<p><code>dnf install wine</code> pulls the 32-bit Wine libraries with it. If a 32-bit prefix still refuses to start, add the i686 package explicitly:</p>
-<pre><code>sudo dnf install wine.i686</code></pre>
-<p>Fedora has no bundled setup script, so bootstrap the prefix by hand with the generic steps below.</p>
-
-<h3>openSUSE</h3>
-<pre><code>sudo zypper install wine wine-32bit winetricks cabextract p7zip \
-  gstreamer-plugins-base gstreamer-plugins-good gstreamer-plugins-bad \
-  gstreamer-plugins-ugly gstreamer-plugin-pipewire \
-  vulkan-tools Mesa-demo-x gamemode</code></pre>
-<div class="warn box"><b>Tumbleweed and 32-bit packages.</b> Tumbleweed has been moving 32-bit packages out of the main repositories, so <code>wine-32bit</code> may not resolve. If it does not, follow the openSUSE Wine wiki for the current repository layout, or use the generic path below on a distribution with multilib.</div>
-
-<h3>Any other distribution</h3>
-<p>You need five things: Wine 9.0 or newer with 32-bit support, winetricks, cabextract, p7zip, and GStreamer with the base, good, bad and ugly plugin sets plus a PipeWire, PulseAudio or ALSA sink. With those present, build the prefix yourself, <b>outside the game folder</b> (see <a href="#prefix">step 6</a> for why) and set it as the Custom Prefix in step 8:</p>
-<pre><code>cd ~/Games/MHFZ
-export WINEPREFIX="$HOME/Games/MHFZ-prefix"
-export WINEDEBUG=-all
-
-mkdir -p "$WINEPREFIX"
-wineboot -u
-wineserver -w
-
-WINETRICKS_DISABLE_LNK=1 WINETRICKS_OPT_SHAREDPREFIX=0 \
-  winetricks -q d3dcompiler_47 dxvk vcrun2022
-wineserver -w</code></pre>
-<p>Then the gamepad overrides, if you use a controller:</p>
-<pre><code>for dll in xinput1_3 dinput d8input; do
-  wine reg add 'HKCU\Software\Wine\DllOverrides' /v "$dll" /t REG_SZ /d 'native,builtin' /f
-done
-wineserver -w</code></pre>
-<p>Sanity check before launching:</p>
-<pre><code>wine --version                  # 9.0 or newer
-winetricks --version
-gst-inspect-1.0 appsink &gt;/dev/null &amp;&amp; echo "gstreamer ok"
-gst-inspect-1.0 autoaudiosink &gt;/dev/null &amp;&amp; echo "audio sink ok"</code></pre>
-
-<h3>The wrapper is the same everywhere</h3>
-<p><code>GDK_BACKEND=x11</code> matters on Wayland desktops of any distribution, and <code>WEBKIT_DMABUF_RENDERER_FORCE_SHM=1</code> matters on NVIDIA. On X11, or on AMD and Intel graphics, you can usually leave both out, but keeping them costs nothing.</p>
-
-<h2 id="english">Appendix: English text and language</h2>
-<p>MHF-Z is a Japanese game. The English translation is not a separate installer: the text lives in the game's data files in <code>dat/</code> (<code>mhfdat.bin</code>, <code>mhfpac.bin</code>, <code>mhfinf.bin</code> and the files in <code>dat/load/</code>). The Mezeporta launcher starts the game itself and never loads <code>mhl.dll</code> (that file belonged to the old Capcom launcher), so replacing <code>mhl.dll</code> changes nothing in game.</p>
-<p><b>What the client patch already does.</b> The patch from <a href="#patch">step 4</a> replaces <code>dat/mhfdat.bin</code> and adds the English Diva storyline and a town's dialogue. If your menus are English, you are done.</p>
-<p><b>If your game is in Japanese.</b> The patch step was skipped, or something put the original files back. Run step 4 again: it overlays the patched files and keeps your first backup in <code>original-files/</code>. The community client of step 1 already carries most of the English menus; a client copied from somewhere else may not.</p>
-<p><b>Coverage is partial.</b> Not everything is translated. Item names, NPC dialogue and event text often stay Japanese. That is the translation, not a broken install.</p>
-<p><b>Fonts.</b> If Japanese text shows as boxes, install your distribution's CJK fonts (<code>fonts-noto-cjk</code> on Debian and Ubuntu, <code>noto-fonts-cjk</code> on Arch, <code>google-noto-sans-cjk-fonts</code> on Fedora) and start the launcher with <code>LANG=ja_JP.UTF-8</code>.</p>
-<div class="warn box"><b>Two warnings from old client guides.</b> Do not apply the hosts-file trick that circulates with the client pack: it points Capcom hostnames at 127.0.0.1, it is meant for self-hosted Erupe servers, and it will break name resolution for Hunsterverse. And Locale Emulator is a Windows tool you do not need here.</div>
-
-<h2 id="discord">Appendix: Discord linking and bot commands</h2>
-<p>Linking your game account to Discord gives you character backups and the bot commands. The account page does the linking:</p>
-<ol>
-<li>Open <a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a>.</li>
-<li>Sign in with the same username and password you use in the game.</li>
-<li>The Overview tab shows the command <code>/link code:&lt;code&gt;</code>, with your own code in it. In the Hunsterverse Discord type <code>/link</code> and paste the code into the code box.</li>
-</ol>
-<p>Once linked, these slash commands work in the Hunsterverse Discord. The old <code>!f</code> commands are gone; type the <code>/</code> and pick the command from the list:</p>
-<table>
-<tr><th>Command</th><th>What it does</th></tr>
-<tr><td><code>/link code:&lt;code&gt;</code></td><td>Links your game account to your Discord account. The code comes from the account page and is valid for 24 hours.</td></tr>
-<tr><td><code>/backup</code></td><td>Sends you a zip backup of one of your characters in a DM (you pick the character).</td></tr>
-<tr><td><code>/import backup:&lt;file&gt;</code></td><td>Restores a character from a backup. Attach the zip <code>/backup</code> sent you <b>as it is</b> (do not extract it), or an Erupe export JSON from another server. You pick the target character, see a preview and confirm. Log out of the game first, and play the target character once before you import into it.</td></tr>
-<tr><td><code>/password password:&lt;new&gt; confirm_password:&lt;new&gt; username:&lt;account&gt;</code></td><td>Sets a new password for your game account (6 to 40 characters). Only you see the answer. This is the only way to reset a forgotten password, and only on an account that is linked to Discord.</td></tr>
-</table>
-<div class="note box"><b>Backups are a zip: send it as it is.</b> Do not extract it and do not attach single BIN files. The account page's Backups tab can also download and import them (it says so when that is not available yet).</div>
-
-<footer>
-<p><b>Credits:</b> Mezeporta launcher by LilButter. Client patch by EclipseKnightt for Hunsterverse. Monster Hunter Frontier Z is a Capcom game; this guide only covers running a private server client on Linux.</p>
-<p>Generated for a CachyOS setup. Paths and versions may differ on your machine.</p>
-</footer>
-</main>
     <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
     <footer class="site-foot">
       <div class="wrap">
@@ -392,8 +101,6 @@ gst-inspect-1.0 autoaudiosink &gt;/dev/null &amp;&amp; echo "audio sink ok"</cod
           <div class="foot-col">
             <h2 class="foot-head">Guides</h2>
             <a href="/play.html">Play</a>
-            <a href="/guide-windows.html">Windows guide</a>
-            <a href="/guide-linux.html">Linux guide</a>
             <a href="/guide-frontier.html">Frontier guide</a>
             <a href="/guide-roads.html">Roads in game</a>
           </div>
@@ -423,6 +130,6 @@ gst-inspect-1.0 autoaudiosink &gt;/dev/null &amp;&amp; echo "audio sink ok"</cod
       </div>
     </footer>
     <!-- /site-shell:footer -->
-  <script src="/js/search.js" defer></script>
-</body>
+      <script src="/js/search.js" defer></script>
+  </body>
 </html>

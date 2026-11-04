@@ -20,13 +20,13 @@ const path = require("path");
 const { chromium } = require("playwright");
 
 const root = path.join(__dirname, "..");
-const pages = ["/", "/worlds.html", "/guide-windows.html"];
+const pages = ["/", "/worlds.html", "/play.html"];
 const sizes = [[375, 667], [667, 375], [768, 1024], [1280, 800]];
 const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json",
   ".png": "image/png", ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml" };
 const shots = process.env.SHOTS;
 // every entry the folded menu must reach (dev/shell/nav.html)
-const expected = ["/play.html", "/guide-windows.html", "/guide-linux.html", "/guide-frontier.html",
+const expected = ["/play.html", "/guide-frontier.html",
   "/monsters.html", "/quests.html", "/catalog.html", "/set-builder.html", "/quest-editor.html",
   "/road-vote.html", "/road.html", "/road-history.html", "/road-data.html", "/guide-roads.html",
   "/hunters.html", "/guilds.html", "/leaderboards.html", "https://discord.gg/YuE42eh",

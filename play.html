@@ -39,8 +39,6 @@
             <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
             <div class="nav-menu" id="nav-guides">
               <a class="navlink" href="/play.html" aria-current="page">Play</a>
-              <a class="navlink" href="/guide-windows.html">Windows guide</a>
-              <a class="navlink" href="/guide-linux.html">Linux guide</a>
               <a class="navlink" href="/guide-frontier.html">Frontier guide</a>
             </div>
           </div>
@@ -110,7 +108,7 @@
           <h2 id="windows-title">New on Windows</h2>
           <span class="panel-note play-progress" data-progress aria-live="polite"></span>
         </div>
-        <p class="note-text">Windows 10 or 11, 64-bit, about 8 GB free. The full text with screenshots is the <a href="/guide-windows.html">Windows guide</a>.</p>
+        <p class="note-text">Windows 10 or 11, 64-bit, about 8 GB free. If something goes wrong, open <a href="#windows-trouble">Troubleshooting</a> below the steps.</p>
 
         <!-- SLOT: one-click installer and our own full download. Hidden until a flag in js/play.js is true
              and its URL is set. The installer is published (release tag "installer"); the full download is not yet. -->
@@ -136,10 +134,10 @@
           </li>
           <li data-step="win-patch">
             <label><input type="checkbox" /> <span class="play-step-title">Apply our client patch before the first launch</span></label>
-            <p>Unzip <code>Frontier_Patch.zip</code> (50.9 MB) over the game folder. The launcher cannot fetch it on a connection slower than about 3 MB/s. The guide has a PowerShell script that also backs up the files it replaces: <a href="/guide-windows.html#patch">step 3 of the guide</a>.</p>
+            <p>Unzip <code>Frontier_Patch.zip</code> (50.9 MB) over the game folder. The launcher cannot fetch it on a connection slower than about 3 MB/s. A PowerShell script that also backs up the files it replaces is in <a href="#windows-patch">Apply the patch with a script</a> below.</p>
             <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a>
           </li>
-          <li data-step="win-launcher">
+          <li id="windows-launcher" data-step="win-launcher">
             <label><input type="checkbox" /> <span class="play-step-title">Install the Mezeporta launcher into the same folder</span></label>
             <p>Extract it so that <code>Mezeporta.exe</code> sits next to <code>dat</code>, not in a subfolder. The launcher is by LilButter (GPL-2.0, <a href="https://github.com/LilButter/Mezeporta" rel="noopener">source</a>).</p>
             <a class="btn btn-secondary btn-small" href="https://github.com/LilButter/Mezeporta/releases/download/v1.5.4/Mezeporta-Windows.zip" rel="noopener">Mezeporta-Windows.zip (v1.5.4)</a>
@@ -158,9 +156,9 @@
             <label><input type="checkbox" /> <span class="play-step-title">Start <code>Mezeporta.exe</code></span></label>
             <p>Windows may say "Windows protected your PC": the launcher is not code-signed. Choose More info, then Run anyway, only for the file from the releases page above.</p>
           </li>
-          <li data-step="win-server">
+          <li id="windows-server" data-step="win-server">
             <label><input type="checkbox" /> <span class="play-step-title">Press ADD A SERVER and enter the server settings</span></label>
-            <!-- Server settings: docs/launcher.md and the guides' "Add the Hunsterverse server". The Copy buttons are hidden until js/play.js runs. -->
+            <!-- Server settings: docs/launcher.md. The Copy buttons are hidden until js/play.js runs. -->
                   <table class="data-table play-settings">
                     <thead><tr><th>Field</th><th>Value</th><th data-nosort>Copy</th></tr></thead>
                     <tbody>
@@ -180,10 +178,66 @@
           </li>
           <li data-step="win-site">
             <label><input type="checkbox" /> <span class="play-step-title">Optional: sign in on this site and link Discord</span></label>
-            <p>Use the same username and password. The account page shows your link command; run it in the <a href="https://discord.gg/YuE42eh" rel="noopener">Hunsterverse Discord</a> to get backups and the bot commands.</p>
+            <p>Use the same username and password. The account page shows your link command; run it in the <a href="https://discord.gg/YuE42eh" rel="noopener">Hunsterverse Discord</a> to get backups and the bot commands (<a href="#discord">the list</a>).</p>
             <a class="btn btn-secondary btn-small" href="/?next=%2Faccount.html#login-form">Sign in</a>
           </li>
         </ol>
+
+        <div class="play-more">
+          <h3 class="play-more-head">More help</h3>
+
+          <details class="play-help" id="windows-patch">
+            <summary>Apply the patch with a script, and "Patcher failed to connect"</summary>
+            <p><b>Slow connection? Download the patch yourself, before the first launch.</b> When the launcher checks for updates it downloads <code>Frontier_Patch.zip</code> (50.9 MB) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>"Patcher failed to connect"</b>. With the patch already in place the launcher has nothing left to download. The same works for later patch releases: download the new zip and unzip it over the game folder.</p>
+            <p>Or open PowerShell and run this. It downloads the patch, backs up every game file it replaces into <code>original-files</code> (only the first time, so running it again keeps your original files), then copies the patch over the game:</p>
+<pre><code>$game = "C:\Games\MHFZ"
+
+# 1. download and unpack the patch
+$patchUrl = "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/" +
+            "download/client_patch/Frontier_Patch.zip"
+$zip = "$env:TEMP\Frontier_Patch.zip"
+Invoke-WebRequest -Uri $patchUrl -OutFile $zip
+Expand-Archive -Path $zip -DestinationPath "$env:TEMP\Frontier_Patch" -Force
+$src = (Get-Item "$env:TEMP\Frontier_Patch\Frontier_Patch").FullName.TrimEnd("\")
+
+# 2. back up every game file the patch replaces
+Get-ChildItem $src -Recurse -File | ForEach-Object {
+  $rel = $_.FullName.Substring($src.Length + 1)
+  $orig = Join-Path $game $rel
+  $backup = Join-Path "$game\original-files" $rel
+  if ((Test-Path $orig) -and -not (Test-Path $backup)) {
+    New-Item -ItemType Directory -Force -Path (Split-Path $backup) | Out-Null
+    Copy-Item $orig $backup
+  }
+}
+
+# 3. copy the patch over the game
+Copy-Item "$src\*" -Destination $game -Recurse -Force</code></pre>
+            <p>The patch replaces <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>dat\mhfdat.bin</code>, plus 79 files with the English Diva storyline and a town's dialogue. To get the original client back, copy everything from <code>C:\Games\MHFZ\original-files\</code> over the game folder.</p>
+            <p>To update the launcher later, extract a newer <code>Mezeporta-Windows.zip</code> over the same folder. <code>Mezeporta\config.json</code> keeps your server list, so back that folder up before a big update.</p>
+          </details>
+
+          <details class="play-help" id="windows-trouble">
+            <summary>Troubleshooting</summary>
+            <div class="table-wrap">
+              <table class="data-table play-help-table">
+                <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+                <tbody>
+                  <tr><td><code>d3dx9_43.dll</code> was not found</td><td>Install the DirectX End-User Runtime (June 2010): Windows 10 and 11 do not ship the old D3DX libraries.</td></tr>
+                  <tr><td><code>VCRUNTIME140.dll</code> or <code>MSVCP140.dll</code> missing</td><td>Install the x86 Visual C++ 2015-2022 package. The game is 32-bit, so x86 is the one that matters.</td></tr>
+                  <tr><td>"Windows protected your PC" (SmartScreen) blocks the launcher</td><td>More info, then Run anyway, but only for a file from the releases page linked in the steps. The launcher is not code-signed.</td></tr>
+                  <tr><td>Antivirus deletes <code>mhfo.dll</code>, <code>mhf.exe</code> or <code>Mezeporta.exe</code></td><td>Restore it from quarantine and exclude <code>C:\Games\MHFZ</code>; keep real-time protection on. Exclude the folder before you patch, so a quarantine does not leave a half patched install.</td></tr>
+                  <tr><td>The launcher opens, the game does not appear</td><td>Check that <code>mhf.exe</code> sits directly next to <code>dat</code>. In a nested folder the launcher cannot find it.</td></tr>
+                  <tr><td>Login fails or the character list is empty</td><td>The username and password must be exactly as registered (case-sensitive), and the server entry must match the table: host <code>129.213.54.221</code>, launcher port <code>8080</code>, game port <code>53310</code>, mode API. A name you never registered is refused: press REGISTER first. Still refused? Launcher port <code>53312</code> and mode SignV1.</td></tr>
+                  <tr><td>"Patcher failed to connect" when the launcher checks for updates</td><td>Your connection is under about 3 MB/s. Download <code>Frontier_Patch.zip</code> and unzip it over the game folder: <a href="#windows-patch">see above</a>.</td></tr>
+                  <tr><td>Controller not detected</td><td>Enable controller support in the launcher settings and keep <code>xinput1_3.dll</code> and <code>XInputPlus.ini</code> in the game folder.</td></tr>
+                  <tr><td>Japanese text shows as boxes</td><td>See <a href="#language">English and Japanese text</a>.</td></tr>
+                  <tr><td>You want the original client back</td><td>Copy everything from <code>C:\Games\MHFZ\original-files\</code> over the game folder.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
         <p class="play-reset"><button type="button" class="ghost-btn small" hidden data-reset>Clear the ticks of this card</button></p>
       </section>
 
@@ -192,7 +246,7 @@
           <h2 id="linux-title">Linux / Steam Deck</h2>
           <span class="panel-note play-progress" data-progress aria-live="polite"></span>
         </div>
-        <p class="note-text">Tested on Arch based systems (CachyOS) with Wine. <strong>Steam Deck is not tested yet:</strong> SteamOS cannot install packages with pacman and the launcher needs a system Wine, so the guide's method may not work there. If you try it, tell us in the Discord. The full text is the <a href="/guide-linux.html">Linux guide</a>, including other distributions.</p>
+        <p class="note-text">Tested on Arch based systems (CachyOS) with Wine. <strong>Steam Deck is not tested yet:</strong> SteamOS cannot install packages with pacman and the launcher needs a system Wine, so this method may not work there. If you try it, tell us in the Discord. The commands below are for Arch based systems; Debian, Ubuntu, Fedora, openSUSE and others are under <a href="#linux-packages">Install Wine and 32-bit support</a>.</p>
 
         <!-- SLOT: same as in the Windows card, for the Linux installer. Hidden until the flag in js/play.js is set. -->
         <div class="play-slot" data-slot="installer-linux" hidden>
@@ -208,7 +262,7 @@
           </li>
           <li data-step="lin-packages">
             <label><input type="checkbox" /> <span class="play-step-title">Install Wine and 32-bit support</span></label>
-            <p>Enable multilib, then install Wine, winetricks and the libraries the game needs. The exact commands: <a href="/guide-linux.html#packages">step 2 of the guide</a>.</p>
+            <p>Enable multilib, then install Wine, winetricks and the libraries the game needs. The exact commands, for each distribution: <a href="#linux-packages">Install Wine and 32-bit support</a> below.</p>
           </li>
           <li data-step="lin-folder">
             <label><input type="checkbox" /> <span class="play-step-title">Copy the client to <code>~/Games/MHFZ</code></span></label>
@@ -217,21 +271,21 @@
           </li>
           <li data-step="lin-patch">
             <label><input type="checkbox" /> <span class="play-step-title">Apply our client patch before the first launch</span></label>
-            <p>Unzip it over the game folder; the guide's script also backs up what it replaces: <a href="/guide-linux.html#patch">step 4</a>.</p>
+            <p>Unzip it over the game folder. The commands that also back up what it replaces are in <a href="#linux-patch">Apply the patch with commands</a> below.</p>
             <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a>
           </li>
-          <li data-step="lin-launcher">
+          <li id="linux-launcher" data-step="lin-launcher">
             <label><input type="checkbox" /> <span class="play-step-title">Install the Mezeporta launcher into the same folder</span></label>
-            <p>By LilButter (GPL-2.0, <a href="https://github.com/LilButter/Mezeporta" rel="noopener">source</a>).</p>
+            <p>By LilButter (GPL-2.0, <a href="https://github.com/LilButter/Mezeporta" rel="noopener">source</a>). Unzip it next to <code>dat/</code>, not inside it, then make <code>run-mezeporta.sh</code> and <code>mezeporta-bin</code> executable (<code>chmod +x</code>).</p>
             <a class="btn btn-secondary btn-small" href="https://github.com/LilButter/Mezeporta/releases/download/v1.5.4/Mezeporta-Linux.zip" rel="noopener">Mezeporta-Linux.zip (v1.5.4)</a>
           </li>
           <li data-step="lin-wine">
             <label><input type="checkbox" /> <span class="play-step-title">Create the Wine prefix, the launch wrapper and the launcher options</span></label>
-            <p>Three short steps with commands: <a href="/guide-linux.html#prefix">prefix</a>, <a href="/guide-linux.html#wrapper">wrapper</a> and <a href="/guide-linux.html#settings">options</a>. Follow the guide for these; they depend on your distribution and graphics card.</p>
+            <p>Two short steps with commands: the <a href="#linux-prefix">prefix and the launcher options</a>, and the <a href="#linux-wrapper">launch wrapper</a>. They depend on your distribution and graphics card.</p>
           </li>
-          <li data-step="lin-server">
+          <li id="linux-server" data-step="lin-server">
             <label><input type="checkbox" /> <span class="play-step-title">Press ADD A SERVER and enter the server settings</span></label>
-            <!-- Server settings: docs/launcher.md and the guides' "Add the Hunsterverse server". The Copy buttons are hidden until js/play.js runs. -->
+            <!-- Server settings: docs/launcher.md. The Copy buttons are hidden until js/play.js runs. -->
                   <table class="data-table play-settings">
                     <thead><tr><th>Field</th><th>Value</th><th data-nosort>Copy</th></tr></thead>
                     <tbody>
@@ -250,6 +304,132 @@
             <p>Choose a username and password (case-sensitive), then pick the Hunsterverse server, log in, create a character and launch. Do not type a new name into LOG IN: the server refuses a name that was not registered.</p>
           </li>
         </ol>
+
+        <div class="play-more">
+          <h3 class="play-more-head">More help</h3>
+
+          <details class="play-help" id="linux-packages">
+            <summary>Install Wine and 32-bit support, by distribution</summary>
+            <p>The game is 32-bit. Everything after the packages (game folder, patch, launcher, wrapper, server settings) is the same on every distribution. You need Wine 9.0 or newer with 32-bit support, winetricks, cabextract, p7zip, and GStreamer with the base, good, bad and ugly plugins plus a PipeWire, PulseAudio or ALSA sink.</p>
+
+            <h4>Arch, CachyOS, EndeavourOS, Manjaro</h4>
+            <p>Check that multilib is on:</p>
+<pre><code>grep -q '^\[multilib\]' /etc/pacman.conf &amp;&amp; echo "multilib enabled" || echo "multilib NOT enabled"</code></pre>
+            <p>If not, uncomment the <code>[multilib]</code> header and the <code>Include = /etc/pacman.d/mirrorlist</code> line under it in <code>/etc/pacman.conf</code>, then run <code>sudo pacman -Sy</code>. Install:</p>
+<pre><code>sudo pacman -Syu --needed wine winetricks cabextract p7zip fuse2 \
+  gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad \
+  gst-plugins-ugly gst-plugin-pipewire gst-libav \
+  vulkan-tools mesa-utils gamemode</code></pre>
+
+            <h4>Debian and Ubuntu</h4>
+<pre><code>sudo dpkg --add-architecture i386
+sudo apt update
+sudo apt install wine wine32:i386 winetricks cabextract p7zip-full \
+  gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
+  gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
+  gstreamer1.0-pipewire vulkan-tools mesa-utils gamemode</code></pre>
+            <p>Ubuntu 24.04 ships Wine 9.0, which is new enough. Ubuntu 22.04 ships 6.x, which is too old: use the WineHQ repository or a Kron4ek build. Check with <code>wine --version</code>.</p>
+
+            <h4>Fedora</h4>
+<pre><code>sudo dnf install wine winetricks cabextract p7zip \
+  gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-bad-free \
+  gstreamer1-plugins-ugly gstreamer1-plugin-pipewire \
+  vulkan-tools glx-utils gamemode</code></pre>
+            <p>If a 32-bit prefix still refuses to start, add <code>sudo dnf install wine.i686</code>. Fedora has no setup script: make the prefix by hand (see <a href="#linux-prefix">Wine prefix</a>).</p>
+
+            <h4>openSUSE</h4>
+<pre><code>sudo zypper install wine wine-32bit winetricks cabextract p7zip \
+  gstreamer-plugins-base gstreamer-plugins-good gstreamer-plugins-bad \
+  gstreamer-plugins-ugly gstreamer-plugin-pipewire \
+  vulkan-tools Mesa-demo-x gamemode</code></pre>
+            <p>Tumbleweed has been moving 32-bit packages out of the main repositories, so <code>wine-32bit</code> may not resolve. Follow the openSUSE Wine wiki for the current layout, or use another distribution with multilib. Then make the prefix by hand.</p>
+
+            <h4>Any other distribution</h4>
+            <p>Install the five things above, then make the prefix by hand (see <a href="#linux-prefix">Wine prefix</a>). Check with <code>wine --version</code> (9.0 or newer) and <code>gst-inspect-1.0 appsink</code>.</p>
+          </details>
+
+          <details class="play-help" id="linux-patch">
+            <summary>Apply the patch with commands, and "Patcher failed to connect"</summary>
+            <p><b>Slow connection? Download the patch yourself, before the first launch.</b> The launcher downloads <code>Frontier_Patch.zip</code> (50.9 MB) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>"Patcher failed to connect"</b>. With the patch already in place there is nothing left to download. The same works for later patch releases.</p>
+            <p>This downloads the patch, backs up every game file it replaces into <code>original-files/</code> (only the first time), then copies it over the game:</p>
+<pre><code>curl -L -o /tmp/Frontier_Patch.zip \
+  "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip"
+unzip -q -o /tmp/Frontier_Patch.zip -d /tmp/fp
+
+cd ~/Games/MHFZ
+(cd /tmp/fp/Frontier_Patch &amp;&amp; find . -type f) | while read -r f; do
+  if [ -e "$f" ] &amp;&amp; [ ! -e "original-files/$f" ]; then
+    mkdir -p "original-files/$(dirname "$f")" &amp;&amp; cp -p "$f" "original-files/$f"
+  fi
+done
+
+rsync -rlt /tmp/fp/Frontier_Patch/ ~/Games/MHFZ/</code></pre>
+            <p>The patch replaces <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>dat/mhfdat.bin</code>, plus 79 files with the English Diva storyline and a town's dialogue. To get the original files back, copy everything from <code>~/Games/MHFZ/original-files/</code> over the game folder.</p>
+          </details>
+
+          <details class="play-help" id="linux-prefix">
+            <summary>Wine prefix and launcher options</summary>
+            <p>Make the Wine prefix <b>outside the game folder</b>. On Arch and on Debian or Ubuntu the launcher zip has a script that creates it and installs DXVK, <code>d3dcompiler_47</code> and the Visual C++ runtime (about 800 MB). Add <code>--controller-fix</code> if you use a gamepad:</p>
+<pre><code>cd ~/Games/MHFZ
+bash SetupDeps/mezeporta-setup-arch.sh --prefix "$HOME/Games/MHFZ-prefix"      # Arch
+bash SetupDeps/mezeporta-setup-ubuntu.sh --prefix "$HOME/Games/MHFZ-prefix"    # Debian, Ubuntu
+bash SetupDeps/mezeporta-setup-arch.sh --verify                                # check at the end (same with -ubuntu)</code></pre>
+            <p>On Fedora, openSUSE and others, build it by hand:</p>
+<pre><code>cd ~/Games/MHFZ
+export WINEPREFIX="$HOME/Games/MHFZ-prefix"
+export WINEDEBUG=-all
+mkdir -p "$WINEPREFIX"
+wineboot -u
+wineserver -w
+WINETRICKS_DISABLE_LNK=1 WINETRICKS_OPT_SHAREDPREFIX=0 \
+  winetricks -q d3dcompiler_47 dxvk vcrun2022
+wineserver -w
+# only with a gamepad:
+for dll in xinput1_3 dinput d8input; do
+  wine reg add 'HKCU\Software\Wine\DllOverrides' /v "$dll" /t REG_SZ /d 'native,builtin' /f
+done
+wineserver -w</code></pre>
+            <p><b>Don't use the launcher's portable prefix</b> (<code>--portable-prefix</code>, or <code>Mezeporta/WinePrefix</code> inside the game folder). Before an update the launcher searches the whole game folder and follows links; a prefix inside it links to your whole disk (its <code>z:</code> drive), so the update fails with "Patcher failed to manage files in game folder". Already have it? Move it out once: <code>mv ~/Games/MHFZ/Mezeporta/WinePrefix ~/Games/MHFZ-prefix</code>.</p>
+            <p>Then start the launcher through the <a href="#linux-wrapper">wrapper</a>, open <b>Configure Settings</b>, the <b>Advanced</b> tab, and set <b>Wine Prefix</b> to <b>Custom Prefix</b> and <b>Custom Prefix Path</b> to <code>~/Games/MHFZ-prefix</code>. The other tabs are cosmetic; Server Mode belongs to each server.</p>
+          </details>
+
+          <details class="play-help" id="linux-wrapper">
+            <summary>Launch wrapper (Wayland and NVIDIA)</summary>
+            <p>On a Wayland desktop with an NVIDIA card the launcher window needs two environment variables. Make this small wrapper in the game folder and start the launcher with it:</p>
+<pre><code>cat &gt; ~/Games/MHFZ/run-mezeporta-x11.sh &lt;&lt;'EOF'
+#!/usr/bin/env sh
+export GDK_BACKEND=x11
+export WEBKIT_DMABUF_RENDERER_FORCE_SHM=1
+exec "$(dirname "$0")/run-mezeporta.sh" "$@"
+EOF
+chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
+~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
+            <p><code>GDK_BACKEND=x11</code> stops the launcher dying at start with <code>Gdk-Message: Error 71 (Protocol error)</code>. <code>WEBKIT_DMABUF_RENDERER_FORCE_SHM=1</code> fixes a blank window on the NVIDIA driver. On X11, or on AMD and Intel graphics, you can usually leave both out, but keeping them costs nothing.</p>
+            <p><b>Do not start the launcher from a systemd transient unit</b> (<code>systemd-run</code>): the launcher exits once the game starts, and the unit then kills the game about 10 seconds later. Start it from a terminal, a desktop shortcut, or with <code>setsid nohup</code>.</p>
+          </details>
+
+          <details class="play-help" id="linux-trouble">
+            <summary>Troubleshooting</summary>
+            <div class="table-wrap">
+              <table class="data-table play-help-table">
+                <thead><tr><th>Symptom</th><th>Cause and fix</th></tr></thead>
+                <tbody>
+                  <tr><td>Launcher exits at once with <code>Gdk-Message: Error 71</code></td><td>Native Wayland path. Start it through the <a href="#linux-wrapper">wrapper</a>.</td></tr>
+                  <tr><td>Launcher window is blank or black</td><td>WebKitGTK cannot allocate a buffer on NVIDIA. Use <code>WEBKIT_DMABUF_RENDERER_FORCE_SHM=1</code> (in the wrapper). <code>WEBKIT_DISABLE_DMABUF_RENDERER</code> and <code>WEBKIT_DISABLE_COMPOSITING_MODE</code> do not fix it.</td></tr>
+                  <tr><td>The launcher closes and nothing appears, every time</td><td>It is run under <code>systemd-run</code>, whose unit is killed with it. Start it from a terminal or with <code>setsid nohup</code>.</td></tr>
+                  <tr><td>The game starts, then quits after a few seconds</td><td>Run the launcher from a terminal and read the output: a DXVK or Wine error shows there.</td></tr>
+                  <tr><td>Text in game is boxes or garbage</td><td>See <a href="#language">English and Japanese text</a>.</td></tr>
+                  <tr><td>No sound</td><td>Install <code>gst-plugin-pipewire</code> and <code>gst-plugins-good</code> (names differ by distribution), then run the <code>--verify</code> step again.</td></tr>
+                  <tr><td>"Patcher failed to manage files in game folder"</td><td>The Wine prefix is inside the game folder. Move it out and set a Custom Prefix: <a href="#linux-prefix">see Wine prefix</a>. Or use launcher port <code>53312</code> with mode SignV1, which skips the patcher.</td></tr>
+                  <tr><td>"Patcher failed to connect" when the launcher checks for updates</td><td>Your connection is under about 3 MB/s. Download <code>Frontier_Patch.zip</code> and unzip it over the game folder: <a href="#linux-patch">see above</a>.</td></tr>
+                  <tr><td>Login fails or the server is refused</td><td>The username and password must be exactly as registered (case-sensitive), and the server entry must match the table: host <code>129.213.54.221</code>, launcher port <code>8080</code>, game port <code>53310</code>, mode API. A name you never registered is refused: press REGISTER first. Still refused? Launcher port <code>53312</code> and mode SignV1.</td></tr>
+                  <tr><td>Wrong or broken prefix</td><td>Delete <code>~/Games/MHFZ-prefix</code> and make it again. Your game files are untouched.</td></tr>
+                  <tr><td>You want the original files back</td><td>Copy everything from <code>~/Games/MHFZ/original-files/</code> over the game folder.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
         <p class="play-reset"><button type="button" class="ghost-btn small" hidden data-reset>Clear the ticks of this card</button></p>
       </section>
 
@@ -300,7 +480,40 @@
         <p class="play-reset"><button type="button" class="ghost-btn small" hidden data-reset>Clear the ticks of this card</button></p>
       </section>
 
-      <noscript><p class="note-text">The ticks and the copy buttons need JavaScript. The steps and the downloads work without it, and the server settings are in the <a href="/guide-windows.html#server">guide</a>.</p></noscript>
+      <section class="panel play-card-more" id="more-help" aria-labelledby="more-help-title">
+        <div class="panel-head">
+          <h2 id="more-help-title">More help for every path</h2>
+        </div>
+        <div class="play-more">
+          <details class="play-help" id="language">
+            <summary>English and Japanese text</summary>
+            <p>MHF-Z is a Japanese game. Our client patch (the step "Apply our client patch") already puts the English menus, the Diva storyline and a town's dialogue in place: if your menus are English, you are done. The text lives in the game's data files in <code>dat</code>; the Mezeporta launcher never loads <code>mhl.dll</code> (it belonged to the old Capcom launcher), so replacing that file changes nothing.</p>
+            <p><b>Your game is in Japanese?</b> The patch step was skipped or something put the original files back. Apply the patch again (Windows: <a href="#windows-patch">script</a>; Linux: <a href="#linux-patch">commands</a>): it keeps your first backup in <code>original-files</code>.</p>
+            <p><b>Coverage is partial.</b> Item names, NPC dialogue and event text often stay Japanese. That is the translation, not a broken install.</p>
+            <p><b>Japanese text shows as boxes?</b> On Windows add the Japanese language pack: Settings, Time and language, Language and region, Add a language, Japanese. On Linux install your distribution's CJK fonts (<code>noto-fonts-cjk</code> on Arch, <code>fonts-noto-cjk</code> on Debian and Ubuntu, <code>google-noto-sans-cjk-fonts</code> on Fedora), enable <code>ja_JP.UTF-8</code> in <code>/etc/locale.gen</code> and run <code>sudo locale-gen</code>, then start the launcher with <code>LANG=ja_JP.UTF-8</code>.</p>
+            <p><b>Two warnings from old client guides.</b> Do not apply the hosts-file trick that circulates with the client pack: it points Capcom's hostnames at 127.0.0.1 for self-hosted servers and breaks Hunsterverse. Locale Emulator is only needed if the game refuses to start without a Japanese locale, and Mezeporta starts the game itself: try without it first (Windows only).</p>
+          </details>
+
+          <details class="play-help" id="discord">
+            <summary>Discord linking and bot commands</summary>
+            <p>Linking your game account to Discord gives you character backups and the bot commands. Sign in on the <a href="/?next=%2Faccount.html#login-form">account page</a> with the same username and password as in the game; the Overview tab shows your command <code>/link code:&lt;code&gt;</code>. In the <a href="https://discord.gg/YuE42eh" rel="noopener">Hunsterverse Discord</a> type <code>/link</code> and paste the code into the code box. Type <code>/</code> and pick a command from the list:</p>
+            <div class="table-wrap">
+              <table class="data-table play-help-table">
+                <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+                <tbody>
+                  <tr><td><code>/link code:&lt;code&gt;</code></td><td>Links your game account to your Discord account. The code comes from the account page and is valid for 24 hours.</td></tr>
+                  <tr><td><code>/backup</code></td><td>Sends you a zip backup of one of your characters in a DM (you pick the character).</td></tr>
+                  <tr><td><code>/import backup:&lt;file&gt;</code></td><td>Restores a character from a backup. Attach the zip <code>/backup</code> sent you <b>as it is</b> (do not extract it), or an Erupe export JSON from another server. You pick the target character, see a preview and confirm. Log out of the game first, and play the target character once before you import into it.</td></tr>
+                  <tr><td><code>/password password:&lt;new&gt; confirm_password:&lt;new&gt; username:&lt;account&gt;</code></td><td>Sets a new password for your game account (6 to 40 characters). Only you see the answer. This is the only way to reset a forgotten password, and only on an account that is linked to Discord.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Backups are a zip: send it as it is, never extracted and never single BIN files. The account page's Backups tab can download and import them too.</p>
+          </details>
+        </div>
+      </section>
+
+      <noscript><p class="note-text">The ticks and the copy buttons need JavaScript. The steps and the downloads work without it, and the server settings are in the table of the step "Press ADD A SERVER".</p></noscript>
     </main>
 
     <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
@@ -310,8 +523,6 @@
           <div class="foot-col">
             <h2 class="foot-head">Guides</h2>
             <a href="/play.html">Play</a>
-            <a href="/guide-windows.html">Windows guide</a>
-            <a href="/guide-linux.html">Linux guide</a>
             <a href="/guide-frontier.html">Frontier guide</a>
             <a href="/guide-roads.html">Roads in game</a>
           </div>

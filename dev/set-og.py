@@ -15,8 +15,7 @@ PAGE_CARD = {
     "monsters.html": "monsters", "monster.html": "monsters", "guilds.html": "guilds",
     "events.html": "events", "road-vote.html": "road-vote", "road.html": "road-vote",
     "road-history.html": "road-vote", "catalog.html": "catalog", "set-builder.html": "set-builder",
-    "changelog.html": "changelog", "api.html": "api", "guide-windows.html": "guide-windows",
-    "guide-linux.html": "guide-linux",
+    "changelog.html": "changelog", "api.html": "api",
 }
 
 BASE = "https://hvmhfz.eclipseforge.xyz"
