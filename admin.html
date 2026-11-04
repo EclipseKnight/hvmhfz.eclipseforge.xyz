@@ -199,9 +199,32 @@
         <p class="form-alert" id="cal-alert" hidden></p>
         <p class="road-ok" id="cal-ok" hidden></p>
         <ul class="road-problems" id="cal-warnings" hidden></ul>
-        <p class="note-text">One featured event at a time, back to back; every boundary is a Monday 03:00 UTC. A lighter bar is a run's tail (festival rewards, Diva week 3), which may run beside the next event. The game server reads the calendar every minute and writes each run's status and phases back; until it has, a run says "waiting for the game server". All times on this tab are <b>UTC</b>.</p>
+        <p class="note-text">One featured event at a time, back to back; every boundary is a Monday 03:00 UTC. A lighter bar is a run's tail (festival rewards, Diva week 3), which may run beside the next event. Background runs (the transition: Diva event 1, Cup cycles 0-1, VS cycle 0) are on for players too, but they are not featured: "No featured event" only means the Featured lane is empty. The game server reads the calendar every minute and writes each run's status and phases back; until it has, a run says "waiting for the game server". All times on this tab are <b>UTC</b>.</p>
+        <p class="cal-running" id="cal-running"></p>
+        <p class="cal-legend"><span class="lg is-empty"></span> nothing runs (a real gap) <span class="lg is-nofeatured"></span> no featured event, background runs or tails on</p>
         <div class="cal-wrap"><div class="cal-strip" id="cal-strip" aria-label="Calendar of the next 12 weeks"></div></div>
+        <p class="note-text cal-at" id="cal-at">Point at the calendar to see what runs at that hour.</p>
+        <p class="note-text muted" id="cal-keys">A planned run can move: drag its bar (on a phone, hold it for half a second first), or drag an edge to change its length; it snaps to the hour, and to Mondays 03:00 and other runs' edges nearby (Shift: whole days at 03:00; Alt: hours only). With the keyboard: focus the bar, Left and Right move it by an hour (Shift: a day), Up and Down change its end (festival rewards by an hour, Cup and VS by a cycle), Escape cancels. Nothing is saved before you check the change below and press Save.</p>
+        <p class="visually-hidden" id="cal-drag-status" aria-live="polite"></p>
+        <div class="cal-change" id="cal-change" hidden>
+          <h3 class="subhead" id="cal-change-title">Change</h3>
+          <div class="table-wrap">
+            <table class="data-table admin-table cal-change-table">
+              <thead><tr><th></th><th>Before</th><th>After</th></tr></thead>
+              <tbody id="cal-change-rows"></tbody>
+            </table>
+          </div>
+          <label class="cal-check" for="cal-change-anytime"><input type="checkbox" id="cal-change-anytime" /> Allow any time (not only Monday 03:00 UTC)</label>
+          <ul class="road-problems" id="cal-change-problems" hidden></ul>
+          <div class="admin-actions">
+            <button type="button" class="btn btn-primary" id="cal-change-save" disabled>Save</button>
+            <button type="button" class="ghost-btn" id="cal-change-cancel">Cancel</button>
+          </div>
+        </div>
         <div class="cal-detail" id="cal-detail" hidden></div>
+
+        <h3 class="subhead">Gaps in the next 12 weeks</h3>
+        <ul class="cal-gaps" id="cal-gaps"></ul>
 
         <h3 class="subhead">In the next 7 days</h3>
         <ul class="cal-soon" id="cal-soon"></ul>
@@ -240,7 +263,13 @@
               <input id="cal-core" type="datetime-local" step="60" />
               <p class="note-text">Empty: the event's own (festival: souls end; Diva: 14 days; Cup and VS: the run's end).</p>
             </div>
+            <div class="field">
+              <label for="cal-end">Ends <span class="field-optional">UTC</span></label>
+              <input id="cal-end" type="datetime-local" step="60" />
+              <p class="note-text">From the start and the settings; a new end changes the festival's rewards hours or the number of cycles.</p>
+            </div>
           </div>
+          <p class="note-text" id="cal-gap-hint" hidden></p>
           <div class="admin-grid admin-grid-6" id="cal-settings"></div>
           <div class="admin-grid">
             <div class="field admin-wide">
