@@ -140,9 +140,275 @@
     });
   }
 
+  /* ---- what each field does in game (the "?" circles); from Erupe's docs hvmhfz-event-calendar, -festa,
+     -diva and -tournament. Keys: a form field, or "<event>.<setting>" before "<setting>". ---- */
+  var HELP = {
+    event: "Which event this run is. Hunter Festival: guilds join the blue or red team, deliver souls, then claim prizes. "
+      + "VS Bracket: players sign up, are drawn into a knockout bracket and race one quest per round. Diva Defense: three weeks "
+      + "of prayer gems, guild tactics, then rewards and a coin shop. Speedrun Cup: a solo and a group quest in the event quest "
+      + "list; the fastest clears are ranked and everyone with a time gets a prize.",
+    lane: "Featured: the event of the moment. Featured cores never overlap, and the next featured event starts where this "
+      + "one's core ends. Background: runs beside a featured event without being the main one (the transition runs that "
+      + "were already going: Diva event 1, Cup cycles 0-1, VS cycle 0). While a background run is on, players still have "
+      + "that event: it is not a real gap.",
+    starts_at: "When the run begins in game: festival entry opens, Diva week 1 starts, the first Cup or VS cycle opens. "
+      + "UTC, at least an hour from now (the game server reads the calendar every minute). Normally a Monday 03:00 UTC "
+      + "(12:00 in Japan, when Diva Defense's days start); any other time needs \"Allow any time\".",
+    core_ends_at: "Where the main part ends and the next featured event may start. Empty: the event's own (festival: the "
+      + "end of soul delivery; Diva: after 14 days; Cup and VS: the run's end). After it the tail (festival judging and "
+      + "rewards, Diva week 3) goes on beside the next event. For a featured run, a Monday 03:00 UTC unless \"Allow any time\".",
+    ends_at: "Where the run really ends, worked out from the start and the settings (the game server refuses a row whose "
+      + "end is wrong). Festival: start + entry + souls + judging + rewards. Diva: start + 21 days. Cup and VS: start + "
+      + "cycles x cycle days. Changing it changes the last length: the festival's rewards hours, or the number of cycles.",
+    note: "For admins only: kept with the run, never shown in game or on the public site.",
+    any_time: "Lets the start (and a featured core end) fall on any hour, not only Monday 03:00 UTC. The game accepts any "
+      + "time; the Monday rule keeps the 7-week loop lined up, so tick it only on purpose (for example to fill a gap now).",
+    entry_hours: "Team entry and the trial vote, the festival's first phase (hours): guilds sign up for the blue or red "
+      + "team and vote for the trials. The loop uses 168 (7 days).",
+    souls_hours: "Soul delivery (hours): guild members hunt and hand in souls for their team at the festival counter. At "
+      + "least 168 (7 days), so a guild that plays once a week can take part. The core ends with it unless set otherwise.",
+    judging_hours: "Judging (hours): the counter is closed while the totals are counted; the winning team is known at "
+      + "its end. Usually 2.5.",
+    rewards_hours: "Results and prizes (hours): players claim their team's prizes and the final reward. This tail runs "
+      + "beside the next featured event. The loop uses 333.5 (about 13.9 days).",
+    first_cycle: "The number of the run's first cycle. Cycle numbers pick each cycle's quests and key its standings, "
+      + "results and prizes, so they are never used twice and go up in each later run. Empty: the next free number.",
+    "speedrun_cup.cycles": "How many Cup weeks this run holds, back to back. The run lasts cycles x cycle days.",
+    "vs_bracket.cycles": "How many brackets this run holds, back to back. The run lasts cycles x cycle days.",
+    "speedrun_cup.cycle_days": "One Cup cycle (days): open, then the tally, then the results until the next cycle. 7 "
+      + "for a weekly Cup.",
+    "vs_bracket.cycle_days": "One bracket (days): sign-up, the draw, the rounds, then the results until the next "
+      + "bracket. 14 in the loop.",
+    open_days: "Days the two Cup quests (solo and group) are in the event quest list and clears count; only each "
+      + "player's best time counts. Open days + tally must end at least an hour before the cycle does.",
+    tally_hours: "Hours after the open days while the ranking screen says it is counting; the prizes go to the gift box "
+      + "from then. The standings show from its end to the end of the cycle.",
+    registration_days: "Sign-up (days): players apply on the VS Tournament screen or with !vs join. At its end the draw "
+      + "makes the bracket (whoever signed up first is seed 1).",
+    round_days: "Each round (days): both players of a match clear the round's quest once, alone, whenever they like; "
+      + "the faster clear goes on. Sign-up + one round must end before the cycle does; rounds that don't fit are dropped.",
+    max_rounds: "The most rounds of a bracket, 1-6: 5 rounds hold 32 players, 6 hold 64. The bracket is the smallest "
+      + "that holds everyone who signed up.",
+    diva: "Diva Defense has no settings: it always lasts 21 days. Week 1, personal: a prayer gem each day, points, bonus "
+      + "quests. Week 2, guild tactics: songs, tactics points, the guild map. Weeks 1-2 are the core. Week 3: rewards and "
+      + "the coin shop, beside the next event.",
+    gen_from: "The Monday (03:00 UTC) where the first event of the extension starts; the API suggests the Monday after "
+      + "the last featured core.",
+    gen_first: "Which event of the 7-week loop (Festival, VS Bracket, Diva Defense, Speedrun Cup) comes first; the others "
+      + "follow in loop order.",
+    gen_weeks: "How many weeks to add: every loop run that starts in them is added, with the loop's settings and the "
+      + "next free cycle numbers."
+  };
+
+  function help(key, event) {
+    return HELP[event + "." + key] || HELP[key] || null;
+  }
+
+  var HOUR = 3600000;
+
+  function num(v) { return v === "" || v === null || v === undefined ? NaN : Number(v); }
+
+  /** Where a run of event from start (ms) with settings ends, and its default core end (the API's shape). */
+  function shape(event, start, s) {
+    s = s || {};
+    if (event === "festa") {
+      var entry = Math.round(num(s.entry_hours) * 3600) * 1000, souls = Math.round(num(s.souls_hours) * 3600) * 1000;
+      var all = entry + souls + Math.round(num(s.judging_hours) * 3600) * 1000 + Math.round(num(s.rewards_hours) * 3600) * 1000;
+      return isNaN(all) ? null : { core: start + entry + souls, end: start + all };
+    }
+    if (event === "diva") return { core: start + 14 * DAY, end: start + 21 * DAY };
+    var len = num(s.cycle_days) * num(s.cycles) * DAY;
+    return isNaN(len) ? null : { core: start + len, end: start + len };
+  }
+
+  /** A run as times in ms, with whether its core end was set by hand (not the event's own). */
+  function runTimes(run) {
+    var start = ms(run.startsAt), core = ms(run.coreEndsAt), end = ms(run.endsAt), sh = shape(run.event, start, run.settings);
+    return { start: start, core: core, end: end, ownCore: !sh || core !== sh.core };
+  }
+
+  function copy(o) { var c = {}; Object.keys(o || {}).forEach(function (k) { c[k] = o[k]; }); return c; }
+
+  function iso(t) { return new Date(t).toISOString().replace(".000Z", "Z"); }
+
+  /** A changed copy of run (a "draft"): same id, event, lane and note; new times and settings. */
+  function draft(run, start, core, settings, explicitCore) {
+    var sh = shape(run.event, start, settings) || { core: core, end: core };
+    var c = explicitCore ? core : sh.core;
+    return { id: run.id, event: run.event, name: run.name, lane: run.lane, note: run.note, settings: settings,
+      startsAt: iso(start), coreEndsAt: iso(c), endsAt: iso(sh.end), explicitCore: !!explicitCore };
+  }
+
+  /** The run moved by delta ms: every time shifts, the settings stay. */
+  function moveRun(run, delta) {
+    var t = runTimes(run);
+    return draft(run, t.start + delta, t.core + delta, copy(run.settings), t.ownCore);
+  }
+
+  /**
+   * The run with one edge at time t: "end" changes the last length (festival rewards, Cup/VS cycles, whole
+   * cycles only), "start" the first one with the end kept (festival entry, Cup/VS cycles), "core" the festival's
+   * soul delivery (or its core end when that was set by hand). Diva Defense always lasts 21 days: null.
+   */
+  function resizeRun(run, edge, t) {
+    var r = runTimes(run), s = copy(run.settings);
+    if (run.event === "diva") return null;
+    if (run.event === "festa") {
+      var h = function (x) { return Math.round(x / HOUR * 2) / 2; }; // half hours, as the loop's lengths
+      if (edge === "end") {
+        var t3 = r.start + (num(s.entry_hours) + num(s.souls_hours) + num(s.judging_hours)) * HOUR;
+        s.rewards_hours = Math.max(1, h(t - t3));
+        return draft(run, r.start, r.core, s, r.ownCore);
+      }
+      if (edge === "start") {
+        var t1 = r.start + num(s.entry_hours) * HOUR;
+        s.entry_hours = Math.max(1, h(t1 - t));
+        return draft(run, t1 - s.entry_hours * HOUR, r.core, s, r.ownCore);
+      }
+      if (edge === "core") {
+        if (r.ownCore) return draft(run, r.start, Math.min(Math.max(t, r.start + HOUR), r.end), s, true);
+        var souls = h(t - (r.start + num(s.entry_hours) * HOUR));
+        s.souls_hours = Math.max(1, souls);
+        return draft(run, r.start, r.core, s, false);
+      }
+      return null;
+    }
+    var cycle = num(s.cycle_days) * DAY;
+    if (!(cycle > 0) || edge === "core") return null;
+    if (edge === "end") {
+      s.cycles = Math.max(1, Math.round((t - r.start) / cycle));
+      return draft(run, r.start, r.core, s, false);
+    }
+    s.cycles = Math.max(1, Math.round((r.end - t) / cycle));
+    return draft(run, r.end - s.cycles * cycle, r.core, s, false);
+  }
+
+  /** Monday 03:00:00 UTC exactly (the rotation's boundary). */
+  function onBoundary(t) {
+    var d = new Date(t);
+    return d.getUTCDay() === 1 && d.getUTCHours() === 3 && d.getUTCMinutes() === 0 && d.getUTCSeconds() === 0 && d.getUTCMilliseconds() === 0;
+  }
+
+  /**
+   * The API's rules (CalendarRules) checked here while dragging, so the bar says at once what the API would
+   * refuse: {problems, boundary}. boundary: the Monday 03:00 rule, which "allow any time" lifts. others: the other
+   * runs (cancelled ones are skipped). The API checks again on drop and on save.
+   */
+  function ruleProblems(d, others, now) {
+    var out = [], boundary = [], s = d.settings || {};
+    var name = function (r) { return "the " + (NAMES[r.event] || r.event) + " run #" + r.id; };
+    var whole = function (k) { return Math.floor(num(s[k])) === num(s[k]); };
+    if (d.event === "festa") {
+      ["entry_hours", "souls_hours", "judging_hours", "rewards_hours"].forEach(function (k) {
+        if (!(num(s[k]) > 0)) out.push(k.replace(/_/g, " ") + " must be above 0.");
+      });
+      if (num(s.souls_hours) < 168) out.push("The soul delivery must last at least 7 days (168 hours).");
+    } else if (d.event === "speedrun_cup" || d.event === "vs_bracket") {
+      (FIELDS[d.event] || []).forEach(function (f) {
+        if (f[0] === "first_cycle" && (s.first_cycle === undefined || s.first_cycle === null || s.first_cycle === "")) return;
+        if (!whole(f[0]) || num(s[f[0]]) < (f[0] === "first_cycle" ? 0 : 1)) out.push(f[1] + " must be a whole number" + (f[0] === "first_cycle" ? " (0 or more)." : " of 1 or more."));
+      });
+      if (d.event === "speedrun_cup" && num(s.open_days) * 24 + num(s.tally_hours) > num(s.cycle_days) * 24 - 1) {
+        out.push("The open days and the tally must end at least an hour before the cycle does.");
+      }
+      if (d.event === "vs_bracket") {
+        if (num(s.max_rounds) > 6) out.push("At most 6 rounds (64 players).");
+        if (num(s.registration_days) + num(s.round_days) >= num(s.cycle_days)) out.push("The sign-up and one round must end before the cycle does.");
+      }
+    }
+    var start = ms(d.startsAt), core = ms(d.coreEndsAt), end = ms(d.endsAt);
+    if (start < now + HOUR) out.push("The start must be at least an hour from now.");
+    if (!(start < core) || core > end) out.push("The core must end after the start and no later than the run's end.");
+    if (!onBoundary(start)) boundary.push("The start is not on a Monday 03:00 UTC (tick \"allow any time\" to use it).");
+    if (d.lane === "featured" && !onBoundary(core)) boundary.push("The core end is not on a Monday 03:00 UTC (tick \"allow any time\" to use it).");
+    var first = num(s.first_cycle), last = first + num(s.cycles) - 1;
+    (others || []).forEach(function (o) {
+      if (o.id === d.id || o.status === "cancelled") return;
+      var os = ms(o.startsAt), oc = ms(o.coreEndsAt), oe = ms(o.endsAt);
+      if (d.lane === "featured" && o.lane !== "background" && start < oc && os < core) out.push("Its core overlaps " + name(o) + "'s core: only one featured event at a time.");
+      if (o.event === d.event && start < oe && os < end) out.push("It overlaps " + name(o) + ": one run of an event at a time.");
+      var of = num(o.settings && o.settings.first_cycle), ol = of + num(o.settings && o.settings.cycles) - 1;
+      if (o.event === d.event && !isNaN(first) && !isNaN(of)) {
+        if (first <= ol && of <= last) out.push("Its cycle numbers are already used by " + name(o) + ".");
+        else if (os < start && first <= ol) out.push("The first cycle must be above " + ol + ", the last one of " + name(o) + ", which runs before it.");
+        else if (start < os && of <= last) out.push("Its cycles must be below " + of + ", the first one of " + name(o) + ", which runs after it.");
+      }
+    });
+    return { problems: out, boundary: boundary };
+  }
+
+  /**
+   * What runs when, in [from, to): pieces split at every start, core end and end, each with the runs on then
+   * (featured core, or another run's core or tail). gaps: the pieces where nothing at all runs ("real" gaps), and
+   * those with no featured core but something else on ("featured"), neighbours merged.
+   */
+  function coverage(runs, from, to) {
+    var live = (runs || []).filter(function (r) { return r.status !== "cancelled" && ms(r.startsAt) !== null && ms(r.endsAt) !== null; });
+    var cuts = [from, to];
+    live.forEach(function (r) {
+      [ms(r.startsAt), ms(r.coreEndsAt), ms(r.endsAt)].forEach(function (t) { if (t !== null && t > from && t < to) cuts.push(t); });
+    });
+    cuts.sort(function (a, b) { return a - b; });
+    var pieces = [];
+    for (var i = 0; i + 1 < cuts.length; i++) {
+      var a = cuts[i], b = cuts[i + 1];
+      if (b <= a) continue;
+      var on = [], featured = null;
+      live.forEach(function (r) {
+        var s = ms(r.startsAt), c = ms(r.coreEndsAt), e = ms(r.endsAt);
+        if (s >= b || e <= a) return;
+        var inCore = s <= a && c >= b;
+        if (inCore && r.lane !== "background") featured = r;
+        on.push({ id: r.id, event: r.event, name: r.name || NAMES[r.event] || r.event, lane: r.lane === "background" ? "background" : "featured", part: inCore ? "core" : "tail" });
+      });
+      on.sort(function (x, y) { return (x.lane === "featured" ? 0 : 1) - (y.lane === "featured" ? 0 : 1); });
+      pieces.push({ from: a, to: b, runs: on, featured: featured ? featured.id : null });
+    }
+    var gaps = [];
+    pieces.forEach(function (p) {
+      var kind = !p.runs.length ? "empty" : p.featured === null ? "featured" : null;
+      if (!kind) return;
+      var prev = gaps[gaps.length - 1];
+      var names = p.runs.map(function (r) { return r.name; });
+      if (prev && prev.kind === kind && prev.to === p.from) {
+        prev.to = p.to;
+        names.forEach(function (n) { if (prev.running.indexOf(n) === -1) prev.running.push(n); });
+      } else {
+        gaps.push({ kind: kind, from: p.from, to: p.to, running: names });
+      }
+    });
+    return { pieces: pieces, gaps: gaps };
+  }
+
+  /** The runs on at time t, from coverage's pieces. */
+  function runningAt(pieces, t) {
+    for (var i = 0; i < pieces.length; i++) if (pieces[i].from <= t && t < pieces[i].to) return pieces[i];
+    return null;
+  }
+
+  /** "12 d 21 h" */
+  function howLong(a, b) {
+    var h = Math.round((b - a) / HOUR), d = Math.floor(h / 24);
+    return (d ? d + " d" : "") + (d && h % 24 ? " " : "") + (h % 24 || !d ? (h % 24) + " h" : "");
+  }
+
+  /** Time t snapped: to the hour, or (day) to 03:00 UTC of the nearest day. */
+  function snap(t, day) {
+    if (day) return Math.round((t - 3 * HOUR) / DAY) * DAY + 3 * HOUR;
+    return Math.round(t / HOUR) * HOUR;
+  }
+
+  /** The request body of a draft (PUT /api/admin/events/calendar/{id}): the full run, note kept. */
+  function draftBody(d, anyTime) {
+    return { event: d.event, lane: d.lane, startsAt: d.startsAt, coreEndsAt: d.explicitCore ? d.coreEndsAt : null,
+      settings: d.settings, note: d.note || null, allowAnyTime: !!anyTime };
+  }
+
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { utc: utc, toInput: toInput, fromInput: fromInput, weekStart: weekStart, timeline: timeline,
-      soon: soon, body: body, phaseLines: phaseLines };
+      soon: soon, body: body, phaseLines: phaseLines, HELP: HELP, help: help, FIELDS: FIELDS, shape: shape,
+      moveRun: moveRun, resizeRun: resizeRun, ruleProblems: ruleProblems, coverage: coverage, runningAt: runningAt,
+      howLong: howLong, snap: snap, onBoundary: onBoundary, draftBody: draftBody };
   }
   if (typeof document === "undefined") return;
 
@@ -212,6 +478,8 @@
   function load() {
     var q = $("cal-cancelled").checked ? "?cancelled=true" : "";
     return request("/api/admin/events/calendar" + q).then(function (cal) {
+      state.change = null;
+      $("cal-change").hidden = true;
       state.runs = cal.runs || [];
       state.now = ms(cal.now) || Date.now();
       say("cal-alert", cal.tableReady ? "" : "The event_calendar table is not in the database yet: apply Erupe's "
@@ -231,8 +499,24 @@
 
   /* ---- the strip ---- */
 
+  // The strip's time span and the pieces of what runs when (set by renderStrip).
+  var view = { from: 0, to: 1, pieces: [] };
+
+  function pct(t) { return Math.max(0, Math.min(100, (t - view.from) / (view.to - view.from) * 100)); }
+
+  function names(piece) {
+    if (!piece || !piece.runs.length) return "nothing runs (a real gap)";
+    return piece.runs.map(function (r) {
+      return r.name + " #" + r.id + " (" + r.lane + (r.part === "tail" ? ", tail" : "") + ")";
+    }).join(", ") + (piece.featured === null ? "; no featured event" : "");
+  }
+
   function renderStrip() {
     var g = timeline(state.runs, state.now, WEEKS);
+    view.from = g.from;
+    view.to = g.to;
+    var cov = coverage(state.runs, state.now, g.to);
+    view.pieces = cov.pieces;
     var outer = $("cal-strip");
     clear(outer);
     var strip = el("div", "cal-body");
@@ -244,21 +528,48 @@
       head.appendChild(tick);
     });
     strip.appendChild(head);
+    // Gaps behind the bars: red where nothing runs, hatched where only background runs or tails are on.
+    cov.gaps.forEach(function (gap) {
+      var shade = el("span", "cal-gap " + (gap.kind === "empty" ? "is-empty" : "is-nofeatured"));
+      shade.style.left = pct(gap.from) + "%";
+      shade.style.width = (pct(gap.to) - pct(gap.from)) + "%";
+      shade.title = (gap.kind === "empty" ? "Nothing runs" : "No featured event (" + gap.running.join(", ") + " on)")
+        + ": " + utc(iso(gap.from)) + " to " + utc(iso(gap.to)) + " UTC";
+      strip.appendChild(shade);
+    });
     ["featured", "background"].forEach(function (lane) {
       var row = el("div", "cal-lane");
       row.style.height = (g.rows[lane] * 34) + "px";
       row.appendChild(el("span", "cal-lane-name", lane === "featured" ? "Featured" : "Background"));
       g.bars.filter(function (b) { return b.lane === lane; }).forEach(function (b) {
+        var run = find(b.id);
         var bar = el("button", "cal-bar cal-" + b.event);
         bar.type = "button";
+        bar.dataset.id = b.id;
         bar.style.left = b.left + "%";
         bar.style.top = (2 + b.row * 34) + "px";
         bar.style.width = (b.core + b.tail) + "%";
-        bar.title = b.name + " #" + b.id + " (" + (STATUS[b.status] || b.status) + ")";
         var core = el("span", "cal-core", b.name);
         core.style.width = (b.core + b.tail > 0 ? b.core / (b.core + b.tail) * 100 : 100) + "%";
         bar.appendChild(core);
-        bar.addEventListener("click", function () { showDetail(b.id); });
+        var label = b.name + " #" + b.id + " (" + (STATUS[b.status] || b.status) + ", " + lane + "): " + utc(run.startsAt)
+          + " to " + utc(run.endsAt) + " UTC";
+        if (run.editable) {
+          bar.classList.add("is-movable");
+          bar.appendChild(el("span", "cal-h cal-h-start"));
+          bar.appendChild(el("span", "cal-h cal-h-end"));
+          if (b.event === "festa") core.appendChild(el("span", "cal-h cal-h-core"));
+          bar.setAttribute("aria-describedby", "cal-keys");
+          bar.title = label + ". Drag to move, drag an edge to change its length (or use the arrow keys).";
+          wireBar(bar, run);
+        } else {
+          bar.title = label + ". " + (run.started ? "It has started: its times can't change." : "Only a planned run can move.");
+        }
+        bar.setAttribute("aria-label", label);
+        bar.addEventListener("click", function () {
+          if (drag.justDropped) { drag.justDropped = false; return; }
+          showDetail(b.id);
+        });
         row.appendChild(bar);
       });
       strip.appendChild(row);
@@ -267,6 +578,251 @@
     now.style.left = g.now + "%";
     now.title = "Now";
     strip.appendChild(now);
+    strip.appendChild(el("span", "cal-tip"));
+    strip.addEventListener("pointermove", function (e) {
+      if (drag.active) return;
+      var t = timeAt(e.clientX);
+      $("cal-at").textContent = utc(iso(snap(t))) + " UTC: " + names(runningAt(view.pieces, t)) + ".";
+    });
+    renderNowAndGaps(cov);
+  }
+
+  function timeAt(x) {
+    var box = document.querySelector("#cal-strip .cal-body").getBoundingClientRect();
+    return view.from + (x - box.left) / box.width * (view.to - view.from);
+  }
+
+  /* ---- what runs now, and the gaps ---- */
+
+  function renderNowAndGaps(cov) {
+    $("cal-running").textContent = "Running now: " + names(runningAt(cov.pieces, state.now)) + ".";
+    var ul = $("cal-gaps");
+    clear(ul);
+    cov.gaps.forEach(function (gap) {
+      var li = el("li", gap.kind === "empty" ? "is-empty" : "is-nofeatured");
+      var open = gap.to >= view.to ? " (the end of the view; nothing is planned after)" : "";
+      li.appendChild(el("span", "cal-gap-key", gap.kind === "empty" ? "Nothing runs" : "No featured event"));
+      li.appendChild(document.createTextNode(" " + utc(iso(gap.from)) + " to " + utc(iso(gap.to)) + " UTC, "
+        + howLong(gap.from, gap.to) + open + (gap.kind === "empty" ? "." : ". Still on: " + gap.running.join(", ") + ".")));
+      var fill = el("button", "ghost-btn small", "Fill this gap");
+      fill.type = "button";
+      fill.addEventListener("click", function () { fillGap(gap); });
+      li.appendChild(fill);
+      ul.appendChild(li);
+    });
+    if (!cov.gaps.length) ul.appendChild(el("li", "is-ok", "No gaps: a featured event covers every hour of the view."));
+  }
+
+  function fillGap(gap) {
+    resetForm();
+    var start = Math.max(snap(gap.from + HOUR / 2 - 1), Math.ceil((state.now + HOUR) / HOUR) * HOUR);
+    $("cal-lane").value = "featured";
+    $("cal-start").value = toInput(iso(start));
+    $("cal-anytime").checked = !onBoundary(start);
+    var event = $("cal-event").value, s = loopSettings(event);
+    if ((event === "speedrun_cup" || event === "vs_bracket") && s.cycle_days) {
+      $("cal-s-cycles").value = String(Math.max(1, Math.floor((gap.to - start) / (s.cycle_days * DAY))));
+    }
+    $("cal-gap-hint").textContent = "Filling " + utc(iso(start)) + " to " + utc(iso(gap.to)) + " UTC ("
+      + howLong(start, gap.to) + "). Pick the event; the check below says where it ends and what it overlaps.";
+    $("cal-gap-hint").hidden = false;
+    syncEnd();
+    $("cal-form").scrollIntoView({ behavior: "smooth", block: "start" });
+    $("cal-event").focus();
+    scheduleCheck();
+  }
+
+  /* ---- drag, resize and keys on the strip ---- */
+
+  var drag = { active: null, justDropped: false };
+
+  // Snap: to the hour; within 8 px of a Monday 03:00 or another run's edge, to that (Alt: hours only).
+  function snapped(t, e, id) {
+    var t0 = snap(t, false);
+    if (e && e.shiftKey) return snap(t, true);
+    if (e && e.altKey) return t0;
+    var body = document.querySelector("#cal-strip .cal-body");
+    var perPx = (view.to - view.from) / Math.max(1, body.getBoundingClientRect().width), best = t0, bestD = 8 * perPx;
+    var targets = [];
+    for (var w = weekStart(view.from); w <= view.to; w += 7 * DAY) targets.push(w);
+    state.runs.forEach(function (r) {
+      if (r.id === id || r.status === "cancelled") return;
+      targets.push(ms(r.startsAt), ms(r.coreEndsAt), ms(r.endsAt));
+    });
+    targets.forEach(function (x) { if (Math.abs(x - t) < bestD) { bestD = Math.abs(x - t); best = x; } });
+    return best;
+  }
+
+  function others(id) { return state.runs.filter(function (r) { return r.id !== id && r.status !== "cancelled"; }); }
+
+  // The bar drawn where the draft is, with the start/end tip and the rules' verdict.
+  function paint(bar, d) {
+    var s = ms(d.startsAt), c = ms(d.coreEndsAt), e = ms(d.endsAt);
+    bar.style.left = pct(s) + "%";
+    bar.style.width = (pct(e) - pct(s)) + "%";
+    bar.querySelector(".cal-core").style.width = (e > s ? (c - s) / (e - s) * 100 : 100) + "%";
+    var rules = ruleProblems(d, others(d.id), state.now);
+    var anyTime = $("cal-change-anytime") && $("cal-change-anytime").checked && !$("cal-change").hidden;
+    var bad = rules.problems.concat(anyTime ? [] : rules.boundary);
+    bar.classList.toggle("is-bad", rules.problems.length > 0);
+    bar.classList.toggle("is-soft", !rules.problems.length && bad.length > 0);
+    var tip = document.querySelector("#cal-strip .cal-tip");
+    tip.textContent = "Start " + utc(d.startsAt) + " · core to " + utc(d.coreEndsAt) + " · end " + utc(d.endsAt) + " UTC"
+      + (bad.length ? " · " + bad[0] + (bad.length > 1 ? " (+" + (bad.length - 1) + ")" : "") : " · the checks pass");
+    tip.classList.add("is-on");
+    var w = tip.parentNode.clientWidth;
+    tip.style.left = Math.max(0, Math.min(pct(s) / 100 * w, w - tip.offsetWidth)) + "px";
+    $("cal-drag-status").textContent = tip.textContent;
+    return rules;
+  }
+
+  function wireBar(bar, run) {
+    var t = runTimes(run);
+    bar.addEventListener("contextmenu", function (e) { if (drag.active || drag.pressing) e.preventDefault(); });
+    bar.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0 || drag.active) return;
+      var handle = e.target.classList.contains("cal-h-start") ? "start" : e.target.classList.contains("cal-h-end") ? "end"
+        : e.target.classList.contains("cal-h-core") ? "core" : "move";
+      var press = { bar: bar, run: run, mode: handle, x0: e.clientX, y0: e.clientY, t0: timeAt(e.clientX), id: e.pointerId,
+        touch: e.pointerType === "touch", ready: e.pointerType !== "touch", draft: null };
+      drag.pressing = press;
+      if (press.touch) {
+        // Touch: hold still for half a second, then drag (a quick swipe still scrolls the strip).
+        press.timer = setTimeout(function () {
+          press.ready = true;
+          bar.classList.add("is-held");
+          $("cal-drag-status").textContent = "Drag " + run.name + " #" + run.id + " to move it.";
+        }, 450);
+      }
+    });
+    bar.addEventListener("keydown", function (e) {
+      var hour = e.shiftKey ? DAY : HOUR, d = null, base = state.change && state.change.run.id === run.id ? state.change.draft : null;
+      var cur = base || { startsAt: run.startsAt, coreEndsAt: run.coreEndsAt, endsAt: run.endsAt, settings: run.settings, explicitCore: t.ownCore };
+      var asRun = { id: run.id, event: run.event, name: run.name, lane: run.lane, note: run.note, startsAt: cur.startsAt,
+        coreEndsAt: cur.coreEndsAt, endsAt: cur.endsAt, settings: cur.settings };
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") d = moveRun(asRun, e.key === "ArrowLeft" ? -hour : hour);
+      else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        var step = run.event === "festa" ? hour : (num(run.settings.cycle_days) || 0) * DAY;
+        d = resizeRun(asRun, "end", ms(cur.endsAt) + (e.key === "ArrowUp" ? step : -step));
+        if (!d) { $("cal-drag-status").textContent = "Diva Defense always lasts 21 days: move it with the left and right arrows."; e.preventDefault(); return; }
+      } else if (e.key === "Escape" && base) { e.preventDefault(); cancelChange(); return; }
+      else return;
+      e.preventDefault();
+      paint(bar, d);
+      showChange(run, d);
+    });
+  }
+
+  document.addEventListener("pointermove", function (e) {
+    var p = drag.pressing;
+    if (!p || e.pointerId !== p.id) return;
+    var dx = e.clientX - p.x0, dy = e.clientY - p.y0;
+    if (!p.ready) {
+      if (Math.abs(dx) > 8 || Math.abs(dy) > 8) { clearTimeout(p.timer); drag.pressing = null; } // a swipe: scroll
+      return;
+    }
+    if (!drag.active) {
+      if (Math.abs(dx) < 4) return;
+      drag.active = p;
+      p.bar.classList.add("is-dragging");
+      try { p.bar.setPointerCapture(p.id); } catch (err) { /* synthetic events */ }
+    }
+    var r = runTimes(p.run), delta = timeAt(e.clientX) - p.t0, d;
+    if (p.mode === "move") d = moveRun(p.run, snapped(r.start + delta, e, p.run.id) - r.start);
+    else d = resizeRun(p.run, p.mode, snapped((p.mode === "start" ? r.start : p.mode === "end" ? r.end : r.core) + delta, e, p.run.id));
+    if (!d) { $("cal-drag-status").textContent = "Diva Defense always lasts 21 days: drag the bar to move it."; return; }
+    p.draft = d;
+    paint(p.bar, d);
+  });
+
+  // A held touch must not scroll the page while it drags.
+  document.addEventListener("touchmove", function (e) { if (drag.pressing && drag.pressing.ready) e.preventDefault(); }, { passive: false });
+
+  function endPress(e, cancelled) {
+    var p = drag.pressing;
+    if (!p || e.pointerId !== p.id) return;
+    clearTimeout(p.timer);
+    p.bar.classList.remove("is-held", "is-dragging");
+    drag.pressing = null;
+    var was = drag.active;
+    drag.active = null;
+    if (!was) return;
+    drag.justDropped = true;
+    setTimeout(function () { drag.justDropped = false; }, 0);
+    if (cancelled || !p.draft) { renderStrip(); return; }
+    showChange(p.run, p.draft);
+  }
+  document.addEventListener("pointerup", function (e) { endPress(e, false); });
+  document.addEventListener("pointercancel", function (e) { endPress(e, true); });
+
+  /* ---- the change of a dragged run: before and after, the API's check, Save ---- */
+
+  function showChange(run, d) {
+    state.change = { run: run, draft: d };
+    var box = $("cal-change");
+    $("cal-change-title").textContent = "Change " + run.name + " #" + run.id;
+    var tbody = $("cal-change-rows");
+    clear(tbody);
+    var rows = [["Starts", utc(run.startsAt), utc(d.startsAt)], ["Core ends", utc(run.coreEndsAt), utc(d.coreEndsAt)],
+      ["Ends", utc(run.endsAt), utc(d.endsAt)]];
+    (FIELDS[run.event] || []).forEach(function (f) {
+      rows.push([f[1], String(run.settings[f[0]]), String(d.settings[f[0]])]);
+    });
+    rows.forEach(function (r) {
+      var tr = el("tr", r[1] !== r[2] ? "is-changed" : null);
+      tr.appendChild(el("th", null, r[0]));
+      tr.appendChild(el("td", null, r[1]));
+      tr.appendChild(el("td", null, r[2]));
+      tbody.appendChild(tr);
+    });
+    box.hidden = false;
+    checkChange();
+  }
+
+  function checkChange() {
+    var c = state.change;
+    if (!c) return;
+    var anyTime = $("cal-change-anytime").checked;
+    var rules = ruleProblems(c.draft, others(c.run.id), state.now);
+    var mine = rules.problems.concat(anyTime ? [] : rules.boundary);
+    list("cal-change-problems", mine, mine.length ? [] : ["Checking with the API..."]);
+    $("cal-change-save").disabled = true;
+    var seq = ++state.checkSeq;
+    clearTimeout(state.changeTimer);
+    state.changeTimer = setTimeout(function () {
+      request("/api/admin/events/calendar/check?id=" + c.run.id, { method: "POST", body: JSON.stringify(draftBody(c.draft, anyTime)) })
+        .then(function (res) {
+          if (seq !== state.checkSeq || state.change !== c) return;
+          var problems = res.problems || [];
+          list("cal-change-problems", problems, problems.length ? [] : ["The API's checks pass."].concat(res.warnings || []));
+          $("cal-change-save").disabled = problems.length > 0;
+        })
+        .catch(function (e) { if (seq === state.checkSeq) list("cal-change-problems", [e.message]); });
+    }, 250);
+  }
+
+  function cancelChange() {
+    state.change = null;
+    $("cal-change").hidden = true;
+    $("cal-drag-status").textContent = "Change cancelled.";
+    renderStrip();
+  }
+
+  function saveChange() {
+    var c = state.change;
+    if (!c) return;
+    $("cal-change-save").disabled = true;
+    request("/api/admin/events/calendar/" + c.run.id, { method: "PUT", body: JSON.stringify(draftBody(c.draft, $("cal-change-anytime").checked)) })
+      .then(function (r) {
+        state.change = null;
+        $("cal-change").hidden = true;
+        say("cal-ok", "Run #" + r.id + " saved: from " + utc(r.startsAt) + " UTC to " + utc(r.endsAt) + " UTC. The game server reads it within a minute.");
+        return load();
+      })
+      .catch(function (e) {
+        list("cal-change-problems", (e.data && e.data.problems) || [e.message]);
+        $("cal-change-save").disabled = false;
+      });
   }
 
   function renderSoon() {
@@ -407,6 +963,72 @@
     return (e && e.loopSettings) || {};
   }
 
+  /* ---- the "?" circles: a button described by its text; hover or focus shows it, a tap or click keeps it open ---- */
+
+  var helpSeq = 0;
+
+  function addHelp(label, key, event) {
+    var text = help(key, event);
+    if (!label || !text || label.parentNode.querySelector(".help-tip")) return;
+    var head = el("div", "field-head");
+    label.parentNode.insertBefore(head, label);
+    head.appendChild(label);
+    var id = "cal-help-" + (++helpSeq);
+    var b = el("button", "help-tip", "?");
+    b.type = "button";
+    b.dataset.help = key;
+    b.setAttribute("aria-label", "What is \"" + label.textContent.trim() + "\"?");
+    b.setAttribute("aria-describedby", id);
+    b.setAttribute("aria-expanded", "false");
+    var pop = el("span", "help-pop", text);
+    pop.id = id;
+    pop.setAttribute("role", "tooltip");
+    // Escape hides it while the button keeps focus; leaving the button forgets that.
+    ["blur", "mouseleave"].forEach(function (t) { b.addEventListener(t, function () { pop.classList.remove("is-dismissed"); }); });
+    b.addEventListener("click", function (e) {
+      e.preventDefault();
+      var open = !pop.classList.contains("is-open");
+      closeHelp();
+      pop.classList.remove("is-dismissed");
+      pop.classList.toggle("is-open", open);
+      b.setAttribute("aria-expanded", String(open));
+    });
+    head.appendChild(b);
+    head.appendChild(pop);
+  }
+
+  function closeHelp(dismiss) {
+    if (dismiss && document.activeElement && document.activeElement.classList.contains("help-tip")) {
+      document.activeElement.nextSibling.classList.add("is-dismissed");
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("#panel-events .help-pop.is-open"), function (p) {
+      p.classList.remove("is-open");
+      p.previousSibling.setAttribute("aria-expanded", "false");
+    });
+  }
+
+  // The Ends field from the start and the settings (the API's own end comes with the check).
+  function syncEnd() {
+    var v = values(), start = ms(fromInput(v.start)), sh = start === null ? null : shape(v.event, start, v.settings);
+    $("cal-end").value = sh && !isNaN(sh.end) ? toInput(iso(sh.end)) : "";
+    $("cal-end").readOnly = v.event === "diva";
+  }
+
+  // A new end typed in: the last length follows (festival rewards, Cup/VS whole cycles), as when dragging the edge.
+  function endChanged() {
+    var v = values(), t = ms(fromInput($("cal-end").value)), start = ms(fromInput(v.start));
+    if (t === null || start === null) return;
+    var sh = shape(v.event, start, v.settings);
+    if (!sh || isNaN(sh.end)) return;
+    var settings = {};
+    Object.keys(v.settings).forEach(function (k) { settings[k] = v.settings[k] === "" ? "" : Number(v.settings[k]); });
+    var d = resizeRun({ id: -1, event: v.event, lane: v.lane, startsAt: iso(start), coreEndsAt: iso(sh.core), endsAt: iso(sh.end), settings: settings }, "end", t);
+    if (!d) return;
+    ["rewards_hours", "cycles"].forEach(function (k) { if ($("cal-s-" + k) && d.settings[k] !== undefined) $("cal-s-" + k).value = String(d.settings[k]); });
+    syncEnd();
+    scheduleCheck();
+  }
+
   function renderSettings(event, values) {
     var box = $("cal-settings");
     clear(box);
@@ -424,11 +1046,19 @@
       if (f[0] === "first_cycle") input.placeholder = "next free";
       var v = defaults[f[0]];
       input.value = v === undefined || v === null ? "" : String(v);
-      input.addEventListener("input", scheduleCheck);
+      input.addEventListener("input", function () { syncEnd(); scheduleCheck(); });
       field.appendChild(input);
       box.appendChild(field);
+      addHelp(label, f[0], event);
     });
-    if (event === "diva") box.appendChild(el("p", "note-text admin-wide", "Diva Defense always lasts 21 days: weeks 1-2 are its core, week 3 (rewards and the coin shop) runs beside the next event."));
+    if (event === "diva") {
+      var field = el("div", "field admin-wide");
+      var label = el("span", "field-label", "Diva weeks");
+      field.appendChild(label);
+      field.appendChild(el("p", "note-text", "Diva Defense always lasts 21 days: weeks 1-2 are its core, week 3 (rewards and the coin shop) runs beside the next event."));
+      box.appendChild(field);
+      addHelp(label, "diva");
+    }
   }
 
   function values() {
@@ -450,6 +1080,7 @@
     var q = state.editing ? "?id=" + state.editing : "";
     request("/api/admin/events/calendar/check" + q, { method: "POST", body: JSON.stringify(body(v)) }).then(function (c) {
       if (seq !== state.checkSeq) return;
+      if (c.endsAt && document.activeElement !== $("cal-end")) $("cal-end").value = toInput(c.endsAt);
       $("cal-computed").textContent = c.endsAt ? "Core to " + utc(c.coreEndsAt) + " UTC, ends " + utc(c.endsAt) + " UTC"
         + (c.settings && c.settings.first_cycle !== undefined ? ", cycles from " + c.settings.first_cycle : "") + "." : "";
       list("cal-problems", c.problems, c.problems && c.problems.length ? [] : ["The checks pass."].concat(c.warnings || []));
@@ -467,6 +1098,8 @@
     renderSettings($("cal-event").value);
     list("cal-problems", []);
     $("cal-computed").textContent = "";
+    $("cal-gap-hint").hidden = true;
+    syncEnd();
   }
 
   function startEdit(r) {
@@ -478,6 +1111,7 @@
     $("cal-note-text").value = r.note || "";
     $("cal-anytime").checked = false;
     renderSettings(r.event, r.settings || {});
+    syncEnd();
     $("cal-form-title").textContent = "Change run #" + r.id + " (" + r.name + ")";
     $("cal-save").textContent = "Save the changes";
     $("cal-reset").hidden = false;
@@ -553,15 +1187,27 @@
   function wire() {
     $("cal-refresh").addEventListener("click", load);
     $("cal-cancelled").addEventListener("change", load);
-    $("cal-event").addEventListener("change", function () { renderSettings($("cal-event").value); scheduleCheck(); });
+    $("cal-event").addEventListener("change", function () { renderSettings($("cal-event").value); syncEnd(); scheduleCheck(); });
     ["cal-lane", "cal-start", "cal-core", "cal-anytime", "cal-note-text"].forEach(function (id) {
       $(id).addEventListener("input", scheduleCheck);
       $(id).addEventListener("change", scheduleCheck);
     });
+    $("cal-start").addEventListener("input", syncEnd);
+    $("cal-end").addEventListener("change", endChanged);
     $("cal-form").addEventListener("submit", save);
     $("cal-reset").addEventListener("click", resetForm);
     $("cal-gen").addEventListener("submit", preview);
     $("cal-gen-save").addEventListener("click", generate);
+    $("cal-change-save").addEventListener("click", saveChange);
+    $("cal-change-cancel").addEventListener("click", cancelChange);
+    $("cal-change-anytime").addEventListener("change", checkChange);
+    [["cal-event", "event"], ["cal-lane", "lane"], ["cal-start", "starts_at"], ["cal-core", "core_ends_at"], ["cal-end", "ends_at"],
+      ["cal-note-text", "note"], ["cal-anytime", "any_time"], ["cal-change-anytime", "any_time"], ["cal-gen-from", "gen_from"],
+      ["cal-gen-first", "gen_first"], ["cal-gen-weeks", "gen_weeks"]].forEach(function (f) {
+      addHelp(document.querySelector("label[for='" + f[0] + "']") || $(f[0]).closest("label"), f[1]);
+    });
+    document.addEventListener("click", function (e) { if (!e.target.closest || !e.target.closest(".field-head")) closeHelp(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeHelp(true); });
   }
 
   window.startAdminEvents = function () {

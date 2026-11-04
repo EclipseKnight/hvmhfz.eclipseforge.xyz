@@ -7,6 +7,11 @@
      (the live check, its reasons, the request body, times read as UTC); changing a planned run (PUT); delete
      and stop after the current cycle only on the second click; the note of a started run; extending the loop
      (preview, then add); a note with markup stays text; no horizontal overflow at 375 px;
+   - the strip's gaps (red where nothing runs, hatched where no featured event is on), "Running now", the gap
+     list and "Fill this gap"; dragging a planned run (move, resize an edge) with the mouse: the live tip with the
+     rules' verdict, the before/after preview, the API's check with ?id=, Save as a PUT of the whole run;
+     Cancel; the keyboard (arrows, Shift, Escape); a long press at 375 px; started runs can't move; a "?" circle
+     with its text for every field of the form, each event's settings and the loop; the Ends field;
    - events.html: "Now: ... Next: ... from ..." from /api/public/events/calendar, and no line when the API has
      no calendar (404) or nothing is planned;
    - the pure helpers of js/admin-events.js and js/events.js under node.
@@ -89,6 +94,62 @@ function helpers() {
   check("phaseLines none", Cal.phaseLines({ phases: null }) === null);
   const lines = Cal.phaseLines({ phases: [{ name: "cycle", starts_at: "2026-11-05T15:00:00Z", ends_at: "2026-11-12T15:00:00Z", cycle: 0, open_ends_at: "2026-11-11T15:00:00Z" }] });
   check("phaseLines", lines && lines[0] === "cycle: Thu 5 Nov 2026 15:00 to Thu 12 Nov 2026 15:00 (cycle 0, open ends at Wed 11 Nov 2026 15:00)", lines && lines[0]);
+  // Drag and resize, the rules while dragging, gaps, help texts.
+  const festa = { id: 5, event: "festa", lane: "featured", status: "planned", note: "keep me", startsAt: "2026-11-17T15:00:00Z",
+    coreEndsAt: "2026-12-21T03:00:00Z", endsAt: "2027-01-12T17:30:00Z", settings: { entry_hours: 336, souls_hours: 504, judging_hours: 2.5, rewards_hours: 504 } };
+  const vs = { id: 6, event: "vs_bracket", lane: "featured", status: "planned", startsAt: "2026-12-21T03:00:00Z", coreEndsAt: "2027-01-04T03:00:00Z",
+    endsAt: "2027-01-04T03:00:00Z", settings: { first_cycle: 1, cycles: 1, cycle_days: 14, registration_days: 3, round_days: 2, max_rounds: 5 } };
+  const diva = { id: 2, event: "diva", lane: "background", status: "running", startsAt: "2026-11-02T03:00:00Z", coreEndsAt: "2026-11-16T03:00:00Z",
+    endsAt: "2026-11-23T03:00:00Z", settings: {} };
+  const H = 3600000, D = 24 * H, T = (x) => Date.parse(x);
+  const sh = Cal.shape("festa", T(festa.startsAt), festa.settings);
+  check("shape festa", sh.end === T(festa.endsAt) && sh.core === T("2026-12-22T15:00:00Z"), JSON.stringify(sh));
+  check("shape diva", Cal.shape("diva", 0, {}).end === 21 * D && Cal.shape("diva", 0, {}).core === 14 * D);
+  const mv = Cal.moveRun(festa, D + 2 * H);
+  check("move: every time shifts, a hand-set core too, settings kept", mv.startsAt === "2026-11-18T17:00:00Z" && mv.coreEndsAt === "2026-12-22T05:00:00Z"
+    && mv.endsAt === "2027-01-13T19:30:00Z" && mv.explicitCore && JSON.stringify(mv.settings) === JSON.stringify(festa.settings), JSON.stringify(mv));
+  const re = Cal.resizeRun(festa, "end", T("2027-01-13T17:30:00Z"));
+  check("resize festa end: rewards hours", re.settings.rewards_hours === 528 && re.endsAt === "2027-01-13T17:30:00Z" && re.startsAt === festa.startsAt, JSON.stringify(re));
+  const rs = Cal.resizeRun(festa, "start", T("2026-11-16T15:00:00Z"));
+  check("resize festa start: entry hours, end kept", rs.settings.entry_hours === 360 && rs.startsAt === "2026-11-16T15:00:00Z" && rs.endsAt === festa.endsAt, JSON.stringify(rs));
+  const rc = Cal.resizeRun(festa, "core", T("2026-12-28T03:00:00Z"));
+  check("resize festa core (set by hand): the core end", rc.coreEndsAt === "2026-12-28T03:00:00Z" && rc.explicitCore && rc.endsAt === festa.endsAt, JSON.stringify(rc));
+  const own = Object.assign({}, festa, { coreEndsAt: "2026-12-22T15:00:00Z" });
+  const ro = Cal.resizeRun(own, "core", T("2026-12-15T15:00:00Z"));
+  check("resize festa core (its own): souls hours, tail follows", ro.settings.souls_hours === 336 && !ro.explicitCore && ro.coreEndsAt === "2026-12-15T15:00:00Z"
+    && ro.endsAt === "2027-01-05T17:30:00Z", JSON.stringify(ro));
+  check("resize Diva: no (21 days)", Cal.resizeRun(diva, "end", T("2026-11-30T03:00:00Z")) === null);
+  const rv = Cal.resizeRun(vs, "end", T("2027-01-15T10:00:00Z"));
+  check("resize VS end: whole cycles", rv.settings.cycles === 2 && rv.endsAt === "2027-01-18T03:00:00Z" && rv.coreEndsAt === rv.endsAt && !rv.explicitCore, JSON.stringify(rv));
+  const rvs = Cal.resizeRun(vs, "start", T("2026-12-08T00:00:00Z"));
+  check("resize VS start: whole cycles, end kept", rvs.settings.cycles === 2 && rvs.startsAt === "2026-12-07T03:00:00Z" && rvs.endsAt === vs.endsAt, JSON.stringify(rvs));
+  const now = T("2026-11-10T00:00:00Z");
+  const early = Cal.ruleProblems(Cal.moveRun(vs, -10 * D), [festa, diva], now);
+  check("rules: featured cores overlap", early.problems.some((p) => /overlaps the Hunter Festival run #5's core/.test(p)), JSON.stringify(early));
+  check("rules: Monday 03:00 is the soft rule", early.boundary.length === 2 && Cal.ruleProblems(vs, [festa], now).boundary.length === 0, JSON.stringify(early.boundary));
+  check("rules: background runs don't block a featured core", !Cal.ruleProblems(Cal.moveRun(vs, -42 * D), [diva], now).problems.some((p) => /core/.test(p)));
+  check("rules: same event, tails included", Cal.ruleProblems(Object.assign({}, festa, { id: 9 }), [festa], now).problems.some((p) => /one run of an event at a time/.test(p)));
+  check("rules: souls at least 7 days", Cal.ruleProblems(Cal.resizeRun(own, "core", T("2026-12-03T15:00:00Z")), [], now).problems.some((p) => /168/.test(p)));
+  check("rules: an hour ahead", Cal.ruleProblems(Cal.moveRun(vs, T("2026-11-10T00:30:00Z") - T(vs.startsAt)), [], now).problems.some((p) => /an hour from now/.test(p)));
+  const cupBad = { id: 7, event: "speedrun_cup", lane: "featured", startsAt: "2027-02-01T03:00:00Z", coreEndsAt: "2027-02-08T03:00:00Z", endsAt: "2027-02-08T03:00:00Z",
+    settings: { first_cycle: 0, cycles: 1, cycle_days: 7, open_days: 7, tally_hours: 1 } };
+  const cupR = Cal.ruleProblems(cupBad, [{ id: 3, event: "speedrun_cup", lane: "background", startsAt: "2026-11-05T15:00:00Z", coreEndsAt: "2026-11-19T15:00:00Z",
+    endsAt: "2026-11-19T15:00:00Z", settings: { first_cycle: 0, cycles: 2 } }], now).problems.join(" ");
+  check("rules: Cup open + tally, cycle numbers", /an hour before the cycle/.test(cupR) && /already used/.test(cupR), cupR);
+  const cov = Cal.coverage([festa, vs, diva], now, T("2027-02-01T03:00:00Z"));
+  const gl = cov.gaps.map((g) => g.kind + " " + new Date(g.from).toISOString().slice(0, 16) + " " + new Date(g.to).toISOString().slice(0, 16) + " " + g.running.join("+"));
+  check("coverage: no featured (background on), festival tail alone, then nothing", gl.join("|") === "featured 2026-11-10T00:00 2026-11-17T15:00 Diva Defense"
+    + "|featured 2027-01-04T03:00 2027-01-12T17:30 Hunter Festival|empty 2027-01-12T17:30 2027-02-01T03:00 ", gl.join("|"));
+  const at = Cal.runningAt(cov.pieces, T("2026-11-20T00:00:00Z"));
+  check("runningAt", at && at.featured === 5 && at.runs.map((r) => r.id + r.part).join() === "5core,2tail", JSON.stringify(at));
+  check("howLong", Cal.howLong(0, (12 * 24 + 21) * H) === "12 d 21 h" && Cal.howLong(0, 2 * D) === "2 d" && Cal.howLong(0, 5 * H) === "5 h");
+  check("snap", Cal.snap(T("2026-11-10T10:31:00Z")) === T("2026-11-10T11:00:00Z") && Cal.snap(T("2026-11-10T16:00:00Z"), true) === T("2026-11-11T03:00:00Z"));
+  check("draftBody: own core left out, note kept", JSON.stringify(Cal.draftBody(rv, true)) === JSON.stringify({ event: "vs_bracket", lane: "featured",
+    startsAt: vs.startsAt, coreEndsAt: null, settings: rv.settings, note: null, allowAnyTime: true }) && Cal.draftBody(mv).note === "keep me"
+    && Cal.draftBody(mv).coreEndsAt === "2026-12-22T05:00:00Z");
+  ["event", "lane", "starts_at", "core_ends_at", "ends_at", "note", "any_time", "diva", "gen_from", "gen_first", "gen_weeks"].forEach((k) =>
+    check("help text: " + k, (Cal.help(k) || "").length > 40));
+  Object.keys(Cal.FIELDS).forEach((e) => Cal.FIELDS[e].forEach((f) => check("help text: " + e + "." + f[0], (Cal.help(f[0], e) || "").length > 40)));
   check("events: calendarLine none", Events.calendarLine(null) === null && Events.calendarLine({ current: null, next: null }) === null);
   const line = Events.calendarLine({ current: null, next: { name: "Hunter Festival", startsAt: "2026-11-17T15:00:00Z" } }) || "";
   check("events: calendarLine next", /^Next: Hunter Festival from .+\.$/.test(line), line);
@@ -145,7 +206,7 @@ function fakeApi(page, api) {
     if (p === "/api/admin/events/calendar/check") {
       const monday = sent.startsAt && new Date(sent.startsAt).getUTCDay() === 1;
       return reply(200, { event: sent.event, startsAt: sent.startsAt, coreEndsAt: "2027-03-29T03:00:00Z", endsAt: "2027-04-05T03:00:00Z",
-        settings: sent.settings, problems: monday ? [] : ["The start (" + sent.startsAt + ") is not on a Monday 03:00 UTC; tick \"allow any time\" to use it anyway."],
+        settings: sent.settings, problems: monday || sent.allowAnyTime ? [] : ["The start (" + sent.startsAt + ") is not on a Monday 03:00 UTC; tick \"allow any time\" to use it anyway."],
         warnings: [] });
     }
     if (p === "/api/admin/events/calendar" && req.method() === "POST") {
@@ -159,6 +220,11 @@ function fakeApi(page, api) {
     if (m && req.method() === "PUT") {
       const r = api.runs.find((x) => x.id === Number(m[1]));
       Object.assign(r, sent.note !== undefined ? { note: sent.note } : {});
+      if (sent.startsAt) {
+        const t = Cal.shape(r.event, Date.parse(sent.startsAt), sent.settings);
+        Object.assign(r, { startsAt: sent.startsAt, settings: sent.settings, endsAt: new Date(t.end).toISOString(),
+          coreEndsAt: sent.coreEndsAt || new Date(t.core).toISOString() });
+      }
       return reply(200, r);
     }
     m = p.match(/^\/api\/admin\/events\/calendar\/(\d+)\/(cancel|stop-after-current)$/);
@@ -307,6 +373,185 @@ async function adminPage(browser, base) {
   await small.page.close();
 }
 
+/* ---- gaps, drag, keys, help circles ---- */
+
+// Pixels of the strip for ms of time, and the x of time t.
+async function geometry(page) {
+  return page.evaluate(() => {
+    const b = document.querySelector("#cal-strip .cal-body").getBoundingClientRect();
+    return { left: b.left, width: b.width };
+  });
+}
+const FROM = Date.parse("2026-11-09T03:00:00Z"), SPAN = 84 * 86400000;
+const xOf = (g, t) => g.left + (Date.parse(t) - FROM) / SPAN * g.width;
+
+// Waits until the page stops scrolling (the form scrolls smoothly).
+async function settle(page) {
+  await page.waitForFunction(() => new Promise((ok) => { const y = scrollY; setTimeout(() => ok(scrollY === y), 150); }), null, { timeout: 5000 }).catch(() => {});
+}
+
+async function dragBy(page, sel, fromX, toX) {
+  await page.$eval(sel, (n) => n.scrollIntoView({ block: "center" }));
+  await settle(page);
+  const box = await (await page.$(sel)).boundingBox();
+  const y = box.y + box.height / 2;
+  await page.mouse.move(fromX, y);
+  await page.mouse.down();
+  await page.mouse.move(fromX + (toX - fromX) / 3, y, { steps: 3 });
+  await page.mouse.move(toX, y, { steps: 5 });
+}
+
+async function dragPage(browser, base) {
+  const api = { runs: seed(), calls: [] };
+  api.runs.find((r) => r.id === 5).note = "keep me";
+  const { page, errors } = await open(browser, base + "/admin.html#events", api, 1280);
+  await page.emulateMedia({ reducedMotion: "reduce" }); // no smooth scrolling under the mouse
+  await page.waitForSelector("#cal-rows tr td.rank", { timeout: 5000 });
+
+  // What runs now and the gaps.
+  const running = await text(page, "#cal-running");
+  check("running now: background runs, no featured", running.indexOf("Diva Defense #2 (background)") !== -1 && running.indexOf("Speedrun Cup #3 (background)") !== -1
+    && running.indexOf("no featured event") !== -1, running);
+  check("strip: one red gap, two hatched", (await page.$$("#cal-strip .cal-gap.is-empty")).length === 1 && (await page.$$("#cal-strip .cal-gap.is-nofeatured")).length === 2);
+  const gaps = await page.$$eval("#cal-gaps li", (ls) => ls.map((l) => l.textContent));
+  check("gap list", gaps.length === 3 && /^No featured event Tue 10 Nov 2026 00:00 to Tue 17 Nov 2026 15:00 UTC, 7 d 15 h\. Still on: Diva Defense, Speedrun Cup\.Fill this gap$/.test(gaps[0])
+    && /^Nothing runs Tue 12 Jan 2027 17:30 to Mon 1 Feb 2027 03:00 UTC, .*nothing is planned after.*Fill this gap$/.test(gaps[2]), gaps.join(" | "));
+  const g = await geometry(page);
+  await page.mouse.move(xOf(g, "2026-11-20T00:00:00Z"), (await (await page.$("#cal-strip .cal-festa")).boundingBox()).y + 10);
+  check("pointing says what runs then", /^Fri 20 Nov 2026 00:00 UTC: Hunter Festival #5 \(featured\), Diva Defense #2 \(background, tail\)\.$/.test(await text(page, "#cal-at")), await text(page, "#cal-at"));
+
+  // Fill this gap: the form starts at the gap (an hour ahead at least), featured, any time allowed.
+  await page.click("#cal-gaps li:first-child button");
+  check("fill: start, lane, any time", (await page.inputValue("#cal-start")) === "2026-11-10T01:00" && (await page.inputValue("#cal-lane")) === "featured"
+    && (await page.isChecked("#cal-anytime")), await page.inputValue("#cal-start"));
+  check("fill: hint", /^Filling Tue 10 Nov 2026 01:00 to Tue 17 Nov 2026 15:00 UTC \(7 d 14 h\)/.test(await text(page, "#cal-gap-hint")), await text(page, "#cal-gap-hint"));
+  check("fill: Ends from the settings", (await page.inputValue("#cal-end")) === "2026-12-08T01:00", await page.inputValue("#cal-end"));
+  await page.waitForFunction(() => document.getElementById("cal-problems").textContent.indexOf("The checks pass.") !== -1, null, { timeout: 3000 })
+    .catch(() => check("fill: checked", false));
+  // A new end changes the last length: the Cup's cycles.
+  await page.selectOption("#cal-event", "speedrun_cup");
+  await page.fill("#cal-end", "2026-12-01T01:00");
+  await page.dispatchEvent("#cal-end", "change");
+  check("Ends: Cup cycles follow", (await page.inputValue("#cal-s-cycles")) === "3" && (await page.inputValue("#cal-end")) === "2026-12-01T01:00", await page.inputValue("#cal-s-cycles"));
+  await page.selectOption("#cal-event", "diva");
+  check("Ends: Diva can't change", await page.$eval("#cal-end", (n) => n.readOnly));
+
+  // Help circles: every field, each event's settings, the loop; open on click, closed by Escape.
+  const helpFor = (id) => page.evaluate((id) => {
+    const input = document.getElementById(id);
+    const head = input.closest(".field, .cal-anytime, .cal-change, form").querySelector(".field-head");
+    const b = head && head.querySelector(".help-tip");
+    const pop = b && document.getElementById(b.getAttribute("aria-describedby"));
+    return b && pop && b.tagName === "BUTTON" && b.getAttribute("aria-label").length > 5 && pop.getAttribute("role") === "tooltip" ? pop.textContent : "";
+  }, id);
+  for (const id of ["cal-event", "cal-lane", "cal-start", "cal-core", "cal-end", "cal-note-text", "cal-anytime", "cal-gen-from", "cal-gen-first", "cal-gen-weeks"]) {
+    check("help circle: " + id, (await helpFor(id)).length > 40);
+  }
+  for (const [ev, keys] of Object.entries(Cal.FIELDS)) {
+    await page.selectOption("#cal-event", ev);
+    for (const k of keys) check("help circle: " + ev + " " + k[0], (await helpFor("cal-s-" + k[0])).length > 40);
+  }
+  await page.selectOption("#cal-event", "diva");
+  check("help circle: Diva weeks", /21 days/.test(await page.$eval("#cal-settings .help-pop", (n) => n.textContent)));
+  await page.click("label[for='cal-lane'] + .help-tip");
+  check("help: click opens", await page.isVisible("label[for='cal-lane'] ~ .help-pop") && (await page.getAttribute("label[for='cal-lane'] + .help-tip", "aria-expanded")) === "true");
+  await page.keyboard.press("Escape");
+  check("help: Escape closes", !(await page.isVisible("label[for='cal-lane'] ~ .help-pop")));
+  await page.click("#cal-reset").catch(() => {});
+
+  // Started runs don't move.
+  check("started runs: no handles", (await page.$$("#cal-strip .cal-diva .cal-h, #cal-strip .cal-speedrun_cup .cal-h")).length === 0
+    && (await page.$$("#cal-strip .cal-festa .cal-h")).length === 3);
+
+  await page.$eval("#cal-strip", (n) => n.scrollIntoView({ block: "center" }));
+  await settle(page);
+  // Drag the festival from Tue 17 Nov 15:00 to Mon 23 Nov 03:00 (the magnet takes it to the boundary).
+  const fb = await (await page.$("#cal-strip .cal-festa")).boundingBox();
+  const startX = fb.x + 60;
+  await dragBy(page, "#cal-strip .cal-festa", startX, startX + (xOf(g, "2026-11-23T02:00:00Z") - xOf(g, "2026-11-17T15:00:00Z")));
+  const tip = await text(page, "#cal-strip .cal-tip");
+  check("drag: the live tip", await page.isVisible("#cal-strip .cal-tip") && tip.indexOf("Start Mon 23 Nov 2026 03:00") !== -1
+    && tip.indexOf("overlaps the VS Bracket run #6") !== -1, tip);
+  check("drag: the bar says it breaks a rule", await page.$eval("#cal-strip .cal-festa", (n) => n.classList.contains("is-bad")));
+  await page.mouse.up();
+  await page.waitForSelector("#cal-change:not([hidden])", { timeout: 3000 }).catch(() => check("drop: the change shows", false));
+  const rows = await page.$$eval("#cal-change-rows tr", (rs) => rs.map((r) => r.textContent));
+  check("drop: before and after", rows[0] === "StartsTue 17 Nov 2026 15:00Mon 23 Nov 2026 03:00" && rows[1] === "Core endsMon 21 Dec 2026 03:00Sat 26 Dec 2026 15:00"
+    && rows.length === 7, rows.join(" | "));
+  check("drop: no detail opened", await page.isHidden("#cal-detail"));
+  await page.waitForFunction(() => document.getElementById("cal-change-problems").textContent.indexOf("API's checks pass") !== -1, null, { timeout: 3000 })
+    .catch(() => check("drop: the API's check", false));
+  const chk = last(api, "POST", "/check?id=5");
+  check("drop: checked with ?id=", chk && chk.body.startsAt === "2026-11-23T03:00:00Z" && chk.body.coreEndsAt === "2026-12-26T15:00:00Z", chk && JSON.stringify(chk.body));
+  await page.click("#cal-change-save");
+  await page.waitForFunction(() => document.getElementById("cal-change").hidden, null, { timeout: 3000 }).catch(() => check("save closes the change", false));
+  const put = last(api, "PUT", "/api/admin/events/calendar/5");
+  check("save: a PUT of the whole run, note kept", put && JSON.stringify(put.body) === JSON.stringify({ event: "festa", lane: "featured", startsAt: "2026-11-23T03:00:00Z",
+    coreEndsAt: "2026-12-26T15:00:00Z", settings: { entry_hours: 336, souls_hours: 504, judging_hours: 2.5, rewards_hours: 504 }, note: "keep me", allowAnyTime: false }),
+  put && JSON.stringify(put.body));
+  check("save: said", (await text(page, "#cal-ok")).indexOf("Run #5 saved") !== -1);
+  await page.waitForTimeout(200);
+
+  // Resize the VS Bracket's end by two weeks: two cycles; Cancel puts it back.
+  const vb = await (await page.$("#cal-strip .cal-vs_bracket")).boundingBox();
+  const before = await page.$eval("#cal-strip .cal-vs_bracket", (n) => n.style.width);
+  const endX = vb.x + vb.width - 3;
+  await dragBy(page, "#cal-strip .cal-vs_bracket", endX, endX + (xOf(g, "2027-01-18T03:00:00Z") - xOf(g, "2027-01-04T03:00:00Z")));
+  await page.mouse.up();
+  await page.waitForSelector("#cal-change:not([hidden])", { timeout: 3000 }).catch(() => check("resize: the change shows", false));
+  const vrows = await page.$$eval("#cal-change-rows tr", (rs) => rs.map((r) => r.textContent));
+  check("resize: cycles 1 to 2", vrows.indexOf("Cycles12") !== -1 && vrows.indexOf("EndsMon 4 Jan 2027 03:00Mon 18 Jan 2027 03:00") !== -1, vrows.join(" | "));
+  const puts = api.calls.filter((c) => c.method === "PUT").length;
+  await page.click("#cal-change-cancel");
+  check("cancel: nothing saved, bar back", api.calls.filter((c) => c.method === "PUT").length === puts && await page.isHidden("#cal-change")
+    && (await page.$eval("#cal-strip .cal-vs_bracket", (n) => n.style.width)) === before);
+
+  // The keyboard: arrows move by an hour, Shift by a day, Up lengthens, Escape cancels.
+  await page.focus("#cal-strip .cal-vs_bracket");
+  await page.keyboard.press("ArrowRight");
+  check("keys: the change shows, focus stays", await page.isVisible("#cal-change") && await page.evaluate(() => document.activeElement.dataset.id === "6"));
+  await page.keyboard.press("Shift+ArrowRight");
+  await page.keyboard.press("ArrowUp");
+  const krows = await page.$$eval("#cal-change-rows tr", (rs) => rs.map((r) => r.textContent));
+  check("keys: +1 h, +1 day, a cycle longer", krows[0] === "StartsMon 21 Dec 2026 03:00Tue 22 Dec 2026 04:00" && krows.indexOf("Cycles12") !== -1, krows.join(" | "));
+  await page.keyboard.press("Escape");
+  check("keys: Escape cancels", await page.isHidden("#cal-change"));
+  check("drag: no page errors", errors.length === 0, errors.join("; "));
+  await shot(page, "admin-events-gaps-1280.png");
+  await page.close();
+
+  // 375 px: a long press, then drag; a quick swipe does nothing.
+  const small = await open(browser, base + "/admin.html#events", { runs: seed(), calls: [] }, 375);
+  await small.page.waitForSelector("#cal-rows tr td.rank", { timeout: 5000 });
+  const touch = (type, x, y) => small.page.evaluate(([type, x, y]) => {
+    const bar = document.querySelector("#cal-strip .cal-festa");
+    (type === "pointerdown" ? bar : document).dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 7, pointerType: "touch", button: 0, clientX: x, clientY: y }));
+  }, [type, x, y]);
+  await small.page.$eval("#cal-strip .cal-festa", (n) => n.scrollIntoView({ block: "center", inline: "start" }));
+  const sb = await (await small.page.$("#cal-strip .cal-festa")).boundingBox();
+  const sx = sb.x + 20, sy = sb.y + 10;
+  await touch("pointerdown", sx, sy);
+  await touch("pointermove", sx + 30, sy);
+  await touch("pointerup", sx + 30, sy);
+  check("375: a swipe doesn't drag", await small.page.isHidden("#cal-change"));
+  await touch("pointerdown", sx, sy);
+  await small.page.waitForTimeout(600);
+  check("375: held", await small.page.$eval("#cal-strip .cal-festa", (n) => n.classList.contains("is-held")));
+  await touch("pointermove", sx + 10, sy);
+  await touch("pointermove", sx + 40, sy);
+  await touch("pointerup", sx + 40, sy);
+  check("375: long press then drag shows the change", await small.page.isVisible("#cal-change"));
+  const overflow = await small.page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  check("375 with the change: no horizontal overflow", overflow <= 0, overflow + " px");
+  check("375: the before/after table fits", await small.page.$eval("#cal-change .table-wrap", (n) => n.scrollWidth <= n.clientWidth));
+  await small.page.click("label[for='cal-start'] + .help-tip");
+  check("375: help opens on tap", await small.page.isVisible("label[for='cal-start'] ~ .help-pop"));
+  check("375 help: no horizontal overflow", (await small.page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) <= 0);
+  await shot(small.page, "admin-events-drag-375.png");
+  check("375 drag: no page errors", small.errors.length === 0, small.errors.join("; "));
+  await small.page.close();
+}
+
 async function eventsPage(browser, base) {
   const next = { now: NOW, current: null, next: { id: 5, event: "festa", name: "Hunter Festival", lane: "featured", startsAt: "2026-11-17T15:00:00Z",
     coreEndsAt: "2026-12-21T03:00:00Z", endsAt: "2027-01-12T17:30:00Z", status: "planned", phases: null }, runs: [] };
@@ -342,6 +587,7 @@ async function eventsPage(browser, base) {
   const browser = await chromium.launch();
   try {
     await adminPage(browser, base);
+    await dragPage(browser, base);
     await eventsPage(browser, base);
   } catch (e) {
     failures.push("crashed: " + (e && e.stack || e));
