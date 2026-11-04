@@ -1528,6 +1528,7 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
   .play-settings th,.play-settings td,.play-settings th[scope="row"]{padding:6px 5px}
   .play-settings .ghost-btn{padding:6px 9px}
   .play-sources td,.play-sources th{min-width:0;padding:8px 6px}
+}
 
 /* ===== Tournaments: VS Bracket (rounds as columns, stacked on phones) ===== */
 .bracket{display:flex;gap:18px;overflow-x:auto;padding-bottom:8px;align-items:flex-start}
@@ -1547,3 +1548,16 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
   .bracket{flex-direction:column;overflow-x:visible}
   .bracket-round{flex:none;width:100%}
 }
+/* Admin Notices tab: the MHFML preview of a login notice page (dark like the game's notice board) and the counters. */
+.notice-row{display:grid;gap:6px;margin:0 0 14px}
+.notice-row textarea{width:100%;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}
+.notice-row .ghost-btn{justify-self:start}
+.mhfml-preview{background:#14110c;border:1px solid rgba(183,138,51,.45);border-radius:6px;padding:8px 10px;min-height:2.4em;overflow-wrap:anywhere}
+.mhfml-line{line-height:1.35}
+.mhfml-unknown{font-style:italic}
+.notice-count.over{color:#a12a2a;font-weight:700}
+.notice-targets{margin:0 0 16px;display:flex;flex-wrap:wrap;gap:8px 18px}
+.notice-text{white-space:pre-wrap;overflow-wrap:anywhere;max-width:32em}
+.notice-result{font-size:.82rem;opacity:.8;overflow-wrap:anywhere}
+.notice-sent{color:#2f5d2a;font-weight:700}
+.notice-failed,.notice-missed{color:#a12a2a;font-weight:700}

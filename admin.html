@@ -103,6 +103,7 @@
         <a class="tab" id="tab-gifts" role="tab" aria-controls="panel-gifts" aria-selected="true" href="#gifts">Gifts</a>
         <a class="tab" id="tab-events" role="tab" aria-controls="panel-events" aria-selected="false" href="#events">Events</a>
         <a class="tab" id="tab-settings" role="tab" aria-controls="panel-settings" aria-selected="false" href="#settings">Settings</a>
+        <a class="tab" id="tab-notices" role="tab" aria-controls="panel-notices" aria-selected="false" href="#notices">Notices</a>
         <a class="tab" id="tab-content" role="tab" aria-controls="panel-content" aria-selected="false" href="#content">Content</a>
         <a class="tab" id="tab-road" role="tab" aria-controls="panel-road" aria-selected="false" href="#road">Hunting Road</a>
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests <span class="tab-count" id="count-quests"></span></a>
@@ -390,6 +391,79 @@
       </section>
       </div>
 
+      <div class="tab-panel" id="panel-notices" hidden>
+      <section class="panel" id="notices-panel">
+        <div class="panel-head"><h2>Notices</h2>
+          <div class="ops-log-actions"><button type="button" class="ghost-btn small" id="not-refresh">Refresh</button></div></div>
+        <p class="form-alert" id="not-alert" hidden></p>
+        <p class="road-ok" id="not-ok" hidden></p>
+        <ul class="road-problems" id="not-problems" hidden></ul>
+        <p class="note-text">In game, a notice is one chat line to every player on every channel: at most 240 bytes, no emoji or accented letters (the game can't show them). On Discord it is a post by the bot in #mhfrontier, with mentions off. Every send is in the Audit tab. Admins only. All times on this tab are <b>UTC</b>.</p>
+
+        <h3 class="subhead">Send now</h3>
+        <form id="not-send-form" class="admin-form" novalidate>
+          <div class="field admin-wide">
+            <label for="not-send-text">Notice</label>
+            <textarea id="not-send-text" rows="3" maxlength="2000"></textarea>
+            <span class="set-help notice-count" id="not-send-count" aria-live="polite"></span>
+          </div>
+          <div class="notice-targets admin-wide">
+            <label class="cal-check"><input type="checkbox" id="not-send-game" checked /> In game</label>
+            <label class="cal-check"><input type="checkbox" id="not-send-discord" /> Discord</label>
+          </div>
+          <ul class="road-problems" id="not-send-problems" hidden></ul>
+          <div class="admin-actions"><button type="submit" class="btn btn-primary" id="not-send-btn">Send now</button></div>
+        </form>
+
+        <h3 class="subhead">Scheduled notices</h3>
+        <p class="form-alert" id="not-sched-missing" hidden>The scheduled notices table is not there yet: the API's db/scheduled-notices.sql must run first. Send now works without it.</p>
+        <form id="not-sched-form" class="admin-form" novalidate>
+          <div class="field admin-wide">
+            <label for="not-sched-text">Notice</label>
+            <textarea id="not-sched-text" rows="3" maxlength="2000"></textarea>
+            <span class="set-help notice-count" id="not-sched-count" aria-live="polite"></span>
+          </div>
+          <div class="field">
+            <label for="not-sched-at">Send at (UTC)</label>
+            <input id="not-sched-at" type="datetime-local" step="60" />
+          </div>
+          <div class="notice-targets">
+            <label class="cal-check"><input type="checkbox" id="not-sched-game" checked /> In game</label>
+            <label class="cal-check"><input type="checkbox" id="not-sched-discord" /> Discord</label>
+          </div>
+          <ul class="road-problems" id="not-sched-problems" hidden></ul>
+          <div class="admin-actions"><button type="submit" class="btn btn-primary" id="not-sched-btn">Schedule</button></div>
+        </form>
+        <p class="note-text">The API sends each notice within 30 seconds of its time, once. If the API was down and a notice is more than 15 minutes late, it is marked <b>missed</b> instead of sent late.</p>
+        <div class="table-wrap">
+          <table class="data-table admin-table" data-nosort>
+            <thead><tr><th>When</th><th>Where</th><th>Notice</th><th>By</th><th></th></tr></thead>
+            <tbody id="not-planned"><tr><td colspan="5" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+        <h3 class="subhead">Sent and past</h3>
+        <div class="table-wrap">
+          <table class="data-table admin-table" data-nosort>
+            <thead><tr><th>When</th><th>Where</th><th>Notice</th><th>By</th><th>Outcome</th></tr></thead>
+            <tbody id="not-recent"><tr><td colspan="5" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+
+        <h3 class="subhead">Login notices</h3>
+        <p class="note-text" id="not-login-state"></p>
+        <p class="note-text">The pages players see at sign-in, in MHFML: <code>&lt;BODY&gt;</code> starts a line, <code>&lt;BR&gt;</code> ends it, <code>&lt;CENTER&gt;</code>, <code>&lt;SIZE_3&gt;</code>, colours <code>&lt;C_4&gt;</code> (highlight), <code>&lt;C_5&gt;</code> (warning), <code>&lt;C_7&gt;</code> (normal). The preview's colours are close, not exact. The same setting as Settings &rarr; Login notices.</p>
+        <form id="not-login-form" class="admin-form" novalidate>
+          <div class="notice-targets admin-wide"><label class="cal-check"><input type="checkbox" id="not-hide" /> Hide the notices (show none at sign-in)</label></div>
+          <div class="field admin-wide" id="not-login-list"></div>
+          <ul class="road-problems" id="not-login-problems" hidden></ul>
+          <div class="admin-actions">
+            <button type="button" class="ghost-btn" id="not-login-add">Add a page</button>
+            <button type="submit" class="btn btn-primary" id="not-login-save">Save login notices</button>
+          </div>
+        </form>
+      </section>
+      </div>
+
       <div class="tab-panel" id="panel-content" hidden>
       <section class="panel" id="content-panel">
         <div class="panel-head"><h2>Event content</h2><span class="panel-note" id="content-note"></span></div>
@@ -593,6 +667,7 @@
     <script src="/js/admin-quests.js?v=2"></script>
     <script src="/js/admin-events.js"></script>
     <script src="/js/admin-settings.js"></script>
+    <script src="/js/admin-notices.js"></script>
     <script src="/js/admin-content.js"></script>
     <script src="/js/admin.js"></script>
     <script src="/js/search.js" defer></script>

@@ -9,6 +9,7 @@ dev/shell/ (nav.html, footer.html, pages.json). For every *.html page in the sit
   - the page has the skip link, a main#content, styles.css, nav.js, background.js, consent.js and search.js;
   - the footer links the privacy policy;
   - every local href/src points at a file that exists, and so does every picture in js/background.js;
+  - every { in css/*.css is closed;
   - everything dev/check-nav.py checks (pages reachable from home, breadcrumbs, search, titles, sitemap,
     and every internal link through dev/check-links.py).
 
@@ -140,6 +141,26 @@ def check(root):
                                 f"(first at line {seen[key]}); the later one replaces the earlier")
             else:
                 seen[key] = number
+
+    # Every { closed in each stylesheet: one missing } once put every later rule (the VS bracket,
+    # the admin Notices tab) inside the Play page's phone-only @media block.
+    for sheet in sorted((root / "css").glob("*.css")):
+        text = re.sub(r"/\*.*?\*/", lambda m: "\n" * m.group(0).count("\n"),  # keep line numbers
+                      sheet.read_text(encoding="utf-8"), flags=re.S)
+        depth, opened = 0, None
+        for number, line in enumerate(text.splitlines(), 1):
+            for ch in line:
+                if ch == "{":
+                    if depth == 0:
+                        opened = number
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+                    if depth < 0:
+                        problems.append(f"css/{sheet.name}:{number}: a }} with no {{")
+                        depth = 0
+        if depth:
+            problems.append(f"css/{sheet.name}: the block opened near line {opened} is never closed")
     return problems
 
 
