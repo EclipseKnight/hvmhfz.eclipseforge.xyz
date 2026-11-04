@@ -973,6 +973,29 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .cal-actions{display:flex;flex-wrap:wrap;gap:6px}
 .link-btn{border:0;background:none;padding:0;cursor:pointer;font:inherit;color:var(--gold-ink);text-decoration:underline}
 
+/* admin.html Settings tab (js/admin-settings.js) */
+.set-sections{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.set-tab[aria-pressed="true"]{border-color:var(--gold);background:rgba(183,138,51,.18)}
+.set-badge{margin-left:6px;padding:1px 6px;border-radius:9px;font:600 .62rem var(--font-ui);letter-spacing:.04em;text-transform:none;background:rgba(43,33,24,.08);color:var(--ink-soft)}
+.set-badge.set-applied{background:rgba(46,91,78,.15);color:var(--teal)}
+.set-badge.set-refused{background:rgba(139,47,39,.15);color:var(--wax)}
+.set-badge.set-waiting{background:rgba(183,138,51,.2);color:var(--gold-ink)}
+.set-state.set-refused,.set-stale{color:var(--wax)}
+.set-effect{font-weight:600}
+.set-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:4px 22px}
+.set-field{padding:10px 12px;border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.45)}
+.set-control{display:flex;flex-direction:column;gap:6px}
+.set-field label.cal-check{display:inline-flex;margin:0;font:600 .8rem var(--font-ui);letter-spacing:0;text-transform:none;color:var(--ink-soft)}
+.set-field input[type="checkbox"]{display:inline-block;width:auto;margin:0}
+.set-help{margin:6px 0 0;font-size:.8rem}
+.set-list{display:grid;gap:6px;margin-bottom:6px}
+.set-list-row{display:flex;gap:6px;align-items:flex-start}
+.set-list-row>:first-child{flex:1;min-width:0}
+.set-pair{display:grid;grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr);gap:4px 6px;align-items:center}
+.set-pair-label{font:600 .7rem var(--font-ui);color:var(--ink-soft)}
+.set-review{margin:14px 0}
+.set-restart{columns:2 220px;margin:0 0 10px;padding-left:20px;font-size:.85rem;color:var(--ink-soft)}
+
 
 /* ---------- Hunting Road (road.html, road-vote.html, road-history.html, account and admin blocks) ---------- */
 .road-links{display:flex;gap:8px 12px;flex-wrap:wrap;margin:16px 0 0}
