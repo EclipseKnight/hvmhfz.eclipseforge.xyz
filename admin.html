@@ -97,11 +97,12 @@
       <!-- /site-shell:crumbs -->
       <header class="page-head">
         <h1>Admin</h1>
-        <p class="page-sub">Gifts (distributions), the event calendar, the Hunting Road rotation and the accounts of the server. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
+        <p class="page-sub">Gifts (distributions), the event calendar, the live game settings, the Hunting Road rotation and the accounts of the server. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
 
       <nav class="tabs" role="tablist" aria-label="Admin sections">
         <a class="tab" id="tab-gifts" role="tab" aria-controls="panel-gifts" aria-selected="true" href="#gifts">Gifts</a>
         <a class="tab" id="tab-events" role="tab" aria-controls="panel-events" aria-selected="false" href="#events">Events</a>
+        <a class="tab" id="tab-settings" role="tab" aria-controls="panel-settings" aria-selected="false" href="#settings">Settings</a>
         <a class="tab" id="tab-road" role="tab" aria-controls="panel-road" aria-selected="false" href="#road">Hunting Road</a>
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests <span class="tab-count" id="count-quests"></span></a>
         <a class="tab" id="tab-users" role="tab" aria-controls="panel-users" aria-selected="false" href="#users">Users <span class="tab-count" id="count-users"></span></a>
@@ -284,6 +285,58 @@
       </section>
       </div>
 
+      <div class="tab-panel" id="panel-settings" hidden>
+      <section class="panel" id="settings-panel">
+        <div class="panel-head"><h2>Live settings</h2><span class="panel-note" id="set-note"></span></div>
+        <p class="form-alert" id="set-alert" hidden></p>
+        <p class="road-ok" id="set-ok" hidden></p>
+        <p class="note-text">The game server reads these every minute and applies them without a restart; each section says when players see a change. A field on <b>config default</b> uses the game server's config.json value. Every save shows its changes first, is checked as the game server checks it, and is kept in the history below (with Revert) and in the Audit tab. Moderators can look; only admins can save. All times on this tab are <b>UTC</b>.</p>
+        <div id="set-status"></div>
+        <div class="ops-log-head">
+          <h3 class="subhead">Sections</h3>
+          <div class="ops-log-actions"><button type="button" class="ghost-btn small" id="set-refresh">Refresh</button></div>
+        </div>
+        <nav class="set-sections" id="set-sections" aria-label="Settings sections"></nav>
+
+        <form id="set-form-wrap" class="admin-form" novalidate>
+          <div id="set-form"></div>
+          <div class="field admin-wide">
+            <label for="set-note-text">Note <span class="field-optional">optional, kept in the history</span></label>
+            <input id="set-note-text" type="text" maxlength="500" />
+          </div>
+          <ul class="road-problems" id="set-problems" hidden></ul>
+          <div class="admin-actions">
+            <button type="submit" class="btn btn-primary" id="set-check">Review changes</button>
+            <button type="button" class="ghost-btn" id="set-cancel">Discard edits</button>
+          </div>
+        </form>
+        <div id="set-review" class="set-review" hidden>
+          <h3 class="subhead">Changes to save</h3>
+          <div class="table-wrap">
+            <table class="data-table admin-table">
+              <thead><tr><th>Setting</th><th>Now</th><th>After saving</th></tr></thead>
+              <tbody id="set-diff"></tbody>
+            </table>
+          </div>
+          <div class="admin-actions">
+            <button type="button" class="btn btn-primary" id="set-save">Save these changes</button>
+          </div>
+        </div>
+
+        <h3 class="subhead">History of this section</h3>
+        <div class="table-wrap">
+          <table class="data-table admin-table">
+            <thead><tr><th>Change</th><th>When</th><th>Who</th><th>What</th><th></th></tr></thead>
+            <tbody id="set-history"><tr><td colspan="5" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+
+        <h3 class="subhead">Restart only (config.json)</h3>
+        <p class="note-text">These stay in the game server's config.json: a change needs a restart (Server tab), or a schema first. Names and on/off only, as the game server reports them.</p>
+        <ul class="set-restart" id="set-restart"></ul>
+      </section>
+      </div>
+
       <div class="tab-panel" id="panel-road" hidden>
       <section class="panel" id="road-panel">
         <div class="panel-head"><h2>Hunting Road</h2><span class="panel-note" id="road-note"></span></div>
@@ -449,6 +502,7 @@
 
     <script src="/js/admin-quests.js?v=2"></script>
     <script src="/js/admin-events.js"></script>
+    <script src="/js/admin-settings.js"></script>
     <script src="/js/admin.js"></script>
     <script src="/js/search.js" defer></script>
   </body>
