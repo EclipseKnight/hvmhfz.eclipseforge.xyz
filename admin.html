@@ -199,12 +199,12 @@
         <p class="form-alert" id="cal-alert" hidden></p>
         <p class="road-ok" id="cal-ok" hidden></p>
         <ul class="road-problems" id="cal-warnings" hidden></ul>
-        <p class="note-text">One featured event at a time, back to back; every boundary is a Monday 03:00 UTC. A lighter bar is a run's tail (festival rewards, Diva week 3), which may run beside the next event. Background runs (the transition: Diva event 1, Cup cycles 0-1, VS cycle 0) are on for players too, but they are not featured: "No featured event" only means the Featured lane is empty. The game server reads the calendar every minute and writes each run's status and phases back; until it has, a run says "waiting for the game server". All times on this tab are <b>UTC</b>.</p>
+        <p class="note-text">One main and one side event at a time. Main event: Hunter Festival or Diva Defense, runs start on a Monday 03:00 UTC. Side event: Speedrun Cup or VS Bracket, runs start on a Thursday 15:00 UTC. A lighter bar is a run's tail (festival rewards, Diva week 3), which may run beside the next event of its lane. The game server reads the calendar every minute and writes each run's status and phases back; until it has, a run says "waiting for the game server". All times on this tab are <b>UTC</b>.</p>
         <p class="cal-running" id="cal-running"></p>
-        <p class="cal-legend"><span class="lg is-empty"></span> nothing runs (a real gap) <span class="lg is-nofeatured"></span> no featured event, background runs or tails on</p>
+        <p class="cal-legend"><span class="lg is-empty"></span> a gap: no main event, or no side event</p>
         <div class="cal-wrap"><div class="cal-strip" id="cal-strip" aria-label="Calendar of the next 12 weeks"></div></div>
         <p class="note-text cal-at" id="cal-at">Point at the calendar to see what runs at that hour.</p>
-        <p class="note-text muted" id="cal-keys">A planned run can move: drag its bar (on a phone, hold it for half a second first), or drag an edge to change its length; it snaps to the hour, and to Mondays 03:00 and other runs' edges nearby (Shift: whole days at 03:00; Alt: hours only). With the keyboard: focus the bar, Left and Right move it by an hour (Shift: a day), Up and Down change its end (festival rewards by an hour, Cup and VS by a cycle), Escape cancels. Nothing is saved before you check the change below and press Save.</p>
+        <p class="note-text muted" id="cal-keys">A planned run can move: drag its bar (on a phone, hold it for half a second first), or drag an edge to change its length; it snaps to the hour, and to its lane's boundary (Monday 03:00, or Thursday 15:00 for the side event) and other runs' edges nearby (Shift: whole days at the lane's hour; Alt: hours only). With the keyboard: focus the bar, Left and Right move it by an hour (Shift: a day), Up and Down change its end (festival rewards by an hour, Cup and VS by a cycle), Escape cancels. Nothing is saved before you check the change below and press Save.</p>
         <p class="visually-hidden" id="cal-drag-status" aria-live="polite"></p>
         <div class="cal-change" id="cal-change" hidden>
           <h3 class="subhead" id="cal-change-title">Change</h3>
@@ -214,7 +214,7 @@
               <tbody id="cal-change-rows"></tbody>
             </table>
           </div>
-          <label class="cal-check" for="cal-change-anytime"><input type="checkbox" id="cal-change-anytime" /> Allow any time (not only Monday 03:00 UTC)</label>
+          <label class="cal-check" for="cal-change-anytime"><input type="checkbox" id="cal-change-anytime" /> Allow any time (not only the lane's boundary)</label>
           <ul class="road-problems" id="cal-change-problems" hidden></ul>
           <div class="admin-actions">
             <button type="button" class="btn btn-primary" id="cal-change-save" disabled>Save</button>
@@ -251,8 +251,8 @@
               <select id="cal-event"><option value="festa">Hunter Festival</option><option value="vs_bracket">VS Bracket</option><option value="diva">Diva Defense</option><option value="speedrun_cup">Speedrun Cup</option></select>
             </div>
             <div class="field">
-              <label for="cal-lane">Lane</label>
-              <select id="cal-lane"><option value="featured">Featured (one at a time)</option><option value="background">Background (beside a featured event)</option></select>
+              <span class="field-label" id="cal-lane-label">Lane</span>
+              <p class="note-text" id="cal-lane-note">Main event (set by the event).</p>
             </div>
             <div class="field">
               <label for="cal-start">Starts <span class="field-optional">UTC</span></label>
@@ -277,7 +277,7 @@
               <input id="cal-note-text" type="text" maxlength="500" />
             </div>
             <div class="cal-anytime">
-              <label class="cal-check"><input type="checkbox" id="cal-anytime" /> Allow any time (not only Monday 03:00 UTC)</label>
+              <label class="cal-check"><input type="checkbox" id="cal-anytime" /> Allow any time (not only the lane's boundary)</label>
             </div>
           </div>
           <p class="note-text" id="cal-computed"></p>
@@ -288,7 +288,7 @@
           </div>
         </form>
 
-        <h3 class="subhead">Extend the loop</h3>
+        <h3 class="subhead">Extend the main event loop</h3>
         <form id="cal-gen" class="admin-form" novalidate>
           <div class="admin-grid">
             <div class="field">
@@ -297,18 +297,41 @@
             </div>
             <div class="field">
               <label for="cal-gen-first">Starting with</label>
-              <select id="cal-gen-first"><option value="festa">Hunter Festival</option><option value="vs_bracket">VS Bracket</option><option value="diva">Diva Defense</option><option value="speedrun_cup">Speedrun Cup</option></select>
+              <select id="cal-gen-first"><option value="festa">Hunter Festival</option><option value="diva">Diva Defense</option></select>
             </div>
             <div class="field">
               <label for="cal-gen-weeks">Weeks</label>
-              <input id="cal-gen-weeks" type="number" min="1" max="52" value="7" />
+              <input id="cal-gen-weeks" type="number" min="1" max="52" value="8" />
             </div>
           </div>
-          <p class="note-text">The 7-week loop: Festival (2 weeks, rewards beside the VS Bracket), VS Bracket (2), Diva Defense (2, rewards week beside the Cup), Speedrun Cup (1). The same runs as Erupe's <code>event-calendar-generate.py</code>; a run already there is skipped. Preview first, then add.</p>
+          <p class="note-text">The 4-week loop: Hunter Festival (2 weeks of entry and souls, then judging and rewards beside Diva Defense), Diva Defense (2 weeks, rewards week beside the next Festival). The same runs as Erupe's <code>event-calendar-generate.py --lane main</code>; a run already there is skipped. Preview first, then add.</p>
           <ul class="road-problems" id="cal-gen-list" hidden></ul>
           <div class="admin-actions">
             <button type="submit" class="ghost-btn" id="cal-gen-preview">Preview</button>
             <button type="button" class="btn btn-primary" id="cal-gen-save" hidden>Add these runs</button>
+          </div>
+        </form>
+        <h3 class="subhead">Extend the side event loop</h3>
+        <form id="cal-gen-side" class="admin-form" novalidate>
+          <div class="admin-grid">
+            <div class="field">
+              <label for="cal-gen-side-from">From the Thursday <span class="field-optional">15:00 UTC</span></label>
+              <input id="cal-gen-side-from" type="date" required />
+            </div>
+            <div class="field">
+              <label for="cal-gen-side-first">Starting with</label>
+              <select id="cal-gen-side-first"><option value="speedrun_cup">Speedrun Cup</option><option value="vs_bracket">VS Bracket</option></select>
+            </div>
+            <div class="field">
+              <label for="cal-gen-side-weeks">Weeks</label>
+              <input id="cal-gen-side-weeks" type="number" min="1" max="52" value="6" />
+            </div>
+          </div>
+          <p class="note-text">The 3-week loop: Speedrun Cup (one 7-day cycle), VS Bracket (one 14-day cycle). The same runs as Erupe's <code>event-calendar-generate.py --lane side</code>; a run already there is skipped. Preview first, then add.</p>
+          <ul class="road-problems" id="cal-gen-side-list" hidden></ul>
+          <div class="admin-actions">
+            <button type="submit" class="ghost-btn" id="cal-gen-side-preview">Preview</button>
+            <button type="button" class="btn btn-primary" id="cal-gen-side-save" hidden>Add these runs</button>
           </div>
         </form>
         <p class="note-text" id="cal-always"></p>

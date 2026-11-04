@@ -241,15 +241,24 @@
     return new Intl.DateTimeFormat(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(ms));
   }
 
-  // "Now: <event> (to <date>). Next: <event> from <date>." from the calendar's current and next featured
+  // "Now: <event> (to <date>). Next: <event> from <date>." from the calendar's current and next main event
   // runs; null when the calendar has neither (the API is older, or nothing is planned).
-  function calendarLine(calendar) {
-    if (!calendar) return null;
+  // One lane's line; `label` ("Side event") starts it, lowercased words after it: "Side event now: ... Next: ...".
+  function laneLine(label, cur, next) {
     var parts = [];
-    var cur = calendar.current, next = calendar.next;
-    if (cur && cur.name && ms(cur.coreEndsAt) !== null) parts.push("Now: " + cur.name + " (to " + longDate(ms(cur.coreEndsAt)) + ").");
-    if (next && next.name && ms(next.startsAt) !== null) parts.push("Next: " + next.name + " from " + longDate(ms(next.startsAt)) + ".");
+    var word = function (w) { return label ? label + " " + w.toLowerCase() : w; };
+    if (cur && cur.name && ms(cur.coreEndsAt) !== null) parts.push(word("Now") + ": " + cur.name + " (to " + longDate(ms(cur.coreEndsAt)) + ").");
+    if (next && next.name && ms(next.startsAt) !== null) parts.push((parts.length ? "Next" : word("Next")) + ": " + next.name + " from " + longDate(ms(next.startsAt)) + ".");
     return parts.length ? parts.join(" ") : null;
+  }
+
+  function calendarLine(calendar) {
+    return calendar ? laneLine("", calendar.current, calendar.next) : null;
+  }
+
+  // The side event's line (Speedrun Cup, VS Bracket) from sideCurrent and sideNext: "Side event now: ... Next: ...".
+  function sideLine(calendar) {
+    return calendar ? laneLine("Side event", calendar.sideCurrent, calendar.sideNext) : null;
   }
 
   function runningEvents(festa, current, bracket) {
@@ -377,6 +386,12 @@
       next.id = "events-next";
       panel.appendChild(next);
     }
+    var sideText = sideLine(calendar);
+    if (sideText) {
+      var side = el("p", "event-next", sideText);
+      side.id = "events-side-next";
+      panel.appendChild(side);
+    }
     var grid = el("div", "tile-grid event-grid");
     runningEvents(festa, current, bracket).forEach(function (e) { grid.appendChild(eventCard(e)); });
     panel.appendChild(grid);
@@ -483,7 +498,7 @@
   }
 
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { staticCards: staticCards, eventCards: eventCards, cardFromRow: cardFromRow, shortDate: shortDate, info: INFO, calendarLine: calendarLine };
+    module.exports = { staticCards: staticCards, eventCards: eventCards, cardFromRow: cardFromRow, shortDate: shortDate, info: INFO, calendarLine: calendarLine, sideLine: sideLine };
   }
   if (typeof document === "undefined") return;
 

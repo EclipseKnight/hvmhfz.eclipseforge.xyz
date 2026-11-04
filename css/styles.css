@@ -976,8 +976,7 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .cal-legend .lg{display:inline-block;width:18px;height:12px;border:1px solid var(--line)}
 .cal-legend .lg + .lg,.cal-legend .lg:not(:first-child){margin-left:10px}
 .is-empty.cal-gap,.cal-legend .lg.is-empty{background:rgba(190,30,30,.28)}
-.is-nofeatured.cal-gap,.cal-legend .lg.is-nofeatured{background:repeating-linear-gradient(135deg,rgba(183,138,51,.28) 0 5px,transparent 5px 10px)}
-.cal-gap{position:absolute;top:22px;bottom:0;pointer-events:none}
+.cal-gap{position:absolute;top:0;bottom:0;pointer-events:none}
 .cal-gap.is-empty{border-left:2px solid rgba(170,20,20,.7);border-right:2px solid rgba(170,20,20,.7)}
 .cal-h{position:absolute;top:0;bottom:0;width:8px;cursor:ew-resize;z-index:2}
 .cal-h-start{left:0}.cal-h-end{right:0}

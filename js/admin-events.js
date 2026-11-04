@@ -2,8 +2,10 @@
    the VS Bracket come from the API's /api/admin/events/calendar, which reads Erupe's event_calendar table; the
    game server reads the same table every minute and writes each run's status and phases back. This page never
    computes phases: it shows Erupe's. The API checks every change (the same rules as the game server and the
-   table) and answers with reasons, which the form shows while you type. All times here are UTC, because every
-   boundary of the rotation is a Monday 03:00 UTC. */
+   table) and answers with reasons, which the form shows while you type. All times here are UTC. There are two
+   lanes, one event at a time in each: the main event (Hunter Festival, Diva Defense; boundary Monday 03:00 UTC)
+   and the side event (Speedrun Cup, VS Bracket; boundary Thursday 15:00 UTC). The lane is the event's: the form
+   has no lane field. */
 (function () {
   "use strict";
 
@@ -21,6 +23,13 @@
     speedrun_cup: [["first_cycle", "First cycle"], ["cycles", "Cycles"], ["cycle_days", "Cycle (days)"], ["open_days", "Open (days)"], ["tally_hours", "Tally (hours)"]],
     vs_bracket: [["first_cycle", "First cycle"], ["cycles", "Cycles"], ["cycle_days", "Cycle (days)"], ["registration_days", "Sign-up (days)"], ["round_days", "Round (days)"], ["max_rounds", "Rounds (1-6)"]]
   };
+  // The two lanes ("featured" is the API's word for the main lane). The lane is the event's.
+  var LANES = ["featured", "side"];
+  var LANE_NAMES = { featured: "Main event", side: "Side event" };
+  var LANE_OF = { festa: "featured", diva: "featured", speedrun_cup: "side", vs_bracket: "side" };
+  var LANE_FIRST = { featured: "festa", side: "speedrun_cup" };
+  // Where each lane's runs start and its cores end: weekday (0 = Sunday), hour UTC, in words.
+  var BOUNDARY = { featured: { day: 1, hour: 3, text: "Monday 03:00 UTC" }, side: { day: 4, hour: 15, text: "Thursday 15:00 UTC" } };
   var STATUS = { planned: "Planned", running: "Running", settling: "Settling", done: "Done", cancelled: "Cancelled" };
 
   /* ---------- pure helpers (tested under node by dev/check-admin-events.js) ---------- */
@@ -56,7 +65,13 @@
     return isNaN(t) ? null : new Date(t).toISOString().replace(".000Z", "Z");
   }
 
-  /** The Monday 03:00 UTC at or before t (the rotation's boundary). */
+  /** The lane a run is drawn and counted in: its event's (a transition row, lane "background", too). */
+  function laneOf(run) {
+    var lane = run.eventLane || LANE_OF[run.event];
+    return lane === "side" ? "side" : "featured";
+  }
+
+  /** The Monday 03:00 UTC at or before t (the main lane's boundary; the strip's weeks start there). */
   function weekStart(t) {
     var d = new Date(t);
     var base = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 3, 0);
@@ -67,7 +82,8 @@
 
   /**
    * The strip's geometry: weeks from the Monday before now, a bar per run in [from, to) with the core and the
-   * tail as percents, and the now line. Background runs get their own lane.
+   * tail as percents, and the now line. Each run is in its event's lane (main or side), drawn there with a
+   * transition row too.
    */
   function timeline(runs, now, weeks) {
     var from = weekStart(now), to = from + weeks * 7 * DAY, span = to - from;
@@ -82,12 +98,12 @@
       var s = ms(r.startsAt), c = ms(r.coreEndsAt), e = ms(r.endsAt);
       if (s === null || e === null || e <= from || s >= to || r.status === "cancelled") return;
       bars.push({ id: r.id, event: r.event, name: r.name || NAMES[r.event] || r.event,
-        lane: r.lane === "background" ? "background" : "featured", status: r.status,
+        lane: laneOf(r), transition: r.lane === "background", status: r.status,
         left: pct(s), core: pct(c) - pct(s), tail: pct(e) - pct(c) });
     });
-    // Runs that overlap in one lane (a tail beside the next core, the transition's background runs) get
-    // their own row, so no bar hides another.
-    var ends = { featured: [], background: [] };
+    // Runs that overlap in one lane (a tail beside the next core, a transition run) get their own row, so no
+    // bar hides another.
+    var ends = { featured: [], side: [] };
     bars.forEach(function (b) {
       var rows = ends[b.lane], i = 0;
       while (i < rows.length && rows[i] > b.left + 1e-9) i++;
@@ -95,7 +111,7 @@
       b.row = i;
     });
     return { from: from, to: to, ticks: ticks, bars: bars, now: pct(now),
-      rows: { featured: Math.max(1, ends.featured.length), background: Math.max(1, ends.background.length) } };
+      rows: { featured: Math.max(1, ends.featured.length), side: Math.max(1, ends.side.length) } };
   }
 
   /** What changes in the next 7 days: starts, core ends and ends, by time. */
@@ -114,7 +130,7 @@
     return out.sort(function (a, b) { return a.t - b.t; }).map(function (x) { return x.text; });
   }
 
-  /** The request body of the form's values. Numbers stay numbers; an empty first cycle is left to the API. */
+  /** The request body of the form's values (no lane: the API sets it from the event). Numbers stay numbers; an empty first cycle is left to the API. */
   function body(values) {
     var settings = {};
     (FIELDS[values.event] || []).forEach(function (f) {
@@ -122,7 +138,7 @@
       if (v === "" || v === undefined || v === null) return;
       settings[f[0]] = Number(v);
     });
-    return { event: values.event, lane: values.lane, startsAt: fromInput(values.start), coreEndsAt: fromInput(values.core),
+    return { event: values.event, startsAt: fromInput(values.start), coreEndsAt: fromInput(values.core),
       settings: settings, note: values.note || null, allowAnyTime: !!values.anyTime };
   }
 
@@ -147,22 +163,25 @@
       + "VS Bracket: players sign up, are drawn into a knockout bracket and race one quest per round. Diva Defense: three weeks "
       + "of prayer gems, guild tactics, then rewards and a coin shop. Speedrun Cup: a solo and a group quest in the event quest "
       + "list; the fastest clears are ranked and everyone with a time gets a prize.",
-    lane: "Featured: the event of the moment. Featured cores never overlap, and the next featured event starts where this "
-      + "one's core ends. Background: runs beside a featured event without being the main one (the transition runs that "
-      + "were already going: Diva event 1, Cup cycles 0-1, VS cycle 0). While a background run is on, players still have "
-      + "that event: it is not a real gap.",
+    lane: "There are two lanes, one event at a time in each, and the event decides the lane (there is no lane field). "
+      + "Main event: Hunter Festival or Diva Defense; its runs start on a Monday 03:00 UTC. Side event: Speedrun Cup or "
+      + "VS Bracket; its runs start on a Thursday 15:00 UTC. A run's tail (festival judging and rewards, Diva week 3) may "
+      + "run beside the next event of its lane.",
     starts_at: "When the run begins in game: festival entry opens, Diva week 1 starts, the first Cup or VS cycle opens. "
-      + "UTC, at least an hour from now (the game server reads the calendar every minute). Normally a Monday 03:00 UTC "
-      + "(12:00 in Japan, when Diva Defense's days start); any other time needs \"Allow any time\".",
-    core_ends_at: "Where the main part ends and the next featured event may start. Empty: the event's own (festival: the "
+      + "UTC, at least an hour from now (the game server reads the calendar every minute). Normally on the lane's boundary: "
+      + "Monday 03:00 UTC for the main event (12:00 in Japan, when Diva Defense's days start), Thursday 15:00 UTC for the "
+      + "side event; any other time needs \"Allow any time\".",
+    core_ends_at: "Where the main part ends and the next event of the lane may start. Empty: the event's own (festival: the "
       + "end of soul delivery; Diva: after 14 days; Cup and VS: the run's end). After it the tail (festival judging and "
-      + "rewards, Diva week 3) goes on beside the next event. For a featured run, a Monday 03:00 UTC unless \"Allow any time\".",
+      + "rewards, Diva week 3) goes on beside the next event. On the lane's boundary (Monday 03:00 UTC main, Thursday 15:00 "
+      + "UTC side) unless \"Allow any time\".",
     ends_at: "Where the run really ends, worked out from the start and the settings (the game server refuses a row whose "
       + "end is wrong). Festival: start + entry + souls + judging + rewards. Diva: start + 21 days. Cup and VS: start + "
       + "cycles x cycle days. Changing it changes the last length: the festival's rewards hours, or the number of cycles.",
     note: "For admins only: kept with the run, never shown in game or on the public site.",
-    any_time: "Lets the start (and a featured core end) fall on any hour, not only Monday 03:00 UTC. The game accepts any "
-      + "time; the Monday rule keeps the 7-week loop lined up, so tick it only on purpose (for example to fill a gap now).",
+    any_time: "Lets the start and the core end fall on any hour, not only the lane's boundary (Monday 03:00 UTC for the main "
+      + "event, Thursday 15:00 UTC for the side event). The game accepts any time; the boundary keeps each lane's loop "
+      + "lined up, so tick it only on purpose (for example to fill a gap now).",
     entry_hours: "Team entry and the trial vote, the festival's first phase (hours): guilds sign up for the blue or red "
       + "team and vote for the trials. The loop uses 168 (7 days).",
     souls_hours: "Soul delivery (hours): guild members hunt and hand in souls for their team at the festival counter. At "
@@ -170,7 +189,7 @@
     judging_hours: "Judging (hours): the counter is closed while the totals are counted; the winning team is known at "
       + "its end. Usually 2.5.",
     rewards_hours: "Results and prizes (hours): players claim their team's prizes and the final reward. This tail runs "
-      + "beside the next featured event. The loop uses 333.5 (about 13.9 days).",
+      + "beside the next main event. The loop uses 333.5 (about 13.9 days).",
     first_cycle: "The number of the run's first cycle. Cycle numbers pick each cycle's quests and key its standings, "
       + "results and prizes, so they are never used twice and go up in each later run. Empty: the next free number.",
     "speedrun_cup.cycles": "How many Cup weeks this run holds, back to back. The run lasts cycles x cycle days.",
@@ -192,12 +211,12 @@
     diva: "Diva Defense has no settings: it always lasts 21 days. Week 1, personal: a prayer gem each day, points, bonus "
       + "quests. Week 2, guild tactics: songs, tactics points, the guild map. Weeks 1-2 are the core. Week 3: rewards and "
       + "the coin shop, beside the next event.",
-    gen_from: "The Monday (03:00 UTC) where the first event of the extension starts; the API suggests the Monday after "
-      + "the last featured core.",
-    gen_first: "Which event of the 7-week loop (Festival, VS Bracket, Diva Defense, Speedrun Cup) comes first; the others "
-      + "follow in loop order.",
-    gen_weeks: "How many weeks to add: every loop run that starts in them is added, with the loop's settings and the "
-      + "next free cycle numbers."
+    gen_from: "The boundary where the first event of the extension starts: a Monday (03:00 UTC) for the main lane, a Thursday "
+      + "(15:00 UTC) for the side lane; the API suggests the one after the lane's last core.",
+    gen_first: "Which event of the lane's loop comes first; the others follow in loop order. Main: Hunter Festival, Diva "
+      + "Defense (a 4-week loop). Side: Speedrun Cup, VS Bracket (a 3-week loop).",
+    gen_weeks: "How many weeks to add: every loop run of the lane that starts in them is added, with the loop's settings "
+      + "and the next free cycle numbers."
   };
 
   function help(key, event) {
@@ -283,19 +302,30 @@
     return draft(run, r.end - s.cycles * cycle, r.core, s, false);
   }
 
-  /** Monday 03:00:00 UTC exactly (the rotation's boundary). */
-  function onBoundary(t) {
-    var d = new Date(t);
-    return d.getUTCDay() === 1 && d.getUTCHours() === 3 && d.getUTCMinutes() === 0 && d.getUTCSeconds() === 0 && d.getUTCMilliseconds() === 0;
+  /** Exactly on the lane's boundary (default the main lane's): Monday 03:00:00 UTC, or Thursday 15:00:00 UTC for "side". */
+  function onBoundary(t, lane) {
+    var d = new Date(t), b = BOUNDARY[lane === "side" ? "side" : "featured"];
+    return d.getUTCDay() === b.day && d.getUTCHours() === b.hour && d.getUTCMinutes() === 0 && d.getUTCSeconds() === 0 && d.getUTCMilliseconds() === 0;
+  }
+
+  /** The lane's boundaries in [from, to] (ms), for the drag to snap to. */
+  function boundaries(lane, from, to) {
+    var b = BOUNDARY[lane === "side" ? "side" : "featured"], out = [];
+    var t = Date.UTC(new Date(from).getUTCFullYear(), new Date(from).getUTCMonth(), new Date(from).getUTCDate(), b.hour, 0);
+    while (new Date(t).getUTCDay() !== b.day || t < from) t += DAY;
+    for (; t <= to; t += 7 * DAY) out.push(t);
+    return out;
   }
 
   /**
    * The API's rules (CalendarRules) checked here while dragging, so the bar says at once what the API would
-   * refuse: {problems, boundary}. boundary: the Monday 03:00 rule, which "allow any time" lifts. others: the other
-   * runs (cancelled ones are skipped). The API checks again on drop and on save.
+   * refuse: {problems, boundary}. boundary: the lane's boundary rule (Monday 03:00 UTC main, Thursday 15:00 UTC
+   * side), which "allow any time" lifts. others: the other runs (cancelled ones are skipped). The lane is the
+   * event's; a transition row (lane "background") has no boundary and blocks no one. The API checks again on drop
+   * and on save.
    */
   function ruleProblems(d, others, now) {
-    var out = [], boundary = [], s = d.settings || {};
+    var out = [], boundary = [], s = d.settings || {}, lane = laneOf(d), inLane = d.lane !== "background";
     var name = function (r) { return "the " + (NAMES[r.event] || r.event) + " run #" + r.id; };
     var whole = function (k) { return Math.floor(num(s[k])) === num(s[k]); };
     if (d.event === "festa") {
@@ -319,13 +349,15 @@
     var start = ms(d.startsAt), core = ms(d.coreEndsAt), end = ms(d.endsAt);
     if (start < now + HOUR) out.push("The start must be at least an hour from now.");
     if (!(start < core) || core > end) out.push("The core must end after the start and no later than the run's end.");
-    if (!onBoundary(start)) boundary.push("The start is not on a Monday 03:00 UTC (tick \"allow any time\" to use it).");
-    if (d.lane === "featured" && !onBoundary(core)) boundary.push("The core end is not on a Monday 03:00 UTC (tick \"allow any time\" to use it).");
+    if (inLane && !onBoundary(start, lane)) boundary.push("The start is not on a " + BOUNDARY[lane].text + " (tick \"allow any time\" to use it).");
+    if (inLane && !onBoundary(core, lane)) boundary.push("The core end is not on a " + BOUNDARY[lane].text + " (tick \"allow any time\" to use it).");
     var first = num(s.first_cycle), last = first + num(s.cycles) - 1;
     (others || []).forEach(function (o) {
       if (o.id === d.id || o.status === "cancelled") return;
       var os = ms(o.startsAt), oc = ms(o.coreEndsAt), oe = ms(o.endsAt);
-      if (d.lane === "featured" && o.lane !== "background" && start < oc && os < core) out.push("Its core overlaps " + name(o) + "'s core: only one featured event at a time.");
+      if (inLane && o.lane !== "background" && laneOf(o) === lane && start < oc && os < core) {
+        out.push("Its core overlaps " + name(o) + "'s core: only one " + LANE_NAMES[lane].toLowerCase() + " at a time.");
+      }
       if (o.event === d.event && start < oe && os < end) out.push("It overlaps " + name(o) + ": one run of an event at a time.");
       var of = num(o.settings && o.settings.first_cycle), ol = of + num(o.settings && o.settings.cycles) - 1;
       if (o.event === d.event && !isNaN(first) && !isNaN(of)) {
@@ -338,9 +370,11 @@
   }
 
   /**
-   * What runs when, in [from, to): pieces split at every start, core end and end, each with the runs on then
-   * (featured core, or another run's core or tail). gaps: the pieces where nothing at all runs ("real" gaps), and
-   * those with no featured core but something else on ("featured"), neighbours merged.
+   * What runs when, in [from, to): pieces split at every start, core end and end, each with the runs on then.
+   * Each piece says which run's core covers each lane (main: `featured`, `side`: run ids, or null). A transition
+   * row counts in its event's lane. gaps: the stretches where a lane has no core, one list for both lanes
+   * (a gap of the main lane is "no main event", of the side lane "no side event"), neighbours merged; running:
+   * what is still on in that lane then (tails).
    */
   function coverage(runs, from, to) {
     var live = (runs || []).filter(function (r) { return r.status !== "cancelled" && ms(r.startsAt) !== null && ms(r.endsAt) !== null; });
@@ -353,30 +387,33 @@
     for (var i = 0; i + 1 < cuts.length; i++) {
       var a = cuts[i], b = cuts[i + 1];
       if (b <= a) continue;
-      var on = [], featured = null;
+      var on = [], core = { featured: null, side: null };
       live.forEach(function (r) {
-        var s = ms(r.startsAt), c = ms(r.coreEndsAt), e = ms(r.endsAt);
+        var s = ms(r.startsAt), c = ms(r.coreEndsAt), e = ms(r.endsAt), lane = laneOf(r);
         if (s >= b || e <= a) return;
         var inCore = s <= a && c >= b;
-        if (inCore && r.lane !== "background") featured = r;
-        on.push({ id: r.id, event: r.event, name: r.name || NAMES[r.event] || r.event, lane: r.lane === "background" ? "background" : "featured", part: inCore ? "core" : "tail" });
+        if (inCore) core[lane] = r.id;
+        on.push({ id: r.id, event: r.event, name: r.name || NAMES[r.event] || r.event, lane: lane, transition: r.lane === "background", part: inCore ? "core" : "tail" });
       });
-      on.sort(function (x, y) { return (x.lane === "featured" ? 0 : 1) - (y.lane === "featured" ? 0 : 1); });
-      pieces.push({ from: a, to: b, runs: on, featured: featured ? featured.id : null });
+      // By lane, the core before the tails.
+      on.sort(function (x, y) { return LANES.indexOf(x.lane) - LANES.indexOf(y.lane) || (x.part === "core" ? 0 : 1) - (y.part === "core" ? 0 : 1); });
+      pieces.push({ from: a, to: b, runs: on, featured: core.featured, side: core.side });
     }
     var gaps = [];
-    pieces.forEach(function (p) {
-      var kind = !p.runs.length ? "empty" : p.featured === null ? "featured" : null;
-      if (!kind) return;
-      var prev = gaps[gaps.length - 1];
-      var names = p.runs.map(function (r) { return r.name; });
-      if (prev && prev.kind === kind && prev.to === p.from) {
-        prev.to = p.to;
-        names.forEach(function (n) { if (prev.running.indexOf(n) === -1) prev.running.push(n); });
-      } else {
-        gaps.push({ kind: kind, from: p.from, to: p.to, running: names });
-      }
+    LANES.forEach(function (lane) {
+      pieces.forEach(function (p) {
+        if (p[lane] !== null) return;
+        var names = p.runs.filter(function (r) { return r.lane === lane; }).map(function (r) { return r.name; });
+        var prev = gaps[gaps.length - 1];
+        if (prev && prev.lane === lane && prev.to === p.from) {
+          prev.to = p.to;
+          names.forEach(function (n) { if (prev.running.indexOf(n) === -1) prev.running.push(n); });
+        } else {
+          gaps.push({ lane: lane, from: p.from, to: p.to, running: names });
+        }
+      });
     });
+    gaps.sort(function (x, y) { return x.from - y.from || LANES.indexOf(x.lane) - LANES.indexOf(y.lane); });
     return { pieces: pieces, gaps: gaps };
   }
 
@@ -392,21 +429,24 @@
     return (d ? d + " d" : "") + (d && h % 24 ? " " : "") + (h % 24 || !d ? (h % 24) + " h" : "");
   }
 
-  /** Time t snapped: to the hour, or (day) to 03:00 UTC of the nearest day. */
-  function snap(t, day) {
-    if (day) return Math.round((t - 3 * HOUR) / DAY) * DAY + 3 * HOUR;
+  /** Time t snapped: to the hour, or (day) to the lane's hour of the nearest day (03:00 UTC main, 15:00 UTC side). */
+  function snap(t, day, lane) {
+    if (day) {
+      var h = BOUNDARY[lane === "side" ? "side" : "featured"].hour * HOUR;
+      return Math.round((t - h) / DAY) * DAY + h;
+    }
     return Math.round(t / HOUR) * HOUR;
   }
 
-  /** The request body of a draft (PUT /api/admin/events/calendar/{id}): the full run, note kept. */
+  /** The request body of a draft (PUT /api/admin/events/calendar/{id}): the full run, note kept (no lane: the API keeps it). */
   function draftBody(d, anyTime) {
-    return { event: d.event, lane: d.lane, startsAt: d.startsAt, coreEndsAt: d.explicitCore ? d.coreEndsAt : null,
+    return { event: d.event, startsAt: d.startsAt, coreEndsAt: d.explicitCore ? d.coreEndsAt : null,
       settings: d.settings, note: d.note || null, allowAnyTime: !!anyTime };
   }
 
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { utc: utc, toInput: toInput, fromInput: fromInput, weekStart: weekStart, timeline: timeline,
-      soon: soon, body: body, phaseLines: phaseLines, HELP: HELP, help: help, FIELDS: FIELDS, shape: shape,
+      soon: soon, body: body, laneOf: laneOf, LANE_NAMES: LANE_NAMES, boundaries: boundaries, phaseLines: phaseLines, HELP: HELP, help: help, FIELDS: FIELDS, shape: shape,
       moveRun: moveRun, resizeRun: resizeRun, ruleProblems: ruleProblems, coverage: coverage, runningAt: runningAt,
       howLong: howLong, snap: snap, onBoundary: onBoundary, draftBody: draftBody };
   }
@@ -486,10 +526,13 @@
         + "schemas/hvmhfz/2026-11-event-calendar.sql (and a seed) first. Until then nothing here can be saved.");
       $("cal-note").textContent = state.runs.length + (state.runs.length === 1 ? " run" : " runs") + " shown";
       list("cal-warnings", cal.warnings);
-      if (cal.loopNext && !$("cal-gen-from").value) {
-        $("cal-gen-from").value = cal.loopNext.from;
-        $("cal-gen-first").value = cal.loopNext.first;
-      }
+      LOOPS.forEach(function (l) {
+        var next = cal[l.next];
+        if (next && !$(l.id + "-from").value) {
+          $(l.id + "-from").value = next.from;
+          $(l.id + "-first").value = next.first;
+        }
+      });
       $("cal-always").textContent = "Always on, not in the calendar: " + (cal.alwaysOn || []).join(", ") + ".";
       renderStrip();
       renderSoon();
@@ -504,11 +547,18 @@
 
   function pct(t) { return Math.max(0, Math.min(100, (t - view.from) / (view.to - view.from) * 100)); }
 
+  // What is on in a piece, per lane: "Main event: Hunter Festival #5; Side event: no side event (a gap)".
   function names(piece) {
-    if (!piece || !piece.runs.length) return "nothing runs (a real gap)";
-    return piece.runs.map(function (r) {
-      return r.name + " #" + r.id + " (" + r.lane + (r.part === "tail" ? ", tail" : "") + ")";
-    }).join(", ") + (piece.featured === null ? "; no featured event" : "");
+    if (!piece) return "nothing is planned";
+    var core = { featured: piece.featured, side: piece.side };
+    return LANES.map(function (lane) {
+      var runs = piece.runs.filter(function (r) { return r.lane === lane; }).map(function (r) {
+        var tags = (r.part === "tail" ? ["tail"] : []).concat(r.transition ? ["transition"] : []);
+        return r.name + " #" + r.id + (tags.length ? " (" + tags.join(", ") + ")" : "");
+      });
+      var gap = core[lane] === null ? "no " + LANE_NAMES[lane].toLowerCase() + " (a gap)" : "";
+      return LANE_NAMES[lane] + ": " + runs.concat(gap || []).join(", ");
+    }).join("; ");
   }
 
   function renderStrip() {
@@ -528,19 +578,19 @@
       head.appendChild(tick);
     });
     strip.appendChild(head);
-    // Gaps behind the bars: red where nothing runs, hatched where only background runs or tails are on.
-    cov.gaps.forEach(function (gap) {
-      var shade = el("span", "cal-gap " + (gap.kind === "empty" ? "is-empty" : "is-nofeatured"));
-      shade.style.left = pct(gap.from) + "%";
-      shade.style.width = (pct(gap.to) - pct(gap.from)) + "%";
-      shade.title = (gap.kind === "empty" ? "Nothing runs" : "No featured event (" + gap.running.join(", ") + " on)")
-        + ": " + utc(iso(gap.from)) + " to " + utc(iso(gap.to)) + " UTC";
-      strip.appendChild(shade);
-    });
-    ["featured", "background"].forEach(function (lane) {
-      var row = el("div", "cal-lane");
+    LANES.forEach(function (lane) {
+      var row = el("div", "cal-lane cal-lane-" + lane);
       row.style.height = (g.rows[lane] * 34) + "px";
-      row.appendChild(el("span", "cal-lane-name", lane === "featured" ? "Featured" : "Background"));
+      row.appendChild(el("span", "cal-lane-name", LANE_NAMES[lane]));
+      // The lane's gaps behind its bars: red where it has no core.
+      cov.gaps.filter(function (gap) { return gap.lane === lane; }).forEach(function (gap) {
+        var shade = el("span", "cal-gap is-empty");
+        shade.style.left = pct(gap.from) + "%";
+        shade.style.width = (pct(gap.to) - pct(gap.from)) + "%";
+        shade.title = "No " + LANE_NAMES[lane].toLowerCase() + (gap.running.length ? " (" + gap.running.join(", ") + " still on)" : "")
+          + ": " + utc(iso(gap.from)) + " to " + utc(iso(gap.to)) + " UTC";
+        row.appendChild(shade);
+      });
       g.bars.filter(function (b) { return b.lane === lane; }).forEach(function (b) {
         var run = find(b.id);
         var bar = el("button", "cal-bar cal-" + b.event);
@@ -552,7 +602,7 @@
         var core = el("span", "cal-core", b.name);
         core.style.width = (b.core + b.tail > 0 ? b.core / (b.core + b.tail) * 100 : 100) + "%";
         bar.appendChild(core);
-        var label = b.name + " #" + b.id + " (" + (STATUS[b.status] || b.status) + ", " + lane + "): " + utc(run.startsAt)
+        var label = b.name + " #" + b.id + " (" + (STATUS[b.status] || b.status) + ", " + LANE_NAMES[lane].toLowerCase() + (b.transition ? ", transition" : "") + "): " + utc(run.startsAt)
           + " to " + utc(run.endsAt) + " UTC";
         if (run.editable) {
           bar.classList.add("is-movable");
@@ -599,30 +649,35 @@
     var ul = $("cal-gaps");
     clear(ul);
     cov.gaps.forEach(function (gap) {
-      var li = el("li", gap.kind === "empty" ? "is-empty" : "is-nofeatured");
+      var li = el("li", "is-empty");
       var open = gap.to >= view.to ? " (the end of the view; nothing is planned after)" : "";
-      li.appendChild(el("span", "cal-gap-key", gap.kind === "empty" ? "Nothing runs" : "No featured event"));
+      li.appendChild(el("span", "cal-gap-key", "No " + LANE_NAMES[gap.lane].toLowerCase()));
       li.appendChild(document.createTextNode(" " + utc(iso(gap.from)) + " to " + utc(iso(gap.to)) + " UTC, "
-        + howLong(gap.from, gap.to) + open + (gap.kind === "empty" ? "." : ". Still on: " + gap.running.join(", ") + ".")));
+        + howLong(gap.from, gap.to) + open + (gap.running.length ? ". Still on: " + gap.running.join(", ") + "." : ".")));
       var fill = el("button", "ghost-btn small", "Fill this gap");
       fill.type = "button";
       fill.addEventListener("click", function () { fillGap(gap); });
       li.appendChild(fill);
       ul.appendChild(li);
     });
-    if (!cov.gaps.length) ul.appendChild(el("li", "is-ok", "No gaps: a featured event covers every hour of the view."));
+    if (!cov.gaps.length) ul.appendChild(el("li", "is-ok", "No gaps: a main event and a side event cover every hour of the view."));
   }
 
   function fillGap(gap) {
     resetForm();
     var start = Math.max(snap(gap.from + HOUR / 2 - 1), Math.ceil((state.now + HOUR) / HOUR) * HOUR);
-    $("cal-lane").value = "featured";
+    // The gap's lane decides the event: keep the chosen one when it is of that lane, else the lane's first.
+    if (LANE_OF[$("cal-event").value] !== gap.lane) {
+      $("cal-event").value = LANE_FIRST[gap.lane];
+      renderSettings(LANE_FIRST[gap.lane]);
+    }
     $("cal-start").value = toInput(iso(start));
-    $("cal-anytime").checked = !onBoundary(start);
+    $("cal-anytime").checked = !onBoundary(start, gap.lane);
     var event = $("cal-event").value, s = loopSettings(event);
     if ((event === "speedrun_cup" || event === "vs_bracket") && s.cycle_days) {
       $("cal-s-cycles").value = String(Math.max(1, Math.floor((gap.to - start) / (s.cycle_days * DAY))));
     }
+    showLane();
     $("cal-gap-hint").textContent = "Filling " + utc(iso(start)) + " to " + utc(iso(gap.to)) + " UTC ("
       + howLong(start, gap.to) + "). Pick the event; the check below says where it ends and what it overlaps.";
     $("cal-gap-hint").hidden = false;
@@ -636,15 +691,15 @@
 
   var drag = { active: null, justDropped: false };
 
-  // Snap: to the hour; within 8 px of a Monday 03:00 or another run's edge, to that (Alt: hours only).
-  function snapped(t, e, id) {
+  // Snap: to the hour; within 8 px of the lane's boundary (Monday 03:00 main, Thursday 15:00 side) or another run's
+  // edge, to that (Shift: the lane's hour of the nearest day; Alt: hours only).
+  function snapped(t, e, id, lane) {
     var t0 = snap(t, false);
-    if (e && e.shiftKey) return snap(t, true);
+    if (e && e.shiftKey) return snap(t, true, lane);
     if (e && e.altKey) return t0;
     var body = document.querySelector("#cal-strip .cal-body");
     var perPx = (view.to - view.from) / Math.max(1, body.getBoundingClientRect().width), best = t0, bestD = 8 * perPx;
-    var targets = [];
-    for (var w = weekStart(view.from); w <= view.to; w += 7 * DAY) targets.push(w);
+    var targets = boundaries(lane, view.from, view.to);
     state.runs.forEach(function (r) {
       if (r.id === id || r.status === "cancelled") return;
       targets.push(ms(r.startsAt), ms(r.coreEndsAt), ms(r.endsAt));
@@ -728,8 +783,9 @@
       try { p.bar.setPointerCapture(p.id); } catch (err) { /* synthetic events */ }
     }
     var r = runTimes(p.run), delta = timeAt(e.clientX) - p.t0, d;
-    if (p.mode === "move") d = moveRun(p.run, snapped(r.start + delta, e, p.run.id) - r.start);
-    else d = resizeRun(p.run, p.mode, snapped((p.mode === "start" ? r.start : p.mode === "end" ? r.end : r.core) + delta, e, p.run.id));
+    var lane = laneOf(p.run);
+    if (p.mode === "move") d = moveRun(p.run, snapped(r.start + delta, e, p.run.id, lane) - r.start);
+    else d = resizeRun(p.run, p.mode, snapped((p.mode === "start" ? r.start : p.mode === "end" ? r.end : r.core) + delta, e, p.run.id, lane));
     if (!d) { $("cal-drag-status").textContent = "Diva Defense always lasts 21 days: drag the bar to move it."; return; }
     p.draft = d;
     paint(p.bar, d);
@@ -838,6 +894,11 @@
     return null;
   }
 
+  // "Main event", "Side event", or "Main event (transition)" for a run kept from the November transition.
+  function laneLabel(r) {
+    return LANE_NAMES[laneOf(r)] + (r.lane === "background" ? " (transition)" : "");
+  }
+
   function showDetail(id) {
     var r = find(id), box = $("cal-detail");
     clear(box);
@@ -845,7 +906,7 @@
     box.appendChild(el("h3", "subhead", r.name + " #" + r.id));
     var meta = el("p", "note-text");
     meta.appendChild(el("span", "badge" + (r.status === "running" ? " good" : ""), STATUS[r.status] || r.status));
-    meta.appendChild(document.createTextNode(" " + (r.lane === "background" ? "Background" : "Featured") + ". Starts "
+    meta.appendChild(document.createTextNode(" " + laneLabel(r) + ". Starts "
       + utc(r.startsAt) + ", core to " + utc(r.coreEndsAt) + ", ends " + utc(r.endsAt) + "."));
     box.appendChild(meta);
     var keys = Object.keys(r.settings || {});
@@ -913,7 +974,7 @@
       link.addEventListener("click", function () { showDetail(r.id); });
       name.appendChild(link);
       tr.appendChild(name);
-      tr.appendChild(el("td", null, r.lane));
+      tr.appendChild(el("td", null, laneLabel(r)));
       tr.appendChild(el("td", null, utc(r.startsAt)));
       tr.appendChild(el("td", null, utc(r.coreEndsAt)));
       tr.appendChild(el("td", null, utc(r.endsAt)));
@@ -1022,7 +1083,7 @@
     if (!sh || isNaN(sh.end)) return;
     var settings = {};
     Object.keys(v.settings).forEach(function (k) { settings[k] = v.settings[k] === "" ? "" : Number(v.settings[k]); });
-    var d = resizeRun({ id: -1, event: v.event, lane: v.lane, startsAt: iso(start), coreEndsAt: iso(sh.core), endsAt: iso(sh.end), settings: settings }, "end", t);
+    var d = resizeRun({ id: -1, event: v.event, startsAt: iso(start), coreEndsAt: iso(sh.core), endsAt: iso(sh.end), settings: settings }, "end", t);
     if (!d) return;
     ["rewards_hours", "cycles"].forEach(function (k) { if ($("cal-s-" + k) && d.settings[k] !== undefined) $("cal-s-" + k).value = String(d.settings[k]); });
     syncEnd();
@@ -1064,7 +1125,7 @@
   function values() {
     var event = $("cal-event").value, settings = {};
     (FIELDS[event] || []).forEach(function (f) { settings[f[0]] = $("cal-s-" + f[0]).value; });
-    return { event: event, lane: $("cal-lane").value, start: $("cal-start").value, core: $("cal-core").value,
+    return { event: event, start: $("cal-start").value, core: $("cal-core").value,
       settings: settings, note: $("cal-note-text").value.trim(), anyTime: $("cal-anytime").checked };
   }
 
@@ -1099,13 +1160,20 @@
     list("cal-problems", []);
     $("cal-computed").textContent = "";
     $("cal-gap-hint").hidden = true;
+    showLane();
     syncEnd();
+  }
+
+  // The lane the chosen event goes in (the API sets it; there is no field).
+  function showLane() {
+    var lane = LANE_OF[$("cal-event").value];
+    $("cal-lane-note").textContent = LANE_NAMES[lane] + ": runs start on a " + BOUNDARY[lane].text.replace(" UTC", "") + " UTC; one at a time.";
   }
 
   function startEdit(r) {
     state.editing = r.id;
     $("cal-event").value = r.event;
-    $("cal-lane").value = r.lane;
+    showLane();
     $("cal-start").value = toInput(r.startsAt);
     $("cal-core").value = toInput(r.coreEndsAt);
     $("cal-note-text").value = r.note || "";
@@ -1138,14 +1206,17 @@
     }).then(function () { $("cal-save").disabled = false; });
   }
 
-  /* ---- extend the loop ---- */
+  /* ---- extend the loop: one form per lane, each from its own "loop next" (loopNext, sideLoopNext) ---- */
 
-  function genRequest(dry) {
-    return { from: $("cal-gen-from").value || null, weeks: Number($("cal-gen-weeks").value) || null,
-      first: $("cal-gen-first").value, dryRun: dry };
+  // `lane` is what the API's generate takes ("main" or "side"); `next` the calendar answer's key for it.
+  var LOOPS = [{ id: "cal-gen", lane: "main", next: "loopNext" }, { id: "cal-gen-side", lane: "side", next: "sideLoopNext" }];
+
+  function genRequest(l, dry) {
+    return { lane: l.lane, from: $(l.id + "-from").value || null, weeks: Number($(l.id + "-weeks").value) || null,
+      first: $(l.id + "-first").value, dryRun: dry };
   }
 
-  function showGenerated(res) {
+  function showGenerated(l, res) {
     var bad = [], ok = [];
     (res.runs || []).forEach(function (r) {
       var line = r.name + ": " + utc(r.startsAt) + " to " + utc(r.endsAt) + " UTC"
@@ -1155,40 +1226,40 @@
       else ok.push(line + " (new)");
     });
     if (!(res.runs || []).length) bad.push("No run of the loop starts in those weeks.");
-    list("cal-gen-list", bad, ok.concat(res.warnings || []));
+    list(l.id + "-list", bad, ok.concat(res.warnings || []));
     var fresh = (res.runs || []).filter(function (r) { return !r.exists; }).length;
-    $("cal-gen-save").hidden = !(fresh && !(res.problems || []).length);
-    $("cal-gen-save").textContent = "Add these " + fresh + (fresh === 1 ? " run" : " runs");
+    $(l.id + "-save").hidden = !(fresh && !(res.problems || []).length);
+    $(l.id + "-save").textContent = "Add these " + fresh + (fresh === 1 ? " run" : " runs");
   }
 
-  function preview(event) {
+  function preview(l, event) {
     event.preventDefault();
     say("cal-alert", "");
-    $("cal-gen-save").hidden = true;
-    request("/api/admin/events/calendar/generate", { method: "POST", body: JSON.stringify(genRequest(true)) })
-      .then(showGenerated)
-      .catch(function (e) { list("cal-gen-list", (e.data && e.data.problems) || [e.message]); });
+    $(l.id + "-save").hidden = true;
+    request("/api/admin/events/calendar/generate", { method: "POST", body: JSON.stringify(genRequest(l, true)) })
+      .then(function (res) { showGenerated(l, res); })
+      .catch(function (e) { list(l.id + "-list", (e.data && e.data.problems) || [e.message]); });
   }
 
-  function generate() {
-    $("cal-gen-save").disabled = true;
-    request("/api/admin/events/calendar/generate", { method: "POST", body: JSON.stringify(genRequest(false)) })
+  function generate(l) {
+    $(l.id + "-save").disabled = true;
+    request("/api/admin/events/calendar/generate", { method: "POST", body: JSON.stringify(genRequest(l, false)) })
       .then(function (res) {
-        say("cal-ok", res.saved + (res.saved === 1 ? " run" : " runs") + " added to the calendar.");
-        list("cal-gen-list", []);
-        $("cal-gen-save").hidden = true;
-        $("cal-gen-from").value = "";
+        say("cal-ok", res.saved + (res.saved === 1 ? " run" : " runs") + " added to the " + (l.lane === "side" ? "side" : "main") + " lane.");
+        list(l.id + "-list", []);
+        $(l.id + "-save").hidden = true;
+        $(l.id + "-from").value = "";
         return load();
       })
-      .catch(function (e) { if (e.data && e.data.runs) showGenerated(e.data); else list("cal-gen-list", [e.message]); })
-      .then(function () { $("cal-gen-save").disabled = false; });
+      .catch(function (e) { if (e.data && e.data.runs) showGenerated(l, e.data); else list(l.id + "-list", [e.message]); })
+      .then(function () { $(l.id + "-save").disabled = false; });
   }
 
   function wire() {
     $("cal-refresh").addEventListener("click", load);
     $("cal-cancelled").addEventListener("change", load);
-    $("cal-event").addEventListener("change", function () { renderSettings($("cal-event").value); syncEnd(); scheduleCheck(); });
-    ["cal-lane", "cal-start", "cal-core", "cal-anytime", "cal-note-text"].forEach(function (id) {
+    $("cal-event").addEventListener("change", function () { renderSettings($("cal-event").value); showLane(); syncEnd(); scheduleCheck(); });
+    ["cal-start", "cal-core", "cal-anytime", "cal-note-text"].forEach(function (id) {
       $(id).addEventListener("input", scheduleCheck);
       $(id).addEventListener("change", scheduleCheck);
     });
@@ -1196,15 +1267,19 @@
     $("cal-end").addEventListener("change", endChanged);
     $("cal-form").addEventListener("submit", save);
     $("cal-reset").addEventListener("click", resetForm);
-    $("cal-gen").addEventListener("submit", preview);
-    $("cal-gen-save").addEventListener("click", generate);
+    LOOPS.forEach(function (l) {
+      $(l.id).addEventListener("submit", function (e) { preview(l, e); });
+      $(l.id + "-save").addEventListener("click", function () { generate(l); });
+    });
     $("cal-change-save").addEventListener("click", saveChange);
     $("cal-change-cancel").addEventListener("click", cancelChange);
     $("cal-change-anytime").addEventListener("change", checkChange);
-    [["cal-event", "event"], ["cal-lane", "lane"], ["cal-start", "starts_at"], ["cal-core", "core_ends_at"], ["cal-end", "ends_at"],
+    [["cal-event", "event"], ["cal-lane-label", "lane"], ["cal-start", "starts_at"], ["cal-core", "core_ends_at"], ["cal-end", "ends_at"],
       ["cal-note-text", "note"], ["cal-anytime", "any_time"], ["cal-change-anytime", "any_time"], ["cal-gen-from", "gen_from"],
-      ["cal-gen-first", "gen_first"], ["cal-gen-weeks", "gen_weeks"]].forEach(function (f) {
-      addHelp(document.querySelector("label[for='" + f[0] + "']") || $(f[0]).closest("label"), f[1]);
+      ["cal-gen-first", "gen_first"], ["cal-gen-weeks", "gen_weeks"], ["cal-gen-side-from", "gen_from"],
+      ["cal-gen-side-first", "gen_first"], ["cal-gen-side-weeks", "gen_weeks"]].forEach(function (f) {
+      var label = f[0] === "cal-lane-label" ? $(f[0]) : document.querySelector("label[for='" + f[0] + "']") || $(f[0]).closest("label");
+      addHelp(label, f[1]);
     });
     document.addEventListener("click", function (e) { if (!e.target.closest || !e.target.closest(".field-head")) closeHelp(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeHelp(true); });
