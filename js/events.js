@@ -60,7 +60,7 @@
   var DAY = 86400000;
   var DIVA_START = Date.UTC(2026, 10, 2, 3, 0);          // Diva Defense cycle 1: Mon 2 Nov, 03:00 UTC
   var CUP_START = Date.UTC(2026, 10, 5, 15, 0);          // Speedrun Cup and VS Bracket: Fri 6 Nov 00:00 JST
-  var NEXT_FESTIVAL = Date.UTC(2026, 10, 22, 15, 0);
+  var NEXT_FESTIVAL = Date.UTC(2026, 10, 17, 15, 0);
 
   function shortDate(ms) {
     return new Intl.DateTimeFormat(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(ms));
