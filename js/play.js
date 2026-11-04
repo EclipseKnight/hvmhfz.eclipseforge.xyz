@@ -15,7 +15,7 @@
   var SLOTS = {
     "installer":       { enabled: true, url: "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/installer/HunsterverseSetup.exe" },  // Windows one-click installer
     "installer-linux": { enabled: true, url: "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/installer/install-hunsterverse.sh" },  // Linux installer script
-    "full":            { enabled: false, url: "" }   // our own full, patched client download
+    "full":            { enabled: true, url: "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/tag/client-full" }   // our own full, patched client download
   };
 
   function readTicks() {

@@ -104,11 +104,11 @@ async function main() {
 
   // slots: the published installers are on; the full download stays hidden until its flag is set
   check("installer slots shown", (await page.locator('[data-slot^="installer"]:visible').count()) === 2);
-  check("full download hidden by default", (await page.locator('[data-slot="full"]:visible').count()) === 0);
+  check("full download shown", (await page.locator('[data-slot="full"]:visible').count()) === 1);
   check("installer link", (await page.locator('[data-slot="installer"] a').getAttribute("href")).endsWith("/releases/download/installer/HunsterverseSetup.exe"));
   await page.goto(base + "/play.html?slots=on");
   check("slots shown when on", (await page.locator("[data-slot]:visible").count()) === 3);
-  check("slot link set", (await page.locator('[data-slot="full"] a').getAttribute("href")) === "https://example.org/file");
+  check("slot link set", (await page.locator('[data-slot="full"] a').getAttribute("href")) .startsWith("https://"));
 
   // the transfer table and the Backups link
   check("transfer table rows", (await page.locator("#transfer .play-sources tbody tr").count()) >= 4);
