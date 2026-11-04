@@ -140,6 +140,11 @@ def tokens(s):
     return set(re.findall(r"\d[\d,.]*\d|\d|[\w-]+\.(?:zip|bin|html)\b", s))
 
 
+# Known-issue bullets of the old page that were rewritten on purpose because the issue was fixed
+# (4 Nov 2026: Diva Defense and the tournaments are built now).
+REWRITTEN = ("Not built on our server yet: Diva Defense, reward song effects",)
+
+
 def is_merged_howto(old_text):
     return old_text.startswith("How to get it:")
 
@@ -150,7 +155,7 @@ def check_facts(old_src, new_src):
     howto = [f for f in new if "cl-howto" in f[2].classes()]
     for text, links, node in facts(Tree(old_src)):
         hit = next((f for f in new if text in f[0] and links <= f[1]), None)
-        if hit:
+        if hit or text.startswith(REWRITTEN):
             continue
         # The 3 Nov "How to get it" bullets were merged into the day's note.
         merged = None
