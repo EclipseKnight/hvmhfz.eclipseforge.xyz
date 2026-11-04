@@ -117,7 +117,7 @@
 <li><a href="#layout">Files and folders</a></li>
 <li><a href="#other">Other distributions</a></li>
 </ol>
-<p class="toc-appendix"><a href="/guide-windows.html#english">Appendix: English text and language</a> (in the Windows guide, the same on Linux) &nbsp;·&nbsp; <a href="#discord">Appendix: Discord linking and bot commands</a></p>
+<p class="toc-appendix"><a href="#english">Appendix: English text and language</a> &nbsp;·&nbsp; <a href="#discord">Appendix: Discord linking and bot commands</a></p>
 </div>
 
 <h2 id="need">1. What you need</h2>
@@ -125,16 +125,16 @@
 <li>A Windows copy of the MHF-Z client, the folder named <code>Monster Hunter Frontier Online</code> (about 5.5 GB). It must contain <code>dat/</code>, <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>mhf.ini</code>.</li>
 <li>An Arch-based distribution (CachyOS, EndeavourOS, Manjaro, plain Arch).</li>
 <li>About 12 GB of free disk: 5.5 GB client, 0.8 GB prefix, plus backups.</li>
-<li>Your Hunsterverse account. You will type the username and password yourself; nobody needs to see them.</li>
+<li>A Hunsterverse account. You create it yourself in the Mezeporta launcher (step 10): press <b>REGISTER</b> and choose a username and password. Nobody else needs to see them.</li>
 </ul>
 
 <p><b>Where to get everything.</b></p>
 <table>
 <tr><th>What</th><th>Where to get it</th></tr>
 <tr><td>Base game client, 5.5 GB</td><td><a href="https://drive.google.com/drive/folders/1F_xg7qaFmG_L7AJ16vzYBG8pwlpCYSFN?usp=sharing">Community client folder on Google Drive</a>, the link maintained by the <a href="https://pastebin.com/QqAwZSTC">/mhg/ community guide</a>. Community-run, not Hunsterverse official; the folder also contains server files you do not need.</td></tr>
-<tr><td>Hunsterverse site, account and Discord</td><td><a href="https://hunstermonter.net">hunstermonter.net</a> for registration, guides, FAQ and troubleshooting, plus the Discord invite: <a href="https://discord.gg/YuE42eh">discord.gg/YuE42eh</a></td></tr>
-<tr><td>Game login page</td><td><a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a></td></tr>
-<tr><td>Hunsterverse client patch, 50.9 MB</td><td><a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> from the EclipseKnight releases page. The Mezeporta launcher also downloads it for you when it checks for updates; on a slow connection (under about 3 MB/s) that can fail with &quot;Patcher failed to connect&quot;: then unzip this file over your game folder by hand, and the launcher has nothing left to download.</td></tr>
+<tr><td>Hunsterverse Discord</td><td>Help, announcements and the bot commands: <a href="https://discord.gg/YuE42eh">discord.gg/YuE42eh</a></td></tr>
+<tr><td>Hunsterverse website</td><td><a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a>: sign in with your game account to see your characters, make backups and get your Discord link code. You do not need it to play.</td></tr>
+<tr><td>Hunsterverse client patch, 50.9 MB</td><td><a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> from the EclipseKnight releases page. Apply it by hand as in step 4, before the first launch: on a slow connection the launcher cannot download it for you (see the box in step 4).</td></tr>
 <tr><td>Mezeporta launcher</td><td><a href="https://github.com/LilButter/Mezeporta/releases">github.com/LilButter/Mezeporta/releases</a>, grab the build for your OS, v1.5.4 or newer</td></tr>
 </table>
 <div class="warn box"><b>Check the source.</b> The base client comes from the community, not from Hunsterverse. The server patch is the part Hunsterverse actually maintains, and it must be applied after the client, as in the patch step. If a link looks different from these, verify it before you run anything.</div>
@@ -163,6 +163,7 @@ ls mhf.exe mhfo.dll mhfo-hd.dll mhl.dll mhf.ini dat/mhfdat.bin</code></pre>
 <p>A clean client is about 5.2 GB and roughly 6,700 files.</p>
 
 <h2 id="patch">4. Apply the client patch</h2>
+<div class="warn box"><b>Slow connection? Download the patch yourself, now.</b> When the Mezeporta launcher checks for updates it has to download the patch (<code>Frontier_Patch.zip</code>, 50.9 MB) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>&quot;Patcher failed to connect&quot;</b>. Do not wait for that: download <a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> in your browser (or let the commands below do it) and apply it <b>before you open the launcher for the first time</b>. With the files already in place the launcher has nothing left to download. The same trick works for later patch releases: download the new zip by hand and unzip it over the game folder.</div>
 <p>Download the server's patch, back up every game file it replaces, then overlay it.</p>
 <pre><code>BASE=&quot;https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download&quot;
 curl -L -o /tmp/Frontier_Patch.zip &quot;$BASE/client_patch/Frontier_Patch.zip&quot;
@@ -246,7 +247,8 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
 
 <h2 id="play">10. Log in and launch</h2>
 <p>Select Hunsterverse in the <b>Server Selection</b> dropdown, type your own account name and password, and press <b>LOG IN</b>. Pick a character, then launch.</p>
-<p>No account yet? Type the username and password you want and press LOG IN: Hunsterverse creates the account on your first login. You can also register at <a href="https://hunstermonter.net">hunstermonter.net</a> first, which is the safer route if the login is refused.</p>
+<p><b>No account yet?</b> In the Mezeporta launcher press <b>REGISTER</b>, choose a username and password, then log in with them. Do not just type a new name into LOG IN: in API mode (the default) the server refuses a name that does not exist.</p>
+<div class="warn box"><b>Usernames and passwords are case-sensitive.</b> Always type them exactly the same way: <code>Hunter</code> and <code>hunter</code> are different names, and logging in with other capitalisation does not open your account (it can look like a lost save).</div>
 <figure><img alt="Login screen" src="/assets/guide/linux-login.webp"><figcaption>Login with Hunsterverse selected. The username field is redacted in this screenshot.</figcaption></figure>
 <p>The launcher window closes when the game starts. That is normal, as long as you did not start the launcher inside a systemd unit (see step 7). The game window is titled <code>MONSTER HUNTER FRONTIER Z</code>.</p>
 
@@ -260,6 +262,8 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh</code></pre>
 <tr><td>Text in game is boxes or garbage</td><td>Install <code>noto-fonts-cjk</code>, enable <code>ja_JP.UTF-8</code> in <code>/etc/locale.gen</code>, run <code>sudo locale-gen</code>, then start with <code>LANG=ja_JP.UTF-8 ~/Games/MHFZ/run-mezeporta-x11.sh</code>.</td></tr>
 <tr><td>No sound</td><td>Install <code>gst-plugin-pipewire</code> and <code>gst-plugins-good</code>, then re-run the <code>--verify</code> step.</td></tr>
 <tr><td><code>Patcher failed to manage files in game folder</code> (API mode)</td><td>The Wine prefix is inside the game folder (<code>Mezeporta/WinePrefix</code>, the launcher's portable prefix). The launcher patcher walks the game folder for <code>.mezeb</code> backups and follows symlinks; the prefix contains <code>dosdevices/z: -&gt; /</code>, so the walk reaches the rest of the disk and aborts with <code>Permission denied</code>. Move the prefix out, <code>mv ~/Games/MHFZ/Mezeporta/WinePrefix ~/Games/MHFZ-prefix</code>, and set a Custom Prefix (step 8). Or use SignV1 (launcher port <code>53312</code>), which skips the patcher.</td></tr>
+<tr><td>&quot;Patcher failed to connect&quot; when the launcher checks for updates</td><td>The connection is too slow for the launcher (under about 3 MB/s). Download <code>Frontier_Patch.zip</code> yourself and unzip it over the game folder, as in step 4.</td></tr>
+<tr><td>Login fails or the server is refused</td><td>Check that the username and password are exactly as you registered them (case-sensitive) and that the server entry matches step 9. A name you never registered is refused in API mode: press REGISTER first. Still refused? Use the fallback from step 9: launcher port <code>53312</code> and mode SignV1.</td></tr>
 <tr><td>Wrong or broken prefix</td><td>Delete <code>~/Games/MHFZ-prefix</code> and re-run the <code>--prefix</code> step. Your game files are untouched.</td></tr>
 <tr><td>Want vanilla files back</td><td>Copy everything from <code>~/Games/MHFZ/original-files/</code> back over the game folder.</td></tr>
 </table>
@@ -291,9 +295,9 @@ sudo apt install wine wine32:i386 winetricks cabextract p7zip-full \
   gstreamer1.0-pipewire vulkan-tools mesa-utils gamemode</code></pre>
 <p>The release zip ships a matching script, so you can skip the manual prefix steps:</p>
 <pre><code>cd ~/Games/MHFZ
-bash SetupDeps/mezeporta-setup-ubuntu.sh --portable-prefix "$HOME/Games/MHFZ" --controller-fix
+bash SetupDeps/mezeporta-setup-ubuntu.sh --prefix "$HOME/Games/MHFZ-prefix" --controller-fix
 bash SetupDeps/mezeporta-setup-ubuntu.sh --verify</code></pre>
-<p>Drop <code>--controller-fix</code> if you play with mouse and keyboard. The repo copy of this script is named <code>install-deps-ubuntu.sh</code>; it is the same file.</p>
+<p>Drop <code>--controller-fix</code> if you play with mouse and keyboard. Keep the prefix <b>outside</b> the game folder, as in <a href="#prefix">step 6</a> (do not use <code>--portable-prefix</code>), and set it as the Custom Prefix in step 8. The repo copy of this script is named <code>install-deps-ubuntu.sh</code>; it is the same file.</p>
 <div class="note box"><b>Ubuntu Wine version.</b> Ubuntu 24.04 ships Wine 9.0, which is new enough for DXVK. Ubuntu 22.04 ships 6.x, which is too old: use the WineHQ repository or a Kron4ek build. Check with <code>wine --version</code>, you want 9.0 or newer.</div>
 
 <h3>Fedora</h3>
@@ -313,9 +317,9 @@ bash SetupDeps/mezeporta-setup-ubuntu.sh --verify</code></pre>
 <div class="warn box"><b>Tumbleweed and 32-bit packages.</b> Tumbleweed has been moving 32-bit packages out of the main repositories, so <code>wine-32bit</code> may not resolve. If it does not, follow the openSUSE Wine wiki for the current repository layout, or use the generic path below on a distribution with multilib.</div>
 
 <h3>Any other distribution</h3>
-<p>You need five things: Wine 9.0 or newer with 32-bit support, winetricks, cabextract, p7zip, and GStreamer with the base, good, bad and ugly plugin sets plus a PipeWire, PulseAudio or ALSA sink. With those present, build the prefix yourself:</p>
+<p>You need five things: Wine 9.0 or newer with 32-bit support, winetricks, cabextract, p7zip, and GStreamer with the base, good, bad and ugly plugin sets plus a PipeWire, PulseAudio or ALSA sink. With those present, build the prefix yourself, <b>outside the game folder</b> (see <a href="#prefix">step 6</a> for why) and set it as the Custom Prefix in step 8:</p>
 <pre><code>cd ~/Games/MHFZ
-export WINEPREFIX="$HOME/Games/MHFZ/Mezeporta/WinePrefix"
+export WINEPREFIX="$HOME/Games/MHFZ-prefix"
 export WINEDEBUG=-all
 
 mkdir -p "$WINEPREFIX"
@@ -340,31 +344,29 @@ gst-inspect-1.0 autoaudiosink &gt;/dev/null &amp;&amp; echo "audio sink ok"</cod
 <p><code>GDK_BACKEND=x11</code> matters on Wayland desktops of any distribution, and <code>WEBKIT_DMABUF_RENDERER_FORCE_SHM=1</code> matters on NVIDIA. On X11, or on AMD and Intel graphics, you can usually leave both out, but keeping them costs nothing.</p>
 
 <h2 id="english">Appendix: English text and language</h2>
-<p>MHF-Z is a Japanese game. The English translation is not a separate installer: it lives inside <code>mhl.dll</code>, the client's text layer, and the patch also replaces the files with the Diva storyline and one town's dialogue (step 4).</p>
-<p><b>What the client patch already does.</b> The Hunsterverse patch ships its own <code>mhl.dll</code>, so a normal install from <a href="#patch">step 4</a> is already translated. If your menus are English, leave this file alone.</p>
-<p><b>If your game is in Japanese.</b> Something overwrote the patched DLL, or the patch step was skipped. Run step 4 again: it puts the patched <code>mhl.dll</code> back and keeps your first backup in <code>original-files/</code>. Check that it is the patched one:</p>
-<pre><code>cd ~/Games/MHFZ
-cmp mhl.dll /tmp/fp/Frontier_Patch/mhl.dll &amp;&amp; echo "patched mhl.dll"</code></pre>
-<p><b>Coverage is partial.</b> Some item names, NPC dialogue and event text stay Japanese even with the English DLL in place. That is the translation, not a broken install.</p>
+<p>MHF-Z is a Japanese game. The English translation is not a separate installer: the text lives in the game's data files in <code>dat/</code> (<code>mhfdat.bin</code>, <code>mhfpac.bin</code>, <code>mhfinf.bin</code> and the files in <code>dat/load/</code>). The Mezeporta launcher starts the game itself and never loads <code>mhl.dll</code> (that file belonged to the old Capcom launcher), so replacing <code>mhl.dll</code> changes nothing in game.</p>
+<p><b>What the client patch already does.</b> The patch from <a href="#patch">step 4</a> replaces <code>dat/mhfdat.bin</code> and adds the English Diva storyline and a town's dialogue. If your menus are English, you are done.</p>
+<p><b>If your game is in Japanese.</b> The patch step was skipped, or something put the original files back. Run step 4 again: it overlays the patched files and keeps your first backup in <code>original-files/</code>. The community client of step 1 already carries most of the English menus; a client copied from somewhere else may not.</p>
+<p><b>Coverage is partial.</b> Not everything is translated. Item names, NPC dialogue and event text often stay Japanese. That is the translation, not a broken install.</p>
 <p><b>Fonts.</b> If Japanese text shows as boxes, install your distribution's CJK fonts (<code>fonts-noto-cjk</code> on Debian and Ubuntu, <code>noto-fonts-cjk</code> on Arch, <code>google-noto-sans-cjk-fonts</code> on Fedora) and start the launcher with <code>LANG=ja_JP.UTF-8</code>.</p>
-<p>The <a href="/guide-windows.html#english">Windows guide's appendix</a> also covers swapping in a translation pack's own <code>mhl.dll</code>; the same warnings apply here.</p>
+<div class="warn box"><b>Two warnings from old client guides.</b> Do not apply the hosts-file trick that circulates with the client pack: it points Capcom hostnames at 127.0.0.1, it is meant for self-hosted Erupe servers, and it will break name resolution for Hunsterverse. And Locale Emulator is a Windows tool you do not need here.</div>
 
 <h2 id="discord">Appendix: Discord linking and bot commands</h2>
 <p>Linking your game account to Discord gives you character backups and the bot commands. The account page does the linking:</p>
 <ol>
 <li>Open <a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a>.</li>
 <li>Sign in with the same username and password you use in the game.</li>
-<li>The page shows a command such as <code>!f link &lt;token&gt;</code>. Run it in the <code>#mhfrontier</code> channel of the Hunsterverse Discord.</li>
+<li>The Overview tab shows the command <code>/link code:&lt;code&gt;</code>, with your own code in it. In the Hunsterverse Discord type <code>/link</code> and paste the code into the code box.</li>
 </ol>
-<p>Once linked, these commands work through a DM with the bot, except where noted:</p>
+<p>Once linked, these slash commands work in the Hunsterverse Discord. The old <code>!f</code> commands are gone; type the <code>/</code> and pick the command from the list:</p>
 <table>
 <tr><th>Command</th><th>What it does</th></tr>
-<tr><td><code>!f backup</code> or <code>!f backupchar</code></td><td>DMs you a ZIP backup of your current character data.</td></tr>
-<tr><td><code>!f import &lt;files&gt;</code> or <code>!f importchar</code></td><td>Restores a backup: attach the BIN files from the ZIP. Extract the archive first; the bot skips 0 KB files.</td></tr>
-<tr><td><code>!f resetpassword</code> or <code>!f pw</code></td><td>DM the bot <code>&lt;newPassword&gt; &lt;confirmNewPassword&gt;</code> to change your password.</td></tr>
-<tr><td><code>!f worldstats</code> or <code>!f ws</code></td><td>In the Frontier Discord channel: current world status, season and players online.</td></tr>
+<tr><td><code>/link code:&lt;code&gt;</code></td><td>Links your game account to your Discord account. The code comes from the account page and is valid for 24 hours.</td></tr>
+<tr><td><code>/backup</code></td><td>Sends you a zip backup of one of your characters in a DM (you pick the character).</td></tr>
+<tr><td><code>/import backup:&lt;file&gt;</code></td><td>Restores a character from a backup. Attach the zip <code>/backup</code> sent you <b>as it is</b> (do not extract it), or an Erupe export JSON from another server. You pick the target character, see a preview and confirm. Log out of the game first, and play the target character once before you import into it.</td></tr>
+<tr><td><code>/password password:&lt;new&gt; confirm_password:&lt;new&gt; username:&lt;account&gt;</code></td><td>Sets a new password for your game account (6 to 40 characters). Only you see the answer. This is the only way to reset a forgotten password, and only on an account that is linked to Discord.</td></tr>
 </table>
-<div class="note box"><b>Backups are BIN files in a ZIP.</b> Extract the archive before importing, and ignore the 0 KB entries. Command names come from the older guide; if one does not respond, check the pinned messages in <code>#mhfrontier</code> for the current list.</div>
+<div class="note box"><b>Backups are a zip: send it as it is.</b> Do not extract it and do not attach single BIN files. The account page's Backups tab can also download and import them (it says so when that is not available yet).</div>
 
 <footer>
 <p><b>Credits:</b> Mezeporta launcher by LilButter. Client patch by EclipseKnight for Hunsterverse. Monster Hunter Frontier Z is a Capcom game; this guide only covers running a private server client on Linux.</p>

@@ -196,17 +196,17 @@
     }
 
     note.textContent = "not linked";
-    body.appendChild(el("p", "discord-state", "Run this command in the #mhfrontier channel of the Hunsterverse Discord to link your account:"));
+    body.appendChild(el("p", "discord-state", "In the Hunsterverse Discord, type /link and paste the code into the code box (or enter this command) to link your account:"));
 
     var box = el("div", "command-box");
-    box.appendChild(el("code", "command", discord.command || "!f link ..."));
-    var copy = el("button", "ghost-btn small", "Copy");
+    box.appendChild(el("code", "command", window.HvLinkCommand.command(discord)));
+    var copy = el("button", "ghost-btn small", "Copy code");
     copy.type = "button";
     copy.addEventListener("click", function () {
-      var value = discord.command || "";
+      var value = window.HvLinkCommand.code(discord);
       function done() {
         copy.textContent = "Copied";
-        setTimeout(function () { copy.textContent = "Copy"; }, 1800);
+        setTimeout(function () { copy.textContent = "Copy code"; }, 1800);
       }
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(value).then(done, done);

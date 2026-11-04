@@ -84,6 +84,7 @@ js/road-vote.js       Hunting Road vote page
 js/road-history.js    Hunting Road past winners
 js/road-rewards.js    Hunting Road rewards on the account page: labels and the claim body per board (design, score); also runs under node
 js/account.js         account page, including storage and hunt log
+js/link-command.js    the Discord link command the account page shows, `/link code:<code>`, built from the API's token (the API's own `!f link` text is not shown); also runs under node
 js/account-backup.js  account page, Backups tab: download, import with preview and confirm, import history (docs/character-backup-web.md)
 js/backup-file.js     backup zips: writes the bot's /backup layout from the API's answer, reads our zips, older zips and Erupe export JSON for an import; also runs under node
 js/guilds.js          guild directory and detail
@@ -122,6 +123,7 @@ data/map-ids.json     every map id's own name (place plus day/night, version or 
 data/quest-fields.json  every quest-file field the quest builder and the API codec touch: offset, bytes, range, value names (docs/quest-fields.md)
 dev/check-quest-fields.js checks data/quest-fields.json against the API codec, js/quest-editor.js, the site's name tables and docs/quest-fields.md
 dev/check-exact-links.js checks in headless Chromium, against a fake API with and without the ids API 5b6d085 added, that hunter and guild names link by id (else by name) and that a refused quest upload or Road draft save shows the API's message (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-exact-links.js)
+dev/check-link-command.js checks js/link-command.js: `/link code:<code>` from the token, never the old `!f link` text (node dev/check-link-command.js)
 dev/check-signin-next.js checks js/signin-next.js: same-site paths only, hostile values refused (node dev/check-signin-next.js)
 dev/check-report-signin.js checks in headless Chromium, against a fake API, report.html: signed out or expired shows the Sign in button (back to the report page) and no forms, signed in sends the token, a 401 asks to sign in again and keeps what was typed (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-report-signin.js)
 dev/check-backup-file.js checks js/backup-file.js on made-up zips and JSON, with Python's zipfile (node dev/check-backup-file.js)
@@ -367,7 +369,7 @@ site always uses the real API and key.
 
 ## Links
 
-- Community site and Discord: https://hunstermonter.net
+- Community site (footer link only, not for registration: its sign-up is for another game server): https://hunstermonter.net
 - Launcher: https://github.com/LilButter/Mezeporta
 - Client patch: https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases
 
