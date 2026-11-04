@@ -87,17 +87,147 @@
     };
   }
 
-  function runningEvents(festa) {
-    var now = Date.now();
+  var TOURNAMENTS = "/tournaments.html";
+
+  // Today's static cards: what the page shows while /api/public/events/current is not there (an API
+  // from before the schedules, or an error). Each card: name, badge, text, and optionally details
+  // (extra lines), note (muted, e.g. a stale schedule) and href/linkText.
+  function staticCards(festa, now) {
+    var cup = weeklyCard("Speedrun Cup", CUP_START, now, "Weekly timed clears of the event quest, no sign-up. Prizes in the gift box.");
+    cup.href = TOURNAMENTS;
+    cup.linkText = "Standings";
+    var vs = weeklyCard("VS Bracket", CUP_START, now, "Every 14 days, play whenever you like. Sign up with !vs join. Prizes in the gift box.");
+    vs.href = TOURNAMENTS;
+    vs.linkText = "Bracket";
     return [
       divaCard(now),
       { name: "MezFes", badge: "Live", text: "Open every day. Tickets refill each Monday, 00:00 JST." },
       { name: "Conquest", badge: "Live", text: "Every week, all four monsters. Weekly gifts for taking part and for the top guilds and caravan hunters." },
       { name: "Event campaigns", badge: "Live", text: "New & Returning Hunter Pack once per character; Weekly Supply Drop every Monday." },
-      weeklyCard("Speedrun Cup", CUP_START, now, "Weekly timed clears of the event quest, no sign-up. Prizes in the gift box."),
-      weeklyCard("VS Bracket", CUP_START, now, "Every 14 days, play whenever you like. Sign up with !vs join. Prizes in the gift box."),
+      cup,
+      vs,
       festaCard(festa, now)
     ];
+  }
+
+  /* ---- cards from the API's schedule rows (/api/public/events/current) ---- */
+
+  function ms(value) {
+    var t = value ? Date.parse(value) : NaN;
+    return isNaN(t) ? null : t;
+  }
+
+  function endsText(label, value) {
+    var t = ms(value);
+    return t === null ? "" : " " + label + " " + shortDate(t) + ".";
+  }
+
+  function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
+
+  // The cup's phase in words, and the quest it is about.
+  function cupCard(row, now) {
+    var x = row.extra || {};
+    var title = x.quest && x.quest.title;
+    var card = { name: "Speedrun Cup", href: TOURNAMENTS, linkText: "Standings" };
+    if (row.phase === "open") {
+      card.text = "Open: clear the quest as fast as you can, no sign-up." + endsText("Clears count until", row.phaseEndsAt);
+    } else if (row.phase === "tallying") {
+      card.text = "Clears are closed and the results are being tallied." + endsText("Results at", row.phaseEndsAt);
+    } else if (row.phase === "results") {
+      card.text = "Results are in; prizes are in the gift box." + endsText("Next cup starts", row.phaseEndsAt || row.endsAt);
+    } else {
+      card.text = "No quest in the cup's pool this week.";
+    }
+    card.details = [];
+    if (title) card.details.push("Quest: " + title);
+    return card;
+  }
+
+  // bracket is optional: /api/public/vs-bracket/current, only used to name the winner on the results.
+  function vsCard(row, bracket) {
+    var x = row.extra || {};
+    var card = { name: "VS Bracket", href: TOURNAMENTS, linkText: "Bracket" };
+    var entrants = Number(x.entrants) || 0;
+    card.details = [];
+    if (row.phase === "signup") {
+      card.text = "Sign-up is open: join with !vs join." + endsText("Sign-up ends", x.signup_ends_at || row.phaseEndsAt);
+    } else if (row.phase === "drawing") {
+      card.text = "Sign-up is over; the bracket is being drawn.";
+    } else if (row.phase === "no_bracket") {
+      card.text = "Fewer than two hunters signed up, so there is no bracket this time.";
+    } else if (row.phase === "round") {
+      card.text = "Round " + x.round + " of " + x.rounds + " is open." + endsText("It ends", row.phaseEndsAt);
+      if (x.quest && x.quest.title) card.details.push("Quest: " + x.quest.title);
+    } else {
+      card.text = "Finished; prizes are in the gift box.";
+      var champion = bracket && bracket.bracket && bracket.bracket.champion;
+      if (champion) card.details.push("Winner: " + champion);
+    }
+    if (entrants && row.phase !== "no_bracket") card.details.push(plural(entrants, "hunter", "hunters") + " entered");
+    return card;
+  }
+
+  function divaRowCard(row) {
+    var weeks = { personal: "Week 1: personal points, one Prayer Gem a day", tactics: "Week 2: guild week", rewards: "Week 3: reward lists and the coin shop" };
+    var card = { name: "Diva Defense" };
+    if (weeks[row.phase]) card.text = weeks[row.phase] + "." + endsText("The week ends", row.phaseEndsAt);
+    else if (row.phase === "between") card.text = "A short pause between two weeks." + endsText("Next week starts", row.phaseEndsAt);
+    else card.text = "The next Diva Defense is coming." + endsText("It starts", row.startsAt);
+    return card;
+  }
+
+  function conquestCard(row) {
+    var monsters = ((row.extra || {}).monsters || []).map(function (m) { return m.name; }).filter(Boolean);
+    return {
+      name: "Conquest",
+      text: "This week's monsters: " + (monsters.length ? monsters.join(", ") : "to be announced") + "." + endsText("The week ends", row.phaseEndsAt),
+      details: []
+    };
+  }
+
+  // A campaign that was not shown before: only the open ones appear; none open means no card.
+  function campaignsCard(row) {
+    var list = ((row.extra || {}).campaigns || []).map(function (c) { return c.title; }).filter(Boolean);
+    if (row.phase !== "open" || !list.length) return null;
+    return { name: "Event campaigns", text: "Open now: " + list.join(", ") + "." + endsText("Next change", row.phaseEndsAt), details: [] };
+  }
+
+  // One schedule row as card data, or null when the row has nothing to show. The badge is "Live" once the
+  // cycle has started, else "From <start>".
+  function cardFromRow(row, now, bracket) {
+    var card = null;
+    if (!row) return null;
+    if (row.event === "speedrun_cup") card = cupCard(row, now);
+    else if (row.event === "vs_bracket") card = vsCard(row, bracket);
+    else if (row.event === "diva") card = divaRowCard(row);
+    else if (row.event === "conquest") card = conquestCard(row);
+    else if (row.event === "campaigns") card = campaignsCard(row);
+    if (!card) return null;
+    var start = ms(row.startsAt);
+    card.badge = start !== null && start > now ? "From " + shortDate(start) : "Live";
+    if (row.stale) card.note = "Schedule may be out of date";
+    return card;
+  }
+
+  // All cards: from the API's rows when it answered with any, else the static ones. An event with no row is
+  // off and leaves its card out; MezFes (no schedule) and the festival stay as they were.
+  function eventCards(current, festa, now, bracket) {
+    var rows = current && Array.isArray(current.events) ? current.events : [];
+    if (!rows.length) return staticCards(festa, now);
+    var byEvent = {};
+    rows.forEach(function (row) { byEvent[row.event] = row; });
+    var cards = [];
+    push(cards, cardFromRow(byEvent.diva, now, bracket));
+    cards.push({ name: "MezFes", badge: "Live", text: "Open every day. Tickets refill each Monday, 00:00 JST." });
+    ["conquest", "campaigns", "speedrun_cup", "vs_bracket"].forEach(function (name) { push(cards, cardFromRow(byEvent[name], now, bracket)); });
+    cards.push(festaCard(festa, now));
+    return cards;
+  }
+
+  function push(list, item) { if (item) list.push(item); }
+
+  function runningEvents(festa, current, bracket) {
+    return eventCards(current, festa, Date.now(), bracket);
   }
 
   function eventCard(event) {
@@ -105,19 +235,33 @@
     card.appendChild(el("p", "kicker", "Server event"));
     card.appendChild(el("h2", null, event.name));
     card.appendChild(el("p", "tile-meta", event.text));
+    (event.details || []).forEach(function (line) { card.appendChild(el("p", "tile-meta", line)); });
+    if (event.note) card.appendChild(el("p", "tile-meta muted", event.note));
+    if (event.href) {
+      var link = el("a", null, event.linkText);
+      link.href = event.href;
+      var p = el("p", "tile-meta");
+      p.appendChild(link);
+      card.appendChild(p);
+    }
     card.appendChild(el("span", event.badge === "Live" ? "badge event-live" : "badge", event.badge));
     return card;
   }
 
-  function render(data, festa) {
+  function render(data, festa, current, bracket) {
     var root = document.getElementById("events-root");
     clear(root);
 
     var panel = el("section", "panel");
     panel.appendChild(el("h2", "panel-head", "Running now"));
-    panel.appendChild(el("p", "panel-note", "Times are in your own time zone. Details of each event: see the Events entry of 4 Nov 2026 in the changelog."));
+    var note = el("p", "panel-note", "Times are in your own time zone. Details of each event: see the Events entry of 4 Nov 2026 in the changelog. Speedrun Cup standings and the VS Bracket: ");
+    var tournaments = el("a", null, "Tournaments");
+    tournaments.href = TOURNAMENTS;
+    note.appendChild(tournaments);
+    note.appendChild(document.createTextNode("."));
+    panel.appendChild(note);
     var grid = el("div", "tile-grid event-grid");
-    runningEvents(festa).forEach(function (e) { grid.appendChild(eventCard(e)); });
+    runningEvents(festa, current, bracket).forEach(function (e) { grid.appendChild(eventCard(e)); });
     panel.appendChild(grid);
     root.appendChild(panel);
 
@@ -217,17 +361,28 @@
     renderQuests();
   }
 
-  // The festival is optional: an old API without /api/public/festa still shows the page.
-  var festaRequest = fetch(API + "/api/public/festa")
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .catch(function () { return null; });
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = { staticCards: staticCards, eventCards: eventCards, cardFromRow: cardFromRow, shortDate: shortDate };
+  }
+  if (typeof document === "undefined") return;
+
+  // The festival, the schedules and the VS bracket are optional: an API without them (404, error) still
+  // shows the page, with today's static cards.
+  function optional(path) {
+    return fetch(API + path)
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
+  }
+  var festaRequest = optional("/api/public/festa");
+  var currentRequest = optional("/api/public/events/current");
+  var bracketRequest = optional("/api/public/vs-bracket/current");
 
   fetch(API + "/api/public/events")
     .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)); })
     .then(function (data) {
-      return festaRequest.then(function (festa) {
+      return Promise.all([festaRequest, currentRequest, bracketRequest]).then(function (extra) {
         quests = data.quests || [];
-        render(data, festa);
+        render(data, extra[0], extra[1], extra[2]);
       });
     })
     .catch(function () {

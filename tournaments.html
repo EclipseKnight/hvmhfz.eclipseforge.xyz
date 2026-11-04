@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tournaments · Hunsterverse</title>
+    <meta name="description" content="The Speedrun Cup standings and the VS Bracket on Hunsterverse." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Tournaments · Hunsterverse" />
+    <meta property="og:description" content="The Speedrun Cup standings and the VS Bracket on Hunsterverse." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/tournaments.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/events.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Tournaments · Hunsterverse" />
+    <meta name="twitter:description" content="The Speedrun Cup standings and the VS Bracket on Hunsterverse." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/events.png" />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/nav.js" defer></script>
+    <script src="/js/background.js" defer></script>
+    <script src="/js/consent.js" defer></script>
+  </head>
+
+  <body class="public-page">
+    <!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/play.html">Play</a>
+              <a class="navlink" href="/guide-windows.html">Windows guide</a>
+              <a class="navlink" href="/guide-linux.html">Linux guide</a>
+              <a class="navlink" href="/guide-frontier.html">Frontier guide</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+              <a class="navlink" href="/quest-editor.html">Quest builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-road">Hunting Road</button>
+            <div class="nav-menu" id="nav-road">
+              <a class="navlink" href="/road-vote.html">Rotation and vote</a>
+              <a class="navlink" href="/road.html">Road builder</a>
+              <a class="navlink" href="/road-history.html">Past winners</a>
+              <a class="navlink" href="/road-data.html">Road data</a>
+              <a class="navlink" href="/guide-roads.html">Roads in game</a>
+              <a class="navlink" href="/sky-corridor.html">Sky Corridor</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="https://discord.gg/YuE42eh">Discord</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/tournaments.html" aria-current="page">Tournaments</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/report.html">Report a problem</a>
+            </div>
+          </div>
+          <a class="navlink nav-cta nav-account" href="/account.html">Sign in</a>
+        </nav>
+      </div>
+    </header>
+    <!-- /site-shell:header -->
+
+    <main id="content" class="wrap page wide">
+      <!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Server</li><li aria-current="page">Tournaments</li></ol></nav>
+      <!-- /site-shell:crumbs -->
+      <header class="page-head">
+        <h1>Tournaments</h1>
+        <p class="page-sub">The Speedrun Cup standings per weapon class and the VS Bracket, from the game server. Times are in your own time zone. What else is running: <a href="/events.html">Events</a>.</p>
+        <p class="road-links">
+          <a class="ghost-btn small" href="#cup">Speedrun Cup</a>
+          <a class="ghost-btn small" href="#bracket">VS Bracket</a>
+        </p>
+      </header>
+
+      <section class="panel" id="cup">
+        <div class="panel-head"><h2>Speedrun Cup</h2></div>
+        <p class="note-text">A weekly timed clear of one event quest, no sign-up: the fastest clear per weapon class wins, and the guild quest has its own board.</p>
+        <div id="cup-body"><p class="empty-state">Loading...</p></div>
+      </section>
+
+      <section class="panel" id="bracket">
+        <div class="panel-head"><h2>VS Bracket</h2></div>
+        <p class="note-text">A knockout bracket: sign up with !vs join, then clear each round's quest before the round ends. Times show once a match is decided.</p>
+        <div id="bracket-body"><p class="empty-state">Loading...</p></div>
+      </section>
+    </main>
+
+    <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <div class="foot-col">
+            <h2 class="foot-head">Guides</h2>
+            <a href="/play.html">Play</a>
+            <a href="/guide-windows.html">Windows guide</a>
+            <a href="/guide-linux.html">Linux guide</a>
+            <a href="/guide-frontier.html">Frontier guide</a>
+            <a href="/guide-roads.html">Roads in game</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Explore</h2>
+            <a href="/monsters.html">Monsters</a>
+            <a href="/quests.html">Quests</a>
+            <a href="/catalog.html">Catalog</a>
+            <a href="/leaderboards.html">Leaderboards</a>
+            <a href="/road-vote.html">Hunting Road</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Server</h2>
+            <a href="/changelog.html">Changelog</a>
+            <a href="/worlds.html">Worlds</a>
+            <a href="/report.html">Report a problem</a>
+            <a href="/api.html">API</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">About</h2>
+            <a href="/privacy.html">Privacy</a>
+            <a href="https://discord.gg/YuE42eh">Discord</a>
+            <a href="https://hunstermonter.net">hunstermonter.net</a>
+          </div>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+    <!-- /site-shell:footer -->
+
+    <script src="/js/tournaments.js"></script>
+    <script src="/js/search.js" defer></script>
+  </body>
+</html>

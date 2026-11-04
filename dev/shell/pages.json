@@ -50,5 +50,6 @@
   {"page": "road.html", "group": "Hunting Road", "label": "Road builder", "title": "Road builder · Hunsterverse", "current": "/road.html"},
   {"page": "set-builder.html", "group": "Database", "label": "Set builder", "title": "Set builder · Hunsterverse", "current": "/set-builder.html"},
   {"page": "sky-corridor.html", "group": "Hunting Road", "label": "Sky Corridor", "title": "Sky Corridor · Hunsterverse", "current": "/sky-corridor.html"},
+  {"page": "tournaments.html", "group": "Server", "label": "Tournaments", "title": "Tournaments · Hunsterverse", "current": "/tournaments.html"},
   {"page": "worlds.html", "group": "Server", "label": "Worlds", "title": "Worlds · Hunsterverse", "current": "/worlds.html"}
 ]

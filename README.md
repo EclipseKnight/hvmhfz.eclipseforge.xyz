@@ -10,7 +10,8 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/account.html` | Signed in view: overview (with the Hunting Road rewards and a character picker to claim them), characters, storage, hunt log, guild, custom quests, backups and account. Backups: download a character's backup zip, import a file into a character (preview, then confirm) and the account's imports; "coming soon" until the API has the account endpoints (`docs/character-backup-web.md`). Without a valid session it sends the visitor to `/?next=/account.html...#login-form`, and back after sign-in; signing out goes to `/`. |
 | `/monsters.html` | Monster field guide: search by name or species, cards link to full hitzone, HP and drop pages. `?q=` opens it searching. Hunt counts match the server's by monster id (`ids` in `data/monsters/index.json`). |
 | `/monster.html?m=slug` | One monster: hitzones normal and enraged, HP by level, stagger limits, maps, every carve table, Henshu/GR/Zenith forms, and a link to its quests. `slug` is `data/monsters/<slug>.json`; older links with the entry's `oldSlug` or `formerSlugs` still open it. An entry made from our own data instead of the field guide's tables (Shagaru Magala, id 164, Mi Ru, id 113, Unknown, id 100, and the five Musou versions without ids of their own, `musou-pariapuria`, `-zinogre`, `-guanzorumu`, `-mi-ru`, `-elzelion`: name, quests, a short `about` note, optional `questsHref`/`questsLabel` for the quest link; `"ferias": false` drops the Ferias credit) shows empty tables. |
-| `/events.html` | What is running: one card per event (Diva Defense, MezFes, Conquest, event campaigns, Speedrun Cup, VS Bracket, Hunter Festival) with its state, from the schedule kept in `js/events.js` (update it when a schedule changes; the Hunter Festival card reads `/api/public/festa`, the API's old 2023 `diva` event row is not shown), the event quest pool and the Festa prize table (`/api/public/events`). |
+| `/events.html` | What is running: one card per event (Diva Defense, MezFes, Conquest, event campaigns, Speedrun Cup, VS Bracket, Hunter Festival) with its state, from `/api/public/events/current` (the schedules Erupe writes: phase in words, when it ends and the content; an event with no row is off and its card is left out; a stale row says so) or, while that endpoint is missing or empty, from the static schedule kept in `js/events.js` (update it when a schedule changes; the Hunter Festival card reads `/api/public/festa`, the API's old 2023 `diva` event row is not shown), the event quest pool and the Festa prize table (`/api/public/events`). |
+| `/tournaments.html` | Tournaments (`js/tournaments.js`): the Speedrun Cup standings from `/api/public/tournament/standings` (this week's quest, phase and closing time, last week's results, a table per weapon class picked with chips, plus the Guild board; "No clears yet" for an empty board) and the VS Bracket from `/api/public/vs-bracket/current` (phase, entrants, sign-up end, the rounds as columns, stacked on phones, with names, Bye, Hidden hunter, cleared ticks, times once decided, the winner and the champion). An endpoint that 404s, fails or answers null shows a "not running yet" note for its section. Linked from the Events page and the Server menu. |
 | `/guilds.html` | Guild directory: search, sort by RP, members, newest or name. `?id=` opens a guild with roster and board; `?name=` opens the one guild of that exact name (else the list, searching). |
 | `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile; `?name=` opens the one hunter of that exact name (else the list, searching), for pages the API gives no character id; `?q=` opens the list searching for a name. |
 | `/leaderboards.html` | Timed hunt boards: top hunters, top guilds (hunts by current members) and most hunted monsters for this week, last week, this month, last month and all time (UTC; weeks start Monday), from `/api/public/leaderboards/hunts`; plus guild RP. `#<board>-<period>` picks one (`#hunters-week`, `#guilds-month`, `#monsters-all`, `#rp`); the old `#hr`, `#gr` and `#guilds` links still land on a board. Tied scores share a rank. |
@@ -57,6 +58,7 @@ road.html             Hunting Road builder and entry viewer
 road-vote.html        Hunting Road rotation: entries, vote, results
 road-history.html     past Hunting Road winners (public)
 sky-corridor.html     Sky Corridor: town progress, boards, guild missions, present box (public)
+tournaments.html      Speedrun Cup standings and VS Bracket (public)
 road-data.html        Hunting Road data per Road and floor (public, static, written by dev/make-road-data.py)
 changelog.html        player changelog (rolling, one entry per live update)
 css/styles.css        shared guild-hall theme (leather page, parchment panels, brass trim, gold buttons)
@@ -95,12 +97,15 @@ js/hunters.js         hunter directory and profile
 js/leaderboards.js    leaderboards, from /api/public/leaderboards/hunts and the guild list
 js/sky.js            Sky Corridor: API calls, labels and the hunter profile's Sky Corridor tab; its helpers also run under node
 js/sky-corridor.js   Sky Corridor page: town progress, boards, guild missions, present box
+js/events.js          Events page; its row-to-card helpers also run under node (dev/check-tournaments.js)
+js/tournaments.js     Tournaments page: Speedrun Cup standings and the VS Bracket; its helpers also run under node
 js/catalog.js         catalog browsing
 js/monster-links.js   a monster's field guide link from the server's id or name or the guide's name (data/monsters/index.json); used by the quest pages, leaderboards, hunters, account and worlds; also runs under node
 js/worlds.js          world status polling
 js/activity.js        live board on the Worlds page (/api/public/activity); its pure part also runs under node
 dev/mock-feedback.py  local stand-in for POST /api/feedback (testing only)
 dev/mock-activity.py  local stand-in for GET /api/public/activity (testing only)
+dev/check-tournaments.js checks the Events cards (live rows, 404 fallback) and the Tournaments page in headless Chromium on a fake API (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-tournaments.js)
 dev/check-activity.js checks js/activity.js on the made-up boards in dev/activity-fixtures.json
 dev/check-road-rules.js  checks js/road-rules.js against the Go golden outputs (needs the base Road as JSON, see the file)
 dev/check-road-monsters.js checks the any-of-176 monsters rule and where a new monster's fields come from, on a made-up Road

@@ -1404,4 +1404,22 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
   .play-settings th,.play-settings td,.play-settings th[scope="row"]{padding:6px 5px}
   .play-settings .ghost-btn{padding:6px 9px}
   .play-sources td,.play-sources th{min-width:0;padding:8px 6px}
+
+/* ===== Tournaments: VS Bracket (rounds as columns, stacked on phones) ===== */
+.bracket{display:flex;gap:18px;overflow-x:auto;padding-bottom:8px;align-items:flex-start}
+.bracket-round{flex:0 0 240px;display:flex;flex-direction:column;gap:10px}
+.bracket-round h3{margin:0}
+.bracket-sub{margin:0;font:.8rem/1.3 var(--font-body);color:var(--ink-soft)}
+.bracket-match{border:1px solid var(--frame-2);border-radius:3px;background:rgba(255,255,255,.35)}
+.bracket-player{display:grid;grid-template-columns:1fr 1.2em auto;gap:8px;align-items:center;padding:7px 10px}
+.bracket-player + .bracket-player{border-top:1px solid var(--frame-2)}
+.bracket-player.is-winner{background:rgba(47,93,42,.18);font-weight:700}
+.bracket-player.is-bye .bracket-name{font-style:italic;color:var(--ink-soft)}
+.bracket-name{overflow-wrap:anywhere}
+.bracket-tick{color:#2f5d2a;font-weight:700}
+.bracket-time{font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.bracket-champion{font-weight:700;font-size:1.1rem}
+@media (max-width:700px){
+  .bracket{flex-direction:column;overflow-x:visible}
+  .bracket-round{flex:none;width:100%}
 }
