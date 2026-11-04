@@ -729,7 +729,7 @@
 
   /* ---------- tabs ---------- */
 
-  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", road: "panel-road", quests: "panel-quests", users: "panel-users", server: "panel-server", audit: "panel-audit" };
+  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", content: "panel-content", road: "panel-road", quests: "panel-quests", users: "panel-users", server: "panel-server", audit: "panel-audit" };
   var roadStarted = false;
   var usersWired = false;
   var serverWired = false;
@@ -758,6 +758,9 @@
     }
     if (name === "settings") {
       if (window.startAdminSettings) window.startAdminSettings();
+    }
+    if (name === "content") {
+      if (window.startAdminContent) window.startAdminContent();
     }
     if (name === "users") {
       if (!usersWired) {
