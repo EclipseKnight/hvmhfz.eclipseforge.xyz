@@ -530,6 +530,9 @@ main.sheet .box::before{display:block;font:700 .62rem var(--font-ui);letter-spac
 main.sheet .note{border-left-color:var(--blue)} main.sheet .note::before{content:"GUILD NOTE";color:var(--blue)}
 main.sheet .warn{border-left-color:var(--wax)} main.sheet .warn::before{content:"CART WARNING";color:var(--wax)}
 main.sheet .tip{border-left-color:var(--teal)} main.sheet .tip::before{content:"FIELD TIP";color:var(--teal)}
+main.sheet .start{border-left-color:var(--gold)} main.sheet .start::before{content:"NEW HERE?";color:var(--gold-ink)}
+main.sheet .start .play-slot{margin:.8em 0}
+main.sheet .start-links{display:flex;flex-wrap:wrap;gap:8px;margin:.8em 0 0}
 main.sheet table{width:100%;border-collapse:collapse;margin:1.4em 0;font-size:.92rem;border:1px solid var(--line);background:rgba(255,250,236,.4)}
 main.sheet th{background:linear-gradient(var(--bg-3),#1a110a);color:var(--gold-bright);text-align:left;padding:10px 12px;
   font:700 .72rem var(--font-ui);letter-spacing:.08em;text-transform:uppercase}

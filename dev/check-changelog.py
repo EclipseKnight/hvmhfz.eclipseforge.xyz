@@ -145,6 +145,11 @@ def tokens(s):
 REWRITTEN = ("Not built on our server yet: Diva Defense, reward song effects",)
 
 
+# Links of the old page that were pointed at the Play page on purpose (4 Nov 2026: new players start at Play;
+# the old setup guides are the detailed reference). The bullet's text stays; only its link may move.
+MOVED_LINKS = {"/guide-windows.html": "/play.html#windows", "/guide-linux.html": "/play.html#linux"}
+
+
 def is_merged_howto(old_text):
     return old_text.startswith("How to get it:")
 
@@ -154,6 +159,7 @@ def check_facts(old_src, new_src):
     new = facts(Tree(new_src))
     howto = [f for f in new if "cl-howto" in f[2].classes()]
     for text, links, node in facts(Tree(old_src)):
+        links = {MOVED_LINKS.get(l, l) for l in links}
         hit = next((f for f in new if text in f[0] and links <= f[1]), None)
         if hit or text.startswith(REWRITTEN):
             continue

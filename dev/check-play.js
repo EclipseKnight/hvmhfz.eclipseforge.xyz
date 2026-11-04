@@ -3,7 +3,8 @@
    each; ticks are kept in localStorage (hvmhfz.play) and come back after a reload; the progress count and
    the "clear the ticks" button; the copy buttons put the server settings on the clipboard; the installer and
    full download slots are hidden until their flag and URL are set (the test serves js/play.js with them
-   switched on); the home page's main button and the "New here" tile go to /play.html. Needs Playwright:
+   switched on); the home page's main button and the "New here" tiles go to /play.html (cards by anchor); the Windows and Linux
+   guides open with a Start at Play box. Needs Playwright:
 
      NODE_PATH=/root/work/pw-tools/node_modules node dev/check-play.js
      SHOTS=dev-shots NODE_PATH=... node dev/check-play.js   (also saves screenshots)
@@ -132,6 +133,28 @@ async function main() {
   await page.goto(base + "/");
   check("home main button", (await page.locator(".hero-actions .btn-primary").getAttribute("href")) === "/play.html");
   check("home New here tile", (await page.locator("#new-here a[href='/play.html']").count()) === 1);
+  // the "New here" row sends everything to Play (cards by anchor); the old guides are not linked from it
+  const hrefs = await page.locator("#new-here a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+  check("home New here tiles go to Play cards", ["/play.html#windows", "/play.html#linux", "/play.html#transfer"].every((h) => hrefs.includes(h)), hrefs.join(" "));
+  check("home New here row has no old guide", !hrefs.some((h) => /guide-(windows|linux)/.test(h)), hrefs.join(" "));
+  check("home sign-in box links to Play", (await page.locator(".login-box a[href='/play.html']").count()) === 1);
+  // the old setup guides open with a Start at Play box: Play, the three cards, and the installer slot (hidden
+  // by default, shown from js/play.js's flag, with that flag's URL)
+  for (const [guide, slot] of [["guide-windows.html", "installer"], ["guide-linux.html", "installer-linux"]]) {
+    await page.goto(base + "/" + guide);
+    const start = page.locator("#start-at-play");
+    check(guide + " Start at Play box", (await start.count()) === 1);
+    const links = await start.locator("a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    check(guide + " box links", ["/play.html", "/play.html#windows", "/play.html#linux", "/play.html#transfer"].every((h) => links.includes(h)), links.join(" "));
+    check(guide + " box is above the contents", await page.evaluate(() => document.querySelector("#start-at-play").compareDocumentPosition(document.querySelector(".toc")) & Node.DOCUMENT_POSITION_FOLLOWING));
+    const s = start.locator("[data-slot='" + slot + "']");
+    check(guide + " installer slot shown", await s.isVisible());
+    check(guide + " installer link", /^https:\/\/github\.com\/EclipseKnight\/.*\/installer\//.test((await s.locator("[data-slot-link]").getAttribute("href")) || ""));
+    if (shots) await page.screenshot({ path: path.join(shots, guide.replace(".html", "") + "-1280.png"), clip: { x: 0, y: 0, width: 1280, height: 900 } });
+  }
+  // the Roads guide is not a setup guide: no Windows / Linux switch
+  await page.goto(base + "/guide-roads.html");
+  check("roads guide has no setup switch", (await page.locator(".guide-switch").count()) === 0);
   // nav
   check("nav has Play", (await page.locator('#site-menu a[href="/play.html"]').count()) === 1);
 

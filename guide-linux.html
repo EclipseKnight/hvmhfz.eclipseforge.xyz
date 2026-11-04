@@ -24,6 +24,7 @@
 <script src="/js/nav.js" defer></script>
 <script src="/js/background.js" defer></script>
 <script src="/js/consent.js" defer></script>
+<script src="/js/play.js" defer></script>
 </head>
 <body class="guide guide-linux">
     <!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->
@@ -100,7 +101,16 @@
 <!-- /site-shell:crumbs -->
 <h1>Monster Hunter Frontier Z on Linux</h1>
 <p class="lead">Mezeporta launcher, a Wine prefix, and the Hunsterverse private server.</p>
-<p class="meta">Tested on CachyOS (Arch) with KDE Plasma 6 on Wayland, NVIDIA RTX 3060 Ti, Mezeporta v1.5.4. Client patch by EclipseKnight, launcher by LilButter.</p>
+<p class="meta">Tested on CachyOS (Arch) with KDE Plasma 6 on Wayland, NVIDIA RTX 3060 Ti, Mezeporta v1.5.4. Client patch by EclipseKnightt, launcher by LilButter.</p>
+
+<div class="start box" id="start-at-play">
+<p><strong>New here? Start at <a href="/play.html">Play</a>.</strong> It has a short checklist for each path, with one download per step. This guide is the detailed reference: every command, the screenshots and the troubleshooting.</p>
+<div class="play-slot" data-slot="installer-linux" hidden>
+<p><strong>One-click installer (beta)</strong> A script that sets up everything and adds Hunsterverse to the launcher. Run it with <code>bash install-hunsterverse.sh</code>. Steam Deck is not tested yet; if it fails, use the steps below and tell us in Discord.</p>
+<a class="btn btn-primary btn-small" data-slot-link href="/play.html" rel="noopener">Download the installer</a>
+</div>
+<p class="start-links"><a class="btn btn-secondary btn-small" href="/play.html#windows">New on Windows</a> <a class="btn btn-secondary btn-small" href="/play.html#linux">Linux / Steam Deck</a> <a class="btn btn-secondary btn-small" href="/play.html#transfer">Bringing a character</a></p>
+</div>
 
 <div class="toc">
 <strong>Contents</strong>
@@ -136,7 +146,7 @@
 <tr><td>Base game client, 5.5 GB</td><td><a href="https://drive.google.com/drive/folders/1F_xg7qaFmG_L7AJ16vzYBG8pwlpCYSFN?usp=sharing">Community client folder on Google Drive</a>, the link maintained by the <a href="https://pastebin.com/QqAwZSTC">/mhg/ community guide</a>. Community-run, not Hunsterverse official; the folder also contains server files you do not need.</td></tr>
 <tr><td>Hunsterverse Discord</td><td>Help, announcements and the bot commands: <a href="https://discord.gg/YuE42eh">discord.gg/YuE42eh</a></td></tr>
 <tr><td>Hunsterverse website</td><td><a href="https://hvmhfz.eclipseforge.xyz">hvmhfz.eclipseforge.xyz</a>: sign in with your game account to see your characters, make backups and get your Discord link code. You do not need it to play.</td></tr>
-<tr><td>Hunsterverse client patch, 50.9 MB</td><td><a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> from the EclipseKnight releases page. Apply it by hand as in step 4, before the first launch: on a slow connection the launcher cannot download it for you (see the box in step 4).</td></tr>
+<tr><td>Hunsterverse client patch, 50.9 MB</td><td><a href="https://github.com/EclipseKnightt/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> from the EclipseKnightt releases page. Apply it by hand as in step 4, before the first launch: on a slow connection the launcher cannot download it for you (see the box in step 4).</td></tr>
 <tr><td>Mezeporta launcher</td><td><a href="https://github.com/LilButter/Mezeporta/releases">github.com/LilButter/Mezeporta/releases</a>, grab the build for your OS, v1.5.4 or newer</td></tr>
 </table>
 <div class="warn box"><b>Check the source.</b> The base client comes from the community, not from Hunsterverse. The server patch is the part Hunsterverse actually maintains, and it must be applied after the client, as in the patch step. If a link looks different from these, verify it before you run anything.</div>
@@ -165,9 +175,9 @@ ls mhf.exe mhfo.dll mhfo-hd.dll mhl.dll mhf.ini dat/mhfdat.bin</code></pre>
 <p>A clean client is about 5.2 GB and roughly 6,700 files.</p>
 
 <h2 id="patch">4. Apply the client patch</h2>
-<div class="warn box"><b>Slow connection? Download the patch yourself, now.</b> When the Mezeporta launcher checks for updates it has to download the patch (<code>Frontier_Patch.zip</code>, 50.9 MB) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>&quot;Patcher failed to connect&quot;</b>. Do not wait for that: download <a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> in your browser (or let the commands below do it) and apply it <b>before you open the launcher for the first time</b>. With the files already in place the launcher has nothing left to download. The same trick works for later patch releases: download the new zip by hand and unzip it over the game folder.</div>
+<div class="warn box"><b>Slow connection? Download the patch yourself, now.</b> When the Mezeporta launcher checks for updates it has to download the patch (<code>Frontier_Patch.zip</code>, 50.9 MB) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>&quot;Patcher failed to connect&quot;</b>. Do not wait for that: download <a href="https://github.com/EclipseKnightt/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a> in your browser (or let the commands below do it) and apply it <b>before you open the launcher for the first time</b>. With the files already in place the launcher has nothing left to download. The same trick works for later patch releases: download the new zip by hand and unzip it over the game folder.</div>
 <p>Download the server's patch, back up every game file it replaces, then overlay it.</p>
-<pre><code>BASE=&quot;https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download&quot;
+<pre><code>BASE=&quot;https://github.com/EclipseKnightt/hvmhfz.eclipseforge.xyz/releases/download&quot;
 curl -L -o /tmp/Frontier_Patch.zip &quot;$BASE/client_patch/Frontier_Patch.zip&quot;
 unzip -q -o /tmp/Frontier_Patch.zip -d /tmp/fp
 
@@ -371,7 +381,7 @@ gst-inspect-1.0 autoaudiosink &gt;/dev/null &amp;&amp; echo "audio sink ok"</cod
 <div class="note box"><b>Backups are a zip: send it as it is.</b> Do not extract it and do not attach single BIN files. The account page's Backups tab can also download and import them (it says so when that is not available yet).</div>
 
 <footer>
-<p><b>Credits:</b> Mezeporta launcher by LilButter. Client patch by EclipseKnight for Hunsterverse. Monster Hunter Frontier Z is a Capcom game; this guide only covers running a private server client on Linux.</p>
+<p><b>Credits:</b> Mezeporta launcher by LilButter. Client patch by EclipseKnightt for Hunsterverse. Monster Hunter Frontier Z is a Capcom game; this guide only covers running a private server client on Linux.</p>
 <p>Generated for a CachyOS setup. Paths and versions may differ on your machine.</p>
 </footer>
 </main>
