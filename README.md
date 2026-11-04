@@ -6,7 +6,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 
 | Path | What it does |
 |---|---|
-| `/` | Home: a hero with two buttons ("New here? Start playing" to the New here row, "Already playing? Sign in" to the form), the sign-in form beside it (after the tiles on screens below 1160px), one row of tiles per audience (New here, Play, Community, Tools, Account; each tile a guide card picture or monster icon that is already on the site) and "What's new". After a successful login it hands over to `?next=` when that is a path on this site (`js/signin-next.js`: starts with `/`, no `//`, no backslash, scheme, space or control character, not the home page itself; the form then says why, e.g. "Sign in to use the Quest builder"), else to `/account.html`. |
+| `/` | Home: a hero with two buttons ("New here? Start playing" to `/play.html`, "Already playing? Sign in" to the form), the sign-in form beside it (after the tiles on screens below 1160px), one row of tiles per audience (New here, Play, Community, Tools, Account; each tile a guide card picture or monster icon that is already on the site) and "What's new". After a successful login it hands over to `?next=` when that is a path on this site (`js/signin-next.js`: starts with `/`, no `//`, no backslash, scheme, space or control character, not the home page itself; the form then says why, e.g. "Sign in to use the Quest builder"), else to `/account.html`. |
 | `/account.html` | Signed in view: overview (with the Hunting Road rewards and a character picker to claim them), characters, storage, hunt log, guild, custom quests, backups and account. Backups: download a character's backup zip, import a file into a character (preview, then confirm) and the account's imports; "coming soon" until the API has the account endpoints (`docs/character-backup-web.md`). Without a valid session it sends the visitor to `/?next=/account.html...#login-form`, and back after sign-in; signing out goes to `/`. |
 | `/monsters.html` | Monster field guide: search by name or species, cards link to full hitzone, HP and drop pages. `?q=` opens it searching. Hunt counts match the server's by monster id (`ids` in `data/monsters/index.json`). |
 | `/monster.html?m=slug` | One monster: hitzones normal and enraged, HP by level, stagger limits, maps, every carve table, Henshu/GR/Zenith forms, and a link to its quests. `slug` is `data/monsters/<slug>.json`; older links with the entry's `oldSlug` or `formerSlugs` still open it. An entry made from our own data instead of the field guide's tables (Shagaru Magala, id 164, Mi Ru, id 113, Unknown, id 100, and the five Musou versions without ids of their own, `musou-pariapuria`, `-zinogre`, `-guanzorumu`, `-mi-ru`, `-elzelion`: name, quests, a short `about` note, optional `questsHref`/`questsLabel` for the quest link; `"ferias": false` drops the Ferias credit) shows empty tables. |
@@ -18,6 +18,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/quests.html` | Quest catalog from `data/quests.json`: every quest file, search and filters, monster icons linking to their pages. `?q=` opens it searching, `?monster=<guide name>` filtered to one monster. |
 | `/quest.html?id=N` | One quest: category, area, objective, time, rewards money, monsters (each to its page), description, tracked runs. |
 | `/worlds.html` | Live world status, the live board (who is online, in town or on a quest and which quest, and who is questing together, from `/api/public/activity`; each name links to its hunter profile by `charId`, or to the Hunters page searching for it when the answer has no `charId`) and server wide hunt totals, refreshed every 30 seconds. |
+| `/play.html` | Play: three cards, each a numbered checklist with one download per step: New on Windows, Linux / Steam Deck (marked not tested yet) and Bringing a character from another server (a "where to get your file" table per source type, then the account page's Backups tab or Discord `/link` and `/import`). Ticks are kept in this browser (`localStorage` `hvmhfz.play`, `js/play.js`, listed in `privacy.html`); Copy buttons for the server settings (name, host, launcher and game port, from `docs/launcher.md`) and the Discord commands. Marked slots for the one-click installer and our own full download stay hidden until `SLOTS` in `js/play.js` has the flag on and a URL. The home page's main button and "Start playing" tile, the Guides menu and the footer link here. |
 | `/guide-windows.html` | Windows setup guide: client, patch, Mezeporta launcher, server entry, troubleshooting, English patch. |
 | `/guide-linux.html` | Linux setup guide: Wine, portable prefix, KDE/NVIDIA fixes, same server entry, troubleshooting. |
 | `/guide-frontier.html` | Frontier guide, landing page: one card per section (picture and one line), grouped in five chapters (`#start`, `#gear`, `#reference`, `#progression`, `#activities`), plus links to our own guides, the comparison page and the credit to the original guide's author. In the nav under Guides ("Frontier guide"), and a card and a step on the home page. |
@@ -44,6 +45,7 @@ hunters.html          hunter directory and profile
 leaderboards.html     timed hunt leaderboards and guild RP
 catalog.html          item and equipment catalog
 worlds.html           world status, live board and hunt totals
+play.html            Play: Windows, Linux / Steam Deck and character transfer checklists
 guide-windows.html    Windows guide
 guide-linux.html      Linux guide
 report.html           bug report and feature request forms
@@ -63,6 +65,7 @@ assets/guide/<section>/ Frontier guide pictures, WebP, one folder per handbook s
 css/guide-frontier.css Frontier guide layout only (side column, pictures, cards, previous/next, "On Hunsterverse" notes)
 assets/backgrounds/   page background pictures (rules and sizes in its README.md)
 assets/favicon.png    site icon
+js/play.js            Play page: saved ticks, copy buttons, hidden installer and full download slots
 js/nav.js             site nav: the four menus, and the Menu button on narrow screens
 js/background.js      page background: a random picture from assets/backgrounds/ per page load, dark and blurred
 js/consent.js         cookie banner (Accept/Decline, kept in localStorage hvmhfz.consent); runs held-back optional scripts after Accept
@@ -123,6 +126,7 @@ data/map-ids.json     every map id's own name (place plus day/night, version or 
 data/quest-fields.json  every quest-file field the quest builder and the API codec touch: offset, bytes, range, value names (docs/quest-fields.md)
 dev/check-quest-fields.js checks data/quest-fields.json against the API codec, js/quest-editor.js, the site's name tables and docs/quest-fields.md
 dev/check-exact-links.js checks in headless Chromium, against a fake API with and without the ids API 5b6d085 added, that hunter and guild names link by id (else by name) and that a refused quest upload or Road draft save shows the API's message (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-exact-links.js)
+dev/check-play.js     checks play.html and js/play.js in headless Chromium: three checklists, ticks kept across reloads, copy buttons, hidden slots, home page links (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-play.js)
 dev/check-link-command.js checks js/link-command.js: `/link code:<code>` from the token, never the old `!f link` text (node dev/check-link-command.js)
 dev/check-signin-next.js checks js/signin-next.js: same-site paths only, hostile values refused (node dev/check-signin-next.js)
 dev/check-report-signin.js checks in headless Chromium, against a fake API, report.html: signed out or expired shows the Sign in button (back to the report page) and no forms, signed in sends the token, a 401 asks to sign in again and keeps what was typed (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-report-signin.js)
@@ -167,7 +171,7 @@ load it. It keeps everything else on the page (head, main, scripts).
 
 - Nav, same on every page: five menus and the account button. Labels use the game's and the Discord bot's
   own words (Worlds as the bot's `/worlds`, Windows/Linux guide as its `/guide`, Hunting Road and Road).
-  - **Guides:** Windows guide, Linux guide, Frontier guide.
+  - **Guides:** Play, Windows guide, Linux guide, Frontier guide.
   - **Database:** Monsters, Quests, Catalog, Set builder, Quest builder.
   - **Hunting Road:** Rotation and vote, Road builder, Past winners, Road data, Roads in game (`guide-roads.html`), Sky Corridor.
   - **Community:** Hunters, Guilds, Leaderboards, Discord.

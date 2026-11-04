@@ -1372,3 +1372,36 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
 .backup-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
 .backup-download{white-space:nowrap}
 .backup-fact{font-weight:700;color:var(--ink)}
+
+/* ---------- play page: three checklists (play.html, js/play.js) ---------- */
+.play-paths{margin:0 0 30px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.play-card{scroll-margin-top:84px}
+.play-steps{list-style:none;counter-reset:play-step;margin:0;padding:0}
+.play-steps > li{counter-increment:play-step;position:relative;margin:0;padding:14px 0 14px 46px;border-top:1px solid rgba(189,166,122,.45)}
+.play-steps > li:first-child{border-top:0}
+.play-steps > li::before{content:counter(play-step);position:absolute;left:0;top:14px;width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font:700 .85rem var(--font-ui);color:var(--gold-bright);
+  background:linear-gradient(var(--bg-3),#1a110a);border:1px solid var(--frame)}
+.play-steps > li.is-done::before{content:"\2713";background:var(--teal);border-color:var(--teal);color:#fff}
+.play-steps > li.is-done .play-step-title{text-decoration:line-through;color:var(--ink-soft)}
+.play-steps label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-weight:700}
+.play-steps input[type="checkbox"]{flex:none;width:20px;height:20px;margin:2px 0 0;accent-color:var(--teal)}
+.play-steps p{margin:6px 0 10px;color:var(--ink-soft);font-size:.92rem}
+.play-steps .btn,.play-steps .ghost-btn{margin:0 8px 6px 0}
+.play-settings{max-width:520px;margin:8px 0 6px}
+.play-settings th[scope="row"]{padding:8px 12px;text-align:left;white-space:nowrap;color:var(--ink);background:none;
+  border-top:1px solid rgba(189,166,122,.45);font-weight:700}
+.play-settings td{padding:6px 12px;white-space:normal}
+.play-settings code{overflow-wrap:anywhere}
+.play-sources td{white-space:normal;min-width:150px}
+.play-sources th{white-space:normal}
+.play-slot{margin:0 0 16px;padding:12px 16px;border:2px dashed var(--gold);border-radius:3px;background:rgba(183,138,51,.12)}
+.play-slot p{margin:0 0 8px}
+.play-reset{margin:14px 0 0}
+@media (max-width:760px){
+  .play-paths{grid-template-columns:minmax(0,1fr)}
+  .play-steps > li{padding-left:40px}
+  .play-settings th,.play-settings td,.play-settings th[scope="row"]{padding:6px 5px}
+  .play-settings .ghost-btn{padding:6px 9px}
+  .play-sources td,.play-sources th{min-width:0;padding:8px 6px}
+}

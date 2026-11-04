@@ -38,6 +38,7 @@
   {"page": "leaderboards.html", "group": "Community", "label": "Leaderboards", "title": "Leaderboards · Hunsterverse", "current": "/leaderboards.html"},
   {"page": "monster.html", "group": "Database", "label": "Monster", "title": "Monster · Hunsterverse", "current": "/monsters.html", "trail": [["Monsters", "/monsters.html"]], "item": true},
   {"page": "monsters.html", "group": "Database", "label": "Monsters", "title": "Monsters · Hunsterverse", "current": "/monsters.html"},
+  {"page": "play.html", "group": "Guides", "label": "Play", "title": "Play on Hunsterverse · Hunsterverse", "current": "/play.html"},
   {"page": "privacy.html", "group": null, "label": "Privacy", "title": "Privacy · Hunsterverse", "current": null},
   {"page": "quest-editor.html", "group": "Database", "label": "Quest builder", "title": "Quest builder · Hunsterverse", "current": "/quest-editor.html"},
   {"page": "quest.html", "group": "Database", "label": "Quest", "title": "Quest · Hunsterverse", "current": "/quests.html", "trail": [["Quests", "/quests.html"]], "item": true},
