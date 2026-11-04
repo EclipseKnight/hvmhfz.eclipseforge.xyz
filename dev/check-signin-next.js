@@ -56,6 +56,8 @@ same("target twice (bad first)", Next.target("?next=%2F%2Fevil.example&next=%2Fr
 same("note quest", Next.note("?next=%2Fquest-editor.html%3Fdraft%3D3"), "Sign in to use the Quest builder.");
 same("note road", Next.note("?next=%2Froad.html"), "Sign in to use the Road builder.");
 same("note account", Next.note("?next=%2Faccount.html%23quests"), "Sign in to open your account.");
+same("note transfer wizard", Next.note("?next=%2Faccount.html%23transfer"), "Sign in, or create an account, to bring your character over.");
+same("transfer wizard return", Next.target("?next=%2Faccount.html%23transfer"), "/account.html#transfer");
 same("note report", Next.note("?next=%2Freport.html%23feature"), "Sign in to report a problem.");
 same("note other page", Next.note("?next=%2Fmonsters.html"), "Sign in to continue.");
 same("note none", Next.note(""), "");

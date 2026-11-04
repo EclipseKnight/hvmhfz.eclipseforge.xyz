@@ -113,6 +113,7 @@
         <a class="tab" id="tab-guild" role="tab" aria-controls="panel-guild" aria-selected="false" href="#guild">Guild <span class="tab-count" id="count-guild"></span></a>
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests</a>
         <a class="tab" id="tab-backups" role="tab" aria-controls="panel-backups" aria-selected="false" href="#backups">Backups</a>
+        <a class="tab" id="tab-transfer" role="tab" aria-controls="panel-transfer" aria-selected="false" href="#transfer">Transfer</a>
         <a class="tab" id="tab-account" role="tab" aria-controls="panel-account" aria-selected="false" href="#account">Account</a>
       </nav>
 
@@ -386,6 +387,69 @@
         </section>
       </section>
 
+      <!-- Transfer: the transfer wizard (js/account-transfer.js). A signed-out visitor to #transfer goes to the
+           sign-in (or sign-up) and comes back here. -->
+      <section class="tab-panel" id="panel-transfer" role="tabpanel" aria-labelledby="tab-transfer" hidden>
+        <section class="panel" id="transfer-panel" aria-live="polite">
+          <div class="panel-head">
+            <h2>Bring a character to Hunsterverse</h2>
+            <span class="panel-note" id="transfer-note">checking</span>
+          </div>
+          <p class="note-text">Bring your hunter from another server, or from one of our backups, before you install anything. No throwaway character and no first login: the file becomes a character on your account.</p>
+          <p class="note-text" id="transfer-soon" hidden>The transfer wizard is coming soon. Until then, log in once with a new character, then use the Backups tab or <code>/import</code> in our Discord.</p>
+          <ol class="wizard" id="transfer-steps">
+            <li class="wizard-step" id="wz-account" data-state="done">
+              <h3 class="wizard-title">1. Your game account</h3>
+              <p class="note-text">Signed in as <strong id="wz-username"></strong>. The character goes to this account; it is also the username and password you type in the game launcher. <button type="button" class="link-btn" id="wz-switch">Use another account, or create one</button></p>
+            </li>
+            <li class="wizard-step" id="wz-file" hidden>
+              <h3 class="wizard-title">2. Your file</h3>
+              <p class="note-text">Use the file exactly as you got it, without unzipping it:</p>
+              <ul class="note-text wizard-list">
+                <li><strong>Our backup zip</strong>: the Backups tab's download, or <code>/backup</code> in our Discord.</li>
+                <li><strong>Another server's zip</strong> of save files (<code>savedata.bin</code> and the like), such as a Discord bot backup. Ask that server's staff for it.</li>
+                <li><strong>A character export JSON</strong> from a server running a newer Erupe (the Mezeporta launcher's character Export there).</li>
+                <li><strong>A bare <code>savedata</code> file</strong>: the save alone. Partner, Felynes and the like then start empty.</li>
+              </ul>
+              <p class="note-text">Saves from the ZZ client only: G-rank-era and older saves can't be used.</p>
+              <div class="field"><label for="wz-file-input">File</label><input id="wz-file-input" type="file" accept=".zip,.json,.bin,application/zip,application/json,application/octet-stream" /></div>
+              <p class="note-text" id="wz-file-note" aria-live="polite"></p>
+            </li>
+            <li class="wizard-step" id="wz-preview" hidden>
+              <h3 class="wizard-title">3. What is in it</h3>
+              <p class="form-alert" id="wz-preview-alert" hidden></p>
+              <div class="backup-preview" id="wz-preview-body"></div>
+            </li>
+            <li class="wizard-step" id="wz-target" hidden>
+              <h3 class="wizard-title">4. Where it goes</h3>
+              <div class="wizard-choice">
+                <label><input type="radio" name="wz-target" id="wz-target-new" value="new" /> <span id="wz-target-new-label">A new character</span></label>
+                <label><input type="radio" name="wz-target" id="wz-target-old" value="old" /> Replace the save of a character I have now:</label>
+                <select id="wz-character" aria-label="Character to replace"></select>
+              </div>
+            </li>
+            <li class="wizard-step" id="wz-confirm" hidden>
+              <h3 class="wizard-title">5. Confirm</h3>
+              <p class="form-alert" id="wz-confirm-alert" hidden></p>
+              <div class="backup-preview" id="wz-confirm-body"></div>
+              <div class="backup-actions">
+                <button type="button" class="btn btn-primary btn-small" id="wz-confirm-btn" hidden>Confirm</button>
+                <button type="button" class="ghost-btn dark" id="wz-restart">Start over</button>
+              </div>
+            </li>
+            <li class="wizard-step" id="wz-done" hidden>
+              <h3 class="wizard-title">6. Now install and play</h3>
+              <p class="road-ok" id="wz-done-text"></p>
+              <p class="note-text">Install the game and our launcher, then log in as <strong id="wz-done-who"></strong> and pick <strong id="wz-done-hunter"></strong> in the character list.</p>
+              <div class="backup-actions">
+                <a class="btn btn-primary btn-small" id="wz-play" href="/play.html">Now install and play</a>
+                <button type="button" class="ghost-btn dark" id="wz-again">Bring another character</button>
+              </div>
+            </li>
+          </ol>
+        </section>
+      </section>
+
       <!-- Account -->
       <section class="tab-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" hidden>
         <section class="panel" id="road-pref-panel">
@@ -466,9 +530,10 @@
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>
     <script src="/js/link-command.js?v=1"></script>
-    <script src="/js/account.js?v=6"></script>
-    <script src="/js/backup-file.js?v=1"></script>
-    <script src="/js/account-backup.js?v=1"></script>
+    <script src="/js/account.js?v=7"></script>
+    <script src="/js/backup-file.js?v=2"></script>
+    <script src="/js/account-backup.js?v=2"></script>
+    <script src="/js/account-transfer.js?v=1"></script>
     <script src="/js/search.js" defer></script>
   </body>
 </html>

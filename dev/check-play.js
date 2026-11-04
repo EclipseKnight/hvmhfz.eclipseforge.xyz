@@ -110,9 +110,9 @@ async function main() {
   check("slots shown when on", (await page.locator("[data-slot]:visible").count()) === 3);
   check("slot link set", (await page.locator('[data-slot="full"] a').getAttribute("href")) .startsWith("https://"));
 
-  // the transfer table and the Backups link
+  // the transfer table and the transfer wizard link (account page, Transfer tab)
   check("transfer table rows", (await page.locator("#transfer .play-sources tbody tr").count()) >= 4);
-  check("Backups link", (await page.locator('#transfer a[href="/account.html#backups"]').count()) === 1);
+  check("transfer wizard link", (await page.locator('#transfer a[href="/account.html#transfer"]').count()) === 1);
 
   // links into the page: the paths and the card anchors
   await page.goto(base + "/play.html#linux");

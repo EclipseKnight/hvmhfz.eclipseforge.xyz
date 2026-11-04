@@ -6,6 +6,7 @@
      {"Character": {id, name, parts}};
    - deflated zips made by Python: the old bot's names (<time>_savedata.bin, skinhist, empty parts), folders,
      macOS junk, a second savedata; a zip holding only character.json; a bare export JSON;
+   - a bare save file (savedata.bin, or any file starting with nullcomp's header), outside a zip;
    - refusals in plain words: not a zip, no save files, too many files, a part over 1 MB.
 
      node dev/check-backup-file.js
@@ -104,6 +105,19 @@ async function rejects(label, promise, pattern) {
   check("export json: kind", e.kind === "export" && e.body.erupeExport.Character.savedata === b64("x"));
   await rejects("export json: not an object", F.readImportFile("a.json", new TextEncoder().encode("[1]")), /not a character export/);
   await rejects("export json: broken", F.readImportFile("a.json", new TextEncoder().encode("{oops")), /can't be read/);
+
+  // ---- a bare save file (no zip): by its name, or savedata when it starts with nullcomp's header
+  const cmp = Buffer.concat([Buffer.from("cmp 20110113   \x00", "binary"), Buffer.from([1, 2, 0, 5])]);
+  const bare = await F.readImportFile("savedata.bin", new Uint8Array(cmp));
+  check("bare savedata: kind and part", bare.kind === "bare" && eq(Object.keys(bare.body.parts), ["savedata"]) &&
+    bare.body.parts.savedata === cmp.toString("base64"), JSON.stringify(bare));
+  const unnamed = await F.readImportFile("download", new Uint8Array(cmp));
+  check("bare: nullcomp without a name is savedata", unnamed.kind === "bare" && unnamed.body.parts.savedata !== undefined);
+  const plates = await F.readImportFile("2026_platedata.bin", new Uint8Array(cmp));
+  check("bare: the name decides the part", eq(Object.keys(plates.body.parts), ["platedata"]), JSON.stringify(plates.body));
+  await rejects("bare: empty", F.readImportFile("savedata.bin", new Uint8Array(0)), /empty/);
+  await rejects("bare: over 1 MB", F.readImportFile("savedata.bin", new Uint8Array(1024 * 1024 + 1)), /over 1 MB/);
+  await rejects("bare: a picture is not a save", F.readImportFile("photo.png", new Uint8Array([0x89, 0x50, 0x4e, 0x47])), /not a zip/);
 
   // ---- refusals
   await rejects("not a zip", F.readImportFile("save.zip", new Uint8Array([1, 2, 3, 4])), /not a zip/);
