@@ -44,9 +44,9 @@
 
   function districtName(n) { return "District " + n; }
 
-  // A reward's milestone in words: "1 floor", "25 Duremudira clears".
+  // A reward's milestone in words: "1 floor", "25 tower clears".
   function milestone(kind, threshold) {
-    if (kind === "clears") return num(threshold) + (threshold === 1 ? " Duremudira clear" : " Duremudira clears");
+    if (kind === "clears") return num(threshold) + (threshold === 1 ? " tower clear" : " tower clears");
     return num(threshold) + (threshold === 1 ? " floor" : " floors");
   }
 
@@ -54,7 +54,7 @@
   // guild missions.
   function hunterHasData(h) {
     if (!h || h.tracking === false) return false;
-    if ((h.clears || 0) > 0 || (h.floors || 0) > 0) return true;
+    if ((h.kills || 0) > 0 || (h.clears || 0) > 0 || (h.floors || 0) > 0) return true;
     if ((h.rewards || []).some(function (r) { return r.reached || r.claimedAt; })) return true;
     var gm = h.guildMissions;
     return !!(gm && (gm.missions || []).some(function (m) { return (m.mine || 0) > 0; }));
@@ -162,24 +162,33 @@
     more.className = "panel-note";
     summary.appendChild(panelHead("Sky Corridor", more));
     var grid = el("div", "stat-grid");
-    grid.appendChild(statCard("Duremudira clears", num(h.clears)));
+    var hasKills = h.kills !== undefined && h.kills !== null;
+    if (hasKills) grid.appendChild(statCard("Duremudira kills", num(h.kills)));
+    grid.appendChild(statCard("Tower clears", num(h.clears)));
     grid.appendChild(statCard("Floors climbed", num(h.floors)));
+    if (hasKills) grid.appendChild(statCard("Kills board", h.killsRank ? "#" + num(h.killsRank) : "-"));
     grid.appendChild(statCard("Clears board", h.clearsRank ? "#" + num(h.clearsRank) : "-"));
     grid.appendChild(statCard("Floors board", h.floorsRank ? "#" + num(h.floorsRank) : "-"));
     if (h.tr !== null && h.tr !== undefined) grid.appendChild(statCard("Tower rank", num(h.tr)));
     if (h.trp !== null && h.trp !== undefined) grid.appendChild(statCard("Tower points", num(h.trp)));
     grid.appendChild(statCard("Last clear", when(h.lastAt)));
     summary.appendChild(grid);
-    summary.appendChild(table([["District"], ["Duremudira clears", "num"], ["Floors", "num"], ["Last clear"]],
+    var districtKills = hasKills && (h.districts || []).every(function (d) { return d.kills !== undefined && d.kills !== null; });
+    var districtHeads = [["District"]];
+    if (districtKills) districtHeads.push(["Duremudira kills", "num"]);
+    districtHeads.push(["Tower clears", "num"], ["Floors", "num"], ["Last clear"]);
+    summary.appendChild(table(districtHeads,
       (h.districts || []).map(function (d) {
-        return [districtName(d.district), num(d.clears), num(d.floors), when(d.lastAt)];
+        var row = [districtName(d.district)];
+        if (districtKills) row.push(num(d.kills));
+        return row.concat([num(d.clears), num(d.floors), when(d.lastAt)]);
       }), "No district progress yet."));
     summary.appendChild(el("p", "note-text", "Ranks are on the all-district, all-time boards. "
       + "A cleared tower quest counts only for hunters in a guild: the game reports it only for them."));
     box.appendChild(summary);
 
     var rewards = el("section", "panel");
-    rewards.appendChild(panelHead("Present box", "rewards for floors and clears"));
+    rewards.appendChild(panelHead("Present box", "rewards for floors and tower clears"));
     rewards.appendChild(table([["Milestone"], ["Reward"], ["Reached"], ["Received"]],
       (h.rewards || []).map(function (r) {
         return [milestone(r.kind, r.threshold), (r.itemName || "Item " + r.itemId) + " x" + num(r.quantity),

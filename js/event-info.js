@@ -184,13 +184,13 @@
       what: "The Sky Corridor (the Tower): climb its floors, clear Duremudira quests and push the town's progress in each district. Open since 3 Nov.",
       steps: [
         "From about Hunter Rank 31 a town event introduces the Tower. Take a tower quest at the tower counter.",
-        "Clear it. Each cleared tower quest counts as one Duremudira clear in its district, plus the floors you climbed.",
+        "Clear it. Each cleared tower quest counts as a tower clear in its district, plus the floors you climbed; killing Duremudira counts once per party toward the town's Duremudira goal.",
         "Check the town's progress, the boards, your guild's missions and the present box on the Sky Corridor page.",
         "Pick up the present box rewards from the present box in town."
       ],
       gets: [
         "Treasure chests, Tower Medals and the materials for Tower weapons and armour.",
-        "Present box rewards, once per hunter, at milestones of floors or Duremudira clears.",
+        "Present box rewards, once per hunter, at milestones of floors or tower clears.",
         "Guild missions in pages of three goals, at half the original goals."
       ],
       when: "Always open. The floors rotate each week.",
