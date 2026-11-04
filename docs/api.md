@@ -41,7 +41,7 @@ Same body, but token carries the Cloudflare Turnstile answer. The site's form do
 
 ### Registration and password reset
 
-POST /api/auth/signup takes username, password and an optional role (ignored for new accounts, which are always ROLE_USER). PUT /api/auth/passwordreset takes username, password and discordId for accounts that linked Discord. Both are rate limited.
+POST /api/auth/signup takes username, password and token (the Turnstile answer, as for signinweb) and makes a game account: a username of 3 to 20 characters from A-Z, a-z, 0-9 and _ . -, a password of 6 to 72 plain ASCII characters. A name that differs from an existing one only by capital letters is refused (409), because logins are case-sensitive. It answers like sign-in (accessToken), or a refusal with a one-sentence message. PUT /api/auth/passwordreset takes username, password and discordId for accounts that linked Discord. Both are rate limited.
 
 | Header | Value |
 
