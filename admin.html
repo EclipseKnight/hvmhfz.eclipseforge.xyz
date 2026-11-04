@@ -97,10 +97,11 @@
       <!-- /site-shell:crumbs -->
       <header class="page-head">
         <h1>Admin</h1>
-        <p class="page-sub">Gifts (distributions), the Hunting Road rotation and the accounts of the server. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
+        <p class="page-sub">Gifts (distributions), the event calendar, the Hunting Road rotation and the accounts of the server. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
 
       <nav class="tabs" role="tablist" aria-label="Admin sections">
         <a class="tab" id="tab-gifts" role="tab" aria-controls="panel-gifts" aria-selected="true" href="#gifts">Gifts</a>
+        <a class="tab" id="tab-events" role="tab" aria-controls="panel-events" aria-selected="false" href="#events">Events</a>
         <a class="tab" id="tab-road" role="tab" aria-controls="panel-road" aria-selected="false" href="#road">Hunting Road</a>
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests <span class="tab-count" id="count-quests"></span></a>
         <a class="tab" id="tab-users" role="tab" aria-controls="panel-users" aria-selected="false" href="#users">Users <span class="tab-count" id="count-users"></span></a>
@@ -187,6 +188,99 @@
             <tbody id="gift-rows"><tr><td colspan="8" class="empty-cell">Loading</td></tr></tbody>
           </table>
         </div>
+      </section>
+      </div>
+
+      <div class="tab-panel" id="panel-events" hidden>
+      <section class="panel" id="events-panel">
+        <div class="panel-head"><h2>Event calendar</h2><span class="panel-note" id="cal-note"></span></div>
+        <p class="form-alert" id="cal-alert" hidden></p>
+        <p class="road-ok" id="cal-ok" hidden></p>
+        <ul class="road-problems" id="cal-warnings" hidden></ul>
+        <p class="note-text">One featured event at a time, back to back; every boundary is a Monday 03:00 UTC. A lighter bar is a run's tail (festival rewards, Diva week 3), which may run beside the next event. The game server reads the calendar every minute and writes each run's status and phases back; until it has, a run says "waiting for the game server". All times on this tab are <b>UTC</b>.</p>
+        <div class="cal-wrap"><div class="cal-strip" id="cal-strip" aria-label="Calendar of the next 12 weeks"></div></div>
+        <div class="cal-detail" id="cal-detail" hidden></div>
+
+        <h3 class="subhead">In the next 7 days</h3>
+        <ul class="cal-soon" id="cal-soon"></ul>
+
+        <div class="ops-log-head">
+          <h3 class="subhead">Runs</h3>
+          <div class="ops-log-actions">
+            <label class="cal-check"><input type="checkbox" id="cal-cancelled" /> Show cancelled</label>
+            <button type="button" class="ghost-btn small" id="cal-refresh">Refresh</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table admin-table">
+            <thead><tr><th>#</th><th>Event</th><th>Lane</th><th>Starts</th><th>Core to</th><th>Ends</th><th>Status</th><th>Note</th><th></th></tr></thead>
+            <tbody id="cal-rows"><tr><td colspan="9" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+
+        <h3 class="subhead" id="cal-form-title">Add a run</h3>
+        <form id="cal-form" class="admin-form" novalidate>
+          <div class="admin-grid">
+            <div class="field">
+              <label for="cal-event">Event</label>
+              <select id="cal-event"><option value="festa">Hunter Festival</option><option value="vs_bracket">VS Bracket</option><option value="diva">Diva Defense</option><option value="speedrun_cup">Speedrun Cup</option></select>
+            </div>
+            <div class="field">
+              <label for="cal-lane">Lane</label>
+              <select id="cal-lane"><option value="featured">Featured (one at a time)</option><option value="background">Background (beside a featured event)</option></select>
+            </div>
+            <div class="field">
+              <label for="cal-start">Starts <span class="field-optional">UTC</span></label>
+              <input id="cal-start" type="datetime-local" step="60" required />
+            </div>
+            <div class="field">
+              <label for="cal-core">Core ends <span class="field-optional">optional, UTC</span></label>
+              <input id="cal-core" type="datetime-local" step="60" />
+              <p class="note-text">Empty: the event's own (festival: souls end; Diva: 14 days; Cup and VS: the run's end).</p>
+            </div>
+          </div>
+          <div class="admin-grid admin-grid-6" id="cal-settings"></div>
+          <div class="admin-grid">
+            <div class="field admin-wide">
+              <label for="cal-note-text">Note <span class="field-optional">optional</span></label>
+              <input id="cal-note-text" type="text" maxlength="500" />
+            </div>
+            <div class="cal-anytime">
+              <label class="cal-check"><input type="checkbox" id="cal-anytime" /> Allow any time (not only Monday 03:00 UTC)</label>
+            </div>
+          </div>
+          <p class="note-text" id="cal-computed"></p>
+          <ul class="road-problems" id="cal-problems" hidden></ul>
+          <div class="admin-actions">
+            <button type="submit" class="btn btn-primary" id="cal-save">Add the run</button>
+            <button type="button" class="ghost-btn" id="cal-reset" hidden>Stop editing</button>
+          </div>
+        </form>
+
+        <h3 class="subhead">Extend the loop</h3>
+        <form id="cal-gen" class="admin-form" novalidate>
+          <div class="admin-grid">
+            <div class="field">
+              <label for="cal-gen-from">From the Monday <span class="field-optional">03:00 UTC</span></label>
+              <input id="cal-gen-from" type="date" required />
+            </div>
+            <div class="field">
+              <label for="cal-gen-first">Starting with</label>
+              <select id="cal-gen-first"><option value="festa">Hunter Festival</option><option value="vs_bracket">VS Bracket</option><option value="diva">Diva Defense</option><option value="speedrun_cup">Speedrun Cup</option></select>
+            </div>
+            <div class="field">
+              <label for="cal-gen-weeks">Weeks</label>
+              <input id="cal-gen-weeks" type="number" min="1" max="52" value="7" />
+            </div>
+          </div>
+          <p class="note-text">The 7-week loop: Festival (2 weeks, rewards beside the VS Bracket), VS Bracket (2), Diva Defense (2, rewards week beside the Cup), Speedrun Cup (1). The same runs as Erupe's <code>event-calendar-generate.py</code>; a run already there is skipped. Preview first, then add.</p>
+          <ul class="road-problems" id="cal-gen-list" hidden></ul>
+          <div class="admin-actions">
+            <button type="submit" class="ghost-btn" id="cal-gen-preview">Preview</button>
+            <button type="button" class="btn btn-primary" id="cal-gen-save" hidden>Add these runs</button>
+          </div>
+        </form>
+        <p class="note-text" id="cal-always"></p>
       </section>
       </div>
 
@@ -354,6 +448,7 @@
     <!-- /site-shell:footer -->
 
     <script src="/js/admin-quests.js?v=2"></script>
+    <script src="/js/admin-events.js"></script>
     <script src="/js/admin.js"></script>
     <script src="/js/search.js" defer></script>
   </body>

@@ -99,6 +99,8 @@ js/sky.js            Sky Corridor: API calls, labels and the hunter profile's Sk
 js/sky-corridor.js   Sky Corridor page: town progress, boards, guild missions, present box
 js/events.js          Events page; its row-to-card helpers also run under node (dev/check-tournaments.js)
 js/event-info.js      what each Events card says when opened: one entry per event key (what, steps, gets, when, tips, links)
+js/events.js          Events page (and its "Now / Next" line from /api/public/events/calendar); its row-to-card helpers also run under node (dev/check-tournaments.js)
+js/admin-events.js    admin panel Events tab: the event calendar (/api/admin/events/**); times in UTC; its helpers also run under node
 js/tournaments.js     Tournaments page: Speedrun Cup standings and the VS Bracket; its helpers also run under node
 js/catalog.js         catalog browsing
 js/monster-links.js   a monster's field guide link from the server's id or name or the guide's name (data/monsters/index.json); used by the quest pages, leaderboards, hunters, account and worlds; also runs under node
@@ -108,6 +110,7 @@ dev/mock-feedback.py  local stand-in for POST /api/feedback (testing only)
 dev/mock-activity.py  local stand-in for GET /api/public/activity (testing only)
 dev/check-tournaments.js checks the Events cards (live rows, 404 fallback) and the Tournaments page in headless Chromium on a fake API (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-tournaments.js)
 dev/check-events.js checks the Events cards open and close (tap, Enter, Space, Escape), have their sections and valid links, at 375 px and with the API missing (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-events.js)
+dev/check-admin-events.js checks the admin Events tab (strip, list, add, edit, delete, stop, extend the loop) and the Events page's "Next" line in headless Chromium on a fake API (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-admin-events.js)
 dev/check-activity.js checks js/activity.js on the made-up boards in dev/activity-fixtures.json
 dev/check-road-rules.js  checks js/road-rules.js against the Go golden outputs (needs the base Road as JSON, see the file)
 dev/check-road-monsters.js checks the any-of-176 monsters rule and where a new monster's fields come from, on a made-up Road
