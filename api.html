@@ -120,7 +120,7 @@
 <h3>POST /api/auth/signinweb (the website)</h3>
 <p>Same body, but token carries the Cloudflare Turnstile answer. The site&#x27;s form does this for you. Wrong or missing captcha answers are refused; repeated failures are rate limited (429).</p>
 <h3>Registration and password reset</h3>
-<p>POST /api/auth/signup takes username, password and an optional role (ignored for new accounts, which are always ROLE_USER). PUT /api/auth/passwordreset takes username, password and discordId for accounts that linked Discord. Both are rate limited.</p>
+<p>POST /api/auth/signup takes username, password and token (the Turnstile answer, as for signinweb) and makes a game account: a username of 3 to 20 characters from A-Z, a-z, 0-9 and _ . -, a password of 6 to 72 plain ASCII characters. A name that differs from an existing one only by capital letters is refused (409), because logins are case-sensitive. It answers like sign-in (accessToken), or a refusal with a one-sentence message. PUT /api/auth/passwordreset takes username, password and discordId for accounts that linked Discord. Both are rate limited.</p>
 <div class="table-wrap"><table class="data-table"><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td>Authorization</td><td>Bearer &lt;accessToken&gt;</td></tr><tr><td>Content-Type</td><td>application/json on requests with a body</td></tr></tbody></table></div>
 <p>Status codes: 400 bad body, 401 missing or expired token, 403 signed in but not allowed, 429 too many sign-in attempts.</p>
 </section>

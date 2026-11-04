@@ -104,7 +104,7 @@
         <section class="login-box" aria-labelledby="signin-title">
           <p class="kicker">Account</p>
           <h2 id="signin-title">Sign in</h2>
-          <p class="login-sub">Use the username and password from the game. No account yet? <a href="/play.html">Start at Play</a>. If your Discord is not linked yet, the next page gives you a code to run in the #mhfrontier channel.</p>
+          <p class="login-sub" id="login-sub">Use the username and password from the game. No account yet? <a href="#signup">Create an account</a>, then <a href="/play.html">start at Play</a>. If your Discord is not linked yet, the next page gives you a code to run in the #mhfrontier channel.</p>
 
           <div id="login-form">
             <p class="note-text" id="login-next" hidden></p>
@@ -121,6 +121,33 @@
             <div id="turnstile-slot" class="turnstile-slot"></div>
 
             <button type="button" id="submit" class="btn btn-primary btn-block">Sign in</button>
+            <p class="login-switch">No account yet? <a href="#signup" id="signup-open">Create an account</a></p>
+          </div>
+
+          <!-- Sign-up (js/signup.js): shown instead of the sign-in form for /#signup. POST /api/auth/signup makes the
+               game account and signs the player in. The rules match the API's SignupRules. -->
+          <div id="signup" hidden>
+            <p class="login-sub">Make your game account here, or with REGISTER in the launcher. You use it to log in to the game and to this site.</p>
+            <p class="form-alert" id="signup-warning" role="alert" hidden></p>
+            <div class="field">
+              <label for="signup-username">Username</label>
+              <input type="text" id="signup-username" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20" aria-describedby="signup-username-help" required />
+              <p class="field-help" id="signup-username-help">3 to 20 characters: letters A-Z, digits and <code>_ . -</code>. <strong>Case-sensitive:</strong> type it exactly like this, capitals included, every time you log in. <code>Hunter</code> and <code>hunter</code> are not the same name.</p>
+            </div>
+            <div class="field">
+              <label for="signup-password">Password</label>
+              <input type="password" id="signup-password" autocomplete="new-password" maxlength="72" aria-describedby="signup-password-help" required />
+              <p class="field-help" id="signup-password-help">6 to 72 characters, letters, digits and the symbols on an English keyboard.</p>
+            </div>
+            <div class="field">
+              <label for="signup-password2">Password again</label>
+              <input type="password" id="signup-password2" autocomplete="new-password" maxlength="72" required />
+            </div>
+
+            <div id="signup-turnstile-slot" class="turnstile-slot"></div>
+
+            <button type="button" id="signup-submit" class="btn btn-primary btn-block">Create account</button>
+            <p class="login-switch">Already have an account? <a href="#login-form" id="signup-close">Sign in</a></p>
           </div>
         </section>
 
@@ -129,7 +156,7 @@
           <section class="route-row" id="new-here" aria-labelledby="new-here-title">
             <div class="route-head"><h3 id="new-here-title">New here</h3><p>Make an account, install the game and learn the basics.</p></div>
             <div class="route-tiles">
-              <a class="tile route-tile route-tile-icon" href="/play.html"><img src="/assets/monsters/icons/felyne.webp" alt="" width="64" height="64" loading="lazy" decoding="async" /><span><strong>Start playing</strong><span class="tile-meta">A checklist for Windows, Linux and Steam Deck, or for bringing a character from another server. Make your account with REGISTER in the launcher.</span></span></a>
+              <a class="tile route-tile route-tile-icon" href="/play.html"><img src="/assets/monsters/icons/felyne.webp" alt="" width="64" height="64" loading="lazy" decoding="async" /><span><strong>Start playing</strong><span class="tile-meta">A checklist for Windows, Linux and Steam Deck, or for bringing a character from another server. Make your account on the sign-in box here or with REGISTER in the launcher.</span></span></a>
               <a class="tile route-tile" href="/play.html#windows"><img src="/assets/guide/menus/card.webp" alt="" width="64" height="64" loading="lazy" decoding="async" /><span><strong>New on Windows</strong><span class="tile-meta">Client, patch, launcher and the server entry, step by step.</span></span></a>
               <a class="tile route-tile" href="/play.html#linux"><img src="/assets/guide/tools/card.webp" alt="" width="64" height="64" loading="lazy" decoding="async" /><span><strong>Linux / Steam Deck</strong><span class="tile-meta">The same setup with Wine. Steam Deck is not tested yet.</span></span></a>
               <a class="tile route-tile" href="/play.html#transfer"><img src="/assets/guide/item-box/card.webp" alt="" width="64" height="64" loading="lazy" decoding="async" /><span><strong>Bringing a character</strong><span class="tile-meta">From another server: get your file, then import it.</span></span></a>
@@ -230,6 +257,7 @@
     <script src="/js/turnstile.js"></script>
     <script src="/js/signin-next.js"></script>
     <script src="/js/main.js"></script>
+    <script src="/js/signup.js"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <script src="/js/whatsnew.js" defer></script>
     <script src="/js/search.js" defer></script>
