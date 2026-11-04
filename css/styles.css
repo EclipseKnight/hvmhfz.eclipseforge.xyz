@@ -953,6 +953,18 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .cal-actions{display:flex;flex-wrap:wrap;gap:6px}
 .link-btn{border:0;background:none;padding:0;cursor:pointer;font:inherit;color:var(--gold-ink);text-decoration:underline}
 
+/* the Content tab: event content editors (js/admin-content.js) */
+#content-tables:empty{display:none}
+.content-trail{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px}
+.content-pick{position:relative}
+.content-search{margin-top:6px}
+.content-name{min-height:1em}
+.content-bool{display:flex;flex-direction:row;align-items:center;gap:8px}
+.content-bool input{width:auto}
+.content-bad{color:var(--wax);font-size:.85rem}
+tr.is-disabled td{color:var(--ink-soft);font-style:italic}
+.ghost-btn.is-armed{border-color:var(--wax);color:var(--wax)}
+
 
 /* ---------- Hunting Road (road.html, road-vote.html, road-history.html, account and admin blocks) ---------- */
 .road-links{display:flex;gap:8px 12px;flex-wrap:wrap;margin:16px 0 0}

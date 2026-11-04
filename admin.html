@@ -102,6 +102,7 @@
       <nav class="tabs" role="tablist" aria-label="Admin sections">
         <a class="tab" id="tab-gifts" role="tab" aria-controls="panel-gifts" aria-selected="true" href="#gifts">Gifts</a>
         <a class="tab" id="tab-events" role="tab" aria-controls="panel-events" aria-selected="false" href="#events">Events</a>
+        <a class="tab" id="tab-content" role="tab" aria-controls="panel-content" aria-selected="false" href="#content">Content</a>
         <a class="tab" id="tab-road" role="tab" aria-controls="panel-road" aria-selected="false" href="#road">Hunting Road</a>
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests <span class="tab-count" id="count-quests"></span></a>
         <a class="tab" id="tab-users" role="tab" aria-controls="panel-users" aria-selected="false" href="#users">Users <span class="tab-count" id="count-users"></span></a>
@@ -284,6 +285,43 @@
       </section>
       </div>
 
+      <div class="tab-panel" id="panel-content" hidden>
+      <section class="panel" id="content-panel">
+        <div class="panel-head"><h2>Event content</h2><span class="panel-note" id="content-note"></span></div>
+        <p class="form-alert" id="content-alert" hidden></p>
+        <p class="note-text">The rows the game server reads for each event: festival trials and prizes, Diva rewards and coin shop, Cup and VS quests and prizes, campaigns, Sky Corridor rewards, event quests, gachas and shops. The API checks every change (limits, item ids against the site's item list) and refuses with reasons; a table is locked while players' claims or a running week point at its rows. Every change is in the Audit tab. Times are <b>UTC</b>.</p>
+        <div class="chips" id="content-groups" role="group" aria-label="Event"></div>
+        <div class="chips" id="content-tables" role="group" aria-label="Table"></div>
+        <p class="content-trail" id="content-trail" hidden></p>
+        <div class="ops-log-head">
+          <h3 class="subhead" id="content-title">Content</h3>
+          <div class="ops-log-actions">
+            <span class="panel-note" id="content-count"></span>
+            <button type="button" class="ghost-btn small" id="content-refresh">Refresh</button>
+          </div>
+        </div>
+        <p class="note-text" id="content-effect"></p>
+        <p class="form-alert" id="content-lock" hidden></p>
+        <div class="admin-grid" id="content-filters" hidden></div>
+        <div class="table-wrap">
+          <table class="data-table admin-table" data-nosort>
+            <thead id="content-head"><tr><th>#</th></tr></thead>
+            <tbody id="content-rows"><tr><td class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+        <p class="road-ok" id="content-ok" hidden></p>
+        <ul class="road-problems" id="content-problems" hidden></ul>
+        <h3 class="subhead" id="content-form-title">Add a row</h3>
+        <form id="content-form" class="admin-form" novalidate>
+          <div class="admin-grid" id="content-fields"></div>
+          <div class="admin-actions">
+            <button type="submit" class="btn btn-primary" id="content-save">Add</button>
+            <button type="button" class="ghost-btn" id="content-reset" hidden>Cancel the change</button>
+          </div>
+        </form>
+      </section>
+      </div>
+
       <div class="tab-panel" id="panel-road" hidden>
       <section class="panel" id="road-panel">
         <div class="panel-head"><h2>Hunting Road</h2><span class="panel-note" id="road-note"></span></div>
@@ -403,7 +441,7 @@
         <div class="audit-runs" id="audit-runs">
           <p class="empty-cell">Loading</p>
         </div>
-        <p class="note-text">Who did what: restarts, role and chat-flag changes, gifts, Hunting Road changes and session cleanups. Actions are stored in the database and grouped by server run, newest run first; open a run to see its actions. The filters work on what was loaded. Times are shown in your local time.</p>
+        <p class="note-text">Who did what: restarts, role and chat-flag changes, gifts, event calendar and content changes, Hunting Road changes and session cleanups. Actions are stored in the database and grouped by server run, newest run first; open a run to see its actions. The filters work on what was loaded. Times are shown in your local time.</p>
       </section>
       </div>
     </main>
@@ -449,6 +487,7 @@
 
     <script src="/js/admin-quests.js?v=2"></script>
     <script src="/js/admin-events.js"></script>
+    <script src="/js/admin-content.js"></script>
     <script src="/js/admin.js"></script>
     <script src="/js/search.js" defer></script>
   </body>
