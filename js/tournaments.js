@@ -22,6 +22,7 @@
   function cupStatus(cycle) {
     if (!cycle) return "";
     var ends = function (label, value) { var d = shortDate(value); return d ? " " + label + " " + d + "." : ""; };
+    if (cycle.phase === "upcoming") return "Not open yet." + ends("Opens", cycle.phaseEndsAt || cycle.startsAt);
     if (cycle.phase === "open") return "Open: clears count." + ends("Closes", cycle.openEndsAt);
     // The tally takes an hour after the close (Erupe Tournament.TallyHours); endsAt is the next cup's start.
     if (cycle.phase === "tallying") return "Closed: the results are being tallied, within the hour.";
@@ -34,7 +35,7 @@
   function bracketStatus(b) {
     if (!b) return "";
     var d = shortDate(b.signupEndsAt);
-    if (b.phase === "signup") return "Sign-up is open" + (d ? " until " + d : "") + ". Join with !vs join.";
+    if (b.phase === "signup") return "Sign-up open" + (d ? " until " + d : "") + ": type !vs join in chat.";
     if (b.phase === "drawing") return "Sign-up is over; the bracket is being drawn.";
     if (b.phase === "no_bracket") return "Fewer than two hunters signed up, so there is no bracket this time.";
     if (b.phase === "round") return "Round " + b.round + " of " + b.roundCount + " is open.";

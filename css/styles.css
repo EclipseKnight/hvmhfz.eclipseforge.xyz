@@ -693,6 +693,26 @@ main.sheet footer::before{content:"MHFZ";display:inline-grid;place-items:center;
 .event-tile{position:relative;gap:6px}
 .event-tile h2{margin:0}
 .event-live{position:absolute;top:10px;right:10px;background:#2f5d2a;color:#eaf6df;border-color:#2f5d2a}
+.event-grid{align-items:start}
+.event-tile.is-open{grid-column:1/-1}
+/* the name is a button whose ::after covers the whole card, so a tap anywhere opens it; links and the opened part sit above it */
+.event-toggle{display:block;min-height:44px;margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.event-toggle::after{content:"";position:absolute;inset:0}
+.event-toggle:focus-visible{outline:none}
+.event-toggle:focus-visible::after{outline:2px solid var(--focus);outline-offset:2px}
+.event-link{position:relative;z-index:1}
+.event-link a{display:inline-flex;align-items:center;min-height:44px}
+.event-hint{display:block;margin-top:6px;font:700 .72rem var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--gold-ink)}
+.event-hint::after{content:" \25BE"}
+.is-open .event-hint::after{content:" \25B4"}
+.event-more{position:relative;z-index:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px 28px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);cursor:auto}
+.event-sec-head{margin:0 0 4px;font:700 .72rem var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.event-sec-text{margin:0 0 6px;font-size:.88rem;overflow-wrap:anywhere}
+.event-list{margin:0;padding-left:1.2em;font-size:.88rem;overflow-wrap:anywhere}
+.event-list li{margin-bottom:4px}
+.event-links{display:flex;flex-wrap:wrap;gap:0 18px;padding:0;list-style:none}
+.event-links li{margin:0}
+.event-links a{display:inline-flex;align-items:center;min-height:44px}
 .prize-name{display:inline-flex;align-items:center;gap:8px}
 .prize-name img{width:24px;height:24px;object-fit:contain}
 .panel-head-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}

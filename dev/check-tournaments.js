@@ -54,12 +54,11 @@ const CURRENT = { now: NOW, festa: null, events: [
   row("vs_bracket", "round", { signup_ends_at: "2026-11-05T15:00:00Z", round_hours: 48, max_rounds: 4, entrants: 6, rounds: 3,
     round: 2, quest: { title: "VS Round: Rathian" } }, { stale: true }),
   row("diva", "tactics", { phases: [] }),
-  row("conquest", "open", { monsters: [{ id: 1, name: "Rathalos" }, { id: 2, name: "Diablos" }], weekly_rewards: [] }),
   row("campaigns", "open", { campaigns: [{ id: 1, title: "Weekly Supply Drop", reward_text: "", repeat: "weekly",
     starts_at: NOW, ends_at: NOW, period_ends_at: NOW }, { id: 2, title: "Returning Hunter Pack", reward_text: "", repeat: "once",
     starts_at: NOW, ends_at: NOW, period_ends_at: NOW }] })
 ] };
-// Same, but the conquest and campaign rows are missing (those events are off) and the cup is upcoming.
+// Same, but the campaign row is missing (that event is off) and the cup is upcoming.
 const PARTIAL = { now: NOW, festa: null, events: [
   row("speedrun_cup", "open", { quest: { title: "Speedrun Cup: Espinas" } }, { startsAt: "2099-11-20T15:00:00Z" }),
   row("diva", "personal", {})
@@ -131,7 +130,7 @@ async function eventsPage(browser, base) {
   let r = await open(browser, base + "/events.html", { current: CURRENT, bracket: BRACKET }, 1280);
   await r.page.waitForSelector("#events-root .event-tile", { timeout: 5000 });
   let list = await cards(r.page);
-  check("events live: card order", (await names(r.page)).join() === "Diva Defense,MezFes,Conquest,Event campaigns,Speedrun Cup,VS Bracket,Hunter Festival",
+  check("events live: card order", (await names(r.page)).join() === "Diva Defense,MezFes,Event campaigns,Speedrun Cup,VS Bracket,Hunter Festival,Raviente,Caravan rankings,Sky Corridor,Hunting Road vote,Event quests",
     (await names(r.page)).join());
   const find = (name) => list.find((t) => t.includes(name)) || "";
   check("events live: cup", find("Speedrun Cup").includes("Open: clear the quest") && find("Speedrun Cup").includes("Speedrun Cup: Espinas")
@@ -141,7 +140,7 @@ async function eventsPage(browser, base) {
   check("events live: stale note on vs only", find("VS Bracket").includes("Schedule may be out of date")
     && !find("Speedrun Cup").includes("out of date"));
   check("events live: diva week", find("Diva Defense").includes("Week 2: guild week") && find("Diva Defense").includes("The week ends"), find("Diva Defense"));
-  check("events live: conquest", find("Conquest").includes("Rathalos, Diablos"), find("Conquest"));
+  check("events live: no Conquest card, caravan rankings stay", !list.some((t) => t.includes("Conquest")) && find("Caravan rankings").includes("merit points"));
   check("events live: campaigns", find("Event campaigns").includes("Weekly Supply Drop, Returning Hunter Pack"), find("Event campaigns"));
   const hrefs = await r.page.$$eval("#events-root a", (as) => as.map((a) => a.getAttribute("href")));
   check("events live: links to tournaments", hrefs.filter((h) => h === "/tournaments.html").length === 3, hrefs.join());
@@ -154,16 +153,26 @@ async function eventsPage(browser, base) {
 
   r = await open(browser, base + "/events.html", { current: PARTIAL }, 1280);
   await r.page.waitForSelector("#events-root .event-tile", { timeout: 5000 });
-  check("events partial: events without a row are left out", (await names(r.page)).join() === "Diva Defense,MezFes,Speedrun Cup,Hunter Festival",
+  check("events partial: events without a row are left out", (await names(r.page)).join() === "Diva Defense,MezFes,Speedrun Cup,Hunter Festival,Raviente,Caravan rankings,Sky Corridor,Hunting Road vote,Event quests",
     (await names(r.page)).join());
   list = await cards(r.page);
   check("events partial: upcoming cup says From", /From /.test(list.find((t) => t.includes("Speedrun Cup")) || ""));
   await r.page.close();
 
+  const LAUNCH = { now: NOW, festa: null, events: [
+    row("speedrun_cup", "upcoming", {}, { cycle: 0, startsAt: "2099-01-01T00:00:00Z", phaseEndsAt: "2026-11-05T15:00:00Z" }),
+    row("vs_bracket", "signup", { signup_ends_at: "2026-11-08T15:00:00Z", entrants: 0 }, { cycle: 0 })] };
+  r = await open(browser, base + "/events.html", { current: LAUNCH }, 1280);
+  await r.page.waitForSelector("#events-root .event-tile", { timeout: 5000 });
+  list = await cards(r.page);
+  check("events launch: cup says Opens", find("Speedrun Cup").includes("Opens ") && !find("Speedrun Cup").includes("No quest"), find("Speedrun Cup"));
+  check("events launch: vs signup", find("VS Bracket").includes("Sign-up open until") && find("VS Bracket").includes("!vs join in chat"), find("VS Bracket"));
+  await r.page.close();
+
   for (const [label, current] of [["404", undefined], ["empty list", { now: NOW, festa: null, events: [] }]]) {
     r = await open(browser, base + "/events.html", { current }, 1280);
     await r.page.waitForSelector("#events-root .event-tile", { timeout: 5000 });
-    check(`events ${label}: static cards`, (await names(r.page)).join() === "Diva Defense,MezFes,Conquest,Event campaigns,Speedrun Cup,VS Bracket,Hunter Festival");
+    check(`events ${label}: static cards`, (await names(r.page)).join() === "Diva Defense,MezFes,Event campaigns,Speedrun Cup,VS Bracket,Hunter Festival,Raviente,Caravan rankings,Sky Corridor,Hunting Road vote,Event quests");
     list = await cards(r.page);
     check(`events ${label}: static text`, list.some((t) => t.includes("Weekly timed clears of the event quest")) && list.some((t) => t.includes("New & Returning Hunter Pack")));
     check(`events ${label}: tournaments link in the note`, (await r.page.$$eval("#events-root .panel-note a", (as) => as.map((a) => a.getAttribute("href")))).includes("/tournaments.html"));
@@ -222,7 +231,7 @@ async function tournamentsSample(browser, base) {
 
   const s = await open(browser, base + "/tournaments.html", { standings: STANDINGS_EMPTY, bracket: BRACKET_SIGNUP }, 1280);
   await s.page.waitForSelector("#cup-body .chip", { timeout: 5000 });
-  await s.page.waitForFunction(() => document.getElementById("bracket-body").textContent.includes("Sign-up is open"), null, { timeout: 5000 });
+  await s.page.waitForFunction(() => document.getElementById("bracket-body").textContent.includes("Sign-up open"), null, { timeout: 5000 });
   check("empty: boards say No clears yet", (await text(s.page, "#cup-body")).includes("No clears yet"));
   check("empty: no week chips without last week", (await s.page.$$('#cup-body [aria-label="Week"]')).length === 0);
   const sb = await text(s.page, "#bracket-body");
@@ -232,6 +241,19 @@ async function tournamentsSample(browser, base) {
   await s.page.setViewportSize({ width: 375, height: 900 });
   await shot(s.page, "tournaments-empty-375.png");
   await s.page.close();
+}
+
+async function tournamentsUpcoming(browser, base) {
+  const up = Object.assign(cycle("upcoming", null, false), { cycle: 0, phaseEndsAt: "2026-11-05T15:00:00Z" });
+  const vs = { now: NOW, bracket: { cycle: 0, phase: "signup", round: 0, roundCount: 0, entrants: 0, drawn: false, finished: false,
+    startsAt: "2026-11-05T15:00:00Z", signupEndsAt: "2026-11-08T15:00:00Z", endsAt: "2026-11-20T15:00:00Z", champion: null, rounds: [] } };
+  const r = await open(browser, base + "/tournaments.html", { standings: { now: NOW, current: up, last: null }, bracket: vs }, 1280);
+  await r.page.waitForFunction(() => document.getElementById("bracket-body").textContent.includes("Sign-up open"), null, { timeout: 5000 });
+  const cup = await text(r.page, "#cup-body");
+  check("upcoming page: cup opens", cup.includes("Not open yet. Opens ") && !cup.includes("No quest in the cup"), cup);
+  check("upcoming page: vs sign-up", (await text(r.page, "#bracket-body")).includes("type !vs join in chat"), await text(r.page, "#bracket-body"));
+  check("upcoming page: errors", r.errors.length === 0, r.errors.join("; "));
+  await r.page.close();
 }
 
 async function tournamentsSoon(browser, base) {
@@ -260,14 +282,21 @@ function helpers() {
   check("helper cardFromRow: upcoming badge", later.badge.startsWith("From "), later.badge);
   check("helper cardFromRow: stale", Events.cardFromRow(CURRENT.events[1], now).note === "Schedule may be out of date" && !cup.note);
   const vs = (phase, extra) => Events.cardFromRow(row("vs_bracket", phase, extra), now, null);
-  check("helper vs phases", vs("signup", { entrants: 1, signup_ends_at: "2026-11-09T15:00:00Z" }).text.startsWith("Sign-up is open")
+  check("helper vs phases", vs("signup", { entrants: 1, signup_ends_at: "2026-11-09T15:00:00Z" }).text.startsWith("Sign-up open")
     && vs("drawing", {}).text.includes("drawn") && vs("no_bracket", {}).text.includes("Fewer than two")
     && vs("results", {}).text.startsWith("Finished"));
   check("helper vs winner from the bracket", Events.cardFromRow(row("vs_bracket", "results", { entrants: 3 }), now, BRACKET).details[0] === "Winner: Alice");
+  // Erupe build going live: before the start the cup row is cycle 0, phase "upcoming", phaseEndsAt = the opening time;
+  // the VS row is cycle 0, phase "signup" with sign-up open until Sun 8 Nov 15:00 UTC.
+  const upcoming = Events.cardFromRow(row("speedrun_cup", "upcoming", {}, { cycle: 0, startsAt: "2099-01-01T00:00:00Z", phaseEndsAt: "2026-11-05T15:00:00Z" }), now);
+  check("helper cup upcoming: Opens <date>, not the empty-pool text", upcoming.text.startsWith("Not open yet. Opens ") && !upcoming.text.includes("No quest")
+    && upcoming.text.includes(Intl.DateTimeFormat(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date("2026-11-05T15:00:00Z"))), upcoming.text);
+  const vsSignup = Events.cardFromRow(row("vs_bracket", "signup", { signup_ends_at: "2026-11-08T15:00:00Z", entrants: 0 }, { cycle: 0 }), now, null);
+  check("helper vs signup: until the date and !vs join in chat", vsSignup.text.startsWith("Sign-up open until ") && vsSignup.text.includes("type !vs join in chat"), vsSignup.text);
   check("helper campaigns none: no card", Events.cardFromRow(row("campaigns", "none", { campaigns: [] }), now) === null);
   check("helper unknown event: no card", Events.cardFromRow(row("other", "open", {}), now) === null);
-  check("helper eventCards: no answer is static", Events.eventCards(null, null, now).length === 7 && Events.eventCards({ events: [] }, null, now).length === 7);
-  check("helper eventCards: off events dropped", Events.eventCards(PARTIAL, null, now).map((c) => c.name).join() === "Diva Defense,MezFes,Speedrun Cup,Hunter Festival");
+  check("helper eventCards: no answer is static", Events.eventCards(null, null, now).length === 11 && Events.eventCards({ events: [] }, null, now).length === 11);
+  check("helper eventCards: off events dropped", Events.eventCards(PARTIAL, null, now).map((c) => c.name).join() === "Diva Defense,MezFes,Speedrun Cup,Hunter Festival,Raviente,Caravan rankings,Sky Corridor,Hunting Road vote,Event quests");
 
   check("helper playerLabel", Tournaments.playerLabel("Al", false) === "Al" && Tournaments.playerLabel(null, true) === "Bye" && Tournaments.playerLabel(null, false) === "Hidden hunter");
   const rows = Tournaments.matchRows(BRACKET.bracket.rounds[0].matches[1]);
@@ -276,6 +305,10 @@ function helpers() {
   check("helper matchRows: no time or winner before the decision", undecided[0].time === null && !undecided[0].winner && undecided[0].cleared);
   check("helper cupStatus", Tournaments.cupStatus({ phase: "open", openEndsAt: NOW }).startsWith("Open") && Tournaments.cupStatus({ phase: "tallying" }).includes("tallied")
     && Tournaments.cupStatus({ phase: "results", endsAt: NOW }).includes("Next cup starts") && Tournaments.cupStatus({ phase: "none" }).includes("No quest"));
+  check("helper cupStatus upcoming", Tournaments.cupStatus({ phase: "upcoming", phaseEndsAt: "2026-11-05T15:00:00Z", startsAt: "2026-11-06T15:00:00Z" }).startsWith("Not open yet. Opens ")
+    && !Tournaments.cupStatus({ phase: "upcoming", startsAt: "2026-11-05T15:00:00Z" }).includes("No quest"));
+  check("helper bracketStatus signup", Tournaments.bracketStatus({ phase: "signup", signupEndsAt: "2026-11-08T15:00:00Z" }).includes("Sign-up open until ")
+    && Tournaments.bracketStatus({ phase: "signup", signupEndsAt: "2026-11-08T15:00:00Z" }).includes("type !vs join in chat"));
   check("helper bracketStatus", Tournaments.bracketStatus({ phase: "round", round: 2, roundCount: 3 }) === "Round 2 of 3 is open." && Tournaments.bracketStatus(null) === "");
   check("helper boardsOf: classes then guild", Tournaments.boardsOf(STANDINGS.current).length === 15 && Tournaments.firstBoard(STANDINGS.current) === 3
     && Tournaments.firstBoard(STANDINGS_EMPTY.current) === 0);
@@ -289,6 +322,7 @@ function helpers() {
   try {
     await eventsPage(browser, base);
     await tournamentsSample(browser, base);
+    await tournamentsUpcoming(browser, base);
     await tournamentsSoon(browser, base);
   } finally {
     await browser.close();
