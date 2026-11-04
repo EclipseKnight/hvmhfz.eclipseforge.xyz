@@ -76,6 +76,23 @@
 
   function grouped(n) { return n === null || n === undefined ? "-" : Number(n).toLocaleString(); }
 
+  /* Play time as the game shows it: "1,307 h 40 min". */
+  function playtime(seconds) {
+    if (seconds === null || seconds === undefined) return "-";
+    return Math.floor(seconds / 3600).toLocaleString() + " h " + Math.floor((seconds % 3600) / 60) + " min";
+  }
+
+  /* "7 hours", "7.5 hours", or minutes under an hour. */
+  function lessPlay(seconds) {
+    if (seconds < 3600) {
+      var minutes = Math.max(1, Math.floor(seconds / 60));
+      return minutes + (minutes === 1 ? " minute" : " minutes");
+    }
+    var hours = seconds / 3600;
+    var text = hours >= 100 ? String(Math.round(hours)) : hours.toFixed(1).replace(/\.0$/, "");
+    return text + (text === "1" ? " hour" : " hours");
+  }
+
   function when(value) {
     if (!value) return "Never";
     var d = new Date(value);
@@ -304,9 +321,23 @@
     });
   }
 
-  function warnings(plan) {
+  /* What must not be missed before Confirm: shown first, in red. An older file rolled a player back once
+     because HR, zenny and Road points all looked fine. olderBySeconds is the API's (absent on an old API). */
+  function alerts(plan) {
     var out = [];
     var skills = plan.roadSkills || {};
+    if (plan.save && plan.save.olderBySeconds > 0) {
+      out.push("This file has " + lessPlay(plan.save.olderBySeconds) + " less play than your character now. " +
+        "Importing it will lose that progress.");
+    }
+    if (skills.policy === "clear" && skills.levelsBefore > 0) {
+      out.push(plan.characterName + " has " + skills.levelsBefore + " Road skill levels now. They will be cleared; the Road points in the file stay.");
+    }
+    return out;
+  }
+
+  function warnings(plan) {
+    var out = [];
     var after = plan.save && plan.save.after;
     if (plan.source === "ours-other-character" && plan.manifest) {
       out.push("This backup is of another character" + (plan.manifest.name ? " (" + plan.manifest.name +
@@ -314,9 +345,6 @@
         ". " + plan.characterName + " becomes a copy of it.");
     }
     if (plan.source === "modified") out.push("The file was changed after the backup was made, so it counts as any other file.");
-    if (skills.policy === "clear" && skills.levelsBefore > 0) {
-      out.push(plan.characterName + " has " + skills.levelsBefore + " Road skill levels now. They will be cleared; the Road points in the file stay.");
-    }
     if (after && after.name && plan.characterName && after.name !== plan.characterName) {
       out.push("The save in the file is the hunter " + after.name + ", not " + plan.characterName + ".");
     }
@@ -332,6 +360,14 @@
     clear(box);
     box.appendChild(el("p", "backup-target", "Into " + plan.characterName + " (id " + plan.characterId + ")"));
     box.appendChild(el("p", "note-text", SOURCES[plan.source] || plan.sourceNote || plan.source));
+
+    var alert = alerts(plan);
+    if (alert.length) {
+      var a = el("ul", "backup-alert");
+      a.setAttribute("role", "alert");
+      alert.forEach(function (line) { a.appendChild(el("li", null, line)); });
+      box.appendChild(a);
+    }
 
     var warn = warnings(plan);
     if (warn.length) {
@@ -378,6 +414,9 @@
        ["HR", grouped(before.hr), grouped(after.hr)], ["GR points", grouped(before.grp), grouped(after.grp)],
        ["Road points", grouped(before.roadSp), grouped(after.roadSp)],
        ["Equipped Road skills", grouped(before.equippedRoadSkills), grouped(after.equippedRoadSkills)]]
+        .concat(after.playtimeSeconds === undefined ? [] : [   // an API from before 2026-11-04 doesn't send these
+          ["Play time", playtime(before.playtimeSeconds), playtime(after.playtimeSeconds)],
+          ["Monsters hunted", grouped(before.huntCount), grouped(after.huntCount)]])
         .forEach(function (row) {
           var tr = el("tr");
           tr.appendChild(el("td", "backup-fact", row[0]));

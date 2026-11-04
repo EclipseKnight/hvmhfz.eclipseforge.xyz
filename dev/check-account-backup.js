@@ -9,7 +9,9 @@
    - import our zip: Preview shows the target, the parts, the save before/after and that Road skill levels
      are restored; Cancel writes nothing; Confirm sends exactly the previewed body (no Discord id) and the
      history shows the import;
-   - an older zip: Road skill levels cleared, with the warning; an export JSON;
+   - an older zip: a red alert first ("N hours less play than your character now", and the Road skill
+     levels cleared), play time and monsters hunted before/after, Confirm kept; no alert for a file with
+     the same play; an export JSON;
    - refusals in plain words: online, deleted, never played, a part that fails the checks (each problem
      listed), not a zip; and a 404 in the middle of a preview switches to "coming soon".
 
@@ -68,9 +70,11 @@ function plan(body, applied) {
     manifest: ours ? { format: "hvmhfz-backup/1", server: "hunsterverse", characterId: 10, name: "Aldra", exportedAt: "2026-11-03T20:00:00Z" } : null,
     parts: partNames.map((p) => ({ part: p, action: "replace", oldSize: 20480, oldSha256: "a", newSize: 20482, newSha256: "b", fileSha256: "b" })),
     ignored: body.erupeExport ? [{ part: "gacha_items", reason: "gacha prizes the server holds" }] : [],
-    save: { before: { name: "Aldra", female: false, zenny: 1000, hr: 999, grp: 5, roadSp: 40, equippedRoadSkills: 3, migrationFlagSet: true },
-            after: { name: ours ? "Aldra" : "Other", female: false, zenny: 99999, hr: 999, grp: 5, roadSp: 80, equippedRoadSkills: 2, migrationFlagSet: true },
-            migrationFlagWasSet: true },
+    save: { before: { name: "Aldra", female: false, zenny: 1000, hr: 999, grp: 5, roadSp: 40, equippedRoadSkills: 3, migrationFlagSet: true,
+                      playtimeSeconds: 4707602, huntCount: 14312 },
+            after: { name: ours ? "Aldra" : "Other", female: false, zenny: 99999, hr: 999, grp: 5, roadSp: 80, equippedRoadSkills: 2, migrationFlagSet: true,
+                     playtimeSeconds: ours ? 4707602 : 4682392, huntCount: ours ? 14312 : 14266 },
+            migrationFlagWasSet: true, olderBySeconds: ours ? 0 : 25210 },
     roadSkills: ours ? { policy: "restore", reason: "r", towerRowExists: true, before: "5,3", after: "5,3", levelsBefore: 8, levelsAfter: 8 }
                      : { policy: "clear", reason: "r", towerRowExists: true, before: "5,3", after: "0,0", levelsBefore: 8, levelsAfter: 0 },
     notRestored: ["warehouse", "the account's shared item box"]
@@ -197,6 +201,8 @@ async function flows(browser, base, shots) {
   check("preview: save facts", /Zenny 1,000 99,999/i.test(pv) && /Road points 40 80/i.test(pv), pv);
   check("preview: skills restored", (await page.getAttribute(".backup-skills", "data-policy")) === "restore"
     && /Road skill levels: 8 now, 8 after\. They go back to what they were/.test(pv), pv);
+  check("preview: play time and hunts", /Play time 1,307 h 40 min 1,307 h 40 min/.test(pv) && /Monsters hunted 14,312 14,312/.test(pv), pv);
+  check("preview: no alert for a file with the same play", (await page.$$(".backup-alert")).length === 0, pv);
   check("preview: not restored listed", /Stays as it is warehouse/i.test(pv), pv);
   check("preview: confirm shown", await visible(page, "#import-confirm"));
   const previewCall = r.calls.filter((c) => c.path === "/api/account/characters/import/preview").pop();
@@ -234,6 +240,13 @@ async function flows(browser, base, shots) {
   const old = await text(page, "#import-preview");
   check("old zip: cleared", (await page.getAttribute(".backup-skills", "data-policy")) === "clear" && /8 now, 0 after\. They are cleared/.test(old), old);
   check("old zip: warnings", /Aldra has 8 Road skill levels now\. They will be cleared/.test(old) && /the hunter Other, not Aldra/.test(old), old);
+  const alertText = await page.$$eval(".backup-alert li", (t) => t.map((x) => x.textContent));
+  check("old zip: alert first, less play and the levels", alertText.length === 2
+    && alertText[0] === "This file has 7 hours less play than your character now. Importing it will lose that progress."
+    && /^Aldra has 8 Road skill levels now/.test(alertText[1]), JSON.stringify(alertText));
+  check("old zip: alert is above the other warnings", await page.$eval("#import-preview .backup-alert + .backup-warnings", () => true).catch(() => false));
+  check("old zip: play time shown", /Play time 1,307 h 40 min 1,300 h 39 min/.test(old) && /Monsters hunted 14,312 14,266/.test(old), old);
+  check("old zip: Confirm is still there", await visible(page, "#import-confirm"));
 
   // export JSON
   await choose(page, "export.json", Buffer.from(JSON.stringify({ Character: { savedata: b64("x") } })), "application/json");
