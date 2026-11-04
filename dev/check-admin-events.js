@@ -7,7 +7,8 @@
      (the live check, its reasons, the request body, times read as UTC); changing a planned run (PUT); delete
      and stop after the current cycle only on the second click; the note of a started run; extending the loop
      (preview, then add); a note with markup stays text; no horizontal overflow at 375 px;
-   - the strip's two lanes (main and side event, each run in its event's lane; a transition run too), the gaps
+   - the strip's two lanes (main and side event, each run in its event's lane; a transition run too, labelled
+     "(transition)" and covering its lane until it ends), the gaps
      (red in the lane that has no run: no main event, no side event), "Running now", the gap list and "Fill this
      gap" (the lane's first event); no lane field in the form, the lane under the event; the side lane's
      Thursday 15:00 boundary when dragging; one "extend the loop" form per lane (sends lane main or side); dragging a planned run (move, resize an edge) with the mouse: the live tip with the
@@ -155,10 +156,16 @@ function helpers() {
   check("rules: Cup open + tally, cycle numbers", /an hour before the cycle/.test(cupR) && /already used/.test(cupR), cupR);
   const cov = Cal.coverage([festa, vs, diva], now, T("2027-02-01T03:00:00Z"));
   const gl = cov.gaps.map((g) => g.lane + " " + new Date(g.from).toISOString().slice(0, 16) + " " + new Date(g.to).toISOString().slice(0, 16) + " " + g.running.join("+"));
-  check("coverage: gaps of both lanes (a transition row counts in its event's lane), by time", gl.join("|") === "side 2026-11-10T00:00 2026-12-24T15:00 "
-    + "|featured 2026-11-16T03:00 2026-11-17T15:00 Diva Defense|featured 2026-12-21T03:00 2027-02-01T03:00 Hunter Festival|side 2027-01-07T15:00 2027-02-01T03:00 ", gl.join("|"));
+  check("coverage: gaps of both lanes (a transition row counts in its event's lane, to its end), by time", gl.join("|") === "side 2026-11-10T00:00 2026-12-24T15:00 "
+    + "|featured 2026-12-21T03:00 2027-02-01T03:00 Hunter Festival|side 2027-01-07T15:00 2027-02-01T03:00 ", gl.join("|"));
   const at = Cal.runningAt(cov.pieces, T("2026-11-20T00:00:00Z"));
-  check("runningAt", at && at.featured === 5 && at.side === null && at.runs.map((r) => r.id + r.part).join() === "5core,2tail", JSON.stringify(at));
+  check("runningAt: a run's own core wins over a transition row", at && at.featured === 5 && at.side === null && at.runs.map((r) => r.id + r.part).join() === "5core,2tail", JSON.stringify(at));
+  const week3 = Cal.runningAt(cov.pieces, T("2026-11-16T12:00:00Z"));
+  check("coverage: a transition row covers its lane in its tail too (Diva week 3, 16-17 Nov: no gap)", week3 && week3.featured === 2
+    && week3.runs.filter((r) => r.lane === "featured").map((r) => r.id + r.part).join() === "2tail", JSON.stringify(week3));
+  const regular = Cal.coverage([festa, Object.assign({}, diva, { lane: "featured" })], now, T("2026-11-20T00:00:00Z"));
+  check("coverage: a regular run covers its lane with its core only", regular.gaps.map((g) => g.lane + " " + new Date(g.from).toISOString().slice(0, 16)).join("|")
+    === "side 2026-11-10T00:00|featured 2026-11-16T03:00", JSON.stringify(regular.gaps));
   check("howLong", Cal.howLong(0, (12 * 24 + 21) * H) === "12 d 21 h" && Cal.howLong(0, 2 * D) === "2 d" && Cal.howLong(0, 5 * H) === "5 h");
   check("snap", Cal.snap(T("2026-11-10T10:31:00Z")) === T("2026-11-10T11:00:00Z") && Cal.snap(T("2026-11-10T16:00:00Z"), true) === T("2026-11-11T03:00:00Z")
     && Cal.snap(T("2026-11-10T16:00:00Z"), true, "side") === T("2026-11-10T15:00:00Z"));
@@ -481,28 +488,30 @@ async function dragPage(browser, base) {
   // What runs now and the gaps.
   const running = await text(page, "#cal-running");
   check("running now: a main and a side event", running === "Running now: Main event: Diva Defense #2 (transition); Side event: Speedrun Cup #3.", running);
-  check("strip: four red gaps, two in each lane's row", (await page.$$("#cal-strip .cal-gap.is-empty")).length === 4
-    && (await page.$$eval("#cal-strip .cal-lane", (ls) => ls.map((l) => l.querySelectorAll(".cal-gap").length))).join() === "2,2");
+  // The transition Diva (#2) covers the main lane to its end (23 Nov): no gap 16-17 Nov.
+  check("strip: three red gaps, one in the main row, two in the side row", (await page.$$("#cal-strip .cal-gap.is-empty")).length === 3
+    && (await page.$$eval("#cal-strip .cal-lane", (ls) => ls.map((l) => l.querySelectorAll(".cal-gap").length))).join() === "1,2");
   const gaps = await page.$$eval("#cal-gaps li", (ls) => ls.map((l) => l.textContent));
-  check("gap list: both kinds, by time", gaps.length === 4
-    && /^No main event Mon 16 Nov 2026 03:00 to Tue 17 Nov 2026 15:00 UTC, 1 d 12 h\. Still on: Diva Defense\.Fill this gap$/.test(gaps[0])
-    && /^No side event Thu 19 Nov 2026 15:00 to Thu 24 Dec 2026 15:00 UTC, 35 d\.Fill this gap$/.test(gaps[1])
-    && /^No main event Mon 21 Dec 2026 03:00 to Mon 1 Feb 2027 03:00 UTC, .*nothing is planned after.*Still on: Hunter Festival\.Fill this gap$/.test(gaps[2])
-    && /^No side event Thu 7 Jan 2027 15:00 to Mon 1 Feb 2027 03:00 UTC, .*nothing is planned after.*Fill this gap$/.test(gaps[3]), gaps.join(" | "));
+  check("gap list: both kinds, by time", gaps.length === 3
+    && /^No side event Thu 19 Nov 2026 15:00 to Thu 24 Dec 2026 15:00 UTC, 35 d\.Fill this gap$/.test(gaps[0])
+    && /^No main event Mon 21 Dec 2026 03:00 to Mon 1 Feb 2027 03:00 UTC, .*nothing is planned after.*Still on: Hunter Festival\.Fill this gap$/.test(gaps[1])
+    && /^No side event Thu 7 Jan 2027 15:00 to Mon 1 Feb 2027 03:00 UTC, .*nothing is planned after.*Fill this gap$/.test(gaps[2]), gaps.join(" | "));
+  check("strip: a transition run says so on its bar", await text(page, '#cal-strip .cal-bar[data-id="2"] .cal-core') === "Diva Defense (transition)"
+    && await text(page, '#cal-strip .cal-bar[data-id="5"] .cal-core') === "Hunter Festival", await text(page, '#cal-strip .cal-bar[data-id="2"] .cal-core'));
   const g = await geometry(page);
   await page.mouse.move(xOf(g, "2026-11-20T00:00:00Z"), (await (await page.$("#cal-strip .cal-festa")).boundingBox()).y + 10);
   check("pointing says what runs then, per lane", await text(page, "#cal-at") === "Fri 20 Nov 2026 00:00 UTC: Main event: Hunter Festival #5, Diva Defense #2 (tail, transition); Side event: no side event (a gap).", await text(page, "#cal-at"));
 
   // Fill this gap: the form starts at the gap (an hour ahead at least), on the lane's boundary (no "any time").
-  await page.click("#cal-gaps li:nth-child(1) button");
-  check("fill main gap: start, event, lane note, boundary kept", (await page.inputValue("#cal-start")) === "2026-11-16T03:00" && (await page.inputValue("#cal-event")) === "festa"
+  await page.click("#cal-gaps li:nth-child(2) button");
+  check("fill main gap: start, event, lane note, boundary kept", (await page.inputValue("#cal-start")) === "2026-12-21T03:00" && (await page.inputValue("#cal-event")) === "festa"
     && /^Main event/.test(await text(page, "#cal-lane-note")) && !(await page.isChecked("#cal-anytime")), await page.inputValue("#cal-start"));
-  check("fill: hint", /^Filling Mon 16 Nov 2026 03:00 to Tue 17 Nov 2026 15:00 UTC \(1 d 12 h\)/.test(await text(page, "#cal-gap-hint")), await text(page, "#cal-gap-hint"));
-  check("fill: Ends from the settings", (await page.inputValue("#cal-end")) === "2026-12-14T03:00", await page.inputValue("#cal-end"));
+  check("fill: hint", /^Filling Mon 21 Dec 2026 03:00 to Mon 1 Feb 2027 03:00 UTC \(42 d\)/.test(await text(page, "#cal-gap-hint")), await text(page, "#cal-gap-hint"));
+  check("fill: Ends from the settings", (await page.inputValue("#cal-end")) === "2027-01-18T03:00", await page.inputValue("#cal-end"));
   await page.waitForFunction(() => document.getElementById("cal-problems").textContent.indexOf("The checks pass.") !== -1, null, { timeout: 3000 })
     .catch(() => check("fill: checked", false));
   // The side lane's gap switches the event to the side lane's first (the Cup) and starts on a Thursday 15:00.
-  await page.click("#cal-gaps li:nth-child(2) button");
+  await page.click("#cal-gaps li:nth-child(1) button");
   check("fill side gap: Cup, Thursday 15:00, side lane note", (await page.inputValue("#cal-event")) === "speedrun_cup" && (await page.inputValue("#cal-start")) === "2026-11-19T15:00"
     && /^Side event/.test(await text(page, "#cal-lane-note")) && !(await page.isChecked("#cal-anytime")), await page.inputValue("#cal-event") + " " + await page.inputValue("#cal-start"));
   check("fill side gap: the cycles that fit", (await page.inputValue("#cal-s-cycles")) === "5" && (await page.inputValue("#cal-end")) === "2026-12-24T15:00", await page.inputValue("#cal-s-cycles") + " " + await page.inputValue("#cal-end"));

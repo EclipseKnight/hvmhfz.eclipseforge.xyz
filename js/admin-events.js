@@ -166,7 +166,8 @@
     lane: "There are two lanes, one event at a time in each, and the event decides the lane (there is no lane field). "
       + "Main event: Hunter Festival or Diva Defense; its runs start on a Monday 03:00 UTC. Side event: Speedrun Cup or "
       + "VS Bracket; its runs start on a Thursday 15:00 UTC. A run's tail (festival judging and rewards, Diva week 3) may "
-      + "run beside the next event of its lane.",
+      + "run beside the next event of its lane. The November 2026 transition runs (marked \"(transition)\") ran all at "
+      + "once before the lanes; each is drawn in its event's lane and covers it until it ends.",
     starts_at: "When the run begins in game: festival entry opens, Diva week 1 starts, the first Cup or VS cycle opens. "
       + "UTC, at least an hour from now (the game server reads the calendar every minute). Normally on the lane's boundary: "
       + "Monday 03:00 UTC for the main event (12:00 in Japan, when Diva Defense's days start), Thursday 15:00 UTC for the "
@@ -371,10 +372,13 @@
 
   /**
    * What runs when, in [from, to): pieces split at every start, core end and end, each with the runs on then.
-   * Each piece says which run's core covers each lane (main: `featured`, `side`: run ids, or null). A transition
-   * row counts in its event's lane. gaps: the stretches where a lane has no core, one list for both lanes
-   * (a gap of the main lane is "no main event", of the side lane "no side event"), neighbours merged; running:
-   * what is still on in that lane then (tails).
+   * Each piece says which run covers each lane (main: `featured`, `side`: run ids, or null): a run's core, or a
+   * transition row (lane "background") from its start to its end, tail included, in its event's lane. The
+   * transition rows of November 2026 ran all at once and can't be in a lane (the table's one-core rules refuse
+   * them), but their events are on until they end, so that time is not a gap (owner, 2026-11-04). A run's own
+   * core wins over a transition row. gaps: the stretches where a lane has nothing covering it, one list for both
+   * lanes (a gap of the main lane is "no main event", of the side lane "no side event"), neighbours merged;
+   * running: what is still on in that lane then (tails).
    */
   function coverage(runs, from, to) {
     var live = (runs || []).filter(function (r) { return r.status !== "cancelled" && ms(r.startsAt) !== null && ms(r.endsAt) !== null; });
@@ -391,9 +395,11 @@
       live.forEach(function (r) {
         var s = ms(r.startsAt), c = ms(r.coreEndsAt), e = ms(r.endsAt), lane = laneOf(r);
         if (s >= b || e <= a) return;
+        var transition = r.lane === "background";
         var inCore = s <= a && c >= b;
-        if (inCore) core[lane] = r.id;
-        on.push({ id: r.id, event: r.event, name: r.name || NAMES[r.event] || r.event, lane: lane, transition: r.lane === "background", part: inCore ? "core" : "tail" });
+        var covers = s <= a && (transition ? e : c) >= b;
+        if (covers && (core[lane] === null || !transition)) core[lane] = r.id;
+        on.push({ id: r.id, event: r.event, name: r.name || NAMES[r.event] || r.event, lane: lane, transition: transition, part: inCore ? "core" : "tail" });
       });
       // By lane, the core before the tails.
       on.sort(function (x, y) { return LANES.indexOf(x.lane) - LANES.indexOf(y.lane) || (x.part === "core" ? 0 : 1) - (y.part === "core" ? 0 : 1); });
@@ -599,7 +605,7 @@
         bar.style.left = b.left + "%";
         bar.style.top = (2 + b.row * 34) + "px";
         bar.style.width = (b.core + b.tail) + "%";
-        var core = el("span", "cal-core", b.name);
+        var core = el("span", "cal-core", b.name + (b.transition ? " (transition)" : ""));
         core.style.width = (b.core + b.tail > 0 ? b.core / (b.core + b.tail) * 100 : 100) + "%";
         bar.appendChild(core);
         var label = b.name + " #" + b.id + " (" + (STATUS[b.status] || b.status) + ", " + LANE_NAMES[lane].toLowerCase() + (b.transition ? ", transition" : "") + "): " + utc(run.startsAt)
