@@ -4,18 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sky Corridor · Hunsterverse</title>
-    <meta name="description" content="The Sky Corridor (the Tower) on Hunsterverse: the town's Duremudira progress per district, the floor and clear boards, guild missions and the present box." />
+    <meta name="description" content="The Sky Corridor (the Tower) on Hunsterverse: the town's Duremudira progress per district, the floor, Duremudira kill and tower clear boards, guild missions and the present box." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Hunsterverse" />
     <meta property="og:title" content="Sky Corridor · Hunsterverse" />
-    <meta property="og:description" content="The Sky Corridor (the Tower) on Hunsterverse: the town's Duremudira progress per district, the floor and clear boards, guild missions and the present box." />
+    <meta property="og:description" content="The Sky Corridor (the Tower) on Hunsterverse: the town's Duremudira progress per district, the floor, Duremudira kill and tower clear boards, guild missions and the present box." />
     <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/sky-corridor.html" />
     <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Sky Corridor · Hunsterverse" />
-    <meta name="twitter:description" content="The Sky Corridor (the Tower) on Hunsterverse: the town's Duremudira progress per district, the floor and clear boards, guild missions and the present box." />
+    <meta name="twitter:description" content="The Sky Corridor (the Tower) on Hunsterverse: the town's Duremudira progress per district, the floor, Duremudira kill and tower clear boards, guild missions and the present box." />
     <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/hunsterverse.png" />
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png" />
@@ -95,7 +95,7 @@
       <!-- /site-shell:crumbs -->
       <header class="page-head">
         <h1>Sky Corridor</h1>
-        <p class="page-sub">The Tower: climb its floors, clear the Duremudira quests and push the town's progress in each district. Hunter boards, guild missions and the present box, from the game server.</p>
+        <p class="page-sub">The Tower: climb its floors, clear the tower quests, beat Duremudira and push the town's progress in each district. Hunter boards, guild missions and the present box, from the game server.</p>
         <p class="road-links">
           <a class="ghost-btn small" href="#sky-overview">Town progress</a>
           <a class="ghost-btn small" href="#leaderboard">Leaderboard</a>
@@ -114,7 +114,7 @@
         </div>
         <div class="stat-grid" id="sky-totals"></div>
         <div class="sky-districts" id="sky-districts"><p class="note-text">Loading</p></div>
-        <p class="note-text">Everyone's Duremudira clears and floors count toward their district's goals, as the town shows them. The game shows districts 1 and 2 in town; 3 and 4 are counted but not shown.</p>
+        <p class="note-text">Every party that kills Duremudira counts once toward its district's kill goal, and everyone's floors count toward the floor goal, as the town shows them. The game shows districts 1 and 2 in town; 3 and 4 are counted but not shown.</p>
       </section>
 
       <section class="panel" id="leaderboard">
@@ -124,7 +124,8 @@
         </div>
         <div class="chips" id="sky-board-chips" role="group" aria-label="Board">
           <button type="button" class="chip" data-board="floors" aria-pressed="true">Floors</button>
-          <button type="button" class="chip" data-board="clears" aria-pressed="false">Duremudira clears</button>
+          <button type="button" class="chip" data-board="kills" aria-pressed="false" hidden>Duremudira kills</button>
+          <button type="button" class="chip" data-board="clears" aria-pressed="false">Tower clears</button>
         </div>
         <div class="chips" id="sky-district-chips" role="group" aria-label="District">
           <button type="button" class="chip" data-district="all" aria-pressed="true">All districts</button>
@@ -162,7 +163,7 @@
           <h2>Present box</h2>
           <span class="panel-note">once per hunter</span>
         </div>
-        <p class="note-text">The Tower's present box gives each hunter these rewards once, when their floors or Duremudira clears (all districts together) reach the milestone. Pick them up from the present box in town.</p>
+        <p class="note-text">The Tower's present box gives each hunter these rewards once, when their floors or tower clears (all districts together) reach the milestone. Pick them up from the present box in town.</p>
         <div id="sky-rewards"><p class="note-text">Loading</p></div>
       </section>
 
@@ -173,7 +174,7 @@
         <ul>
           <li>Join a guild first. The game reports a cleared tower quest to the server only for guild members, so hunters without a guild are not counted here, in the town's progress or in the present box.</li>
           <li>From about Hunter Rank 31, a town event introduces the Tower. Take a tower quest at the tower counter.</li>
-          <li>Each cleared tower quest counts as one Duremudira clear in its district, plus the floors you climbed.</li>
+          <li>Each cleared tower quest counts as one tower clear in its district, plus the floors you climbed, whether you killed Duremudira or left by the broken wall (Return to Mezeporta). A party that kills Duremudira also adds one Duremudira kill to the district's goal; the board's Duremudira kills are your own.</li>
         </ul>
         <p>More in the Frontier guide: <a href="/guide-frontier-hunters-road.html#tower-weapons">Tower weapons</a>, <a href="/guide-frontier-hunters-road.html#tower-armour">Tower armour</a>, <a href="/guide-frontier-hunters-road.html#tower-medals">Tower Medals</a> and <a href="/guide-frontier-hunters-road.html#duremudira">Duremudira</a>. What differs here from the old servers: <a href="/guide-frontier-hunters-road.html#hv-tower-weapons">the Sky Corridor on Hunsterverse</a> and the <a href="/guide-frontier-hunsterverse.html">Hunsterverse comparison</a>.</p>
       </section>

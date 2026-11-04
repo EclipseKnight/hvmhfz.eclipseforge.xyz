@@ -1,4 +1,4 @@
-/* Sky Corridor page: the town's Duremudira progress per district, the hunter boards (floors or clears,
+/* Sky Corridor page: the town's Duremudira progress per district, the hunter boards (floors, Duremudira kills or tower clears,
    per district, all time or this week), the guild missions and the present box, from
    /api/public/sky/* (js/sky.js). While the API has no Sky Corridor endpoints yet (404) or its
    database has no Sky Corridor tables (tracking: false) the page says the stats are coming soon. */
@@ -11,6 +11,11 @@
 
   function byId(id) { return document.getElementById(id); }
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+
+  // Whether the API counts real Duremudira kills (overview: killsTracked, goals.kills, totals.kills).
+  // False until the overview says so: an older API shows the old clears display.
+  var killsTracked = false;
+  var lastBoard = null;
 
   var DATA_PANELS = ["sky-overview", "leaderboard", "missions", "rewards"];
   var soonShown = false;
@@ -38,13 +43,25 @@
     if (!data.tracking) { soon(); return; }
     var goals = data.goals || {};
     var totals = data.totals || {};
+    var tracked = data.killsTracked === true && goals.kills !== undefined && totals.kills !== undefined;
     var grid = byId("sky-totals");
     clear(grid);
-    grid.appendChild(S.statCard("Duremudira clears", num(totals.clears)));
+    if (tracked) {
+      grid.appendChild(S.statCard("Duremudira kills", num(totals.kills)));
+      grid.appendChild(S.statCard("Tower clears", num(totals.clears)));
+    } else {
+      grid.appendChild(S.statCard("Duremudira clears", num(totals.clears)));
+    }
     grid.appendChild(S.statCard("Floors climbed", num(totals.floors)));
     grid.appendChild(S.statCard("Hunters with a clear", num(totals.players)));
     grid.appendChild(S.statCard("Last clear", data.lastActivity ? S.when(data.lastActivity) : "None yet"));
-    byId("sky-goals-note").textContent = "goals per district: " + num(goals.clears) + " clears, " + num(goals.floors) + " floors";
+    byId("sky-goals-note").textContent = tracked
+      ? "goals per district: " + num(goals.kills) + " Duremudira kills, " + num(goals.floors) + " floors"
+      : "goals per district: " + num(goals.clears) + " clears, " + num(goals.floors) + " floors";
+    var wasTracked = killsTracked;
+    killsTracked = tracked;
+    document.querySelector('#sky-board-chips [data-board="kills"]').hidden = !tracked;
+    if (wasTracked !== tracked && lastBoard) renderBoard(lastBoard);
 
     var list = byId("sky-districts");
     clear(list);
@@ -55,8 +72,13 @@
       head.appendChild(el("span", "badge" + (d.shownInGame ? " good" : ""), d.shownInGame ? "Shown in town" : "Not shown in town"));
       card.appendChild(head);
       var bars = el("ol", "weapon-bars sky-bars");
-      bars.appendChild(S.bar("Duremudira clears", d.clearsPercent || 0,
-        num(d.clears) + " / " + num(goals.clears) + (d.clearsGoalReached ? " · done" : ""), d.clearsGoalReached));
+      if (tracked) {
+        bars.appendChild(S.bar("Duremudira kills", d.killsPercent || 0,
+          num(d.kills) + " / " + num(goals.kills) + (d.killsGoalReached ? " · done" : ""), d.killsGoalReached));
+      } else {
+        bars.appendChild(S.bar("Duremudira clears", d.clearsPercent || 0,
+          num(d.clears) + " / " + num(goals.clears) + (d.clearsGoalReached ? " · done" : ""), d.clearsGoalReached));
+      }
       bars.appendChild(S.bar("Floors", d.floorsPercent || 0,
         num(d.floors) + " / " + num(goals.floors) + (d.floorsGoalReached ? " · done" : ""), d.floorsGoalReached));
       card.appendChild(bars);
@@ -68,7 +90,7 @@
 
   /* ---- Leaderboard ---- */
 
-  var BOARDS = { floors: "Floors climbed", clears: "Duremudira clears" };
+  var BOARDS = { floors: "Floors climbed", kills: "Duremudira kills", clears: "Tower clears" };
   var state = { board: "floors", district: "all", period: "all" };
   var boardKey = "";
 
@@ -76,6 +98,25 @@
     Array.prototype.forEach.call(byId(groupId).querySelectorAll(".chip"), function (chip) {
       chip.setAttribute("aria-pressed", chip.getAttribute(attribute) === value ? "true" : "false");
     });
+  }
+
+  // The table's second number column: floors board shows kills (clears when kills are not tracked),
+  // the kills and clears boards show floors.
+  function renderBoard(data) {
+    var holder = byId("sky-board");
+    var board = data.board || state.board;
+    var other = board === "floors" ? (killsTracked ? "kills" : "clears") : "floors";
+    byId("sky-board-note").textContent = num(data.hunters) + (data.hunters === 1 ? " hunter" : " hunters")
+      + (data.from ? " · since " + S.when(data.from) : "");
+    clear(holder);
+    holder.appendChild(S.table(
+      [["#", "rank"], ["Hunter"], [BOARDS[board], "num"], [BOARDS[other], "num"], ["Guild"], ["Last clear"]],
+      (data.entries || []).map(function (e) {
+        return [String(e.rank), S.hunterLink(e.charId, e.name), num(e.value), num(e[other]),
+          e.guildId ? S.guildLink(e.guildId, e.guildName) : (e.guildName || "-"), S.when(e.lastAt)];
+      }),
+      state.period === "week" ? "Nobody has cleared a tower quest this week yet."
+        : "Nobody has cleared a tower quest yet. Be the first!"));
   }
 
   function showBoard() {
@@ -94,18 +135,8 @@
       + "&period=" + state.period + "&limit=" + TOP).then(function (data) {
       if (boardKey !== key) return;
       if (!data.tracking) { soon(); return; }
-      var other = state.board === "floors" ? "clears" : "floors";
-      byId("sky-board-note").textContent = num(data.hunters) + (data.hunters === 1 ? " hunter" : " hunters")
-        + (data.from ? " · since " + S.when(data.from) : "");
-      clear(holder);
-      holder.appendChild(S.table(
-        [["#", "rank"], ["Hunter"], [BOARDS[state.board], "num"], [BOARDS[other], "num"], ["Guild"], ["Last clear"]],
-        (data.entries || []).map(function (e) {
-          return [String(e.rank), S.hunterLink(e.charId, e.name), num(e.value), num(e[other]),
-            e.guildId ? S.guildLink(e.guildId, e.guildName) : (e.guildName || "-"), S.when(e.lastAt)];
-        }),
-        state.period === "week" ? "Nobody has cleared a tower quest this week yet."
-          : "Nobody has cleared a tower quest yet. Be the first!"));
+      lastBoard = data;
+      renderBoard(data);
     }).catch(function (error) {
       if (boardKey !== key || failed(error)) return;
       placeholder(holder, "Could not load this board. Try again in a moment.");
