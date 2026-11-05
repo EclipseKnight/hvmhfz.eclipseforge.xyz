@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 /* Checks the Road builder page (road.html, js/road.js, js/road-help.js) in headless Chromium on a fake API
    with a small made-up Road (no game data):
-   - every element with data-help gets one "?" circle with its HELP text, named after its field and
-     described by its text box; the entry tables' column headers get one each (Entry ... Level);
+   - help only where the label doesn't say it: exactly Checks, the solo tick, and the Second monster, Weight,
+     Forced and Level columns (6 circles on the page, no others); every element with data-help gets one "?"
+     circle with its HELP text, named after its field and described by its text box; the entry tables' column
+     headers get four (Second monster ... Level); the "How the Road builder works" note holds the rest;
+     the circle is a quiet 16px ring in a tap area (22px, 30px on touch) that doesn't change the header's height;
    - at 1280x800 hovering a header's circle shows its text box whole on screen (not cut by the table's
      scroll box), and leaving hides it; at 375x667 the tables become cards, the column key above them shows,
      a tap keeps the box open inside the screen, a second tap, a tap elsewhere and Escape close it;
@@ -28,6 +31,7 @@ const shots = process.env.SHOTS;
 async function shot(page, name) {
   if (!shots) return;
   fs.mkdirSync(shots, { recursive: true });
+  await page.waitForTimeout(250); // the text box fades in
   await page.screenshot({ path: path.join(shots, "road-help-" + name + ".png") });
 }
 const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json",
@@ -139,16 +143,36 @@ async function desktop(browser, base) {
         const tip = th.querySelector(".help-tip");
         return tip ? tip.getAttribute("data-help-key") : "-";
       });
-      out.count = document.querySelectorAll(".help-tip").length;
+      out.all = Array.prototype.map.call(document.querySelectorAll(".road-page .help-tip"), (t) => t.getAttribute("data-help-key"));
+      out.all = out.all.filter((k, i) => out.all.indexOf(k) === i).sort(); // the phone key repeats the columns
       out.unknown = Object.keys(help).filter((k) => !document.querySelector(".help-tip[data-help-key='" + k + "']"));
       return out;
     });
     check("desktop: every data-help has a circle", tips.missing.length === 0, tips.missing.join(", "));
     check("desktop: circles have their text and name", tips.wrong.length === 0, tips.wrong.join(", "));
     check("desktop: column headers have circles", JSON.stringify(tips.headers) ===
-      JSON.stringify(["entry", "monster", "monster2", "weight", "forced", "level"]), JSON.stringify(tips.headers));
+      JSON.stringify(["-", "-", "monster2", "weight", "forced", "level"]), JSON.stringify(tips.headers));
+    check("desktop: only the chosen fields have circles", JSON.stringify(tips.all) ===
+      JSON.stringify(["checks", "solo", "monster2", "weight", "forced", "level"].sort()), JSON.stringify(tips.all));
+    check("desktop: the how-it-works note is there and closed", await page.evaluate(() => {
+      const d = document.querySelector("details.road-howto");
+      return !!d && !d.open && /Floors and records/.test(d.textContent) && /9,669 bytes/.test(d.textContent);
+    }));
+    const look = await page.evaluate(() => {
+      const t = document.querySelector("#road-table-0-0 thead .help-tip");
+      const th = t.closest("th");
+      const before = getComputedStyle(t, "::before");
+      return { w: t.getBoundingClientRect().width, ring: before.width, th: th.getBoundingClientRect().height };
+    });
+    check("desktop: the circle is a 16px ring in a 22px tap area", look.ring === "16px" && look.w === 22, JSON.stringify(look));
+    check("desktop: a circle doesn't grow the header row", await page.evaluate(() => {
+      const ths = Array.prototype.slice.call(document.querySelectorAll("#road-table-0-0 thead th"));
+      const tip = ths[ths.length - 1].querySelector(".help-tip");
+      const noTip = ths[0]; // Entry has none
+      return Math.abs(ths[ths.length - 1].getBoundingClientRect().height - noTip.getBoundingClientRect().height) < 0.5 && !!tip;
+    }));
     check("desktop: every HELP text is used", tips.unknown.length === 0, tips.unknown.join(", "));
-    check("desktop: the phone column key is hidden", !(await page.locator(".road-key-phone").first().isVisible()));
+    check("desktop: the phone column key is hidden", !(await page.locator(".road-key-phones").isVisible()));
 
     // Hover the Level header's circle: the box shows whole, on screen; leaving hides it.
     const levelTip = page.locator("#road-table-0-0 thead th .help-tip[data-help-key=level]");
@@ -172,6 +196,21 @@ async function desktop(browser, base) {
     await levelTip.click();
     check("desktop: a second click closes it", !(await pop.isVisible()));
     await shot(page, "desktop-table");
+    if (shots) {
+      await page.evaluate(() => { document.documentElement.style.scrollBehavior = "auto"; document.querySelector("details.road-howto").open = true; });
+      await page.locator("details.road-howto").scrollIntoViewIfNeeded();
+      await page.evaluate(() => window.scrollBy(0, -150));
+      await shot(page, "desktop-top-howto");
+      await page.evaluate(() => { document.querySelector("details.road-howto").open = false; });
+      await page.locator("#road-solo-check").scrollIntoViewIfNeeded().catch(() => {});
+      await page.locator(".road-page h2 .help-tip").first().scrollIntoViewIfNeeded();
+      await page.locator(".road-page h2 .help-tip").first().hover();
+      await shot(page, "desktop-checks-hover");
+      await page.mouse.move(5, 5);
+      await page.locator("#road-table-0-0 thead .help-tip[data-help-key=weight]").focus();
+      await shot(page, "desktop-weight-focus");
+      await page.mouse.move(5, 5);
+    }
 
     // The Level picker: entry 0 (Monster 1 at 53, +0x04 10): 53 and 78 are used with it, the rest of 0-83 not.
     const levelBtn = page.locator("#road-table-0-0 tbody tr").nth(0).locator("td[data-label=Level] .bui-picker-btn");
@@ -238,9 +277,9 @@ async function desktop(browser, base) {
 async function phone(browser, base) {
   const { page, errors } = await open(browser, base, NO_LEVEL_POLICY, [375, 667]);
   try {
-    check("phone: the column key shows", await page.locator(".road-key-phone[data-help=level]").isVisible());
+    check("phone: the column key shows", await page.locator(".road-key-phones [data-help=level]").isVisible());
     check("phone: the table headers are hidden", !(await page.locator("#road-table-0-0 thead").isVisible()));
-    const tip = page.locator(".road-key-phone[data-help=level] .help-tip");
+    const tip = page.locator(".road-key-phones [data-help=level] .help-tip");
     const pop = page.locator("#" + await tip.getAttribute("aria-describedby"));
     await tip.tap();
     check("phone: a tap opens the box", await pop.isVisible() && (await tip.getAttribute("aria-expanded")) === "true");
@@ -249,7 +288,7 @@ async function phone(browser, base) {
     check("phone: the box fits the screen", box && box.x >= 0 && box.y >= 0 && box.x + box.width <= 375 && box.y + box.height <= 667,
       JSON.stringify(box));
     const size = await tip.boundingBox();
-    check("phone: the circle is big enough to tap", size && size.width >= 24 && size.height >= 24, JSON.stringify(size));
+    check("phone: the tap area is big enough to tap", size && size.width >= 28 && size.height >= 28, JSON.stringify(size));
     await tip.tap();
     check("phone: a second tap closes it", !(await pop.isVisible()));
     await tip.tap();
@@ -258,6 +297,15 @@ async function phone(browser, base) {
     await tip.tap();
     await page.keyboard.press("Escape");
     check("phone: Escape closes it", !(await pop.isVisible()));
+    if (shots) {
+      await page.locator("#road-table-0-0").scrollIntoViewIfNeeded();
+      await page.evaluate(() => { document.querySelector(".road-key-phones").scrollIntoView({ block: "start" }); window.scrollBy(0, -70); });
+      await shot(page, "phone-key-cards");
+      await page.evaluate(() => { const t = document.querySelectorAll(".road-page h2 .help-tip"); t[0].scrollIntoView({ block: "center" }); });
+      await page.locator(".road-page h2 .help-tip").first().tap();
+      await shot(page, "phone-checks");
+      await page.keyboard.press("Escape");
+    }
     const width = await page.evaluate(() => document.documentElement.scrollWidth);
     check("phone: no sideways scroll", width <= 375, String(width));
     const levelBtn = page.locator("#road-table-0-0 tbody tr").nth(0).locator("td[data-label=Level] .bui-picker-btn");
