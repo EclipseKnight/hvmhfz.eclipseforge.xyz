@@ -9,6 +9,8 @@
   "use strict";
 
   var FLAG_FORCED = 2;
+  // +0x04 of a Zenith monster (js/road-rules.js VARIANT_ZENITH): such an entry is named "Zenith <name>".
+  var VARIANT_ZENITH = 16;
 
   var FLOOR_FIELDS = [
     ["table", "table"],
@@ -68,15 +70,23 @@
 
   function named(nameOf, id) { return id ? nameOf(id) : "none"; }
 
+  function zenith(en) { return en.unk04 === VARIANT_ZENITH; }
+
+  // The entry's first monster in its form: "Zenith Rathalos" or "Rathalos".
+  function first(en, nameOf) { return en.monster && zenith(en) ? "Zenith " + nameOf(en.monster) : named(nameOf, en.monster); }
+
   function pair(en, nameOf) {
-    return named(nameOf, en.monster) + (en.monster2 ? " with " + nameOf(en.monster2) : "");
+    return first(en, nameOf) + (en.monster2 ? " with " + nameOf(en.monster2) : "");
   }
 
   function entryParts(a, b, nameOf) {
     var parts = [];
-    if (a.monster !== b.monster) parts.push(change("monster", named(nameOf, a.monster), named(nameOf, b.monster)));
+    var form = zenith(a) !== zenith(b);
+    if (a.monster !== b.monster || form) parts.push(change("monster", first(a, nameOf), first(b, nameOf)));
     if (a.monster2 !== b.monster2) parts.push(change("second monster", named(nameOf, a.monster2), named(nameOf, b.monster2)));
     ENTRY_FIELDS.forEach(function (f) {
+      // A change of form is the monster line above; its +0x04 (16 or not) says nothing more.
+      if (f[0] === "unk04" && form) return;
       if (a[f[0]] !== b[f[0]]) parts.push(change(f[1], number(a[f[0]]), number(b[f[0]])));
     });
     var forcedA = (a.flags & FLAG_FORCED) !== 0;

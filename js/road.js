@@ -29,7 +29,8 @@
   var readOnly = false;
   var refreshers = [];      // one function per drawn row; each updates its row from `road` and `problems`
   var openTables = {};      // "mode:table" -> true while its <details> is open
-  var monsterOptions = null; // the picker's monster list, built once: [with None, without None]
+  var monsterOptions = null; // the pickers' monster lists, built once: [second monster, with None; first monster,
+                             // with the Zenith forms as negative ids]
   var timer = null;
 
   /* ---------- helpers ---------- */
@@ -187,6 +188,19 @@
   function baseEntry(m, t, e) {
     var table = baseMode(m).tables[t];
     return table && e < table.length ? table[e] : null;
+  }
+
+  // The first monster of an entry in a form (zenith true: its Zenith form). "zenith" goes in the edits only when
+  // the monster would come out in the other form without it (js/road-rules.js copyForm, as the server applies it).
+  function setEntryForm(m, t, e, monster, zenith) {
+    setEntryField(m, t, e, "monster", monster);
+    var ee = entryEdit(m, t, e, true);
+    delete ee.zenith;
+    var parsed = Rules.parseEdits(edits);
+    var without = parsed.edits ? Rules.apply(pool.base, parsed.edits, Rules.allMonsters()).road : null;
+    var en = without && without.modes[m] && without.modes[m].tables[t] ? without.modes[m].tables[t][e] : null;
+    if (en && Rules.isZenith(en) !== zenith) ee.zenith = zenith;
+    prune();
   }
 
   function setEntryField(m, t, e, field, value) {
@@ -416,7 +430,8 @@
   /* ---------- tables ---------- */
 
   // Any of the 176 known monsters may go on the Road (owner, 2026-10-28). The ones the live Road uses come
-  // first; the others are new to the Road, so they are listed apart. Each option shows the monster's icon.
+  // first, then the Zenith forms (first monster only: "Zenith <name>", value -id, for the monsters the base
+  // Road gives one), then those new to the Road. Each option shows the monster's icon.
   function buildMonsterOptions() {
     var onRoad = {};
     Rules.monsters(pool.base).forEach(function (id) { onRoad[id] = true; });
@@ -425,16 +440,33 @@
     ids.sort(function (a, b) {
       return (onRoad[a] ? 0 : 1) - (onRoad[b] ? 0 : 1) || monsterName(a).localeCompare(monsterName(b)) || a - b;
     });
-    var list = ids.map(function (i) {
+    var normal = ids.map(function (i) {
       return { value: i, label: monsterName(i), group: onRoad[i] ? "On the Road now" : "New to the Road" };
     });
-    monsterOptions = [[{ value: 0, label: "None" }].concat(list), list];
+    var zenithIds = Object.keys(Rules.zenithMonsters(pool.base)).map(Number);
+    zenithIds.sort(function (a, b) { return monsterName(a).localeCompare(monsterName(b)) || a - b; });
+    var allowed = policyList("entryFields").indexOf("zenith") >= 0;
+    var zenith = zenithIds.map(function (i) {
+      var opt = { value: -i, label: zenithName(i), group: "Zenith forms" };
+      if (!allowed) { opt.disabled = true; opt.hint = "not in this rotation"; }
+      return opt;
+    });
+    var onRoadCount = normal.filter(function (o) { return onRoad[o.value]; }).length;
+    var first = normal.slice(0, onRoadCount).concat(zenith, normal.slice(onRoadCount));
+    monsterOptions = [[{ value: 0, label: "None" }].concat(normal), first];
   }
+
+  function zenithName(id) { return "Zenith " + monsterName(id); }
+
+  // The first monster's picker value for an entry: -id for the Zenith form.
+  function formValue(en) { return Rules.isZenith(en) && en.monster ? -en.monster : en.monster; }
 
   function monsterPicker(withNone, label, disabled, onChange) {
     return UI.picker({
       options: monsterOptions[withNone ? 0 : 1], value: 0, kind: "monster", compact: true, showIds: true,
-      label: label, disabled: disabled, unknownLabel: monsterName, onChange: onChange
+      label: label, disabled: disabled, onChange: onChange,
+      iconOf: Math.abs, idOf: Math.abs,
+      unknownLabel: function (v) { return v < 0 ? zenithName(-v) : monsterName(v); }
     });
   }
 
@@ -453,7 +485,7 @@
     }
     cell("Entry", document.createTextNode(String(e)), "rank");
     var monster = monsterPicker(false, "Monster of entry " + e, !can("monster"), function (v) {
-      setEntryField(m, t, e, "monster", v); refreshSoon();
+      setEntryForm(m, t, e, Math.abs(v), v < 0); refreshSoon();
     });
     cell("Monster", monster.el);
     var second = monsterPicker(true, "Second monster of entry " + e, !can("monster2"), function (v) {
@@ -485,13 +517,13 @@
       var en = road.modes[m].tables[t][e];
       if (!en) { row.hidden = true; return; }
       row.hidden = false;
-      monster.setValue(en.monster);
+      monster.setValue(formValue(en));
       second.setValue(en.monster2);
       weight.setValue(en.weight);
       forced.checked = (en.flags & Rules.FLAG_FORCED) !== 0;
       level.textContent = String(en.level);
       var base = baseEntry(m, t, e);
-      var changed = !base || base.monster !== en.monster || base.monster2 !== en.monster2 ||
+      var changed = !base || formValue(base) !== formValue(en) || base.monster2 !== en.monster2 ||
         base.weight !== en.weight || ((base.flags ^ en.flags) & Rules.FLAG_FORCED) !== 0;
       row.classList.toggle("is-changed", changed);
       row.classList.toggle("has-problem", problemHere(function (p) { return p.mode === m && p.table === t && p.entry === e; }));

@@ -14,6 +14,10 @@ function entry(monster, monster2, weight, level, flags) {
   return { monster: monster, unk04: 0, monster2: monster2, unk0c: 0, level: level, unk14: -1, weight: weight, flags: flags };
 }
 
+function zenith(monster, weight, level) {
+  return { monster: monster, unk04: 16, monster2: 0, unk0c: 0, level: level, unk14: -1, weight: weight, flags: 0 };
+}
+
 function floor(n, table) { return { floor: n, table: table, loop: 0, points: 1, points2: 1, bonus: 0 }; }
 
 const base = {
@@ -35,10 +39,15 @@ const base = {
 const NAMES = { 1: "Alpha", 2: "Bravo", 3: "Charlie", 4: "Delta", 5: "Echo", 6: "Foxtrot" };
 function nameOf(id) { return NAMES[id] || "Unknown monster " + id; }
 
-function run(edits) {
-  const applied = rules.apply(base, rules.parseEdits(edits).edits);
+// The same Road with a third mode 0 table of Zenith monsters (+0x04 16, level 9), for the Zenith case.
+const zenithBase = JSON.parse(JSON.stringify(base));
+zenithBase.modes[0].tables.push([zenith(5, 10, 9), zenith(4, 10, 9), entry(1, 0, 10, 9, 0)]);
+
+function run(edits, onBase) {
+  const from = onBase || base;
+  const applied = rules.apply(from, rules.parseEdits(edits).edits);
   if (applied.problems.length) throw new Error("bad test edits: " + applied.problems[0].message);
-  return summary.summarize(base, applied.road, nameOf);
+  return summary.summarize(from, applied.road, nameOf);
 }
 
 const cases = [
@@ -111,12 +120,42 @@ const cases = [
         tables: ["Table 0, entry 2 (Charlie): weight 10 → 0"]
       }]
     }
+  },
+  {
+    // Echo is Zenith in the base's table 2 (+0x04 16, level 9): "zenith" takes that entry's fields.
+    name: "Zenith forms",
+    base: zenithBase,
+    edits: {
+      modes: [{
+        mode: 0,
+        entries: [
+          { table: 0, entry: 0, monster: 5, zenith: true },
+          { table: 2, entry: 0, zenith: false },
+          { table: 2, entry: 1, monster: 4, weight: 1, zenith: true }
+        ]
+      }]
+    },
+    want: {
+      count: 3,
+      road: [],
+      modes: [{
+        mode: 0,
+        title: "Mode 0: open Road",
+        floors: [],
+        tables: [
+          "Table 0, entry 0 (Alpha): monster Alpha → Zenith Echo, level 1 → 9",
+          // Echo alone is never normal in this base: the fields of table 2's first normal entry (level 9).
+          "Table 2, entry 0 (Zenith Echo): monster Zenith Echo → Echo",
+          "Table 2, entry 1 (Zenith Delta): weight 10 → 1"
+        ]
+      }]
+    }
   }
 ];
 
 let failed = 0;
 cases.forEach((c) => {
-  const got = JSON.stringify(run(c.edits), null, 2);
+  const got = JSON.stringify(run(c.edits, c.base), null, 2);
   const want = JSON.stringify(c.want, null, 2);
   if (got === want) {
     console.log("ok   " + c.name);

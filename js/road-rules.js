@@ -20,7 +20,7 @@
    a missing key means the default below, which is the contract's default:
      modes           [0]                                    modes players may edit
      floorFields     ["table"]                              floor fields: table, loop, points, points2, bonus
-     entryFields     ["monster","monster2","weight","forced"]
+     entryFields     ["monster","monster2","weight","forced","zenith"]
                                                             entry fields: also level, unk04, unk0c, unk14, flags
      floorCount      false                                  may change a mode's floor count
      modeCount       false                                  may change the mode count
@@ -36,6 +36,8 @@
 
   var FLAG_FORCED = 2;
   var FLAG_LOCKED = 8;
+  // +0x04 of a Zenith monster (Go VariantZenith): the quest slot variant the client tests with 0x10.
+  var VARIANT_ZENITH = 16;
   var MIN_MONSTERS = 3;
   var MAX_POINTS = 100;
 
@@ -84,6 +86,11 @@
     return GUIDE_NAMES[id] || MONSTER_NAMES[id];
   }
 
+  // An entry's monster as the pages show it: "Zenith <name>" when the entry is the Zenith form.
+  function entryName(id, zenith) {
+    return (zenith ? "Zenith " : "") + displayName(id);
+  }
+
   // Ids 1 to KNOWN_MONSTERS, as extra: every monster the game knows (Go road.AllMonsters).
   function allMonsters() {
     var ids = {};
@@ -100,7 +107,7 @@
   var DEFAULT_POLICY = {
     modes: [0],
     floorFields: ["table"],
-    entryFields: ["monster", "monster2", "weight", "forced"],
+    entryFields: ["monster", "monster2", "weight", "forced", "zenith"],
     floorCount: false,
     modeCount: false,
     maxAddedEntries: 64,
@@ -122,7 +129,7 @@
     mode: { mode: "int", floorCount: "int", floors: ["floor"], entries: ["entry"] },
     floor: { floor: "int", table: "u32", loop: "u32", points: "f32", points2: "f32", bonus: "u32" },
     entry: { table: "int", entry: "int", monster: "u32", monster2: "u32", weight: "u32", forced: "bool",
-             level: "u32", unk04: "u32", unk0c: "u32", unk14: "i32", flags: "u32" }
+             level: "u32", unk04: "u32", unk0c: "u32", unk14: "i32", flags: "u32", zenith: "bool" }
   };
 
   function isObject(v) { return v !== null && typeof v === "object" && !Array.isArray(v); }
@@ -247,23 +254,77 @@
     return drawn;
   }
 
+  function isZenith(e) { return e.unk04 === VARIANT_ZENITH; }
+
+  // The base entry that gives a monster its Zenith form (zenith true) or its normal form (Go copyForm),
+  // searched as copyFrom searches: the same pair in that form in the same table, else in the same mode at
+  // the slot's level, else anywhere in the same mode, else in any mode. A Zenith form must be one the base
+  // gives that pair. A normal form for a pair the base never uses in it comes from the first drawn normal
+  // entry with a second monster or not, as the pair, in the same table, else in the same mode.
+  function copyForm(base, mode, table, monster, monster2, level, zenith) {
+    function sameForm(e) { return e.monster === monster && e.monster2 === monster2 && isZenith(e) === zenith; }
+    if (mode < base.modes.length && table < base.modes[mode].tables.length) {
+      var own = base.modes[mode].tables[table];
+      for (var i = 0; i < own.length; i++) if (sameForm(own[i])) return own[i];
+    }
+    var modes = [mode];
+    for (var m = 0; m < base.modes.length; m++) if (m !== mode) modes.push(m);
+    for (var k = 0; k < modes.length; k++) {
+      var index = modes[k];
+      if (index >= base.modes.length) continue;
+      var first = null;
+      var tables = base.modes[index].tables;
+      for (var t = 0; t < tables.length; t++) {
+        for (var j = 0; j < tables[t].length; j++) {
+          var e = tables[t][j];
+          if (!sameForm(e)) continue;
+          if (k === 0 && e.level === level) return e;
+          if (first === null) first = e;
+        }
+      }
+      if (first !== null) return first;
+    }
+    if (zenith || mode >= base.modes.length) return null;
+    function drawnNormal(c) {
+      return c.monster !== 0 && c.weight > 0 && !isZenith(c) && (c.monster2 !== 0) === (monster2 !== 0);
+    }
+    var modeTables = base.modes[mode].tables;
+    if (table < modeTables.length) {
+      for (var d = 0; d < modeTables[table].length; d++) if (drawnNormal(modeTables[table][d])) return modeTables[table][d];
+    }
+    for (var u = 0; u < modeTables.length; u++) {
+      for (var v = 0; v < modeTables[u].length; v++) if (drawnNormal(modeTables[u][v])) return modeTables[u][v];
+    }
+    return null;
+  }
+
+  // Makes one entry edit; returns why it cannot be made (a form the Road has no entry for), or "".
   function applyEntry(base, extra, mode, table, en, ee) {
     var newPair = (ee.monster !== undefined && ee.monster !== en.monster) ||
       (ee.monster2 !== undefined && ee.monster2 !== en.monster2);
     if (ee.monster !== undefined) en.monster = ee.monster;
     if (ee.monster2 !== undefined) en.monster2 = ee.monster2;
+    function copyFields(t) {
+      var forced = (en.flags & FLAG_FORCED) >>> 0;
+      en.unk04 = t.unk04;
+      en.unk0c = t.unk0c;
+      en.level = t.level;
+      en.unk14 = t.unk14;
+      en.flags = ((sameFlags(t.flags)) | forced) >>> 0;
+    }
     var given = ee.level !== undefined || ee.unk04 !== undefined || ee.unk0c !== undefined ||
       ee.unk14 !== undefined || ee.flags !== undefined;
     if (newPair && !given) {
       var t = copyFrom(base, extra, mode, table, en.monster, en.monster2, en.level);
-      if (t) {
-        var forced = (en.flags & FLAG_FORCED) >>> 0;
-        en.unk04 = t.unk04;
-        en.unk0c = t.unk0c;
-        en.level = t.level;
-        en.unk14 = t.unk14;
-        en.flags = ((sameFlags(t.flags)) | forced) >>> 0;
-      }
+      if (t) copyFields(t);
+    }
+    var why = "";
+    if (ee.zenith !== undefined && isZenith(en) !== ee.zenith) {
+      var z = copyForm(base, mode, table, en.monster, en.monster2, en.level, ee.zenith);
+      if (z) copyFields(z);
+      else if (ee.zenith && en.monster2 !== 0) why = "a Zenith monster cannot have a second monster.";
+      else if (ee.zenith) why = "monster " + en.monster + " has no Zenith form on the Road.";
+      else why = "monster " + en.monster + " has no normal form on the Road.";
     }
     if (ee.level !== undefined) en.level = ee.level;
     if (ee.unk04 !== undefined) en.unk04 = ee.unk04;
@@ -275,6 +336,7 @@
       if (ee.forced) en.flags = (en.flags | FLAG_FORCED) >>> 0;
       else en.flags = (en.flags & ~FLAG_FORCED) >>> 0;
     }
+    return why;
   }
 
   // The base with the edits made. Edits that point nowhere are reported with the rule "bad-edit" and
@@ -323,7 +385,8 @@
           }
           table.push({ monster: 0, unk04: 0, monster2: 0, unk0c: 0, level: 0, unk14: -1, weight: 0, flags: 0 });
         }
-        applyEntry(base, extra, mn, tn, table[en], ee);
+        var why = applyEntry(base, extra, mn, tn, table[en], ee);
+        if (why) bad("Mode " + mn + " table " + tn + " entry " + en + ": " + why);
       });
       if (me.floorCount !== undefined) {
         if (me.floorCount < 0 || me.floorCount > mode.floors.length) {
@@ -350,6 +413,17 @@
   }
 
   // The monster ids the base uses (first and second monsters, 0 left out), sorted.
+  // The monsters the base gives a Zenith form ({id: true}): the only ones "zenith": true accepts.
+  function zenithMonsters(base) {
+    var ids = {};
+    base.modes.forEach(function (mode) {
+      mode.tables.forEach(function (entries) {
+        entries.forEach(function (e) { if (isZenith(e) && e.monster !== 0 && e.monster2 === 0) ids[e.monster] = true; });
+      });
+    });
+    return ids;
+  }
+
   function monsters(base) {
     var seen = {};
     base.modes.forEach(function (mode) {
@@ -487,7 +561,7 @@
       (me.entries || []).forEach(function (ee) {
         var tn = ee.table === undefined ? 0 : ee.table;
         var en = ee.entry === undefined ? 0 : ee.entry;
-        ["monster", "monster2", "weight", "forced", "level", "unk04", "unk0c", "unk14", "flags"].forEach(function (field) {
+        ["monster", "monster2", "weight", "forced", "level", "unk04", "unk0c", "unk14", "flags", "zenith"].forEach(function (field) {
           if (ee[field] !== undefined && entryFields.indexOf(field) < 0) {
             problems.push(notAllowed(mn, -1, tn, en, "the " + field + " of an entry"));
           }
@@ -537,12 +611,17 @@
     DEFAULT_POLICY: DEFAULT_POLICY,
     FLAG_FORCED: FLAG_FORCED,
     FLAG_LOCKED: FLAG_LOCKED,
+    VARIANT_ZENITH: VARIANT_ZENITH,
     MIN_MONSTERS: MIN_MONSTERS,
     MAX_POINTS: MAX_POINTS,
     MONSTER_NAMES: MONSTER_NAMES,
     KNOWN_MONSTERS: KNOWN_MONSTERS,
     GUIDE_NAMES: GUIDE_NAMES,
     displayName: displayName,
+    entryName: entryName,
+    isZenith: isZenith,
+    zenithMonsters: zenithMonsters,
+    copyForm: copyForm,
     allMonsters: allMonsters,
     parseEdits: parseEdits,
     parseProblem: parseProblem,

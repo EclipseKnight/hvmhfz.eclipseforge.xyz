@@ -38,7 +38,7 @@ field with the JSON's offset and size.
   use, and the JSON's `seen` says so; outside it is untested, not known to break.
 - **builder**: `edits` (an input exists), `shows`, `carried` (in the model, round-trips untouched),
   `should edit` (must follow a field the builder edits, and does not), `not in the model` (the codec keeps
-  these bytes raw).
+  these bytes raw), `derived` (the builder sets it from another control, the notes say which).
 - **confidence**: `confirmed` = offset, size and meaning agree in two or more independent sources;
   `one source` = offset and size are certain (the codec reproduces every quest file byte for byte and the
   client trace reads them there) but the meaning rests on one source; `guess` = no source shows the meaning.
@@ -123,9 +123,11 @@ question.
 |---|---|---|---|---|---|---|---|---|---|
 | `header.monsterSize` | Large-monster size (percent) | header | 0x44 | 2 | u16 | 1..65535 |  | carried | one source |
 | `header.sizeClass` | Size spread class | header | 0x46 | 1 | u8 | 0..4 | 0 = 100-100%; 1 = 100-105%; 2 = 95-110%; 3 = 87-114%; 4 = 85-125% | carried | one source |
-| `header.monsterLevel` | Large-monster level | header | 0x48 | 1 | u8 | 0..255 |  | carried | one source |
+| `header.monsterLevel` | Large-monster level | header | 0x48 | 1 | u8 | 0..255 | 64-67 = Zenith rank 1-4 | edits | one source |
 | `header.secondMonsterLevel` | Second monster level | header | 0x61 | 1 | u8 |  |  | carried | one source |
 | `header.specialFight` | Special fight selector | header | 0x62 | 2 | u16 |  | 0 = off; 2 = monster 0x5c behaviour; 3 = monster 0x5b behaviour | carried | one source |
+| `body.monsterVariants[0-1]` | Large monster form, slots 1-2 | body | 0x91 | 2 (2 x 1) | u8enum |  | 0 = normal, 16 = Zenith | derived | confirmed |
+| `body.monsterVariants[2-4]` | Large monster form, slots 3-5 | body | 0xb6 | 3 (3 x 1) | u8enum |  | 0 = normal, 16 = Zenith | derived | confirmed |
 | `body.iconMonsters[]` | Quest info monster icons (5) | body | 0xb9 | 5 (5 x 1) | u8enum | 0..176 | 0 = end of the list; monster-ids.json | edits | confirmed |
 | `smallSpawnGroupOffsets[]` | Small-monster group offsets | smallSpawnSlot | 0x00 | 4 | u32 |  |  | carried | confirmed |
 | `largeSpawnAreas[].areaId` | Large spawn record number | spawnArea | 0x00 | 4 | u32 | 1..1 |  | carried | one source |
@@ -195,7 +197,7 @@ question.
 | `body.variantIndex` | Variant row | body | 0x93 | 1 | u8 |  |  | carried | one source |
 | `body.variantFlags1` | Variant flags 1 | body | 0x97 | 1 | bitfield |  | bits 0, 1, 2, 3, 7 (JSON) | carried | one source |
 | `body.variantFlags2` | Variant flags 2 | body | 0x98 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 5, 6, 7 (JSON) | carried | one source |
-| `body.variantFlags3` | Variant flags 3 | body | 0x99 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 5, 6, 7 (JSON) | carried | confirmed |
+| `body.variantFlags3` | Variant flags 3 | body | 0x99 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 5, 6, 7 (JSON); bit 4 with a Zenith monster | derived | confirmed |
 | `body.specialListTab` | Special list tab | body | 0xa0 | 2 | u16 |  | 0 = tabs 1-4; 1 = tab 5 only | carried | one source |
 | `body.infoNumber` | Info page 2 number | body | 0xbe | 2 | u16 |  |  | carried | guess |
 | `body.flagsAtC0` | Body flags at +0xc0 | body | 0xc0 | 4 | bitfield |  | bits 1 (JSON) | carried | one source |

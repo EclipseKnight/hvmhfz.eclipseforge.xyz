@@ -81,11 +81,12 @@ fields.forEach(function (f) {
 
 function offsetOf(f) { return parseInt(f.offset, 16); }
 
-/** Fields of a struct whose key ends in the property name the codec uses. */
+/** Fields of a struct whose key ends in the property name the codec uses. A key may end in "[]" or name the
+    elements it holds ("body.monsterVariants[2-4]": one array kept at two offsets). */
 function fieldsFor(struct, prop) {
   return fields.filter(function (f) {
     if (f.struct !== struct || !inCodec(f)) return false;
-    const key = f.key.replace(/\[\]$/, "");
+    const key = f.key.replace(/\[[^\]]*\]$/, "");
     return key === prop || key.endsWith("." + prop);
   });
 }
@@ -236,7 +237,11 @@ if (fs.existsSync(CODEC)) {
   const reads = codecReads(methods);
   const written = new Set();
   writes.forEach(function (w) {
-    const found = fieldsFor(w.struct, w.prop);
+    let found = fieldsFor(w.struct, w.prop);
+    // One array kept at two offsets: the write is the part at its offset.
+    if (found.length > 1 && found.some(function (f) { return offsetOf(f) === w.offset; })) {
+      found = found.filter(function (f) { return offsetOf(f) === w.offset; });
+    }
     const what = "QuestCodec." + w.method + " writes " + w.struct + " +0x" + w.offset.toString(16) + " (" + w.prop + ")";
     if (!found.length) { fail(what + ": no field in quest-fields.json"); return; }
     found.forEach(function (f) {

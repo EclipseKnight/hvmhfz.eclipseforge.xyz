@@ -406,7 +406,7 @@
       var text = el("span", "bui-name", opt.label);
       row.appendChild(text);
       if (opt.hint) row.appendChild(el("span", "bui-hint", opt.hint));
-      if (p.showIds) row.appendChild(el("span", "bui-id", "#" + opt.value));
+      if (p.showIds) row.appendChild(el("span", "bui-id", "#" + p.idOf(opt.value)));
       var on = String(opt.value) === current;
       row.setAttribute("aria-selected", on ? "true" : "false");
       if (on) { row.classList.add("is-on"); selectedIndex = shown; }
@@ -501,6 +501,9 @@
    *   label     the accessible name when no field label is attached
    *   compact   smaller, for table cells
    *   showIds   adds the id as a small muted "#id" on each option
+   *   iconOf(value)  the id whose icon a value shows (default the value; the Road builder's Zenith options
+   *             are negative ids with the monster's own icon)
+   *   idOf(value)    the id "#id" and the title show (default the value)
    *   unknownLabel(value)  the text for a value the list does not hold
    *   disabled
    */
@@ -513,7 +516,8 @@
       searchHint: opts.searchHint || "Type a name",
       active: -1
     };
-    p.icon = function (v) { return iconFor(opts.kind, v); };
+    p.icon = function (v) { return iconFor(opts.kind, opts.iconOf ? opts.iconOf(v) : v); };
+    p.idOf = function (v) { return opts.idOf ? opts.idOf(v) : v; };
     var wrap = el("span", "bui-picker" + (opts.compact ? " is-compact" : ""));
     var btn = el("button", "bui-picker-btn");
     btn.type = "button";
@@ -549,7 +553,7 @@
       text.textContent = shownLabel;
       iconSlot.textContent = "";
       iconSlot.appendChild(iconNode(p.icon(v)));
-      btn.title = p.problem || (p.showIds && Number(v) ? shownLabel + " (id " + v + ")" : shownLabel);
+      btn.title = p.problem || (p.showIds && Number(v) ? shownLabel + " (id " + p.idOf(v) + ")" : shownLabel);
     };
 
     btn.addEventListener("click", function () {

@@ -232,6 +232,103 @@
     return Number(id) ? (monsterIds[String(id)] || "Unlisted monster (id " + id + ")") : "None";
   }
 
+  /* Zenith forms (body.monsterVariants[0-1] and [2-4], data/quest-fields.json): one byte per slot of the first
+     large-monster list, which the API writes as that list's distinct monsters, first appearance first. 16 there
+     makes that monster Zenith in the whole quest (the client asks by monster id). Offered as "Zenith <name>", with
+     the monster's negative id as the picker value, for the monsters the live quest files make Zenith (the API's
+     QuestCodec.ZENITH_MONSTERS, which refuses any other); only in the first large-monster list, whose five slots
+     the bytes describe. A model without the field (an API from before it) offers none. */
+  var VARIANT_ZENITH = 16;
+  /* Every one of the 617 live quests with a Zenith monster also sets body.variantFlags3 bit 4 (no other quest
+     does) and a Zenith monster level, header.monsterLevel 64 to 67 (Zenith rank 1 to 4; the API refuses a Zenith
+     monster without both). keepForms sets them with the first Zenith monster and undoes them with the last. */
+  var FLAGS3_ZENITH = 0x10;
+  var ZENITH_LEVELS = [64, 65, 66, 67];
+  var levelBeforeZenith = null; // header.monsterLevel before the first Zenith monster, put back after the last
+  var ZENITH_MONSTERS = [11, 15, 17, 21, 48, 51, 74, 76, 80, 83, 95, 99, 103, 109, 110, 111, 112, 121, 129, 140, 141, 142, 170];
+
+  function canZenith(model) {
+    var v = model && model.body && model.body.monsterVariants;
+    return Array.isArray(v) && v.length === 5;
+  }
+
+  /** The first large-monster list's distinct monsters, first appearance first: the slots the variants describe. */
+  function slotMonsters(model) {
+    var ids = [];
+    var first = (model.largeSpawnAreas || [])[0];
+    ((first && first.spawns) || []).forEach(function (spawn) {
+      if (ids.indexOf(spawn.monsterId) < 0) ids.push(spawn.monsterId);
+    });
+    return ids;
+  }
+
+  /** {id: true} for the monsters the quest makes Zenith now. */
+  function zenithSet(model) {
+    var set = {};
+    if (!canZenith(model)) return set;
+    slotMonsters(model).forEach(function (id, i) {
+      if (i < 5 && model.body.monsterVariants[i] === VARIANT_ZENITH) set[id] = true;
+    });
+    return set;
+  }
+
+  /** Runs fn(set), which changes the first list and the Zenith set, then puts each Zenith monster's 16 in its new
+      slot. A slot that is no longer Zenith goes back to 0; other values the file had stay where they are. */
+  function keepForms(model, fn) {
+    var set = zenithSet(model);
+    fn(set);
+    if (!canZenith(model)) return;
+    var ids = slotMonsters(model);
+    var variants = model.body.monsterVariants;
+    var any = false;
+    for (var i = 0; i < 5; i++) {
+      var zenith = i < ids.length && !!set[ids[i]] && ZENITH_MONSTERS.indexOf(ids[i]) >= 0;
+      if (zenith) variants[i] = VARIANT_ZENITH;
+      else if (variants[i] === VARIANT_ZENITH) variants[i] = 0;
+      any = any || zenith;
+    }
+    var flags = model.body.variantFlags3 || 0;
+    model.body.variantFlags3 = any ? (flags | FLAGS3_ZENITH) : (flags & ~FLAGS3_ZENITH);
+    if (!model.header) return;
+    var level = model.header.monsterLevel;
+    if (any && ZENITH_LEVELS.indexOf(level) < 0) {
+      levelBeforeZenith = level;
+      model.header.monsterLevel = ZENITH_LEVELS[0];
+    } else if (!any && ZENITH_LEVELS.indexOf(level) >= 0 && levelBeforeZenith !== null) {
+      model.header.monsterLevel = levelBeforeZenith;
+      levelBeforeZenith = null;
+    }
+  }
+
+  /** The Zenith rank picker (header.monsterLevel 64 to 67), shown while the quest has a Zenith monster. */
+  function zenithRank(model) {
+    var header = model.header;
+    var options = ZENITH_LEVELS.map(function (level, i) {
+      return { value: level, label: "Zenith \u2605" + (i + 1), hint: "monster level " + level };
+    });
+    return fieldFor(F("header.monsterLevel"), "Zenith rank", UI.picker({
+      options: options, value: header.monsterLevel,
+      onChange: writes(function (v) { header.monsterLevel = v; })
+    }), "The level of every large monster in the quest, as Capcom's 1\u2605 to 4\u2605 Zenith quests have it.");
+  }
+
+  /** A monster as the quest has it: "Zenith Rathalos" when the quest makes it Zenith. */
+  function formName(model, id) {
+    return (zenithSet(model)[id] ? "Zenith " : "") + monsterName(id);
+  }
+
+  var zenithList = null;
+  /** monsterOptions with the Zenith forms (value -id), by name. */
+  function zenithOptions() {
+    if (zenithList) return zenithList;
+    var zenith = ZENITH_MONSTERS.filter(function (id) { return monsterIds[String(id)]; }).map(function (id) {
+      return { value: -id, label: "Zenith " + monsterName(id) };
+    });
+    var list = monsterOptions().slice(1).concat(zenith).sort(byLabel);
+    zenithList = [monsterOptions()[0]].concat(list);
+    return zenithList;
+  }
+
   function areasForMap(mapId) {
     return (mapAreas[String(mapId)] || []).slice();
   }
@@ -693,6 +790,9 @@
   function spawnTable(model, spawns, where) {
     var mapId = model.body.mapId;
     var options = areaOptions(mapId);
+    // The first large-monster list holds the slots a Zenith form is kept in (keepForms).
+    var forms = where === "largeSpawnAreas[0]" && canZenith(model);
+    var zenith = forms ? zenithSet(model) : {};
     var rows = spawns.map(function (spawn, index) {
       var areaRef = F("largeSpawnAreas[].spawns[].areaId");
       var area = options.length ? UI.picker({
@@ -705,15 +805,25 @@
       if (options.length && !areaOnMap(spawn.areaId, mapId)) area.setProblem("This area is not part of the chosen map: pick another.");
       return [
         { label: "Monster", ref: F("largeSpawnAreas[].spawns[].monsterId"), node: UI.picker({
-          options: monsterOptions(), value: spawn.monsterId, kind: "monster", compact: true, showIds: true,
-          label: "Monster", unknownLabel: monsterName, onChange: writes(function (v) { spawn.monsterId = v; })
+          options: forms ? zenithOptions() : monsterOptions(), kind: "monster", compact: true, showIds: true,
+          value: zenith[spawn.monsterId] ? -spawn.monsterId : spawn.monsterId, iconOf: Math.abs, idOf: Math.abs,
+          label: "Monster", unknownLabel: function (v) { return v < 0 ? "Zenith " + monsterName(-v) : monsterName(v); },
+          onChange: writes(function (v) {
+            if (!forms) { spawn.monsterId = v; return; }
+            keepForms(model, function (set) {
+              spawn.monsterId = Math.abs(v);
+              if (v < 0) set[-v] = true; else delete set[v];
+            });
+            // A monster is Zenith in the whole quest: its other rows change with it.
+            redraw("monsters");
+          })
         }) },
         { label: "How many", ref: F("largeSpawnAreas[].spawns[].count"), node: UI.numberInput(ranged(F("largeSpawnAreas[].spawns[].count"), {
           value: spawn.count, min: 0, max: 99, label: "How many", onChange: writes(function (v) { spawn.count = v; })
         })) },
         { label: "Area", ref: areaRef, node: area },
         { cls: "bui-row-end", node: UI.button("Remove", function () {
-          spawns.splice(index, 1);
+          keepForms(model, function () { spawns.splice(index, 1); });
           redraw("monsters");
           changed();
         }, "remove", "Remove " + monsterName(spawn.monsterId)) }
@@ -741,7 +851,7 @@
     var goal = model.body.objective0;
     var first = monsterOptions()[1];
     var monster = goal && goal.type !== 0 && !isItemObjective(goal.type) && goal.target ? goal.target : (first ? first.value : 1);
-    spawnsOf(area).push({ monsterId: monster, count: 1, areaId: where });
+    keepForms(model, function () { spawnsOf(area).push({ monsterId: monster, count: 1, areaId: where }); });
     redraw("monsters");
     changed();
   }
@@ -753,7 +863,16 @@
       return p;
     }
     p.appendChild(note("Each row puts monsters in one area of the chosen map. The areas offered are the map's own."));
+    if (canZenith(model)) {
+      p.appendChild(note("\u201cZenith <name>\u201d is the monster's Zenith form, for the monsters that have one. Pick it in the"
+        + " first list of large monsters: a monster is Zenith everywhere in the quest, so its other rows change with it."));
+    }
     var large = model.largeSpawnAreas || [];
+    if (model.header && Object.keys(zenithSet(model)).length) {
+      var rank = grid();
+      rank.appendChild(zenithRank(model));
+      p.appendChild(rank);
+    }
     p.appendChild(UI.subhead("Large monsters"));
     if (!large.length) p.appendChild(UI.table(["Monster", "How many", "Area", ""], [], "No monsters yet."));
     large.forEach(function (area, a) { p.appendChild(spawnTable(model, spawnsOf(area), "largeSpawnAreas[" + a + "]")); });
@@ -1001,7 +1120,7 @@
         + ((b.maxHunters & 7) === 1 ? "solo" : "up to " + ((b.maxHunters & 7) || 4) + " hunters")],
       ["Money", "fee " + Number(b.zenny || 0).toLocaleString() + " zenny, reward " + Number(b.rewardMoney || 0).toLocaleString() + " zenny"],
       ["Objectives", goals.length ? goals.join("; ") : "none set"],
-      ["Monsters", spawns.length ? spawns.map(function (s) { return s.count + " × " + monsterName(s.monsterId); }).join(", ") : "none yet"],
+      ["Monsters", spawns.length ? spawns.map(function (s) { return s.count + " × " + formName(model, s.monsterId); }).join(", ") : "none yet"],
       ["Supplies and rewards", supplies + (supplies === 1 ? " supply item, " : " supply items, ") + rewards + (rewards === 1 ? " reward" : " rewards")]
     ];
     var dl = el("dl", "bui-review");
