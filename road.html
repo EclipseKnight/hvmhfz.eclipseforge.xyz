@@ -107,27 +107,38 @@
       <p class="form-alert" id="road-alert" hidden></p>
       <p class="road-ok" id="road-notice" hidden></p>
 
+      <details class="road-howto">
+        <summary>How the Road builder works</summary>
+        <ul>
+          <li><strong>Drafts.</strong> Roads you are still working on are saved to your account and are not in the vote. Open one to carry on, from any device.</li>
+          <li><strong>Floors and records.</strong> A Road run goes floor by floor. Record N says which table floor N draws its monsters from and how many Road points it gives. The live Road has 60 records on the open Road and 50 on the solo Road; after the last one the game goes back to the loop start, so higher floors reuse the records.</li>
+          <li><strong>Tables.</strong> On each floor the game draws two entries from the floor's table by weight and you pick the fight; an entry with the same monster as the previous floor's pick is left out. Floors can share a table, so changing a table changes every floor that uses it.</li>
+          <li><strong>Points.</strong> The first multiplier is for the floor's own Road points, the second for the run's points total. The live Road keeps the two equal.</li>
+          <li><strong>Check, Submit, Reset.</strong> Check with the server builds the real Road file and runs the same checks, plus one this page can't: the file the game downloads must stay under 9,669 bytes. Submit enters your Road in this rotation's vote (or saves changes to your entry) while submissions are open and nothing is listed under Checks; if it wins and an admin approves it, it becomes the Hunting Road everyone plays. Reset drops every change (click twice to confirm).</li>
+        </ul>
+      </details>
+
         <section class="panel" id="road-play-panel">
           <div class="panel-head"><h2>Road you play in game</h2><span class="panel-note">saved to your account</span></div>
           <p class="note-text">This is what the server pins when you open a quest room. A room can still change it with <code>!road</code>, and anyone on a different Road is moved back to town automatically so their client loads the new one.</p>
           <div class="field">
-            <label for="road-pref-select" data-help="pref">Default Road</label>
+            <label for="road-pref-select">Default Road</label>
             <select id="road-pref-select"><option value="">Follow the live Road</option></select>
           </div>
           <p class="note-text"><a href="/guide-roads.html">How Roads work in game</a>: the commands, and what the rest of the party sees.</p>
           <p class="note-text" id="road-pref-note" aria-live="polite"></p>
-          <button type="button" class="btn btn-primary btn-small" id="road-pref-save" data-help="pref-save">Save Road</button>
+          <button type="button" class="btn btn-primary btn-small" id="road-pref-save">Save Road</button>
         </section>
 
       <div id="road-app" hidden>
 
         <section class="panel" id="road-drafts-panel">
-          <div class="panel-head"><h2 data-help="drafts">Your drafts</h2><span class="panel-note" id="road-drafts-note">autosaved on this account</span></div>
+          <div class="panel-head"><h2>Your drafts</h2><span class="panel-note" id="road-drafts-note">autosaved on this account</span></div>
           <p class="note-text">Unfinished Roads live here, not on the vote list. Save at any time; opening a draft restores it exactly, even from another machine.</p>
-          <button type="button" class="btn btn-primary btn-small" id="road-draft-save" data-help="draft-save">Save draft</button>
+          <button type="button" class="btn btn-primary btn-small" id="road-draft-save">Save draft</button>
           <div class="table-wrap">
             <table class="data-table">
-              <thead><tr><th data-help="draft-name">Draft</th><th data-help="draft-saved">Last saved</th><th></th></tr></thead>
+              <thead><tr><th>Draft</th><th>Last saved</th><th></th></tr></thead>
               <tbody id="road-drafts-list"><tr><td colspan="3" class="empty-cell">Loading your drafts.</td></tr></tbody>
             </table>
           </div>
@@ -138,31 +149,31 @@
           <form id="road-form" class="admin-form" novalidate>
             <div class="admin-grid">
               <div class="field">
-                <label for="road-name" data-help="name">Name</label>
+                <label for="road-name">Name</label>
                 <input id="road-name" type="text" minlength="3" maxlength="40" autocomplete="off" />
                 <p class="note-text">3 to 40 characters.</p>
               </div>
               <div class="field">
-                <label for="road-character" data-help="character">Credit character</label>
+                <label for="road-character">Credit character</label>
                 <select id="road-character"></select>
                 <p class="note-text">Its name is shown publicly as the author.</p>
               </div>
               <div class="field admin-wide">
-                <label for="road-description" data-help="description">Description <span class="field-optional">up to 300 characters</span></label>
+                <label for="road-description">Description <span class="field-optional">up to 300 characters</span></label>
                 <textarea id="road-description" rows="3" maxlength="300"></textarea>
               </div>
             </div>
             <p class="note-text" id="road-window-note"></p>
             <div class="admin-actions" id="road-actions">
-              <button type="button" class="ghost-btn" id="road-check" data-help="check">Check with the server</button>
-              <button type="submit" class="btn btn-primary" id="road-submit" data-help="submit">Submit</button>
-              <button type="button" class="ghost-btn" id="road-reset" data-help="reset">Reset everything to the base</button>
+              <button type="button" class="ghost-btn" id="road-check">Check with the server</button>
+              <button type="submit" class="btn btn-primary" id="road-submit">Submit</button>
+              <button type="button" class="ghost-btn" id="road-reset">Reset everything to the base</button>
             </div>
           </form>
         </section>
 
         <section class="panel" id="road-changes-panel">
-          <div class="panel-head"><h2 data-help="changes">Changes from the base</h2><span class="panel-note" id="road-changes-note"></span></div>
+          <div class="panel-head"><h2>Changes from the base</h2><span class="panel-note" id="road-changes-note"></span></div>
           <div id="road-changes"></div>
         </section>
 
@@ -173,22 +184,20 @@
         </section>
 
         <section class="panel" id="road-floors-panel">
-          <div class="panel-head"><h2 data-help="floors">Floors</h2><span class="panel-note" id="road-floors-note"></span></div>
+          <div class="panel-head"><h2>Floors</h2><span class="panel-note" id="road-floors-note"></span></div>
           <div class="road-solo" id="road-solo" hidden>
             <label data-help="solo"><input type="checkbox" id="road-solo-check" /> Also change the solo Road (the Road you play alone)</label>
             <p class="note-text" id="road-solo-note"></p>
           </div>
-          <p class="road-key"><span class="road-key-item" data-help="mode">Road mode</span></p>
           <div class="chips road-modes" id="road-modes" role="group" aria-label="Road mode"></div>
-          <p class="note-text">Each floor draws its monsters from one table. Pick another table for a floor, or change the tables below. The points multipliers set how many Road points a floor gives: a higher value gives more, up to <span id="road-points-cap">4</span>x.</p>
-          <p class="road-key"><span class="road-key-item" data-help="record">Record</span><span class="road-key-item" data-help="table">Table</span><span class="road-key-item" data-help="open">Open</span><span class="road-key-item" data-help="points">Points ×</span><span class="road-key-item" data-help="points2">Second points ×</span></p>
+          <p class="note-text">Each floor draws its monsters from one table. Pick another table for a floor, or change the tables below. The points multipliers set how many Road points a floor gives: a higher value gives more, up to <span id="road-points-cap">4</span>x. The second one is for the run's points total.</p>
           <div class="road-floors" id="road-floors"></div>
         </section>
 
         <section class="panel" id="road-tables-panel">
-          <div class="panel-head"><h2 data-help="tables">Tables</h2><span class="panel-note" id="road-tables-note"></span></div>
+          <div class="panel-head"><h2>Tables</h2><span class="panel-note" id="road-tables-note"></span></div>
           <p class="note-text">Open a table to change its entries. A higher weight makes a monster more likely. A forced entry is always picked (at most one per table). A table needs at least 3 different monsters with a weight above 0. Any of the game's 176 monsters can go in a table; a monster new to the Road takes its level from the table's other monsters. The level sets the monster's strength (its health, attack and toughness); you can pick any level from 0 to 83; at a level the live Road never uses with that monster it may play at its base strength.</p>
-          <p class="road-key"><span class="road-key-item road-key-phone" data-help="entry">Entry</span><span class="road-key-item road-key-phone" data-help="monster">Monster</span><span class="road-key-item road-key-phone" data-help="monster2">Second monster</span><span class="road-key-item road-key-phone" data-help="weight">Weight</span><span class="road-key-item road-key-phone" data-help="forced">Forced</span><span class="road-key-item road-key-phone" data-help="level">Level</span><span class="road-key-item" data-help="add">Add an entry</span><span class="road-key-item" data-help="remove">Remove the last added entry</span><span class="road-key-item" data-help="reset-table">Reset this table</span></p>
+          <p class="road-key road-key-phones"><span class="road-key-item" data-help="monster2">Second monster</span><span class="road-key-item" data-help="weight">Weight</span><span class="road-key-item" data-help="forced">Forced</span><span class="road-key-item" data-help="level">Level</span></p>
           <div id="road-tables"></div>
         </section>
       </div>
@@ -236,7 +245,7 @@
     <script src="/js/road-summary.js?v=2"></script>
     <script src="/js/signin-next.js"></script>
     <script src="/js/road.js?v=3"></script>
-    <script src="/js/road-help.js?v=2"></script>
+    <script src="/js/road-help.js?v=3"></script>
     <script src="/js/search.js" defer></script>
     <script src="/js/road-preference.js?v=2"></script>
     <script src="/js/road-drafts.js?v=1"></script>
