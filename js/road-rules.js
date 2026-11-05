@@ -20,8 +20,8 @@
    a missing key means the default below, which is the contract's default:
      modes           [0]                                    modes players may edit
      floorFields     ["table"]                              floor fields: table, loop, points, points2, bonus
-     entryFields     ["monster","monster2","weight","forced","zenith"]
-                                                            entry fields: also level, unk04, unk0c, unk14, flags
+     entryFields     ["monster","monster2","weight","forced","zenith","level"]
+                                                            entry fields: also unk04, unk0c, unk14, flags
      floorCount      false                                  may change a mode's floor count
      modeCount       false                                  may change the mode count
      maxAddedEntries 64                                     entries added over the base, all tables together
@@ -107,7 +107,7 @@
   var DEFAULT_POLICY = {
     modes: [0],
     floorFields: ["table"],
-    entryFields: ["monster", "monster2", "weight", "forced", "zenith"],
+    entryFields: ["monster", "monster2", "weight", "forced", "zenith", "level"],
     floorCount: false,
     modeCount: false,
     maxAddedEntries: 64,
@@ -408,8 +408,10 @@
 
   /* ---------- Check (Go rules.go) ---------- */
 
+  // What copied-fields compares (Go keyOf): every field but the monsters, the level, the weight and the
+  // forced flag, and whether there is a second monster.
   function fieldKey(e) {
-    return [e.unk04, e.unk0c, e.level, e.unk14, sameFlags(e.flags), e.monster2 !== 0].join(",");
+    return [e.unk04, e.unk0c, e.unk14, sameFlags(e.flags), e.monster2 !== 0].join(",");
   }
 
   // The monster ids the base uses (first and second monsters, 0 left out), sorted.
@@ -435,6 +437,42 @@
       });
     });
     return Object.keys(seen).map(Number).sort(function (a, b) { return a - b; });
+  }
+
+  /* The level of an entry (+0x10) is the monster's strength level. The client puts it in place of the
+     quest's monster level, and that picks a row of the monster's stat table in the client's mhfemd.bin:
+     multipliers for its health, attack and toughness (the names come from the values). Every monster has
+     84 rows (levels 0 to 83, MAX_LEVEL; the Level research of 2026-11-05 noted the client may add up to 2
+     to the level, which would take 82 and 83 past the table: not confirmed). A row the game never filled in is all 1.0: the monster then plays
+     at its base strength, far weaker. The live Road uses 53 (the open Road), 77 (12 monsters of the open
+     Road, at about 60% of their level-53 health), 78 (the solo Road, about 60% of the health again) and 64
+     to 67 (Zenith entries: the same health, attack rising and damage taken falling with each level).
+     Checked on the client's files, 2026-11-05. Players may pick any level 0 to 83 (owner, 2026-11-05): the
+     rule copied-fields refuses only a level past the table. */
+
+  var MAX_LEVEL = 83;
+
+  var levelIndexBase = null;
+  var levelIndex = null;
+
+  // The levels an entry may take, 0 to MAX_LEVEL, each as {level, withMonster}: withMonster is true when
+  // the base uses the entry's monster at that level, so the game has stats for it there; at the others the
+  // monster may have none and play at its base strength (the builder warns).
+  function levelChoices(base, en) {
+    if (levelIndexBase !== base) {
+      levelIndex = {};
+      base.modes.forEach(function (mode) {
+        mode.tables.forEach(function (entries) {
+          entries.forEach(function (e) { levelIndex[e.monster + ":" + e.level] = true; });
+        });
+      });
+      levelIndexBase = base;
+    }
+    var choices = [];
+    for (var level = 0; level <= MAX_LEVEL; level++) {
+      choices.push({ level: level, withMonster: !!levelIndex[en.monster + ":" + level] });
+    }
+    return choices;
   }
 
   // Every crash rule road breaks except too-big, base being the live file. extra: the monster ids
@@ -496,9 +534,14 @@
           });
           if (!unknown && !copied[fieldKey(en)]) {
             add(RULES.copiedFields, m, -1, t, e,
-              "Mode " + m + " table " + t + " entry " + e + ": level " + en.level + " with +0x04 " + en.unk04 +
+              "Mode " + m + " table " + t + " entry " + e + ": +0x04 " + en.unk04 +
               ", +0x0c " + en.unk0c + ", +0x14 " + en.unk14 + " and flags " + sameFlags(en.flags) +
-              " is not used by any entry of the live Road; copy them from an existing entry.");
+              " are not used by any entry of the live Road; copy them from an existing entry.");
+          }
+          if (!unknown && en.level > MAX_LEVEL) {
+            add(RULES.copiedFields, m, -1, t, e,
+              "Mode " + m + " table " + t + " entry " + e + ": level " + en.level +
+              " is past the game's stat table (levels 0 to " + MAX_LEVEL + ").");
           }
         });
         if (distinctCount < MIN_MONSTERS) {
@@ -613,6 +656,7 @@
     FLAG_LOCKED: FLAG_LOCKED,
     VARIANT_ZENITH: VARIANT_ZENITH,
     MIN_MONSTERS: MIN_MONSTERS,
+    MAX_LEVEL: MAX_LEVEL,
     MAX_POINTS: MAX_POINTS,
     MONSTER_NAMES: MONSTER_NAMES,
     KNOWN_MONSTERS: KNOWN_MONSTERS,
@@ -628,6 +672,7 @@
     apply: apply,
     copyFrom: copyFrom,
     monsters: monsters,
+    levelChoices: levelChoices,
     check: check,
     policyProblems: policyProblems,
     policyValue: policyValue,
