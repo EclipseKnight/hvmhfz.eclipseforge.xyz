@@ -803,7 +803,7 @@
 
   /* ---------- users ---------- */
 
-  var users = { page: 0, size: 25, query: "" };
+  var users = { page: 0, size: 25, query: "", match: "all" };
 
   function usersAlert(text) {
     var box = $("users-alert");
@@ -873,6 +873,135 @@
     return button;
   }
 
+
+  // A character chip: links to the hunter page; deleted and never-played slots are shown but not linked.
+  function userCharacter(character, query) {
+    var label = character.name || ("Character " + character.id);
+    var bits = [];
+    if (character.hr) bits.push("HR " + character.hr);
+    if (character.gr) bits.push("GR " + character.gr);
+    if (character.weapon) bits.push(character.weapon);
+    var chip;
+    if (character.deleted || character.isNew) {
+      chip = el("span", "char-chip is-off");
+      chip.appendChild(el("span", "char-chip-name", label));
+      chip.appendChild(el("span", "char-chip-tag", character.deleted ? "deleted" : "unplayed"));
+    } else {
+      chip = el("a", "char-chip");
+      chip.href = "/hunters.html?id=" + encodeURIComponent(character.id);
+      chip.target = "_blank";
+      chip.rel = "noopener";
+      chip.appendChild(el("span", "char-chip-name", label));
+    }
+    if (bits.length) chip.appendChild(el("span", "char-chip-meta", bits.join(" · ")));
+    chip.title = label + " (id " + character.id + ")" + (character.lastLogin ? ", last played " + stamp(character.lastLogin) : "");
+    if (query && label.toLowerCase().indexOf(query.toLowerCase()) !== -1) chip.className += " is-match";
+    return chip;
+  }
+
+  function userCharacters(user) {
+    var cell = el("td", "char-cell");
+    var list = user.characterList || [];
+    if (!list.length) {
+      cell.appendChild(el("span", "admin-desc", "none"));
+      return cell;
+    }
+    var shown = list.slice(0, 4);
+    var wrap = el("div", "char-chips");
+    shown.forEach(function (c) { wrap.appendChild(userCharacter(c, users.query)); });
+    cell.appendChild(wrap);
+    if (list.length > shown.length) {
+      var more = el("details", "char-more");
+      more.appendChild(el("summary", null, "+" + (list.length - shown.length) + " more"));
+      var rest = el("div", "char-chips");
+      list.slice(4).forEach(function (c) { rest.appendChild(userCharacter(c, users.query)); });
+      more.appendChild(rest);
+      cell.appendChild(more);
+    }
+    return cell;
+  }
+
+  // Discord cell: the linked id, a Link/Change editor, and a two-click Unlink.
+  function userDiscord(user) {
+    var cell = el("td", "discord-cell");
+    var view = el("div", "discord-view");
+    if (user.discordId) {
+      view.appendChild(el("span", "role-badge role-linked", "Linked"));
+      view.appendChild(el("code", "discord-id", user.discordId));
+    } else {
+      view.appendChild(el("span", "admin-desc", "not linked"));
+    }
+    var edit = el("button", "ghost-btn small", user.discordId ? "Change" : "Link");
+    edit.type = "button";
+    view.appendChild(edit);
+    if (user.discordId) {
+      var unlink = el("button", "ghost-btn small", "Unlink");
+      unlink.type = "button";
+      var armed = null;
+      unlink.addEventListener("click", function () {
+        if (!armed) {
+          unlink.textContent = "Confirm unlink";
+          unlink.classList.add("is-armed");
+          armed = setTimeout(function () { armed = null; unlink.textContent = "Unlink"; unlink.classList.remove("is-armed"); }, 5000);
+          return;
+        }
+        clearTimeout(armed);
+        unlink.disabled = true;
+        saveDiscord(user, "", unlink);
+      });
+      view.appendChild(unlink);
+    }
+    var form = el("form", "discord-form");
+    form.hidden = true;
+    var input = el("input");
+    input.type = "text";
+    input.inputMode = "numeric";
+    input.placeholder = "Discord user id";
+    input.value = user.discordId || "";
+    input.setAttribute("aria-label", "Discord user id for " + user.username);
+    var save = el("button", "btn btn-primary btn-small", "Save");
+    save.type = "submit";
+    var cancel = el("button", "ghost-btn small", "Cancel");
+    cancel.type = "button";
+    form.appendChild(input);
+    form.appendChild(save);
+    form.appendChild(cancel);
+    edit.addEventListener("click", function () {
+      view.hidden = true;
+      form.hidden = false;
+      input.focus();
+      input.select();
+    });
+    cancel.addEventListener("click", function () {
+      form.hidden = true;
+      view.hidden = false;
+    });
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var value = input.value.trim();
+      if (value && !/^\d{17,20}$/.test(value)) {
+        usersAlert("A Discord user id is 17 to 20 digits (Developer Mode on, right-click the user, Copy User ID).");
+        return;
+      }
+      save.disabled = true;
+      saveDiscord(user, value, save);
+    });
+    cell.appendChild(view);
+    cell.appendChild(form);
+    return cell;
+  }
+
+  function saveDiscord(user, value, button) {
+    request("/api/admin/users/" + user.id + "/discord", { method: "POST", body: JSON.stringify({ discordId: value }) })
+      .then(function (data) {
+        usersAlert((data && data.message) || "Saved.");
+        return loadUsers();
+      }).catch(function (error) {
+        button.disabled = false;
+        usersFail(error);
+      });
+  }
+
   function renderUsers(data) {
     var body = $("user-rows");
     clear(body);
@@ -885,8 +1014,9 @@
     $("users-next").disabled = (data.page + 1) * data.size >= data.total;
     if (!data.users.length) {
       var empty = el("tr");
-      var cell = el("td", "empty-cell", "No account matches that search.");
-      cell.colSpan = 9;
+      var cell = el("td", "empty-cell", users.match === "character" ? "No character matches that search."
+        : "No account or character matches that search.");
+      cell.colSpan = 10;
       empty.appendChild(cell);
       body.appendChild(empty);
       return;
@@ -902,9 +1032,9 @@
       if (!user.roles.length) roles.appendChild(el("span", "role-badge", "none"));
       else user.roles.forEach(function (role) { roles.appendChild(roleBadge(role)); });
       row.appendChild(roles);
-      row.appendChild(el("td", "num", num(user.characters)));
+      row.appendChild(userCharacters(user));
       row.appendChild(el("td", null, stamp(user.lastLogin)));
-      row.appendChild(el("td", null, user.discordLinked ? "Linked" : "-"));
+      row.appendChild(userDiscord(user));
       var chat = el("td", "admin-flags");
       chat.appendChild(chatToggle(user, "op"));
       chat.appendChild(chatToggle(user, "timer"));
@@ -925,7 +1055,8 @@
   }
 
   function loadUsers() {
-    return request("/api/admin/users?query=" + encodeURIComponent(users.query) + "&page=" + users.page + "&size=" + users.size)
+    return request("/api/admin/users?query=" + encodeURIComponent(users.query) + "&match=" + users.match
+      + "&page=" + users.page + "&size=" + users.size)
       .then(function (data) { renderUsers(data); });
   }
 
@@ -939,6 +1070,11 @@
     $("users-next").addEventListener("click", function () {
       users.page += 1;
       loadUsers().catch(usersFail);
+    });
+    $("user-match").addEventListener("change", function () {
+      users.match = $("user-match").value;
+      users.page = 0;
+      if (users.query) loadUsers().catch(usersFail);
     });
     var timer = null;
     $("user-search").addEventListener("input", function () {

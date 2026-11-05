@@ -1144,6 +1144,24 @@ tr.is-disabled td{color:var(--ink-soft);font-style:italic}
 /* Admin: section tabs and the user manager */
 .admin-search{margin:0 0 14px}
 .admin-search input{max-width:360px}
+.admin-search{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.admin-search select{padding:8px 10px;border:1px solid var(--line);border-radius:3px;background:var(--parchment-2);color:var(--ink);font:inherit;font-size:.88rem}
+.char-cell{min-width:220px}
+.char-chips{display:flex;flex-wrap:wrap;gap:4px}
+.char-chip{display:inline-flex;align-items:baseline;gap:6px;padding:3px 8px;border:1px solid #b89a5a;border-radius:3px;background:rgba(183,138,51,.08);color:var(--ink);font-size:.82rem;text-decoration:none;white-space:nowrap}
+a.char-chip:hover{border-color:#8a6a24;background:rgba(183,138,51,.18)}
+.char-chip-name{font-weight:600}
+.char-chip-meta{color:var(--ink-soft);font-size:.76rem}
+.char-chip-tag{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft)}
+.char-chip.is-off{opacity:.6;border-style:dashed}
+.char-chip.is-match{box-shadow:0 0 0 2px rgba(138,106,36,.55)}
+.char-more summary{cursor:pointer;font-size:.8rem;color:var(--ink-soft);margin-top:4px}
+.char-more .char-chips{margin-top:4px}
+.discord-cell{min-width:170px}
+.discord-view,.discord-form{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.discord-id{font-size:.76rem;color:var(--ink-soft)}
+.discord-form input{width:170px;padding:5px 7px;border:1px solid var(--line);border-radius:3px;font:inherit;font-size:.82rem}
+.role-badge.role-linked{border-color:#5f7a4c;color:#3e5530}
 .admin-pager{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:12px}
 .admin-pager .panel-note{white-space:nowrap}
 .role-cell{display:flex;flex-wrap:wrap;gap:6px}

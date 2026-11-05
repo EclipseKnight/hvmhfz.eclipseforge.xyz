@@ -561,12 +561,17 @@
         <div class="panel-head"><h2>Users</h2><span class="panel-note" id="users-summary"></span></div>
         <p class="form-alert" id="users-alert" hidden></p>
         <div class="admin-search">
-          <input id="user-search" type="search" autocomplete="off" placeholder="Search an account name" aria-label="Search an account name" />
+          <input id="user-search" type="search" autocomplete="off" placeholder="Search an account or character name" aria-label="Search an account or character name" />
+          <select id="user-match" aria-label="Search in">
+            <option value="all">Accounts and characters</option>
+            <option value="account">Account names only</option>
+            <option value="character">Character names only</option>
+          </select>
         </div>
         <div class="table-wrap">
           <table class="data-table admin-table">
-            <thead><tr><th>#</th><th>Account</th><th>Roles</th><th class="num">Characters</th><th>Last login</th><th>Discord</th><th>Chat</th><th>Admin</th><th>Moderator</th><th>Tester</th></tr></thead>
-            <tbody id="user-rows"><tr><td colspan="9" class="empty-cell">Loading</td></tr></tbody>
+            <thead><tr><th>#</th><th>Account</th><th>Roles</th><th data-nosort>Characters</th><th>Last login</th><th data-nosort>Discord</th><th>Chat</th><th>Admin</th><th>Moderator</th><th>Tester</th></tr></thead>
+            <tbody id="user-rows"><tr><td colspan="10" class="empty-cell">Loading</td></tr></tbody>
           </table>
         </div>
         <div class="admin-pager">
@@ -574,7 +579,7 @@
           <span class="panel-note" id="users-page"></span>
           <button type="button" class="ghost-btn small" id="users-next">Next</button>
         </div>
-        <p class="note-text">Roles apply at the account's next request. Nobody can remove their own admin role, and the last admin cannot be removed. Search is case-insensitive; account names themselves are case-sensitive. Chat toggles are the in-game <code>op</code> (chat commands) and <code>timer</code> (quest timer) flags.</p>
+        <p class="note-text">Roles apply at the account's next request. Nobody can remove their own admin role, and the last admin cannot be removed. Search is case-insensitive and finds an account by its name or by any of its characters (matching characters are highlighted); account names themselves are case-sensitive. Each character links to its hunter page; deleted and never-played slots are listed but not linked. <b>Link</b> sets an account's Discord user id by hand, the same link <code>/link</code> makes (the Hunter role follows within 30 minutes); <b>Unlink</b> takes two clicks. Chat toggles are the in-game <code>op</code> (chat commands) and <code>timer</code> (quest timer) flags.</p>
       </section>
       </div>
 
@@ -669,7 +674,7 @@
     <script src="/js/admin-settings.js"></script>
     <script src="/js/admin-notices.js"></script>
     <script src="/js/admin-content.js"></script>
-    <script src="/js/admin.js"></script>
+    <script src="/js/admin.js?v=2"></script>
     <script src="/js/search.js" defer></script>
   </body>
 </html>
