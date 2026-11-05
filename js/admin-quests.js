@@ -1,5 +1,6 @@
 /* Admin: the custom quest approval queue. Players submit a decompressed quest file; nothing becomes
-   playable until an admin approves it here. */
+   playable until an admin approves it here. A testing quest shows when it expires (14 days without
+   activity, API README "Custom quest expiry"); a published one stays until an admin retires it here. */
 (function () {
   "use strict";
 
@@ -33,7 +34,14 @@
     if (o.body) headers["Content-Type"] = "application/json";
     return fetch(API + path, { method: o.method || "GET", headers: headers, body: o.body, cache: "no-store" })
       .then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
+        if (!r.ok) {
+          // The API's reason (e.g. the event quest list is full) is shown as it is.
+          return r.json().catch(function () { return {}; }).then(function (b) {
+            var e = new Error("HTTP " + r.status);
+            e.apiMessage = b && b.message;
+            throw e;
+          });
+        }
         return r.json();
       });
   }
@@ -55,6 +63,9 @@
     tr.appendChild(el("td", null, when(item.submittedAt)));
     var st = el("td");
     st.appendChild(el("span", "badge " + (item.status === "approved" ? "good" : ""), item.status));
+    if (item.status === "testing" && item.expiresAt) {
+      st.appendChild(el("span", "cell-sub muted", " expires " + when(item.expiresAt)));
+    }
     tr.appendChild(st);
     tr.appendChild(el("td", "cell-sub muted", item.note || "-"));
 
@@ -74,6 +85,22 @@
       actions.appendChild(approve);
       actions.appendChild(document.createTextNode(" "));
       actions.appendChild(reject);
+    } else if (item.status === "approved") {
+      var retire = el("button", "ghost-btn small", "Retire");
+      retire.type = "button";
+      retire.addEventListener("click", function () {
+        var why = window.prompt("Retire \u201c" + item.title + "\u201d? It leaves the game for everyone. "
+          + "Optional note for the player:", "");
+        if (why === null) return;
+        request("/api/admin/quest-submissions/" + item.id + "/retire", {
+          method: "POST",
+          body: JSON.stringify({ note: why })
+        }).then(function () { load(); })
+          .catch(function () { note2("Could not retire that quest."); });
+      });
+      actions.appendChild(retire);
+    } else if (item.status === "retired") {
+      actions.appendChild(el("span", "muted", item.retiredAt ? "retired " + when(item.retiredAt) : "retired"));
     } else {
       actions.appendChild(el("span", "muted", item.reviewedAt ? when(item.reviewedAt) : "-"));
     }
@@ -86,7 +113,18 @@
       method: "POST",
       body: JSON.stringify({ approve: approve, note: note })
     }).then(function () { load(); })
-      .catch(function () { note2("Could not save that decision."); });
+      .catch(function (e) { note2(e && e.apiMessage ? e.apiMessage : "Could not save that decision."); });
+  }
+
+  /** Approved quests share the in-game event quest list with the festival, Cup and VS quests (API: quest.event-list-cap). */
+  function loadSlots() {
+    var n = $("quests-slots");
+    if (!n) return;
+    request("/api/admin/quest-submissions/event-slots").then(function (s) {
+      n.textContent = s && typeof s.used === "number" && typeof s.cap === "number"
+        ? s.used + " of " + s.cap + " event quest slots used" + (s.used >= s.cap ? ". Publishing is blocked until one is freed." : ".")
+        : "";
+    }).catch(function () { n.textContent = ""; });
   }
 
   function note2(text) {
@@ -97,6 +135,7 @@
   function load() {
     var body = $("quests-body");
     if (!body) return;
+    loadSlots();
     body.innerHTML = "";
     var placeholder = el("tr");
     var cell = el("td", "empty-cell", "Loading submissions.");

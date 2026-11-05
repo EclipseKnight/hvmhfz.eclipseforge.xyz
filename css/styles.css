@@ -1598,3 +1598,7 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
 .notice-result{font-size:.82rem;opacity:.8;overflow-wrap:anywhere}
 .notice-sent{color:#2f5d2a;font-weight:700}
 .notice-failed,.notice-missed{color:#a12a2a;font-weight:700}
+
+/* Account page: custom quest expiry reminders (js/quest-submissions.js) */
+.quest-reminders .quest-reminder-list{margin:0 0 6px;padding-left:20px}
+.quest-reminders li{margin:4px 0}
