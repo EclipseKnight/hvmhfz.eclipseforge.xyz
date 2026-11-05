@@ -3,6 +3,7 @@
   {"page": "account.html", "group": null, "label": "My account", "title": "My account · Hunsterverse", "current": "/account.html"},
   {"page": "admin.html", "group": null, "label": "Admin", "title": "Admin · Hunsterverse", "current": null, "trail": [["My account", "/account.html"]]},
   {"page": "api.html", "group": "Server", "label": "API", "title": "API · Hunsterverse", "current": null},
+  {"page": "bot-terms.html", "group": null, "label": "Bot terms", "title": "Prontier bot: Terms of Service · Hunsterverse", "current": null},
   {"page": "catalog.html", "group": "Database", "label": "Catalog", "title": "Catalog · Hunsterverse", "current": "/catalog.html"},
   {"page": "changelog.html", "group": "Server", "label": "Changelog", "title": "Changelog · Hunsterverse", "current": "/changelog.html"},
   {"page": "events.html", "group": "Server", "label": "Events", "title": "Events · Hunsterverse", "current": "/events.html"},

@@ -92,7 +92,7 @@
 <!-- /site-shell:crumbs -->
 <h1>Privacy and cookies</h1>
 <p class="lead">What this website and the Hunsterverse server keep about you, why, for how long, and what you can ask us to do with it.</p>
-<p class="meta">Last changed 28 October 2026.</p>
+<p class="meta">Last changed 5 November 2026.</p>
 
 <div class="toc">
 <strong>Contents</strong>
@@ -100,6 +100,7 @@
 <li><a href="#who">Who we are</a></li>
 <li><a href="#data">What we keep and why</a></li>
 <li><a href="#cookies">Cookies and browser storage</a></li>
+<li><a href="#bot">Prontier Discord bot</a></li>
 <li><a href="#others">Other services on the site</a></li>
 <li><a href="#public">What other players can see</a></li>
 <li><a href="#rights">Your rights</a></li>
@@ -141,6 +142,22 @@
 </table>
 <p>"Accept" on the banner allows optional extras; right now there are none. "Decline" changes nothing about how the site works. If we ever add something optional, it stays off until you accept.</p>
 <p><button type="button" class="ghost-btn" data-consent-reset>Change my cookie choice</button></p>
+
+<h2 id="bot">Prontier Discord bot</h2>
+<p>Prontier is the Hunsterverse Discord bot (its <a href="/bot-terms.html">terms are here</a>). It runs on our own server and works only in the Hunsterverse Discord server, plus direct messages with people who are in it. It does not read your ordinary messages in channels, and it asks Discord for no special access to message contents or the member list. This is what it handles:</p>
+<table>
+<thead><tr><th>What</th><th>Where</th><th>How long</th></tr></thead>
+<tbody>
+<tr><td><b>Your Discord user ID</b>, when you run <code>/link</code></td><td>On your game account, in our game database (through the API). The bot has no database of its own</td><td>Until you run <code>/unlink</code> or your account is deleted</td></tr>
+<tr><td><b>Your Discord user ID, display name and @username</b> when you use a command or button (the bot gets them from Discord with every command)</td><td>The ID is sent to our API to find your linked account and characters. The bot's log keeps the ID for some actions (looking up an account or character, a backup, an import, an announcement that pings players). The @username and display name appear in the replies and posts the command makes, such as <code>/whois</code> and the Road party post</td><td>Replies and posts stay in Discord until deleted there. Log lines stay in the server's log, which rotates automatically</td></tr>
+<tr><td><b>Display name for the Worlds page:</b> for linked players who are online, the bot looks up your server nickname, else your Discord display name (never your @username) and sends it to the API every 2 minutes</td><td>In the API's memory only; it is not written to the database. The bot keeps each name for 30 minutes</td><td>Forgotten when you leave the server (the bot tells the API), and when the API restarts</td></tr>
+<tr><td><b>Game password:</b> the one you type in <code>/password</code></td><td>Sent to our API, which stores it only as a one-way hash. The bot does not log or keep it, but Discord receives it as part of your command, so use a password you don't use elsewhere</td><td>As for your account</td></tr>
+<tr><td><b>Character backups and imports:</b> the save files of your character (and the file you attach to <code>/import</code>)</td><td>Built or held in the bot's memory only, never written to its disk. The zip is sent to you in a direct message (so Discord keeps it there). An imported file is held for 5 minutes while you confirm, then dropped. The API logs each import</td><td>Memory: minutes. The import log: as long as the account exists</td></tr>
+<tr><td><b>Road parties:</b> your Discord ID and display name, while you are in a party</td><td>The bot's memory</td><td>3 hours, or until the party closes or the bot restarts</td></tr>
+<tr><td><b>Event posts:</b> which announcements were already posted</td><td>A file on the bot's server (event names and cycle numbers, nothing about people)</td><td>Kept</td></tr>
+</tbody>
+</table>
+<p>The bot does not store your messages, does not relay chat between Discord and the game, and does not keep a list of members or their roles. When it checks a role it asks Discord at that moment. <code>/whois</code> answers in the channel with a member's Discord name, game user name, user ID, Discord ID, and character names and IDs, so anyone in the channel can read it (never passwords, saves or IP addresses). Staff who run the servers can see the API's database and the bot's log. To ask us to delete or correct anything, or to unlink your account, run <code>/unlink</code> or message a staff member on <a href="https://discord.gg/YuE42eh">Discord</a> (see <a href="#rights">Your rights</a>). Messages and files Discord holds (replies, the backup direct message) are under <a href="https://discord.com/privacy">Discord's privacy policy</a>; delete them in Discord.</p>
 
 <h2 id="others">Other services on the site</h2>
 <ul>
@@ -196,6 +213,7 @@
           <div class="foot-col">
             <h2 class="foot-head">About</h2>
             <a href="/privacy.html">Privacy</a>
+                <a href="/bot-terms.html">Bot terms</a>
             <a href="https://discord.gg/YuE42eh">Discord</a>
             <a href="https://hunstermonter.net">hunstermonter.net</a>
           </div>

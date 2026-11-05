@@ -33,6 +33,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/road-history.html` | Past Hunting Road winners (number, name, character, votes, live from and until), public, from `/api/public/road/history`. |
 | `/admin.html` | Admin panel: gifts (Erupe distributions) and the Hunting Road rotation (rotations with entries and votes, create, change dates, close now, approve, override the winner, hide/unhide/disqualify, pause). Lists every gift with its items, claims and end, creates a gift (for everyone or one character, with rank limits, a deadline and items picked from the catalog) and ends one. Admin accounts only: the API checks `ROLE_ADMIN` on every `/api/admin/**` request; the account page links here for admins. Its Custom quests tab (`js/admin-quests.js`) shows "N of CAP event quest slots used" (`GET /api/admin/quest-submissions/event-slots`; approved quests share the in-game event quest list) and the API's reason when a publish is refused because the list is full. Not in the nav, `noindex`. |
 | `/report.html` | Bug report (`#bug`) and feature request (`#feature`) forms, for signed-in accounts only: signed out (or expired) the page shows why and a Sign in button that comes back here (`/?next=/report.html...`) and no forms; a 401 from the API (sign-in ran out) asks to sign in again and keeps what was typed (`sessionStorage` `hvmhfz.report-draft`, put back in the form after sign-in). Each report becomes a task on the Kanboard board. |
+| `/bot-terms.html` | Prontier bot: Terms of Service (effective 5 Nov 2026): who runs the Discord bot, what its commands and posts do (from `hvmhfz_discord_bot`; no chat relay), acceptable use, no warranty, changes and termination, not affiliated with Capcom or Discord. Linked from the footer. The bot's privacy facts are in the "Prontier Discord bot" section of `/privacy.html#bot`. |
 | `/privacy.html` | Privacy and cookies: what the site, API, game server and bot keep, why and how long, the browser storage it uses (`hvmhfz.token`, `hvmhfz.consent`; no cookies of its own), other services (GitHub Pages, Cloudflare Turnstile, the set builder embed, Discord) and players' rights. Linked from the footer and the cookie banner. Update it when the site starts storing or sending anything new. |
 
 ## Layout
@@ -51,7 +52,8 @@ guide-linux.html      redirect to /play.html#linux (old Linux guide)
 report.html           bug report and feature request forms
 guide-frontier.html   Frontier guide landing page (cards per section)
 guide-frontier-*.html Frontier guide sections (18), the comparison page and three moved-page notices
-privacy.html          privacy and cookies policy
+bot-terms.html        Prontier Discord bot terms of service
+privacy.html          privacy and cookies policy (with a Prontier bot section, #bot)
 admin.html            admin panel: gifts (distributions) and the Hunting Road rotation
 road.html             Hunting Road builder and entry viewer
 road-vote.html        Hunting Road rotation: entries, vote, results
