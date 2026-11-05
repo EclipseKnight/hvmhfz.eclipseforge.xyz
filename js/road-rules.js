@@ -20,8 +20,8 @@
    a missing key means the default below, which is the contract's default:
      modes           [0]                                    modes players may edit
      floorFields     ["table"]                              floor fields: table, loop, points, points2, bonus
-     entryFields     ["monster","monster2","weight","forced"]
-                                                            entry fields: also level, unk04, unk0c, unk14, flags
+     entryFields     ["monster","monster2","weight","forced","level"]
+                                                            entry fields: also unk04, unk0c, unk14, flags
      floorCount      false                                  may change a mode's floor count
      modeCount       false                                  may change the mode count
      maxAddedEntries 64                                     entries added over the base, all tables together
@@ -100,7 +100,7 @@
   var DEFAULT_POLICY = {
     modes: [0],
     floorFields: ["table"],
-    entryFields: ["monster", "monster2", "weight", "forced"],
+    entryFields: ["monster", "monster2", "weight", "forced", "level"],
     floorCount: false,
     modeCount: false,
     maxAddedEntries: 64,
@@ -363,6 +363,47 @@
     return Object.keys(seen).map(Number).sort(function (a, b) { return a - b; });
   }
 
+  /* The level of an entry (+0x10) is the monster's strength level. The client puts it in place of the
+     quest's monster level, and that picks a row of the monster's stat table in the client's mhfemd.bin:
+     multipliers for its health, attack and toughness (the names come from the values). Every monster has
+     84 rows (levels 0 to 83; the client may add up to 2), so any level up to 81 stays in the table. A row
+     the game never filled in is all 1.0: the monster then plays at its base strength, far weaker. The live
+     Road uses 53 (the open Road), 77 (12 monsters of the open Road, at about 60% of their level-53 health),
+     78 (the solo Road, about 60% of the health again) and 64 to 67 (Zenith entries: the same health,
+     attack rising and damage taken falling with each level). Checked on the client's files, 2026-11-05.
+     The rule copied-fields already keeps a level to one the live Road uses with the entry's other fields,
+     so no extra range rule is needed. */
+
+  var levelIndexBase = null;
+  var levelIndex = null;
+
+  function levelKey(e) {
+    return [e.unk04, e.unk0c, e.unk14, sameFlags(e.flags), e.monster2 !== 0].join(",");
+  }
+
+  // The levels an entry may take (rule copied-fields: the base uses that level with the entry's other
+  // fields), sorted, each as {level, withMonster}: withMonster is true when the base uses the entry's
+  // monster at that level, so the game has stats for it there.
+  function levelChoices(base, en) {
+    if (levelIndexBase !== base) {
+      levelIndex = { levels: {}, monsters: {} };
+      base.modes.forEach(function (mode) {
+        mode.tables.forEach(function (entries) {
+          entries.forEach(function (e) {
+            var key = levelKey(e);
+            (levelIndex.levels[key] = levelIndex.levels[key] || {})[e.level] = true;
+            levelIndex.monsters[e.monster + ":" + e.level] = true;
+          });
+        });
+      });
+      levelIndexBase = base;
+    }
+    var found = levelIndex.levels[levelKey(en)] || {};
+    return Object.keys(found).map(Number).sort(function (a, b) { return a - b; }).map(function (level) {
+      return { level: level, withMonster: !!levelIndex.monsters[en.monster + ":" + level] };
+    });
+  }
+
   // Every crash rule road breaks except too-big, base being the live file. extra: the monster ids
   // allowed besides the base's ({id: true}, null for none).
   function check(base, road, extra) {
@@ -549,6 +590,7 @@
     apply: apply,
     copyFrom: copyFrom,
     monsters: monsters,
+    levelChoices: levelChoices,
     check: check,
     policyProblems: policyProblems,
     policyValue: policyValue,

@@ -195,6 +195,9 @@
     var same;
     if (base) same = field === "forced" ? value === ((base.flags & Rules.FLAG_FORCED) !== 0) : value === base[field];
     else same = (field === "monster2" && value === 0) || (field === "forced" && value === false);
+    // A new monster takes its own level again; a level picked for a new monster stays even when it is the base's.
+    if (field === "monster" || field === "monster2") delete ee.level;
+    if (field === "level" && (ee.monster !== undefined || ee.monster2 !== undefined)) same = false;
     if (same) delete ee[field]; else ee[field] = value;
     prune();
   }
@@ -479,7 +482,14 @@
     forcedCell.appendChild(forced);
     row.appendChild(forcedCell);
 
-    var level = cell("Level", null, "num");
+    // Only the levels the rule copied-fields accepts for this entry (js/road-rules.js levelChoices).
+    var level = UI.picker({
+      options: [], value: 0, compact: true, label: "Level of entry " + e, disabled: !can("level"),
+      unknownLabel: function (v) { return String(v); },
+      onChange: function (v) { setEntryField(m, t, e, "level", v); refreshSoon(); }
+    });
+    var levelChoices = "";
+    cell("Level", level.el, "num");
 
     refreshers.push(function () {
       var en = road.modes[m].tables[t][e];
@@ -489,9 +499,18 @@
       second.setValue(en.monster2);
       weight.setValue(en.weight);
       forced.checked = (en.flags & Rules.FLAG_FORCED) !== 0;
-      level.textContent = String(en.level);
+      var choices = Rules.levelChoices(pool.base, en);
+      if (JSON.stringify(choices) !== levelChoices) {
+        levelChoices = JSON.stringify(choices);
+        level.setOptions(choices.filter(function (c) { return c.withMonster; }).concat(
+          choices.filter(function (c) { return !c.withMonster; })).map(function (c) {
+          return { value: c.level, label: String(c.level),
+            group: c.withMonster ? "Used with this monster" : "Not used with this monster: may be far weaker" };
+        }));
+      }
+      level.setValue(en.level);
       var base = baseEntry(m, t, e);
-      var changed = !base || base.monster !== en.monster || base.monster2 !== en.monster2 ||
+      var changed = !base || base.monster !== en.monster || base.monster2 !== en.monster2 || base.level !== en.level ||
         base.weight !== en.weight || ((base.flags ^ en.flags) & Rules.FLAG_FORCED) !== 0;
       row.classList.toggle("is-changed", changed);
       row.classList.toggle("has-problem", problemHere(function (p) { return p.mode === m && p.table === t && p.entry === e; }));
