@@ -271,9 +271,11 @@ a.badge:hover{border-color:var(--gold)}
 .rank{color:var(--ink-soft);font-variant-numeric:tabular-nums;width:44px}
 .empty-cell{text-align:center;color:var(--ink-soft);font-style:italic;padding:20px}
 .data-table tr.no-results td{text-align:center;color:var(--ink-soft);font-style:italic}
-.catalog-icon{width:38px;padding:4px 8px}
-.catalog-icon img{width:26px;height:26px;object-fit:contain;display:block}
-.icon-col{width:38px}
+/* Catalog icons (every tab): the art is 96 px, shown at exactly half so the pixel edges stay crisp */
+.catalog-icon{width:72px;padding:6px 12px}
+.catalog-icon img{width:48px;height:48px;object-fit:contain;display:block;image-rendering:pixelated}
+.icon-col{width:72px}
+#catalog-body td{vertical-align:middle}
 .pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:22px}
 .pager-note{font:.8rem var(--font-ui);color:var(--ink-soft)}
 
