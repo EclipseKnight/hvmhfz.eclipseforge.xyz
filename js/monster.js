@@ -227,7 +227,9 @@
     // An entry may set its own link and label (a Musou version: the quests list the normal monster's name).
     var quests = el("a", "ghost-btn small", detail.questsLabel || ("Quests with " + detail.name));
     quests.href = detail.questsHref || ("/quests.html?monster=" + encodeURIComponent(detail.name));
-    info.appendChild(quests);
+    // The quests link and the Form picker share one row, bottoms aligned, at the same height.
+    var actions = el("div", "monster-hero-actions");
+    actions.appendChild(quests);
     // A short note for an entry made from our own data, not the field guide's tables (e.g. Shagaru Magala).
     if (detail.about) info.appendChild(el("p", "panel-note monster-about", detail.about));
     var forms = [];
@@ -242,15 +244,16 @@
         option.value = String(i);
         select.appendChild(option);
       });
-      var label = el("label", "select-wrap");
-      label.appendChild(el("span", "search-label", "Form"));
+      var label = el("label", "monster-form-pick");
+      label.appendChild(el("span", "monster-form-label", "Form"));
       label.appendChild(select);
-      info.appendChild(label);
+      actions.appendChild(label);
       select.addEventListener("change", function () {
         var index = Number(select.value);
         renderForms(index < 0 ? detail : forms[index]);
       });
     }
+    info.appendChild(actions);
     hero.appendChild(info);
     root.appendChild(hero);
 

@@ -63,6 +63,42 @@
     head.appendChild(sub);
     main.appendChild(head);
 
+    // A Speedrun Cup quest is only in the game's event list during a week it is the cup's quest: say whether
+    // it is this week's, and how to find it (GET /api/public/tournament/standings, current.quests).
+    if (quest.category === "Idaten Cup" || quest.category === "Guild Contest") {
+      var cup = section("Speedrun Cup");
+      var cupBox = el("div", "cup-enter");
+      cupBox.appendChild(el("p", "cup-enter-where", "A Speedrun Cup quest. It is only listed in game during a week it is the cup's quest."));
+      cup.appendChild(cupBox);
+      main.appendChild(cup);
+      fetch("https://api.hvmhfz.eclipseforge.xyz/api/public/tournament/standings")
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          var cur = data && data.current;
+          var mine = cur && (cur.quests || []).filter(function (q) { return q.questId === quest.id; })[0];
+          cupBox.textContent = "";
+          var live = mine && (cur.phase === "open" || cur.phase === "upcoming");
+          cupBox.appendChild(el("p", "cup-enter-head", live ? "This week's cup quest" : "Speedrun Cup quest"));
+          if (live) {
+            var closes = cur.openEndsAt ? new Intl.DateTimeFormat(undefined, { day: "numeric", month: "short",
+              hour: "2-digit", minute: "2-digit" }).format(new Date(cur.openEndsAt)) : "";
+            var kind = mine.kind === "solo" ? "the solo quest, one board per weapon class"
+              : "the guild quest, up to " + (mine.maxPlayers || 4) + " hunters, one board for the group";
+            cupBox.appendChild(el("p", "cup-enter-where", (cur.quest || "This week's Speedrun Cup") + ": " + kind + "."
+              + (cur.phase === "open" ? (closes ? " Clears count until " + closes + "." : "") : " It opens soon.")));
+            cupBox.appendChild(el("p", "cup-enter-where", "In game: Quest counter > Limited-Time Quests > Event Quests, listed as "
+              + quest.name + "."));
+          } else {
+            cupBox.appendChild(el("p", "cup-enter-where", "It is only listed in game during a week it is the cup's quest"
+              + (cur && cur.quest ? "; this week's cup is " + cur.quest + "." : ".")));
+          }
+          var more = el("p", "cup-enter-where");
+          more.appendChild(el("a", null, live ? "Standings and prizes" : "This week's cup")).href = "/tournaments.html#cup";
+          cupBox.appendChild(more);
+        })
+        .catch(function () {});
+    }
+
     var facts = section("Quest");
     var table = el("table", "data-table quest-facts");
     var body = el("tbody");

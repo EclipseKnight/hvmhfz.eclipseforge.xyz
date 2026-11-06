@@ -78,6 +78,31 @@
     return 0;
   }
 
+  // The week's quests as players find them in game (the cup's own title is not a quest name there):
+  // [{kind, name, questId, href, who, board}], solo first. Empty when the API does not know them.
+  function cupQuests(cycle) {
+    return ((cycle && cycle.quests) || []).filter(function (q) { return q && q.questId > 0; }).map(function (q) {
+      var solo = q.kind === "solo";
+      return {
+        kind: q.kind,
+        name: q.name || "Quest " + q.questId,
+        questId: q.questId,
+        href: "/quest.html?id=" + encodeURIComponent(q.questId),
+        who: solo ? "Solo, 1 hunter" : "Guild, up to " + (q.maxPlayers || 4) + " hunters",
+        board: solo ? "one board per weapon class: the weapon you take in counts" : "one board for the group"
+      };
+    });
+  }
+
+  // Where the quests are in game, for the cup's phase.
+  function cupWhere(cycle) {
+    if (!cycle) return "";
+    var path = "Quest counter > Limited-Time Quests > Event Quests";
+    if (cycle.phase === "open") return "In game: " + path + ". Look for the quest names above; the cup's own name does not appear in game.";
+    if (cycle.phase === "upcoming") return "They appear in " + path + " when the cup opens.";
+    return "The cup's quests are only listed while clears count.";
+  }
+
   function boardsOf(cycle) {
     var boards = ((cycle && cycle.classes) || []).slice();
     if (cycle && cycle.guild) boards.push(cycle.guild);
@@ -86,7 +111,7 @@
 
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { cupStatus: cupStatus, bracketStatus: bracketStatus, playerLabel: playerLabel, matchRows: matchRows,
-      boardsOf: boardsOf, firstBoard: firstBoard };
+      boardsOf: boardsOf, firstBoard: firstBoard, cupQuests: cupQuests, cupWhere: cupWhere };
   }
   if (typeof document === "undefined") return;
 
@@ -159,6 +184,7 @@
     classChips.setAttribute("aria-label", "Weapon class");
     var status = el("p", "note-text");
     var quest = el("h3", "cup-quest");
+    var enter = el("div", "cup-enter");
     var note = el("p", "note-text");
     var table = el("div");
 
@@ -172,6 +198,7 @@
       if (boardIndex >= boards.length) boardIndex = 0;
       quest.textContent = cycle.quest || "No quest this week";
       status.textContent = cupStatus(cycle);
+      drawEnter(cycle);
       var board = boards[boardIndex];
       clear(table);
       if (!board) {
@@ -181,6 +208,28 @@
       }
       table.appendChild(boardTable(board));
       note.textContent = board.total ? plural(board.total, "clear", "clears") + " on this board; the fastest " + Math.min(100, board.total) + " at most are listed." : "";
+    }
+
+    // "How to enter": each quest with its in-game name, a link to its quest page, and where it is in game.
+    function drawEnter(cycle) {
+      clear(enter);
+      var quests = cupQuests(cycle);
+      enter.hidden = !quests.length;
+      if (!quests.length) return;
+      var current = cycle.phase === "open" || cycle.phase === "upcoming";
+      enter.appendChild(el("p", "cup-enter-head", current ? "How to enter" : "The quests that week"));
+      var list = el("ul", "cup-enter-list");
+      quests.forEach(function (q) {
+        var li = el("li");
+        var link = el("a", "cup-enter-name", q.name);
+        link.href = q.href;
+        li.appendChild(link);
+        li.appendChild(el("span", "cup-enter-who", q.who));
+        li.appendChild(el("span", "cup-enter-board", q.board));
+        list.appendChild(li);
+      });
+      enter.appendChild(list);
+      if (current) enter.appendChild(el("p", "cup-enter-where", cupWhere(cycle)));
     }
 
     function drawClassChips() {
@@ -214,6 +263,7 @@
     }
     root.appendChild(quest);
     root.appendChild(status);
+    root.appendChild(enter);
     drawClassChips();
     root.appendChild(classChips);
     root.appendChild(table);
