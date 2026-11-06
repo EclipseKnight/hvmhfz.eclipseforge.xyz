@@ -92,7 +92,8 @@ def check(root):
             problems.append(f"{name}: no skip link")
         if "content" not in page.ids:
             problems.append(f"{name}: no element with id=content for the skip link")
-        if "/css/styles.css" not in page.stylesheets:
+        # "?v=N" is allowed: the CDN and browsers keep the stylesheet for hours, so a release bumps it on every page.
+        if not any(re.fullmatch(r"/css/styles\.css(\?v=\d+)?", h or "") for h in page.stylesheets):
             problems.append(f"{name}: does not load /css/styles.css")
         for script in ("/js/nav.js", "/js/background.js", "/js/consent.js", "/js/search.js"):
             if script not in page.scripts:

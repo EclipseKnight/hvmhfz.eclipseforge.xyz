@@ -56,7 +56,11 @@
       var nameCell = el("td");
       if (entry.href) {
         nameCell.appendChild(el("a", null, entry.name)).href = entry.href;
-        if (entry.aka) nameCell.appendChild(el("span", "catalog-aka", "also " + entry.aka));
+        // The space keeps the two names apart even before the stylesheet puts the other name on its own line.
+        if (entry.aka) {
+          nameCell.appendChild(document.createTextNode(" "));
+          nameCell.appendChild(el("span", "catalog-aka", "(also " + entry.aka + ")"));
+        }
       } else {
         nameCell.textContent = entry.name;
       }
