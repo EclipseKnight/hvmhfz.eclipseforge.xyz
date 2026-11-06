@@ -76,6 +76,7 @@ No token, cached 30 seconds unless stated. Paged endpoints return {items, page, 
 | GET /api/public/catalog/equipment | slot (melee default, ranged, head, chest, arms, waist, legs), q, page, size (40) | paged equipment |
 
 | GET /api/public/worlds | none | worlds: name, description, players, capacity |
+| GET /api/public/status | none | state (online: the sign and game ports answer; degraded: only some ports answer; offline: none), online, players (hunters on all worlds; null while offline or unknown), worldsOpen, checkedAt, ports[] (name, port, open), connect (host, launcherPort, signPort, gamePort, mode, fallbackMode, version). Checked at most every 30 s |
 | GET /api/public/weapons | none | hours played per weapon type by every hunter: since (when tracking began), seconds, hunters, weapons[] (all 14 types, most played first: weaponType, weapon, seconds, hunters) |
 | GET /api/public/road/hunter/{id} | id: character id | one hunter's place on the live Road's and the Original Road's boards at any rank: [{key, name, current, open, solo}], open/solo = {rank, of, floor, points, reachedAt}, rank null with no clear |
 | GET /api/public/worlds/history | range (24h default, 7d, 30d, 90d, all) | players online over time (sampled every minute: points[] with average and peak per bucket), active hunters per hour/day/week from the hunt log (active[]), and the players seen in the range: name, HR, GR, playtimeSeconds, sessions, secondsInRange, lastSeen, online (newest 500) |
