@@ -1,8 +1,9 @@
 /* Worlds: player count over time and who played (GET /api/public/worlds/history).
  *
  * The line is the number of players online (sampled every minute, averaged per bucket, with the
- * bucket's peak as a dashed line). The bars are hunters active in the hunt log per day or week, which
- * reaches back much further than the minute samples. Below the graph: every player seen in the range
+ * bucket's peak as a dashed line). The bars are hunters with a kill: how many different characters
+ * killed at least one monster in that hour, day or week (the kill log), which reaches back much further
+ * than the minute samples. Below the graph: every player seen in the range
  * with playtime (the game's own counter), sessions, time online in the range, last seen and status.
  * Drawn as inline SVG, no libraries. */
 (function () {
@@ -195,8 +196,9 @@
         tip.appendChild(el("span", null, "Online: " + p.average + " average, " + p.peak + " peak"));
       }
       if (a) {
-        tip.appendChild(el("span", null, "Active hunters (" + (data.activeBucketSeconds >= 604800 ? "week" :
-          data.activeBucketSeconds >= 86400 ? "day" : "hour") + "): " + a.hunters));
+        var span = data.activeBucketSeconds >= 604800 ? "week" : data.activeBucketSeconds >= 86400 ? "day" : "hour";
+        tip.appendChild(el("span", null, (a.hunters === 1 ? "1 hunter" : a.hunters + " hunters")
+          + " killed at least one monster that " + span));
       }
       tip.hidden = false;
       var left = (px / width) * rect.width;
@@ -228,11 +230,12 @@
       grid.appendChild(card);
     });
 
+    var BARS_NOTE = "Bars: hunters with a kill, the number of different characters that killed at least one monster in that hour, day or week (from the kill log, which goes back further than the online counts). Someone playing two characters counts twice; time in town without a kill does not count.";
     var since = d.trackingSince ? new Date(d.trackingSince).toLocaleString(undefined,
       { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : null;
     var note = since
-      ? "Online counts are sampled every minute since " + since + ". Bars: hunters active in the hunt log."
-      : "Online counts start with the first sample, within a minute of this update. Bars: hunters active in the hunt log.";
+      ? "Online counts are sampled every minute since " + since + ". " + BARS_NOTE
+      : "Online counts start with the first sample, within a minute of this update. " + BARS_NOTE;
     $("history-note").textContent = note;
     $("players-note").textContent = (d.playerTotal > d.players.length
       ? "Showing the " + d.players.length + " most recent of " + d.playerTotal.toLocaleString() + " players. "
