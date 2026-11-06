@@ -244,6 +244,21 @@
   }
 
   // The most played weapon from the tracked hours, or null before any were tracked.
+  // The server counts Duremudira once per Sky Corridor district ("Block1 Duremudira", "Block2 Duremudira"):
+  // one monster to a player, so add them up under one name. Other names pass through, most kills first.
+  function mergedMonsters(list) {
+    var byName = {}, out = [];
+    (list || []).forEach(function (m) {
+      var name = String(m.name || "").replace(/^Block\d+\s+/, "");
+      if (!byName[name]) {
+        byName[name] = { id: m.id, name: name, kills: 0 };
+        out.push(byName[name]);
+      }
+      byName[name].kills += m.kills || 0;
+    });
+    return out.sort(function (a, b) { return b.kills - a.kills; });
+  }
+
   function mainWeapon(hunter) {
     var list = hunter.weaponTime || [];
     return list.length ? list[0] : null;
@@ -256,7 +271,8 @@
   var CARD_VW = 1200, CARD_VH = 1000;
 
   // Draws the card on `canvas` (sized 1200 x 820). `road` is roadStandings(), or null while loading.
-  function drawCard(canvas, hunter, logo, road, frameKey) {
+  function drawCard(canvas, hunter, logo, road, frameKey, extras) {
+    extras = extras || {};
     var f = FRAMES[frameKey] || FRAMES.brass;
     canvas.width = CARD_W;
     canvas.height = CARD_H;
@@ -302,8 +318,10 @@
     ctx.fillText(hunter.name, 60, 190);
     ctx.fillStyle = f.soft;
     ctx.font = "500 22px " + sans;
-    var sub = [hunter.weapon || "Unknown weapon", hunter.guildName ? hunter.guildName + (hunter.guildRank ? " · " + hunter.guildRank : "") : null]
-      .filter(Boolean).join("   ·   ");
+    // The weapon has its own tile below, so the line under the name is the guild alone (name, rank, since when).
+    var sub = hunter.guildName
+      ? [hunter.guildName, hunter.guildRank, hunter.guildJoined ? "since " + date(hunter.guildJoined) : null].filter(Boolean).join("   ·   ")
+      : "No guild";
     ctx.fillText(sub, 60, 232);
 
     function tile(x, y, w, h, label, value, note, bar) {
@@ -336,7 +354,7 @@
       ["G RANK", num(hunter.gr)],
       ["PLAY TIME", playtime(hunter.playtimeSeconds)],
       ["HUNTS LOGGED", num(hunter.totalKills)],
-      ["MAIN WEAPON", main ? main.weapon + " · " + hours(main.seconds) : "Not tracked yet"],
+      main ? ["MAIN WEAPON", main.weapon + " · " + hours(main.seconds)] : ["WEAPON", hunter.weapon || "Unknown"],
       ["LAST SEEN", date(hunter.lastLogin)]
     ];
     var tw = 200, th = 92, gap = 14;
@@ -353,7 +371,7 @@
     ctx.fillStyle = f.heading;
     ctx.font = "700 16px " + sans;
     ctx.fillText("MOST HUNTED", mx + 22, my + 36);
-    var monsters = (hunter.topMonsters || []).slice(0, 6);
+    var monsters = mergedMonsters(hunter.topMonsters).slice(0, 6);
     if (!monsters.length) {
       ctx.fillStyle = f.label;
       ctx.font = "italic 18px " + serif;
@@ -414,14 +432,28 @@
       tile(60 + i * (rw + rgap), ry + 22, rw, 128, s[0], s[1], s[2], s[3]);
     });
 
+    // The band: what the stats above do not already say (Sky Corridor, the Speedrun Cup, tracked quest runs,
+    // weapons). Each value loads after the first draw; "..." until it arrives, "-" when there is nothing.
+    var sky = extras.sky, cup = extras.cup, runs = extras.runs;
+    var used = (hunter.weaponTime || []).filter(function (w) { return w.seconds > 0; });
     var band = [
-      ["TIME PLAYED", playtime(hunter.playtimeSeconds)],
-      ["WEAPONS USED", String((hunter.weaponTime || []).filter(function (w) { return w.seconds > 0; }).length)],
-      ["HUNTS LOGGED", num(hunter.totalKills)]
+      ["SKY CORRIDOR",
+        sky === undefined ? "..." : sky && (sky.floors || sky.clears || sky.kills) ? num(sky.floors) + (sky.floors === 1 ? " floor" : " floors") : "-",
+        sky === undefined ? "loading" : sky && (sky.floors || sky.clears || sky.kills)
+          ? (sky.floorsRank ? "#" + num(sky.floorsRank) + " · " : "") + num(sky.clears) + " clears · " + num(sky.kills) + " Duremudira kills"
+          : "no Sky Corridor runs yet"],
+      ["SPEEDRUN CUP",
+        cup === undefined ? "..." : cup ? "#" + num(cup.rank) : "-",
+        cup === undefined ? "loading" : cup ? cup.board + " · " + cup.time + " · " + cup.when : "no cup clear this week or last"],
+      ["QUEST RUNS",
+        runs === undefined ? "..." : runs === null ? "-" : num(runs),
+        runs === undefined ? "loading" : runs ? "tracked by the server" : "none tracked yet"],
+      ["WEAPONS USED", String(used.length),
+        used.length ? used.slice(0, 2).map(function (w) { return w.weapon; }).join(", ") + (used.length > 2 ? " and more" : "") : "not tracked yet"]
     ];
-    var bwid = (W - 120 - 28) / 3;
+    var bgap = 14, bwid = (W - 120 - bgap * 3) / 4;
     band.forEach(function (b, i) {
-      tile(60 + i * (bwid + 14), 744, bwid, 104, b[0], b[1]);
+      tile(60 + i * (bwid + bgap), 730, bwid, 128, b[0], b[1], b[2], f.second);
     });
 
     ctx.fillStyle = f.label;
@@ -471,9 +503,9 @@
     canvas.className = "card-preview";
     canvas.setAttribute("role", "img");
     canvas.setAttribute("aria-label", "Hunter card preview for " + hunter.name);
-    var logo = null, road = null;
+    var logo = null, road = null, extras = {};
 
-    function redraw() { drawCard(canvas, hunter, logo, road, frame); }
+    function redraw() { drawCard(canvas, hunter, logo, road, frame, extras); }
 
     Object.keys(FRAMES).forEach(function (key) {
       var chip = el("button", "chip", FRAMES[key].name);
@@ -518,6 +550,34 @@
     ready.then(function () { return loadImage("/assets/brand/hunsterverse.gif"); })
       .then(function (img) { logo = img; redraw(); return roadStandings(hunter.id); })
       .then(function (standings) { road = standings; redraw(); });
+    cardExtras(hunter, function (key, value) { extras[key] = value; redraw(); });
+  }
+
+  // The card's band: Sky Corridor totals and rank, the best Speedrun Cup place this week or last (the boards
+  // list hunters by name), and how many quest runs the server has tracked. Each calls back once, null when
+  // there is nothing or the request failed.
+  function cardExtras(hunter, done) {
+    request("/api/public/sky/hunter/" + encodeURIComponent(hunter.id))
+      .then(function (sky) { done("sky", sky && sky.tracking ? sky : null); }, function () { done("sky", null); });
+    request("/api/public/quests/hunter/" + encodeURIComponent(hunter.id) + "?page=0&size=1")
+      .then(function (q) { done("runs", q && typeof q.total === "number" ? q.total : null); }, function () { done("runs", null); });
+    request("/api/public/tournament/standings").then(function (data) {
+      var best = null;
+      [["this week", data && data.current], ["last week", data && data.last]].forEach(function (pair) {
+        var cycle = pair[1];
+        if (!cycle) return;
+        var boards = (cycle.classes || []).slice();
+        if (cycle.guild) boards.push(cycle.guild);
+        boards.forEach(function (b) {
+          (b.entries || []).forEach(function (e) {
+            if (e.name === hunter.name && (!best || e.rank < best.rank)) {
+              best = { rank: e.rank, time: e.time, board: b.name === "Guild" ? "Guild cup" : b.name, when: pair[0] };
+            }
+          });
+        });
+      });
+      done("cup", best);
+    }, function () { done("cup", null); });
   }
 
   // Weapons: the most played weapon and hours on every weapon, from the play tracker (it credits
@@ -746,7 +806,7 @@
       thead.appendChild(row);
       table.appendChild(thead);
       var tbody = el("tbody");
-      hunter.topMonsters.forEach(function (monster) {
+      mergedMonsters(hunter.topMonsters).forEach(function (monster) {
         var tr = el("tr");
         var nameCell = el("td");
         nameCell.appendChild(MonsterLinks.anchor(monster));
