@@ -11,7 +11,7 @@
   "use strict";
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
-  var DISCORD = "https://discord.gg/YuE42eh";
+  var DISCORD = "https://discord.gg/NQrvRdRwU8";
   var TIMEOUT_MS = 15000;
   // Uploading and storing up to 6 MB on the board takes longer than a plain report.
   var UPLOAD_TIMEOUT_MS = 60000;

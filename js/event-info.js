@@ -161,7 +161,7 @@
         "Stay until the phase vote. If you leave before it and the event resets, you can lose the reward (a known problem).",
         "Do not try the big G Rank hunts without a good Caravan Gem and gear."
       ],
-      links: [["Guide: Raviente", GUIDE + "#raviente-about"], ["Guide: joining one", GUIDE + "#raviente-posting"], ["Discord", "https://discord.gg/YuE42eh"]]
+      links: [["Guide: Raviente", GUIDE + "#raviente-about"], ["Guide: joining one", GUIDE + "#raviente-posting"], ["Discord", "https://discord.gg/NQrvRdRwU8"]]
     },
 
     caravan_rankings: {

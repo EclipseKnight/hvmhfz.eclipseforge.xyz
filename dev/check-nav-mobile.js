@@ -29,7 +29,7 @@ const shots = process.env.SHOTS;
 const expected = ["/play.html", "/guide-frontier.html",
   "/monsters.html", "/quests.html", "/catalog.html", "/set-builder.html", "/quest-editor.html",
   "/road-vote.html", "/road.html", "/road-history.html", "/road-data.html", "/guide-roads.html",
-  "/hunters.html", "/guilds.html", "/leaderboards.html", "https://discord.gg/YuE42eh",
+  "/hunters.html", "/guilds.html", "/leaderboards.html", "https://discord.gg/NQrvRdRwU8",
   "/worlds.html", "/events.html", "/changelog.html", "/report.html"];
 // a saved sign-in that expires in an hour (only its payload is read by js/nav.js)
 const fakeToken = "x." + Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 })).toString("base64url") + ".x";
