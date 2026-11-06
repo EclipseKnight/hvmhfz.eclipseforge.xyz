@@ -31,6 +31,28 @@
     <header class="site-nav">
       <div class="wrap">
         <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <div class="nav-status" data-state="loading">
+          <button type="button" class="nav-status-toggle" aria-expanded="false" aria-controls="nav-status-panel">
+            <span class="nav-status-dot" aria-hidden="true"></span><span class="nav-status-label">Server</span>
+          </button>
+          <div class="nav-status-panel" id="nav-status-panel" role="region" aria-label="Server status and how to connect" hidden>
+            <p class="nav-status-head"><span class="nav-status-dot" aria-hidden="true"></span><strong class="nav-status-title">Checking the server</strong></p>
+            <p class="nav-status-sub">Hunters online and which ports answer, checked every minute.</p>
+            <ul class="nav-status-ports"></ul>
+            <h3 class="nav-status-h">Connect in the launcher</h3>
+            <table class="nav-status-connect">
+              <tbody>
+                <tr><th scope="row">Host</th><td><code data-connect="host">129.213.54.221</code></td><td><button type="button" class="nav-copy" data-nav-copy="host">Copy</button></td></tr>
+                <tr><th scope="row">Launcher port</th><td><code data-connect="launcherPort">8080</code></td><td><button type="button" class="nav-copy" data-nav-copy="launcherPort">Copy</button></td></tr>
+                <tr><th scope="row">Game port</th><td><code data-connect="gamePort">53310</code></td><td><button type="button" class="nav-copy" data-nav-copy="gamePort">Copy</button></td></tr>
+                <tr><th scope="row">Server mode</th><td><code data-connect="mode">API</code></td><td></td></tr>
+                <tr><th scope="row">Version</th><td><code data-connect="version">ZZ</code></td><td></td></tr>
+              </tbody>
+            </table>
+            <p class="nav-status-note">API mode will not log in? Use launcher port <code data-connect="signPort">53312</code> with mode <code data-connect="fallbackMode">SignV1</code>.</p>
+            <p class="nav-status-links"><a href="/play.html">Setup guide</a><a href="/worlds.html">Worlds</a><a href="https://discord.gg/NQrvRdRwU8">Discord</a></p>
+          </div>
+        </div>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
         <nav id="site-menu" aria-label="Main">
           <div class="nav-group">
@@ -130,7 +152,7 @@
 
 <section class="cl-day" id="d-2026-11-06" aria-labelledby="d-2026-11-06-h">
 <h4 class="cl-day-title" id="d-2026-11-06-h"><a class="cl-anchor" href="#d-2026-11-06">Friday 6 November 2026</a></h4>
-<p class="cl-topics"><a href="#d-2026-11-06-discord">Discord</a> · <a href="#d-2026-11-06-game-server">Game server</a></p>
+<p class="cl-topics"><a href="#d-2026-11-06-discord">Discord</a> · <a href="#d-2026-11-06-game-server">Game server</a> · <a href="#d-2026-11-06-website">Website</a></p>
 <section class="cl-topic" id="d-2026-11-06-discord" aria-labelledby="d-2026-11-06-discord-h">
 <h5 class="cl-topic-title" id="d-2026-11-06-discord-h"><a class="cl-anchor" href="#d-2026-11-06-discord">Discord</a></h5>
 <ul>
@@ -147,6 +169,13 @@
 <h5 class="cl-topic-title" id="d-2026-11-06-game-server-h"><a class="cl-anchor" href="#d-2026-11-06-game-server">Game server</a></h5>
 <ul>
 <li><time class="cl-when" datetime="2026-11-06T02:37Z">6 Nov 2026, 02:37 UTC</time> <b>Game chat shows where a line came from:</b> in #game-chat a message reads <b>Luna · World</b> for world chat, or the land for town chat in Mezeporta (<b>Luna · Normal (EN) 2</b>), since every land has its own town chat.</li>
+</ul>
+</section>
+<section class="cl-topic" id="d-2026-11-06-website" aria-labelledby="d-2026-11-06-website-h">
+<h5 class="cl-topic-title" id="d-2026-11-06-website-h"><a class="cl-anchor" href="#d-2026-11-06-website">Website</a></h5>
+<ul>
+<li><time class="cl-when" datetime="2026-11-06T15:51Z">6 Nov 2026, 15:51 UTC</time> <b>Server status on every page:</b> next to the logo, the bar now shows whether the game is up and how many hunters are online, checked every minute. Click it for each port's state and what to type into the launcher (host, ports, server mode, version), with Copy buttons.</li>
+<li><time class="cl-when" datetime="2026-11-06T15:05Z">6 Nov 2026, 15:05 UTC</time> <b>A new tab icon:</b> the site's icon in your browser tab and on a phone's home screen is now the Hunsterverse Z orb. Still seeing the old one? Reload the page once.</li>
 </ul>
 </section>
 </section>

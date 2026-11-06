@@ -33,6 +33,28 @@
     <header class="site-nav">
       <div class="wrap">
         <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <div class="nav-status" data-state="loading">
+          <button type="button" class="nav-status-toggle" aria-expanded="false" aria-controls="nav-status-panel">
+            <span class="nav-status-dot" aria-hidden="true"></span><span class="nav-status-label">Server</span>
+          </button>
+          <div class="nav-status-panel" id="nav-status-panel" role="region" aria-label="Server status and how to connect" hidden>
+            <p class="nav-status-head"><span class="nav-status-dot" aria-hidden="true"></span><strong class="nav-status-title">Checking the server</strong></p>
+            <p class="nav-status-sub">Hunters online and which ports answer, checked every minute.</p>
+            <ul class="nav-status-ports"></ul>
+            <h3 class="nav-status-h">Connect in the launcher</h3>
+            <table class="nav-status-connect">
+              <tbody>
+                <tr><th scope="row">Host</th><td><code data-connect="host">129.213.54.221</code></td><td><button type="button" class="nav-copy" data-nav-copy="host">Copy</button></td></tr>
+                <tr><th scope="row">Launcher port</th><td><code data-connect="launcherPort">8080</code></td><td><button type="button" class="nav-copy" data-nav-copy="launcherPort">Copy</button></td></tr>
+                <tr><th scope="row">Game port</th><td><code data-connect="gamePort">53310</code></td><td><button type="button" class="nav-copy" data-nav-copy="gamePort">Copy</button></td></tr>
+                <tr><th scope="row">Server mode</th><td><code data-connect="mode">API</code></td><td></td></tr>
+                <tr><th scope="row">Version</th><td><code data-connect="version">ZZ</code></td><td></td></tr>
+              </tbody>
+            </table>
+            <p class="nav-status-note">API mode will not log in? Use launcher port <code data-connect="signPort">53312</code> with mode <code data-connect="fallbackMode">SignV1</code>.</p>
+            <p class="nav-status-links"><a href="/play.html">Setup guide</a><a href="/worlds.html">Worlds</a><a href="https://discord.gg/NQrvRdRwU8">Discord</a></p>
+          </div>
+        </div>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
         <nav id="site-menu" aria-label="Main">
           <div class="nav-group">
