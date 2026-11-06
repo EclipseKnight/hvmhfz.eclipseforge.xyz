@@ -73,8 +73,11 @@
     });
 
     var pages = Math.max(1, Math.ceil(data.total / data.size));
-    document.getElementById("catalog-total").textContent = Number(data.total).toLocaleString() + " to browse.";
-    document.getElementById("catalog-results").textContent = Number(data.total).toLocaleString() + " entries";
+    // The header counts the whole section; the toolbar counts what the search found.
+    var whole = state.slot === "items" && itemRows ? itemRows.length : (state.q ? null : data.total);
+    if (whole !== null) document.getElementById("catalog-total").textContent = Number(whole).toLocaleString() + " to browse.";
+    document.getElementById("catalog-results").textContent = Number(data.total).toLocaleString() +
+      (data.total === 1 ? " entry" : " entries");
     var pager = document.getElementById("catalog-pager");
     pager.hidden = pages <= 1;
     document.getElementById("catalog-page-note").textContent = "Page " + (state.page + 1) + " of " + pages;
