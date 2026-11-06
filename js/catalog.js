@@ -36,7 +36,7 @@
     if (!data.items.length) {
       var empty = el("tr");
       var cell = el("td", "empty-cell", "Nothing matches that search.");
-      cell.colSpan = 3;
+      cell.colSpan = 4;
       empty.appendChild(cell);
       body.appendChild(empty);
     }
@@ -44,7 +44,7 @@
     data.items.forEach(function (entry) {
       var row = el("tr");
       var iconCell = el("td", "catalog-icon");
-      if (entry.icon) {
+      if (entry.icon) { // API equipment and data/items both name the file in /assets/items
         var img = document.createElement("img");
         img.src = "/assets/items/" + entry.icon + ".webp";
         img.alt = "";
@@ -53,7 +53,18 @@
       }
       row.appendChild(iconCell);
       row.appendChild(el("td", "mono", entry.id));
-      row.appendChild(el("td", null, entry.name));
+      var nameCell = el("td");
+      if (entry.href) {
+        nameCell.appendChild(el("a", null, entry.name)).href = entry.href;
+        if (entry.aka) nameCell.appendChild(el("span", "catalog-aka", "also " + entry.aka));
+      } else {
+        nameCell.textContent = entry.name;
+      }
+      row.appendChild(nameCell);
+      var srcCell = el("td", "catalog-src");
+      if (state.slot === "items") srcCell.textContent = entry.sources ? String(entry.sources) : "-";
+      srcCell.hidden = state.slot !== "items";
+      row.appendChild(srcCell);
       body.appendChild(row);
     });
 
@@ -67,7 +78,48 @@
     document.getElementById("catalog-next").disabled = state.page >= pages - 1;
   }
 
+  /* Items: every item in the game (data/items/index.json, made by dev/make-item-data.py: 16,701 rows of
+     [id, name, icon, aka, sources]), searched here by name, the server's own name for it (aka) or id. Each row
+     links to its item page. Equipment still comes from the API. */
+  var itemRows = null;
+  function loadItems() {
+    if (itemRows) return Promise.resolve(itemRows);
+    return fetch("/data/items/index.json").then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (d) { itemRows = d.items || []; return itemRows; });
+  }
+
+  function itemMatches(rows, q) {
+    q = q.toLowerCase();
+    if (!q) return rows;
+    var asId = /^\d+$/.test(q) ? Number(q) : null;
+    var starts = [], contains = [];
+    rows.forEach(function (r) {
+      if (asId !== null && r[0] === asId) { starts.unshift(r); return; }
+      var name = r[1].toLowerCase(), aka = (r[3] || "").toLowerCase();
+      if (name === q || aka === q) starts.unshift(r);
+      else if (name.indexOf(q) === 0 || aka.indexOf(q) === 0) starts.push(r);
+      else if (name.indexOf(q) !== -1 || aka.indexOf(q) !== -1) contains.push(r);
+    });
+    return starts.concat(contains);
+  }
+
+  function renderItems(rows) {
+    var found = itemMatches(rows, state.q);
+    var start = state.page * state.size;
+    render({ total: found.length, size: state.size, items: found.slice(start, start + state.size).map(function (r) {
+      return { id: String(r[0]), name: r[1], icon: r[2], aka: r[3], sources: r[4], href: "/item.html?id=" + r[0] };
+    }) });
+  }
+
   function load() {
+    if (state.slot === "items") {
+      loadItems().then(renderItems).catch(function () {
+        document.getElementById("catalog-results").textContent = "Could not load the catalog";
+      });
+      return;
+    }
     request(url()).then(render).catch(function () {
       document.getElementById("catalog-results").textContent = "Could not load the catalog";
     });
@@ -89,6 +141,7 @@
       document.querySelectorAll("#catalog-slots .chip").forEach(function (other) {
         other.setAttribute("aria-pressed", other === chip ? "true" : "false");
       });
+      document.getElementById("catalog-src-head").hidden = state.slot !== "items";
       load();
     });
   });

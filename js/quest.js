@@ -129,8 +129,13 @@
       if (details.zenny !== undefined) body.appendChild(row("Contract fee", details.zenny.toLocaleString() + "z"));
     }
     if (details && details.requirementItemId) {
-      body.appendChild(row("Requirement", (details.requirementItemName || ("Item #" + details.requirementItemId))
-        + " x" + details.requirementCount));
+      var need = row("Requirement", "");
+      var needCell = need.lastChild;
+      needCell.textContent = "";
+      needCell.appendChild(el("a", null, details.requirementItemName || ("Item " + details.requirementItemId))).href =
+        "/item.html?id=" + details.requirementItemId;
+      needCell.appendChild(document.createTextNode(" x" + details.requirementCount));
+      body.appendChild(need);
     }
     body.appendChild(row("Files", String(quest.variants.length) + " (" + quest.variants.join(", ") + ")"));
     if (quest.nameJp && quest.nameJp !== quest.name) body.appendChild(row("Original title", quest.nameJp));

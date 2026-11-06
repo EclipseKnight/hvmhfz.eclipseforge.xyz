@@ -10,7 +10,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 PAGE_CARD = {
     "index.html": "index", "hunters.html": "hunters", "leaderboards.html": "leaderboards",
-    "worlds.html": "worlds", "quests.html": "quests", "quest.html": "quest",
+    "worlds.html": "worlds", "quests.html": "quests", "quest.html": "quest", "item.html": "item",
     "quest-editor.html": "quest-editor",
     "monsters.html": "monsters", "monster.html": "monsters", "guilds.html": "guilds",
     "events.html": "events", "road-vote.html": "road-vote", "road.html": "road-vote",

@@ -5,6 +5,7 @@
   {"page": "api.html", "group": "Server", "label": "API", "title": "API · Hunsterverse", "current": null},
   {"page": "bot-terms.html", "group": null, "label": "Bot terms", "title": "Prontier bot: Terms of Service · Hunsterverse", "current": null},
   {"page": "catalog.html", "group": "Database", "label": "Catalog", "title": "Catalog · Hunsterverse", "current": "/catalog.html"},
+  {"page": "item.html", "group": "Database", "label": "Item", "title": "Item · Hunsterverse", "current": "/catalog.html", "trail": [["Catalog", "/catalog.html"]], "item": true},
   {"page": "changelog.html", "group": "Server", "label": "Changelog", "title": "Changelog · Hunsterverse", "current": "/changelog.html"},
   {"page": "events.html", "group": "Server", "label": "Events", "title": "Events · Hunsterverse", "current": "/events.html"},
   {"page": "guide-frontier-activities.html", "group": "Guides", "label": "Things to do", "title": "Things to do · Frontier guide · Hunsterverse", "current": "/guide-frontier.html", "trail": [["Frontier guide", "/guide-frontier.html"]]},

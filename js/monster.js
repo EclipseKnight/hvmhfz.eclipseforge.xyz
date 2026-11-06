@@ -147,7 +147,9 @@
         row.items.forEach(function (item) {
           var line = el("div", "drop-row");
           var name = el("a", "drop-name", item.item);
-          name.href = "/catalog.html?q=" + encodeURIComponent(item.item);
+          // Every drop row carries the item's id as 4 hex digits: link its item page, not a name search
+          // (the server's item list names many items differently, so a search by this name can miss).
+          name.href = item.hex ? "/item.html?id=" + parseInt(item.hex, 16) : "/catalog.html?q=" + encodeURIComponent(item.item);
           line.appendChild(name);
           line.appendChild(el("span", "drop-qty", "x" + (item.qty || 1)));
           var bar = el("span", "drop-bar");

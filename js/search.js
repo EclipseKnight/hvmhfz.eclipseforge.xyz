@@ -9,6 +9,15 @@
   var timer = null;
   var controller = null;
   var monsters = null;
+  var itemIndex = null; // data/items/index.json rows [id, name, icon, aka, sources], loaded on the first item search
+
+  function loadItems() {
+    if (itemIndex) return Promise.resolve(itemIndex);
+    return fetch("/data/items/index.json")
+      .then(function (r) { return r.json(); })
+      .then(function (data) { itemIndex = data.items || []; return itemIndex; })
+      .catch(function () { itemIndex = []; return itemIndex; });
+  }
 
   function el(tag, className, text) {
     var node = document.createElement(tag);
@@ -103,6 +112,17 @@
     });
 
     addGroup("Monsters", monsterHits);
+    if (needle.length >= 3 && itemIndex) {
+      var starts = [], inside = [];
+      itemIndex.forEach(function (r) {
+        var name = norm(r[1]), aka = norm(r[3]);
+        if (name.indexOf(needle) === 0 || aka.indexOf(needle) === 0) starts.push(r);
+        else if (name.indexOf(needle) !== -1 || aka.indexOf(needle) !== -1) inside.push(r);
+      });
+      addGroup("Items", starts.concat(inside).slice(0, 6).map(function (r) {
+        return { title: r[1], sub: r[3] ? "Item · also " + r[3] : "Item", href: "/item.html?id=" + r[0] };
+      }));
+    }
     if (data) {
       addGroup("Guilds", (data.guilds || []).map(function (g) {
         return { title: g.name, sub: g.members + " members", href: "/guilds.html?id=" + g.id };
@@ -110,8 +130,10 @@
       addGroup("Hunters", (data.hunters || []).map(function (h) {
         return { title: h.name, sub: "HR " + h.hr + " · GR " + h.gr + " · " + h.weapon, href: "/hunters.html?id=" + h.id };
       }));
-      addGroup("Items", (data.items || []).map(function (i) {
-        return { title: i.name, sub: i.slot === "item" ? "Item" : "Equipment", href: "/catalog.html?q=" + encodeURIComponent(i.name) };
+      // Items come from the site's own item list (below), which has every item under the name the drop tables
+      // use and the server's name as well; the API's hits only add equipment.
+      addGroup("Equipment", (data.items || []).filter(function (i) { return i.slot !== "item"; }).map(function (i) {
+        return { title: i.name, sub: "Equipment", href: "/catalog.html?q=" + encodeURIComponent(i.name) };
       }));
       addGroup("Monster hunt counts", (data.monsters || []).map(function (m) {
         // The server's monster id is in the guide's index ("ids"); a monster without a page opens the guide's search.
@@ -143,7 +165,7 @@
         if (norm(query)) renderResults(null, query); else renderResults(null, "");
       });
     }
-    loadMonsters().then(function () {
+    Promise.all([loadMonsters(), query.length >= 3 ? loadItems() : null]).then(function () {
       if (controller) controller.abort();
       controller = new AbortController();
       fetch(API + "/api/public/search?q=" + encodeURIComponent(query), { signal: controller.signal })
