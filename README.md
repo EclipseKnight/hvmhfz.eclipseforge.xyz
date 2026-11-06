@@ -281,6 +281,10 @@ same change:
    datetime="2026-11-03T03:41Z">3 Nov 2026, 03:41 UTC</time>`, from the release record (the server docs, the
    release runbook, the patch release, the site's GitHub Pages deployment). When the time is not recorded, give
    the date only: `<time class="cl-when cl-date" datetime="2026-11-03">3 Nov 2026</time>`. Don't guess times.
+   Staff-only changes (the admin panel, moderation and review tools) get `<li class="cl-staff">`: they stay on
+   the page with a Staff tag, but the Discord bot's #changelog feed skips them. A whole topic can be marked
+   `<section class="cl-topic cl-staff">`, and a topic titled "Admin..." (an "Admin panel" topic) is skipped too.
+   A player-facing change that merely mentions admins (custom quests reviewed in the admin panel) is not staff-only.
 4. Move the entries that went live out of "Coming next". For a game server build, the source is that
    build's player notes ("Next build" in Erupe's `docs/hvmhfz-changelog.md`).
 5. Update "Last update listed" in the page's meta line, and "Known issues" if one was fixed or found.

@@ -562,6 +562,7 @@ main.sheet .cl-anchor{color:inherit;border-bottom:0;text-decoration:none}
 main.sheet .cl-anchor:hover,main.sheet .cl-anchor:focus-visible{text-decoration:underline}
 main.sheet .cl-topic>ul>li{margin:.55em 0}
 .cl-when{display:block;font:600 .74rem var(--font-ui);letter-spacing:.04em;color:var(--ink-soft,#6b5638)}
+li.cl-staff::before{content:"Staff";display:inline-block;margin-right:6px;padding:0 6px;border:1px solid #8a6a24;border-radius:3px;font-size:.7rem;letter-spacing:.04em;text-transform:uppercase;color:#6b521c;vertical-align:1px}
 .cl-local{display:block;margin:-.1em 0 .1em;font:.72rem var(--font-ui);color:var(--ink-soft,#6b5638)}
 main.sheet li.cl-howto{list-style:none;margin-left:-1.2em;padding:.6em .8em;border:1px dashed #a98b56;background:rgba(255,250,236,.45)}
 main.sheet .tree{font:.82rem/1.55 var(--font-mono);color:#3a2c1c;background:rgba(255,250,236,.45);
