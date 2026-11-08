@@ -1,0 +1,220 @@
+{
+  "_about": "Client patch versions, newest first. One entry per Frontier_Patch.zip that was public on the GitHub release client_patch. Versions: v1.N, one step per public patch (v1.0 = the 2023 patch). Each version has its own GitHub release client-patch-v<version> with the zip and SHA256SUMS; client_patch always holds the current one. Shown on play.html#patches; checked by dev/check-patch-versions.py. Add a release with hvmhfz_ops hunsterverse/mezeporta/release-patch.sh.",
+  "current": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip",
+  "patches": [
+    {
+      "version": "1.18",
+      "published": "2026-11-08T19:20Z",
+      "sha256": "e581fc15641bb9026972b92fab3c3e5f9e47948526d9ddea4c57302fe522335f",
+      "size": 58056660,
+      "files": 100,
+      "changes": "Guild card pages 4 and up no longer crash: 120 numbers in the game data are back to the originals.",
+      "changelog": "/changelog.html#d-2026-11-08-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.18/Frontier_Patch.zip",
+      "current": true
+    },
+    {
+      "version": "1.17",
+      "published": "2026-11-08T17:57Z",
+      "sha256": "080ac21c2cce443dd9870d155275dc05fb1c0a0ac3d184016d789da3ce7ade50",
+      "size": 58057058,
+      "files": 100,
+      "changes": "No more crash when you view a guild card or change its wallpaper.",
+      "note": "Guild card pages 4 and up still crash. Fixed in v1.18.",
+      "changelog": "/changelog.html#d-2026-11-08-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.17/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.16",
+      "published": "2026-11-05T02:45Z",
+      "sha256": "f50c0294e590d8754930fc4cf18ed8289e45e0857f58d71549bb49f097e19671",
+      "size": 58057060,
+      "files": 100,
+      "changes": "Room for 2,048 event quests (was 512).",
+      "changelog": "/changelog.html#d-2026-11-05-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.16/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.15",
+      "published": "2026-11-05T01:30Z",
+      "sha256": "198a5474599edf15765a6c528d710f6252cddcf4d4426f7a9e48b868a221e15c",
+      "size": 58057056,
+      "files": 100,
+      "changes": "The 3rd and 4th District quests load the tower instead of Mezeporta.",
+      "changelog": "/changelog.html#d-2026-11-05-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.15/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.14",
+      "published": "2026-11-04T23:38Z",
+      "sha256": "2070170d582602f29505467fc1586259f555aa7e147b395797b910a4aa2e7372",
+      "size": 58057056,
+      "files": 100,
+      "changes": "Sky Corridor 3rd and 4th Districts open.",
+      "note": "Their quests send you to Mezeporta. Fixed in v1.15.",
+      "changelog": "/changelog.html#d-2026-11-04-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.14/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.13",
+      "published": "2026-11-04T13:43Z",
+      "sha256": "80cb4b94fafbd5ef4578a2548b5009fe61902dd8633b0ab662f04bbdc9555023",
+      "size": 50929551,
+      "files": 90,
+      "changes": "Diva Defense screens in English; tower clears count without a guild.",
+      "changelog": "/changelog.html#d-2026-11-04-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.13/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.12",
+      "published": "2026-11-04T02:22Z",
+      "sha256": "c5638acbdf1fd1cefa875ed924c559202ec4b76261b5965f24b9244ddb12b315",
+      "size": 50902048,
+      "files": 89,
+      "changes": "World messages in English; the Sky Corridor ballista that could crash the game can no longer be mounted.",
+      "changelog": "/changelog.html#d-2026-11-04-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.12/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.11",
+      "published": "2026-11-04T01:41Z",
+      "sha256": "957dc1767a63c675868674b796eafb7c136b0370021e99fcc7782842f79315ff",
+      "size": 50901519,
+      "files": 89,
+      "changes": "The built-in quest lists show each day and night quest once.",
+      "changelog": "/changelog.html#d-2026-11-04-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.11/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.10",
+      "published": "2026-11-03T20:59Z",
+      "sha256": "d7cfa5e9fc4bfc9a12d60ca7f254559d130e5c7427260089a4d3ab882c5c9964",
+      "size": 50901567,
+      "files": 89,
+      "changes": "Six restored tower skills use the original game's values.",
+      "changelog": "/changelog.html#d-2026-11-03-sky-corridor",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.10/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.9",
+      "published": "2026-11-03T20:41Z",
+      "sha256": "9a2ccb3bc081e8348f0a8668cf810147408046199b7f0cd572df60c7c789346d",
+      "size": 50901566,
+      "files": 89,
+      "changes": "Longer full-map tower, original tower skill icons and costs, a 150-point skill budget, about 160 tower item texts in English.",
+      "changelog": "/changelog.html#d-2026-11-03-sky-corridor",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.9/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.8",
+      "published": "2026-11-03T18:38Z",
+      "sha256": "0abd1eb9892ab1812dfbbf43daf907fe9017804ee4c411f23cba7e71d3740ad0",
+      "size": 38525882,
+      "files": 86,
+      "changes": "13 old tower skills back; about 50,000 item and gear names English again.",
+      "changelog": "/changelog.html#d-2026-11-03-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.8/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.7",
+      "published": "2026-11-03T17:29Z",
+      "sha256": "3a5cada1babaac2f5776b49c37365912eb1c4dff581557846803d2808bc62db0",
+      "size": 39292358,
+      "files": 86,
+      "changes": "About 200 more lines of English inside the Sky Corridor.",
+      "changelog": "/changelog.html#d-2026-11-03-sky-corridor",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.7/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.6",
+      "published": "2026-11-03T16:58Z",
+      "sha256": "6ff4c40355128053829f2cd9cbbaf7e711c3cb2b3b9ba9594440c7792ffddd17",
+      "size": 39289277,
+      "files": 86,
+      "changes": "Game text rebuilt on the community's English files, with about 320 more lines translated; quests that cannot load hidden again; \"(Full Map)\" titles.",
+      "changelog": "/changelog.html#d-2026-11-03-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.6/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.5",
+      "published": "2026-11-03T16:39Z",
+      "sha256": "b68a8195bd49357e68f933936a979538fcd929b9cb439f80d0b7487156d66b9a",
+      "size": 37701889,
+      "files": 84,
+      "changes": "Emergency rollback: v1.4 without its two game text files, so your English text comes back.",
+      "changelog": "/changelog.html#d-2026-11-03-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.5/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.4",
+      "published": "2026-11-03T15:52Z",
+      "sha256": "b90317c428d0e57a7dbd7190cd6910f598c3d330192b16ffe529fafa243438c3",
+      "size": 38940219,
+      "files": 86,
+      "changes": "Full tower maps: \"Urgent 1st/2nd District (Full Map)\" always load the whole tower.",
+      "note": "Turns a lot of English game text back to Japanese (v1.2 to v1.4). Use v1.6 or later.",
+      "changelog": "/changelog.html#d-2026-11-03-sky-corridor",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.4/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.3",
+      "published": "2026-11-03T15:18Z",
+      "sha256": "1628513fec4d8088bbfcd256c1fc72d31e75d984077401c1708eaae8fa61650c",
+      "size": 38940163,
+      "files": 86,
+      "changes": "You can leave the gacha screen after Point Redemption; tower quests that cannot load are hidden from the counter.",
+      "note": "Turns a lot of English game text back to Japanese (v1.2 to v1.4). Use v1.6 or later.",
+      "changelog": "/changelog.html#d-2026-11-03-gacha",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.3/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.2",
+      "published": "2026-11-03T14:10Z",
+      "sha256": "43cd64873be4464948d7569de23f4adb715116f5ff82fa005826fc5e05cc6a15",
+      "size": 38940173,
+      "files": 86,
+      "changes": "About 390 more lines in English (Gacha Felyne, Sky Corridor, conquest, guild hall, cafe); the crashing \"Unused\" tower quest is hidden.",
+      "note": "Turns a lot of English game text back to Japanese (v1.2 to v1.4). Use v1.6 or later.",
+      "changelog": "/changelog.html#d-2026-11-03-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.2/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.1",
+      "published": "2026-11-02T15:07Z",
+      "sha256": "51f04fa41b95de759bf3eadc663260d7cce6272544a95f0f6d521abf6e55be0e",
+      "size": 37016629,
+      "files": 84,
+      "changes": "The Diva storyline at the Prayer Fountain and one town's NPC dialogue in English.",
+      "changelog": "/changelog.html#d-2026-11-02-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.1/Frontier_Patch.zip",
+      "current": false
+    },
+    {
+      "version": "1.0",
+      "published": "2023-07-11",
+      "sha256": "da9201a23abcc93eceb996963ce79c1a5ff470d40097b41192f58e2003fee805",
+      "size": 34582615,
+      "files": 5,
+      "changes": "The first Hunsterverse patch: the game program, its DLLs and the item data, set up for the server.",
+      "changelog": null,
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.0/Frontier_Patch.zip",
+      "current": false
+    }
+  ]
+}

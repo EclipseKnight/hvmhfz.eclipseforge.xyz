@@ -5,7 +5,8 @@
    full download slots are hidden until their flag and URL are set (the test serves js/play.js with them
    switched on); the home page's main button and the "New here" tiles go to /play.html (cards by anchor); the "More help"
    sections (troubleshooting, patch, Linux per distribution, language, Discord commands) and the way a link or address
-   opens one; the old Windows and Linux guides are only redirect pages that send each old #anchor to Play. Needs Playwright:
+   opens one; the client patch versions (#patches, from data/patch-versions.json); the old Windows and Linux guides are only
+   redirect pages that send each old #anchor to Play. Needs Playwright:
 
      NODE_PATH=/root/work/pw-tools/node_modules node dev/check-play.js
      SHOTS=dev-shots NODE_PATH=... node dev/check-play.js   (also saves screenshots)
@@ -145,6 +146,40 @@ async function main() {
   const dead = await page.evaluate(() => [...document.querySelectorAll('a[href^="#"]')].map((a) => a.getAttribute("href").slice(1)).filter((id) => id && !document.getElementById(id)));
   check("every in-page link has its target", dead.length === 0, dead.join(" "));
 
+  // client patch versions (#patches) from data/patch-versions.json: the current one in the box, the older ones in
+  // the table (newest first) with their own release download and a copy button for the full sha256; the patch
+  // size in the steps follows the current one; without the file a note points at GitHub releases
+  const pv = JSON.parse(fs.readFileSync(path.join(root, "data", "patch-versions.json"), "utf8"));
+  const pvNow = pv.patches.find((p) => p.current);
+  const mb = (pvNow.size / 1e6).toFixed(1) + " MB";
+  await page.goto(base + "/play.html#patches");
+  await page.locator("[data-patch-current]").waitFor({ state: "visible" });
+  const box = await page.locator("[data-patch-current]").innerText();
+  check("current patch version shown", box.includes("v" + pvNow.version) && box.includes(pvNow.sha256) && box.includes(mb), box);
+  check("current patch download is client_patch", (await page.locator("[data-patch-current] a.btn").getAttribute("href")) === pv.current);
+  const rows = await page.locator("[data-patch-rows] tr").evaluateAll((trs) => trs.map((tr) => ({
+    v: tr.getAttribute("data-version"), href: (tr.querySelector('td[data-label="Download"] a') || {}).href,
+    hash: tr.querySelector('td[data-label="SHA-256"] code').textContent, text: tr.textContent })));
+  const older = pv.patches.filter((p) => !p.current);
+  check("one row per older version, newest first", rows.map((r) => r.v).join() === older.map((p) => p.version).join(), rows.map((r) => r.v).join());
+  check("each row downloads its own release", rows.every((r, i) => r.href === older[i].download && /\/releases\/download\/client-patch-v[0-9.]+\/Frontier_Patch\.zip$/.test(r.href)));
+  check("short sha256 per row", rows.every((r, i) => r.hash === older[i].sha256.slice(0, 8)));
+  check("known problems shown", older.filter((p) => p.note).every((p) => rows.find((r) => r.v === p.version).text.includes(p.note)));
+  check("troubleshooting note", /always installs the current patch/.test(await page.locator("#patches").innerText()));
+  check("load note hidden once loaded", await page.locator("[data-patch-status]").isHidden());
+  const sizes = await page.locator("[data-patch-size]").allTextContents();
+  check("patch size in the steps follows the current patch", sizes.length === 3 && sizes.every((t) => t === mb), sizes.join());
+  await page.locator('[data-patch-rows] tr[data-version="' + older[0].version + '"] button[data-copy-sha]').click();
+  check("copy puts the full sha256 on the clipboard", (await page.evaluate(() => navigator.clipboard.readText())) === older[0].sha256);
+  check("patch links from the help sections", (await page.locator('#windows-patch a[href="#patches"], #linux-patch a[href="#patches"]').count()) === 2);
+  const failing = await context.newPage();
+  await failing.route("**/data/patch-versions.json", (r) => r.fulfill({ status: 404, body: "" }));
+  await failing.goto(base + "/play.html");
+  await failing.waitForFunction(() => /could not be loaded/.test(document.querySelector("[data-patch-status]").textContent));
+  check("no file: note with the GitHub releases link", (await failing.locator('[data-patch-status] a[href$="/releases"]').count()) === 1
+    && await failing.locator("[data-patch-current]").isHidden() && await failing.locator(".play-patch-table").isHidden());
+  await failing.close();
+
   // links into the page: the paths and the card anchors
   await page.goto(base + "/play.html#linux");
   check("anchor opens the Linux card", (await page.locator("#linux").isVisible()));
@@ -153,6 +188,9 @@ async function main() {
   await page.setViewportSize({ width: 375, height: 700 });
   await page.goto(base + "/play.html"); // load it at phone width, as a phone does
   await page.waitForTimeout(500);       // the folded Menu is set by js/nav.js after load
+  await page.locator("[data-patch-rows] tr").first().waitFor();
+  check("patch table is one card per version on a phone", (await page.locator(".play-patch-table thead").isHidden())
+    && (await page.locator("[data-patch-rows] tr").first().evaluate((tr) => getComputedStyle(tr).display)) === "grid");
   check("no sideways scroll on a phone", await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
     (await page.evaluate(() => [...document.querySelectorAll("body *")].filter((e) => e.getBoundingClientRect().right > window.innerWidth + 1)
       .slice(0, 4).map((e) => e.tagName + "." + e.className + " " + Math.round(e.getBoundingClientRect().right)).join("; "))));

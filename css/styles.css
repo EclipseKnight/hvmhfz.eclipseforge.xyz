@@ -1598,6 +1598,36 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
 .play-help .table-wrap{margin-top:8px;margin-bottom:12px}
 .play-help-table td,.play-help-table th{white-space:normal;vertical-align:top}
 .play-card-more .play-more{margin-top:0;border-top:0;padding-top:0}
+.play-patches{margin-top:30px;scroll-margin-top:84px}
+.play-patches > p{color:var(--ink-soft);font-size:.92rem}
+.play-patch-current{margin:14px 0 22px;padding:14px 16px;border:2px solid var(--gold);border-radius:3px;background:rgba(183,138,51,.12)}
+.play-patch-current p{margin:0 0 8px}
+.play-patch-now{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.play-patch-label{font:700 .7rem var(--font-ui);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)}
+.play-patch-version{font:700 1.5rem var(--font-ui);color:var(--ink)}
+.play-patch-meta{color:var(--ink-soft);font-size:.9rem}
+.play-patch-changes{margin:0 0 8px;font-size:.92rem}
+.play-patch-note{color:var(--wax);font-weight:600}
+.play-patch-sha code{overflow-wrap:anywhere;font-size:.8rem}
+.play-patch-sha .ghost-btn,.play-patch-hash .ghost-btn{margin-left:8px}
+.play-patch-table td{vertical-align:top}
+.play-patch-table td[data-label="What changed"]{white-space:normal;min-width:260px}
+.play-patch-table .play-patch-changes{margin:0}
+.play-patch-hash{display:inline-flex;align-items:center}
+.play-patch-hash code{white-space:nowrap}
+@media (max-width:640px){
+  /* one card per version on a phone, each cell under its own label */
+  .play-patches .table-wrap{overflow:visible;border:0;background:none}
+  .play-patch-table,.play-patch-table tbody,.play-patch-table tr,.play-patch-table td{display:block;width:100%}
+  .play-patch-table thead{display:none}
+  .play-patch-table tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2px 12px;margin:0 0 10px;padding:8px 10px;
+    border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.55)}
+  .play-patch-table td[data-label="What changed"],.play-patch-table td[data-label="Download"]{grid-column:1 / -1}
+  .play-patch-table td,.play-patch-table td.num{padding:3px 0;border:0;text-align:left;white-space:normal;min-width:0}
+  .play-patch-table td[data-label="What changed"]{min-width:0}
+  .play-patch-table td[data-label]::before{content:attr(data-label);display:block;margin-bottom:2px;font:700 .64rem/1.2 var(--font-ui);
+    letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+}
 @media (max-width:760px){
   .play-paths{grid-template-columns:minmax(0,1fr)}
   .play-steps > li{padding-left:40px}

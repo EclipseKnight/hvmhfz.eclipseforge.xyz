@@ -156,7 +156,7 @@
           </li>
           <li data-step="win-patch">
             <label><input type="checkbox" /> <span class="play-step-title">Apply our client patch before the first launch</span></label>
-            <p>Unzip <code>Frontier_Patch.zip</code> (50.9 MB) over the game folder. The launcher cannot fetch it on a connection slower than about 3 MB/s. A PowerShell script that also backs up the files it replaces is in <a href="#windows-patch">Apply the patch with a script</a> below.</p>
+            <p>Unzip <code>Frontier_Patch.zip</code> (<span data-patch-size>58.1 MB</span>) over the game folder. The launcher cannot fetch it on a connection slower than about 3 MB/s. A PowerShell script that also backs up the files it replaces is in <a href="#windows-patch">Apply the patch with a script</a> below.</p>
             <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a>
           </li>
           <li id="windows-launcher" data-step="win-launcher">
@@ -211,7 +211,7 @@
 
           <details class="play-help" id="windows-patch">
             <summary>Apply the patch with a script, and "Patcher failed to connect"</summary>
-            <p><b>Slow connection? Download the patch yourself, before the first launch.</b> When the launcher checks for updates it downloads <code>Frontier_Patch.zip</code> (50.9 MB) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>"Patcher failed to connect"</b>. With the patch already in place the launcher has nothing left to download. The same works for later patch releases: download the new zip and unzip it over the game folder.</p>
+            <p><b>Slow connection? Download the patch yourself, before the first launch.</b> When the launcher checks for updates it downloads <code>Frontier_Patch.zip</code> (<span data-patch-size>58.1 MB</span>) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>"Patcher failed to connect"</b>. With the patch already in place the launcher has nothing left to download. The same works for later patch releases: download the new zip and unzip it over the game folder. Older versions are in <a href="#patches">Client patch versions</a>.</p>
             <p>Or open PowerShell and run this. It downloads the patch, backs up every game file it replaces into <code>original-files</code> (only the first time, so running it again keeps your original files), then copies the patch over the game:</p>
 <pre><code>$game = "C:\Games\MHFZ"
 
@@ -374,7 +374,7 @@ sudo apt install wine wine32:i386 winetricks cabextract p7zip-full \
 
           <details class="play-help" id="linux-patch">
             <summary>Apply the patch with commands, and "Patcher failed to connect"</summary>
-            <p><b>Slow connection? Download the patch yourself, before the first launch.</b> The launcher downloads <code>Frontier_Patch.zip</code> (50.9 MB) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>"Patcher failed to connect"</b>. With the patch already in place there is nothing left to download. The same works for later patch releases.</p>
+            <p><b>Slow connection? Download the patch yourself, before the first launch.</b> The launcher downloads <code>Frontier_Patch.zip</code> (<span data-patch-size>58.1 MB</span>) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>"Patcher failed to connect"</b>. With the patch already in place there is nothing left to download. The same works for later patch releases. Older versions are in <a href="#patches">Client patch versions</a>.</p>
             <p>This downloads the patch, backs up every game file it replaces into <code>original-files/</code> (only the first time), then copies it over the game:</p>
 <pre><code>curl -L -o /tmp/Frontier_Patch.zip \
   "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip"
@@ -535,6 +535,22 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
             <p>Backups are a zip: send it as it is, never extracted and never single BIN files. The account page's Backups tab can download and import them too.</p>
           </details>
         </div>
+      </section>
+
+      <section class="panel play-card-more play-patches" id="patches" aria-labelledby="patches-title">
+        <div class="panel-head">
+          <h2 id="patches-title">Client patch versions</h2>
+        </div>
+        <p>The Mezeporta launcher always installs the current patch, and so do the downloads in the steps above. Older versions are kept for troubleshooting only: to check which patch you have (compare the SHA-256 of your zip) or to try the one before while we look at a problem. Each version is listed in the <a href="/changelog.html">changelog</a>.</p>
+        <div class="play-patch-current" data-patch-current hidden></div>
+        <h3 class="play-more-head" data-patch-older hidden>Older versions</h3>
+        <div class="table-wrap" data-patch-older hidden>
+          <table class="data-table play-patch-table">
+            <thead><tr><th scope="col">Version</th><th scope="col">Released (UTC)</th><th scope="col">What changed</th><th scope="col" class="num">Size</th><th scope="col">SHA-256</th><th scope="col">Download</th></tr></thead>
+            <tbody data-patch-rows></tbody>
+          </table>
+        </div>
+        <p class="note-text" data-patch-status>The version list needs JavaScript. Every version is also on <a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases" rel="noopener">GitHub releases</a> (<code>client-patch-v1.0</code> and up).</p>
       </section>
 
       <noscript><p class="note-text">The ticks and the copy buttons need JavaScript. The steps and the downloads work without it, and the server settings are in the table of the step "Press ADD A SERVER".</p></noscript>
