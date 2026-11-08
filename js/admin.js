@@ -875,12 +875,15 @@
 
 
   // A character chip: links to the hunter page; deleted and never-played slots are shown but not linked.
-  function userCharacter(character, query) {
+  // With patch tracking the chip also shows the client patch it last logged in with (js/admin-patches.js).
+  function userCharacter(character, query, tracking) {
     var label = character.name || ("Character " + character.id);
     var bits = [];
     if (character.hr) bits.push("HR " + character.hr);
     if (character.gr) bits.push("GR " + character.gr);
     if (character.weapon) bits.push(character.weapon);
+    var patch = window.AdminPatches ? window.AdminPatches.chipLabel(character, tracking) : "";
+    if (patch) bits.push(patch);
     var chip;
     if (character.deleted || character.isNew) {
       chip = el("span", "char-chip is-off");
@@ -894,12 +897,13 @@
       chip.appendChild(el("span", "char-chip-name", label));
     }
     if (bits.length) chip.appendChild(el("span", "char-chip-meta", bits.join(" · ")));
-    chip.title = label + " (id " + character.id + ")" + (character.lastLogin ? ", last played " + stamp(character.lastLogin) : "");
+    chip.title = label + " (id " + character.id + ")" + (character.lastLogin ? ", last played " + stamp(character.lastLogin) : "")
+      + (patch ? ", client " + patch + (character.clientPatchSeenAt ? " at " + stamp(character.clientPatchSeenAt) : "") : "");
     if (query && label.toLowerCase().indexOf(query.toLowerCase()) !== -1) chip.className += " is-match";
     return chip;
   }
 
-  function userCharacters(user) {
+  function userCharacters(user, tracking) {
     var cell = el("td", "char-cell");
     var list = user.characterList || [];
     if (!list.length) {
@@ -908,13 +912,13 @@
     }
     var shown = list.slice(0, 4);
     var wrap = el("div", "char-chips");
-    shown.forEach(function (c) { wrap.appendChild(userCharacter(c, users.query)); });
+    shown.forEach(function (c) { wrap.appendChild(userCharacter(c, users.query, tracking)); });
     cell.appendChild(wrap);
     if (list.length > shown.length) {
       var more = el("details", "char-more");
       more.appendChild(el("summary", null, "+" + (list.length - shown.length) + " more"));
       var rest = el("div", "char-chips");
-      list.slice(4).forEach(function (c) { rest.appendChild(userCharacter(c, users.query)); });
+      list.slice(4).forEach(function (c) { rest.appendChild(userCharacter(c, users.query, tracking)); });
       more.appendChild(rest);
       cell.appendChild(more);
     }
@@ -1032,7 +1036,7 @@
       if (!user.roles.length) roles.appendChild(el("span", "role-badge", "none"));
       else user.roles.forEach(function (role) { roles.appendChild(roleBadge(role)); });
       row.appendChild(roles);
-      row.appendChild(userCharacters(user));
+      row.appendChild(userCharacters(user, data.patchTracking));
       row.appendChild(el("td", null, stamp(user.lastLogin)));
       row.appendChild(userDiscord(user));
       var chat = el("td", "admin-flags");
@@ -1054,10 +1058,21 @@
     });
   }
 
+  // The client patch summary line (current / older / unknown), from the API's counts and the site's version file.
+  function renderPatches(data) {
+    var line = $("users-patches");
+    if (!line || !window.AdminPatches) return;
+    window.AdminPatches.loadCurrent().then(function (current) {
+      line.textContent = window.AdminPatches.summaryText(data, current);
+      line.title = window.AdminPatches.breakdown(data);
+      line.hidden = false;
+    });
+  }
+
   function loadUsers() {
     return request("/api/admin/users?query=" + encodeURIComponent(users.query) + "&match=" + users.match
       + "&page=" + users.page + "&size=" + users.size)
-      .then(function (data) { renderUsers(data); });
+      .then(function (data) { renderUsers(data); renderPatches(data); });
   }
 
   function wireUsers() {
