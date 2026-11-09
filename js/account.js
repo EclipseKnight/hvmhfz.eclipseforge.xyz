@@ -4,7 +4,10 @@
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
-  var TABS = ["overview", "characters", "storage", "hunts", "details", "guild", "quests", "backups", "transfer", "account"];
+  var TABS = ["overview", "characters", "hunts", "guild", "quests", "backups", "transfer", "account"];
+  /* The Storage and Details tabs became the character view on the Characters tab (9 Nov 2026); old links
+     to them land there (js/account-details.js opens the matching section). */
+  var TAB_ALIASES = { storage: "characters", details: "characters" };
 
   var state = {
     account: null,
@@ -106,7 +109,7 @@
   /* ---------- tabs ---------- */
 
   function activateTab(name) {
-    var target = TABS.indexOf(name) === -1 ? "overview" : name;
+    var target = TAB_ALIASES[name] || (TABS.indexOf(name) === -1 ? "overview" : name);
     TABS.forEach(function (tab) {
       var panel = document.getElementById("panel-" + tab);
       var link = document.getElementById("tab-" + tab);
@@ -253,16 +256,16 @@
     row.dataset.search = [character.name, character.weaponType, character.guildName, character.guildRank]
       .filter(Boolean).join(" ").toLowerCase();
 
-    // The name opens the public hunter card (the page the leaderboards and Worlds link to); "Details"
-    // opens the private Details tab (js/account-details.js) for this character.
+    // The name opens the public hunter card (the page the leaderboards and Worlds link to); "View" opens
+    // this character in the character view below the list (js/account-details.js).
     var nameCell = el("td", "cell-name");
     var card = el("a", null, character.name || "Unnamed");
     card.href = "/hunters.html?id=" + encodeURIComponent(character.id);
     card.title = "Hunter card";
     nameCell.appendChild(card);
     if (character.guildRank) nameCell.appendChild(el("span", "badge", character.guildRank));
-    var details = el("a", "char-details-link", "Details");
-    details.href = "#details";
+    var details = el("a", "char-details-link", "View");
+    details.href = "#characters";
     details.setAttribute("data-details-id", String(character.id));
     nameCell.appendChild(details);
     row.appendChild(nameCell);
@@ -445,7 +448,8 @@
   }
 
 
-  /* ---------- storage and hunts ---------- */
+  /* ---------- hunts ---------- */
+  /* (the item box, pouch and warehouse are in the character view, js/account-details.js) */
 
   function money(value) {
     return Number(value || 0).toLocaleString();
@@ -453,258 +457,6 @@
 
   function amount(value) {
     return value === null || value === undefined ? "-" : Number(value).toLocaleString();
-  }
-
-  /* The item box holds 6,000 slots (60 pages of 100; measured from live saves on 2026-10-27, the API
-     reads them all). Show at least the first 10 pages, and as many more as it takes to reach the last
-     page with an item, so a full box shows every page without 50 empty tabs for everyone else. */
-  var BOX_MAX_PAGES = 60;
-  var BOX_MIN_PAGES = 10;
-  var BOX_SIZE = 100;
-  var BOX_PAGES = BOX_MIN_PAGES;
-  var box = { page: 0, items: [], bySlot: {}, selected: null, query: "" };
-
-  var ICONS = {
-    flask: { color: "#7fc4e6", d: "M10 3h4v2l-1 1v3.1l3.4 6.6A2.8 2.8 0 0 1 13.8 20h-3.6a2.8 2.8 0 0 1-2.6-4.3L11 9.1V6l-1-1V3z" },
-    leaf: { color: "#86c46e", d: "M20 4C11 4 5 9 4 18c9-1 16-6 16-14z" },
-    book: { color: "#c39a63", d: "M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm1 3v12h9V6H7z" },
-    meat: { color: "#c96f5a", d: "M16.5 5.5a5 5 0 0 0-7 7L6 16a1.8 1.8 0 1 0 2.5 2.5l3.5-3.5a5 5 0 0 0 4.5-9.5z" },
-    gem: { color: "#b98ad8", d: "M12 3l6 6-6 12L6 9l6-6z" },
-    ticket: { color: "#e8c877", d: "M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4V7z" },
-    ore: { color: "#c9a45c", d: "M4 16l4-9 4 3 4-5 4 11-8 4-8-4z" },
-    bone: { color: "#d9cfba", d: "M5.5 8.5a2 2 0 1 1 2.8-2.8l8 8a2 2 0 1 1-2.8 2.8l-8-8z" },
-    sack: { color: "#a9b4c0", d: "M8 8h8l2 5-3 7H9l-3-7 2-5z" }
-  };
-
-  function iconKind(name) {
-    var n = String(name || "").toLowerCase();
-    if (/potion|juice|drink|medicine|antidote|immunizer|nutrient|drug|elixir|extract/.test(n)) return "flask";
-    if (/herb|leaf|mushroom|seed|berry|plant|fruit|nectar|honey|bug|worm|web|moss|grass/.test(n)) return "leaf";
-    if (/book|combo|map|scroll|tome|note/.test(n)) return "book";
-    if (/meat|fish|steak|jerky|sushi/.test(n)) return "meat";
-    if (/gem|jewel|orb|pearl|crystal/.test(n)) return "gem";
-    if (/ticket|tkt|cheque|coin|pass|receipt|coupon|badge/.test(n)) return "ticket";
-    if (/ore|stone|iron|machalite|dragonite|carbalite|mineral/.test(n)) return "ore";
-    if (/bone|fang|claw|scale|shell|carapace|hide|pelt|wing|tail|horn|sacle|fin|tooth/.test(n)) return "bone";
-    return "sack";
-  }
-
-  function iconNode(item) {
-    var name = typeof item === "string" ? item : (item && item.name);
-    var file = item && typeof item === "object" ? item.icon : null;
-
-    if (file) {
-      var img = document.createElement("img");
-      img.className = "item-img";
-      img.src = "/assets/items/" + file + ".webp";
-      img.alt = "";
-      img.loading = "lazy";
-      return img;
-    }
-
-    var kind = ICONS[iconKind(name)];
-    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", "0 0 24 24");
-    svg.setAttribute("aria-hidden", "true");
-    var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", kind.d);
-    path.setAttribute("fill", kind.color);
-    svg.appendChild(path);
-    return svg;
-  }
-
-  function wallet(id, value) {
-    var node = document.getElementById(id);
-    if (node) node.textContent = value;
-  }
-
-  function pageCount(page) {
-    var count = 0;
-    for (var slot = page * BOX_SIZE; slot < (page + 1) * BOX_SIZE; slot++) {
-      if (box.bySlot[slot]) count++;
-    }
-    return count;
-  }
-
-  function renderTabs() {
-    var tabs = document.getElementById("box-tabs");
-    clear(tabs);
-    for (var page = 0; page < BOX_PAGES; page++) {
-      var button = el("button", "mbox-tab", String(page + 1));
-      button.type = "button";
-      button.setAttribute("role", "tab");
-      button.setAttribute("aria-pressed", page === box.page ? "true" : "false");
-      var count = pageCount(page);
-      if (count) {
-        button.appendChild(el("span", "tab-dot"));
-        button.title = count + (count === 1 ? " item" : " items");
-      }
-      button.addEventListener("click", (function (target) {
-        return function () {
-          box.page = target;
-          renderTabs();
-          renderGrid();
-        };
-      })(page));
-      tabs.appendChild(button);
-    }
-  }
-
-  function renderGrid() {
-    var grid = document.getElementById("box-grid");
-    clear(grid);
-    var start = box.page * BOX_SIZE;
-    for (var i = 0; i < BOX_SIZE; i++) {
-      var slot = start + i;
-      var item = box.bySlot[slot];
-      var cell = el("div", "slot" + (item ? " filled" : ""));
-      cell.setAttribute("role", "gridcell");
-      if (item) {
-        cell.title = item.name + " x" + item.quantity;
-        if (box.query && item.name.toLowerCase().indexOf(box.query) !== -1) {
-          cell.classList.add("match");
-        } else if (box.query) {
-          cell.classList.add("dim");
-        }
-        if (box.selected === item.slot) cell.classList.add("sel");
-        cell.appendChild(iconNode(item));
-        cell.appendChild(el("span", "qty", amount(item.quantity)));
-        cell.addEventListener("click", (function (entry) {
-          return function () { selectItem(entry); };
-        })(item));
-      }
-      grid.appendChild(cell);
-    }
-  }
-
-  function showPreview(item, meta) {
-    document.getElementById("preview-name").textContent = item.name;
-    document.getElementById("preview-meta").textContent = meta;
-    var icon = document.getElementById("preview-icon");
-    clear(icon);
-    icon.appendChild(iconNode(item));
-  }
-
-  function selectItem(item) {
-    box.selected = item.slot;
-    renderGrid();
-    showPreview(item, "x" + amount(item.quantity) + " · id " + item.id +
-      " · slot " + ((item.slot % BOX_SIZE) + 1));
-  }
-
-  function searchBox(term) {
-    box.query = term;
-    if (term) {
-      var matches = box.items.filter(function (item) {
-        return item.name.toLowerCase().indexOf(term) !== -1;
-      });
-      if (matches.length) box.page = Math.floor(matches[0].slot / BOX_SIZE);
-      document.getElementById("storage-box-note").textContent =
-        matches.length + (matches.length === 1 ? " matching item" : " matching items");
-    } else {
-      document.getElementById("storage-box-note").textContent = box.items.length + " items";
-    }
-    renderTabs();
-    renderGrid();
-  }
-
-  function renderPouch(pouch) {
-    var grid = document.getElementById("pouch-grid");
-    clear(grid);
-    var bySlot = {};
-    pouch.forEach(function (item) {
-      if (item.slot !== null && item.slot !== undefined) bySlot[item.slot] = item;
-    });
-    for (var i = 0; i < 40; i++) {
-      var item = bySlot[i];
-      var cell = el("div", "slot" + (item ? " filled" : ""));
-      cell.setAttribute("role", "gridcell");
-      if (item) {
-        cell.title = item.name + " x" + item.quantity;
-        cell.appendChild(iconNode(item));
-        cell.appendChild(el("span", "qty", amount(item.quantity)));
-        cell.addEventListener("click", (function (entry, index) {
-          return function () {
-            showPreview(entry, "x" + amount(entry.quantity) + " · pouch slot " + (index + 1));
-          };
-        })(item, i));
-      }
-      grid.appendChild(cell);
-    }
-  }
-
-  function renderHouse(house) {
-    var list = document.getElementById("storage-house");
-    clear(list);
-    var rows = house
-      ? [["House state", house.state === null || house.state === undefined ? "not set" : String(house.state)],
-         ["Gallery record", house.galleryBytes ? house.galleryBytes + " bytes stored" : "none"],
-         ["Bookshelf", house.bookshelfBytes ? house.bookshelfBytes + " bytes stored" : "none"],
-         ["Tore record", house.toreBytes ? house.toreBytes + " bytes stored" : "none"],
-         ["Garden", house.gardenBytes ? house.gardenBytes + " bytes stored" : "none"]]
-      : [["House", "no house data"]];
-    rows.forEach(function (row) {
-      list.appendChild(el("dt", null, row[0]));
-      list.appendChild(el("dd", null, row[1]));
-    });
-  }
-
-  function renderStorage(data) {
-    box.items = data.itemBox || [];
-    box.bySlot = {};
-    box.items.forEach(function (item) {
-      if (item.slot !== null && item.slot !== undefined) box.bySlot[item.slot] = item;
-    });
-    var lastSlot = box.items.reduce(function (max, item) {
-      return item.slot !== null && item.slot !== undefined && item.slot > max ? item.slot : max;
-    }, -1);
-    BOX_PAGES = Math.min(BOX_MAX_PAGES, Math.max(BOX_MIN_PAGES, Math.floor(lastSlot / BOX_SIZE) + 1));
-    box.page = 0;
-    box.selected = null;
-    box.query = "";
-    var search = document.getElementById("storage-search");
-    if (search) search.value = "";
-
-    document.getElementById("storage-note").textContent = data.name || "";
-    wallet("stat-zenny", money(data.zenny));
-    wallet("stat-gzenny", money(data.gzenny));
-    wallet("stat-cp", money(data.cp));
-    var stamps = data.stamps || {};
-    wallet("stat-stamps", "HL " + amount(stamps.hlTotal) + " / EX " + amount(stamps.exTotal));
-    document.getElementById("mbox-cap").textContent =
-      box.items.length.toLocaleString() + " / " + (BOX_MAX_PAGES * BOX_SIZE).toLocaleString();
-
-    document.getElementById("preview-name").textContent = "No item selected";
-    document.getElementById("preview-meta").textContent = "Click a slot to inspect it";
-    clear(document.getElementById("preview-icon"));
-
-    renderTabs();
-    renderGrid();
-    renderPouch(data.pouch || []);
-    renderHouse(data.house);
-
-    var warehouse = document.getElementById("storage-warehouse");
-    clear(warehouse);
-    if (data.warehouse && data.warehouse.length) {
-      data.warehouse.forEach(function (item) {
-        warehouse.appendChild(el("span", "badge", item.name + " x" + item.quantity));
-      });
-    } else {
-      warehouse.appendChild(el("span", "muted", "Empty"));
-    }
-
-    document.getElementById("storage-box-note").textContent = box.items.length + " items";
-  }
-
-  function loadStorage(characterId) {
-    if (!characterId) return;
-    document.getElementById("storage-note").textContent = "loading";
-    request("/api/account/characters/" + encodeURIComponent(characterId) + "/storage")
-      .then(renderStorage)
-      .catch(function (error) {
-        if (error.message === "unauthenticated") return;
-        showError("Could not read that character's storage.");
-      });
   }
 
   function renderHunts(data) {
@@ -760,7 +512,7 @@
   }
 
   function wireCharacters(characters) {
-    ["storage-character", "hunts-character"].forEach(function (id) {
+    ["hunts-character"].forEach(function (id) {
       var select = document.getElementById(id);
       if (!select) return;
       clear(select);
@@ -772,33 +524,14 @@
       });
     });
 
-    var storageSelect = document.getElementById("storage-character");
     var huntsSelect = document.getElementById("hunts-character");
-    if (storageSelect) storageSelect.addEventListener("change", function () { loadStorage(storageSelect.value); });
     if (huntsSelect) huntsSelect.addEventListener("change", function () { loadHunts(huntsSelect.value); });
 
     if (characters.length) {
-      loadStorage(characters[0].id);
       loadHunts(characters[0].id);
     } else {
-      document.getElementById("storage-note").textContent = "no characters";
-      wallet("stat-zenny", "-");
-      wallet("stat-gzenny", "-");
-      wallet("stat-cp", "-");
-      wallet("stat-stamps", "-");
       renderHunts({ totalKills: 0, monsters: [], recent: [] }); // the hunt log's own "nothing recorded" rows
       document.getElementById("hunts-note").textContent = "no characters";
-    }
-
-    var storageSearch = document.getElementById("storage-search");
-    if (storageSearch) {
-      var timer = null;
-      storageSearch.addEventListener("input", function () {
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          searchBox(storageSearch.value.trim().toLowerCase());
-        }, 180);
-      });
     }
   }
 
@@ -808,21 +541,10 @@
     return Number(quantity).toLocaleString();
   }
 
-  function giftImageUrl(icon) {
-    return "/assets/items/" + icon + ".webp";
-  }
-
   function giftRow(item) {
     var row = el("li", "gift-row");
     var iconCell = el("span", "gift-icon");
-    if (item.icon) {
-      var img = el("img", null, "");
-      img.src = giftImageUrl(item.icon);
-      img.alt = "";
-      img.loading = "lazy";
-      img.onerror = function () { iconCell.style.display = "none"; };
-      iconCell.appendChild(img);
-    }
+    iconCell.appendChild(window.HvGameIcons.itemIcon(item)); // the neutral placeholder when it has none
     row.appendChild(iconCell);
     var label = item.name || item.itemTypeLabel;
     var text = giftQuantity(item.quantity) + " " + label;
