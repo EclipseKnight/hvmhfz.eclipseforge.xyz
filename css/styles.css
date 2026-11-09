@@ -1037,6 +1037,9 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .set-review{margin:14px 0}
 .set-impact{margin:14px 0 4px;padding:10px 12px;border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.45)}
 .set-impact p{margin:4px 0}
+.set-auto{margin:10px 0;padding:8px 12px;border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.45)}
+.set-auto p{margin:4px 0}
+.set-auto .ghost-btn{margin-left:10px}
 .set-restart{columns:2 220px;margin:0 0 10px;padding-left:20px;font-size:.85rem;color:var(--ink-soft)}
 
 /* the Content tab: event content editors (js/admin-content.js) */
