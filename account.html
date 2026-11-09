@@ -21,7 +21,7 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=3" />
+    <link rel="stylesheet" href="/css/styles.css?v=4" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/tablesort.js" defer></script>
     <script src="/js/background.js" defer></script>
@@ -133,6 +133,7 @@
         <a class="tab" id="tab-characters" role="tab" aria-controls="panel-characters" aria-selected="false" href="#characters">Characters <span class="tab-count" id="count-characters"></span></a>
         <a class="tab" id="tab-storage" role="tab" aria-controls="panel-storage" aria-selected="false" href="#storage">Storage</a>
         <a class="tab" id="tab-hunts" role="tab" aria-controls="panel-hunts" aria-selected="false" href="#hunts">Hunts</a>
+        <a class="tab" id="tab-details" role="tab" aria-controls="panel-details" aria-selected="false" href="#details">Details</a>
         <a class="tab" id="tab-guild" role="tab" aria-controls="panel-guild" aria-selected="false" href="#guild">Guild <span class="tab-count" id="count-guild"></span></a>
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests</a>
         <a class="tab" id="tab-backups" role="tab" aria-controls="panel-backups" aria-selected="false" href="#backups">Backups</a>
@@ -316,6 +317,40 @@
         </section>
 
       <div id="hunts-quests"></div>
+      </section>
+
+      <!-- Details (js/account-details.js) -->
+      <section class="tab-panel" id="panel-details" role="tabpanel" aria-labelledby="tab-details" hidden>
+        <section class="panel" id="details-live">
+          <div class="panel-head">
+            <h2>Character details</h2>
+            <span class="panel-note" id="details-note" aria-live="polite"></span>
+          </div>
+          <div class="toolbar">
+            <label class="select-wrap">
+              <span class="search-label">Character</span>
+              <select id="details-character"></select>
+            </label>
+            <a class="toolbar-note" id="details-card-link" href="/hunters.html" hidden>Open the hunter card</a>
+          </div>
+          <form class="toolbar" id="details-admin-form" hidden>
+            <label class="search">
+              <span class="search-label">Admin: any character id</span>
+              <input type="text" inputmode="numeric" id="details-admin-id" placeholder="Character id" autocomplete="off" />
+            </label>
+            <button class="btn btn-small" type="submit">Open</button>
+          </form>
+          <p class="form-alert" id="details-alert" role="alert" hidden></p>
+          <p class="note-text" id="details-soon" hidden>Character details on the website are coming soon.</p>
+          <div class="chips" id="details-sections" role="group" aria-label="Details sections" hidden>
+            <button type="button" class="chip" data-section="equipment" aria-pressed="true">Equipment</button>
+            <button type="button" class="chip" data-section="loadouts" aria-pressed="false">Loadouts</button>
+            <button type="button" class="chip" data-section="boxes" aria-pressed="false">Boxes</button>
+            <button type="button" class="chip" data-section="stats" aria-pressed="false">Stats</button>
+          </div>
+          <p class="note-text">What the game saved at this character's last save, read by the server. Only you (and the server's admins) can see this tab.</p>
+        </section>
+        <div id="details-body"></div>
       </section>
 
       <!-- Guild -->
@@ -574,7 +609,8 @@
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>
     <script src="/js/link-command.js?v=1"></script>
-    <script src="/js/account.js?v=7"></script>
+    <script src="/js/account.js?v=8"></script>
+    <script src="/js/account-details.js?v=1"></script>
     <script src="/js/backup-file.js?v=2"></script>
     <script src="/js/account-backup.js?v=2"></script>
     <script src="/js/account-transfer.js?v=1"></script>

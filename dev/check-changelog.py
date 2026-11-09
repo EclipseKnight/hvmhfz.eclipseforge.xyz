@@ -141,8 +141,9 @@ def tokens(s):
 
 
 # Known-issue bullets of the old page that were rewritten on purpose because the issue was fixed
-# (4 Nov 2026: Diva Defense and the tournaments are built now).
-REWRITTEN = ("Not built on our server yet: Diva Defense, reward song effects",)
+# (4 Nov 2026: Diva Defense and the tournaments are built now), and the empty "Coming next" line, which goes
+# away while something is waiting there.
+REWRITTEN = ("Not built on our server yet: Diva Defense, reward song effects", "Nothing is waiting right now.")
 
 
 # Links of the old page that were pointed at the Play page on purpose (4 Nov 2026: new players start at Play;

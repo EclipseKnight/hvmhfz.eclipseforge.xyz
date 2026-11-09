@@ -4,7 +4,7 @@
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
-  var TABS = ["overview", "characters", "storage", "hunts", "guild", "quests", "backups", "transfer", "account"];
+  var TABS = ["overview", "characters", "storage", "hunts", "details", "guild", "quests", "backups", "transfer", "account"];
 
   var state = {
     account: null,
@@ -253,9 +253,18 @@
     row.dataset.search = [character.name, character.weaponType, character.guildName, character.guildRank]
       .filter(Boolean).join(" ").toLowerCase();
 
+    // The name opens the public hunter card (the page the leaderboards and Worlds link to); "Details"
+    // opens the private Details tab (js/account-details.js) for this character.
     var nameCell = el("td", "cell-name");
-    nameCell.appendChild(el("span", null, character.name || "Unnamed"));
+    var card = el("a", null, character.name || "Unnamed");
+    card.href = "/hunters.html?id=" + encodeURIComponent(character.id);
+    card.title = "Hunter card";
+    nameCell.appendChild(card);
     if (character.guildRank) nameCell.appendChild(el("span", "badge", character.guildRank));
+    var details = el("a", "char-details-link", "Details");
+    details.href = "#details";
+    details.setAttribute("data-details-id", String(character.id));
+    nameCell.appendChild(details);
     row.appendChild(nameCell);
 
     [number(character.hr), number(character.gr), character.weaponType || "Unknown",
