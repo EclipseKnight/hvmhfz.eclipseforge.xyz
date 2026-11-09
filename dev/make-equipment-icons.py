@@ -19,10 +19,12 @@ named ids plus id 0, legs 13,515 / 13,514, ranged 4,224 / 4,223) and the same pi
 head 1000 PV Glasses SP Red).
 
 Output (compact, one string per table, index = id):
-  "classes": weapon class slugs, the file names of assets/weapons/<slug>.png
+  "classes": weapon class slugs, the first part of the icon files assets/icons/<1x|2x>/<slug>-<colour>.png
   "melee", "ranged": two characters per id: the class's index in "classes" and the rarity, both base 36
   "head", "chest", "arms", "waist", "legs": one character per id: the rarity, base 36
   rarity is the game's stored value, 0-11 (shown in game as RARE 1-12); "-" = unknown.
+  "meleeTint", "rangedTint": one letter per weapon id, how the game picks its icon colour (js/game-icons.js
+  weaponRank); written by hvmhfz_re tools/icons/game_icons.py from the client and kept as they are here.
 
 Usage:
   python3 dev/make-equipment-icons.py <folder with Melee.csv, Ranged.csv, Armor.csv> [out.json]
@@ -33,7 +35,7 @@ import json
 import os
 import sys
 
-# The dumps' Japanese class names, to the weapon sprites in assets/weapons/.
+# The dumps' Japanese class names, to the weapon icons' names in assets/icons/.
 CLASSES = {
     "大剣": "great-sword",
     "太刀": "long-sword",
@@ -96,13 +98,17 @@ def main():
     out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(__file__), "..", "data", "equipment-icons.json")
     order = list(dict.fromkeys(CLASSES.values()))
     data = {
-        "about": "Weapon class and rarity per equipment id, from the game's equipment tables (Z Zenith); "
-                 "written by dev/make-equipment-icons.py, read by js/game-icons.js.",
+        "about": "Weapon class and rarity per equipment id, from the game's equipment tables (Z Zenith), "
+                 "written by dev/make-equipment-icons.py; meleeTint/rangedTint (the client's weapon colour rules) "
+                 "by hvmhfz_re tools/icons/game_icons.py; read by js/game-icons.js.",
         "classes": order,
         "melee": weapons(os.path.join(folder, "Melee.csv"), order),
         "ranged": weapons(os.path.join(folder, "Ranged.csv"), order),
     }
     data.update(armour(os.path.join(folder, "Armor.csv")))
+    if os.path.exists(out):  # the weapon colour rules come from the client (game_icons.py): keep them
+        old = json.load(open(out, encoding="utf-8"))
+        data.update({k: old[k] for k in ("meleeTint", "rangedTint") if k in old})
     with open(out, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
         f.write("\n")

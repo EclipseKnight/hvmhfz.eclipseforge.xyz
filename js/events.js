@@ -419,14 +419,8 @@
         clear(prizeBody);
         var rows = byTier[tier].map(function (p) {
           var name = el("span", "prize-name");
-          if (p.icon) {
-            var img = el("img", "item-img");
-            img.src = "/assets/items/" + p.icon + ".webp";
-            img.alt = "";
-            img.loading = "lazy";
-            img.width = 28;
-            img.height = 28;
-            name.appendChild(img);
+          if (p.itemId && window.HvGameIcons) { // every prize is an item; its game icon by id
+            name.appendChild(window.HvGameIcons.itemIcon({ id: p.itemId }, "prize-icon"));
           }
           name.appendChild(document.createTextNode(p.itemName || ("Item " + p.itemId)));
           return [p.type, Number(p.soulsReq).toLocaleString(), name, "x" + p.quantity];

@@ -213,7 +213,7 @@
   function pieceCard(slot, piece, decorations, extra) {
     var card = el("article", "detail-piece" + (piece ? "" : " is-empty"));
     var head = el("div", "detail-piece-head");
-    head.appendChild(piece ? Icons.equipmentIcon(state.icons, piece) : el("span", "gi gi-empty")); // an empty frame
+    head.appendChild(piece ? Icons.equipmentIcon(state.icons, piece, "gi-piece") : el("span", "gi gi-empty")); // an empty frame
     var text = el("div", "detail-piece-text");
     text.appendChild(el("span", "detail-slot", SLOT_LABELS[slot] || slot));
     text.appendChild(el("h4", "detail-name", pieceName(piece)));

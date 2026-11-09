@@ -4,14 +4,15 @@
    GET /api/account/characters/{id}/details (API README "Character details") and /storage:
 
    - the helpers under node (names for unknown ids, type, rarity and level, playtime, filters, searches)
-     and the icon lookups on the real data file (weapon class and rarity, armour slot and rarity, unknown ids);
+     and the icon lookups on the real data files (weapon class, rarity and the client's colour rules, armour
+     slot and rarity, unknown ids, item keys) and that every icon they name exists (assets/icons/1x and 2x);
    - the page's tabs: no Storage or Details tab any more; old #storage and #details links land on Characters
      (#storage on the item box);
    - the character list: each name links to its hunter card (/hunters.html?id=), each row has View;
    - nothing asks for details or storage until the Characters tab is shown, then both load once;
    - the seven sections: Overview (ranks, playtime, money, stamps, guild, coins, house, hunter card link),
-     Equipment (six slots, names, ids for unknown pieces, armour level, decorations, a tinted type icon on
-     every piece, an empty frame for an empty slot), Loadouts (named sets, a piece no longer in the box,
+     Equipment (six slots, names, ids for unknown pieces, armour level, decorations, the game's type icon in
+     its rarity colour on every piece, 1x and 2x files, an empty frame for an empty slot), Loadouts (named sets, a piece no longer in the box,
      cuffs), Item box (the grid with pages, icons, counts, search that jumps to the page; the list),
      Pouch and Warehouse (icon, name, count, search), Equipment box (icons, class, rarity, filter chips,
      search); counts on the section chips; an item without a picture or with a missing file gets the
@@ -37,6 +38,7 @@ const Icons = require("../js/game-icons.js");
 
 const root = path.join(__dirname, "..");
 const EQUIP_DATA = JSON.parse(fs.readFileSync(path.join(root, "data", "equipment-icons.json"), "utf8"));
+const ITEM_KEYS = JSON.parse(fs.readFileSync(path.join(root, "data", "item-icons.json"), "utf8"));
 const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json",
   ".png": "image/png", ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml" };
 const server = http.createServer((req, res) => {
@@ -101,9 +103,9 @@ const STRANGER = Object.assign({}, DETAILS, { characterId: 20, name: "Stranger",
 const item = (slot, id, name, quantity, icon) => ({ slot, id, name, quantity, icon });
 const STORAGE = { characterId: 10, name: "Aldra", zenny: 3392, gzenny: 120000, cp: 50,
   itemBox: [item(0, 7, "Potion", 10, "Drink6"), item(1, 8, "Mega Potion", 10, "Drink2"),
-    item(5, 99999, null, 5, null), item(250, 1000, "Akantor Spike", 100, "Nope7")],
+    item(5, 99999, null, 5, null), item(250, 1000, "Akantor Spike", 100, "Nope7")], // its icon file 404s here
   pouch: [item(0, 7, "Potion", 10, "Drink6"), item(3, 13, "Dash Juice", 5, "Drink1")],
-  warehouse: [item(null, 1000, "Akantor Spike", 3, "Claw1")],
+  warehouse: [item(null, 13, "Dash Juice", 3, "Drink1")],
   stamps: { hlTotal: 4, hlRedeemed: 0, exTotal: 9, exRedeemed: 0 },
   house: { state: 2, galleryBytes: 0, bookshelfBytes: 64, toreBytes: 0, gardenBytes: 0 } };
 const EMPTY_STORAGE = { characterId: 11, name: "Bexo", zenny: 0, gzenny: 0, cp: 0, itemBox: [], pouch: [], warehouse: [],
@@ -126,6 +128,7 @@ async function open(browser, o, width, hash) {
     localStorage.setItem("hvmhfz.consent", JSON.stringify({ choice: "declined", at: new Date().toISOString() }));
   }, TOKEN);
   await page.route("https://challenges.cloudflare.com/**", (route) => route.abort());
+  await page.route("**/assets/icons/*/item-31-10.png", (route) => route.fulfill({ status: 404, body: "" })); // Akantor Spike's
   await page.route("https://api.hvmhfz.eclipseforge.xyz/**", (route) => {
     const req = route.request();
     if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
@@ -195,24 +198,55 @@ async function run() {
 
   // icon lookups on the real data file (ids checked against the server's tables: dev/make-equipment-icons.py)
   const lookOf = (piece, data) => Icons.equipmentLook(data === undefined ? EQUIP_DATA : data, piece);
+  const icon = (key) => "/assets/icons/1x/" + key + ".png";
   let l = lookOf(katana);
-  check("melee 10 is a long sword, rare 1", l.sprite === "/assets/weapons/long-sword.png" && l.rarity === 0 && l.colour === Icons.RARITY_COLOURS[0], JSON.stringify(l));
+  check("melee 10 is a long sword, rare 1", l.sprite === icon("long-sword-0") && l.rarity === 0 && l.colour === Icons.EQUIP_COLOURS[0], JSON.stringify(l));
   l = lookOf({ kind: "ranged", slot: "weapon", id: 4096 });
-  check("ranged 4096 is a bow, rare 4", l.sprite === "/assets/weapons/bow.png" && l.rarity === 3 && l.weaponClass === "Bow", JSON.stringify(l));
+  check("ranged 4096 is a bow, rare 4: the client's second colour", l.sprite === icon("bow-1") && l.rarity === 3 && l.weaponClass === "Bow" && l.colour === "#73cb8d", JSON.stringify(l));
   l = lookOf({ kind: "ranged", slot: "weapon", id: 1000 });
   check("ranged 1000 is a heavy bowgun", l.weaponClass === "Heavy Bowgun", JSON.stringify(l));
   l = lookOf({ kind: "armour", slot: "head", id: 1000 });
-  check("head 1000 rare 7", l.sprite === "/assets/equipment/head.svg" && l.rarity === 6, JSON.stringify(l));
+  check("head 1000 rare 7", l.sprite === icon("head-4") && l.rarity === 6, JSON.stringify(l));
   l = lookOf({ kind: "armour", slot: "legs", id: 999999 });
-  check("unknown armour id: slot sprite, no tint", l.sprite === "/assets/equipment/legs.svg" && l.colour === null, JSON.stringify(l));
+  check("unknown armour id: slot sprite, first colour, no rarity", l.sprite === icon("legs-0") && l.colour === null && l.rarity === null, JSON.stringify(l));
   l = lookOf({ kind: "melee", slot: "weapon", id: 999999 });
   check("unknown weapon id: placeholder", l.sprite === Icons.FALLBACK && l.colour === null, JSON.stringify(l));
   l = lookOf({ kind: "armour", slot: "arms", id: 5 }, null);
-  check("no data: armour still has its slot", l.sprite === "/assets/equipment/arms.svg" && l.colour === null, JSON.stringify(l));
+  check("no data: armour still has its slot", l.sprite === icon("arms-0") && l.colour === null, JSON.stringify(l));
+  check("RARE 1-3 share the first colour, RARE 12 the last", [0, 1, 2].every((r) => Icons.RANK_COLOUR[r] === 0) && Icons.RANK_COLOUR[11] === 9);
+  // the client's weapon colour rules (mhfo-hd.dll 0x10a9cac0): fixed series, by level, by the level table
+  check("weapon rank: rarity", Icons.weaponRank("-", 4, 80) === 4);
+  check("weapon rank: fixed series", Icons.weaponRank("h", 4, 0) === 6 && Icons.weaponRank("i", 4, 0) === 8 && Icons.weaponRank("b", 4, 0) === 11);
+  check("weapon rank: level set a", [[1, 2], [6, 3], [16, 4], [26, 5], [36, 6], [46, 7], [56, 8], [66, 9], [76, 10], [86, 11], [100, 11]].every((c) => Icons.weaponRank("a", 0, c[0]) === c[1]));
+  check("weapon rank: level set c", [[5, 3], [6, 4], [26, 6], [76, 11]].every((c) => Icons.weaponRank("c", 0, c[0]) === c[1]));
+  check("weapon rank: level set e", [[15, 4], [16, 5], [31, 6], [91, 10], [100, 11]].every((c) => Icons.weaponRank("e", 0, c[0]) === c[1]));
+  check("weapon rank: level outside 1-100 is the rarity", Icons.weaponRank("a", 7, 0) === 7 && Icons.weaponRank("e", 7, 101) === 7);
+  check("weapon rank: level table", [[1, 2], [9, 2], [10, 3], [21, 4], [30, 5], [40, 6], [50, 7]].every((c) => Icons.weaponRank("t", 0, c[0]) === c[1]) && Icons.weaponRank("t", 3, 51) === 3);
+  const ruled = (rule) => EQUIP_DATA.meleeTint.indexOf(rule);
+  check("every rule letter is used", ["a", "c", "e", "h", "i", "b", "t"].every((r) => ruled(r) > 0 || EQUIP_DATA.rangedTint.indexOf(r) > 0));
+  l = lookOf({ kind: "melee", slot: "weapon", id: ruled("a"), upgrade: [86, 0] });
+  check("a level weapon at level 86 takes the last colour", l.colour === Icons.EQUIP_COLOURS[9], JSON.stringify(l));
+  l = lookOf({ kind: "melee", slot: "weapon", id: ruled("h") });
+  check("a series weapon takes its own colour", l.colour === Icons.EQUIP_COLOURS[Icons.RANK_COLOUR[6]], JSON.stringify(l));
+  let gun = -1; // a bowgun on the level table: its level is the second upgrade byte (a bow's the first)
+  for (let i = 1; i < EQUIP_DATA.rangedTint.length && gun < 0; i++) {
+    if (EQUIP_DATA.rangedTint[i] === "t" && /bowgun/.test(EQUIP_DATA.classes[parseInt(EQUIP_DATA.ranged[i * 2], 36)])) gun = i;
+  }
+  const gunRarity = parseInt(EQUIP_DATA.ranged[gun * 2 + 1], 36);
+  check("a bowgun's level is its second upgrade byte", gun > 0
+    && lookOf({ kind: "ranged", slot: "weapon", id: gun, upgrade: [0, 50] }).colour === Icons.EQUIP_COLOURS[Icons.RANK_COLOUR[7]]
+    && lookOf({ kind: "ranged", slot: "weapon", id: gun, upgrade: [50, 0] }).colour === Icons.EQUIP_COLOURS[Icons.RANK_COLOUR[gunRarity]], String(gun));
+  check("tint rules cover every weapon id", EQUIP_DATA.meleeTint.length === EQUIP_DATA.melee.length / 2 && EQUIP_DATA.rangedTint.length === EQUIP_DATA.ranged.length / 2);
   check("rarity label", Icons.rarityLabel(6) === "Rare 7" && Icons.rarityLabel(null) === "");
-  check("item icon url", Icons.itemIconUrl("Drink6") === "/assets/items/Drink6.webp" && Icons.itemIconUrl(null) === Icons.FALLBACK);
-  check("every class has its sprite", EQUIP_DATA.classes.every((c) => fs.existsSync(path.join(root, "assets", "weapons", c + ".png"))));
-  check("every slot has its sprite", ["head", "chest", "arms", "waist", "legs"].every((s) => fs.existsSync(path.join(root, "assets", "equipment", s + ".svg"))));
+  check("icon urls", Icons.iconUrl("item-24-2") === "/assets/icons/1x/item-24-2.png" && Icons.iconUrl("item-24-2", 2) === "/assets/icons/2x/item-24-2.png" && Icons.iconUrl(null) === Icons.FALLBACK);
+  check("item keys by id", Icons.itemKey(ITEM_KEYS, { id: 7 }) === "item-24-2" && Icons.itemKey(ITEM_KEYS, 7) === "item-24-2"
+    && Icons.itemKey(ITEM_KEYS, { itemType: 7, itemId: 7 }) === "item-24-2" && Icons.itemKey(ITEM_KEYS, { itemType: 10, itemId: 7 }) === null
+    && Icons.itemKey(ITEM_KEYS, { id: 99999 }) === null && Icons.itemKey(null, { id: 7 }) === null);
+  const iconFile = (key, size) => path.join(root, "assets", "icons", size, key + ".png");
+  const equipKeys = [];
+  EQUIP_DATA.classes.concat(["head", "chest", "arms", "waist", "legs"]).forEach((t) => Icons.EQUIP_COLOURS.forEach((c, i) => equipKeys.push(t + "-" + i)));
+  const missing = equipKeys.concat(Object.values(ITEM_KEYS)).filter((k) => !fs.existsSync(iconFile(k, "1x")) || !fs.existsSync(iconFile(k, "2x")));
+  check("every equipment and item icon has its 1x and 2x file", missing.length === 0, missing.slice(0, 5).join(","));
   check("data covers the server's ids", EQUIP_DATA.head.length >= 14595 && EQUIP_DATA.melee.length / 2 >= 15334 && EQUIP_DATA.ranged.length / 2 >= 4224);
 
   await new Promise((resolve) => server.listen(0, resolve));
@@ -255,11 +289,12 @@ async function run() {
     check("sigil shown", equipment.includes("Poison Sigil"));
     check("weapon class and rarity", equipment.includes("Long Sword · Rare 1"));
     check("weapon upgrade not shown as a level", !equipment.includes("Lv 100"));
-    const pieceIcons = await s.page.$$eval("#details-body .detail-piece-head .gi", (n) => n.map((g) => (g.querySelector("img") || {}).getAttribute
-      ? g.querySelector("img").getAttribute("src") + (g.querySelector(".gi-tint") ? " tinted" : "") : g.className));
-    check("piece icons", JSON.stringify(pieceIcons) === JSON.stringify(["/assets/weapons/long-sword.png tinted", "/assets/equipment/head.svg tinted",
-      "/assets/equipment/chest.svg tinted", "/assets/equipment/arms.svg tinted", "gi gi-empty", "/assets/equipment/legs.svg tinted"]), JSON.stringify(pieceIcons));
-    check("tint is the rarity colour", (await s.page.$eval("#details-body .detail-piece .gi-tint", (t) => getComputedStyle(t).backgroundColor)) === "rgb(255, 255, 255)");
+    const pieceIcons = await s.page.$$eval("#details-body .detail-piece-head .gi", (n) => n.map((g) => g.querySelector("img")
+      ? g.querySelector("img").getAttribute("src") : g.className));
+    check("piece icons", JSON.stringify(pieceIcons) === JSON.stringify([icon("long-sword-0"), icon("head-0"), icon("chest-4"), icon("arms-4"),
+      "gi gi-empty", icon("legs-4")]), JSON.stringify(pieceIcons));
+    check("1x and 2x files in srcset, shown at 40 px", (await s.page.$eval("#details-body .detail-piece .gi img", (i) => i.getAttribute("srcset") + " " + i.getAttribute("sizes")))
+      === "/assets/icons/1x/long-sword-0.png 32w, /assets/icons/2x/long-sword-0.png 64w 40px");
     check("decoration icons", (await count(s.page, "#details-body .detail-decos .gi img")) === 4);
     check("equipment: pictures load", (await brokenImages(s.page)).length === 0, (await brokenImages(s.page)).join(","));
     await shot(s.page, "character-equipment-1280.png");
@@ -281,7 +316,7 @@ async function run() {
     check("100 slots", (await count(s.page, "#details-body .mbox-grid .slot")) === 100);
     check("10 pages", (await count(s.page, "#details-body .mbox-tab")) === 10);
     check("filled slots", (await count(s.page, "#details-body .mbox-grid .slot.filled")) === 3);
-    check("slot icon and count", (await s.page.$eval("#details-body .slot.filled", (n) => n.querySelector("img").getAttribute("src") + " " + n.querySelector(".qty").textContent)) === "/assets/items/Drink6.webp 10");
+    check("slot icon and count", (await s.page.$eval("#details-body .slot.filled", (n) => n.querySelector("img").getAttribute("src") + " " + n.querySelector(".qty").textContent)) === icon("item-24-2") + " 10");
     await s.page.click("#details-body .slot.filled");
     check("preview", (await text(s.page, "#details-body .preview")).includes("Potion") && (await text(s.page, "#details-body .preview")).includes("x10"));
     await s.page.fill("#char-search-itembox", "akantor");
@@ -309,8 +344,8 @@ async function run() {
     await s.page.fill("#char-search-pouch", "dash");
     check("pouch search", (await count(s.page, "#details-body .char-item")) === 1);
     await section(s.page, "warehouse", "#details-body .char-item");
-    check("warehouse row", (await text(s.page, "#details-body .char-item")).includes("Akantor Spike"));
-    check("warehouse icon", (await s.page.$eval("#details-body .char-item img", (i) => i.getAttribute("src"))) === "/assets/items/Claw1.webp");
+    check("warehouse row", (await text(s.page, "#details-body .char-item")).includes("Dash Juice"));
+    check("warehouse icon", (await s.page.$eval("#details-body .char-item img", (i) => i.getAttribute("src"))) === icon("item-24-4"));
 
     // Equipment box
     await section(s.page, "equipbox", ".detail-box-table tbody tr");

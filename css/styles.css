@@ -273,7 +273,7 @@ a.badge:hover{border-color:var(--gold)}
 .data-table tr.no-results td{text-align:center;color:var(--ink-soft);font-style:italic}
 /* Catalog icons (every tab): the art is 96 px, shown at exactly half so the pixel edges stay crisp */
 .catalog-icon{width:72px;padding:6px 12px}
-.catalog-icon img{width:48px;height:48px;object-fit:contain;display:block;image-rendering:pixelated}
+.catalog-icon img{width:48px;height:48px;max-width:none;object-fit:contain;display:block} /* max-width:none: the equipment sections' table would squeeze the column */
 .icon-col{width:72px}
 #catalog-body td{vertical-align:middle}
 .pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:22px}
@@ -1795,7 +1795,7 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
 .item-hero{display:flex;align-items:center;gap:24px;margin:24px 0 36px}
 .item-hero-art{width:96px;height:96px;flex:0 0 96px;display:flex;align-items:center;justify-content:center;
   background:#0f0a06;border:1px solid #4a3520;border-radius:10px}
-.item-hero-art img{width:64px;height:64px;object-fit:contain;image-rendering:pixelated}
+.item-hero-art img{width:64px;height:64px;object-fit:contain}
 .item-hero-info{min-width:0}
 .item-hero-info .kicker{margin:0 0 10px}
 .item-hero-info h1{margin:0 0 8px;color:#f4e7c9;overflow-wrap:anywhere}
@@ -1848,16 +1848,12 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
 }
 
 /* ---------- game icons (js/game-icons.js) and the account page's character view (js/account-details.js) ----------
-   An icon is a span.gi holding the picture; an equipment icon adds span.gi-tint, the rarity colour cut to the
-   sprite's shape and multiplied over it, so the grey sprite takes the colour and its outline stays dark. */
+   An icon is a span.gi holding the picture: the game's icon, already in its colour (assets/icons/). */
 .gi{position:relative;display:inline-block;flex:none;width:32px;height:32px;vertical-align:middle;isolation:isolate}
 .gi img{display:block;width:100%;height:100%;object-fit:contain}
-.gi-item img{image-rendering:pixelated}
-.gi-tint{position:absolute;inset:0;mix-blend-mode:multiply;pointer-events:none;
-  -webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
-  -webkit-mask-position:center;mask-position:center}
 .gi-small{width:20px;height:20px}
 .gi-large{width:48px;height:48px}
+.prize-icon{width:28px;height:28px;margin-right:6px}
 .gi-empty{border:1px dashed var(--line);border-radius:3px;opacity:.6}
 .detail-piece-head{display:flex;align-items:center;gap:10px}
 .detail-piece-head .gi{width:40px;height:40px}
