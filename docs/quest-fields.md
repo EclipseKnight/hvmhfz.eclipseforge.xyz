@@ -60,7 +60,8 @@ field with the JSON's offset and size.
 
 Pax's quest editor (`Mhfz-Quest-Editor.exe`) was looked at but gives nothing readable: its interface is
 packed inside the binary. Ghidra was not needed; the RE notes and the existing decompiles answered every
-question.
+question. Its source on GitHub was read on 2026-11-09: `docs/quest-builder-gap.md` compares every Pax field
+with the builder and plans the missing ones.
 
 ## The fields
 

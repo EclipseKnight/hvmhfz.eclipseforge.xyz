@@ -140,6 +140,10 @@ only map 26 is offered. A save the server refuses with 400 shows its message nex
 "Create a quest" on `quests.html` and on the account page's Custom quests tab opens it; the quest page no
 longer carries an edit action, and `?id=` shows the server's refusal instead of a form.
 
+**What Pax's editor has that the builder lacks** (counter and mark, flags, restrictions, forced equipment,
+monster size, level and coordinates, reward preview) and the plan for it: `docs/quest-builder-gap.md`
+(2026-11-09).
+
 **Still open.** The `quest_submission` queue, MAX_ACTIVE and the sandbox id block are unchanged; a draft is
 never a submission until Submit. Nothing here deletes drafts (the API caps an account at 50), and the private
 API docs have no entry for these routes yet.
