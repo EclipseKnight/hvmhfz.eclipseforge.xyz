@@ -1177,6 +1177,7 @@ a.char-chip:hover{border-color:#8a6a24;background:rgba(183,138,51,.18)}
 .role-badge{display:inline-block;padding:3px 8px;border-radius:999px;border:1px solid #b9a379;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);background:rgba(183,138,51,.08)}
 .role-badge.role-admin{border-color:#8a6a24;color:#6d5318;background:rgba(183,138,51,.16);font-weight:700}
 .role-badge.role-tester{border-color:#4c6f7a;color:#2f4d57;background:rgba(76,111,122,.12)}
+.role-badge.role-playtester{border-color:#7a5f8a;color:#53386a;background:rgba(122,95,138,.12)}
 .role-badge.role-mod{border-color:#5f7a4c;color:#3f5530;background:rgba(95,122,76,.12)}
 .admin-flags{display:flex;gap:6px;flex-wrap:wrap}
 .ghost-btn.is-on{border-color:#8a6a24;color:#6d5318;background:rgba(183,138,51,.16);box-shadow:inset 0 0 0 1px rgba(138,106,36,.35)}
@@ -1983,3 +1984,13 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .patch-channel-choices .ghost-btn{min-height:44px}
 .patch-channel-choices .ghost-btn.is-on{border-color:#8a6a24;background:rgba(183,138,51,.16);font-weight:700}
 .role-badge.role-pre{border-color:#4c6f7a;color:#2f4d57;background:rgba(76,111,122,.12);font-weight:700}
+/* Account > Client patch: characters, published slots and the Test-land warning; admin Pre-release slots panel */
+.patch-chars{list-style:none;margin:8px 0;padding:0}
+.patch-chars li{margin:3px 0}
+.patch-notes,.patch-slot-notes{margin:4px 0 8px 1.2em;padding:0}
+.patch-warning{margin:12px 0 0;padding:10px 12px;border:2px solid #a23b2a;border-left-width:6px;border-radius:6px;background:rgba(162,59,42,.1);color:var(--ink);font-weight:600;overflow-wrap:anywhere}
+.patch-channel-cell .patch-channel-select{max-width:11em;margin:0 6px}
+.patch-slot{margin:0 0 12px;padding:0 0 8px;border-bottom:1px solid rgba(0,0,0,.12)}
+.patch-slot-head{margin:0 0 2px;overflow-wrap:anywhere}
+.patch-slot-sub{margin:14px 0 6px;font-size:1rem}
+.patch-sub{margin:12px 0 4px;font-size:1rem}

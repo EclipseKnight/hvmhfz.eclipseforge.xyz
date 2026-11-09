@@ -3,15 +3,20 @@
    older, which send nothing; null = not logged in since the recording started). GET /api/admin/users carries it per
    character (clientPatch) and a count per value over every account (patches). The current version comes from this
    site's data/patch-versions.json (the entry with "current": true), the same file play.html shows.
+   From 10000 up the value is a pre-release build (12102 = v1.21-pre2).
    Summary buckets: current (the current version), pre (newer than it: a pre-release, which only testers get, see the
    Patch channel column), older (a version below it), unknown (0 or null). */
 (function () {
   "use strict";
 
-  // 119 -> "v1.19"; 0 -> "v1.18 or older"; null -> "not seen".
+  // 119 -> "v1.19"; 12102 -> "v1.21-pre2" (10000 and up is a pre-release build: (major * 100 + minor) * 100 + N);
+  // 0 -> "v1.18 or older"; null -> "not seen".
   function patchName(value) {
     if (value === null || value === undefined) return "not seen";
     if (value === 0) return "v1.18 or older";
+    if (value >= 10000) {
+      return "v" + Math.floor(value / 10000) + "." + (Math.floor(value / 100) % 100) + "-pre" + (value % 100);
+    }
     return "v" + Math.floor(value / 100) + "." + (value % 100);
   }
 
@@ -78,6 +83,7 @@
     if (!tracking || character.clientPatch === null || character.clientPatch === undefined) return "";
     if (character.clientPatch === 0) return "patch ≤v1.18";
     var label = "patch " + patchName(character.clientPatch);
+    if (character.clientPatch >= 10000) return label + " pre-release";
     return current && character.clientPatch > current ? label + " pre-release" : label;
   }
 

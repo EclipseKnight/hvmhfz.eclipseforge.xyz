@@ -118,6 +118,12 @@ function pure() {
   check("name 200", P.patchName(200) === "v2.0");
   check("name 0", P.patchName(0) === "v1.18 or older");
   check("name null", P.patchName(null) === "not seen");
+  // 10000 and up: a pre-release build, (major * 100 + minor) * 100 + N.
+  check("name pre build", P.patchName(12102) === "v1.21-pre2" && P.patchName(12101) === "v1.21-pre1" && P.patchName(12199) === "v1.21-pre99"
+    && P.patchName(10001) === "v1.0-pre1" && P.patchName(9999) === "v99.99", P.patchName(12102) + " " + P.patchName(9999));
+  check("bucket pre build", P.bucket(12102, 120) === "pre");
+  check("chip pre build", P.chipLabel({ clientPatch: 12102 }, true, 120) === "patch v1.21-pre2 pre-release"
+    && P.chipLabel({ clientPatch: 12102 }, true) === "patch v1.21-pre2 pre-release", P.chipLabel({ clientPatch: 12102 }, true, 120));
   check("value", P.versionValue("1.19") === 119 && P.versionValue("v2.5") === 205);
   check("value refused", P.versionValue("1.100") === null && P.versionValue("soon") === null && P.versionValue("") === null);
   check("current from the file", P.currentValue(VERSIONS) === 120);
