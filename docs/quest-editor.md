@@ -47,8 +47,9 @@ honest.
   weeks).
 - The room pin (already needed for Roads) carries the token, so a room's members receive the test quest
   file when the client asks for that id.
-- Test quests are **sandboxed**: no rewards granted to the live save, no kill log contribution, no board
-  entries, no Road points. Otherwise a test quest is a duplication exploit.
+- Test quests are **sandboxed**: no item rewards granted to the live save, no kill log contribution, no board
+  entries, no Road points. Otherwise a test quest is a duplication exploit. (Owner, 2026-11-09: custom quests do pay
+  their reward money, in testing too, and an approved quest pays its full rewards; `docs/quest-editor-web.md`.)
 - The quest id used for testing is a reserved block, so a test can never be requested through the normal
   quest counter.
 - Expiry is automatic; the room falls back to the live rotation of quests when the token lapses.

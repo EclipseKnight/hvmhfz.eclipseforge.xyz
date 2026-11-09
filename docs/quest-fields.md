@@ -60,7 +60,8 @@ field with the JSON's offset and size.
 
 Pax's quest editor (`Mhfz-Quest-Editor.exe`) was looked at but gives nothing readable: its interface is
 packed inside the binary. Ghidra was not needed; the RE notes and the existing decompiles answered every
-question.
+question. Its source on GitHub was read on 2026-11-09: `docs/quest-builder-gap.md` compares every Pax field
+with the builder and plans the missing ones.
 
 ## The fields
 
@@ -69,18 +70,21 @@ question.
 | Key | Label | Struct | Offset | Bytes | Type | Range | Values | Builder | Confidence |
 |---|---|---|---|---|---|---|---|---|---|
 | `header.questClass` | Quest class (the copy the client uses) | header | 0x5c | 1 | u8enum | 0..9 | 0 = Low rank; 1 = High rank; 2 = Exercise / trial; 3 = HR 100 and up; 7 = G rank; 8 = Hunting Road / Sky Corridor; 9 = Supremacy (names: one source) | edits | confirmed |
-| `body.seasonFlags` | Season and day/night | body | 0x02 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 6 (JSON) | carried | confirmed |
-| `body.level` | Quest level (stars) | body | 0x04 | 1 | u8 | 1..8 |  | carried | confirmed |
+| `body.seasonFlags` | Season and time of day | body | 0x02 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 6 (JSON) | edits | confirmed |
+| `body.level` | Quest level (stars) | body | 0x04 | 1 | u8 | 1..8 |  | edits | confirmed |
 | `body.monsterGroup` | Monster group (list filter) | body | 0x05 | 1 | u8 | 0..6 |  | carried | one source |
 | `body.questClass` | Quest class | body | 0x0a | 1 | u8enum | 0..9 | 0 = Low rank; 1 = High rank; 2 = Exercise / trial; 3 = HR 100 and up; 7 = G rank; 8 = Hunting Road / Sky Corridor; 9 = Supremacy (names: one source) | edits | confirmed |
 | `body.maxHunters` | Max hunters | body | 0x0b | 1 | u8 | 0..4 | 0 = 4 hunters; 1 = solo (skips the multi-hunter paths); 2 = 2 hunters; 3 = 3 hunters; 4 = 4 hunters | edits | confirmed |
 | `body.timeLimit` | Time limit | body | 0x20 | 4 | u32 | 1800..90000 |  | edits | confirmed |
-| `body.conditionNote` | Condition note id | body | 0x2c | 1 | u8 |  | 0 = none | carried | one source |
+| `body.conditionNote` | Restriction (condition note) | body | 0x2c | 1 | u8 |  | 0 = none; 109 = Hardcore (with 110-113, 118; class 3 only); the 136 of `data/quest-condition-notes.json` | edits | one source |
 | `body.questId` | Quest id | body | 0x2e | 2 | u16 | 0..65535 | 0 = new quest: the server assigns the id at submit | shows | confirmed |
-| `body.rank` | Minimum hunter rank to join | body | 0x4e | 2 | u16 | 0..999 |  | carried | confirmed |
+| `body.postRankMin` | Lowest rank to post | body | 0x4a | 2 | u16 | 0..999 |  | edits | one source |
+| `body.postRankMax` | Highest rank to post | body | 0x4c | 2 | u16 | 0..999 | 0 = no limit | edits | one source |
+| `body.rank` | Lowest rank to join | body | 0x4e | 2 | u16 | 0..999 |  | edits | confirmed |
+| `body.joinRankMax` | Highest rank to join | body | 0x50 | 2 | u16 | 0..999 | 0 = no limit | edits | one source |
+| `body.srBounds` | SR bounds (not in the codec) | body | 0x52 | 2 | u16 |  |  | not in the model | guess |
 | `body.iconLabelId` | Required item | body | 0x94 | 2 | u16enum |  | 0 = none; item-ids.json | edits | confirmed |
 | `body.iconLabelCount` | Required item count | body | 0x96 | 1 | u8 | 0..255 | 0 = line left out | edits | one source |
-| `body.hrBounds` | HR / SR bounds (not in the codec) | body | 0x4a | 16 (8 x 2) | u16 |  |  | not in the model | guess |
 
 ### Map
 
@@ -112,7 +116,7 @@ question.
 | `body.objective2.type` | Objective type (sub-target B) | body | 0x40 | 4 | bitfield |  | 12 named values (JSON) | edits | confirmed |
 | `body.objective2.target` | Objective target (sub-target B) | body | 0x44 | 2 | u16enum |  | monster-ids.json when type bit 0 or bit 2 is set; item-ids.json when bit 1 is set | edits | confirmed |
 | `body.objective2.count` | Objective count (sub-target B) | body | 0x46 | 2 | u16 | 0..65535 |  | edits | confirmed |
-| `body.objectiveMode` | Objective mode | body | 0x48 | 1 | u8enum |  | 2 = main target only (12,924 files); 3 = two objectives (703 files); 4 = three objectives (240 files) | carried | one source |
+| `body.objectiveMode` | Targets required to clear | body | 0x48 | 1 | u8enum | 2..4 | 2 = main target only (12,924 files); 3 = main target and sub-target A (703 files, all with sub-target A and body.seasonFlags bit 6); 4 = all three targets (240 files, all with sub-targets A and B and bit 6) | edits | one source |
 | `body.fourthObjectiveType` | Fail objective type | body | 0x54 | 4 | bitfield |  |  | carried | one source |
 | `body.fourthObjectiveTarget` | Fail objective target | body | 0x58 | 2 | u16 |  |  | carried | one source |
 | `body.fourthObjectiveCount` | Fail objective count | body | 0x5a | 2 | u16 |  |  | carried | one source |
@@ -121,9 +125,9 @@ question.
 
 | Key | Label | Struct | Offset | Bytes | Type | Range | Values | Builder | Confidence |
 |---|---|---|---|---|---|---|---|---|---|
-| `header.monsterSize` | Large-monster size (percent) | header | 0x44 | 2 | u16 | 1..65535 |  | carried | one source |
-| `header.sizeClass` | Size spread class | header | 0x46 | 1 | u8 | 0..4 | 0 = 100-100%; 1 = 100-105%; 2 = 95-110%; 3 = 87-114%; 4 = 85-125% | carried | one source |
-| `header.monsterLevel` | Large-monster level | header | 0x48 | 1 | u8 | 0..255 | 64-67 = Zenith rank 1-4 | edits | one source |
+| `header.monsterSize` | Large-monster size (percent) | header | 0x44 | 2 | u16 | 70..150 |  | edits | one source |
+| `header.sizeClass` | Size spread class | header | 0x46 | 1 | u8 | 0..4 | 0 = 100-100%; 1 = 100-105%; 2 = 95-110%; 3 = 87-114%; 4 = 85-125% | edits | one source |
+| `header.monsterLevel` | Large-monster level | header | 0x48 | 1 | u8 | 0..78 | 1-10 Low rank; 11 Low / High; 12-20 High rank; 26, 31, 42 HR5; 53 G rank; 54, 55 Musou 1, 2; 64-67 = Zenith rank 1-4; 71-73 Interception (Pax's names) | edits | one source |
 | `header.secondMonsterLevel` | Second monster level | header | 0x61 | 1 | u8 |  |  | carried | one source |
 | `header.specialFight` | Special fight selector | header | 0x62 | 2 | u16 |  | 0 = off; 2 = monster 0x5c behaviour; 3 = monster 0x5b behaviour | carried | one source |
 | `body.monsterVariants[0-1]` | Large monster form, slots 1-2 | body | 0x91 | 2 (2 x 1) | u8enum |  | 0 = normal, 16 = Zenith | derived | confirmed |
@@ -139,7 +143,7 @@ question.
 | `largeSpawnAreas[].spawns[].monsterId` | Monster | spawnRecord | 0x00 | 2 | u16enum | 1..176 | 65535 = end of the records; monster-ids.json | edits | confirmed |
 | `largeSpawnAreas[].spawns[].count` | Spawn count | spawnRecord | 0x04 | 1 | s8 | 0..99 |  | edits | confirmed |
 | `largeSpawnAreas[].spawns[].areaId` | Spawn area | spawnRecord | 0x08 | 2 | u16enum |  | area-ids.json | edits | confirmed |
-| `largeSpawnAreas[].spawns[].position` | Spawn position | spawnRecord | 0x20 | 12 (3 x 4) | f32 |  |  | carried | one source |
+| `largeSpawnAreas[].spawns[].position` | Spawn position | spawnRecord | 0x20 | 12 (3 x 4) | f32 | -50000..50000 |  | edits | one source |
 | `largeSpawnAreas[].spawns[].arrival` | Random arrival spot flag (not in the codec) | spawnRecord | 0x0b | 1 | u8 |  | 1 = start at a random spot of the area (header +0x34) | not in the model | one source |
 
 ### Rewards
@@ -152,9 +156,11 @@ question.
 | `header.objective2Points` | Points for sub-target B | header | 0x58 | 4 | u32 |  |  | carried | one source |
 | `body.zenny` | Contract fee (zenny) | body | 0x0c | 4 | u32 | 0..999999 |  | edits | confirmed |
 | `body.rewardMoney` | Main reward money | body | 0x10 | 4 | u32 | 0..999999 |  | edits | confirmed |
-| `body.faintPenalty` | Faint penalty | body | 0x14 | 4 | u32 |  |  | carried | confirmed |
-| `body.objective1Money` | Sub-target A reward money | body | 0x18 | 4 | u32 |  |  | carried | confirmed |
-| `body.objective2Money` | Sub-target B reward money | body | 0x1c | 4 | u32 |  |  | carried | confirmed |
+| `body.faintPenalty` | Death count (faint penalty) | body | 0x14 | 4 | u32 |  | faints allowed (1..9) with `variantFlags1` bit 3, else zenny per faint (0..999,999) | edits | confirmed |
+| `body.objective1Money` | Sub-target A reward money | body | 0x18 | 4 | u32 | 0..999999 |  | edits | confirmed |
+| `body.objective2Money` | Sub-target B reward money | body | 0x1c | 4 | u32 | 0..999999 |  | edits | confirmed |
+| `body.rewardFlag` | Reward flag | body | 0x90 | 1 | u8enum | 0..4 | Pax's five modes: 0 first main fixed, 1 first main and sub fixed, 2 fixed, 3 unknown, 4 none fixed | edits | one source |
+| `body.previewItems[]` | Reward 1, 2 and 3 (quest list) | body | 0xb0 | 6 (3 x 2) | u16enum |  | 0 = none; item-ids.json; cleared in the testing copy | edits | one source |
 | `body.gRankPoints[]` | G rank points (3) | body | 0xa4 | 12 (3 x 4) | u32 |  |  | not in the model | guess |
 | `startItems[].itemId` | Supply item | startItem | 0x00 | 2 | u16enum |  | 0 = empty slot; item-ids.json | edits | one source |
 | `startItems[].count` | Supply item count | startItem | 0x02 | 2 | u16 | 1..99 |  | edits | one source |
@@ -191,17 +197,20 @@ question.
 | `header.triggerGate` | Trigger gate | header | 0x74 | 2 | u16 |  | 3 = copy the two trigger records; 4 = copy the two trigger records | carried | one source |
 | `header.dropListCount` | Drop list count | header | 0x78 | 2 | u16 |  |  | carried | one source |
 | `header.triggers` | Two trigger records | header | 0x88 | 24 | bytes |  |  | carried | one source |
-| `body.flags` | Body flags (u32 view of +0x00..+0x03) | body | 0x00 | 4 | bitfield |  | bits 16, 18, 19, 21, 22, 26 (JSON) | carried | one source |
+| `body.flags` | Body flags (u32 view of +0x00..+0x03) | body | 0x00 | 4 | bitfield |  | bits 16, 18, 19, 21, 22, 26 (JSON) | derived | one source |
 | `body.flagByte` | Quest flag bits | body | 0x03 | 1 | bitfield |  | bits 0-1, 2, 3, 4, 5, 6 (JSON) | carried | one source |
 | `body.listFlags` | Quest list row flags | body | 0x06 | 1 | bitfield |  | bits 0, 2, 6, 7 (JSON) | carried | one source |
 | `body.variantIndex` | Variant row | body | 0x93 | 1 | u8 |  |  | carried | one source |
-| `body.variantFlags1` | Variant flags 1 | body | 0x97 | 1 | bitfield |  | bits 0, 1, 2, 3, 7 (JSON) | carried | one source |
-| `body.variantFlags2` | Variant flags 2 | body | 0x98 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 5, 6, 7 (JSON) | carried | one source |
-| `body.variantFlags3` | Variant flags 3 | body | 0x99 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 5, 6, 7 (JSON); bit 4 with a Zenith monster | derived | confirmed |
-| `body.specialListTab` | Special list tab | body | 0xa0 | 2 | u16 |  | 0 = tabs 1-4; 1 = tab 5 only | carried | one source |
+| `body.variantFlags1` | Variant flags 1 | body | 0x97 | 1 | bitfield |  | bits 0, 1, 2, 3, 7 (JSON); bit 3 from the class | edits | one source |
+| `body.variantFlags2` | Variant flags 2 | body | 0x98 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 5, 6, 7 (JSON); bit 7 refused | edits | one source |
+| `body.variantFlags3` | Variant flags 3 | body | 0x99 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 5, 6, 7 (JSON); bit 4 with a Zenith monster; bit 5 refused | edits | confirmed |
+| `body.specialListTab` | Special list tab | body | 0xa0 | 2 | u16 |  | 0 = tabs 1-4; 1 = tab 5 only | derived | one source |
 | `body.infoNumber` | Info page 2 number | body | 0xbe | 2 | u16 |  |  | carried | guess |
-| `body.flagsAtC0` | Body flags at +0xc0 | body | 0xc0 | 4 | bitfield |  | bits 1 (JSON) | carried | one source |
-| `body.equipment[]` | Forced equipment (6 records) | body | 0x5c | 48 (6 x 8) | bytes |  |  | not in the model | one source |
+| `body.flagsAtC0` | Body flags at +0xc0 | body | 0xc0 | 4 | bitfield |  | bit 1 = forced weapon id bit 14 | edits | confirmed |
+| `body.equipment[].piece` | Forced piece | forcedPiece | 0x00 | 2 | u16 |  | armour id (0 = no piece) or weapon id (low 14 bits, bit 15 gunner, bit 14 off); forced-equipment.json | edits | confirmed |
+| `body.equipment[].word1` | Decoration 1 (and in force) | forcedPiece | 0x02 | 2 | bitfield |  | bit 15 in force; low 15 bits a decoration item id | edits | confirmed |
+| `body.equipment[].word2` | Decoration 2 | forcedPiece | 0x04 | 2 | bitfield |  | bit 15 set with the record; low 15 bits a decoration item id | edits | confirmed |
+| `body.equipment[].word3` | Decoration 3 | forcedPiece | 0x06 | 2 | bitfield |  | as word2 | edits | confirmed |
 
 ### Text slot meanings
 
@@ -322,17 +331,33 @@ all in the API repo; 1-3 and 5 are fixed in `hvmhfz_rest_api` `a3aca9a` (live si
    points `monsterIdsOffset` at it; a sixth monster in one area is refused with 400 ("Large monster area 1
    has 6 different monsters ..."). What the client does with the list is not traced.
 2. **Spawn positions. Fixed.** The position (3 f32 at +0x20) is a model field, `spawns[].position`, read and
-   written by the codec. For a new quest `QuestMaps` sets each large monster's position to that of a real
-   quest's large monster in the same map and area; where none has one it keeps the model's (0, 0, 0 for a new
-   monster).
+   written by the codec. For a new quest `QuestMaps` gives a large monster with an empty position (none, or 0, 0,
+   0) that of a real quest's large monster in the same map and area; where none has one it keeps the model's.
+   Since quest builder task 2 (2026-11-09) a position the author typed is kept on every save, within the map's
+   bounds (API README "Monster tuning"); before, every save overwrote it.
 3. **Duplicated fields kept in step. Fixed.** `QuestModelWriter.prepare` copies `body.questClass` into
    `header.questClass`, `body.mapId` into `map.mapId` and the first start area into `map.areaId`.
-4. **Overlapping views of the same bytes. Open.** `body.flags` (u32 at +0x00) covers `body.seasonFlags`
-   (+0x02) and `body.flagByte` (+0x03). An editor that changes one without the other gets "Two fields
-   disagree about byte 0x..." on save. Edit one view only (the bytes, not the u32).
+4. **Overlapping views of the same bytes. Fixed** (2026-11-09, quest builder chunk 1). `body.flags` (u32 at
+   +0x00) covers `body.seasonFlags` (+0x02) and `body.flagByte` (+0x03). An editor that changes one without the
+   other gets "Two fields disagree about byte 0x..." on save. The builder edits `seasonFlags` and keeps bytes 2
+   and 3 of `body.flags` in step (`flagsInStep` in `js/quest-editor.js`); the API does the same for a new quest
+   (`QuestModelWriter.flagsInStep`), and sets `seasonFlags` bit 6 from the objective mode.
 5. **Range validation. Fixed** (builder item 8). `QuestModelRanges` refuses a value outside this file's range
    with 400 and the field's name, for example `Out of range: body.timeLimit is 0; allowed 1800..90000.`; a
    field with no range here is checked against its width.
+
+## Not in the file: the quest list row
+
+Three things the in-game quest list shows come from Erupe's `event_quests` row, not from the quest file; the
+builder edits them too (2026-11-09, `docs/quest-builder-gap.md` task 1; API README "Custom quest listing"):
+
+| What | Row column | Builder | Values |
+|---|---|---|---|
+| Counter (quest type) | `quest_type` (entry +0x0a) | "Counter", kept in the draft's `listing.questType` | 18 HR Event (default), 24 Series, 26 Daily, 28 G Event, 31 G Urgent, 38 HR Exotic, 39 G Exotic, 43 Superior / Zenith (name unconfirmed); the API refuses any other, an admin can set any at approval |
+| Appeal mark | `mark` (entry +0x0e..+0x11) | "Mark", `listing.mark` | 0 none, 1 Recommended, 2 New |
+| Player cap | `max_players` (entry +0x09) | "Players", which edits `body.maxHunters` | the API writes the row from the file (low 3 bits, 0 = 4) |
+
+These have no bytes label (they are not file bytes) and are not in `data/quest-fields.json`.
 
 ## Still unknown, or sources disagree
 
@@ -342,11 +367,12 @@ all in the API repo; 1-3 and 5 are fixed in `hvmhfz_rest_api` `a3aca9a` (live si
 | `body.listFlags` (+0x06) | RE: bit tests (row colour, two lookups switched off); ReFrontier: an enum `courseType` (6 premium, 18 free?, 19 HLC?, 20 extra). The files hold 18, 19, 20, which fits both |
 | `body.faintPenalty` (+0x14) | RE and ReFrontier (`zennyKo`): faint penalty. The 010 template calls it RewardSubA and shifts the next two by one; the template's full-decode branch is for another layout |
 | `body.zenny` (+0x0c) | the RE notes left "contract fee or base reward" open; ReFrontier (`fee`) and the 010 template (`Fee`) both say fee, so it is confirmed |
-| `body +0x4a..+0x59` | the 010 template: MinHR, MaxHR, MinJoinHR (+0x4e), MaxJoinHR, SR bounds. Only +0x4e is traced (a minimum against the party and the player); +0x54..+0x5b are the fail objective in the trace. Not in the codec |
+| `body +0x4a..+0x53` | the 010 template: MinHR, MaxHR, MinJoinHR (+0x4e), MaxJoinHR, SR bounds; Pax's editor: min/max post rank, min/max join rank. Only +0x4e is traced (a minimum against the party and the player). The codec reads +0x4a, +0x4c and +0x50 since quest builder task 3; +0x52 stays raw (0 in every live file); +0x54..+0x5b are the fail objective in the trace |
 | `body +0xa4..+0xaf` | ReFrontier reads three G rank point values there in the client's own quest table; not traced for quest files, not in the codec |
 | `body.infoNumber` (+0xbe) | printed on info page 2, label is panel art; 0 in every file |
-| `body.variantFlags1..3` bit names | Erupe's comments only, except +0x99 bit 5 (Interception), which the client tests 622 times |
-| `body.seasonFlags` | Erupe names the bits of this byte (Spring, Warm, Cold, Day, Night) but edits the next byte, +0x03 (RE "Erupe's offsets") |
+| `body.variantFlags1..3` bit names | Erupe's comments and Pax's editor (one source between them), except +0x99 bit 5 (Interception), which the client tests 622 times. None was tested in game; the builder says so. "Fix HC" (+0x97 bit 1) is not what makes a quest Hardcore: `body.conditionNote` 109-113/118 in a class 3 quest is (hvmhfz_re part 75) |
+| `body.conditionNote` names | `data/quest-condition-notes.json`: our names; Pax's editor is the only source for 114 of the 136, 22 also match the live quests that use them. Which notes the client enforces, beyond showing them, is not traced one by one |
+| `body.seasonFlags` | Erupe names the bits of this byte (Spring, Warm, Cold, Day, Night) but its `event_quests.flags` column edits the next byte, +0x03 (RE "Erupe's offsets"), so the builder sets time of day and season in the file. What a season changes beyond the client's season number, and what both day and night bits together (2,016 files) do, is not traced |
 | objective types 16, 131072, 262144 | overlay names only; no quest file uses them |
 | reward groups 0x8002 / 0x8003 | the code calls the same check for both; sub-target A and B is inferred from their place |
 | reward weights not adding up to 100 | 18 groups in the files; what the client draws then is not traced |

@@ -63,7 +63,7 @@ turns disagreements into a diff instead of a silent bug.
 ## Test deployment
 
 Unchanged, and it depends on the room pin built for Roads: a token per account, a reserved quest id block,
-token-gated serving, no rewards and no board entries, automatic expiry.
+token-gated serving, no item rewards (the money is paid; owner, 2026-11-09) and no board entries, automatic expiry.
 
 ## Safety
 
@@ -106,7 +106,7 @@ documents it. The builder now starts from a blank quest the API owns:
 | `GET /api/account/quest-drafts/{id}` | `{id, sourceQuestId, variant, revision, model}`; another account's id is a 404, a draft seeded from a live quest is a 403 |
 | `PUT /api/account/quest-drafts/{id}` `{model}` | validates by packing and writing it with the codec (400 with the codec's message), stores it, bumps `revision` |
 | `GET /api/account/quest-drafts/{id}/file` | the `.bin` as `application/octet-stream`, attachment `new-quest.bin` |
-| `POST /api/account/quest-drafts/{id}/submit` | reward-stripped copy via `QuestFile`, a `quest_submission` row with status `testing`, the sandbox quest published by `QuestSubmissionController`'s own method; `{submissionId, sandboxQuestId}` |
+| `POST /api/account/quest-drafts/{id}/submit` | the testing copy via `QuestFile.withNoRewards` (no item rewards, no Reward 1/2/3; money kept), a `quest_submission` row with status `testing`, the sandbox quest published by `QuestSubmissionController`'s own method; `{submissionId, sandboxQuestId}` |
 
 `quest_draft(id, account_id, source_quest_id, variant, model jsonb, revision, created_at, updated_at)`,
 DDL in the API repo at `src/main/resources/db/quest-draft.sql`. `source_quest_id` is 0 for every draft the
@@ -120,9 +120,10 @@ result is refused past the client's 32 KB quest buffer, and text Shift-JIS canno
 character named.
 
 **Page.** `quest-editor.html` with `js/quest-editor.js`, laid out in the order a quest is built (2 Nov 2026):
-Your drafts (links to `?draft=<id>`), Basics (name, time limit, players, contract fee, reward money, item
-needed to enter; quest class under "More settings"), Map and start area, Objectives (with the quest card's
-monster pictures), Monsters and their areas, Rewards and supplies (supply box, reward groups with each item's
+Your drafts (links to `?draft=<id>`), Basics (name, time limit, contract fee, reward money, item
+needed to enter; quest class under "More settings"), Quest board listing (counter, mark, players, stars; 9 Nov
+2026, below), Map and start area (with time of day and season), Objectives (with the targets required to clear
+and the quest card's monster pictures), Monsters and their areas, Rewards and supplies (supply box, reward groups with each item's
 share of the group's weight), Quest text, then Review and submit (a summary, the problems the page can see,
 and save, download, submit). Choosing a map refreshes every area list to that map's areas
 (`data/map-areas.json`, the client's own per-map lists, written by `dev/make-builder-data.py`): a start area
@@ -139,6 +140,114 @@ server has their area tables); the others are listed, muted, as "not available y
 only map 26 is offered. A save the server refuses with 400 shows its message next to the field it names. The time limit is edited in minutes (the body field counts 1 800 ticks a minute).
 "Create a quest" on `quests.html` and on the account page's Custom quests tab opens it; the quest page no
 longer carries an edit action, and `?id=` shows the server's refusal instead of a form.
+
+**What Pax's editor has that the builder lacks** (counter and mark, flags, restrictions, forced equipment,
+monster size, level and coordinates, reward preview) and the plan for it: `docs/quest-builder-gap.md`
+(2026-11-09). All five tasks are built; how they ship together and what to test in game:
+`docs/quest-builder-release.md`.
+
+**Listing options (gap plan task 1, 9 Nov 2026).** "Quest board listing": Counter (the eight event counters
+the API takes for authors: 18 HR Event by default, 24, 26, 28, 31, 38, 39, 43) and Mark (none, Recommended,
+New) are not file fields: they are the draft's `listing`, saved beside the model (`PUT {model, listing}`) and
+copied into the submission, whose `event_quests` row the API writes with them and with the file's player cap
+(API README "Custom quest listing"; an admin can change counter and mark when publishing, in the admin Custom
+quests tab). Players (`body.maxHunters`) moved here from Basics; Stars edit `body.level` (1..8). Under Map,
+Time of day (Day or Night, `body.seasonFlags` bit 3 or 4) and Season (warm, cold or breeding, bits 1, 2, 0):
+set in the file because Erupe's `event_quests.flags` writes the wrong byte. Under Objectives, "Targets
+required to clear" (`body.objectiveMode` 2, 3 or 4; the two-target choices open once the sub-targets are set)
+also sets `seasonFlags` bit 6. Every `seasonFlags` change keeps the u32 view `body.flags` in step, and the API
+does the same. The review shows the quest list row ("★★★ · New · name — G Event counter, ...") and time and
+season, and lists a required sub-target that is not set. Only three fields have a quiet "?" with more text
+(Counter, Season, Targets required; `BuilderUI.helpTip`), the owner's preference for few help buttons. Check:
+`dev/check-quest-listing.js`.
+
+**Monster tuning (gap plan task 2, 9 Nov 2026).** Under Monsters, "Strength and size": Difficulty
+(`header.monsterLevel` 0..78, Pax's names, the one quiet "?" here; levels from 53 are offered in a G rank quest
+only, and while a monster is Zenith the Zenith rank picker takes its place), Size (`header.monsterSize`, 70..150 %)
+and Size spread (`header.sizeClass`, 0..4 with its percentages). Each large-monster row has a Position: "Usual
+spot" (with its x, y, z when the server knows one) or, after "Set exactly", x, y and z inputs held to the map's
+bounds. "Use the usual spot", a new area or a new map send an empty position, which the API fills with the usual
+spot; any other position is kept. Both come from `GET /api/account/quests/maps` (`spots`, `bounds`; API README
+"Monster tuning"); with an older API the inputs take -50,000..50,000. The builder has no map pictures, so the usual
+spot and the allowed range are the coordinate help. Pax has no facing angle, and neither do we. Monster forms
+other than Zenith stay out (an unknown form may load a model file that does not exist). The review shows strength,
+size and how many monsters stand at an exact spot. Check: `dev/check-quest-monsters.js`.
+
+**Rules and restrictions (gap plan task 3, 9 Nov 2026).** A section after the listing:
+- **Hardcore**, a switch (with a quiet "?"): it writes restriction 109 (`body.conditionNote`) and is offered in an
+  HR 100 and up quest (class 3) only. Evidence: the client sets its Hardcore state from notes 109-113/118 and the
+  monsters take their Hardcore data in class 3 (`hvmhfz_re` `docs/quest-classes.md`, part 75); in the 5,000 live
+  files 240 class 3 quests have such a note, while Pax's "Fix HC" bit (`variantFlags1` bit 1) is in 636 files, 410
+  not class 3, so it is not what makes a quest Hardcore. Leaving class 3 turns Hardcore off.
+- **Restriction** (with a quiet "?"): `body.conditionNote` from `data/quest-condition-notes.json`, our own names for
+  the 136 ids of Pax's list, grouped (rank, items and money, weapons, armour, party, unlocks, then the untested
+  groups that take tickets or proofs or need the server to count). 22 names match the live quests that use them;
+  the other 114 rest on Pax alone and are marked "unconfirmed". The API takes exactly these ids
+  (`QuestCodec.CONDITION_NOTES`; `dev/check-quest-fields.js` compares the two).
+- **Death count** (`body.faintPenalty`): "Faints allowed" 1..9 in a G rank or Zenith quest, "Money lost per faint"
+  0..999,999 zenny otherwise; crossing that line with the class resets it (3 faints, or a third of the reward money).
+- **Hunter rank limits**: lowest and highest rank to post (`body.postRankMin`, `postRankMax`) and to join
+  (`body.rank`, `joinRankMax`); 0 as a highest is no limit; a highest below its lowest is marked and refused.
+- **Quest flags**: 17 checkboxes over `body.variantFlags1-3`, Pax's and Erupe's names (No Halk pots = the owner's
+  "no alk", Low and High conquest, ...), with one note that none was traced or tested in game. G rank (flags 1 bit 3,
+  with the special list tab) follows the class and Zenith the monsters; Road and Interception are not offered and the
+  API refuses them; the unnamed bits are kept.
+A draft from before these fields (no rank limits or flags in its model) shows neither block and saves as before. The
+review gains a Rules line. Not tested in game yet: the Hardcore switch, a conquest flag and the restrictions the
+game may enforce. Check: `dev/check-quest-rules.js`.
+
+**Forced equipment (gap plan task 4, 9 Nov 2026).** A section "Forced equipment (arena)" after the rules, with a red
+"Untested in game" note at its top: no forced set made here has been tried in the game.
+- **What the client does** (`hvmhfz_re` `docs/quest-files.md`, "Forced equipment", part 79): `body.equipment` is six
+  8-byte records at body +0x5c, in file order legs, weapon, head, chest, arms, waist. When the quest starts the game
+  replaces each hunter's piece by the record's (`0x10812fe0`), looking the id up in its equipment tables **without a
+  bounds check**. The weapon's id is 14 bits with bit 15 for the gunner table; `body.flagsAtC0` bit 1 is its id bit
+  14 (melee ids 16,384 and up). The three other words hold decoration item ids (low 15 bits).
+- **Ids**: the site's equipment ids (`data/equipment-icons.json`, the API catalog) are the game's table rows: every
+  row's rarity matches the client's `mhfdat.bin` tables, the five armour slots and both weapon tables. The tables
+  hold placeholder rows (ダミー, 使用禁止, 欠番, blank), so the builder offers only `data/forced-equipment.json`'s pieces
+  (`dev/make-forced-equipment.py`, from the same dumps; the API keeps a copy and refuses anything else). Every piece
+  forced in Capcom's quest files is in it (254 sets in the local files, 470 in the live sample).
+- **Per slot**: "Not forced" (all four words 0) by default; "Choose" searches the API catalog by name or id (game
+  icons from `js/game-icons.js`), placeholder rows left out and said so; armour also has "Force no piece" (id 0, the
+  slot forced empty, as Capcom's arena quests do); "Clear" stops forcing it. A blademaster-only piece cannot join a
+  gunner set or the other way round (no Capcom file mixes them; the API refuses it).
+- **Decorations**: three pickers per forced piece, from the 224 decorations Capcom's quest files force. The game was
+  not seen to check a piece's slots, so this is not limited by slot count. No sigils: the format has none.
+- **Not in the format**: a pouch or ammo of its own. An arena quest is forced gear plus the supply box (Rewards) and a
+  restriction such as "No items" (Rules and restrictions).
+A server refusal naming `body.equipment[N]` shows in that slot's row. The review gains a "Forced equipment" line
+("... — not tested in game") and lists a placeholder piece, a blademaster/gunner mix or a stray weapon bit. A draft
+from before the field (no `body.equipment`) shows six "Not forced" rows and saves without it until a slot is set.
+Not tested in game: any forced set, a piece for one gender only, decorations beyond a piece's slots, and the client's
+gate that skips forcing in some party states (`0x10a827b0`, not traced; Pax's README says forcing sometimes does
+not apply). Check: `dev/check-quest-equipment.js`.
+
+**Rewards and text extras (gap plan task 5, 9 Nov 2026).** Owner decisions (2026-11-09): custom quests keep paying
+their reward money; the testing copy has no item rewards and lists no Reward 1/2/3; an approved quest pays the author's
+rewards and lists their items (Erupe branch `erupe-approved-rewards`, `85d282f`, serves `data` once approved and
+`data_stripped` in testing, for the file and the list entry alike). API README "Reward extras".
+- **Sub-target money**: under Objectives, each used sub-target has its own "Reward money" (`body.objective1Money`,
+  `objective2Money`, body +0x18, +0x1c; 0..999,999 as the main reward money). The review lists a sub-target that is
+  not used but still pays money.
+- **Quest list rewards** (Rewards and supplies): Reward 1, 2 and 3 (`body.previewItems`, body +0xb0, +0xb2, +0xb4),
+  three item pickers with the game's icons. "Use the main target's rewards" fills them with the three items the main
+  target reward groups (0x8001) weigh most, else the first group's (as 2,585 of the 3,501 live quests that list items
+  do). The review names them, "shown once approved", and lists one no reward group pays.
+- **Fixed rewards** (`body.rewardFlag`, body +0x90): Pax's five modes, 0..4; not traced in the client, so marked
+  unconfirmed. The review shows it with the reward count.
+- **Text auto-fill** (Quest text): "Write the target lines" writes the main and sub-target lines from the objectives
+  ("Hunt a Tigrex", "Slay 3 Velociprey", "None" for an unused one); "Write the clear and fail lines" writes the
+  clear line from the targets required and the fail line from the faint rule ("Faint 3 times / Time runs out" in G
+  rank, else "Reward money hits zero / Time runs out", or "Time runs out" with no money lost per faint). Both write
+  over the texts; "Undo" puts back the last fill.
+- **Wording**: the account page, the builder, the admin page and the quest list now say the testing copy pays no
+  items (the money is paid) and an approved quest pays its rewards.
+- **Older drafts and the blank**: the API's blank listed the source quest's three items (Capcom's); it lists none now.
+  A draft saved before these fields opens with Reward 1/2/3 empty, so it stops listing those items when saved.
+- **Not done**: Pax's per-box entry limits (24 in the first group, 4 in the others): 1,187 live reward groups have
+  more, so they are not the client's limit. Reward JSON export and import: skipped, as the plan says.
+Check: `dev/check-quest-rewards.js`.
 
 **Still open.** The `quest_submission` queue, MAX_ACTIVE and the sandbox id block are unchanged; a draft is
 never a submission until Submit. Nothing here deletes drafts (the API caps an account at 50), and the private

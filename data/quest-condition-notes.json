@@ -1,0 +1,755 @@
+{
+ "about": "The quest restrictions (body.conditionNote, body +0x2c) the quest builder offers, with our own names. The ids are the 136 Pax's quest editor names (its 239 read as 47, Light Bowgun only); the API accepts exactly these (QuestCodec.CONDITION_NOTES, compared by dev/check-quest-fields.js). A restriction with confirmedBy has a second source: the live quests that use it (survey of the 5,000 live quest files, 2026-11-09); the others rest on Pax's name alone and the builder marks them unconfirmed. The game shows the note on the quest info page; which ones it also enforces is not traced one by one (hvmhfz_re 0x10aeae10, 0x10b0c170). None was tested in game here.",
+ "updated": "2026-11-09",
+ "hardcore": {
+  "ids": [
+   109,
+   110,
+   111,
+   112,
+   113,
+   118
+  ],
+  "written": 109,
+  "questClass": 3,
+  "about": "Hardcore: with one of these notes the client sets its Hardcore quest state (hvmhfz_re 0x1047d500) and the monsters of a class 3 (HR 100 and up) quest take their Hardcore data (0x1087b4e0; docs/quest-classes.md part 75). 240 live class 3 quests have one (109 in 208 files). The builder's Hardcore switch writes 109; the API refuses these ids in any other class."
+ },
+ "groups": [
+  {
+   "name": "Hunter rank",
+   "untested": false
+  },
+  {
+   "name": "Items and money",
+   "untested": false
+  },
+  {
+   "name": "Weapons",
+   "untested": false
+  },
+  {
+   "name": "Armour",
+   "untested": false
+  },
+  {
+   "name": "Party and companions",
+   "untested": false
+  },
+  {
+   "name": "Unlocks and play course",
+   "untested": false
+  },
+  {
+   "name": "Takes tickets or proofs (untested)",
+   "untested": true
+  },
+  {
+   "name": "Needs server support (untested)",
+   "untested": true
+  }
+ ],
+ "notes": [
+  {
+   "id": 1,
+   "name": "HR 2 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 5,
+   "name": "HR 3 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 6,
+   "name": "HR 4 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 7,
+   "name": "HR 5 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 10,
+   "name": "HR 6 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 12,
+   "name": "HR 7 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 13,
+   "name": "HR 2 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 18,
+   "name": "HR 3 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 20,
+   "name": "HR 1 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 21,
+   "name": "HR 1 to 2 only",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 26,
+   "name": "HR 1 to 3 only",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 27,
+   "name": "HR 3 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 61,
+   "name": "HR 2 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 68,
+   "name": "HR 4 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 90,
+   "name": "HR 3 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 93,
+   "name": "HR 3 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 138,
+   "name": "G rank hunters only",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 155,
+   "name": "GR guild request (GR 1 and up)",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 156,
+   "name": "GR 2 guild request (GR 1 and up)",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 157,
+   "name": "GR 3 guild request (GR 2 and up)",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 158,
+   "name": "GR 4 guild request (GR 3 and up)",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 159,
+   "name": "GR 5 guild request (GR 4 and up)",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 160,
+   "name": "GR 6 guild request (GR 5 and up)",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 161,
+   "name": "GR 7 guild request (GR 6 and up)",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 162,
+   "name": "GR 8 guild request (GR 7 and up)",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 188,
+   "name": "GR 500 and up",
+   "group": "Hunter rank"
+  },
+  {
+   "id": 59,
+   "name": "Ammo and bottles only (no other items)",
+   "group": "Items and money",
+   "confirmedBy": "live speed quests with this note tell the hunter to bring nothing"
+  },
+  {
+   "id": 60,
+   "name": "No items",
+   "group": "Items and money"
+  },
+  {
+   "id": 64,
+   "name": "100 zenny or less in hand",
+   "group": "Items and money"
+  },
+  {
+   "id": 79,
+   "name": "50,000 zenny or more in hand",
+   "group": "Items and money"
+  },
+  {
+   "id": 80,
+   "name": "100,000 zenny or more in hand",
+   "group": "Items and money"
+  },
+  {
+   "id": 81,
+   "name": "200,000 zenny or more in hand",
+   "group": "Items and money"
+  },
+  {
+   "id": 94,
+   "name": "No capture items",
+   "group": "Items and money"
+  },
+  {
+   "id": 122,
+   "name": "Progress and timer rules",
+   "group": "Items and money"
+  },
+  {
+   "id": 123,
+   "name": "Progress and timer rules, ammo and bottles only",
+   "group": "Items and money",
+   "confirmedBy": "live quests with this note are speed-run review quests"
+  },
+  {
+   "id": 146,
+   "name": "Bottles, ammo and sword crystals only",
+   "group": "Items and money"
+  },
+  {
+   "id": 42,
+   "name": "Great Sword only",
+   "group": "Weapons"
+  },
+  {
+   "id": 43,
+   "name": "Lance only",
+   "group": "Weapons"
+  },
+  {
+   "id": 44,
+   "name": "Hammer only",
+   "group": "Weapons"
+  },
+  {
+   "id": 45,
+   "name": "Sword and Shield only",
+   "group": "Weapons"
+  },
+  {
+   "id": 46,
+   "name": "Dual Swords only",
+   "group": "Weapons"
+  },
+  {
+   "id": 47,
+   "name": "Light Bowgun only",
+   "group": "Weapons"
+  },
+  {
+   "id": 48,
+   "name": "Heavy Bowgun only",
+   "group": "Weapons"
+  },
+  {
+   "id": 49,
+   "name": "Long Sword only",
+   "group": "Weapons"
+  },
+  {
+   "id": 50,
+   "name": "Hunting Horn only",
+   "group": "Weapons"
+  },
+  {
+   "id": 51,
+   "name": "Bow only",
+   "group": "Weapons"
+  },
+  {
+   "id": 52,
+   "name": "Gunlance only",
+   "group": "Weapons"
+  },
+  {
+   "id": 53,
+   "name": "Sword and Shield or Dual Swords only",
+   "group": "Weapons"
+  },
+  {
+   "id": 54,
+   "name": "Great Sword or Long Sword only",
+   "group": "Weapons"
+  },
+  {
+   "id": 55,
+   "name": "Lance or Gunlance only",
+   "group": "Weapons"
+  },
+  {
+   "id": 56,
+   "name": "Hammer or Hunting Horn only",
+   "group": "Weapons"
+  },
+  {
+   "id": 57,
+   "name": "Bowguns only",
+   "group": "Weapons"
+  },
+  {
+   "id": 58,
+   "name": "Bowguns or Bow only",
+   "group": "Weapons"
+  },
+  {
+   "id": 63,
+   "name": "Hunter's Knife only",
+   "group": "Weapons"
+  },
+  {
+   "id": 114,
+   "name": "SP weapon required",
+   "group": "Weapons"
+  },
+  {
+   "id": 131,
+   "name": "Goushu (HC) weapon required",
+   "group": "Weapons",
+   "confirmedBy": "live quests with this note are titled as HC weapon quests"
+  },
+  {
+   "id": 132,
+   "name": "HC weapon required",
+   "group": "Weapons"
+  },
+  {
+   "id": 133,
+   "name": "Evolution weapon required",
+   "group": "Weapons"
+  },
+  {
+   "id": 134,
+   "name": "Reinforced Goushu weapon required",
+   "group": "Weapons"
+  },
+  {
+   "id": 135,
+   "name": "Master's weapon required",
+   "group": "Weapons"
+  },
+  {
+   "id": 139,
+   "name": "No G rank weapons",
+   "group": "Weapons"
+  },
+  {
+   "id": 140,
+   "name": "No HC weapons",
+   "group": "Weapons"
+  },
+  {
+   "id": 141,
+   "name": "No Evolution weapons",
+   "group": "Weapons"
+  },
+  {
+   "id": 142,
+   "name": "No Evolution or HC weapons",
+   "group": "Weapons"
+  },
+  {
+   "id": 143,
+   "name": "No Evolution, HC or G rank weapons",
+   "group": "Weapons"
+  },
+  {
+   "id": 144,
+   "name": "Tenshou weapon only",
+   "group": "Weapons",
+   "confirmedBy": "live quests with this note are titled as Tenshou weapon quests"
+  },
+  {
+   "id": 145,
+   "name": "Supremacy weapon only",
+   "group": "Weapons"
+  },
+  {
+   "id": 147,
+   "name": "Blademasters only",
+   "group": "Weapons"
+  },
+  {
+   "id": 148,
+   "name": "Gunners only",
+   "group": "Weapons"
+  },
+  {
+   "id": 179,
+   "name": "Tonfa only",
+   "group": "Weapons"
+  },
+  {
+   "id": 180,
+   "name": "No G rank weapons, blademasters only",
+   "group": "Weapons"
+  },
+  {
+   "id": 181,
+   "name": "Owns a G level 50 weapon",
+   "group": "Weapons"
+  },
+  {
+   "id": 62,
+   "name": "No armour",
+   "group": "Armour"
+  },
+  {
+   "id": 76,
+   "name": "Ice resistance -15 or lower",
+   "group": "Armour"
+  },
+  {
+   "id": 77,
+   "name": "Dragon resistance 15 or higher",
+   "group": "Armour"
+  },
+  {
+   "id": 78,
+   "name": "Dragon resistance -15 or lower",
+   "group": "Armour"
+  },
+  {
+   "id": 136,
+   "name": "At least 1 Goushu armour piece",
+   "group": "Armour"
+  },
+  {
+   "id": 137,
+   "name": "5 Goushu armour pieces",
+   "group": "Armour"
+  },
+  {
+   "id": 149,
+   "name": "No Hiden armour",
+   "group": "Armour"
+  },
+  {
+   "id": 150,
+   "name": "Full Hiden armour set",
+   "group": "Armour"
+  },
+  {
+   "id": 151,
+   "name": "Full Hiden FX armour set",
+   "group": "Armour"
+  },
+  {
+   "id": 152,
+   "name": "Two Hiden FX armour pieces",
+   "group": "Armour"
+  },
+  {
+   "id": 153,
+   "name": "Tenshou armour only",
+   "group": "Armour"
+  },
+  {
+   "id": 154,
+   "name": "Supremacy armour only",
+   "group": "Armour"
+  },
+  {
+   "id": 40,
+   "name": "Male hunters only",
+   "group": "Party and companions",
+   "confirmedBy": "the live collaboration quests with this note pair with the female-only ones (41)"
+  },
+  {
+   "id": 41,
+   "name": "Female hunters only",
+   "group": "Party and companions",
+   "confirmedBy": "the live collaboration quests with this note pair with the male-only ones (40)"
+  },
+  {
+   "id": 130,
+   "name": "No Rasta or Legendary Rasta",
+   "group": "Party and companions"
+  },
+  {
+   "id": 177,
+   "name": "No support hunters, no items",
+   "group": "Party and companions"
+  },
+  {
+   "id": 178,
+   "name": "No support hunters, blademasters only",
+   "group": "Party and companions"
+  },
+  {
+   "id": 182,
+   "name": "Must take a Rasta",
+   "group": "Party and companions"
+  },
+  {
+   "id": 183,
+   "name": "Must take a Legendary Rasta",
+   "group": "Party and companions"
+  },
+  {
+   "id": 184,
+   "name": "Must take the Partner",
+   "group": "Party and companions"
+  },
+  {
+   "id": 185,
+   "name": "Must take the Partnyer",
+   "group": "Party and companions",
+   "confirmedBy": "live quests with this note are Partnyer request quests"
+  },
+  {
+   "id": 186,
+   "name": "Must take the Partnyer, blademasters only",
+   "group": "Party and companions"
+  },
+  {
+   "id": 189,
+   "name": "No NPC companions",
+   "group": "Party and companions"
+  },
+  {
+   "id": 192,
+   "name": "Party of mixed genders only",
+   "group": "Party and companions"
+  },
+  {
+   "id": 29,
+   "name": "Owners of the Unexplored Region set",
+   "group": "Unlocks and play course",
+   "confirmedBy": "live quests with this note are exploration quests into a secret region"
+  },
+  {
+   "id": 30,
+   "name": "Owners of the White Dragon book, HR 4 and up",
+   "group": "Unlocks and play course"
+  },
+  {
+   "id": 31,
+   "name": "Knows the Song of Origin",
+   "group": "Unlocks and play course"
+  },
+  {
+   "id": 32,
+   "name": "Owners of the Centenarian Dagger",
+   "group": "Unlocks and play course"
+  },
+  {
+   "id": 33,
+   "name": "Every symbol colour unlocked",
+   "group": "Unlocks and play course"
+  },
+  {
+   "id": 34,
+   "name": "Red symbol colour unlocked",
+   "group": "Unlocks and play course"
+  },
+  {
+   "id": 35,
+   "name": "Red symbol colour unlocked, HR 3 and up",
+   "group": "Unlocks and play course"
+  },
+  {
+   "id": 36,
+   "name": "White symbol colour unlocked",
+   "group": "Unlocks and play course"
+  },
+  {
+   "id": 37,
+   "name": "White symbol colour unlocked, HR 3 and up",
+   "group": "Unlocks and play course"
+  },
+  {
+   "id": 38,
+   "name": "Green symbol colour unlocked",
+   "group": "Unlocks and play course"
+  },
+  {
+   "id": 39,
+   "name": "Green symbol colour unlocked, HR 3 and up",
+   "group": "Unlocks and play course"
+  },
+  {
+   "id": 65,
+   "name": "Net café or N course players only",
+   "group": "Unlocks and play course",
+   "confirmedBy": "live quests with this note are titled as N course / net café quests"
+  },
+  {
+   "id": 66,
+   "name": "Net café or N course players, HR 2 and up",
+   "group": "Unlocks and play course"
+  },
+  {
+   "id": 99,
+   "name": "Hunter Festival winning team only",
+   "group": "Takes tickets or proofs (untested)"
+  },
+  {
+   "id": 100,
+   "name": "Festival winners only; takes 1 Festival ticket",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are Festival memory quests"
+  },
+  {
+   "id": 101,
+   "name": "Festival winners only; takes 2 Festival tickets",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are Festival memory quests"
+  },
+  {
+   "id": 102,
+   "name": "Festival winners only; takes 3 Festival tickets",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are Festival memory quests"
+  },
+  {
+   "id": 103,
+   "name": "Takes 1 capture proof",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are joint capture reward quests"
+  },
+  {
+   "id": 104,
+   "name": "Takes 2 capture proofs",
+   "group": "Takes tickets or proofs (untested)"
+  },
+  {
+   "id": 105,
+   "name": "Takes 3 capture proofs",
+   "group": "Takes tickets or proofs (untested)"
+  },
+  {
+   "id": 106,
+   "name": "Takes 1 part-break proof",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are joint part reward quests"
+  },
+  {
+   "id": 107,
+   "name": "Takes 2 part-break proofs",
+   "group": "Takes tickets or proofs (untested)"
+  },
+  {
+   "id": 108,
+   "name": "Takes 3 part-break proofs",
+   "group": "Takes tickets or proofs (untested)"
+  },
+  {
+   "id": 115,
+   "name": "Festival winners only; takes 4 Festival tickets",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are Festival memory quests"
+  },
+  {
+   "id": 116,
+   "name": "Festival winners only; takes 5 Festival tickets",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are Festival memory quests"
+  },
+  {
+   "id": 117,
+   "name": "Festival winners only; takes 10 Festival tickets",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are Festival memory quests"
+  },
+  {
+   "id": 119,
+   "name": "Takes 1 event assist ticket",
+   "group": "Takes tickets or proofs (untested)"
+  },
+  {
+   "id": 120,
+   "name": "Takes 2 event assist tickets",
+   "group": "Takes tickets or proofs (untested)"
+  },
+  {
+   "id": 121,
+   "name": "Takes 3 event assist tickets",
+   "group": "Takes tickets or proofs (untested)"
+  },
+  {
+   "id": 171,
+   "name": "Festival winners only; takes 1 Festival gem",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are Festival fervour quests"
+  },
+  {
+   "id": 172,
+   "name": "Festival winners only; takes 2 Festival gems",
+   "group": "Takes tickets or proofs (untested)"
+  },
+  {
+   "id": 173,
+   "name": "Festival winners only; takes 3 Festival gems",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are Festival fervour quests"
+  },
+  {
+   "id": 174,
+   "name": "Festival winners only; takes 4 Festival gems",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are Festival fervour quests"
+  },
+  {
+   "id": 175,
+   "name": "Festival winners only; takes 5 Festival gems",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are Festival fervour quests"
+  },
+  {
+   "id": 176,
+   "name": "Festival winners only; takes 10 Festival gems",
+   "group": "Takes tickets or proofs (untested)",
+   "confirmedBy": "live quests with this note are Festival fervour quests"
+  },
+  {
+   "id": 187,
+   "name": "Takes 1 preparation ticket",
+   "group": "Takes tickets or proofs (untested)"
+  },
+  {
+   "id": 95,
+   "name": "Event code needed",
+   "group": "Needs server support (untested)"
+  },
+  {
+   "id": 193,
+   "name": "Once per character",
+   "group": "Needs server support (untested)"
+  },
+  {
+   "id": 194,
+   "name": "Limited number of departures",
+   "group": "Needs server support (untested)"
+  },
+  {
+   "id": 195,
+   "name": "Limited number of clears",
+   "group": "Needs server support (untested)"
+  }
+ ]
+}

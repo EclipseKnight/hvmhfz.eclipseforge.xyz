@@ -1,10 +1,11 @@
 /* Quest builder: a new quest as a QuestCodec model, edited as a private draft. The server writes the
    bytes. Nothing here opens a live quest file; every draft starts from the blank quest the API owns.
 
-   The page is laid out in the order a quest is built: basics, map and start area, objectives, monsters and
-   their areas, rewards and supplies, text, then review and submit. Every control writes one field of the
-   model the server sent, and nothing else; the controls themselves come from js/builder-ui.js, shared with
-   the Road builder. */
+   The page is laid out in the order a quest is built: basics, quest board listing, map and start area,
+   objectives, monsters and their areas, rewards and supplies, text, then review and submit. Every control writes
+   one field of the model the server sent, and nothing else (the listing's counter and mark are not in the file:
+   they are the draft's listing, see LISTING below); the controls themselves come from js/builder-ui.js, shared
+   with the Road builder. */
 (function () {
   "use strict";
 
@@ -35,6 +36,105 @@
      gathering points, area zones) of its chosen map, for the maps GET /api/account/quests/maps lists; any
      other map is refused with 400. When that list cannot be loaded, only the blank's own map is offered. */
   var BLANK_MAP = 26;
+
+  /* LISTING: where the quest is listed in game, kept beside the model in the draft (API README "Custom quest
+     listing"): the counter (event_quests.quest_type) and the appeal mark (event_quests.mark). The API refuses any
+     other counter (QuestListing.AUTHOR_TYPES: event counters with live rows and no event system of their own) and
+     any other mark; an admin can still change both when publishing. Names as Pax's editor has them. The third
+     listing value, the player cap, is the file's body.maxHunters, which the API copies into the row. */
+  var COUNTERS = [
+    { value: 18, label: "HR Event", hint: "the default" }, { value: 28, label: "G Event" },
+    { value: 24, label: "Series" }, { value: 26, label: "Daily" }, { value: 31, label: "G Urgent" },
+    { value: 38, label: "HR Exotic" }, { value: 39, label: "G Exotic" },
+    { value: 43, label: "Superior / Zenith", hint: "name unconfirmed" }
+  ];
+  var MARKS = [{ value: 0, label: "None" }, { value: 1, label: "Recommended" }, { value: 2, label: "New" }];
+  var DEFAULT_LISTING = { questType: 18, mark: 0 };
+
+  /* body.seasonFlags (+0x02): day is bit 3, night bit 4 (2,016 quest files set both; the builder offers one), the
+     season one of bits 0-2; bit 6 goes with "all objectives required" (objective modes 3 and 4). body.flags is a
+     u32 view of the same bytes, kept in step (flagsInStep), as the API does too. */
+  var TIME_DAY = 0x08;
+  var TIME_NIGHT = 0x10;
+  var TIME_BITS = TIME_DAY | TIME_NIGHT;
+  var SEASON_BITS = 0x07;
+  var ALL_REQUIRED = 0x40;
+  var TIMES = [{ value: TIME_DAY, label: "Day" }, { value: TIME_NIGHT, label: "Night" }];
+  var SEASONS = [{ value: 0x02, label: "Warm season", hint: "most quest files" }, { value: 0x04, label: "Cold season" },
+    { value: 0x01, label: "Breeding season" }];
+  /* body.objectiveMode: which targets must be done to clear the quest. 3 needs sub-target A, 4 needs A and B. */
+  var MODES = [{ value: 2, label: "Main target only", needs: [] },
+    { value: 3, label: "Main target and sub-target A", needs: ["objective1"] },
+    { value: 4, label: "All three targets", needs: ["objective1", "objective2"] }];
+
+  /* Monster tuning (docs/quest-builder-gap.md task 2; API README "Monster tuning"). header.monsterLevel picks the
+     row of the monsters' stat tables (Difficulty). The names are Pax's editor's; the 5,000 live quest files use
+     0..80. The API takes 0..78, a G rank level (53 and up) only in a G rank quest (class 7), and the Zenith ranks
+     64..67 only with a Zenith monster (they have their own picker, zenithRank). */
+  var LEVEL_MAX = 78;
+  var G_RANK_LEVEL = 53;
+  var G_RANK_CLASS = 7;
+  var LEVEL_NAMES = { 11: "Low / High rank", 26: "HR5", 31: "HR5", 42: "HR5", 53: "G rank", 54: "Musou 1",
+    55: "Musou 2", 71: "Interception", 72: "Interception", 73: "Interception" };
+  /* The levels the live files use most, for the hint: 53 (982 files), 26 (560), 6 (537), 12 (460). */
+  var COMMON_LEVELS = { 6: true, 12: true, 26: true, 53: true };
+
+  /* Rules and restrictions (docs/quest-builder-gap.md task 3; API README "Flags and restrictions"). The three flag
+     bytes body.variantFlags1-3 (+0x97..+0x99), named as Pax's editor and Erupe's comments name them; none of these
+     bits was tested in game here. Not offered: flags 1 bit 3 (G rank: the API sets it from the class, with the
+     special list tab), flags 3 bit 4 (Zenith: set with a Zenith monster), flags 2 bit 7 (Road: would replace the
+     quest's monsters) and flags 3 bit 5 (Interception: Erupe clears it), which the API refuses, and the bits with no
+     name (flags 1 bits 5 and 6, flags 3 bit 6), which are kept as they are. */
+  var FLAGS1 = [[0, "Hiden"], [1, "Fix HC", "not what makes a quest Hardcore: that is the Hardcore switch"],
+    [2, "HC to UL"], [4, "SR"], [7, "UL fixed"]];
+  var FLAGS2 = [[0, "Low conquest"], [1, "No Halk pots"], [2, "No cuff"], [3, "Timer"], [4, "No active feature"],
+    [5, "Fixed difficulty"], [6, "High conquest"]];
+  var FLAGS3 = [[0, "No reward skills"], [1, "GSR to GR"], [2, "No easy drink"], [3, "No GP skills"], [7, "No sigils"]];
+  var FLAGS1_G_RANK = 0x08;
+  /* Reward extras (docs/quest-builder-gap.md task 5; API README "Reward extras"). body.rewardFlag (+0x90) is one of
+     Pax's five modes (names from data/quest-fields.json; these are the fallback), the API takes 0..4.
+     body.previewItems (+0xb0) is Reward 1/2/3 of the quest list, three item ids: an approved quest shows them, the
+     testing copy has them cleared (it pays no items either). Money is paid in both. "Use the main target's rewards"
+     takes the three items the main target reward groups (0x8001) weigh most, as 2,585 of the 3,501 live quests that
+     list items do. */
+  var REWARD_FLAGS = { 0: "First main reward fixed, sub-target rewards drawn", 1: "First main and first sub-target reward fixed",
+    2: "Fixed rewards", 3: "Unknown (fixed)", 4: "No fixed reward" };
+  var MAIN_REWARD_GROUP = 0x8001;
+  var PREVIEW_ITEMS = 3;
+  var G_CLASSES = [7, 9];
+  /* body.faintPenalty: the faints allowed in a G rank or Zenith quest (the live files use 3, a few 5; the API takes
+     1..9), else the money taken from the reward money at each faint (the quest fails when it runs out). */
+  var G_FAINTS = { min: 1, max: 9, usual: 3 };
+  var PENALTY_MAX = 999999;
+  var RANK_MAX = 999;
+  /* The restriction list and the Hardcore notes (data/quest-condition-notes.json); these are the fallback. */
+  var conditionNotes = { notes: [], groups: [], hardcore: { ids: [109, 110, 111, 112, 113, 118], written: 109, questClass: 3 } };
+
+  /* Forced equipment (docs/quest-builder-gap.md task 4; API README "Forced equipment"; hvmhfz_re docs/quest-files.md
+     "Forced equipment"): body.equipment, six 8-byte records { piece, word1, word2, word3 } in file order legs, weapon,
+     head, chest, arms, waist. A record is in force when word1 bit 15 is set (and piece bit 14 clear); the low 15 bits of
+     the three words are decoration item ids; for the weapon, piece bit 15 picks the gunner table and body.flagsAtC0 bit 1
+     is its id bit 14. The game looks the ids up with no bound check, so only data/forced-equipment.json's pieces are
+     offered (names from the API catalog, icons from js/game-icons.js), and the API refuses the rest. Nothing here was
+     tested in game. */
+  var GEAR_SLOTS = [
+    { name: "Legs", table: "legs", catalog: "legs" },
+    { name: "Weapon", weapon: true },
+    { name: "Head", table: "head", catalog: "heads" },
+    { name: "Chest", table: "chest", catalog: "chests" },
+    { name: "Arms", table: "arms", catalog: "arms" },
+    { name: "Waist", table: "waist", catalog: "waists" }
+  ];
+  var GEAR_ORDER = [1, 2, 3, 4, 5, 0]; // on screen: weapon, then head to legs
+  var GEAR_WEAPON = 1;
+  var GEAR_ON = 0x8000;      // word1: the record is in force; word2, word3: set with it in every Capcom file
+  var GEAR_OFF = 0x4000;     // piece: the record is switched off
+  var GEAR_GUNNER = 0x8000;  // weapon piece: the ranged table
+  var GEAR_DECO = 0x7fff;
+  var GEAR_ID_BIT14 = 2;     // body.flagsAtC0 bit 1
+  var forcedGear = null;     // data/forced-equipment.json
+  var gearIcons = null;      // data/equipment-icons.json, through js/game-icons.js
+  var gearNames = {};        // "<table>:<id>" -> the API catalog's name
 
   /* Objective types no quest file uses; their names come from the overlay only (builder item 11). */
   var UNTESTED_TYPES = { 16: true, 131072: true, 262144: true };
@@ -70,8 +170,15 @@
   var submitBtn = document.getElementById("editor-submit");
   var buttons = [saveBtn, downloadBtn, submitBtn];
 
-  var state = { model: null, draftId: null, revision: 0, busy: false, mapMessage: "", supplyShown: {},
-    serverMaps: null, mapsNote: "" };
+  var state = { model: null, listing: copyListing(null), draftId: null, revision: 0, busy: false, mapMessage: "",
+    supplyShown: {}, serverMaps: null, mapsNote: "", spots: {}, bounds: {}, exactSpawns: [] };
+
+  /** The draft's listing as the API answers it, the defaults for what it leaves out. */
+  function copyListing(from) {
+    var l = from || {};
+    return { questType: typeof l.questType === "number" ? l.questType : DEFAULT_LISTING.questType,
+      mark: typeof l.mark === "number" ? l.mark : DEFAULT_LISTING.mark };
+  }
 
   // ---- server calls --------------------------------------------------------------------------
 
@@ -121,11 +228,15 @@
     return Promise.all([
       grab("/data/map-ids.json"), grab("/data/map-areas.json"), grab("/data/area-ids.json"),
       grab("/data/item-ids.json"), grab("/data/objective-types.json"), grab("/data/monster-ids.json"),
-      grab("/data/quest-fields.json"), UI.loadIcons(["monsters", "items"])
+      grab("/data/quest-fields.json"), UI.loadIcons(["monsters", "items"]), grab("/data/quest-condition-notes.json"),
+      grab("/data/forced-equipment.json"), window.HvGameIcons ? window.HvGameIcons.load() : null
     ]).then(function (r) {
       mapIds = r[0] || {}; mapAreas = r[1] || {}; areaIds = r[2] || {}; itemIds = r[3] || {};
       objectiveTypes = r[4] || {}; monsterIds = r[5] || {};
       ((r[6] || {}).fields || []).forEach(function (f) { fieldRef[f.key] = f; });
+      if (r[8] && Array.isArray(r[8].notes)) conditionNotes = r[8];
+      if (r[9] && typeof r[9].melee === "string" && Array.isArray(r[9].decorations)) forcedGear = r[9];
+      gearIcons = r[10] || null;
     });
   }
 
@@ -136,6 +247,9 @@
       if (!list || !list.length) throw new Error("empty map list");
       state.serverMaps = {};
       list.forEach(function (id) { state.serverMaps[String(id)] = true; });
+      // Usual spots and allowed positions per map (an API from before monster tuning sends neither).
+      state.spots = answer.spots && typeof answer.spots === "object" ? answer.spots : {};
+      state.bounds = answer.bounds && typeof answer.bounds === "object" ? answer.bounds : {};
     }).catch(function () {
       state.serverMaps = {};
       state.serverMaps[String(BLANK_MAP)] = true;
@@ -315,6 +429,187 @@
   /** A monster as the quest has it: "Zenith Rathalos" when the quest makes it Zenith. */
   function formName(model, id) {
     return (zenithSet(model)[id] ? "Zenith " : "") + monsterName(id);
+  }
+
+  // ---- monster strength, size and position (task 2) ---------------------------------------------
+
+  /** Pax's name for a monster level: 1-10 Low rank, 12-20 High rank, the others in LEVEL_NAMES; "" for none. */
+  function levelName(n) {
+    if (n >= 1 && n <= 10) return "Low rank";
+    if (n >= 12 && n <= 20) return "High rank";
+    return LEVEL_NAMES[n] || "";
+  }
+
+  function levelLabel(n) {
+    var name = levelName(n);
+    return name ? n + " \u00b7 " + name : String(n);
+  }
+
+  /** Every level the API takes but the Zenith ranks; a G rank level is offered in a G rank quest only. */
+  function levelOptions(model) {
+    var gRank = model.body.questClass === G_RANK_CLASS;
+    var list = [];
+    for (var n = 0; n <= LEVEL_MAX; n++) {
+      if (ZENITH_LEVELS.indexOf(n) >= 0) continue;
+      var g = n >= G_RANK_LEVEL;
+      list.push({ value: n, label: levelLabel(n), disabled: g && !gRank && n !== model.header.monsterLevel,
+        hint: g && !gRank ? "G rank quests only" : (COMMON_LEVELS[n] ? "common in Capcom's quests" : "") });
+    }
+    return list;
+  }
+
+  /** What the server would refuse about header.monsterLevel, in words; "" when nothing. */
+  function levelProblem(model) {
+    var level = model.header && model.header.monsterLevel;
+    if (typeof level !== "number") return "";
+    if (ZENITH_LEVELS.indexOf(level) >= 0) {
+      return Object.keys(zenithSet(model)).length ? "" : "Levels 64 to 67 are the Zenith ranks, for a quest with a"
+        + " Zenith monster only: pick another level.";
+    }
+    if (level > LEVEL_MAX) return "The server takes levels 0 to " + LEVEL_MAX + ": pick another.";
+    if (level >= G_RANK_LEVEL && model.body.questClass !== G_RANK_CLASS) {
+      return "Levels from " + G_RANK_LEVEL + " up are G rank levels, for a G rank quest only: pick a lower level, or"
+        + " set the quest class to G rank (Basics, More settings).";
+    }
+    return "";
+  }
+
+  /** Size spread choices from the field reference (header.sizeClass: 0 "100-100%" ... 4 "85-125%"). */
+  function spreadOptions() {
+    var named = (fieldRef["header.sizeClass"] || {}).values || {};
+    return Object.keys(named).map(Number).sort(function (a, b) { return a - b; }).map(function (v) {
+      var range = String(valueName(named[v])).replace("-", "\u2013");
+      return { value: v, label: v === 0 ? "None (always 100%)" : range, hint: v === 2 ? "the blank's" : "" };
+    });
+  }
+
+  /** The usual spot of an area on a map ([x, y, z], from GET /api/account/quests/maps); null when unknown. */
+  function spotOf(mapId, areaId) {
+    var areas = state.spots[String(mapId)];
+    var p = areas && areas[String(areaId)];
+    return Array.isArray(p) && p.length === 3 ? p : null;
+  }
+
+  /** Where an exact position may lie on a map ({min, max}, three numbers each); null with an older API. */
+  function boundsOf(mapId) {
+    var box = state.bounds[String(mapId)];
+    return box && Array.isArray(box.min) && Array.isArray(box.max) ? box : null;
+  }
+
+  /** No position, or 0, 0, 0: the server gives the monster its area's usual spot. */
+  function emptyPosition(p) {
+    return !Array.isArray(p) || (p[0] === 0 && p[1] === 0 && p[2] === 0);
+  }
+
+  function samePosition(a, b) {
+    return !!a && !!b && [0, 1, 2].every(function (i) { return Math.abs(a[i] - b[i]) < 0.05; });
+  }
+
+  /** True when the row shows X, Y and Z: the author chose "Set exactly", or the position is not the usual spot. */
+  function isExact(spawn, mapId) {
+    if (state.exactSpawns.indexOf(spawn) >= 0) return true;
+    return !emptyPosition(spawn.position) && !samePosition(spawn.position, spotOf(mapId, spawn.areaId));
+  }
+
+  function forgetExact(spawn) {
+    var i = state.exactSpawns.indexOf(spawn);
+    if (i >= 0) state.exactSpawns.splice(i, 1);
+  }
+
+  function roundCoord(v) {
+    return Math.round(v * 10) / 10;
+  }
+
+  function coordsText(p) {
+    return "x " + roundCoord(p[0]) + ", y " + roundCoord(p[1]) + ", z " + roundCoord(p[2]);
+  }
+
+  /** True when an exact position lies outside the map's allowed box (always false with an older API). */
+  function outsideBounds(p, mapId) {
+    var box = boundsOf(mapId);
+    return !!box && Array.isArray(p) && [0, 1, 2].some(function (i) { return p[i] < box.min[i] || p[i] > box.max[i]; });
+  }
+
+  /** The Position cell of a large-monster row: the usual spot, or X, Y and Z within the map's bounds. */
+  function positionCell(model, spawn) {
+    var mapId = model.body.mapId;
+    var usual = spotOf(mapId, spawn.areaId);
+    var box = boundsOf(mapId);
+    var ref = F("largeSpawnAreas[].spawns[].position");
+    var wrap = el("div", "bui-position");
+    if (!isExact(spawn, mapId)) {
+      wrap.appendChild(el("span", "bui-position-text", usual ? "Usual spot (" + coordsText(usual) + ")" : "Usual spot"));
+      wrap.appendChild(UI.button("Set exactly", function () {
+        // Start from the usual spot, else the middle of the map's box, else a spot near most quests' (10000, 0, 10000).
+        spawn.position = usual ? usual.slice() : box ? [0, 1, 2].map(function (i) {
+          return Math.round((box.min[i] + box.max[i]) / 2);
+        }) : [10000, 0, 10000];
+        state.exactSpawns.push(spawn);
+        redraw("monsters");
+        changed();
+      }, null, "Set the exact position of " + monsterName(spawn.monsterId)));
+      return { label: "Position", ref: ref, node: wrap };
+    }
+    var start = Array.isArray(spawn.position) && spawn.position.length === 3 ? spawn.position : [0, 0, 0];
+    ["x", "y", "z"].forEach(function (axis, i) {
+      var item = el("label", "bui-axis");
+      item.appendChild(el("span", null, axis));
+      item.appendChild(UI.numberInput({
+        value: roundCoord(start[i]), step: "any", label: axis + " of " + monsterName(spawn.monsterId),
+        min: box ? box.min[i] : -50000, max: box ? box.max[i] : 50000,
+        onChange: writes(function (v) {
+          var next = (Array.isArray(spawn.position) ? spawn.position : start).slice();
+          next[i] = v;
+          spawn.position = next;
+        })
+      }));
+      wrap.appendChild(item);
+    });
+    wrap.appendChild(UI.button("Use the usual spot", function () {
+      spawn.position = null;
+      forgetExact(spawn);
+      redraw("monsters");
+      changed();
+    }, null, "Put " + monsterName(spawn.monsterId) + " back at the usual spot"));
+    if (box) {
+      wrap.appendChild(el("span", "bui-position-text", "Allowed here: x " + box.min[0] + " to " + box.max[0] + ", y "
+        + box.min[1] + " to " + box.max[1] + ", z " + box.min[2] + " to " + box.max[2] + "."));
+    }
+    return { label: "Position", ref: ref, node: wrap };
+  }
+
+  /** Difficulty (or the Zenith rank while a monster is Zenith), size and size spread. */
+  function strengthFields(model) {
+    var header = model.header;
+    var g = grid();
+    if (Object.keys(zenithSet(model)).length) {
+      g.appendChild(zenithRank(model));
+    } else if (typeof header.monsterLevel === "number") {
+      var level = null;
+      g.appendChild(fieldFor(F("header.monsterLevel"), "Difficulty", level = UI.picker({
+        options: levelOptions(model), value: header.monsterLevel,
+        unknownLabel: function (v) { return "Level " + v + (ZENITH_LEVELS.indexOf(v) >= 0 ? " (a Zenith rank)" : ""); },
+        onChange: writes(function (v) { header.monsterLevel = v; level.setProblem(levelProblem(model)); })
+      }), null, { help: "The row of the monsters' stat tables the quest uses: the higher, the stronger. Capcom's"
+        + " quests use 1 to 10 in Low rank, 12 to 20 in High rank, 26 to 42 from HR 100 and 53 up in G rank. A"
+        + " monster with no data for a level plays at its base strength." }));
+      level.setProblem(levelProblem(model));
+    }
+    if (typeof header.monsterSize === "number") {
+      g.appendChild(numberFor(F("header.monsterSize"), "Size", {
+        id: "monster-size", value: header.monsterSize, min: 70, max: 150, unit: "%",
+        onChange: writes(function (v) { header.monsterSize = v; })
+      }, "Every large monster's size; 100 is normal. Capcom's quests use 70 to 150."));
+    }
+    var spreads = spreadOptions();
+    if (typeof header.sizeClass === "number" && spreads.length) {
+      g.appendChild(fieldFor(F("header.sizeClass"), "Size spread", UI.picker({
+        options: spreads, value: header.sizeClass,
+        unknownLabel: function (v) { return "Spread " + v + " (the server takes 0 to 4)"; },
+        onChange: writes(function (v) { header.sizeClass = v; })
+      }), "Each monster's size varies at random within this range of the size above."));
+    }
+    return g;
   }
 
   var zenithList = null;
@@ -538,6 +833,44 @@
     return el("div", "editor-grid");
   }
 
+  /** body.flags is a u32 view of body +0x00..+0x03: bytes 2 and 3 follow seasonFlags and flagByte (or the server
+      would refuse the save: two fields disagree about a byte). */
+  function flagsInStep(b) {
+    if (typeof b.flags !== "number") return;
+    b.flags = ((b.flags & 0xffff) | ((b.seasonFlags & 0xff) << 16) | ((b.flagByte & 0xff) << 24)) >>> 0;
+  }
+
+  /** The bits of body.seasonFlags under mask become value; body.flags follows. */
+  function setSeasonBits(b, mask, value) {
+    b.seasonFlags = (b.seasonFlags & ~mask & 0xff) | value;
+    flagsInStep(b);
+  }
+
+  function optionLabel(list, value, fallback) {
+    var hit = list.filter(function (o) { return o.value === value; })[0];
+    return hit ? hit.label : fallback;
+  }
+
+  function starsText(level) {
+    return level + (level === 1 ? " star" : " stars");
+  }
+
+  /** True when the objective record is in use (its type is not "Not used"). */
+  function used(b, key) {
+    return !!(b[key] && b[key].type !== 0);
+  }
+
+  /** What the chosen objective mode needs and the quest lacks, as a sentence; "" when nothing. */
+  function modeProblem(b) {
+    var mode = MODES.filter(function (m) { return m.value === b.objectiveMode; })[0];
+    if (!mode) return "";
+    var missing = mode.needs.filter(function (key) { return !used(b, key); }).map(function (key) {
+      return key === "objective1" ? "sub-target A" : "sub-target B";
+    });
+    return missing.length ? "\u201c" + mode.label + "\u201d needs " + missing.join(" and ") + ": set "
+      + (missing.length === 1 ? "it" : "them") + " above, or require fewer targets." : "";
+  }
+
   // ---- 1. basics -----------------------------------------------------------------------------
 
   function basicsSection(model) {
@@ -553,19 +886,6 @@
       min: ticks ? Math.ceil(ticks.min / TICKS_PER_MINUTE) : 1, max: ticks ? Math.floor(ticks.max / TICKS_PER_MINUTE) : undefined,
       onChange: writes(function (v) { b.timeLimit = v * TICKS_PER_MINUTE; })
     }, "The quest files use 10 to 50 minutes; longer is untested."));
-    var hunters = hunterOptions();
-    if (hunters.length) {
-      g.appendChild(fieldFor(F("body.maxHunters"), "Players", UI.picker({
-        options: hunters, value: b.maxHunters, showIds: true,
-        unknownLabel: function (v) { return "Other (value " + v + ", the game reads " + (v & 7) + ")"; },
-        onChange: writes(function (v) { b.maxHunters = v; })
-      }), "How many hunters can join. The game reads only the low 3 bits, and 0 also means 4."));
-    } else {
-      g.appendChild(numberFor(F("body.maxHunters"), "Players", {
-        id: "meta-players", value: b.maxHunters, min: 1, max: 4,
-        onChange: writes(function (v) { b.maxHunters = v; })
-      }, "How many hunters can join, 1 to 4."));
-    }
     g.appendChild(numberFor(F("body.zenny"), "Contract fee", {
       id: "meta-zenny", value: b.zenny, min: 0, unit: "zenny",
       onChange: writes(function (v) { b.zenny = v; })
@@ -573,7 +893,7 @@
     g.appendChild(numberFor(F("body.rewardMoney"), "Reward money", {
       id: "meta-money", value: b.rewardMoney, min: 0, unit: "zenny",
       onChange: writes(function (v) { b.rewardMoney = v; })
-    }, "Paid for the main target, on a clear."));
+    }, "Paid for the main target, on a clear. Custom quests pay it, in testing too."));
     var countField = null;
     g.appendChild(fieldFor(F("body.iconLabelId"), "Item needed to enter", UI.picker({
       options: itemOptions(), value: b.iconLabelId, kind: "item", showIds: true,
@@ -603,7 +923,14 @@
       g2.appendChild(fieldFor(F(["body.questClass", "header.questClass"]), "Quest class", UI.picker({
         options: classes, value: b.questClass, showIds: true,
         unknownLabel: function (v) { return "Unnamed class (value " + v + ")"; },
-        onChange: writes(function (v) { b.questClass = v; if (model.header) model.header.questClass = v; })
+        onChange: writes(function (v) {
+          var before = b.questClass;
+          b.questClass = v;
+          if (model.header) model.header.questClass = v;
+          classChanged(model, before);
+          redraw("monsters"); // G rank levels follow the class
+          redraw("rules"); // Hardcore, faints and the G rank flag follow it too
+        })
       }), "Sets both copies: the game reads the header's. The names come from the quest lists each class"
         + " appears in; the game's code names none."));
     } else {
@@ -617,7 +944,629 @@
     return p;
   }
 
-  // ---- 2. map and start area -----------------------------------------------------------------
+  // ---- 2. quest board listing ---------------------------------------------------------------
+
+  function listingSection(model) {
+    var b = model.body;
+    var listing = state.listing;
+    var p = UI.section("Quest board listing", "where and how it is listed");
+    var g = grid();
+    g.appendChild(UI.field("Counter", UI.picker({
+      options: COUNTERS, value: listing.questType, showIds: true,
+      unknownLabel: function (v) { return "Counter " + v + " (not offered: pick one of the list)"; },
+      onChange: writes(function (v) { listing.questType = v; })
+    }), null, { help: "The quest list the quest appears in. These are the event counters a custom quest can use;"
+      + " an admin may move the quest to another counter when publishing it." }));
+    g.appendChild(UI.field("Mark", UI.picker({
+      options: MARKS, value: listing.mark,
+      unknownLabel: function (v) { return "Mark " + v + " (not offered)"; },
+      onChange: writes(function (v) { listing.mark = v; })
+    }), "The New or Recommended label beside the quest in the list."));
+    var hunters = hunterOptions();
+    if (hunters.length) {
+      g.appendChild(fieldFor(F("body.maxHunters"), "Players", UI.picker({
+        options: hunters, value: b.maxHunters, showIds: true,
+        unknownLabel: function (v) { return "Other (value " + v + ", the game reads " + (v & 7) + ")"; },
+        onChange: writes(function (v) { b.maxHunters = v; })
+      }), "How many hunters can join; the quest list shows it too. The game reads only the low 3 bits, and 0 also"
+        + " means 4."));
+    } else {
+      g.appendChild(numberFor(F("body.maxHunters"), "Players", {
+        id: "meta-players", value: b.maxHunters, min: 1, max: 4,
+        onChange: writes(function (v) { b.maxHunters = v; })
+      }, "How many hunters can join, 1 to 4."));
+    }
+    var stars = [1, 2, 3, 4, 5, 6, 7, 8].map(function (n) {
+      return { value: n, label: starsText(n), hint: new Array(n + 1).join("\u2605") };
+    });
+    g.appendChild(fieldFor(F("body.level"), "Stars", UI.picker({
+      options: stars, value: b.level,
+      unknownLabel: function (v) { return "Level " + v + " (the server accepts 1 to 8)"; },
+      onChange: writes(function (v) { b.level = v; })
+    }), "The quest's difficulty in stars, as the quest list shows it."));
+    p.appendChild(g);
+    return p;
+  }
+
+  // ---- 2b. rules and restrictions ------------------------------------------------------------
+
+  function isG(b) {
+    return G_CLASSES.indexOf(b.questClass) >= 0;
+  }
+
+  function hardcoreIds() {
+    return (conditionNotes.hardcore && conditionNotes.hardcore.ids) || [];
+  }
+
+  function hardcoreClass() {
+    return (conditionNotes.hardcore && conditionNotes.hardcore.questClass) || 3;
+  }
+
+  function isHardcore(b) {
+    return hardcoreIds().indexOf(b.conditionNote) >= 0;
+  }
+
+  var noteList = null;
+  /** None, then the restrictions by group; a name with one source (Pax's editor only) is marked unconfirmed. */
+  function noteOptions() {
+    if (noteList) return noteList;
+    noteList = [{ value: 0, label: "None" }].concat((conditionNotes.notes || []).map(function (n) {
+      return { value: n.id, label: n.name, group: n.group, hint: n.confirmedBy ? "" : "unconfirmed" };
+    }));
+    return noteList;
+  }
+
+  function noteName(id) {
+    if (!id) return "None";
+    if (hardcoreIds().indexOf(id) >= 0) return "Hardcore (restriction " + id + ", set by the switch)";
+    var hit = (conditionNotes.notes || []).filter(function (n) { return n.id === id; })[0];
+    return hit ? hit.name : "Restriction " + id + " (not offered)";
+  }
+
+  /** After the quest class changed: a Hardcore note goes with class 3; flags 1 bit 3 and the special list tab follow
+      the G rank line (the API sets them too); and body.faintPenalty, faints allowed in G rank and Zenith but money per
+      faint otherwise, takes the usual value of its new meaning. */
+  function classChanged(model, before) {
+    var b = model.body;
+    if (isHardcore(b) && b.questClass !== hardcoreClass()) b.conditionNote = 0;
+    if (typeof b.variantFlags1 === "number") {
+      b.variantFlags1 = isG(b) ? (b.variantFlags1 | FLAGS1_G_RANK) : (b.variantFlags1 & ~FLAGS1_G_RANK & 0xff);
+    }
+    if (typeof b.specialListTab === "number") b.specialListTab = isG(b) ? 1 : 0;
+    if ((G_CLASSES.indexOf(before) >= 0) !== isG(b) && typeof b.faintPenalty === "number") {
+      b.faintPenalty = isG(b) ? G_FAINTS.usual : Math.ceil((b.rewardMoney || 0) / 3);
+    }
+  }
+
+  /** A checkbox with its text; opts: label, checked, onChange(on), disabled, id, hint (shown small after the text). */
+  function checkbox(opts) {
+    var wrap = el("label", "bui-check");
+    var input = el("input");
+    input.type = "checkbox";
+    if (opts.id) input.id = opts.id;
+    input.checked = !!opts.checked;
+    input.disabled = !!opts.disabled;
+    input.addEventListener("change", function () { opts.onChange(input.checked); });
+    wrap.appendChild(input);
+    wrap.appendChild(el("span", null, opts.label));
+    if (opts.hint) wrap.appendChild(el("span", "bui-check-hint", opts.hint));
+    wrap.input = input;
+    return wrap;
+  }
+
+  /** One flag byte as checkboxes, one per named bit; get() reads the byte, set(v) writes it (other bits kept). */
+  function flagBox(bits, get, set) {
+    var box = el("div", "bui-flags");
+    bits.forEach(function (bit) {
+      var mask = 1 << bit[0];
+      box.appendChild(checkbox({ label: bit[1], hint: bit[2], checked: !!(get() & mask), onChange: writes(function (on) {
+        set(on ? (get() | mask) : (get() & ~mask & 0xff));
+      }) }));
+    });
+    return box;
+  }
+
+  /** A maximum rank below its minimum (0 is no limit), in words; "" when fine. */
+  function rankProblem(min, max, what) {
+    return typeof min === "number" && typeof max === "number" && max !== 0 && max < min
+      ? "The highest rank to " + what + " (" + max + ") is below the lowest (" + min + "): raise it, or 0 for no limit." : "";
+  }
+
+  function rulesSection(model) {
+    var b = model.body;
+    var p = UI.section("Rules and restrictions", "who may join, and how");
+    var g = grid();
+    var hardcore = isHardcore(b);
+    var canHardcore = b.questClass === hardcoreClass();
+    var hcBox = checkbox({ id: "rule-hardcore", label: "Make this a Hardcore quest", checked: hardcore,
+      disabled: !canHardcore && !hardcore,
+      onChange: function (on) {
+        b.conditionNote = on ? ((conditionNotes.hardcore || {}).written || 109) : 0;
+        redraw("rules");
+        changed();
+      } });
+    var hcField = fieldFor(F("body.conditionNote"), "Hardcore", hcBox, canHardcore
+      ? "Uses the restriction slot, so a Hardcore quest has no other restriction."
+      : "For HR 100 and up quests only: set the quest class to it first (Basics, More settings).",
+      { help: "The monsters use their Hardcore data and the rewards their Hardcore rows. The game does this for an"
+        + " HR 100 and up quest whose restriction is one of the Hardcore notes (read from the game's code), so the"
+        + " switch sets restriction 109, as most of Capcom's Hardcore quests have. The “Fix HC” flag below"
+        + " does not do it. Not tested in game yet: try the quest in testing before you submit it." });
+    hcField.querySelector("label").htmlFor = "rule-hardcore";
+    g.appendChild(hcField);
+
+    var restriction = null;
+    g.appendChild(fieldFor(F("body.conditionNote"), "Restriction", restriction = UI.picker({
+      options: noteOptions(), value: b.conditionNote, showIds: true, disabled: hardcore, unknownLabel: noteName,
+      searchHint: "Type a weapon, rank or item rule",
+      onChange: writes(function (v) { b.conditionNote = v; })
+    }), hardcore ? "A Hardcore quest uses this slot." : "One per quest, shown on the quest's info page.",
+      { help: "The rule on the quest's info page, such as “Great Sword only” or “No items”. The game"
+        + " may also enforce it; which ones it enforces is not known, and none was tested here, so try the quest in"
+        + " testing. “Unconfirmed” names rest on one source (Pax's quest editor). Rules that take tickets or"
+        + " proofs, or need the game server to count, are untested." }));
+    if (!hardcore && b.conditionNote && !noteOptions().some(function (o) { return o.value === b.conditionNote; })) {
+      restriction.setProblem("The server does not take this restriction: pick another, or None.");
+    }
+
+    if (typeof b.faintPenalty === "number") {
+      if (isG(b)) {
+        g.appendChild(numberFor(F("body.faintPenalty"), "Faints allowed", {
+          id: "rule-faints", value: b.faintPenalty, min: G_FAINTS.min, max: G_FAINTS.max,
+          onChange: writes(function (v) { b.faintPenalty = v; })
+        }, "The quest fails at this many faints. Capcom's G rank quests allow 3, a few 5."));
+      } else {
+        g.appendChild(numberFor(F("body.faintPenalty"), "Money lost per faint", {
+          id: "rule-faints", value: b.faintPenalty, min: 0, max: PENALTY_MAX, unit: "zenny",
+          onChange: writes(function (v) { b.faintPenalty = v; })
+        }, "Taken from the reward money at each faint; the quest fails when it runs out. Capcom's quests take a third"
+          + " of it (3 faints)."));
+      }
+    }
+    p.appendChild(g);
+
+    p.appendChild(UI.subhead("Hunter rank limits"));
+    p.appendChild(note("Hunter rank, or G rank in a G rank quest. 0 as a highest rank means no limit. The game's code"
+      + " was traced for the lowest rank to join only."));
+    var r = grid();
+    var rankFields = [];
+    function rankChanged() {
+      rankFields.forEach(function (f) { f.check(); });
+      changed();
+    }
+    function rankField(input, min, max, what) {
+      input.check = function () {
+        var why = rankProblem(min(), max(), what);
+        var box = input.input;
+        box.classList.toggle("is-invalid", !!why);
+        box.title = why;
+      };
+      rankFields.push(input);
+      return input;
+    }
+    if (typeof b.postRankMin === "number") {
+      r.appendChild(numberFor(F("body.postRankMin"), "Lowest rank to post", {
+        id: "rule-post-min", value: b.postRankMin, min: 0, max: RANK_MAX,
+        onChange: function (v) { b.postRankMin = v; rankChanged(); }
+      }, "The lowest rank that can post the quest."));
+    }
+    if (typeof b.postRankMax === "number") {
+      r.appendChild(rankField(numberFor(F("body.postRankMax"), "Highest rank to post", {
+        id: "rule-post-max", value: b.postRankMax, min: 0, max: RANK_MAX,
+        onChange: function (v) { b.postRankMax = v; rankChanged(); }
+      }, "0 for no limit."), function () { return b.postRankMin; }, function () { return b.postRankMax; }, "post"));
+    }
+    if (typeof b.rank === "number") {
+      r.appendChild(numberFor(F("body.rank"), "Lowest rank to join", {
+        id: "rule-join-min", value: b.rank, min: 0, max: RANK_MAX,
+        onChange: function (v) { b.rank = v; rankChanged(); }
+      }, "The lowest rank that can join."));
+    }
+    if (typeof b.joinRankMax === "number") {
+      r.appendChild(rankField(numberFor(F("body.joinRankMax"), "Highest rank to join", {
+        id: "rule-join-max", value: b.joinRankMax, min: 0, max: RANK_MAX,
+        onChange: function (v) { b.joinRankMax = v; rankChanged(); }
+      }, "0 for no limit."), function () { return b.rank; }, function () { return b.joinRankMax; }, "join"));
+    }
+    p.appendChild(r);
+    rankFields.forEach(function (f) { f.check(); });
+
+    if (typeof b.variantFlags1 === "number") {
+      p.appendChild(UI.subhead("Quest flags"));
+      p.appendChild(note("Named as in Pax's quest editor and Erupe's comments. What each one does was not traced in"
+        + " the game's code or tested in game here, so try the quest in testing. Set for you: G rank (from the quest"
+        + " class) and Zenith (from the monsters). Not offered: Road and Interception."));
+      var f = grid();
+      f.appendChild(fieldFor(F("body.variantFlags1"), "Flags 1", flagBox(FLAGS1, function () { return b.variantFlags1; },
+        function (v) { b.variantFlags1 = v; })));
+      f.appendChild(fieldFor(F("body.variantFlags2"), "Flags 2", flagBox(FLAGS2, function () { return b.variantFlags2; },
+        function (v) { b.variantFlags2 = v; })));
+      f.appendChild(fieldFor(F("body.variantFlags3"), "Flags 3", flagBox(FLAGS3, function () { return b.variantFlags3; },
+        function (v) { b.variantFlags3 = v; })));
+      p.appendChild(f);
+    }
+    return p;
+  }
+
+  /** "Hardcore, Great Sword only, 3 faints, join HR 100 and up, flags: No Halk pots" for the review. */
+  function rulesText(model) {
+    var b = model.body;
+    var parts = [];
+    if (isHardcore(b)) parts.push("Hardcore");
+    else if (b.conditionNote) parts.push(noteName(b.conditionNote));
+    if (typeof b.faintPenalty === "number") {
+      parts.push(isG(b) ? b.faintPenalty + (b.faintPenalty === 1 ? " faint allowed" : " faints allowed")
+        : Number(b.faintPenalty).toLocaleString() + " zenny lost per faint");
+    }
+    function band(min, max) {
+      return max ? min + " to " + max : min + " and up";
+    }
+    if (typeof b.postRankMin === "number" && (b.postRankMin || b.postRankMax)) parts.push("post " + band(b.postRankMin, b.postRankMax));
+    if (b.rank || b.joinRankMax) parts.push("join " + band(b.rank, b.joinRankMax));
+    var flags = [];
+    [["variantFlags1", FLAGS1], ["variantFlags2", FLAGS2], ["variantFlags3", FLAGS3]].forEach(function (spec) {
+      spec[1].forEach(function (bit) { if ((b[spec[0]] || 0) & (1 << bit[0])) flags.push(bit[1]); });
+    });
+    if (flags.length) parts.push("flags: " + flags.join(", "));
+    return parts.length ? parts.join("; ") : "none";
+  }
+
+  // ---- 2c. forced equipment (arena quests) ----------------------------------------------------
+
+  function emptyRecord() {
+    return { piece: 0, word1: 0, word2: 0, word3: 0 };
+  }
+
+  /** The six records, or six empty ones for a draft saved before the field existed (sent only once edited). */
+  function gearList(b) {
+    return Array.isArray(b.equipment) && b.equipment.length === GEAR_SLOTS.length ? b.equipment
+      : GEAR_SLOTS.map(emptyRecord);
+  }
+
+  function gearRecord(b, slot) {
+    if (!Array.isArray(b.equipment) || b.equipment.length !== GEAR_SLOTS.length) b.equipment = gearList(b);
+    return b.equipment[slot];
+  }
+
+  function inForce(rec) {
+    return !!rec && (rec.word1 & GEAR_ON) !== 0 && (rec.piece & GEAR_OFF) === 0;
+  }
+
+  function blankRecord(rec) {
+    return !rec || !(rec.piece || rec.word1 || rec.word2 || rec.word3);
+  }
+
+  /** A forced record's piece: { id, ranged } (a weapon's id takes bit 14 from body.flagsAtC0). */
+  function gearPiece(b, slot, rec) {
+    if (slot !== GEAR_WEAPON) return { id: rec.piece, ranged: false };
+    return { id: (rec.piece & 0x3fff) | ((b.flagsAtC0 || 0) & GEAR_ID_BIT14 ? 0x4000 : 0), ranged: !!(rec.piece & GEAR_GUNNER) };
+  }
+
+  /** "a" any hunter, "b" blademaster, "g" gunner, or "-" when data/forced-equipment.json does not offer the piece. */
+  function gearKind(slot, id, ranged) {
+    if (!forcedGear) return "-";
+    if (slot === GEAR_WEAPON) {
+      return (forcedGear[ranged ? "ranged" : "melee"] || "").charAt(id) === "w" && id > 0 ? (ranged ? "g" : "b") : "-";
+    }
+    return (forcedGear[GEAR_SLOTS[slot].table] || "").charAt(id) || "-";
+  }
+
+  /** "b" or "g" when the forced pieces other than slot `skip` are for blademasters or gunners only, else "". */
+  function gearSetKind(b, skip) {
+    var kind = "";
+    gearList(b).forEach(function (rec, slot) {
+      if (slot === skip || !inForce(rec)) return;
+      var p = gearPiece(b, slot, rec);
+      var k = gearKind(slot, p.id, p.ranged);
+      if (k === "b" || k === "g") kind = kind && kind !== k ? "x" : k;
+    });
+    return kind;
+  }
+
+  function gearTable(slot, ranged) {
+    return slot === GEAR_WEAPON ? (ranged ? "ranged" : "melee") : GEAR_SLOTS[slot].table;
+  }
+
+  /* The API catalog's equipment ids are the game's id as 4 hex digits, low byte first ("EB19" is 6635). */
+  function catalogKey(id) {
+    function two(n) { return (n < 16 ? "0" : "") + n.toString(16).toUpperCase(); }
+    return two(id & 0xff) + two((id >> 8) & 0xff);
+  }
+
+  function catalogId(raw) {
+    var hex = String(raw || "").trim();
+    return /^[0-9a-f]{4}$/i.test(hex) ? parseInt(hex.slice(2, 4) + hex.slice(0, 2), 16) : null;
+  }
+
+  /** Pieces of a slot whose name (or id, for a number) matches: [{ id, ranged, name }] from the API catalog. */
+  function searchGear(slot, term) {
+    var number = /^\d+$/.test(term) ? Number(term) : null;
+    var lists = slot === GEAR_WEAPON ? ["melee", "ranged"] : [GEAR_SLOTS[slot].catalog];
+    return Promise.all(lists.map(function (list) {
+      var q = number === null ? term : catalogKey(number);
+      return fetch(API + "/api/public/catalog/equipment?slot=" + list + "&size=40&q=" + encodeURIComponent(q))
+        .then(function (r) { return r.ok ? r.json() : { items: [] }; })
+        .then(function (page) {
+          return (page.items || []).map(function (e) {
+            var ranged = list === "ranged";
+            var id = catalogId(e.id);
+            if (id !== null && e.name) gearNames[gearTable(slot, ranged) + ":" + id] = e.name;
+            return { id: id, ranged: ranged, name: e.name || "" };
+          }).filter(function (e) { return e.id !== null && (number === null || e.id === number); });
+        });
+    })).then(function (parts) { return [].concat.apply([], parts); });
+  }
+
+  /** The catalog name of a forced piece, fetched once; then() runs when it came in. */
+  function gearNameOf(slot, piece, then) {
+    var key = gearTable(slot, piece.ranged) + ":" + piece.id;
+    if (gearNames[key] !== undefined) return gearNames[key];
+    gearNames[key] = null;
+    searchGear(slot, String(piece.id)).then(function () {
+      if (gearNames[key] === null) gearNames[key] = "";
+      if (then) then();
+    }).catch(function () { gearNames[key] = ""; });
+    return null;
+  }
+
+  function gearLabel(slot, piece, name) {
+    if (slot !== GEAR_WEAPON && piece.id === 0) return "No piece: the slot is left empty";
+    return name || (slot === GEAR_WEAPON ? (piece.ranged ? "Gunner weapon" : "Blademaster weapon") : GEAR_SLOTS[slot].name + " piece")
+      + " #" + piece.id;
+  }
+
+  function gearIcon(slot, piece) {
+    if (!window.HvGameIcons || (slot !== GEAR_WEAPON && piece.id === 0)) return el("span", "gi gi-equip gi-unknown");
+    var look = slot === GEAR_WEAPON ? { kind: piece.ranged ? "ranged" : "melee", id: piece.id }
+      : { kind: "armour", slot: GEAR_SLOTS[slot].table, id: piece.id };
+    return window.HvGameIcons.equipmentIcon(gearIcons, look, "gi-small");
+  }
+
+  var KIND_NAMES = { b: "blademasters", g: "gunners" };
+
+  /**
+   * The forced piece of one slot: what is forced now, and a search of the API catalog (only pieces
+   * data/forced-equipment.json offers, and not a blademaster piece in a gunner set or the other way round).
+   * onPick({ id, ranged }) forces a piece; onPick(null) stops forcing the slot.
+   */
+  function gearChooser(model, slot, onPick) {
+    var b = model.body;
+    var s = GEAR_SLOTS[slot];
+    var rec = gearList(b)[slot];
+    var wrap = el("div", "qe-gear");
+    var current = el("div", "qe-gear-current");
+    wrap.appendChild(current);
+    function drawCurrent() {
+      current.textContent = "";
+      wrap.classList.remove("is-invalid");
+      if (!inForce(rec)) {
+        current.appendChild(el("span", "qe-gear-none", blankRecord(rec) ? "Not forced" : "Not forced (old bytes left: Clear)"));
+        return;
+      }
+      var piece = gearPiece(b, slot, rec);
+      current.appendChild(gearIcon(slot, piece));
+      current.appendChild(el("span", "qe-gear-name", gearLabel(slot, piece, gearNameOf(slot, piece, drawCurrent))));
+      var kind = gearKind(slot, piece.id, piece.ranged);
+      if (kind === "-") {
+        wrap.classList.add("is-invalid");
+        current.appendChild(el("span", "qe-gear-why", "not a piece the server takes: pick another"));
+      } else if (kind === "b" || kind === "g") {
+        current.appendChild(el("span", "qe-gear-kind", KIND_NAMES[kind] + " only"));
+      }
+    }
+    drawCurrent();
+
+    var actions = el("div", "qe-gear-actions");
+    var chooseBtn = UI.button(inForce(rec) ? "Change" : "Choose", function () {
+      panel.hidden = !panel.hidden;
+      if (!panel.hidden) input.focus();
+    }, "add", "Choose the forced " + s.name.toLowerCase());
+    actions.appendChild(chooseBtn);
+    if (!blankRecord(rec)) {
+      actions.appendChild(UI.button("Clear", function () { onPick(null); }, "remove", "Stop forcing the " + s.name.toLowerCase()));
+    }
+    wrap.appendChild(actions);
+
+    var panel = el("div", "qe-gear-search");
+    panel.hidden = true;
+    var input = el("input");
+    input.type = "search";
+    input.placeholder = slot === GEAR_WEAPON ? "Type a weapon's name or id" : "Type a " + s.name.toLowerCase() + " piece's name or id";
+    input.setAttribute("aria-label", "Search " + s.name.toLowerCase() + " pieces");
+    panel.appendChild(input);
+    if (slot !== GEAR_WEAPON) {
+      var bare = UI.button("Force no piece", function () { onPick({ id: 0, ranged: false }); }, null,
+        "Force the " + s.name.toLowerCase() + " slot empty");
+      bare.classList.add("qe-gear-bare");
+      panel.appendChild(bare);
+    }
+    var found = el("ul", "qe-gear-results");
+    var status = note("Type at least 2 letters, or an id.");
+    panel.appendChild(status);
+    panel.appendChild(found);
+    wrap.appendChild(panel);
+
+    var timer = null;
+    var asked = 0;
+    input.addEventListener("input", function () {
+      clearTimeout(timer);
+      var term = input.value.trim();
+      found.textContent = "";
+      if (term.length < 2 && !/^\d+$/.test(term)) { status.textContent = "Type at least 2 letters, or an id."; return; }
+      status.textContent = "Searching…";
+      timer = setTimeout(function () {
+        var mine = ++asked;
+        searchGear(slot, term).then(function (list) {
+          if (mine !== asked) return;
+          var setKind = gearSetKind(b, slot);
+          var shown = 0;
+          var hidden = 0;
+          list.forEach(function (e) {
+            var kind = gearKind(slot, e.id, e.ranged);
+            if (kind === "-") { hidden += 1; return; }
+            var clash = (kind === "b" || kind === "g") && (setKind === "b" || setKind === "g") && kind !== setKind;
+            var li = el("li");
+            var btn = el("button", "qe-gear-option");
+            btn.type = "button";
+            btn.appendChild(gearIcon(slot, e));
+            btn.appendChild(el("span", "qe-gear-name", e.name));
+            btn.appendChild(el("span", "bui-id", "#" + e.id));
+            if (clash) {
+              btn.disabled = true;
+              btn.appendChild(el("span", "bui-hint", "for " + KIND_NAMES[kind] + "; the set is for " + KIND_NAMES[setKind]));
+            } else if (kind === "b" || kind === "g") {
+              btn.appendChild(el("span", "bui-hint", KIND_NAMES[kind] + " only"));
+            }
+            btn.addEventListener("click", function () { onPick({ id: e.id, ranged: e.ranged }); });
+            li.appendChild(btn);
+            found.appendChild(li);
+            shown += 1;
+          });
+          status.textContent = shown ? (list.length >= 40 ? "The first matches; type more of the name to narrow them." : "")
+            + (hidden ? " " + hidden + " placeholder " + (hidden === 1 ? "row" : "rows") + " of the game's tables left out." : "")
+            : list.length ? "Only placeholder rows of the game's tables match: they cannot be forced."
+              : "Nothing matches “" + term + "”.";
+        }).catch(function () {
+          if (mine === asked) status.textContent = "The equipment list could not be loaded. Try again in a moment.";
+        });
+      }, 250);
+    });
+    return wrap;
+  }
+
+  var decoList = null;
+  /** None, then the decorations Capcom's quest files force (data/forced-equipment.json), by name. */
+  function decoOptions() {
+    if (decoList) return decoList;
+    decoList = [{ value: 0, label: "None" }].concat(((forcedGear || {}).decorations || []).map(function (id) {
+      return { value: id, label: itemName(id) };
+    }).sort(byLabel));
+    return decoList;
+  }
+
+  function equipmentSection(model) {
+    var b = model.body;
+    var p = UI.section("Forced equipment (arena)", "the gear every hunter must use");
+    p.appendChild(note("Untested in game: no forced equipment made here has been tried in the game yet. The game"
+      + " swaps each hunter's gear for these pieces when the quest starts (read from its code); try the quest in"
+      + " testing before you submit it.", "bui-notice bui-warn qe-gear-untested"));
+    p.appendChild(note("Leave a slot “Not forced” to let hunters bring their own. Pieces come from the game's"
+      + " equipment tables, placeholder rows left out; a set cannot mix blademaster and gunner pieces. An arena quest"
+      + " usually also has a supply box (Rewards) and a restriction such as “No items” (Rules and restrictions); the"
+      + " quest file has no pouch of its own."));
+    if (!forcedGear) {
+      p.appendChild(note("The list of pieces could not be loaded, so nothing can be forced now. Reload the page to try"
+        + " again.", "bui-notice bui-warn"));
+      return p;
+    }
+    var rows = [];
+    GEAR_ORDER.forEach(function (slot) {
+      var s = GEAR_SLOTS[slot];
+      var rec = gearList(b)[slot];
+      var forced = inForce(rec);
+      var cells = [{ label: "Slot", node: el("strong", null, s.name) }];
+      if (slot === GEAR_WEAPON) {
+        cells.push({ label: "Forced piece", ref: F(["body.equipment[].piece", "body.flagsAtC0"], slot),
+          node: gearChooser(model, slot, function (piece) {
+            var rec = gearRecord(b, slot);
+            var keep = inForce(rec);
+            rec.piece = piece ? (piece.id & 0x3fff) | (piece.ranged ? GEAR_GUNNER : 0) : 0;
+            b.flagsAtC0 = ((b.flagsAtC0 || 0) & ~GEAR_ID_BIT14) | (piece && piece.id & 0x4000 ? GEAR_ID_BIT14 : 0);
+            rec.word1 = piece ? GEAR_ON | (keep ? rec.word1 & GEAR_DECO : 0) : 0;
+            rec.word2 = piece ? GEAR_ON | (keep ? rec.word2 & GEAR_DECO : 0) : 0;
+            rec.word3 = piece ? GEAR_ON | (keep ? rec.word3 & GEAR_DECO : 0) : 0;
+            redraw("equipment");
+            changed();
+          }) });
+      } else {
+        cells.push({ label: "Forced piece", ref: F("body.equipment[].piece", slot),
+          node: gearChooser(model, slot, function (piece) {
+            var rec = gearRecord(b, slot);
+            var keep = inForce(rec) && piece && piece.id !== 0;
+            rec.piece = piece ? piece.id : 0;
+            rec.word1 = piece ? GEAR_ON | (keep ? rec.word1 & GEAR_DECO : 0) : 0;
+            rec.word2 = piece ? GEAR_ON | (keep ? rec.word2 & GEAR_DECO : 0) : 0;
+            rec.word3 = piece ? GEAR_ON | (keep ? rec.word3 & GEAR_DECO : 0) : 0;
+            redraw("equipment");
+            changed();
+          }) });
+      }
+      var decos = forced && (slot === GEAR_WEAPON || rec.piece !== 0);
+      function decoPicker(word, ref, write) {
+        var d = UI.picker({ options: decoOptions(), value: rec[word] & GEAR_DECO, kind: "item", compact: true, showIds: true,
+          label: s.name + " decoration " + word.slice(-1), disabled: !decos, unknownLabel: itemName, onChange: writes(write) });
+        var v = rec[word] & GEAR_DECO;
+        if (decos && v && !decoOptions().some(function (o) { return o.value === v; })) {
+          d.setProblem("The server does not take this decoration: pick another, or None.");
+        }
+        cells.push({ label: "Decoration " + word.slice(-1), ref: ref, node: d.el });
+      }
+      decoPicker("word1", F("body.equipment[].word1", slot), function (v) {
+        var rec = gearRecord(b, slot);
+        rec.word1 = GEAR_ON | v;
+      });
+      decoPicker("word2", F("body.equipment[].word2", slot), function (v) {
+        var rec = gearRecord(b, slot);
+        rec.word2 = GEAR_ON | v;
+      });
+      decoPicker("word3", F("body.equipment[].word3", slot), function (v) {
+        var rec = gearRecord(b, slot);
+        rec.word3 = GEAR_ON | v;
+      });
+      rows.push(cells);
+    });
+    var wrap = UI.table(["Slot", "Forced piece", "Decoration 1", "Decoration 2", "Decoration 3"], rows, "", "qe-gear-table");
+    // Each row's record index, so a refusal naming body.equipment[N] lands in its row (placeFor).
+    [].forEach.call(wrap.querySelectorAll("tbody tr"), function (tr, i) {
+      [].forEach.call(tr.querySelectorAll("td[data-fields]"), function (td) { td.setAttribute("data-index", String(GEAR_ORDER[i])); });
+    });
+    p.appendChild(wrap);
+    p.appendChild(note("Decorations: only the ones Capcom's own quests force are offered, and the game was not seen"
+      + " to check a piece's slots, so a piece may show more decorations than it has slots. Also untested: a piece for"
+      + " one gender only (Capcom's quests force some)."));
+    return p;
+  }
+
+  /** "Great Sword X, Head #4, legs left empty" or "none" for the review. */
+  function equipmentText(model) {
+    var b = model.body;
+    var parts = [];
+    GEAR_ORDER.forEach(function (slot) {
+      var rec = gearList(b)[slot];
+      if (!inForce(rec)) return;
+      var piece = gearPiece(b, slot, rec);
+      if (slot !== GEAR_WEAPON && piece.id === 0) { parts.push(GEAR_SLOTS[slot].name.toLowerCase() + " left empty"); return; }
+      var name = gearNames[gearTable(slot, piece.ranged) + ":" + piece.id];
+      var decos = [rec.word1, rec.word2, rec.word3].filter(function (w) { return w & GEAR_DECO; }).length;
+      parts.push((name || GEAR_SLOTS[slot].name + " #" + piece.id) + (decos ? " (" + decos + (decos === 1 ? " decoration)" : " decorations)") : ""));
+    });
+    return parts.length ? parts.join(", ") + " — not tested in game" : "none (hunters bring their own)";
+  }
+
+  /** What the page sees wrong in the forced equipment, for the review list. */
+  function equipmentProblems(model) {
+    var b = model.body;
+    var out = [];
+    if (!forcedGear || !Array.isArray(b.equipment)) return out;
+    var weapon = false;
+    b.equipment.forEach(function (rec, slot) {
+      var s = GEAR_SLOTS[slot];
+      if (!inForce(rec)) {
+        if (!blankRecord(rec)) out.push("The " + s.name.toLowerCase() + " slot holds old bytes: clear it (Forced equipment).");
+        return;
+      }
+      if (slot === GEAR_WEAPON) weapon = true;
+      var piece = gearPiece(b, slot, rec);
+      if (gearKind(slot, piece.id, piece.ranged) === "-") {
+        out.push("The forced " + s.name.toLowerCase() + " (#" + piece.id + ") is not a piece the server takes (Forced equipment).");
+      }
+    });
+    if (gearSetKind(b, -1) === "x") out.push("The forced set mixes blademaster and gunner pieces (Forced equipment).");
+    if (!weapon && (b.flagsAtC0 || 0) & GEAR_ID_BIT14) out.push("A weapon bit is left without a forced weapon: force a weapon or clear it (Forced equipment).");
+    return out;
+  }
+
+  // ---- 3. map and start area -----------------------------------------------------------------
 
   function allSpawns(model) {
     var list = [];
@@ -642,6 +1591,11 @@
       lines.push("Start area moved to " + areaName(areas[0], mapId) + ": the old one (id " + before + ") is not part of "
         + mapName(mapId) + ".");
     }
+    // A spot belongs to its map: every large monster starts again at its area's usual spot.
+    (model.largeSpawnAreas || []).forEach(function (area) {
+      (area.spawns || []).forEach(function (spawn) { spawn.position = null; });
+    });
+    state.exactSpawns = [];
     var off = allSpawns(model).filter(function (s) { return !areaOnMap(s.areaId, mapId); }).length;
     if (off) {
       lines.push(off + (off === 1 ? " monster is" : " monsters are") + " in an area that is not part of " + mapName(mapId)
@@ -694,6 +1648,20 @@
         : "This map has no known area list, so every area id is allowed.")
         + " Sets all four start records and the map record's base camp."));
     }
+    if (typeof b.seasonFlags === "number") {
+      g.appendChild(fieldFor(F("body.seasonFlags"), "Time of day", UI.picker({
+        options: TIMES, value: b.seasonFlags & TIME_BITS,
+        unknownLabel: function (v) { return v === TIME_BITS ? "Day and night (both bits, untested)" : "Not set"; },
+        onChange: writes(function (v) { b.seasonFlags = (b.seasonFlags & ~TIME_BITS & 0xff) | v; flagsInStep(b); })
+      }), "Day or night on the map."));
+      g.appendChild(fieldFor(F("body.seasonFlags"), "Season", UI.picker({
+        options: SEASONS, value: b.seasonFlags & SEASON_BITS,
+        unknownLabel: function (v) { return v === SEASON_BITS ? "All three (untested)" : "Value " + v + " (untested)"; },
+        onChange: writes(function (v) { b.seasonFlags = (b.seasonFlags & ~SEASON_BITS & 0xff) | v; flagsInStep(b); })
+      }), null, { help: "The season the game plays the map in. It is set in the quest file, so it does not follow"
+        + " the server's season. What a season changes on the map beyond that is not fully known: test the quest"
+        + " in game." }));
+    }
     p.appendChild(g);
     if (state.mapsNote) p.appendChild(note(state.mapsNote, "bui-notice"));
     if (state.mapMessage) {
@@ -711,11 +1679,11 @@
   }
 
   /* The three objective records: the main target and sub-targets A and B, each with the body field that pays
-     its reward money (builder item 14). */
+     its reward money (builder item 14; a used sub-target edits its own, subTargetMoney). */
   var OBJECTIVES = [
     { key: "objective0", name: "Main target", money: "body.rewardMoney", paid: "Reward money, under Basics" },
-    { key: "objective1", name: "Sub-target A", money: "body.objective1Money", paid: "kept from the blank, not edited here" },
-    { key: "objective2", name: "Sub-target B", money: "body.objective2Money", paid: "kept from the blank, not edited here" }
+    { key: "objective1", name: "Sub-target A", money: "body.objective1Money" },
+    { key: "objective2", name: "Sub-target B", money: "body.objective2Money" }
   ];
 
   /** The first empty picture ends the list of five, so pictures fill from the left (builder item 13). */
@@ -730,6 +1698,21 @@
     return moved;
   }
 
+  /** Sub-target A or B's reward money (body +0x18, +0x1c; the API takes 0..999,999, as for the main reward money). */
+  function subTargetMoney(b, index) {
+    var hint = "Paid for this sub-target, on top of the main reward money. Custom quests pay it, in testing too.";
+    if (index === 1) {
+      return numberFor(F("body.objective1Money"), "Reward money", {
+        id: "obj-1-money", value: b.objective1Money, min: 0, unit: "zenny",
+        onChange: writes(function (v) { b.objective1Money = v; })
+      }, hint);
+    }
+    return numberFor(F("body.objective2Money"), "Reward money", {
+      id: "obj-2-money", value: b.objective2Money, min: 0, unit: "zenny",
+      onChange: writes(function (v) { b.objective2Money = v; })
+    }, hint);
+  }
+
   function objectivesSection(model) {
     var b = model.body;
     var p = UI.section("Objectives", "what the hunters must do",
@@ -739,7 +1722,7 @@
       if (!objective) return;
       p.appendChild(UI.subhead(spec.name));
       var money = refText(spec.money);
-      if (money) p.appendChild(note("Its reward money is " + money + " (" + spec.paid + ")."));
+      if (money && index === 0) p.appendChild(note("Its reward money is " + money + " (" + spec.paid + ")."));
       var g = grid();
       g.appendChild(fieldFor(F("body.objective#.type", index), "Type", UI.picker({
         options: typeOptions(), value: objective.type, showIds: true,
@@ -758,9 +1741,34 @@
           id: "obj-" + index + "-count", value: objective.count, min: 0,
           onChange: writes(function (v) { objective.count = v; })
         }));
+        if (index > 0) g.appendChild(subTargetMoney(b, index));
       }
       p.appendChild(g);
     });
+
+    if (typeof b.objectiveMode === "number") {
+      var modeOptions = MODES.map(function (m) {
+        var missing = m.needs.filter(function (key) { return !used(b, key); }).length;
+        return { value: m.value, label: m.label, disabled: missing > 0 && m.value !== b.objectiveMode,
+          hint: missing ? "set the sub-targets first" : "" };
+      });
+      var mode = null;
+      var required = grid();
+      required.appendChild(fieldFor(F("body.objectiveMode"), "Targets required to clear", mode = UI.picker({
+        options: modeOptions, value: b.objectiveMode, showIds: true,
+        unknownLabel: function (v) { return "Mode " + v + " (the server accepts 2 to 4)"; },
+        onChange: writes(function (v) {
+          b.objectiveMode = v;
+          setSeasonBits(b, ALL_REQUIRED, v >= 3 ? ALL_REQUIRED : 0);
+          mode.setProblem(modeProblem(b));
+        })
+      }), null, {
+        help: "Main target only: the quest clears on the main target, and sub-targets pay extra. With more than the"
+          + " main target required, the quest clears only when all of them are done, and the game pays the"
+          + " sub-target rewards with the main reward." }));
+      mode.setProblem(modeProblem(b));
+      p.appendChild(required);
+    }
 
     var icons = b.iconMonsters || [];
     if (icons.length) {
@@ -793,17 +1801,27 @@
     // The first large-monster list holds the slots a Zenith form is kept in (keepForms).
     var forms = where === "largeSpawnAreas[0]" && canZenith(model);
     var zenith = forms ? zenithSet(model) : {};
+    // Large monsters have a position the author may set; small monsters keep the file's.
+    var large = where.indexOf("largeSpawnAreas") === 0;
     var rows = spawns.map(function (spawn, index) {
       var areaRef = F("largeSpawnAreas[].spawns[].areaId");
       var area = options.length ? UI.picker({
         options: options, value: spawn.areaId, compact: true, showIds: true, label: "Area of " + monsterName(spawn.monsterId),
         unknownLabel: function (v) { return areaLabel(v, mapId); },
-        onChange: writes(function (v) { spawn.areaId = v; area.setProblem(""); })
+        onChange: writes(function (v) {
+          spawn.areaId = v;
+          area.setProblem("");
+          // A spot belongs to its area: a new area starts at its usual spot.
+          if (large) { spawn.position = null; forgetExact(spawn); redraw("monsters"); }
+        })
       }) : UI.numberInput(ranged(areaRef, {
-        value: spawn.areaId, min: 0, label: "Area id", onChange: writes(function (v) { spawn.areaId = v; })
+        value: spawn.areaId, min: 0, label: "Area id", onChange: writes(function (v) {
+          spawn.areaId = v;
+          if (large) { spawn.position = null; forgetExact(spawn); }
+        })
       }));
       if (options.length && !areaOnMap(spawn.areaId, mapId)) area.setProblem("This area is not part of the chosen map: pick another.");
-      return [
+      var cells = [
         { label: "Monster", ref: F("largeSpawnAreas[].spawns[].monsterId"), node: UI.picker({
           options: forms ? zenithOptions() : monsterOptions(), kind: "monster", compact: true, showIds: true,
           value: zenith[spawn.monsterId] ? -spawn.monsterId : spawn.monsterId, iconOf: Math.abs, idOf: Math.abs,
@@ -821,15 +1839,19 @@
         { label: "How many", ref: F("largeSpawnAreas[].spawns[].count"), node: UI.numberInput(ranged(F("largeSpawnAreas[].spawns[].count"), {
           value: spawn.count, min: 0, max: 99, label: "How many", onChange: writes(function (v) { spawn.count = v; })
         })) },
-        { label: "Area", ref: areaRef, node: area },
-        { cls: "bui-row-end", node: UI.button("Remove", function () {
-          keepForms(model, function () { spawns.splice(index, 1); });
-          redraw("monsters");
-          changed();
-        }, "remove", "Remove " + monsterName(spawn.monsterId)) }
+        { label: "Area", ref: areaRef, node: area }
       ];
+      if (large) cells.push(positionCell(model, spawn));
+      cells.push({ cls: "bui-row-end", node: UI.button("Remove", function () {
+        keepForms(model, function () { spawns.splice(index, 1); });
+        forgetExact(spawn);
+        redraw("monsters");
+        changed();
+      }, "remove", "Remove " + monsterName(spawn.monsterId)) });
+      return cells;
     });
-    var t = UI.table(["Monster", "How many", "Area", { label: "", cls: "bui-row-end" }], rows, "No monsters here yet.");
+    var headers = ["Monster", "How many", "Area"].concat(large ? ["Position"] : []);
+    var t = UI.table(headers.concat([{ label: "", cls: "bui-row-end" }]), rows, "No monsters here yet.");
     t.setAttribute("data-where", where);
     return t;
   }
@@ -868,13 +1890,13 @@
         + " first list of large monsters: a monster is Zenith everywhere in the quest, so its other rows change with it."));
     }
     var large = model.largeSpawnAreas || [];
-    if (model.header && Object.keys(zenithSet(model)).length) {
-      var rank = grid();
-      rank.appendChild(zenithRank(model));
-      p.appendChild(rank);
-    }
+    p.appendChild(UI.subhead("Strength and size"));
+    p.appendChild(strengthFields(model));
     p.appendChild(UI.subhead("Large monsters"));
-    if (!large.length) p.appendChild(UI.table(["Monster", "How many", "Area", ""], [], "No monsters yet."));
+    p.appendChild(note("Position is where the monster starts in its area. The usual spot is where Capcom's quests put"
+      + " a large monster in that area; \u201cSet exactly\u201d lets you type x, y (height) and z. A new area or map"
+      + " starts again at the usual spot."));
+    if (!large.length) p.appendChild(UI.table(["Monster", "How many", "Area", "Position", ""], [], "No monsters yet."));
     large.forEach(function (area, a) { p.appendChild(spawnTable(model, spawnsOf(area), "largeSpawnAreas[" + a + "]")); });
     var actions = el("div", "bui-actions");
     actions.appendChild(UI.button("Add a monster", function () { addMonster(model); }, "add"));
@@ -1025,8 +2047,8 @@
     p.appendChild(UI.subhead("Rewards"));
     p.appendChild(note("Each group is paid when its condition holds, and draws its rewards by weight. The game"
       + " reads the weights as percent, so a group's weights should add up to 100; Share is each item's part of"
-      + " the group's total. A quest submitted for testing is served with its rewards emptied, so a test clear"
-      + " pays nothing."));
+      + " the group's total. While the quest is in testing it is served with these rewards emptied, so a test clear"
+      + " pays no items; once an admin approves it, it pays them. The reward money is paid in both."));
     var groups = model.rewardGroups || [];
     groups.forEach(function (group, i) { p.appendChild(rewardGroupBlock(model, groups, group, i)); });
     var actions = el("div", "bui-actions");
@@ -1037,16 +2059,184 @@
       changed();
     }, "add"));
     p.appendChild(actions);
+    p.appendChild(rewardExtras(model));
     return p;
   }
 
+  function rewardFlagOptions() {
+    var named = (fieldRef["body.rewardFlag"] || {}).values || REWARD_FLAGS;
+    return Object.keys(named).map(Number).sort(function (a, b) { return a - b; }).map(function (id) {
+      return { value: id, label: capital(valueName(named[id])) };
+    });
+  }
+
+  /** The three items the main target reward groups weigh most (else the first group's), for Reward 1/2/3. */
+  function mainRewardItems(model) {
+    var groups = (model.rewardGroups || []).filter(function (g) { return g.groupId === MAIN_REWARD_GROUP; });
+    if (!groups.length) groups = (model.rewardGroups || []).slice(0, 1);
+    var order = [];
+    var weight = {};
+    groups.forEach(function (g) {
+      (g.entries || []).forEach(function (e) {
+        if (!e.itemId) return;
+        if (!(e.itemId in weight)) { order.push(e.itemId); weight[e.itemId] = 0; }
+        weight[e.itemId] += Number(e.weight) || 0;
+      });
+    });
+    var top = order.map(function (id, i) { return { id: id, w: weight[id], i: i }; })
+      .sort(function (a, b) { return b.w - a.w || a.i - b.i; }).slice(0, PREVIEW_ITEMS)
+      .map(function (x) { return x.id; });
+    while (top.length < PREVIEW_ITEMS) top.push(0);
+    return top;
+  }
+
+  /** Every item some reward group pays. */
+  function paidItems(model) {
+    var paid = {};
+    (model.rewardGroups || []).forEach(function (g) {
+      (g.entries || []).forEach(function (e) { if (e.itemId) paid[e.itemId] = true; });
+    });
+    return paid;
+  }
+
+  /* Reward 1/2/3 of the quest list and the reward flag (gap plan task 5). */
+  function rewardExtras(model) {
+    var b = model.body;
+    var box = el("div", "bui-reward-extras");
+    box.appendChild(UI.subhead("Quest list rewards"));
+    box.appendChild(note("Reward 1, 2 and 3: the items the quest list shows for this quest. They show once an admin"
+      + " approves the quest; the testing copy lists none, as it pays no items. Usually the main target's best"
+      + " rewards."));
+    var items = Array.isArray(b.previewItems) ? b.previewItems : [0, 0, 0];
+    var g = grid();
+    [0, 1, 2].forEach(function (i) {
+      g.appendChild(fieldFor(F("body.previewItems[]", i), "Reward " + (i + 1), UI.picker({
+        options: itemOptions(), value: items[i] || 0, kind: "item", showIds: true, unknownLabel: itemName,
+        label: "Quest list reward " + (i + 1),
+        onChange: writes(function (v) {
+          var list = (Array.isArray(b.previewItems) ? b.previewItems : [0, 0, 0]).slice();
+          list[i] = v;
+          b.previewItems = list;
+        })
+      })));
+    });
+    box.appendChild(g);
+    var actions = el("div", "bui-actions");
+    var fill = UI.button("Use the main target's rewards", function () {
+      b.previewItems = mainRewardItems(model);
+      redraw("rewards");
+      changed();
+    });
+    fill.id = "reward-preview-fill";
+    fill.disabled = !mainRewardItems(model)[0];
+    if (fill.disabled) fill.title = "Add a main target reward first.";
+    actions.appendChild(fill);
+    box.appendChild(actions);
+
+    var flags = grid();
+    flags.appendChild(fieldFor(F("body.rewardFlag"), "Fixed rewards", UI.picker({
+      options: rewardFlagOptions(), value: typeof b.rewardFlag === "number" ? b.rewardFlag : 0, showIds: true,
+      unknownLabel: function (v) { return "Value " + v + " (the server accepts 0 to 4)"; },
+      onChange: writes(function (v) { b.rewardFlag = v; })
+    }), "Which rewards a clear always pays rather than drawing them by weight. Pax's editor's names; not traced in"
+      + " the game's code, so test it."));
+    box.appendChild(flags);
+    return box;
+  }
+
   // ---- 6. text -------------------------------------------------------------------------------
+
+  /* Text auto-fill (gap plan task 5, as Pax's editor's buttons): the target lines from the objectives, the clear line
+     from the targets required, the fail line from the faint rule. The last fill can be undone until the next one. */
+  var lastFill = null;
+
+  function article(word) {
+    return /^[aeiou]/i.test(word) ? "an" : "a";
+  }
+
+  /** "Hunt a Tigrex", "Slay 3 Velociprey", "Deliver 5 Herbs"; "None" for an unused objective. */
+  function objectiveLine(o) {
+    if (!o || o.type === 0) return "None";
+    var item = isItemObjective(o.type);
+    var what = item ? itemName(o.target) : monsterName(o.target);
+    var n = Number(o.count) || 0;
+    var verb = {
+      1: "Hunt", 257: "Capture", 513: "Slay", 2: "Deliver", 4098: "Deliver", 32772: "Damage", 98308: "Slay or damage"
+    }[o.type];
+    if (o.type === 16388) return "Break " + (n === 1 ? "a part" : n + " parts") + " of " + article(what) + " " + what;
+    if (verb) return verb + " " + (n === 1 ? article(what) : n) + " " + what;
+    var named = valueName(((fieldRef["body.objective0.type"] || {}).values || objectiveTypes)[String(o.type)]);
+    return (named || "Objective") + ": " + n + " " + what;
+  }
+
+  function targetLines(model) {
+    var b = model.body;
+    return { 1: objectiveLine(b.objective0), 2: objectiveLine(b.objective1), 3: objectiveLine(b.objective2) };
+  }
+
+  function clearFailLines(model) {
+    var b = model.body;
+    var clear = { 3: "Complete the main target and sub-target A", 4: "Complete all targets" }[b.objectiveMode]
+      || "Complete the main target";
+    var faints = Number(b.faintPenalty) || 0;
+    var fail = isG(b) ? "Faint " + (faints === 1 ? "once" : faints + " times") + " / Time runs out"
+      : faints > 0 ? "Reward money hits zero / Time runs out" : "Time runs out";
+    return { 4: clear, 5: fail };
+  }
+
+  function fillTexts(model, lines, what) {
+    var before = {};
+    var names = [];
+    Object.keys(lines).forEach(function (index) {
+      var slot = slotByIndex(model, Number(index));
+      if (!slot) return;
+      before[index] = slot.text || "";
+      slot.text = lines[index];
+      names.push((SLOTS[index] || { name: "Text " + index }).name);
+    });
+    lastFill = { before: before, text: "Wrote " + names.join(", ") + " " + what + "." };
+    redraw("text");
+    changed();
+  }
+
+  function undoFill(model) {
+    if (!lastFill) return;
+    Object.keys(lastFill.before).forEach(function (index) {
+      var slot = slotByIndex(model, Number(index));
+      if (slot) slot.text = lastFill.before[index];
+    });
+    lastFill = null;
+    redraw("text");
+    changed();
+  }
 
   function textSection(model) {
     var p = UI.section("Quest text", "what the quest card says",
       "Each text has a set room in bytes: a plain letter takes 1, a Japanese character 2. Longer text is not"
       + " cut; it is stored at the end of the file. English and Japanese only. What the texts marked"
       + " (unconfirmed) are was read from sample quest files, not from the game's code.");
+    var actions = el("div", "bui-actions");
+    var targets = UI.button("Write the target lines", function () {
+      fillTexts(model, targetLines(model), "from the objectives");
+    });
+    targets.id = "text-fill-targets";
+    var rules = UI.button("Write the clear and fail lines", function () {
+      fillTexts(model, clearFailLines(model), "from the targets required and the faint rule");
+    });
+    rules.id = "text-fill-rules";
+    actions.appendChild(targets);
+    actions.appendChild(rules);
+    p.appendChild(actions);
+    if (lastFill) {
+      var done = note(lastFill.text + " ", "bui-fill-note");
+      var undo = UI.button("Undo", function () { undoFill(model); });
+      undo.id = "text-fill-undo";
+      done.appendChild(undo);
+      p.appendChild(done);
+    } else {
+      p.appendChild(note("The two buttons write the main and sub-target lines, or the clear and fail lines, from what"
+        + " you set above, over what the texts hold; edit them after."));
+    }
     var g = grid();
     TEXT_ORDER.forEach(function (index) {
       var slot = slotByIndex(model, index);
@@ -1081,8 +2271,56 @@
       }
       if (o && UNTESTED_TYPES[o.type]) list.push(spec.name + " uses a type no quest file uses: untested (Objectives).");
     });
+    var needs = modeProblem(b);
+    if (needs) list.push("Targets required to clear: " + needs + " (Objectives).");
+    var listing = state.listing;
+    if (!COUNTERS.some(function (c) { return c.value === listing.questType; })) {
+      list.push("The counter " + listing.questType + " is not one a custom quest can use (Quest board listing).");
+    }
+    if (!MARKS.some(function (m) { return m.value === listing.mark; })) {
+      list.push("The mark " + listing.mark + " is not one a custom quest can use (Quest board listing).");
+    }
+    if (typeof b.seasonFlags === "number" && !(b.seasonFlags & TIME_BITS)) {
+      list.push("No time of day is set (Map and start area).");
+    }
     var off = allSpawns(model).filter(function (s) { return !areaOnMap(s.areaId, b.mapId); }).length;
     if (off) list.push(off + (off === 1 ? " monster is" : " monsters are") + " in an area that is not part of the map (Monsters).");
+    var level = levelProblem(model);
+    if (level) list.push("Difficulty: " + level + " (Monsters).");
+    var size = model.header && model.header.monsterSize;
+    if (typeof size === "number" && (size < 70 || size > 150)) {
+      list.push("The size is " + size + "%; the server takes 70 to 150 (Monsters).");
+    }
+    var far = 0;
+    (model.largeSpawnAreas || []).forEach(function (area) {
+      (area.spawns || []).forEach(function (s) { if (!emptyPosition(s.position) && outsideBounds(s.position, b.mapId)) far += 1; });
+    });
+    if (far) list.push(far + (far === 1 ? " monster's exact position is" : " monsters' exact positions are")
+      + " outside what the server allows on this map (Monsters).");
+    if (isHardcore(b) && b.questClass !== hardcoreClass()) {
+      list.push("Hardcore needs an HR 100 and up quest: set the quest class, or turn Hardcore off (Rules and restrictions).");
+    } else if (b.conditionNote && !isHardcore(b) && !noteOptions().some(function (o) { return o.value === b.conditionNote; })) {
+      list.push("The restriction " + b.conditionNote + " is not one the server takes (Rules and restrictions).");
+    }
+    if (typeof b.faintPenalty === "number" && isG(b) && (b.faintPenalty < G_FAINTS.min || b.faintPenalty > G_FAINTS.max)) {
+      list.push("A G rank quest allows " + G_FAINTS.min + " to " + G_FAINTS.max + " faints; this one says " + b.faintPenalty
+        + " (Rules and restrictions).");
+    }
+    [rankProblem(b.postRankMin, b.postRankMax, "post"), rankProblem(b.rank, b.joinRankMax, "join")].forEach(function (why) {
+      if (why) list.push(why + " (Rules and restrictions)");
+    });
+    OBJECTIVES.slice(1).forEach(function (spec) {
+      var paid = Number(b[spec.money.replace("body.", "")]) || 0;
+      if (paid && !used(b, spec.key)) {
+        list.push(spec.name + " is not used but pays " + paid.toLocaleString() + " zenny (Objectives).");
+      }
+    });
+    var paidNow = paidItems(model);
+    (Array.isArray(b.previewItems) ? b.previewItems : []).forEach(function (id, i) {
+      if (id && !paidNow[id]) {
+        list.push("Quest list reward " + (i + 1) + " (" + itemName(id) + ") is not an item any reward group pays (Rewards).");
+      }
+    });
     var none = 0;
     (model.rewardGroups || []).forEach(function (g, i) {
       (g.entries || []).forEach(function (e) { if (!e.itemId) none += 1; });
@@ -1093,7 +2331,38 @@
       }
     });
     if (none) list.push(none + (none === 1 ? " reward has" : " rewards have") + " no item (Rewards).");
-    return list;
+    return list.concat(equipmentProblems(model));
+  }
+
+  /** "difficulty 26 · HR5, size 100% (95–110%), 1 at an exact spot" for the review. */
+  function strengthText(model) {
+    var h = model.header;
+    if (!h) return "\u2013";
+    var zenith = ZENITH_LEVELS.indexOf(h.monsterLevel);
+    var parts = [zenith >= 0 && Object.keys(zenithSet(model)).length ? "Zenith \u2605" + (zenith + 1)
+      : "difficulty " + levelLabel(h.monsterLevel)];
+    if (typeof h.monsterSize === "number") {
+      parts.push("size " + h.monsterSize + "% (" + optionLabel(spreadOptions(), h.sizeClass, "spread " + h.sizeClass) + ")");
+    }
+    var exact = 0;
+    (model.largeSpawnAreas || []).forEach(function (area) {
+      (area.spawns || []).forEach(function (s) { if (isExact(s, model.body.mapId)) exact += 1; });
+    });
+    if (exact) parts.push(exact + " at an exact spot");
+    return parts.join(", ");
+  }
+
+  function moneyText(b) {
+    var z = function (v) { return Number(v || 0).toLocaleString() + " zenny"; };
+    var parts = ["fee " + z(b.zenny), "reward " + z(b.rewardMoney)];
+    if (b.objective1Money) parts.push("sub-target A " + z(b.objective1Money));
+    if (b.objective2Money) parts.push("sub-target B " + z(b.objective2Money));
+    return parts.join(", ") + " (paid in testing too)";
+  }
+
+  function previewText(b) {
+    var ids = (Array.isArray(b.previewItems) ? b.previewItems : []).filter(Boolean);
+    return ids.length ? ids.map(itemName).join(", ") + " (shown once approved; the testing copy lists none)" : "none";
   }
 
   function renderReview() {
@@ -1112,16 +2381,34 @@
       var named = ((fieldRef["body.objective0.type"] || {}).values || objectiveTypes)[String(o.type)];
       return (valueName(named) || "Objective") + ": " + o.count + " × " + what;
     });
+    var listing = state.listing;
+    var players = (b.maxHunters & 7) === 1 ? "solo" : "up to " + ((b.maxHunters & 7) || 4) + " hunters";
+    var row = [new Array((b.level || 0) + 1).join("\u2605") || "no stars"];
+    if (listing.mark) row.push(optionLabel(MARKS, listing.mark, "mark " + listing.mark));
+    row.push(title && title.text ? title.text : "(no name yet)");
+    var required = optionLabel(MODES, b.objectiveMode, "");
     var facts = [
       ["Name", title && title.text ? title.text : "(none yet)"],
+      ["In the quest list", row.join(" \u00b7 ") + " \u2014 " + optionLabel(COUNTERS, listing.questType,
+        "counter " + listing.questType) + " counter, " + starsText(b.level || 0) + ", " + players],
       ["Map", mapName(b.mapId)],
+      ["Time and season", typeof b.seasonFlags === "number"
+        ? optionLabel(TIMES, b.seasonFlags & TIME_BITS, (b.seasonFlags & TIME_BITS) === TIME_BITS ? "Day and night" : "No time of day")
+          + ", " + optionLabel(SEASONS, b.seasonFlags & SEASON_BITS, "season value " + (b.seasonFlags & SEASON_BITS)).toLowerCase()
+        : "\u2013"],
       ["Start area", model.startAreas && model.startAreas.length ? areaName(model.startAreas[0].areaId, b.mapId) : "–"],
       ["Time and players", Math.round((b.timeLimit || 0) / TICKS_PER_MINUTE) + " minutes, "
         + ((b.maxHunters & 7) === 1 ? "solo" : "up to " + ((b.maxHunters & 7) || 4) + " hunters")],
-      ["Money", "fee " + Number(b.zenny || 0).toLocaleString() + " zenny, reward " + Number(b.rewardMoney || 0).toLocaleString() + " zenny"],
-      ["Objectives", goals.length ? goals.join("; ") : "none set"],
+      ["Money", moneyText(b)],
+      ["Objectives", (goals.length ? goals.join("; ") : "none set") + (required ? " (to clear: " + required.toLowerCase() + ")" : "")],
       ["Monsters", spawns.length ? spawns.map(function (s) { return s.count + " × " + formName(model, s.monsterId); }).join(", ") : "none yet"],
-      ["Supplies and rewards", supplies + (supplies === 1 ? " supply item, " : " supply items, ") + rewards + (rewards === 1 ? " reward" : " rewards")]
+      ["Strength and size", strengthText(model)],
+      ["Rules", rulesText(model)],
+      ["Forced equipment", equipmentText(model)],
+      ["Supplies and rewards", supplies + (supplies === 1 ? " supply item, " : " supply items, ") + rewards + (rewards === 1 ? " reward" : " rewards")
+        + " (" + optionLabel(rewardFlagOptions(), typeof b.rewardFlag === "number" ? b.rewardFlag : 0, "reward flag " + b.rewardFlag).toLowerCase()
+        + "); paid once approved, none while testing"],
+      ["Quest list rewards", previewText(b)]
     ];
     var dl = el("dl", "bui-review");
     facts.forEach(function (f) {
@@ -1143,7 +2430,7 @@
   // ---- drawing -------------------------------------------------------------------------------
 
   var SECTIONS = [
-    ["basics", basicsSection], ["map", mapSection], ["objectives", objectivesSection], ["monsters", monstersSection],
+    ["basics", basicsSection], ["listing", listingSection], ["rules", rulesSection], ["equipment", equipmentSection], ["map", mapSection], ["objectives", objectivesSection], ["monsters", monstersSection],
     ["rewards", rewardsSection], ["text", textSection]
   ];
   var drawn = {};
@@ -1201,6 +2488,60 @@
       var names = m[3].split(/,\s*/).filter(Boolean).map(function (id) { return monsterName(id); }).join(", ");
       out.push({ key: "largeSpawnAreas[" + (Number(m[1]) - 1) + "]", text: "This list has " + m[2] + " different monsters ("
         + names + "); a quest can list at most " + m[4] + " in one area. Remove one." });
+    }
+    m = /body\.objectiveMode (\d) requires sub-target ([AB])/.exec(text);
+    if (m) {
+      out.push({ key: "body.objectiveMode", text: "The server needs sub-target " + m[2] + " for this choice: set it, or"
+        + " require fewer targets." });
+    }
+    var season = /body\.seasonFlags sets ([^;]*?), which no quest file does/g;
+    while ((m = season.exec(text))) {
+      out.push({ key: "body.seasonFlags", text: "The server refused the time of day or season: it " + m[1] + "." });
+    }
+    m = /(largeSpawnAreas\[\d+\]\.spawns\[\d+\]\.position) is ([^;]+) on map (\d+); allowed (x [^(]*?) \(/.exec(text);
+    if (m) {
+      out.push({ key: m[1], text: "This position (" + m[2] + ") is outside what the server allows on this map: "
+        + m[4] + ". Move it, or use the usual spot." });
+    }
+    m = /(largeSpawnAreas\[\d+\]\.spawns\[\d+\]\.position) must stay within (-?\d+)\.\.(-?\d+)/.exec(text);
+    if (m) {
+      out.push({ key: m[1], text: "The server takes positions from " + m[2] + " to " + m[3] + " only." });
+    }
+    m = /header\.monsterLevel (\d+) is a (G rank|Zenith) level/.exec(text);
+    if (m) {
+      out.push({ key: "header.monsterLevel", text: "The server refused difficulty " + m[1] + ": " + (m[2] === "Zenith"
+        ? "it is a Zenith rank, for a quest with a Zenith monster only." : "it is a G rank level, for a G rank quest only.") });
+    }
+    m = /body\.conditionNote (\d+) makes a quest Hardcore/.exec(text);
+    if (m) {
+      out.push({ key: "body.conditionNote", text: "The server refused Hardcore: it needs an HR 100 and up quest (quest"
+        + " class, Basics)." });
+    }
+    m = /body\.conditionNote (\d+) is not one of the restrictions offered/.exec(text);
+    if (m) {
+      out.push({ key: "body.conditionNote", text: "The server does not take restriction " + m[1] + ": pick another." });
+    }
+    var order = /body\.(postRankMax|joinRankMax) is (\d+), below body\.\w+ (\d+)/g;
+    while ((m = order.exec(text))) {
+      out.push({ key: "body." + m[1], text: "The server refused a highest rank (" + m[2] + ") below the lowest (" + m[3]
+        + "): raise it, or 0 for no limit." });
+    }
+    m = /body\.(variantFlags[23]) bit \d \((Road|Interception)\)/.exec(text);
+    if (m) {
+      out.push({ key: "body." + m[1], text: "The server does not take the " + m[2] + " flag." });
+    }
+    var gear = /body\.equipment\[(\d)\]\.piece: (?:[\w ]+?) (\d+) is not a/g;
+    while ((m = gear.exec(text))) {
+      out.push({ key: "body.equipment[" + m[1] + "].piece", text: "The server does not take this "
+        + (GEAR_SLOTS[Number(m[1])] || { name: "piece" }).name.toLowerCase() + " (#" + m[2] + "): pick another." });
+    }
+    var deco = /body\.equipment\[(\d)\]\.(word[123]): decoration (\d+) is not one/g;
+    while ((m = deco.exec(text))) {
+      out.push({ key: "body.equipment[" + m[1] + "]." + m[2], text: "The server does not take decoration " + itemName(m[3])
+        + " (#" + m[3] + "): pick another, or None." });
+    }
+    if (/body\.equipment mixes blademaster and gunner pieces/.test(text)) {
+      out.push({ key: "body.equipment[1].piece", text: "The server refused a set that mixes blademaster and gunner pieces." });
     }
     m = /Map (\d+) has no area tables on this server/.exec(text);
     if (m) {
@@ -1287,7 +2628,7 @@
       return api("/api/account/quest-drafts/" + id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: state.model })
+        body: JSON.stringify({ model: state.model, listing: state.listing })
       }).then(body).then(function (saved) {
         state.revision = saved.revision;
         setDraftNote();
@@ -1403,11 +2744,16 @@
     state.model = model;
     if (!model.largeSpawnAreas) model.largeSpawnAreas = [];
     if (!model.rewardGroups) model.rewardGroups = [];
+    // A draft saved before Reward 1/2/3 were in the model holds the old blank's three items in its raw bytes, which
+    // nobody chose: it starts with none, as a new quest does (API README "Reward extras").
+    var b = model.body;
+    if (b && model.layout === "QUEST" && !Array.isArray(b.previewItems)) b.previewItems = [0, 0, 0];
+    lastFill = null;
     panels(model);
     titleEl.textContent = "New quest";
     document.title = "New quest · Hunsterverse";
-    subEl.textContent = "Work down the page: basics, map, objectives, monsters, rewards and text, then review and"
-      + " submit at the end. The server assigns the quest id when you submit.";
+    subEl.textContent = "Work down the page: basics, listing, map, objectives, monsters, rewards and text, then"
+      + " review and submit at the end. The server assigns the quest id when you submit.";
     buttons.forEach(function (button) { button.disabled = false; });
     say("", false);
     setDraftNote();
@@ -1443,6 +2789,7 @@
     : api("/api/account/quest-drafts/" + draftParam).then(body).then(function (draft) {
         state.draftId = draft.id;
         state.revision = draft.revision;
+        state.listing = copyListing(draft.listing);
         return draft.model;
       });
 
