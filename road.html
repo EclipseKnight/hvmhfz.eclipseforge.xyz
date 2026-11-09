@@ -194,6 +194,17 @@
           </form>
         </section>
 
+        <section class="panel" id="road-test-panel" hidden>
+          <div class="panel-head"><h2>Test in game</h2><span class="panel-note" id="road-test-state"></span></div>
+          <p class="note-text">Play this Road before you submit it. Test in game checks it with the same rules as a submission and serves it, for <span id="road-test-hours">24</span> hours, to your account and to anyone who joins a quest room you host. The game reads the Road once per session, so log in again after you press it. Press it again after a change to test the new version.</p>
+          <p class="note-text" id="road-test-warning"><strong>Test runs are not saved: everything from the start of a test run until you log out is discarded (Road points, items, anything else). Use a short session just for testing.</strong></p>
+          <p class="note-text" id="road-test-note" aria-live="polite"></p>
+          <div class="admin-actions">
+            <button type="button" class="btn btn-primary btn-small" id="road-test-start">Test in game</button>
+            <button type="button" class="ghost-btn" id="road-test-stop" hidden>Stop the test</button>
+          </div>
+        </section>
+
         <section class="panel" id="road-changes-panel">
           <div class="panel-head"><h2>Changes from the base</h2><span class="panel-note" id="road-changes-note"></span></div>
           <div id="road-changes"></div>
@@ -272,5 +283,6 @@
     <script src="/js/search.js" defer></script>
     <script src="/js/road-preference.js?v=2"></script>
     <script src="/js/road-drafts.js?v=1"></script>
+    <script src="/js/road-test.js?v=1"></script>
   </body>
 </html>
