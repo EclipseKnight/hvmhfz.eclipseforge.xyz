@@ -2,7 +2,7 @@
 /* Checks the Road builder's "Test in game" panel (road.html, js/road-test.js) in headless Chromium on a fake
    API with a small made-up Road (no game data):
    - live setting off (GET /api/account/road-test says enabled false, no test): the panel stays hidden;
-   - on: the panel shows the hours, "no test running", Stop hidden; Test in game sends PUT with the page's
+   - on: the panel shows the hours, the warning that test runs are not saved, "no test running", Stop hidden; Test in game sends PUT with the page's
      name and edits (js/road.js roadDraftState), then shows "testing <name> until ..." and the Stop button;
    - a Road the API refuses (400 with problems): the reason and the first problem show, the button comes back;
    - Stop sends DELETE and hides Stop again;
@@ -112,6 +112,10 @@ async function run(browser, base) {
     check("on: hours", (await page.textContent("#road-test-hours")) === "6");
     check("on: no test", /no test running/.test(await page.textContent("#road-test-state")));
     check("on: stop hidden", await page.locator("#road-test-stop").isHidden());
+    const warning = (await page.textContent("#road-test-warning")).replace(/\s+/g, " ").trim();
+    check("on: no-save warning shown before use", await page.locator("#road-test-warning").isVisible() &&
+      warning === "Test runs are not saved: everything from the start of a test run until you log out is discarded " +
+      "(Road points, items, anything else). Use a short session just for testing.", warning);
 
     sent.length = 0;
     await page.fill("#road-name", "");

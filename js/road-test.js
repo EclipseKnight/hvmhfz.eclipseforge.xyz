@@ -92,7 +92,7 @@
     stop.disabled = true;
     call("DELETE").then(function (view) {
       show(view);
-      say("Stopped. Log in again to go back to the live Road; until then the game keeps your session as practice.", false);
+      say("Stopped. Log in again to go back to the live Road; until you log out, nothing you do in this session is saved.", false);
     }).catch(function (error) {
       say(error.refused ? error.message : "Could not stop the test. Try again in a moment.", true);
     }).then(function () { stop.disabled = false; });
