@@ -3,6 +3,17 @@
   "current": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip",
   "patches": [
     {
+      "version": "1.20",
+      "published": "2026-11-09T17:54Z",
+      "sha256": "56e506284a2f461846fa5d7dcd762e0cb59adf84d115ab21532cfdf219c2b7cb",
+      "size": 58034622,
+      "files": 100,
+      "changes": "Game options: choose true raw (weapon attack without the display multiplier) and true element (element and status without the extra 0) on your account page; display only, damage unchanged.",
+      "changelog": "/changelog.html#d-2026-11-09-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.20/Frontier_Patch.zip",
+      "current": true
+    },
+    {
       "version": "1.19",
       "published": "2026-11-09T01:00Z",
       "sha256": "6d4023f6f149c805b1c5a810bddda1fe628acaa215ad299f45abd621ca89709b",
@@ -11,7 +22,7 @@
       "changes": "Cheaper armour upgrades: one Armour Sphere per level for Low and High Rank armour (from the community Armor Sphere Patch), about a fifth fewer materials to craft the next piece; Gypceros U upgrades fixed; the game now tells the server its patch version.",
       "changelog": "/changelog.html#d-2026-11-09-client-patch",
       "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.19/Frontier_Patch.zip",
-      "current": true
+      "current": false
     },
     {
       "version": "1.18",

@@ -125,7 +125,7 @@
         </div>
       </header>
 
-      <!-- Reminders before a testing quest expires or a draft is deleted: js/quest-submissions.js -->
+      <!-- Reminders before a testing quest expires: js/quest-submissions.js -->
       <div class="form-alert quest-reminders" id="quest-reminders" role="status" hidden></div>
 
       <nav class="tabs" role="tablist" aria-label="Account sections">
@@ -319,8 +319,8 @@
       <section class="tab-panel" id="panel-quests" role="tabpanel" aria-labelledby="tab-quests" hidden>
         <section class="panel" id="quest-submit-panel">
           <div class="panel-head"><h2>Custom quests</h2><a class="btn btn-primary btn-small" href="/quest-editor.html">Create a quest</a></div>
-          <p class="note-text">Up to five waiting for review or in testing at a time; approved quests don't count, so you can have as many as get approved. Build one in the browser from a blank quest, or upload a decompressed quest file you already have; either way it is yours to test straight away, in game under Event. An admin publishes or rejects it later. While in testing a quest pays its reward money but no item rewards; once approved it pays the rewards you set.</p>
-          <p class="note-text">A quest in testing expires after 14 days without activity: submitting it, starting it in game, or pressing Keep testing each give it 14 days again, and a reminder shows on this page 3 days before. An expired quest can be resubmitted for 30 days, then its file is removed. A published quest stays until an admin retires it.</p>
+          <p class="note-text">Up to five waiting for review or in testing at a time; approved quests don't count, so you can have as many as get approved. Build one in the browser from a blank quest, or upload a decompressed quest file you already have; either way it is yours to test straight away, in game under Event, and friends can join when you post it. An admin publishes or rejects it later. While in testing a quest pays its reward money but no item rewards; once approved it pays the rewards you set.</p>
+          <p class="note-text">A quest in testing expires after 14 days without activity: submitting it, starting it in game, or pressing Keep testing each give it 14 days again, and a reminder shows on this page 3 days before. An expired quest is kept, and you can resubmit it for testing again whenever you like. Drafts never expire. A published quest stays until an admin retires it.</p>
           <div class="field"><label for="quest-file">Quest file</label><input id="quest-file" type="file" accept=".bin" /></div>
           <div class="field"><label for="quest-title">Title</label><input id="quest-title" type="text" maxlength="80" placeholder="What should it be called?" /></div>
           <button type="button" class="btn btn-primary btn-small" id="quest-submit">Submit and test it</button>
@@ -335,22 +335,12 @@
 
         <section class="panel" id="quest-drafts-panel">
           <div class="panel-head"><h2>Quest drafts</h2><a class="ghost-btn small" href="/quest-editor.html">Quest builder</a></div>
-          <p class="note-text">A draft nobody opens, saves, downloads or keeps for 90 days is deleted, with a reminder on this page 3 days before. A deleted draft can be restored here for 30 days.</p>
-          <p class="note-text" id="quest-draft-note" aria-live="polite"></p>
+          <p class="note-text">Drafts are kept forever: they never expire.</p>
           <div class="table-wrap">
             <table class="data-table">
-              <thead><tr><th>Draft</th><th>Last activity</th><th>Deleted on</th><th></th></tr></thead>
-              <tbody id="quest-draft-list"><tr><td colspan="4" class="empty-cell">Loading your drafts.</td></tr></tbody>
+              <thead><tr><th>Draft</th><th>Last activity</th></tr></thead>
+              <tbody id="quest-draft-list"><tr><td colspan="2" class="empty-cell">Loading your drafts.</td></tr></tbody>
             </table>
-          </div>
-          <div id="quest-deleted-wrap" hidden>
-            <h3>Deleted drafts</h3>
-            <div class="table-wrap">
-              <table class="data-table">
-                <thead><tr><th>Draft</th><th>Deleted</th><th>Gone for good on</th><th></th></tr></thead>
-                <tbody id="quest-deleted-list"></tbody>
-              </table>
-            </div>
           </div>
         </section>
 
@@ -486,6 +476,14 @@
           <button type="button" class="btn btn-primary btn-small" id="road-pref-save">Save Road</button>
         </section>
 
+        <section class="panel" id="qol-panel">
+          <div class="panel-head"><h2>Game options</h2><span class="panel-note">display only</span></div>
+          <p class="note-text">Changes take effect at your next login to the game.</p>
+          <p class="form-alert" id="qol-alert" hidden></p>
+          <div id="qol-list" class="qol-list" aria-live="polite"><span class="skeleton-line w60"></span></div>
+          <p class="note-text" id="qol-note" aria-live="polite"></p>
+        </section>
+
         <section class="panel">
           <div class="panel-head"><h2>Account</h2></div>
           <dl class="detail-list" id="account-details">
@@ -547,6 +545,7 @@
     <script src="/js/monster-links.js"></script>
     <script src="/js/questlog.js?v=2"></script>
     <script src="/js/road-preference.js?v=1"></script>
+    <script src="/js/account-qol.js?v=1"></script>
     <script src="/js/quest-submissions.js?v=2"></script>
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>
