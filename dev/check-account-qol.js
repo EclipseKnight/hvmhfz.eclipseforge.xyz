@@ -13,6 +13,12 @@
      a real keydown, ignores a lone modifier, says so for a key outside the list and cancels on Escape; Save refuses
      a letter without Ctrl/Alt and a Shift talk key before sending anything; Save sends PUT /api/account/qol/keys with
      all five settings; a 400 message from the API is shown;
+   - the "iframeViewer" feature shows its switch with the hidden-info mark and the event-rule text; the Viewer options
+     part shows when the list has it and the answer has "viewer": four checkboxes, a Position select (Top, Centre,
+     Bottom, Left) and a Size select (Small, Normal, Large, Huge) showing the GET values; "Save viewer options" sends
+     PUT /api/account/qol/viewer with exactly the six keys and the chosen values, redraws from the answer and says
+     so; a 400 message is shown; the part is hidden without "viewer" (an older API) and without the iframeViewer
+     feature;
    - at 375px the card and the page content stay inside the screen;
    - no page errors.
 
@@ -47,22 +53,31 @@ const check = (label, ok, detail) => { if (!ok) failures.push(label + (detail ? 
 
 const DESC = "Shows weapon attack as the true value damage uses, without the weapon-class multiplier (a Great Sword's 1022 shows as 213). Display only: damage and the server's numbers do not change.";
 const DESC_ELEMENT = "Shows weapon element and status values as the weapon stores them, without the 0 the game adds at the end (Fire 250 shows as 25, Poison 120 as 12), on the equipment and smithy weapon details, the equipment list and item details. Display only: damage and the server's numbers do not change.";
+const EVENT_RULE = "Turned off by itself in Speedrun Cup and VS Bracket quests. A cup time or VS result made while a viewer was showing does not count.";
+let viewerState = { iframeBar: true, iframeCount: false, hitstopBar: true, hitIndicator: false, position: "left", size: "large" };
+let sendViewer = true;
+let listViewer = true;
 let keysState = { retireKey: "Ctrl+R", retireOnDeath: "off", retireCarts: 1, skipWaitKey: null, talkKeys: [null, null, null, null, null] };
 function state(flags) {
   const defs = [
     { id: "trueRaw", bit: 0, name: "True raw attack", description: DESC, revealsHiddenInfo: false, minPatch: "1.20" },
     { id: "trueElement", bit: 1, name: "True element", description: DESC_ELEMENT, revealsHiddenInfo: false, minPatch: "1.20" },
-    { id: "monsterBar", bit: 2, name: "Monster health bar", description: "Shows the monster's remaining health.", revealsHiddenInfo: true, minPatch: "1.21" }
-  ];
-  return { features: defs.map((d) => Object.assign({ enabled: (flags & (1 << d.bit)) !== 0 }, d)), flags, keys: keysState, takesEffect: "next login" };
+    { id: "monsterBar", bit: 2, name: "Monster health bar", description: "Shows the monster's remaining health.", revealsHiddenInfo: true, minPatch: "1.21" },
+    { id: "iframeViewer", bit: 5, name: "Iframe viewer", description: "Draws bars over the game for your invulnerability frames.", revealsHiddenInfo: true, minPatch: "1.21" }
+  ].filter((d) => listViewer || d.id !== "iframeViewer");
+  const out = { features: defs.map((d) => Object.assign({ enabled: (flags & (1 << d.bit)) !== 0 }, d)), flags, keys: keysState, takesEffect: "next login" };
+  if (sendViewer) out.viewer = viewerState;
+  return out;
 }
 
 async function run(browser, base) {
   let flags = 0;
   let refuse = false;
   let refuseKeys = false;
+  let refuseViewer = false;
   const puts = [];
   const keyPuts = [];
+  const viewerPuts = [];
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, locale: "en-US" });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -79,6 +94,13 @@ async function run(browser, base) {
       keyPuts.push(body);
       if (refuseKeys) return reply(400, { message: "Ctrl+R is used twice" });
       keysState = body;
+      return reply(200, state(flags));
+    }
+    if (p === "/api/account/qol/viewer" && req.method() === "PUT") {
+      const body = JSON.parse(req.postData());
+      viewerPuts.push(body);
+      if (refuseViewer) return reply(400, { message: "position must be top, center, bottom or left" });
+      viewerState = Object.assign({}, viewerState, body);
       return reply(200, state(flags));
     }
     if (p === "/api/account/qol" && req.method() === "PUT") {
@@ -99,12 +121,15 @@ async function run(browser, base) {
   check("card is visible on the Account tab", await page.isVisible("#qol-panel"));
   check("next-login note", /Changes take effect at your next login to the game\./.test(await page.textContent("#qol-panel")));
   const boxes = await page.$$eval("#qol-list input[type=checkbox]", (n) => n.map((b) => [b.id, b.checked]));
-  check("one switch per listed feature, all off", JSON.stringify(boxes) === JSON.stringify([["qol-trueRaw", false], ["qol-trueElement", false], ["qol-monsterBar", false]]), JSON.stringify(boxes));
+  check("one switch per listed feature, all off", JSON.stringify(boxes) === JSON.stringify([["qol-trueRaw", false], ["qol-trueElement", false], ["qol-monsterBar", false], ["qol-iframeViewer", false]]), JSON.stringify(boxes));
   const items = await page.$$eval(".qol-item", (n) => n.map((x) => x.textContent.replace(/\s+/g, " ").trim()));
   check("name and description", items[0].includes("True raw attack") && items[0].includes("a Great Sword's 1022 shows as 213"), items[0]);
   check("true element name and description", items[1].includes("True element") && items[1].includes("Fire 250 shows as 25"), items[1]);
   check("patch note", items[0].includes("Needs client patch v1.20 or newer") && items[1].includes("Needs client patch v1.20 or newer") && items[2].includes("Needs client patch v1.21 or newer"), items.join(" | "));
   check("hidden-info note only where flagged", !items[0].includes("information the game normally hides") && !items[1].includes("information the game normally hides") && items[2].includes("Shows information the game normally hides"), items.join(" | "));
+
+  check("iframe viewer switch with the hidden-info mark and the event rule", items[3].includes("Iframe viewer") && items[3].includes("Shows information the game normally hides") && items[3].includes(EVENT_RULE) && items[3].includes("Needs client patch v1.21 or newer"), items[3]);
+  check("event rule only on the viewer switch", !items[0].includes("Speedrun Cup") && !items[2].includes("Speedrun Cup"));
 
   // Toggle on.
   await page.check("#qol-trueRaw");
@@ -216,6 +241,48 @@ async function run(browser, base) {
   check("API 400 message shown", /Ctrl\+R is used twice/.test(await alertText()), await alertText());
   check("keys stay after a refused save", (await btnText("qol-key-retire-key")) === "Ctrl+R" && keyPuts.length === 2);
 
+  // Viewer options part.
+  const vText = () => page.textContent("#qol-viewer").then((t) => t.replace(/\s+/g, " ").trim());
+  check("viewer part is shown", await page.isVisible("#qol-viewer"));
+  check("viewer part heading", (await page.textContent("#qol-viewer h3")) === "Viewer options");
+  const vBoxes = await page.$$eval("#qol-viewer input[type=checkbox]", (n) => n.map((b) => [b.id, b.checked, b.parentElement.textContent.trim()]));
+  check("four checkboxes show the GET values", JSON.stringify(vBoxes) === JSON.stringify([["qol-viewer-iframeBar", true, "Iframe bar"], ["qol-viewer-iframeCount", false, "Iframe count"], ["qol-viewer-hitstopBar", true, "Hitstop bar"], ["qol-viewer-hitIndicator", false, "Hit indicator"]]), JSON.stringify(vBoxes));
+  const optionsOf = (id) => page.$$eval("#" + id + " option", (n) => n.map((o) => [o.value, o.textContent]));
+  check("position options", JSON.stringify(await optionsOf("qol-viewer-position")) === JSON.stringify([["top", "Top"], ["center", "Centre"], ["bottom", "Bottom"], ["left", "Left"]]), JSON.stringify(await optionsOf("qol-viewer-position")));
+  check("size options", JSON.stringify(await optionsOf("qol-viewer-size")) === JSON.stringify([["small", "Small"], ["normal", "Normal"], ["large", "Large"], ["huge", "Huge"]]), JSON.stringify(await optionsOf("qol-viewer-size")));
+  check("selects show the GET values", (await page.inputValue("#qol-viewer-position")) === "left" && (await page.inputValue("#qol-viewer-size")) === "large");
+  check("save button text", (await btnText("qol-viewer-save")) === "Save viewer options");
+  check("nothing sent yet", !viewerPuts.length);
+
+  await page.uncheck("#qol-viewer-iframeBar");
+  await page.check("#qol-viewer-iframeCount");
+  await page.check("#qol-viewer-hitIndicator");
+  await page.selectOption("#qol-viewer-position", "center");
+  await page.selectOption("#qol-viewer-size", "huge");
+  await page.click("#qol-viewer-save");
+  await page.waitForFunction(() => /Viewer options saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
+  const wantViewer = { iframeBar: false, iframeCount: true, hitstopBar: true, hitIndicator: true, position: "center", size: "huge" };
+  check("Save sends exactly the six keys with the chosen values", viewerPuts.length === 1 && JSON.stringify(viewerPuts[0]) === JSON.stringify(wantViewer), JSON.stringify(viewerPuts));
+  check("viewer saved message", /Viewer options saved\. They take effect from your next login/.test(await page.textContent("#qol-note")), await page.textContent("#qol-note"));
+  const vAfter = await page.$$eval("#qol-viewer input[type=checkbox]", (n) => n.map((b) => b.checked));
+  check("controls redrawn from the answer", JSON.stringify(vAfter) === JSON.stringify([false, true, true, true]) && (await page.inputValue("#qol-viewer-position")) === "center" && (await page.inputValue("#qol-viewer-size")) === "huge", JSON.stringify(vAfter));
+  check("the other switches and keys survive the viewer save", (await page.isChecked("#qol-trueElement")) && (await btnText("qol-key-retire-key")) === "Ctrl+R");
+
+  // Saving the keys redraws the viewer part from the answer, unchanged.
+  refuseKeys = false;
+  await page.click("#qol-keys-save");
+  await page.waitForFunction(() => /Keys saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
+  check("viewer part still shows the stored values after Save keys", (await page.inputValue("#qol-viewer-size")) === "huge" && (await page.isVisible("#qol-viewer")), await vText());
+
+  // A 400 message from the API is shown and the part stays.
+  refuseViewer = true;
+  await page.selectOption("#qol-viewer-size", "small");
+  await page.click("#qol-viewer-save");
+  await page.waitForSelector("#qol-alert:not([hidden])", { timeout: 5000 }).catch(() => {});
+  check("viewer API 400 message shown", /position must be top/.test(await alertText()), await alertText());
+  check("viewer part stays with the chosen value after a refused save", (await page.isVisible("#qol-viewer")) && (await page.inputValue("#qol-viewer-size")) === "small" && (await page.isEnabled("#qol-viewer-save")) && viewerPuts.length === 2);
+  refuseViewer = false;
+
   // Mobile: no sideways scroll.
   await page.setViewportSize({ width: 375, height: 800 });
   // The site menu's own button is outside this card (and is wider than the screen only with this check's empty
@@ -226,6 +293,21 @@ async function run(browser, base) {
       && e.getBoundingClientRect().right > window.innerWidth + 1 && !e.closest(".tabs"))
       .slice(0, 6).map((e) => e.tagName + "#" + e.id + "." + e.className) }));
   check("nothing in the page content passes 375px", widths.card <= widths.win && !widths.wide.length, JSON.stringify(widths));
+
+  // An older API (no "viewer" in the answer): the part is hidden, the switch stays.
+  sendViewer = false;
+  await page.reload();
+  await page.waitForSelector("#qol-list input", { timeout: 5000 });
+  await page.waitForSelector("#qol-keys:not([hidden])", { timeout: 5000 }).catch(() => {});
+  check("viewer part hidden without viewer", !(await page.isVisible("#qol-viewer")) && !(await page.$("#qol-viewer-save")));
+  check("iframe viewer switch still listed without viewer", !!(await page.$("#qol-iframeViewer")));
+  // Viewer in the answer but the list has no iframeViewer: hidden too.
+  sendViewer = true;
+  listViewer = false;
+  await page.reload();
+  await page.waitForSelector("#qol-list input", { timeout: 5000 });
+  await page.waitForSelector("#qol-keys:not([hidden])", { timeout: 5000 }).catch(() => {});
+  check("viewer part hidden without the iframeViewer feature", !(await page.isVisible("#qol-viewer")) && !(await page.$("#qol-iframeViewer")));
   check("no page errors", !errors.length, errors.join("; "));
   await page.close();
 }

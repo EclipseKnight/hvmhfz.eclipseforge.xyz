@@ -1977,6 +1977,7 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .qol-key-btn.capturing{border-color:var(--gold);box-shadow:0 0 0 3px rgba(183,138,51,.3)}
 .qol-keys select{max-width:100%}
 .qol-keys-actions{margin-top:12px}
+.qol-viewer-checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(10em,1fr));gap:0 12px}
 /* Account > Pre-release client patch (js/account-patch-channel.js) and the admin Users patch channel column */
 .patch-channel-choices{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
 .patch-channel-choices .ghost-btn{min-height:44px}
