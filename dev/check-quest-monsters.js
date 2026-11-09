@@ -10,7 +10,7 @@
      marked and not saved; a draft with that position opens with the inputs; "Use the usual spot" saves no position;
    - after "Set exactly", a new area, or a new map, saves no position (the server fills the usual spot);
    - a 400 naming the position shows next to the monster's Position cell;
-   - four quiet "?" buttons on the page (chunk 1's three and Difficulty);
+   - six quiet "?" buttons on the page (chunk 1's three, Difficulty, and chunk 3's Hardcore and Restriction);
    - at 375 px the x, y, z inputs stay inside the screen and add no sideways scroll;
    - an older API (maps without spots and bounds): "Usual spot" without numbers, "Set exactly" starts at
      10000, 0, 10000;
@@ -165,8 +165,9 @@ async function editor(browser, base) {
     "the 22 G rank levels are disabled in a High rank quest: " + levels.filter((l) => l.disabled).length);
 
   const tips = await page.locator(".bui-help .help-tip").evaluateAll((bs) => bs.map((b) => b.getAttribute("aria-label")));
-  check(JSON.stringify(tips) === JSON.stringify(["What is Counter?", "What is Season?", "What is Targets required to clear?",
-    "What is Difficulty?"]), "four help buttons, the last on Difficulty: " + tips);
+  check(JSON.stringify(tips) === JSON.stringify(["What is Counter?", "What is Hardcore?", "What is Restriction?", "What is Season?",
+    "What is Targets required to clear?",
+    "What is Difficulty?"]), "six help buttons, the last on Difficulty: " + tips);
 
   await pick(page, "Difficulty", "12 · High rank");
   await page.fill("#monster-size", "150");

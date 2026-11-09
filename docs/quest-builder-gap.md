@@ -279,7 +279,13 @@ and the changelog when it goes live. API deploys and the one migration need the 
    `QuestMaps.withPositions` keeps an author's position, bounds check per map. Monster variants other than
    Zenith stay out. Tests: positions kept and refused, range errors, round trip.
 3. **Flags and restrictions: the quest flags, Hardcore, conquest, no Halk, rank limits, quest restriction,
-   death count.** UI: the three flag bytes as named checkboxes (Flags 1 bit 3 and `+0xa0` derived from the
+   death count.** Built 2026-11-09 (site branch `questbuilder-gap`, API branch `qb-chunk1`; not live):
+   `docs/quest-editor-web.md` "Rules and restrictions", API README "Flags and restrictions". Hardcore settled from
+   the RE (part 75) and the live files: condition note 109-113/118 in a class 3 quest, not "Fix HC" (in 636 files,
+   410 not class 3; in 63 of the 240 Hardcore ones); the switch writes 109. Every Pax restriction is offered (the
+   owner's "full list"), the ticket, proof and server-count ones in groups marked untested. Death count 1..9 faints
+   in G rank and Zenith, else 0..999,999 zenny per faint. The unnamed flag bits are kept, not offered. Still to do
+   in game before it goes live: Hardcore, one conquest quest, a few restrictions. UI: the three flag bytes as named checkboxes (Flags 1 bit 3 and `+0xa0` derived from the
    class, Zenith derived as now, Road and Interception hidden), a Hardcore switch, rank limits, a quest
    restriction picker from a new `data/quest-condition-notes.json` (our own names, Pax as the cross-check,
    "(unconfirmed)" where one source), death count. API: add the three rank fields to `QuestCodec.Body`,

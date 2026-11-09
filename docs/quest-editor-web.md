@@ -172,6 +172,29 @@ spot and the allowed range are the coordinate help. Pax has no facing angle, and
 other than Zenith stay out (an unknown form may load a model file that does not exist). The review shows strength,
 size and how many monsters stand at an exact spot. Check: `dev/check-quest-monsters.js`.
 
+**Rules and restrictions (gap plan task 3, 9 Nov 2026).** A section after the listing:
+- **Hardcore**, a switch (with a quiet "?"): it writes restriction 109 (`body.conditionNote`) and is offered in an
+  HR 100 and up quest (class 3) only. Evidence: the client sets its Hardcore state from notes 109-113/118 and the
+  monsters take their Hardcore data in class 3 (`hvmhfz_re` `docs/quest-classes.md`, part 75); in the 5,000 live
+  files 240 class 3 quests have such a note, while Pax's "Fix HC" bit (`variantFlags1` bit 1) is in 636 files, 410
+  not class 3, so it is not what makes a quest Hardcore. Leaving class 3 turns Hardcore off.
+- **Restriction** (with a quiet "?"): `body.conditionNote` from `data/quest-condition-notes.json`, our own names for
+  the 136 ids of Pax's list, grouped (rank, items and money, weapons, armour, party, unlocks, then the untested
+  groups that take tickets or proofs or need the server to count). 22 names match the live quests that use them;
+  the other 114 rest on Pax alone and are marked "unconfirmed". The API takes exactly these ids
+  (`QuestCodec.CONDITION_NOTES`; `dev/check-quest-fields.js` compares the two).
+- **Death count** (`body.faintPenalty`): "Faints allowed" 1..9 in a G rank or Zenith quest, "Money lost per faint"
+  0..999,999 zenny otherwise; crossing that line with the class resets it (3 faints, or a third of the reward money).
+- **Hunter rank limits**: lowest and highest rank to post (`body.postRankMin`, `postRankMax`) and to join
+  (`body.rank`, `joinRankMax`); 0 as a highest is no limit; a highest below its lowest is marked and refused.
+- **Quest flags**: 17 checkboxes over `body.variantFlags1-3`, Pax's and Erupe's names (No Halk pots = the owner's
+  "no alk", Low and High conquest, ...), with one note that none was traced or tested in game. G rank (flags 1 bit 3,
+  with the special list tab) follows the class and Zenith the monsters; Road and Interception are not offered and the
+  API refuses them; the unnamed bits are kept.
+A draft from before these fields (no rank limits or flags in its model) shows neither block and saves as before. The
+review gains a Rules line. Not tested in game yet: the Hardcore switch, a conquest flag and the restrictions the
+game may enforce. Check: `dev/check-quest-rules.js`.
+
 **Owner decisions for later chunks (2026-11-09, not built yet).** Custom quests keep paying their reward money.
 Testing copies are reward-stripped; approved quests pay their full rewards (Erupe branch `erupe-approved-rewards`,
 `85d282f`). The Reward 1/2/3 list items (body +0xb0..+0xb4) are shown for approved quests and cleared in the testing

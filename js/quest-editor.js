@@ -79,6 +79,27 @@
   /* The levels the live files use most, for the hint: 53 (982 files), 26 (560), 6 (537), 12 (460). */
   var COMMON_LEVELS = { 6: true, 12: true, 26: true, 53: true };
 
+  /* Rules and restrictions (docs/quest-builder-gap.md task 3; API README "Flags and restrictions"). The three flag
+     bytes body.variantFlags1-3 (+0x97..+0x99), named as Pax's editor and Erupe's comments name them; none of these
+     bits was tested in game here. Not offered: flags 1 bit 3 (G rank: the API sets it from the class, with the
+     special list tab), flags 3 bit 4 (Zenith: set with a Zenith monster), flags 2 bit 7 (Road: would replace the
+     quest's monsters) and flags 3 bit 5 (Interception: Erupe clears it), which the API refuses, and the bits with no
+     name (flags 1 bits 5 and 6, flags 3 bit 6), which are kept as they are. */
+  var FLAGS1 = [[0, "Hiden"], [1, "Fix HC", "not what makes a quest Hardcore: that is the Hardcore switch"],
+    [2, "HC to UL"], [4, "SR"], [7, "UL fixed"]];
+  var FLAGS2 = [[0, "Low conquest"], [1, "No Halk pots"], [2, "No cuff"], [3, "Timer"], [4, "No active feature"],
+    [5, "Fixed difficulty"], [6, "High conquest"]];
+  var FLAGS3 = [[0, "No reward skills"], [1, "GSR to GR"], [2, "No easy drink"], [3, "No GP skills"], [7, "No sigils"]];
+  var FLAGS1_G_RANK = 0x08;
+  var G_CLASSES = [7, 9];
+  /* body.faintPenalty: the faints allowed in a G rank or Zenith quest (the live files use 3, a few 5; the API takes
+     1..9), else the money taken from the reward money at each faint (the quest fails when it runs out). */
+  var G_FAINTS = { min: 1, max: 9, usual: 3 };
+  var PENALTY_MAX = 999999;
+  var RANK_MAX = 999;
+  /* The restriction list and the Hardcore notes (data/quest-condition-notes.json); these are the fallback. */
+  var conditionNotes = { notes: [], groups: [], hardcore: { ids: [109, 110, 111, 112, 113, 118], written: 109, questClass: 3 } };
+
   /* Objective types no quest file uses; their names come from the overlay only (builder item 11). */
   var UNTESTED_TYPES = { 16: true, 131072: true, 262144: true };
 
@@ -171,11 +192,12 @@
     return Promise.all([
       grab("/data/map-ids.json"), grab("/data/map-areas.json"), grab("/data/area-ids.json"),
       grab("/data/item-ids.json"), grab("/data/objective-types.json"), grab("/data/monster-ids.json"),
-      grab("/data/quest-fields.json"), UI.loadIcons(["monsters", "items"])
+      grab("/data/quest-fields.json"), UI.loadIcons(["monsters", "items"]), grab("/data/quest-condition-notes.json")
     ]).then(function (r) {
       mapIds = r[0] || {}; mapAreas = r[1] || {}; areaIds = r[2] || {}; itemIds = r[3] || {};
       objectiveTypes = r[4] || {}; monsterIds = r[5] || {};
       ((r[6] || {}).fields || []).forEach(function (f) { fieldRef[f.key] = f; });
+      if (r[8] && Array.isArray(r[8].notes)) conditionNotes = r[8];
     });
   }
 
@@ -863,9 +885,12 @@
         options: classes, value: b.questClass, showIds: true,
         unknownLabel: function (v) { return "Unnamed class (value " + v + ")"; },
         onChange: writes(function (v) {
+          var before = b.questClass;
           b.questClass = v;
           if (model.header) model.header.questClass = v;
+          classChanged(model, before);
           redraw("monsters"); // G rank levels follow the class
+          redraw("rules"); // Hardcore, faints and the G rank flag follow it too
         })
       }), "Sets both copies: the game reads the header's. The names come from the quest lists each class"
         + " appears in; the game's code names none."));
@@ -922,6 +947,229 @@
     }), "The quest's difficulty in stars, as the quest list shows it."));
     p.appendChild(g);
     return p;
+  }
+
+  // ---- 2b. rules and restrictions ------------------------------------------------------------
+
+  function isG(b) {
+    return G_CLASSES.indexOf(b.questClass) >= 0;
+  }
+
+  function hardcoreIds() {
+    return (conditionNotes.hardcore && conditionNotes.hardcore.ids) || [];
+  }
+
+  function hardcoreClass() {
+    return (conditionNotes.hardcore && conditionNotes.hardcore.questClass) || 3;
+  }
+
+  function isHardcore(b) {
+    return hardcoreIds().indexOf(b.conditionNote) >= 0;
+  }
+
+  var noteList = null;
+  /** None, then the restrictions by group; a name with one source (Pax's editor only) is marked unconfirmed. */
+  function noteOptions() {
+    if (noteList) return noteList;
+    noteList = [{ value: 0, label: "None" }].concat((conditionNotes.notes || []).map(function (n) {
+      return { value: n.id, label: n.name, group: n.group, hint: n.confirmedBy ? "" : "unconfirmed" };
+    }));
+    return noteList;
+  }
+
+  function noteName(id) {
+    if (!id) return "None";
+    if (hardcoreIds().indexOf(id) >= 0) return "Hardcore (restriction " + id + ", set by the switch)";
+    var hit = (conditionNotes.notes || []).filter(function (n) { return n.id === id; })[0];
+    return hit ? hit.name : "Restriction " + id + " (not offered)";
+  }
+
+  /** After the quest class changed: a Hardcore note goes with class 3; flags 1 bit 3 and the special list tab follow
+      the G rank line (the API sets them too); and body.faintPenalty, faints allowed in G rank and Zenith but money per
+      faint otherwise, takes the usual value of its new meaning. */
+  function classChanged(model, before) {
+    var b = model.body;
+    if (isHardcore(b) && b.questClass !== hardcoreClass()) b.conditionNote = 0;
+    if (typeof b.variantFlags1 === "number") {
+      b.variantFlags1 = isG(b) ? (b.variantFlags1 | FLAGS1_G_RANK) : (b.variantFlags1 & ~FLAGS1_G_RANK & 0xff);
+    }
+    if (typeof b.specialListTab === "number") b.specialListTab = isG(b) ? 1 : 0;
+    if ((G_CLASSES.indexOf(before) >= 0) !== isG(b) && typeof b.faintPenalty === "number") {
+      b.faintPenalty = isG(b) ? G_FAINTS.usual : Math.ceil((b.rewardMoney || 0) / 3);
+    }
+  }
+
+  /** A checkbox with its text; opts: label, checked, onChange(on), disabled, id, hint (shown small after the text). */
+  function checkbox(opts) {
+    var wrap = el("label", "bui-check");
+    var input = el("input");
+    input.type = "checkbox";
+    if (opts.id) input.id = opts.id;
+    input.checked = !!opts.checked;
+    input.disabled = !!opts.disabled;
+    input.addEventListener("change", function () { opts.onChange(input.checked); });
+    wrap.appendChild(input);
+    wrap.appendChild(el("span", null, opts.label));
+    if (opts.hint) wrap.appendChild(el("span", "bui-check-hint", opts.hint));
+    wrap.input = input;
+    return wrap;
+  }
+
+  /** One flag byte as checkboxes, one per named bit; get() reads the byte, set(v) writes it (other bits kept). */
+  function flagBox(bits, get, set) {
+    var box = el("div", "bui-flags");
+    bits.forEach(function (bit) {
+      var mask = 1 << bit[0];
+      box.appendChild(checkbox({ label: bit[1], hint: bit[2], checked: !!(get() & mask), onChange: writes(function (on) {
+        set(on ? (get() | mask) : (get() & ~mask & 0xff));
+      }) }));
+    });
+    return box;
+  }
+
+  /** A maximum rank below its minimum (0 is no limit), in words; "" when fine. */
+  function rankProblem(min, max, what) {
+    return typeof min === "number" && typeof max === "number" && max !== 0 && max < min
+      ? "The highest rank to " + what + " (" + max + ") is below the lowest (" + min + "): raise it, or 0 for no limit." : "";
+  }
+
+  function rulesSection(model) {
+    var b = model.body;
+    var p = UI.section("Rules and restrictions", "who may join, and how");
+    var g = grid();
+    var hardcore = isHardcore(b);
+    var canHardcore = b.questClass === hardcoreClass();
+    var hcBox = checkbox({ id: "rule-hardcore", label: "Make this a Hardcore quest", checked: hardcore,
+      disabled: !canHardcore && !hardcore,
+      onChange: function (on) {
+        b.conditionNote = on ? ((conditionNotes.hardcore || {}).written || 109) : 0;
+        redraw("rules");
+        changed();
+      } });
+    var hcField = fieldFor(F("body.conditionNote"), "Hardcore", hcBox, canHardcore
+      ? "Uses the restriction slot, so a Hardcore quest has no other restriction."
+      : "For HR 100 and up quests only: set the quest class to it first (Basics, More settings).",
+      { help: "The monsters use their Hardcore data and the rewards their Hardcore rows. The game does this for an"
+        + " HR 100 and up quest whose restriction is one of the Hardcore notes (read from the game's code), so the"
+        + " switch sets restriction 109, as most of Capcom's Hardcore quests have. The “Fix HC” flag below"
+        + " does not do it. Not tested in game yet: try the quest in testing before you submit it." });
+    hcField.querySelector("label").htmlFor = "rule-hardcore";
+    g.appendChild(hcField);
+
+    var restriction = null;
+    g.appendChild(fieldFor(F("body.conditionNote"), "Restriction", restriction = UI.picker({
+      options: noteOptions(), value: b.conditionNote, showIds: true, disabled: hardcore, unknownLabel: noteName,
+      searchHint: "Type a weapon, rank or item rule",
+      onChange: writes(function (v) { b.conditionNote = v; })
+    }), hardcore ? "A Hardcore quest uses this slot." : "One per quest, shown on the quest's info page.",
+      { help: "The rule on the quest's info page, such as “Great Sword only” or “No items”. The game"
+        + " may also enforce it; which ones it enforces is not known, and none was tested here, so try the quest in"
+        + " testing. “Unconfirmed” names rest on one source (Pax's quest editor). Rules that take tickets or"
+        + " proofs, or need the game server to count, are untested." }));
+    if (!hardcore && b.conditionNote && !noteOptions().some(function (o) { return o.value === b.conditionNote; })) {
+      restriction.setProblem("The server does not take this restriction: pick another, or None.");
+    }
+
+    if (typeof b.faintPenalty === "number") {
+      if (isG(b)) {
+        g.appendChild(numberFor(F("body.faintPenalty"), "Faints allowed", {
+          id: "rule-faints", value: b.faintPenalty, min: G_FAINTS.min, max: G_FAINTS.max,
+          onChange: writes(function (v) { b.faintPenalty = v; })
+        }, "The quest fails at this many faints. Capcom's G rank quests allow 3, a few 5."));
+      } else {
+        g.appendChild(numberFor(F("body.faintPenalty"), "Money lost per faint", {
+          id: "rule-faints", value: b.faintPenalty, min: 0, max: PENALTY_MAX, unit: "zenny",
+          onChange: writes(function (v) { b.faintPenalty = v; })
+        }, "Taken from the reward money at each faint; the quest fails when it runs out. Capcom's quests take a third"
+          + " of it (3 faints)."));
+      }
+    }
+    p.appendChild(g);
+
+    p.appendChild(UI.subhead("Hunter rank limits"));
+    p.appendChild(note("Hunter rank, or G rank in a G rank quest. 0 as a highest rank means no limit. The game's code"
+      + " was traced for the lowest rank to join only."));
+    var r = grid();
+    var rankFields = [];
+    function rankChanged() {
+      rankFields.forEach(function (f) { f.check(); });
+      changed();
+    }
+    function rankField(input, min, max, what) {
+      input.check = function () {
+        var why = rankProblem(min(), max(), what);
+        var box = input.input;
+        box.classList.toggle("is-invalid", !!why);
+        box.title = why;
+      };
+      rankFields.push(input);
+      return input;
+    }
+    if (typeof b.postRankMin === "number") {
+      r.appendChild(numberFor(F("body.postRankMin"), "Lowest rank to post", {
+        id: "rule-post-min", value: b.postRankMin, min: 0, max: RANK_MAX,
+        onChange: function (v) { b.postRankMin = v; rankChanged(); }
+      }, "The lowest rank that can post the quest."));
+    }
+    if (typeof b.postRankMax === "number") {
+      r.appendChild(rankField(numberFor(F("body.postRankMax"), "Highest rank to post", {
+        id: "rule-post-max", value: b.postRankMax, min: 0, max: RANK_MAX,
+        onChange: function (v) { b.postRankMax = v; rankChanged(); }
+      }, "0 for no limit."), function () { return b.postRankMin; }, function () { return b.postRankMax; }, "post"));
+    }
+    if (typeof b.rank === "number") {
+      r.appendChild(numberFor(F("body.rank"), "Lowest rank to join", {
+        id: "rule-join-min", value: b.rank, min: 0, max: RANK_MAX,
+        onChange: function (v) { b.rank = v; rankChanged(); }
+      }, "The lowest rank that can join."));
+    }
+    if (typeof b.joinRankMax === "number") {
+      r.appendChild(rankField(numberFor(F("body.joinRankMax"), "Highest rank to join", {
+        id: "rule-join-max", value: b.joinRankMax, min: 0, max: RANK_MAX,
+        onChange: function (v) { b.joinRankMax = v; rankChanged(); }
+      }, "0 for no limit."), function () { return b.rank; }, function () { return b.joinRankMax; }, "join"));
+    }
+    p.appendChild(r);
+    rankFields.forEach(function (f) { f.check(); });
+
+    if (typeof b.variantFlags1 === "number") {
+      p.appendChild(UI.subhead("Quest flags"));
+      p.appendChild(note("Named as in Pax's quest editor and Erupe's comments. What each one does was not traced in"
+        + " the game's code or tested in game here, so try the quest in testing. Set for you: G rank (from the quest"
+        + " class) and Zenith (from the monsters). Not offered: Road and Interception."));
+      var f = grid();
+      f.appendChild(fieldFor(F("body.variantFlags1"), "Flags 1", flagBox(FLAGS1, function () { return b.variantFlags1; },
+        function (v) { b.variantFlags1 = v; })));
+      f.appendChild(fieldFor(F("body.variantFlags2"), "Flags 2", flagBox(FLAGS2, function () { return b.variantFlags2; },
+        function (v) { b.variantFlags2 = v; })));
+      f.appendChild(fieldFor(F("body.variantFlags3"), "Flags 3", flagBox(FLAGS3, function () { return b.variantFlags3; },
+        function (v) { b.variantFlags3 = v; })));
+      p.appendChild(f);
+    }
+    return p;
+  }
+
+  /** "Hardcore, Great Sword only, 3 faints, join HR 100 and up, flags: No Halk pots" for the review. */
+  function rulesText(model) {
+    var b = model.body;
+    var parts = [];
+    if (isHardcore(b)) parts.push("Hardcore");
+    else if (b.conditionNote) parts.push(noteName(b.conditionNote));
+    if (typeof b.faintPenalty === "number") {
+      parts.push(isG(b) ? b.faintPenalty + (b.faintPenalty === 1 ? " faint allowed" : " faints allowed")
+        : Number(b.faintPenalty).toLocaleString() + " zenny lost per faint");
+    }
+    function band(min, max) {
+      return max ? min + " to " + max : min + " and up";
+    }
+    if (typeof b.postRankMin === "number" && (b.postRankMin || b.postRankMax)) parts.push("post " + band(b.postRankMin, b.postRankMax));
+    if (b.rank || b.joinRankMax) parts.push("join " + band(b.rank, b.joinRankMax));
+    var flags = [];
+    [["variantFlags1", FLAGS1], ["variantFlags2", FLAGS2], ["variantFlags3", FLAGS3]].forEach(function (spec) {
+      spec[1].forEach(function (bit) { if ((b[spec[0]] || 0) & (1 << bit[0])) flags.push(bit[1]); });
+    });
+    if (flags.length) parts.push("flags: " + flags.join(", "));
+    return parts.length ? parts.join("; ") : "none";
   }
 
   // ---- 3. map and start area -----------------------------------------------------------------
@@ -1471,6 +1719,18 @@
     });
     if (far) list.push(far + (far === 1 ? " monster's exact position is" : " monsters' exact positions are")
       + " outside what the server allows on this map (Monsters).");
+    if (isHardcore(b) && b.questClass !== hardcoreClass()) {
+      list.push("Hardcore needs an HR 100 and up quest: set the quest class, or turn Hardcore off (Rules and restrictions).");
+    } else if (b.conditionNote && !isHardcore(b) && !noteOptions().some(function (o) { return o.value === b.conditionNote; })) {
+      list.push("The restriction " + b.conditionNote + " is not one the server takes (Rules and restrictions).");
+    }
+    if (typeof b.faintPenalty === "number" && isG(b) && (b.faintPenalty < G_FAINTS.min || b.faintPenalty > G_FAINTS.max)) {
+      list.push("A G rank quest allows " + G_FAINTS.min + " to " + G_FAINTS.max + " faints; this one says " + b.faintPenalty
+        + " (Rules and restrictions).");
+    }
+    [rankProblem(b.postRankMin, b.postRankMax, "post"), rankProblem(b.rank, b.joinRankMax, "join")].forEach(function (why) {
+      if (why) list.push(why + " (Rules and restrictions)");
+    });
     var none = 0;
     (model.rewardGroups || []).forEach(function (g, i) {
       (g.entries || []).forEach(function (e) { if (!e.itemId) none += 1; });
@@ -1540,6 +1800,7 @@
       ["Objectives", (goals.length ? goals.join("; ") : "none set") + (required ? " (to clear: " + required.toLowerCase() + ")" : "")],
       ["Monsters", spawns.length ? spawns.map(function (s) { return s.count + " × " + formName(model, s.monsterId); }).join(", ") : "none yet"],
       ["Strength and size", strengthText(model)],
+      ["Rules", rulesText(model)],
       ["Supplies and rewards", supplies + (supplies === 1 ? " supply item, " : " supply items, ") + rewards + (rewards === 1 ? " reward" : " rewards")]
     ];
     var dl = el("dl", "bui-review");
@@ -1562,7 +1823,7 @@
   // ---- drawing -------------------------------------------------------------------------------
 
   var SECTIONS = [
-    ["basics", basicsSection], ["listing", listingSection], ["map", mapSection], ["objectives", objectivesSection], ["monsters", monstersSection],
+    ["basics", basicsSection], ["listing", listingSection], ["rules", rulesSection], ["map", mapSection], ["objectives", objectivesSection], ["monsters", monstersSection],
     ["rewards", rewardsSection], ["text", textSection]
   ];
   var drawn = {};
@@ -1643,6 +1904,24 @@
     if (m) {
       out.push({ key: "header.monsterLevel", text: "The server refused difficulty " + m[1] + ": " + (m[2] === "Zenith"
         ? "it is a Zenith rank, for a quest with a Zenith monster only." : "it is a G rank level, for a G rank quest only.") });
+    }
+    m = /body\.conditionNote (\d+) makes a quest Hardcore/.exec(text);
+    if (m) {
+      out.push({ key: "body.conditionNote", text: "The server refused Hardcore: it needs an HR 100 and up quest (quest"
+        + " class, Basics)." });
+    }
+    m = /body\.conditionNote (\d+) is not one of the restrictions offered/.exec(text);
+    if (m) {
+      out.push({ key: "body.conditionNote", text: "The server does not take restriction " + m[1] + ": pick another." });
+    }
+    var order = /body\.(postRankMax|joinRankMax) is (\d+), below body\.\w+ (\d+)/g;
+    while ((m = order.exec(text))) {
+      out.push({ key: "body." + m[1], text: "The server refused a highest rank (" + m[2] + ") below the lowest (" + m[3]
+        + "): raise it, or 0 for no limit." });
+    }
+    m = /body\.(variantFlags[23]) bit \d \((Road|Interception)\)/.exec(text);
+    if (m) {
+      out.push({ key: "body." + m[1], text: "The server does not take the " + m[2] + " flag." });
     }
     m = /Map (\d+) has no area tables on this server/.exec(text);
     if (m) {

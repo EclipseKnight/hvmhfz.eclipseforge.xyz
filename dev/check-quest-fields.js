@@ -8,7 +8,8 @@
       size fits the type.
    2. The API codec (QuestCodec.java, in the private API repo): every byte it reads or writes is a field here
       with the same struct, offset and size, and every field here marked as in the codec is written by it.
-      Skipped, and said so, when the file is not on this machine.
+      Skipped, and said so, when the file is not on this machine. Also: data/quest-condition-notes.json holds
+      the same restriction ids as QuestCodec.CONDITION_NOTES and the same Hardcore ids as HARDCORE_NOTES.
    3. The builder (js/quest-editor.js): every model property it assigns is a field here, and every bytes
       label it shows is right. A label is F("key") (or F(["key", "key"]) for a value kept in two places) next
       to the control: each key must be a field here, the first model property the control assigns after it
@@ -271,6 +272,34 @@ if (fs.existsSync(CODEC)) {
     }
   });
   codecSummary = "codec: " + writes.length + " writes and " + reads.length + " reads matched";
+
+  // The restrictions the builder offers (data/quest-condition-notes.json) are the ones the API accepts.
+  const codecText = fs.readFileSync(CODEC, "utf8");
+  const notesRef = readJson("data/quest-condition-notes.json");
+  const javaSet = function (name) {
+    const m = new RegExp("\\b" + name + " = Set\\.of\\(([^)]*)\\)").exec(codecText);
+    return m ? m[1].split(",").map(function (v) { return Number(v.trim()); }).sort(function (a, b) { return a - b; }) : null;
+  };
+  const sorted = function (list) { return list.slice().sort(function (a, b) { return a - b; }); };
+  const offered = sorted(notesRef.notes.map(function (n) { return n.id; }));
+  const accepted = javaSet("CONDITION_NOTES");
+  if (!accepted) fail("QuestCodec.java: no CONDITION_NOTES = Set.of(...) to compare data/quest-condition-notes.json with");
+  else if (accepted.join() !== offered.join()) {
+    fail("data/quest-condition-notes.json ids differ from QuestCodec.CONDITION_NOTES: only in the JSON "
+      + offered.filter(function (id) { return accepted.indexOf(id) < 0; }).join(", ") + "; only in the codec "
+      + accepted.filter(function (id) { return offered.indexOf(id) < 0; }).join(", "));
+  }
+  const hardcore = javaSet("HARDCORE_NOTES");
+  if (!hardcore || hardcore.join() !== sorted(notesRef.hardcore.ids).join()) {
+    fail("data/quest-condition-notes.json hardcore.ids differ from QuestCodec.HARDCORE_NOTES");
+  }
+  if (new Set(offered).size !== offered.length) fail("data/quest-condition-notes.json lists an id twice");
+  notesRef.notes.forEach(function (n) {
+    if (!n.name || !notesRef.groups.some(function (g) { return g.name === n.group; })) {
+      fail("data/quest-condition-notes.json note " + n.id + ": no name, or a group not in groups");
+    }
+  });
+  codecSummary += "; " + offered.length + " restrictions as the API's";
 } else {
   notes.push("QuestCodec.java not found at " + CODEC + ": the codec part was skipped (set QUEST_CODEC to check it)");
 }

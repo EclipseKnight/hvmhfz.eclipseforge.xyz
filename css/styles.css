@@ -1468,6 +1468,14 @@ a.char-chip:hover{border-color:#8a6a24;background:rgba(183,138,51,.18)}
 .bui-position .bui-axis{display:inline-flex;align-items:center;gap:4px;font:600 .72rem var(--font-ui)}
 .bui-position .bui-number{width:6.5em}
 .bui-position-text{font:400 .78rem/1.35 var(--font-ui);color:var(--ink-soft);font-variant-numeric:tabular-nums}
+/* Checkboxes in a field: Hardcore and the quest flags (js/quest-editor.js checkbox, flagBox). */
+.bui-flags{display:flex;flex-direction:column;gap:6px}
+.field label.bui-check{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin:0;cursor:pointer;
+  font:400 .9rem/1.35 var(--font-body);letter-spacing:0;text-transform:none;color:var(--ink)}
+.field .bui-check input[type="checkbox"]{display:inline-block;flex:none;width:18px;height:18px;margin:0;accent-color:var(--teal);
+  align-self:center}
+.field .bui-check input[type="checkbox"]:disabled + span{color:var(--ink-soft)}
+.bui-check-hint{flex-basis:100%;padding-left:26px;font:400 .76rem/1.35 var(--font-ui);color:var(--ink-soft)}
 .bui-share{font-variant-numeric:tabular-nums}
 .bui-bytes{display:block;margin:-3px 0 6px;font:400 .68rem/1.3 var(--font-ui);letter-spacing:.02em;text-transform:none;
   color:var(--ink-soft);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}

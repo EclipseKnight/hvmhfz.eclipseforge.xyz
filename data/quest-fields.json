@@ -908,20 +908,21 @@
   },
   {
    "key": "body.faintPenalty",
-   "label": "Faint penalty",
-   "section": "rewards",
+   "label": "Death count (faint penalty)",
+   "section": "basics",
    "struct": "body",
    "offset": "0x14",
    "size": 4,
    "type": "u32",
-   "seen": "0..330,000; 3 or 5 when body +0x97 bit 3 is set",
-   "notes": "With body.variantFlags1 bit 3 set it is the number of faints allowed instead. The 010 template calls this RewardSubA (one field off).",
-   "builder": "carried",
+   "seen": "money per faint 0..330,000 (a third of the reward money in 2,625 of 3,491 live files); faints 3 (1,467) or 5 (42) with variantFlags1 bit 3",
+   "notes": "Without body.variantFlags1 bit 3: the money taken from the reward money at each faint; the quest fails when it runs out (RE 0x10aa86c0). With bit 3 (every G rank and Zenith quest): the number of faints allowed. The builder offers 1..9 faints in a G rank or Zenith quest and 0..999,999 zenny otherwise (the API's limits), and resets it when the class crosses that line. The 010 template calls this RewardSubA (one field off).",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 203",
     "ReFrontier FrontierDataTool/Program.cs:519 (zennyKo)",
     "hvmhfz_rest_api QuestCodec.java:399, 623",
-    "survey of the 13,867 local quest files (2026-11-02)"
+    "survey of the 13,867 local quest files (2026-11-02)",
+    "survey of the 5,000 live quest files (2026-11-09, quest builder task 3)"
    ],
    "confidence": "confirmed"
   },
@@ -1044,22 +1045,27 @@
   },
   {
    "key": "body.conditionNote",
-   "label": "Condition note id",
+   "label": "Restriction (condition note)",
    "section": "basics",
    "struct": "body",
    "offset": "0x2c",
    "size": 1,
    "type": "u8",
    "values": {
-    "0": "none"
+    "0": "none",
+    "109": "Hardcore (with 110-113, 118; class 3 only)"
    },
-   "notes": "Indexes a message table on the quest info page; the 010 template calls bytes +0x2c..+0x2d Restrictions.",
-   "builder": "carried",
+   "notes": "Indexes a message table on the quest info page; some ids also switch client rules (RE 0x10aeae10, 0x10b0c170). With 109-113 or 118 the client sets its Hardcore quest state (0x1047d500), and in a class 3 quest the monsters take their Hardcore data (hvmhfz_re docs/quest-classes.md, part 75). The builder offers the 136 restrictions in data/quest-condition-notes.json (the API's QuestCodec.CONDITION_NOTES) and a Hardcore switch that writes 109 in a class 3 quest. The 010 template calls bytes +0x2c..+0x2d Restrictions; +0x2d is 0 in every live file.",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 209",
-    "hvmhfz_rest_api QuestCodec.java:406, 630"
+    "hvmhfz_rest_api QuestCodec.java:406, 630",
+    "hvmhfz_re docs/quest-classes.md (part 75: Hardcore)",
+    "PaxMHFZQuestEditor src/Data/requirements.js (names, cross-check only)",
+    "survey of the 5,000 live quest files (2026-11-09, quest builder task 3)"
    ],
-   "confidence": "one source"
+   "confidence": "one source",
+   "seen": "0 in 3,688 of 5,000 live files; 45 distinct values"
   },
   {
    "key": "body.questId",
@@ -1386,8 +1392,54 @@
    }
   },
   {
+   "key": "body.postRankMin",
+   "label": "Lowest rank to post",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x4a",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 0,
+    "max": 999
+   },
+   "seen": "0..999; equal to body.rank in 4,941 files",
+   "notes": "The 010 template's MinHR, Pax's minimum post rank. Not traced in the client. Equals body.rank in 4,941 of 5,000 live files.",
+   "builder": "edits",
+   "source": [
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:91-99",
+    "PaxMHFZQuestEditor src/Utils/QuestParams/misc_utils.js (names, cross-check only)",
+    "hvmhfz_rest_api QuestCodec.java (Body.postRankMin)",
+    "survey of the 5,000 live quest files (2026-11-09, quest builder task 3)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.postRankMax",
+   "label": "Highest rank to post",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x4c",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 0,
+    "max": 999
+   },
+   "seen": "0 in 4,985 files; 9, 10, 16, 30",
+   "notes": "0 = no limit (4,985 of 5,000 live files). The 010 template's MaxHR, Pax's maximum post rank. Not traced in the client; the API refuses a maximum below body.postRankMin.",
+   "builder": "edits",
+   "source": [
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:91-99",
+    "PaxMHFZQuestEditor src/Utils/QuestParams/misc_utils.js (names, cross-check only)",
+    "hvmhfz_rest_api QuestCodec.java (Body.postRankMax)",
+    "survey of the 5,000 live quest files (2026-11-09, quest builder task 3)"
+   ],
+   "confidence": "one source"
+  },
+  {
    "key": "body.rank",
-   "label": "Minimum hunter rank to join",
+   "label": "Lowest rank to join",
    "section": "basics",
    "struct": "body",
    "offset": "0x4e",
@@ -1398,8 +1450,8 @@
     "max": 999
    },
    "seen": "0..999, 30 values; 1 x4,087, 100 x2,034, 31 x1,841",
-   "notes": "Not the overlay's rank band (data/rank-names.json uses other numbers; 100 is not in it).",
-   "builder": "carried",
+   "notes": "Hunter rank, or G rank in a G rank quest (class 7: 1-30). The only rank limit the client trace covers. Not the overlay's rank band (data/rank-names.json uses other numbers; 100 is not in it).",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 217",
     "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:93 (MinJoinHR)",
@@ -1407,6 +1459,46 @@
     "survey of the 13,867 local quest files (2026-11-02)"
    ],
    "confidence": "confirmed"
+  },
+  {
+   "key": "body.joinRankMax",
+   "label": "Highest rank to join",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x50",
+   "size": 2,
+   "type": "u16",
+   "range": {
+    "min": 0,
+    "max": 999
+   },
+   "seen": "0 in 4,985 files; 9, 10, 16, 30",
+   "notes": "0 = no limit (4,985 of 5,000 live files). The 010 template's MaxJoinHR, Pax's maximum join rank. Not traced in the client; the API refuses a maximum below body.rank.",
+   "builder": "edits",
+   "source": [
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:91-99",
+    "PaxMHFZQuestEditor src/Utils/QuestParams/misc_utils.js (names, cross-check only)",
+    "hvmhfz_rest_api QuestCodec.java (Body.joinRankMax)",
+    "survey of the 5,000 live quest files (2026-11-09, quest builder task 3)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.srBounds",
+   "label": "SR bounds (not in the codec)",
+   "section": "basics",
+   "struct": "body",
+   "offset": "0x52",
+   "size": 2,
+   "type": "u16",
+   "codec": false,
+   "notes": "The 010 template names +0x52 an SR bound; 0 in every one of the 5,000 live files. Kept as raw bytes.",
+   "builder": "not in the model",
+   "source": [
+    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:91-99",
+    "survey of the 5,000 live quest files (2026-11-09, quest builder task 3)"
+   ],
+   "confidence": "guess"
   },
   {
    "key": "body.fourthObjectiveType",
@@ -1556,12 +1648,14 @@
     "3": "G Rank (RE: special list tab / faint count)",
     "7": "UL Fixed"
    },
-   "notes": "Bit names are Erupe comments; the client tests bit 3 80 times. Bit 3 equals body.specialListTab in every file.",
-   "builder": "carried",
+   "notes": "Bit names are Erupe's comments and Pax's editor's; the client tests bit 3 80 times and bit 1 14 times. Bit 3 equals body.specialListTab in every local file and is set in every G rank and Zenith (class 7, 9) live file: the builder and the API set it from the class. Bit 1 (Fix HC) does not make a quest Hardcore (body.conditionNote does): it is in 636 of 5,000 live files, 410 of them not class 3. The builder offers bits 0, 1, 2, 4, 7 as checkboxes; bits 5 and 6 have no name and are kept.",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 225",
     "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):324 (names only)",
-    "hvmhfz_rest_api QuestCodec.java:419, 643"
+    "hvmhfz_rest_api QuestCodec.java:419, 643",
+    "PaxMHFZQuestEditor src/Utils/QuestParams/flag_utils.js (names, cross-check only)",
+    "survey of the 5,000 live quest files (2026-11-09, quest builder task 3)"
    ],
    "confidence": "one source"
   },
@@ -1583,12 +1677,14 @@
     "6": "High Conquest",
     "7": "Road (swaps the large spawns for a client table)"
    },
-   "notes": "Bit names are Erupe comments; bit 7's table swap is from the client trace.",
-   "builder": "carried",
+   "notes": "Bit names are Erupe's comments and Pax's editor's (bit 1 \"No Halk Pots\": Halk, the pet, uses no pots); bit 7's table swap is from the client trace. The builder offers bits 0-6 as checkboxes; the API refuses bit 7 (Road), which would replace the quest's large monsters. None tested in game.",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 226",
     "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):325 (names only)",
-    "hvmhfz_rest_api QuestCodec.java:420, 644"
+    "hvmhfz_rest_api QuestCodec.java:420, 644",
+    "PaxMHFZQuestEditor src/Utils/QuestParams/flag_utils.js (names, cross-check only)",
+    "survey of the 5,000 live quest files (2026-11-09, quest builder task 3)"
    ],
    "confidence": "one source"
   },
@@ -1603,15 +1699,15 @@
    "bits": {
     "0": "No Reward Skills",
     "1": "GSR to GR",
-    "2": "No Simple Mode?",
+    "2": "No Easy Drink",
     "3": "No GP Skills",
     "4": "Zenith",
     "5": "Interception (Erupe clears it in the event list; client tests it 622 times)",
     "6": "unknown",
     "7": "No Sigils"
    },
-   "notes": "Only bit 5 is confirmed by both sources; the other names are Erupe's. The builder sets bit 4 while the quest has a Zenith monster and clears it after the last: the 617 live quests with a Zenith monster set it, no other does.",
-   "builder": "derived",
+   "notes": "Only bit 5 is confirmed by both sources; the other names are Erupe's and Pax's. The builder offers bits 0, 1, 2, 3, 7 as checkboxes, sets bit 4 while the quest has a Zenith monster and clears it after the last (the 617 live quests with a Zenith monster set it, no other does); the API refuses bit 5 (Interception), which Erupe clears in every event list entry.",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 227",
     "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):326-332 (clears bit 5)",
@@ -1631,12 +1727,13 @@
     "0": "tabs 1-4",
     "1": "tab 5 only"
    },
-   "builder": "carried",
+   "builder": "derived",
    "source": [
     "hvmhfz_re docs/quest-files.md line 228",
     "hvmhfz_rest_api QuestCodec.java:422, 646"
    ],
-   "confidence": "one source"
+   "confidence": "one source",
+   "notes": "Equals body.variantFlags1 bit 3 in every local file (26 live G rank files use 100, 200 or 500 instead); the builder and the API set it to 1 in a G rank or Zenith quest (class 7, 9) and 0 otherwise."
   },
   {
    "section": "monsters",
@@ -1722,23 +1819,6 @@
     "hvmhfz_rest_api QuestCodec.java:425, 651"
    ],
    "confidence": "one source"
-  },
-  {
-   "key": "body.hrBounds",
-   "label": "HR / SR bounds (not in the codec)",
-   "section": "basics",
-   "struct": "body",
-   "offset": "0x4a",
-   "size": 16,
-   "type": "u16",
-   "count": 8,
-   "codec": false,
-   "notes": "The 010 template names +0x4a MinHR, +0x4c MaxHR, +0x4e MinJoinHR, +0x50 MaxJoinHR, +0x52.. SR bounds; only +0x4e is traced in the client, and +0x54/+0x58 are the fail objective there.",
-   "builder": "not in the model",
-   "source": [
-    "Mezeporta/010Templates Build/BuildEnumerateQuest.bt:91-99"
-   ],
-   "confidence": "guess"
   },
   {
    "key": "body.equipment[]",
