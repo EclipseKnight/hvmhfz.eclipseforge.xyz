@@ -6,7 +6,9 @@
    default" is left out of the saved value, so the game server uses its config.json value. Save always shows the
    changes first (the API's check), and the history keeps every change with a Revert. The Patch gate section also
    shows who it would refuse right now (the API's /api/admin/settings/patch_gate/impact), for the stored values and
-   again for the form's values as they are edited. All times here are UTC. */
+   again for the form's values as they are edited. Its Latest version can follow the latest release (the API's
+   /api/admin/settings/patch_gate/auto: a switch, with the field read-only while it is on; hvmhfz_ops
+   release-patch.sh sets it at each release). All times here are UTC. */
 (function () {
   "use strict";
 
@@ -181,6 +183,24 @@
     return out;
   }
 
+  /**
+   * The patch gate's "follow the latest release" switch (API patch_gate/auto: {tableReady, enabled, latest, current,
+   * inSync}) as a sentence. Nothing for no answer (an API without the switch).
+   */
+  function autoLine(auto) {
+    if (!auto) return "";
+    if (!auto.tableReady) {
+      return "Latest version is typed by hand. The switch to follow the latest release needs the patch_gate_auto table "
+        + "(API docs/schema/2026-11-patch-gate-auto.sql).";
+    }
+    if (auto.enabled) {
+      if (!auto.latest) return "Current: follows the latest release (no release recorded yet: type it once by hand with the switch off).";
+      return "Current: follows the latest release (v" + auto.latest + ")."
+        + (auto.inSync ? "" : " The stored Current is " + (auto.current ? "v" + auto.current : "empty") + ", not v" + auto.latest + " yet.");
+    }
+    return "Current is typed by hand." + (auto.latest ? " The latest release recorded is v" + auto.latest + "." : "");
+  }
+
   /** The impact's versions as table rows: [version, online, recent, what the gate does]. */
   function impactRows(impact) {
     return ((impact && impact.versions) || []).map(function (v) {
@@ -192,14 +212,14 @@
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { utc: utc, show: show, formValue: formValue, formInputs: formInputs, stateText: stateText,
       stateBadge: stateBadge, diffRows: diffRows, historyChanges: historyChanges, limits: limits,
-      impactLines: impactLines, impactRows: impactRows };
+      impactLines: impactLines, impactRows: impactRows, autoLine: autoLine };
   }
   if (typeof document === "undefined") return;
 
   /* ---------- the page ---------- */
 
   var started = false;
-  var state = { overview: null, current: null, inputs: null, reviewed: null, confirmRevert: null };
+  var state = { overview: null, auto: null, current: null, inputs: null, reviewed: null, confirmRevert: null };
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -251,7 +271,11 @@
   function fail(error) { say("set-ok", ""); say("set-alert", error.message); }
 
   function load(keep) {
-    return request("/api/admin/settings").then(function (data) {
+    // The gate's follow-the-release switch; an API without it (404) or a failure leaves the field as it was.
+    var auto = request("/api/admin/settings/patch_gate/auto").catch(function () { return null; });
+    return Promise.all([request("/api/admin/settings"), auto]).then(function (both) {
+      var data = both[0];
+      state.auto = both[1];
       state.overview = data;
       say("set-alert", "");
       renderStatus();
@@ -341,12 +365,55 @@
     }
     var grid = el("div", "set-fields");
     view.spec.fields.forEach(function (f) { grid.appendChild(fieldRow(view, f)); });
+    if (view.spec.name === "patch_gate" && state.auto) box.appendChild(autoBox());
     box.appendChild(grid);
     if (view.spec.name === "patch_gate") {
       box.appendChild(impactBox());
       refreshImpact(false);
     }
     $("set-note-text").value = "";
+  }
+
+  /* --- the patch gate's Latest version: follows the latest release, or by hand --- */
+
+  function autoBox() {
+    var a = state.auto, wrap = el("div", "set-auto");
+    wrap.id = "set-auto";
+    var line = el("p", "note-text set-auto-text", autoLine(a));
+    line.id = "set-auto-text";
+    wrap.appendChild(line);
+    if (a.tableReady) {
+      var label = el("label", "cal-check");
+      var cb = el("input");
+      cb.type = "checkbox";
+      cb.id = "set-auto-on";
+      cb.checked = a.enabled;
+      cb.addEventListener("change", function () { setAuto(cb.checked); });
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(" Latest version follows the latest release"));
+      wrap.appendChild(label);
+      if (a.enabled && a.latest && !a.inSync) {
+        var now = el("button", "ghost-btn small", "Set Current to v" + a.latest + " now");
+        now.type = "button";
+        now.id = "set-auto-now";
+        now.addEventListener("click", function () { setAuto(true); });
+        wrap.appendChild(now);
+      }
+    }
+    return wrap;
+  }
+
+  // On sets Current to the latest release at once (the API saves it, with a history row); off only turns the switch off.
+  function setAuto(on) {
+    request("/api/admin/settings/patch_gate/auto", { method: "PUT", body: JSON.stringify({ enabled: on }) })
+      .then(function (result) {
+        say("set-ok", on
+          ? "Latest version follows the latest release" + (result.changes && result.changes.length
+            ? ": Current is now v" + result.auto.latest + ". The game server applies it within a minute." : ".")
+          : "Latest version is typed by hand again.");
+        return load("patch_gate");
+      })
+      .catch(function (e) { fail(e); renderForm(); });
   }
 
   /* --- the patch gate's count of who it would refuse --- */
@@ -440,8 +507,18 @@
     row.appendChild(label);
 
     var control = el("div", "set-control");
+    var follows = view.spec.name === "patch_gate" && f.key === "current" && state.auto && state.auto.enabled;
     var editor = editorFor(f, input, id);
     control.appendChild(editor);
+    if (follows) {
+      // The release sets it (and the API refuses another value): show it, do not offer it. Left on "config default"
+      // it is simply not sent; stored, it is sent as it is.
+      var box = editor.querySelector("input");
+      if (box) box.disabled = true;
+      row.appendChild(control);
+      row.appendChild(el("p", "note-text set-help", autoLine(state.auto) + " " + f.help));
+      return row;
+    }
     var defaults = view.defaults || {};
     var useDefault = el("label", "cal-check set-default");
     var cb = el("input");

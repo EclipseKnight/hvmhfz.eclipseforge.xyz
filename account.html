@@ -21,7 +21,7 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=4" />
+    <link rel="stylesheet" href="/css/styles.css?v=5" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/tablesort.js" defer></script>
     <script src="/js/background.js" defer></script>
@@ -131,9 +131,7 @@
       <nav class="tabs" role="tablist" aria-label="Account sections">
         <a class="tab" id="tab-overview" role="tab" aria-controls="panel-overview" aria-selected="true" href="#overview">Overview</a>
         <a class="tab" id="tab-characters" role="tab" aria-controls="panel-characters" aria-selected="false" href="#characters">Characters <span class="tab-count" id="count-characters"></span></a>
-        <a class="tab" id="tab-storage" role="tab" aria-controls="panel-storage" aria-selected="false" href="#storage">Storage</a>
         <a class="tab" id="tab-hunts" role="tab" aria-controls="panel-hunts" aria-selected="false" href="#hunts">Hunts</a>
-        <a class="tab" id="tab-details" role="tab" aria-controls="panel-details" aria-selected="false" href="#details">Details</a>
         <a class="tab" id="tab-guild" role="tab" aria-controls="panel-guild" aria-selected="false" href="#guild">Guild <span class="tab-count" id="count-guild"></span></a>
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests</a>
         <a class="tab" id="tab-backups" role="tab" aria-controls="panel-backups" aria-selected="false" href="#backups">Backups</a>
@@ -224,65 +222,43 @@
             </table>
           </div>
         </section>
-      </section>
 
-
-      <!-- Storage -->
-      <section class="tab-panel" id="panel-storage" role="tabpanel" aria-labelledby="tab-storage" hidden>
-        <section class="panel box-panel">
+        <!-- One character's view (js/account-details.js): its stats, equipment, My Sets and every box,
+             from /details and /storage, loaded when this tab is first shown. -->
+        <section class="panel" id="details-live">
           <div class="panel-head">
-            <h2>Item box</h2>
-            <span class="panel-note" id="storage-note"></span>
+            <h2>Character</h2>
+            <span class="panel-note" id="details-note" aria-live="polite"></span>
           </div>
-
-          <div class="box-controls">
+          <div class="toolbar">
             <label class="select-wrap">
               <span class="search-label">Character</span>
-              <select id="storage-character"></select>
+              <select id="details-character"></select>
             </label>
-            <div class="wallet">
-              <div class="wallet-plate"><span class="wallet-label">Zenny</span><span class="wallet-value" id="stat-zenny">-</span></div>
-              <div class="wallet-plate"><span class="wallet-label">G zenny</span><span class="wallet-value" id="stat-gzenny">-</span></div>
-              <div class="wallet-plate"><span class="wallet-label">CP</span><span class="wallet-value" id="stat-cp">-</span></div>
-              <div class="wallet-plate"><span class="wallet-label">Stamps</span><span class="wallet-value" id="stat-stamps">-</span></div>
-            </div>
+            <a class="toolbar-note" id="details-card-link" href="/hunters.html" hidden>Open the hunter card</a>
           </div>
-
-          <div class="mbox">
-            <div class="mbox-bar">
-              <span class="mbox-title">Item box</span>
-              <span class="mbox-cap" id="mbox-cap">0 / 6,000</span>
-            </div>
-            <div class="mbox-tabs" id="box-tabs" role="tablist" aria-label="Item box pages"></div>
-            <div class="mbox-main">
-              <div class="mbox-grid" id="box-grid" role="grid" aria-label="Item box slots"></div>
-              <aside class="mbox-side">
-                <div class="preview" id="box-preview" aria-live="polite">
-                  <div class="preview-icon" id="preview-icon"></div>
-                  <p class="preview-name" id="preview-name">No item selected</p>
-                  <p class="preview-meta" id="preview-meta">Click a slot to inspect it</p>
-                </div>
-                <label class="search mbox-search">
-                  <span class="search-label">Search</span>
-                  <input type="search" id="storage-search" placeholder="Item name" autocomplete="off" />
-                </label>
-                <span class="toolbar-note" id="storage-box-note"></span>
-              </aside>
-            </div>
-
-            <div class="mbox-pouch">
-              <span class="mbox-sub-title">Pouch</span>
-              <div class="mbox-grid pouch-grid" id="pouch-grid"></div>
-            </div>
+          <form class="toolbar" id="details-admin-form" hidden>
+            <label class="search">
+              <span class="search-label">Admin: any character id</span>
+              <input type="text" inputmode="numeric" id="details-admin-id" placeholder="Character id" autocomplete="off" />
+            </label>
+            <button class="btn btn-small" type="submit">Open</button>
+          </form>
+          <p class="form-alert" id="details-alert" role="alert" hidden></p>
+          <div class="chips char-tabs" id="details-sections" role="group" aria-label="Character sections" hidden>
+            <button type="button" class="chip" data-section="overview" aria-pressed="true">Overview</button>
+            <button type="button" class="chip" data-section="equipment" aria-pressed="false">Equipment</button>
+            <button type="button" class="chip" data-section="loadouts" aria-pressed="false">Loadouts</button>
+            <button type="button" class="chip" data-section="itembox" aria-pressed="false">Item box <span class="chip-count" data-count="itembox"></span></button>
+            <button type="button" class="chip" data-section="pouch" aria-pressed="false">Pouch <span class="chip-count" data-count="pouch"></span></button>
+            <button type="button" class="chip" data-section="warehouse" aria-pressed="false">Warehouse <span class="chip-count" data-count="warehouse"></span></button>
+            <button type="button" class="chip" data-section="equipbox" aria-pressed="false">Equipment box <span class="chip-count" data-count="equipbox"></span></button>
           </div>
-
-          <p class="subhead">Warehouse</p>
-          <div class="chip-list" id="storage-warehouse"><span class="muted">Empty</span></div>
-
-          <p class="subhead">House</p>
-          <dl class="detail-list" id="storage-house"></dl>
+          <p class="note-text">What the game saved at this character's last save, read by the server. Only you (and the server's admins) can see this.</p>
         </section>
+        <div id="details-body"></div>
       </section>
+
 
       <!-- Hunts -->
       <section class="tab-panel" id="panel-hunts" role="tabpanel" aria-labelledby="tab-hunts" hidden>
@@ -317,40 +293,6 @@
         </section>
 
       <div id="hunts-quests"></div>
-      </section>
-
-      <!-- Details (js/account-details.js) -->
-      <section class="tab-panel" id="panel-details" role="tabpanel" aria-labelledby="tab-details" hidden>
-        <section class="panel" id="details-live">
-          <div class="panel-head">
-            <h2>Character details</h2>
-            <span class="panel-note" id="details-note" aria-live="polite"></span>
-          </div>
-          <div class="toolbar">
-            <label class="select-wrap">
-              <span class="search-label">Character</span>
-              <select id="details-character"></select>
-            </label>
-            <a class="toolbar-note" id="details-card-link" href="/hunters.html" hidden>Open the hunter card</a>
-          </div>
-          <form class="toolbar" id="details-admin-form" hidden>
-            <label class="search">
-              <span class="search-label">Admin: any character id</span>
-              <input type="text" inputmode="numeric" id="details-admin-id" placeholder="Character id" autocomplete="off" />
-            </label>
-            <button class="btn btn-small" type="submit">Open</button>
-          </form>
-          <p class="form-alert" id="details-alert" role="alert" hidden></p>
-          <p class="note-text" id="details-soon" hidden>Character details on the website are coming soon.</p>
-          <div class="chips" id="details-sections" role="group" aria-label="Details sections" hidden>
-            <button type="button" class="chip" data-section="equipment" aria-pressed="true">Equipment</button>
-            <button type="button" class="chip" data-section="loadouts" aria-pressed="false">Loadouts</button>
-            <button type="button" class="chip" data-section="boxes" aria-pressed="false">Boxes</button>
-            <button type="button" class="chip" data-section="stats" aria-pressed="false">Stats</button>
-          </div>
-          <p class="note-text">What the game saved at this character's last save, read by the server. Only you (and the server's admins) can see this tab.</p>
-        </section>
-        <div id="details-body"></div>
       </section>
 
       <!-- Guild -->
@@ -609,8 +551,9 @@
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>
     <script src="/js/link-command.js?v=1"></script>
-    <script src="/js/account.js?v=8"></script>
-    <script src="/js/account-details.js?v=1"></script>
+    <script src="/js/game-icons.js?v=2"></script>
+    <script src="/js/account.js?v=9"></script>
+    <script src="/js/account-details.js?v=2"></script>
     <script src="/js/backup-file.js?v=2"></script>
     <script src="/js/account-backup.js?v=2"></script>
     <script src="/js/account-transfer.js?v=1"></script>

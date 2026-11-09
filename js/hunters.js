@@ -593,7 +593,9 @@
       var label = el("span", "wb-name");
       var img = document.createElement("img");
       img.className = "weapon-icon";
-      img.src = "/assets/weapons/" + r.weapon.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".png";
+      var slug = r.weapon.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      img.src = "/assets/icons/1x/" + slug + "-0.png"; // the game's weapon class icon (js/game-icons.js)
+      img.srcset = "/assets/icons/2x/" + slug + "-0.png 2x";
       img.alt = "";
       img.loading = "lazy";
       label.appendChild(img);

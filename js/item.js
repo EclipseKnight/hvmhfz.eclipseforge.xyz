@@ -174,7 +174,9 @@
     var art = el("div", "item-hero-art");
     if (icon) {
       var img = el("img");
-      img.src = "/assets/items/" + icon + ".webp";
+      img.src = "/assets/icons/1x/" + icon + ".png"; // the game's icon (js/game-icons.js)
+      img.srcset = "/assets/icons/1x/" + icon + ".png 32w, /assets/icons/2x/" + icon + ".png 64w";
+      img.sizes = "64px";
       img.alt = "";
       art.appendChild(img);
     }

@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """Writes the lookup tables the Quest builder needs and the site cannot derive by itself.
 
-  python3 dev/make-builder-data.py --dll <mhfo-hd.dll> --item-tsv <item-icons.tsv> --dat <mhfdat.bin, decompressed>
+  python3 dev/make-builder-data.py --dll <mhfo-hd.dll> --dat <mhfdat.bin, decompressed>
 
 --dll       the client's mhfo-hd.dll (the unpacked one from the owner's client; it is never copied here).
             Writes data/map-areas.json: per map id, the ids of its areas, in the client's own order (the
             first is the area a quest starts in). The client keeps a u16 count per map at 0x11864828 and a
             pointer to a u16 list per map at 0x11a3fa28 (hvmhfz_re docs/quest-files.md, header +0x24). Areas
             the old file listed (start areas seen in quests) that the client list lacks are kept at the end.
---item-tsv  the API's src/main/resources/item-icons.tsv (community item database: item id, byte reversed
-            hex, then the icon name). Writes data/item-icons.json: item id -> icon name, the file being
-            /assets/items/<name>.webp. Items with no icon name are left out; the builders draw the neutral
-            placeholder for them (dev/check-builder-icons.js lists them).
+(data/item-icons.json, item id -> the game's icon, is no longer written here: it comes from the client with
+the icons themselves, hvmhfz_re tools/icons/game_icons.py; see README "Game icons".)
 
 --dat       the English client's dat/mhfdat.bin, decompressed (e.g. `mono ReFrontier.exe mhfdat.bin`; the patch's file,
             never copied here). Rewrites the names in data/item-ids.json with the game's own: the client keeps a
@@ -81,26 +79,6 @@ def map_areas(dll):
     print("data/map-areas.json: %d maps, %d areas" % (len(ordered), sum(len(v) for v in ordered.values())))
 
 
-def item_icons(tsv):
-    icons = {}
-    for line in open(tsv, encoding="utf-8"):
-        key, _, name = line.rstrip("\n").partition("\t")
-        key, name = key.strip(), name.strip()
-        if len(key) != 4 or not name:
-            continue
-        try:
-            item = (int(key[2:4], 16) << 8) | int(key[0:2], 16)
-        except ValueError:
-            continue
-        icons[item] = name
-    ordered = {str(k): icons[k] for k in sorted(icons)}
-    path = os.path.join(ROOT, "data", "item-icons.json")
-    with open(path, "w") as out:
-        json.dump(ordered, out, separators=(",", ":"))
-        out.write("\n")
-    print("data/item-icons.json: %d items" % len(ordered))
-
-
 def game_text_kept(game, current):
     """Why the current name stays instead of the game's, or None to take the game's."""
     if any("\u3000" <= ch <= "\u9fff" or "\uff00" <= ch <= "\uffef" for ch in game):
@@ -141,15 +119,12 @@ def item_names(dat):
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--dll")
-    parser.add_argument("--item-tsv")
     parser.add_argument("--dat")
     args = parser.parse_args()
-    if not args.dll and not args.item_tsv and not args.dat:
-        parser.error("give --dll, --item-tsv, --dat or several")
+    if not args.dll and not args.dat:
+        parser.error("give --dll, --dat or both")
     if args.dll:
         map_areas(args.dll)
-    if args.item_tsv:
-        item_icons(args.item_tsv)
     if args.dat:
         item_names(args.dat)
 

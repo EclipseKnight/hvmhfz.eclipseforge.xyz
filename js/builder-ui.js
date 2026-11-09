@@ -5,7 +5,8 @@
    from the label, a quiet "?" with more), section panels and add/remove buttons.
 
    Icons: a monster's picture comes from data/monster-icons.json (id -> path), an item's from
-   data/item-icons.json (id -> icon name, /assets/items/<name>.webp). Anything without a picture gets the one
+   data/item-icons.json (id -> icon key, the game's icon /assets/icons/1x/<key>.png, 2x/ in srcset; see
+   js/game-icons.js). Anything without a picture gets the one
    neutral placeholder, never a broken image. The icon lookups also run under node, where
    dev/check-builder-icons.js uses them to check that every offered monster and item has a file. */
 (function (root) {
@@ -30,7 +31,7 @@
   /** The picture of an item, or "" when it has none. */
   function itemIcon(id) {
     var name = tables.items && tables.items[String(id)];
-    return name ? "/assets/items/" + name + ".webp" : "";
+    return name ? "/assets/icons/1x/" + name + ".png" : "";
   }
 
   /** What a picker draws for an option: a picture, the placeholder, or nothing for "None" (id 0). */
@@ -144,7 +145,12 @@
     img.alt = "";
     img.loading = "lazy";
     img.src = src;
+    if (src.indexOf("/assets/icons/1x/") === 0) { // the game's icons: the 2x file when 28 px needs it
+      img.srcset = src + " 32w, " + src.replace("/1x/", "/2x/") + " 64w";
+      img.sizes = "28px";
+    }
     img.addEventListener("error", function () {
+      img.removeAttribute("srcset");
       if (img.src.indexOf(PLACEHOLDER) === -1) img.src = PLACEHOLDER;
     });
     return img;

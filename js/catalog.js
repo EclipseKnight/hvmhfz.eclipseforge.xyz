@@ -21,6 +21,28 @@
     });
   }
 
+  var Icons = window.HvGameIcons;
+
+  /* The catalog's equipment sections as the pieces js/game-icons.js knows. */
+  var PIECES = { melee: { kind: "melee" }, ranged: { kind: "ranged" }, heads: { slot: "head" },
+    chests: { slot: "chest" }, arms: { slot: "arms" }, waists: { slot: "waist" }, legs: { slot: "legs" } };
+
+  /* The API's equipment ids are the game's id as 4 hex digits, byte-swapped ("EB19" is 0x19EB = 6635);
+     armour ids come padded with spaces. */
+  function gameId(raw) {
+    var hex = String(raw || "").trim();
+    return /^[0-9a-f]{4}$/i.test(hex) ? parseInt(hex.slice(2, 4) + hex.slice(0, 2), 16) : null;
+  }
+
+  /* The icon of an equipment row: its type in its colour, from data/equipment-icons.json (the API's own
+     icon names are item pictures and not used). */
+  function equipmentKey(data, slot, raw) {
+    var id = gameId(raw);
+    if (id === null || !PIECES[slot]) return null;
+    var piece = { id: id, kind: PIECES[slot].kind || "armour", slot: PIECES[slot].slot || "weapon" };
+    return Icons.equipmentLook(data, piece).key;
+  }
+
   function url() {
     if (state.slot === "items") {
       return "/api/public/catalog/items?q=" + encodeURIComponent(state.q) + "&page=" + state.page + "&size=" + state.size;
@@ -44,9 +66,9 @@
     data.items.forEach(function (entry) {
       var row = el("tr");
       var iconCell = el("td", "catalog-icon");
-      if (entry.icon) { // API equipment and data/items both name the file in /assets/items
+      if (entry.key) { // the game's icon (js/game-icons.js): an item's key, or a piece's type and colour
         var img = document.createElement("img");
-        img.src = "/assets/items/" + entry.icon + ".webp";
+        Icons.setPicture(img, entry.key, 48);
         img.alt = "";
         img.loading = "lazy";
         iconCell.appendChild(img);
@@ -116,7 +138,7 @@
     var found = itemMatches(rows, state.q);
     var start = state.page * state.size;
     render({ total: found.length, size: state.size, items: found.slice(start, start + state.size).map(function (r) {
-      return { id: String(r[0]), name: r[1], icon: r[2], aka: r[3], sources: r[4], href: "/item.html?id=" + r[0] };
+      return { id: String(r[0]), name: r[1], key: r[2], aka: r[3], sources: r[4], href: "/item.html?id=" + r[0] };
     }) });
   }
 
@@ -127,7 +149,11 @@
       });
       return;
     }
-    request(url()).then(render).catch(function () {
+    var slot = state.slot;
+    Promise.all([request(url()), Icons.load()]).then(function (results) {
+      results[0].items.forEach(function (entry) { entry.key = equipmentKey(results[1], slot, entry.id); });
+      render(results[0]);
+    }).catch(function () {
       document.getElementById("catalog-results").textContent = "Could not load the catalog";
     });
   }
