@@ -2,7 +2,10 @@
    GET /api/account/qol (the list comes from the API, nothing is hard-coded here). A toggle saves at once with
    PUT /api/account/qol {id: true|false}. The game reads the choice at the next login.
    When the answer has "keys", a Keys part lets the player pick the keys the mods use (retire key and what to do on a
-   cart or death, skip-wait key, five remote talk keys); "Save keys" sends PUT /api/account/qol/keys. */
+   cart or death, skip-wait key, five remote talk keys); "Save keys" sends PUT /api/account/qol/keys.
+   When the feature list has "iframeViewer" and the answer has "viewer", a Viewer options part shows four checkboxes
+   (iframe bar, iframe count, hitstop bar, hit indicator), a position and a size; "Save viewer options" sends all six
+   keys with PUT /api/account/qol/viewer. */
 (function () {
   "use strict";
   var API = "https://api.hvmhfz.eclipseforge.xyz";
@@ -12,6 +15,7 @@
   var note = document.getElementById("qol-note");
   var alertNode = document.getElementById("qol-alert");
   var keysBox = document.getElementById("qol-keys");
+  var viewerBox = document.getElementById("qol-viewer");
   if (!list) return;
 
   function token() {
@@ -32,6 +36,8 @@
     if (bad) note.textContent = "";
   }
 
+  var VIEWER_EVENT_RULE = "Turned off by itself in Speedrun Cup and VS Bracket quests. A cup time or VS result made while a viewer was showing does not count.";
+
   function render(data) {
     list.innerHTML = "";
     (data.features || []).forEach(function (f) {
@@ -49,6 +55,7 @@
       row.appendChild(el("p", "note-text qol-desc", f.description));
       if (f.minPatch) row.appendChild(el("p", "note-text qol-patch", "Needs client patch v" + f.minPatch + " or newer"));
       if (f.revealsHiddenInfo) row.appendChild(el("p", "note-text qol-hidden", "Shows information the game normally hides"));
+      if (f.id === "iframeViewer") row.appendChild(el("p", "note-text qol-event", VIEWER_EVENT_RULE));
       box.addEventListener("change", function () { save(f, box); });
       list.appendChild(row);
     });
@@ -237,6 +244,101 @@
     keysBox.appendChild(actions);
   }
 
+  /* ---- Viewer options ---- */
+  var VIEWER_BOXES = [["iframeBar", "Iframe bar"], ["iframeCount", "Iframe count"], ["hitstopBar", "Hitstop bar"], ["hitIndicator", "Hit indicator"]];
+  var VIEWER_POSITIONS = [["top", "Top"], ["center", "Centre"], ["bottom", "Bottom"], ["left", "Left"]];
+  var VIEWER_SIZES = [["small", "Small"], ["normal", "Normal"], ["large", "Large"], ["huge", "Huge"]];
+
+  function pick(list, value, fallback) {
+    for (var i = 0; i < list.length; i++) if (list[i][0] === value) return value;
+    return fallback;
+  }
+
+  function viewerSelect(parent, id, label, options, value) {
+    var row = el("div", "field");
+    var l = el("label", "", label);
+    l.htmlFor = id;
+    var sel = el("select");
+    sel.id = id;
+    options.forEach(function (o) {
+      var opt = el("option", "", o[1]);
+      opt.value = o[0];
+      sel.appendChild(opt);
+    });
+    sel.value = value;
+    row.appendChild(l);
+    row.appendChild(sel);
+    parent.appendChild(row);
+    return sel;
+  }
+
+  function renderViewer(data) {
+    viewerBox.innerHTML = "";
+    var has = (data.features || []).some(function (f) { return f.id === "iframeViewer"; });
+    var v = data.viewer;
+    if (!has || !v || typeof v !== "object") { viewerBox.hidden = true; return; }
+    viewerBox.hidden = false;
+    viewerBox.appendChild(el("h3", "", "Viewer options"));
+    viewerBox.appendChild(el("p", "note-text", "What the iframe viewer draws, where and how big. They apply while the Iframe viewer switch is on."));
+    var boxes = {};
+    var checks = el("div", "qol-viewer-checks");
+    VIEWER_BOXES.forEach(function (b) {
+      var label = el("label", "qol-label");
+      var box = el("input");
+      box.type = "checkbox";
+      box.id = "qol-viewer-" + b[0];
+      box.checked = v[b[0]] !== false;
+      label.htmlFor = box.id;
+      label.appendChild(box);
+      label.appendChild(el("span", "qol-name", b[1]));
+      checks.appendChild(label);
+      boxes[b[0]] = box;
+    });
+    viewerBox.appendChild(checks);
+    var position = viewerSelect(viewerBox, "qol-viewer-position", "Position", VIEWER_POSITIONS, pick(VIEWER_POSITIONS, v.position, "top"));
+    var size = viewerSelect(viewerBox, "qol-viewer-size", "Size", VIEWER_SIZES, pick(VIEWER_SIZES, v.size, "normal"));
+    var actions = el("div", "qol-keys-actions");
+    var saveBtn = el("button", "btn btn-primary btn-small", "Save viewer options");
+    saveBtn.type = "button";
+    saveBtn.id = "qol-viewer-save";
+    saveBtn.addEventListener("click", function () {
+      var body = {};
+      VIEWER_BOXES.forEach(function (b) { body[b[0]] = boxes[b[0]].checked; });
+      body.position = position.value;
+      body.size = size.value;
+      saveViewer(saveBtn, body);
+    });
+    actions.appendChild(saveBtn);
+    viewerBox.appendChild(actions);
+  }
+
+  function saveViewer(btn, body) {
+    btn.disabled = true;
+    say("Saving.");
+    fetch(API + "/api/account/qol/viewer", {
+      method: "PUT",
+      headers: { Authorization: "Bearer " + token(), "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json().catch(function () { return null; }).then(function (data) {
+        if (!r.ok) {
+          var err = new Error("HTTP " + r.status);
+          err.serverMessage = data && (data.message || data.error);
+          throw err;
+        }
+        return data;
+      });
+    }).then(function (data) {
+      render(data);
+      renderKeys(data.keys);
+      renderViewer(data);
+      say("Viewer options saved. They take effect from your next login to the game.");
+    }).catch(function (e) {
+      btn.disabled = false;
+      say(e.serverMessage ? "Could not save the viewer options: " + e.serverMessage : "Could not save the viewer options. Try again in a moment.", true);
+    });
+  }
+
   // The same checks as the API (rules 2-4); returns a message, or "" when all is well.
   function keyProblem() {
     var all = [["Retire key", keyState.retire], ["Skip-wait key", keyState.skip]];
@@ -295,6 +397,7 @@
     }).then(function (data) {
       render(data);
       renderKeys(data.keys);
+      renderViewer(data);
       say("Keys saved. They take effect from your next login to the game.");
     }).catch(function (e) {
       btn.disabled = false;
@@ -325,7 +428,7 @@
   }
 
   function load() {
-    if (!token()) { say("Sign in to change your game options."); list.innerHTML = ""; keysBox.hidden = true; return; }
+    if (!token()) { say("Sign in to change your game options."); list.innerHTML = ""; keysBox.hidden = true; viewerBox.hidden = true; return; }
     fetch(API + "/api/account/qol", { headers: { Authorization: "Bearer " + token() }, cache: "no-store" })
       .then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
@@ -333,10 +436,12 @@
       }).then(function (data) {
         render(data);
         renderKeys(data.keys);
+        renderViewer(data);
       })
       .catch(function () {
         list.innerHTML = "";
         keysBox.hidden = true;
+        viewerBox.hidden = true;
         say("Your game options could not be loaded right now.", true);
       });
   }
