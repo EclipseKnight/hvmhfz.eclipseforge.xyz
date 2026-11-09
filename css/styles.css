@@ -1818,7 +1818,7 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
   .item-hero-info h1{font-size:1.8rem}
 }
 
-/* ---------- account page, Details tab (js/account-details.js) ---------- */
+/* ---------- account page, character view (js/account-details.js; its icons in the block "game icons" below) ---------- */
 .char-details-link{font:600 .74rem/1 var(--font-ui);letter-spacing:.06em;text-transform:uppercase}
 .detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:0 0 14px}
 .detail-piece{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border:1px solid var(--line);border-radius:3px;background:var(--parchment-3)}
@@ -1845,5 +1845,44 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
   .detail-grid{grid-template-columns:1fr}
   .detail-list{grid-template-columns:1fr;gap:2px}
   .detail-list dd{margin-bottom:8px}
-  .detail-box-table td:nth-child(5){min-width:160px}
+}
+
+/* ---------- game icons (js/game-icons.js) and the account page's character view (js/account-details.js) ----------
+   An icon is a span.gi holding the picture; an equipment icon adds span.gi-tint, the rarity colour cut to the
+   sprite's shape and multiplied over it, so the grey sprite takes the colour and its outline stays dark. */
+.gi{position:relative;display:inline-block;flex:none;width:32px;height:32px;vertical-align:middle;isolation:isolate}
+.gi img{display:block;width:100%;height:100%;object-fit:contain}
+.gi-item img{image-rendering:pixelated}
+.gi-tint{position:absolute;inset:0;mix-blend-mode:multiply;pointer-events:none;
+  -webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-position:center;mask-position:center}
+.gi-small{width:20px;height:20px}
+.gi-large{width:48px;height:48px}
+.gi-empty{border:1px dashed var(--line);border-radius:3px;opacity:.6}
+.detail-piece-head{display:flex;align-items:center;gap:10px}
+.detail-piece-head .gi{width:40px;height:40px}
+.detail-piece-text{display:flex;flex-direction:column;gap:3px;min-width:0}
+.detail-set-weapon{display:inline-flex;align-items:center;gap:6px}
+.char-tabs{margin:4px 0 10px}
+.chip-count{margin-left:4px;opacity:.75;font-variant-numeric:tabular-nums}
+.chip-count:empty{display:none}
+.char-view-switch{margin:0;flex:none}
+.char-icon-cell{width:44px;padding-top:4px;padding-bottom:4px}
+.char-decos-cell .detail-item{margin-right:10px}
+.char-items{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 14px}
+.char-item{display:flex;align-items:center;gap:10px;padding:6px 8px;border:1px solid var(--line);border-radius:3px;background:var(--parchment-3)}
+.char-item-text{display:flex;flex-direction:column;min-width:0;flex:1}
+.char-item-name{font-weight:600;overflow-wrap:anywhere;line-height:1.25}
+.char-item-where{font-size:.78rem;color:var(--ink-soft)}
+.char-item-qty{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.char-item-empty{color:var(--ink-soft);font-style:italic}
+/* the item box grid: filled slots are buttons now (keyboard and screen readers reach them) */
+button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
+.slot .gi{width:78%;height:78%}
+.preview-icon .gi{width:44px;height:44px}
+@media (max-width:560px){
+  .char-items{grid-template-columns:1fr}
+  /* two chips always fit: no scrolling row and no fade at its edge */
+  .chips[role="group"].char-view-switch{overflow:visible;padding-bottom:0;-webkit-mask-image:none;mask-image:none}
+  .detail-box-table td:nth-child(7){min-width:160px}
 }
