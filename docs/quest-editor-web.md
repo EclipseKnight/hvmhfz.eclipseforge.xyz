@@ -120,9 +120,10 @@ result is refused past the client's 32 KB quest buffer, and text Shift-JIS canno
 character named.
 
 **Page.** `quest-editor.html` with `js/quest-editor.js`, laid out in the order a quest is built (2 Nov 2026):
-Your drafts (links to `?draft=<id>`), Basics (name, time limit, players, contract fee, reward money, item
-needed to enter; quest class under "More settings"), Map and start area, Objectives (with the quest card's
-monster pictures), Monsters and their areas, Rewards and supplies (supply box, reward groups with each item's
+Your drafts (links to `?draft=<id>`), Basics (name, time limit, contract fee, reward money, item
+needed to enter; quest class under "More settings"), Quest board listing (counter, mark, players, stars; 9 Nov
+2026, below), Map and start area (with time of day and season), Objectives (with the targets required to clear
+and the quest card's monster pictures), Monsters and their areas, Rewards and supplies (supply box, reward groups with each item's
 share of the group's weight), Quest text, then Review and submit (a summary, the problems the page can see,
 and save, download, submit). Choosing a map refreshes every area list to that map's areas
 (`data/map-areas.json`, the client's own per-map lists, written by `dev/make-builder-data.py`): a start area
@@ -143,6 +144,21 @@ longer carries an edit action, and `?id=` shows the server's refusal instead of 
 **What Pax's editor has that the builder lacks** (counter and mark, flags, restrictions, forced equipment,
 monster size, level and coordinates, reward preview) and the plan for it: `docs/quest-builder-gap.md`
 (2026-11-09).
+
+**Listing options (gap plan task 1, 9 Nov 2026).** "Quest board listing": Counter (the eight event counters
+the API takes for authors: 18 HR Event by default, 24, 26, 28, 31, 38, 39, 43) and Mark (none, Recommended,
+New) are not file fields: they are the draft's `listing`, saved beside the model (`PUT {model, listing}`) and
+copied into the submission, whose `event_quests` row the API writes with them and with the file's player cap
+(API README "Custom quest listing"; an admin can change counter and mark when publishing, in the admin Custom
+quests tab). Players (`body.maxHunters`) moved here from Basics; Stars edit `body.level` (1..8). Under Map,
+Time of day (Day or Night, `body.seasonFlags` bit 3 or 4) and Season (warm, cold or breeding, bits 1, 2, 0):
+set in the file because Erupe's `event_quests.flags` writes the wrong byte. Under Objectives, "Targets
+required to clear" (`body.objectiveMode` 2, 3 or 4; the two-target choices open once the sub-targets are set)
+also sets `seasonFlags` bit 6. Every `seasonFlags` change keeps the u32 view `body.flags` in step, and the API
+does the same. The review shows the quest list row ("★★★ · New · name — G Event counter, ...") and time and
+season, and lists a required sub-target that is not set. Only three fields have a quiet "?" with more text
+(Counter, Season, Targets required; `BuilderUI.helpTip`), the owner's preference for few help buttons. Check:
+`dev/check-quest-listing.js`.
 
 **Still open.** The `quest_submission` queue, MAX_ACTIVE and the sandbox id block are unchanged; a draft is
 never a submission until Submit. Nothing here deletes drafts (the API caps an account at 50), and the private

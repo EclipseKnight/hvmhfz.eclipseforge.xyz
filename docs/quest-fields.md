@@ -70,8 +70,8 @@ with the builder and plans the missing ones.
 | Key | Label | Struct | Offset | Bytes | Type | Range | Values | Builder | Confidence |
 |---|---|---|---|---|---|---|---|---|---|
 | `header.questClass` | Quest class (the copy the client uses) | header | 0x5c | 1 | u8enum | 0..9 | 0 = Low rank; 1 = High rank; 2 = Exercise / trial; 3 = HR 100 and up; 7 = G rank; 8 = Hunting Road / Sky Corridor; 9 = Supremacy (names: one source) | edits | confirmed |
-| `body.seasonFlags` | Season and day/night | body | 0x02 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 6 (JSON) | carried | confirmed |
-| `body.level` | Quest level (stars) | body | 0x04 | 1 | u8 | 1..8 |  | carried | confirmed |
+| `body.seasonFlags` | Season and time of day | body | 0x02 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 6 (JSON) | edits | confirmed |
+| `body.level` | Quest level (stars) | body | 0x04 | 1 | u8 | 1..8 |  | edits | confirmed |
 | `body.monsterGroup` | Monster group (list filter) | body | 0x05 | 1 | u8 | 0..6 |  | carried | one source |
 | `body.questClass` | Quest class | body | 0x0a | 1 | u8enum | 0..9 | 0 = Low rank; 1 = High rank; 2 = Exercise / trial; 3 = HR 100 and up; 7 = G rank; 8 = Hunting Road / Sky Corridor; 9 = Supremacy (names: one source) | edits | confirmed |
 | `body.maxHunters` | Max hunters | body | 0x0b | 1 | u8 | 0..4 | 0 = 4 hunters; 1 = solo (skips the multi-hunter paths); 2 = 2 hunters; 3 = 3 hunters; 4 = 4 hunters | edits | confirmed |
@@ -113,7 +113,7 @@ with the builder and plans the missing ones.
 | `body.objective2.type` | Objective type (sub-target B) | body | 0x40 | 4 | bitfield |  | 12 named values (JSON) | edits | confirmed |
 | `body.objective2.target` | Objective target (sub-target B) | body | 0x44 | 2 | u16enum |  | monster-ids.json when type bit 0 or bit 2 is set; item-ids.json when bit 1 is set | edits | confirmed |
 | `body.objective2.count` | Objective count (sub-target B) | body | 0x46 | 2 | u16 | 0..65535 |  | edits | confirmed |
-| `body.objectiveMode` | Objective mode | body | 0x48 | 1 | u8enum |  | 2 = main target only (12,924 files); 3 = two objectives (703 files); 4 = three objectives (240 files) | carried | one source |
+| `body.objectiveMode` | Targets required to clear | body | 0x48 | 1 | u8enum | 2..4 | 2 = main target only (12,924 files); 3 = main target and sub-target A (703 files, all with sub-target A and body.seasonFlags bit 6); 4 = all three targets (240 files, all with sub-targets A and B and bit 6) | edits | one source |
 | `body.fourthObjectiveType` | Fail objective type | body | 0x54 | 4 | bitfield |  |  | carried | one source |
 | `body.fourthObjectiveTarget` | Fail objective target | body | 0x58 | 2 | u16 |  |  | carried | one source |
 | `body.fourthObjectiveCount` | Fail objective count | body | 0x5a | 2 | u16 |  |  | carried | one source |
@@ -192,7 +192,7 @@ with the builder and plans the missing ones.
 | `header.triggerGate` | Trigger gate | header | 0x74 | 2 | u16 |  | 3 = copy the two trigger records; 4 = copy the two trigger records | carried | one source |
 | `header.dropListCount` | Drop list count | header | 0x78 | 2 | u16 |  |  | carried | one source |
 | `header.triggers` | Two trigger records | header | 0x88 | 24 | bytes |  |  | carried | one source |
-| `body.flags` | Body flags (u32 view of +0x00..+0x03) | body | 0x00 | 4 | bitfield |  | bits 16, 18, 19, 21, 22, 26 (JSON) | carried | one source |
+| `body.flags` | Body flags (u32 view of +0x00..+0x03) | body | 0x00 | 4 | bitfield |  | bits 16, 18, 19, 21, 22, 26 (JSON) | derived | one source |
 | `body.flagByte` | Quest flag bits | body | 0x03 | 1 | bitfield |  | bits 0-1, 2, 3, 4, 5, 6 (JSON) | carried | one source |
 | `body.listFlags` | Quest list row flags | body | 0x06 | 1 | bitfield |  | bits 0, 2, 6, 7 (JSON) | carried | one source |
 | `body.variantIndex` | Variant row | body | 0x93 | 1 | u8 |  |  | carried | one source |
@@ -328,12 +328,27 @@ all in the API repo; 1-3 and 5 are fixed in `hvmhfz_rest_api` `a3aca9a` (live si
    monster).
 3. **Duplicated fields kept in step. Fixed.** `QuestModelWriter.prepare` copies `body.questClass` into
    `header.questClass`, `body.mapId` into `map.mapId` and the first start area into `map.areaId`.
-4. **Overlapping views of the same bytes. Open.** `body.flags` (u32 at +0x00) covers `body.seasonFlags`
-   (+0x02) and `body.flagByte` (+0x03). An editor that changes one without the other gets "Two fields
-   disagree about byte 0x..." on save. Edit one view only (the bytes, not the u32).
+4. **Overlapping views of the same bytes. Fixed** (2026-11-09, quest builder chunk 1). `body.flags` (u32 at
+   +0x00) covers `body.seasonFlags` (+0x02) and `body.flagByte` (+0x03). An editor that changes one without the
+   other gets "Two fields disagree about byte 0x..." on save. The builder edits `seasonFlags` and keeps bytes 2
+   and 3 of `body.flags` in step (`flagsInStep` in `js/quest-editor.js`); the API does the same for a new quest
+   (`QuestModelWriter.flagsInStep`), and sets `seasonFlags` bit 6 from the objective mode.
 5. **Range validation. Fixed** (builder item 8). `QuestModelRanges` refuses a value outside this file's range
    with 400 and the field's name, for example `Out of range: body.timeLimit is 0; allowed 1800..90000.`; a
    field with no range here is checked against its width.
+
+## Not in the file: the quest list row
+
+Three things the in-game quest list shows come from Erupe's `event_quests` row, not from the quest file; the
+builder edits them too (2026-11-09, `docs/quest-builder-gap.md` task 1; API README "Custom quest listing"):
+
+| What | Row column | Builder | Values |
+|---|---|---|---|
+| Counter (quest type) | `quest_type` (entry +0x0a) | "Counter", kept in the draft's `listing.questType` | 18 HR Event (default), 24 Series, 26 Daily, 28 G Event, 31 G Urgent, 38 HR Exotic, 39 G Exotic, 43 Superior / Zenith (name unconfirmed); the API refuses any other, an admin can set any at approval |
+| Appeal mark | `mark` (entry +0x0e..+0x11) | "Mark", `listing.mark` | 0 none, 1 Recommended, 2 New |
+| Player cap | `max_players` (entry +0x09) | "Players", which edits `body.maxHunters` | the API writes the row from the file (low 3 bits, 0 = 4) |
+
+These have no bytes label (they are not file bytes) and are not in `data/quest-fields.json`.
 
 ## Still unknown, or sources disagree
 
@@ -347,7 +362,7 @@ all in the API repo; 1-3 and 5 are fixed in `hvmhfz_rest_api` `a3aca9a` (live si
 | `body +0xa4..+0xaf` | ReFrontier reads three G rank point values there in the client's own quest table; not traced for quest files, not in the codec |
 | `body.infoNumber` (+0xbe) | printed on info page 2, label is panel art; 0 in every file |
 | `body.variantFlags1..3` bit names | Erupe's comments only, except +0x99 bit 5 (Interception), which the client tests 622 times |
-| `body.seasonFlags` | Erupe names the bits of this byte (Spring, Warm, Cold, Day, Night) but edits the next byte, +0x03 (RE "Erupe's offsets") |
+| `body.seasonFlags` | Erupe names the bits of this byte (Spring, Warm, Cold, Day, Night) but its `event_quests.flags` column edits the next byte, +0x03 (RE "Erupe's offsets"), so the builder sets time of day and season in the file. What a season changes beyond the client's season number, and what both day and night bits together (2,016 files) do, is not traced |
 | objective types 16, 131072, 262144 | overlay names only; no quest file uses them |
 | reward groups 0x8002 / 0x8003 | the code calls the same check for both; sub-target A and B is inferred from their place |
 | reward weights not adding up to 100 | 18 groups in the files; what the client draws then is not traced |

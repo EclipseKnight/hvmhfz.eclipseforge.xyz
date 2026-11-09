@@ -1080,20 +1080,21 @@ tr.is-disabled td{color:var(--ink-soft);font-style:italic}
 .road-table-body{padding:10px 12px}
 .road-entries td{white-space:normal;vertical-align:middle}
 .road-entries input[type="checkbox"]{width:22px;height:22px}
-/* The Road builder's "?" circles (js/road-help.js): quiet, a 16px ring in the label's colour inside a bigger
-   invisible tap area; the text box is fixed on the page, placed by the script. */
+/* The Road builder's "?" circles (js/road-help.js) and the Quest builder's (js/builder-ui.js helpTip, .bui-help):
+   quiet, a 16px ring in the label's colour inside a bigger invisible tap area; the Road's text box is fixed on the
+   page, placed by the script, the Quest builder's sits under the field's label row (.field-head). */
 .help-pop.is-fixed{position:fixed;right:auto;margin-top:0;max-width:calc(100vw - 16px);z-index:60;padding:9px 12px;border-radius:6px;
   box-shadow:0 10px 28px rgba(26,17,11,.3),0 1px 3px rgba(26,17,11,.2);font-size:.8rem;line-height:1.5;animation:help-pop-in .12s ease-out}
 @keyframes help-pop-in{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.help-pop.is-fixed{animation:none}}
-.road-page .help-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin:-4px 0 -4px 2px;
+:is(.road-page,.bui-help) .help-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin:-4px 0 -4px 2px;
   vertical-align:middle;border:0;border-radius:50%;background:none;color:var(--ink-soft);font-size:0;outline:0}
-.road-page .help-tip::before{content:"?";box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:16px;height:16px;
+:is(.road-page,.bui-help) .help-tip::before{content:"?";box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:16px;height:16px;
   border:1px solid currentColor;border-radius:50%;font:600 .62rem/1 var(--font-ui);letter-spacing:0;opacity:.6;
   transition:opacity .12s,background-color .12s}
-.road-page .help-tip:hover,.road-page .help-tip:focus-visible,.road-page .help-tip[aria-expanded="true"]{background:none;color:var(--gold-ink)}
-.road-page .help-tip:hover::before,.road-page .help-tip[aria-expanded="true"]::before{opacity:1;background:rgba(183,138,51,.18)}
-.road-page .help-tip:focus-visible::before{opacity:1;background:rgba(183,138,51,.18);outline:2px solid var(--focus);outline-offset:2px}
+:is(.road-page,.bui-help) .help-tip:hover,:is(.road-page,.bui-help) .help-tip:focus-visible,:is(.road-page,.bui-help) .help-tip[aria-expanded="true"]{background:none;color:var(--gold-ink)}
+:is(.road-page,.bui-help) .help-tip:hover::before,:is(.road-page,.bui-help) .help-tip[aria-expanded="true"]::before{opacity:1;background:rgba(183,138,51,.18)}
+:is(.road-page,.bui-help) .help-tip:focus-visible::before{opacity:1;background:rgba(183,138,51,.18);outline:2px solid var(--focus);outline-offset:2px}
 .road-page .panel-head .help-tip,.road-page thead .help-tip{color:var(--text-dim)}
 .road-page .panel-head .help-tip:hover,.road-page .panel-head .help-tip:focus-visible,.road-page .panel-head .help-tip[aria-expanded="true"],
 .road-page thead .help-tip:hover,.road-page thead .help-tip:focus-visible,.road-page thead .help-tip[aria-expanded="true"]{color:var(--gold-bright)}

@@ -1,7 +1,8 @@
 /* Shared controls of the two builders, the Road builder (road.html) and the Quest builder
    (quest-editor.html), so both look and behave the same: one picker (a dropdown that draws an icon on every
    option, with a search box when the list is long, usable by mouse, touch and keyboard), number inputs that
-   say what they accept, fields with a label and a help note, section panels and add/remove buttons.
+   say what they accept, fields with a label and a help note (and, on the few fields whose meaning is not plain
+   from the label, a quiet "?" with more), section panels and add/remove buttons.
 
    Icons: a monster's picture comes from data/monster-icons.json (id -> path), an item's from
    data/item-icons.json (id -> icon name, /assets/items/<name>.webp). Anything without a picture gets the one
@@ -188,10 +189,64 @@
     return span;
   }
 
+  var openTip = null; // the "?" text pinned open by a tap or click, closed by Escape or a tap elsewhere
+
+  /* Closing also marks the text dismissed, so the still-focused button does not show it again through the CSS
+     focus rule (it would cover the control under it); hovering or leaving the button clears that. */
+  function closeTip() {
+    if (!openTip) return;
+    openTip.pop.classList.remove("is-open");
+    openTip.pop.classList.add("is-dismissed");
+    openTip.button.setAttribute("aria-expanded", "false");
+    openTip = null;
+  }
+
+  /**
+   * A quiet "?" after a label (css .help-tip, .help-pop; the same markup as the Road builder's): hover or keyboard
+   * focus shows the text, a tap or click keeps it open, a second tap, a tap elsewhere or Escape closes it (and keeps
+   * it closed while the button keeps focus).
+   * name is the field's label, for the button's accessible name.
+   */
+  function helpTip(text, name) {
+    var wrap = el("span", "bui-help");
+    var button = el("button", "help-tip");
+    button.type = "button";
+    button.setAttribute("aria-label", "What is " + name + "?");
+    button.setAttribute("aria-expanded", "false");
+    var pop = el("span", "help-pop", text);
+    pop.id = uid("bui-help");
+    pop.setAttribute("role", "tooltip");
+    button.setAttribute("aria-describedby", pop.id);
+    button.addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      var again = openTip && openTip.button === button;
+      closeTip();
+      if (again) return;
+      pop.classList.remove("is-dismissed");
+      pop.classList.add("is-open");
+      button.setAttribute("aria-expanded", "true");
+      openTip = { button: button, pop: pop };
+    });
+    button.addEventListener("mouseenter", function () { pop.classList.remove("is-dismissed"); });
+    button.addEventListener("blur", function () { pop.classList.remove("is-dismissed"); });
+    if (!helpTip.listening && doc) {
+      helpTip.listening = true;
+      doc.addEventListener("click", function (event) {
+        if (openTip && !openTip.pop.contains(event.target)) closeTip();
+      });
+      doc.addEventListener("keydown", function (event) { if (event.key === "Escape") closeTip(); });
+    }
+    wrap.appendChild(button);
+    wrap.appendChild(pop);
+    return wrap;
+  }
+
   /**
    * A labelled field: label, the bytes label, the control, then a help note. A picker is labelled through
    * aria-labelledby. opts: wide; ref ({fields, index}, see bytesText) adds the bytes label and, for a field
-   * whose name is not confirmed, "(unconfirmed)"; unsure (text) forces that mark with its reason.
+   * whose name is not confirmed, "(unconfirmed)"; unsure (text) forces that mark with its reason; help (text) puts
+   * a "?" after the label (helpTip), for the few fields whose meaning the label and hint do not make plain.
    */
   function field(labelText, control, hint, opts) {
     var o = opts || {};
@@ -206,7 +261,14 @@
     }
     var mark = unsureNode(o.ref, o.unsure);
     if (mark) { label.appendChild(doc.createTextNode(" ")); label.appendChild(mark); }
-    wrap.appendChild(label);
+    if (o.help) {
+      var head = el("div", "field-head");
+      head.appendChild(label);
+      head.appendChild(helpTip(o.help, labelText));
+      wrap.appendChild(head);
+    } else {
+      wrap.appendChild(label);
+    }
     var bytes = bytesNode(o.ref);
     if (bytes) wrap.appendChild(bytes);
     wrap.appendChild(node);
@@ -648,6 +710,7 @@
   shared.section = section;
   shared.subhead = subhead;
   shared.field = field;
+  shared.helpTip = helpTip;
   shared.button = button;
   shared.numberInput = numberInput;
   shared.numberField = numberField;

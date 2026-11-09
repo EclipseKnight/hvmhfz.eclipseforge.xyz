@@ -255,7 +255,11 @@ task: site check under `dev/` against a fake API (as `dev/check-quest-zenith.js`
 codec round-trip over the sample directory, `dev/check-quest-fields.js` and `docs/quest-fields.md` updated,
 and the changelog when it goes live. API deploys and the one migration need the owner's go as usual.
 
-1. **Listing: counter, mark, players, time of day, season, stars, mandatory objectives.** The owner's longest
+1. **Listing: counter, mark, players, time of day, season, stars, mandatory objectives.** Built 2026-11-09
+   (site branch `questbuilder-gap`, API branch `qb-chunk1`; not live): `docs/quest-editor-web.md` "Listing
+   options", API README "Custom quest listing". Found on the way: 2,016 of the 13,867 local files set both day
+   and night bits and 468 all three seasons (Pax's "Any"?); the builder offers one of each, the API refuses only
+   mixes no file has. The owner's longest
    list and the lowest client risk. UI: a "Where it is listed" section (counter from the safe list, mark, the
    existing players control), Day/Night and Season pickers writing `body.seasonFlags` (keeping bit 6),
    Stars 1..8, and an "Objectives required" picker writing `body.objectiveMode` and bit 6. API: an additive

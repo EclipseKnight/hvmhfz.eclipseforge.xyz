@@ -1,6 +1,6 @@
 {
  "about": "Every quest-file field the quest builder (quest-editor.html, js/quest-editor.js) and the API's QuestCodec read or write, with its struct, byte offset, size, type, range and named values. Read docs/quest-fields.md first. Checked by dev/check-quest-fields.js. Edit this file by hand.",
- "updated": "2026-11-05",
+ "updated": "2026-11-09",
  "confidence": {
   "confirmed": "offset, size and meaning agree in two or more independent sources (client trace, ReFrontier, 010 template, Erupe, a relation over all quest files)",
   "one source": "offset and size agree (codec round trip over every quest file and the client trace); the meaning has one source",
@@ -600,8 +600,8 @@
     "22": "required objectives (= seasonFlags bit 6, Erupe's name)",
     "26": "special quest (= flagByte bit 2)"
    },
-   "notes": "Overlaps body.seasonFlags and body.flagByte: an editor must change one view only, or the codec refuses the save (two fields disagree about a byte).",
-   "builder": "carried",
+   "notes": "Overlaps body.seasonFlags and body.flagByte: an editor must change one view only, or the codec refuses the save (two fields disagree about a byte). The builder edits seasonFlags and keeps bytes 2 and 3 of this view in step; the API does the same for a new quest (QuestModelWriter.flagsInStep).",
+   "builder": "derived",
    "source": [
     "hvmhfz_re docs/quest-files.md line 193",
     "hvmhfz_rest_api QuestCodec.java:361, 613"
@@ -610,29 +610,32 @@
   },
   {
    "key": "body.seasonFlags",
-   "label": "Season and day/night",
+   "label": "Season and time of day",
    "section": "basics",
    "struct": "body",
    "offset": "0x02",
    "size": 1,
    "type": "bitfield",
    "bits": {
-    "0": "season 2 (Erupe: Spring)",
-    "1": "Erupe: Warm",
-    "2": "season 1 (Erupe: Cold)",
-    "3": "day (file name letter d; Erupe: Day)",
-    "4": "Erupe: Night",
-    "6": "required objectives (Erupe's name; objective modes 3 and 4 only occur with it)"
+    "0": "season 2 (Pax: Breeding; Erupe: Spring)",
+    "1": "warm (Pax: Warm; the client's season 0, as with no bit)",
+    "2": "season 1 (Pax and Erupe: Cold)",
+    "3": "day (file name letter d)",
+    "4": "night (Erupe: Night)",
+    "6": "all objectives required (Erupe's name; set with objective modes 3 and 4)"
    },
-   "notes": "Erupe calls bits 0-4 Spring, Warm, Cold, Day, Night but edits the next byte (see docs/quest-fields.md).",
-   "builder": "carried",
+   "notes": "The builder offers Day or Night (bit 3 or 4) and one season (bit 0, 1 or 2), and sets bit 6 from the objective mode (body.objectiveMode); body.flags follows. The API refuses neither day nor night and two of the three seasons, which no file has. Erupe calls bits 0-4 Spring, Warm, Cold, Day, Night but its event_quests.flags column writes the next byte (see docs/quest-fields.md), so the builder sets them here, in the file.",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 194",
     "hvmhfz_re docs/quest-files.md line 328 (Erupe's bitset fits this byte bit for bit)",
     "Erupe server/channelserver/handlers_quest.go (erupe-target-upgrade):308-309",
-    "hvmhfz_rest_api QuestCodec.java:390, 614"
+    "hvmhfz_rest_api QuestCodec.java:390, 614",
+    "survey of the 13,867 local quest files (2026-11-09)",
+    "PaxMHFZQuestEditor (season and time names; read only, no licence)"
    ],
-   "confidence": "confirmed"
+   "confidence": "confirmed",
+   "seen": "time: day only 7,575, night only 4,276, both 2,016, neither 0; season: one of bits 0-2 13,393 (warm 6,841), all three 468, none 6, two 0 (13,867 local files)"
   },
   {
    "key": "body.flagByte",
@@ -670,7 +673,7 @@
     "max": 8
    },
    "seen": "1..8",
-   "builder": "carried",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 196",
     "ReFrontier FrontierDataTool/Program.cs:509 (level)",
@@ -678,7 +681,8 @@
     "hvmhfz_rest_api QuestCodec.java:392, 616",
     "survey of the 13,867 local quest files (2026-11-02)"
    ],
-   "confidence": "confirmed"
+   "confidence": "confirmed",
+   "notes": "The stars the quest list shows; the client compares them with the hunter's level (hvmhfz_re 0x10aadd30). The builder offers 1 to 8."
   },
   {
    "key": "body.monsterGroup",
@@ -1315,7 +1319,7 @@
   },
   {
    "key": "body.objectiveMode",
-   "label": "Objective mode",
+   "label": "Targets required to clear",
    "section": "objectives",
    "struct": "body",
    "offset": "0x48",
@@ -1323,17 +1327,22 @@
    "type": "u8enum",
    "values": {
     "2": "main target only (12,924 files)",
-    "3": "two objectives (703 files)",
-    "4": "three objectives (240 files)"
+    "3": "main target and sub-target A (703 files, all with sub-target A and body.seasonFlags bit 6)",
+    "4": "all three targets (240 files, all with sub-targets A and B and bit 6)"
    },
-   "notes": "What each mode does is only partly traced.",
-   "builder": "carried",
+   "notes": "The builder offers 2, 3 and 4, 3 only with sub-target A in use and 4 only with A and B, and sets body.seasonFlags bit 6 with 3 and 4 (the API refuses a mode without its sub-targets and sets bit 6 itself). With bit 6 the client folds the sub-target rewards into the main one (hvmhfz_re 0x10b126c0).",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 216",
     "hvmhfz_rest_api QuestCodec.java:411, 635",
-    "survey of the 13,867 local quest files (2026-11-02)"
+    "survey of the 13,867 local quest files (2026-11-02)",
+    "survey of the 13,867 local quest files (2026-11-09)"
    ],
-   "confidence": "one source"
+   "confidence": "one source",
+   "range": {
+    "min": 2,
+    "max": 4
+   }
   },
   {
    "key": "body.rank",

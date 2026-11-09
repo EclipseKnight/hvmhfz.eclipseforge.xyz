@@ -1,10 +1,11 @@
 /* Quest builder: a new quest as a QuestCodec model, edited as a private draft. The server writes the
    bytes. Nothing here opens a live quest file; every draft starts from the blank quest the API owns.
 
-   The page is laid out in the order a quest is built: basics, map and start area, objectives, monsters and
-   their areas, rewards and supplies, text, then review and submit. Every control writes one field of the
-   model the server sent, and nothing else; the controls themselves come from js/builder-ui.js, shared with
-   the Road builder. */
+   The page is laid out in the order a quest is built: basics, quest board listing, map and start area,
+   objectives, monsters and their areas, rewards and supplies, text, then review and submit. Every control writes
+   one field of the model the server sent, and nothing else (the listing's counter and mark are not in the file:
+   they are the draft's listing, see LISTING below); the controls themselves come from js/builder-ui.js, shared
+   with the Road builder. */
 (function () {
   "use strict";
 
@@ -35,6 +36,36 @@
      gathering points, area zones) of its chosen map, for the maps GET /api/account/quests/maps lists; any
      other map is refused with 400. When that list cannot be loaded, only the blank's own map is offered. */
   var BLANK_MAP = 26;
+
+  /* LISTING: where the quest is listed in game, kept beside the model in the draft (API README "Custom quest
+     listing"): the counter (event_quests.quest_type) and the appeal mark (event_quests.mark). The API refuses any
+     other counter (QuestListing.AUTHOR_TYPES: event counters with live rows and no event system of their own) and
+     any other mark; an admin can still change both when publishing. Names as Pax's editor has them. The third
+     listing value, the player cap, is the file's body.maxHunters, which the API copies into the row. */
+  var COUNTERS = [
+    { value: 18, label: "HR Event", hint: "the default" }, { value: 28, label: "G Event" },
+    { value: 24, label: "Series" }, { value: 26, label: "Daily" }, { value: 31, label: "G Urgent" },
+    { value: 38, label: "HR Exotic" }, { value: 39, label: "G Exotic" },
+    { value: 43, label: "Superior / Zenith", hint: "name unconfirmed" }
+  ];
+  var MARKS = [{ value: 0, label: "None" }, { value: 1, label: "Recommended" }, { value: 2, label: "New" }];
+  var DEFAULT_LISTING = { questType: 18, mark: 0 };
+
+  /* body.seasonFlags (+0x02): day is bit 3, night bit 4 (2,016 quest files set both; the builder offers one), the
+     season one of bits 0-2; bit 6 goes with "all objectives required" (objective modes 3 and 4). body.flags is a
+     u32 view of the same bytes, kept in step (flagsInStep), as the API does too. */
+  var TIME_DAY = 0x08;
+  var TIME_NIGHT = 0x10;
+  var TIME_BITS = TIME_DAY | TIME_NIGHT;
+  var SEASON_BITS = 0x07;
+  var ALL_REQUIRED = 0x40;
+  var TIMES = [{ value: TIME_DAY, label: "Day" }, { value: TIME_NIGHT, label: "Night" }];
+  var SEASONS = [{ value: 0x02, label: "Warm season", hint: "most quest files" }, { value: 0x04, label: "Cold season" },
+    { value: 0x01, label: "Breeding season" }];
+  /* body.objectiveMode: which targets must be done to clear the quest. 3 needs sub-target A, 4 needs A and B. */
+  var MODES = [{ value: 2, label: "Main target only", needs: [] },
+    { value: 3, label: "Main target and sub-target A", needs: ["objective1"] },
+    { value: 4, label: "All three targets", needs: ["objective1", "objective2"] }];
 
   /* Objective types no quest file uses; their names come from the overlay only (builder item 11). */
   var UNTESTED_TYPES = { 16: true, 131072: true, 262144: true };
@@ -70,8 +101,15 @@
   var submitBtn = document.getElementById("editor-submit");
   var buttons = [saveBtn, downloadBtn, submitBtn];
 
-  var state = { model: null, draftId: null, revision: 0, busy: false, mapMessage: "", supplyShown: {},
-    serverMaps: null, mapsNote: "" };
+  var state = { model: null, listing: copyListing(null), draftId: null, revision: 0, busy: false, mapMessage: "",
+    supplyShown: {}, serverMaps: null, mapsNote: "" };
+
+  /** The draft's listing as the API answers it, the defaults for what it leaves out. */
+  function copyListing(from) {
+    var l = from || {};
+    return { questType: typeof l.questType === "number" ? l.questType : DEFAULT_LISTING.questType,
+      mark: typeof l.mark === "number" ? l.mark : DEFAULT_LISTING.mark };
+  }
 
   // ---- server calls --------------------------------------------------------------------------
 
@@ -538,6 +576,44 @@
     return el("div", "editor-grid");
   }
 
+  /** body.flags is a u32 view of body +0x00..+0x03: bytes 2 and 3 follow seasonFlags and flagByte (or the server
+      would refuse the save: two fields disagree about a byte). */
+  function flagsInStep(b) {
+    if (typeof b.flags !== "number") return;
+    b.flags = ((b.flags & 0xffff) | ((b.seasonFlags & 0xff) << 16) | ((b.flagByte & 0xff) << 24)) >>> 0;
+  }
+
+  /** The bits of body.seasonFlags under mask become value; body.flags follows. */
+  function setSeasonBits(b, mask, value) {
+    b.seasonFlags = (b.seasonFlags & ~mask & 0xff) | value;
+    flagsInStep(b);
+  }
+
+  function optionLabel(list, value, fallback) {
+    var hit = list.filter(function (o) { return o.value === value; })[0];
+    return hit ? hit.label : fallback;
+  }
+
+  function starsText(level) {
+    return level + (level === 1 ? " star" : " stars");
+  }
+
+  /** True when the objective record is in use (its type is not "Not used"). */
+  function used(b, key) {
+    return !!(b[key] && b[key].type !== 0);
+  }
+
+  /** What the chosen objective mode needs and the quest lacks, as a sentence; "" when nothing. */
+  function modeProblem(b) {
+    var mode = MODES.filter(function (m) { return m.value === b.objectiveMode; })[0];
+    if (!mode) return "";
+    var missing = mode.needs.filter(function (key) { return !used(b, key); }).map(function (key) {
+      return key === "objective1" ? "sub-target A" : "sub-target B";
+    });
+    return missing.length ? "\u201c" + mode.label + "\u201d needs " + missing.join(" and ") + ": set "
+      + (missing.length === 1 ? "it" : "them") + " above, or require fewer targets." : "";
+  }
+
   // ---- 1. basics -----------------------------------------------------------------------------
 
   function basicsSection(model) {
@@ -553,19 +629,6 @@
       min: ticks ? Math.ceil(ticks.min / TICKS_PER_MINUTE) : 1, max: ticks ? Math.floor(ticks.max / TICKS_PER_MINUTE) : undefined,
       onChange: writes(function (v) { b.timeLimit = v * TICKS_PER_MINUTE; })
     }, "The quest files use 10 to 50 minutes; longer is untested."));
-    var hunters = hunterOptions();
-    if (hunters.length) {
-      g.appendChild(fieldFor(F("body.maxHunters"), "Players", UI.picker({
-        options: hunters, value: b.maxHunters, showIds: true,
-        unknownLabel: function (v) { return "Other (value " + v + ", the game reads " + (v & 7) + ")"; },
-        onChange: writes(function (v) { b.maxHunters = v; })
-      }), "How many hunters can join. The game reads only the low 3 bits, and 0 also means 4."));
-    } else {
-      g.appendChild(numberFor(F("body.maxHunters"), "Players", {
-        id: "meta-players", value: b.maxHunters, min: 1, max: 4,
-        onChange: writes(function (v) { b.maxHunters = v; })
-      }, "How many hunters can join, 1 to 4."));
-    }
     g.appendChild(numberFor(F("body.zenny"), "Contract fee", {
       id: "meta-zenny", value: b.zenny, min: 0, unit: "zenny",
       onChange: writes(function (v) { b.zenny = v; })
@@ -617,7 +680,51 @@
     return p;
   }
 
-  // ---- 2. map and start area -----------------------------------------------------------------
+  // ---- 2. quest board listing ---------------------------------------------------------------
+
+  function listingSection(model) {
+    var b = model.body;
+    var listing = state.listing;
+    var p = UI.section("Quest board listing", "where and how it is listed");
+    var g = grid();
+    g.appendChild(UI.field("Counter", UI.picker({
+      options: COUNTERS, value: listing.questType, showIds: true,
+      unknownLabel: function (v) { return "Counter " + v + " (not offered: pick one of the list)"; },
+      onChange: writes(function (v) { listing.questType = v; })
+    }), null, { help: "The quest list the quest appears in. These are the event counters a custom quest can use;"
+      + " an admin may move the quest to another counter when publishing it." }));
+    g.appendChild(UI.field("Mark", UI.picker({
+      options: MARKS, value: listing.mark,
+      unknownLabel: function (v) { return "Mark " + v + " (not offered)"; },
+      onChange: writes(function (v) { listing.mark = v; })
+    }), "The New or Recommended label beside the quest in the list."));
+    var hunters = hunterOptions();
+    if (hunters.length) {
+      g.appendChild(fieldFor(F("body.maxHunters"), "Players", UI.picker({
+        options: hunters, value: b.maxHunters, showIds: true,
+        unknownLabel: function (v) { return "Other (value " + v + ", the game reads " + (v & 7) + ")"; },
+        onChange: writes(function (v) { b.maxHunters = v; })
+      }), "How many hunters can join; the quest list shows it too. The game reads only the low 3 bits, and 0 also"
+        + " means 4."));
+    } else {
+      g.appendChild(numberFor(F("body.maxHunters"), "Players", {
+        id: "meta-players", value: b.maxHunters, min: 1, max: 4,
+        onChange: writes(function (v) { b.maxHunters = v; })
+      }, "How many hunters can join, 1 to 4."));
+    }
+    var stars = [1, 2, 3, 4, 5, 6, 7, 8].map(function (n) {
+      return { value: n, label: starsText(n), hint: new Array(n + 1).join("\u2605") };
+    });
+    g.appendChild(fieldFor(F("body.level"), "Stars", UI.picker({
+      options: stars, value: b.level,
+      unknownLabel: function (v) { return "Level " + v + " (the server accepts 1 to 8)"; },
+      onChange: writes(function (v) { b.level = v; })
+    }), "The quest's difficulty in stars, as the quest list shows it."));
+    p.appendChild(g);
+    return p;
+  }
+
+  // ---- 3. map and start area -----------------------------------------------------------------
 
   function allSpawns(model) {
     var list = [];
@@ -694,6 +801,20 @@
         : "This map has no known area list, so every area id is allowed.")
         + " Sets all four start records and the map record's base camp."));
     }
+    if (typeof b.seasonFlags === "number") {
+      g.appendChild(fieldFor(F("body.seasonFlags"), "Time of day", UI.picker({
+        options: TIMES, value: b.seasonFlags & TIME_BITS,
+        unknownLabel: function (v) { return v === TIME_BITS ? "Day and night (both bits, untested)" : "Not set"; },
+        onChange: writes(function (v) { b.seasonFlags = (b.seasonFlags & ~TIME_BITS & 0xff) | v; flagsInStep(b); })
+      }), "Day or night on the map."));
+      g.appendChild(fieldFor(F("body.seasonFlags"), "Season", UI.picker({
+        options: SEASONS, value: b.seasonFlags & SEASON_BITS,
+        unknownLabel: function (v) { return v === SEASON_BITS ? "All three (untested)" : "Value " + v + " (untested)"; },
+        onChange: writes(function (v) { b.seasonFlags = (b.seasonFlags & ~SEASON_BITS & 0xff) | v; flagsInStep(b); })
+      }), null, { help: "The season the game plays the map in. It is set in the quest file, so it does not follow"
+        + " the server's season. What a season changes on the map beyond that is not fully known: test the quest"
+        + " in game." }));
+    }
     p.appendChild(g);
     if (state.mapsNote) p.appendChild(note(state.mapsNote, "bui-notice"));
     if (state.mapMessage) {
@@ -761,6 +882,30 @@
       }
       p.appendChild(g);
     });
+
+    if (typeof b.objectiveMode === "number") {
+      var modeOptions = MODES.map(function (m) {
+        var missing = m.needs.filter(function (key) { return !used(b, key); }).length;
+        return { value: m.value, label: m.label, disabled: missing > 0 && m.value !== b.objectiveMode,
+          hint: missing ? "set the sub-targets first" : "" };
+      });
+      var mode = null;
+      var required = grid();
+      required.appendChild(fieldFor(F("body.objectiveMode"), "Targets required to clear", mode = UI.picker({
+        options: modeOptions, value: b.objectiveMode, showIds: true,
+        unknownLabel: function (v) { return "Mode " + v + " (the server accepts 2 to 4)"; },
+        onChange: writes(function (v) {
+          b.objectiveMode = v;
+          setSeasonBits(b, ALL_REQUIRED, v >= 3 ? ALL_REQUIRED : 0);
+          mode.setProblem(modeProblem(b));
+        })
+      }), null, {
+        help: "Main target only: the quest clears on the main target, and sub-targets pay extra. With more than the"
+          + " main target required, the quest clears only when all of them are done, and the game pays the"
+          + " sub-target rewards with the main reward." }));
+      mode.setProblem(modeProblem(b));
+      p.appendChild(required);
+    }
 
     var icons = b.iconMonsters || [];
     if (icons.length) {
@@ -1081,6 +1226,18 @@
       }
       if (o && UNTESTED_TYPES[o.type]) list.push(spec.name + " uses a type no quest file uses: untested (Objectives).");
     });
+    var needs = modeProblem(b);
+    if (needs) list.push("Targets required to clear: " + needs + " (Objectives).");
+    var listing = state.listing;
+    if (!COUNTERS.some(function (c) { return c.value === listing.questType; })) {
+      list.push("The counter " + listing.questType + " is not one a custom quest can use (Quest board listing).");
+    }
+    if (!MARKS.some(function (m) { return m.value === listing.mark; })) {
+      list.push("The mark " + listing.mark + " is not one a custom quest can use (Quest board listing).");
+    }
+    if (typeof b.seasonFlags === "number" && !(b.seasonFlags & TIME_BITS)) {
+      list.push("No time of day is set (Map and start area).");
+    }
     var off = allSpawns(model).filter(function (s) { return !areaOnMap(s.areaId, b.mapId); }).length;
     if (off) list.push(off + (off === 1 ? " monster is" : " monsters are") + " in an area that is not part of the map (Monsters).");
     var none = 0;
@@ -1112,14 +1269,26 @@
       var named = ((fieldRef["body.objective0.type"] || {}).values || objectiveTypes)[String(o.type)];
       return (valueName(named) || "Objective") + ": " + o.count + " × " + what;
     });
+    var listing = state.listing;
+    var players = (b.maxHunters & 7) === 1 ? "solo" : "up to " + ((b.maxHunters & 7) || 4) + " hunters";
+    var row = [new Array((b.level || 0) + 1).join("\u2605") || "no stars"];
+    if (listing.mark) row.push(optionLabel(MARKS, listing.mark, "mark " + listing.mark));
+    row.push(title && title.text ? title.text : "(no name yet)");
+    var required = optionLabel(MODES, b.objectiveMode, "");
     var facts = [
       ["Name", title && title.text ? title.text : "(none yet)"],
+      ["In the quest list", row.join(" \u00b7 ") + " \u2014 " + optionLabel(COUNTERS, listing.questType,
+        "counter " + listing.questType) + " counter, " + starsText(b.level || 0) + ", " + players],
       ["Map", mapName(b.mapId)],
+      ["Time and season", typeof b.seasonFlags === "number"
+        ? optionLabel(TIMES, b.seasonFlags & TIME_BITS, (b.seasonFlags & TIME_BITS) === TIME_BITS ? "Day and night" : "No time of day")
+          + ", " + optionLabel(SEASONS, b.seasonFlags & SEASON_BITS, "season value " + (b.seasonFlags & SEASON_BITS)).toLowerCase()
+        : "\u2013"],
       ["Start area", model.startAreas && model.startAreas.length ? areaName(model.startAreas[0].areaId, b.mapId) : "–"],
       ["Time and players", Math.round((b.timeLimit || 0) / TICKS_PER_MINUTE) + " minutes, "
         + ((b.maxHunters & 7) === 1 ? "solo" : "up to " + ((b.maxHunters & 7) || 4) + " hunters")],
       ["Money", "fee " + Number(b.zenny || 0).toLocaleString() + " zenny, reward " + Number(b.rewardMoney || 0).toLocaleString() + " zenny"],
-      ["Objectives", goals.length ? goals.join("; ") : "none set"],
+      ["Objectives", (goals.length ? goals.join("; ") : "none set") + (required ? " (to clear: " + required.toLowerCase() + ")" : "")],
       ["Monsters", spawns.length ? spawns.map(function (s) { return s.count + " × " + formName(model, s.monsterId); }).join(", ") : "none yet"],
       ["Supplies and rewards", supplies + (supplies === 1 ? " supply item, " : " supply items, ") + rewards + (rewards === 1 ? " reward" : " rewards")]
     ];
@@ -1143,7 +1312,7 @@
   // ---- drawing -------------------------------------------------------------------------------
 
   var SECTIONS = [
-    ["basics", basicsSection], ["map", mapSection], ["objectives", objectivesSection], ["monsters", monstersSection],
+    ["basics", basicsSection], ["listing", listingSection], ["map", mapSection], ["objectives", objectivesSection], ["monsters", monstersSection],
     ["rewards", rewardsSection], ["text", textSection]
   ];
   var drawn = {};
@@ -1201,6 +1370,15 @@
       var names = m[3].split(/,\s*/).filter(Boolean).map(function (id) { return monsterName(id); }).join(", ");
       out.push({ key: "largeSpawnAreas[" + (Number(m[1]) - 1) + "]", text: "This list has " + m[2] + " different monsters ("
         + names + "); a quest can list at most " + m[4] + " in one area. Remove one." });
+    }
+    m = /body\.objectiveMode (\d) requires sub-target ([AB])/.exec(text);
+    if (m) {
+      out.push({ key: "body.objectiveMode", text: "The server needs sub-target " + m[2] + " for this choice: set it, or"
+        + " require fewer targets." });
+    }
+    var season = /body\.seasonFlags sets ([^;]*?), which no quest file does/g;
+    while ((m = season.exec(text))) {
+      out.push({ key: "body.seasonFlags", text: "The server refused the time of day or season: it " + m[1] + "." });
     }
     m = /Map (\d+) has no area tables on this server/.exec(text);
     if (m) {
@@ -1287,7 +1465,7 @@
       return api("/api/account/quest-drafts/" + id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: state.model })
+        body: JSON.stringify({ model: state.model, listing: state.listing })
       }).then(body).then(function (saved) {
         state.revision = saved.revision;
         setDraftNote();
@@ -1406,8 +1584,8 @@
     panels(model);
     titleEl.textContent = "New quest";
     document.title = "New quest · Hunsterverse";
-    subEl.textContent = "Work down the page: basics, map, objectives, monsters, rewards and text, then review and"
-      + " submit at the end. The server assigns the quest id when you submit.";
+    subEl.textContent = "Work down the page: basics, listing, map, objectives, monsters, rewards and text, then"
+      + " review and submit at the end. The server assigns the quest id when you submit.";
     buttons.forEach(function (button) { button.disabled = false; });
     say("", false);
     setDraftNote();
@@ -1443,6 +1621,7 @@
     : api("/api/account/quest-drafts/" + draftParam).then(body).then(function (draft) {
         state.draftId = draft.id;
         state.revision = draft.revision;
+        state.listing = copyListing(draft.listing);
         return draft.model;
       });
 
