@@ -4,7 +4,7 @@
 Sources (all in this repo except the optional server names):
   - data/item-ids.json      the game's item id (decimal) -> name, from the overlay database (16,701 items;
                             the names the monster drop tables use);
-  - data/item-icons.json    item id -> icon name (/assets/items/<icon>.webp);
+  - data/item-icons.json    item id -> the game's icon key (/assets/icons/1x/<key>.png; README "Game icons");
   - data/monsters/*.json    drops: every row carries the item's id as 4 hex digits ("hex": "19EB");
   - data/quest-details.json + data/quests.json   quests that need an item to enter (requirementItemId);
   - the server's item table (GET /api/public/catalog/items, about 12k rows), whose ids are the same numbers

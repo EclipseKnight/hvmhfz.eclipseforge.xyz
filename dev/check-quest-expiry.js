@@ -3,12 +3,12 @@
    (js/admin-quests.js) in headless Chromium against a fake API with the fields of the API README
    "Custom quest expiry":
 
-   - account page: the reminder at the top of the page (whatever tab is open) for a reminded testing quest and
-     a reminded draft, gone after Keep testing / Keep (the POSTs go to the right ids); the submissions table
-     shows each testing quest's expiry date with Keep testing, Resubmit on an expired quest whose file is kept,
-     "File removed" when it is not; the drafts table shows the deletion date; a deleted draft can be restored;
-   - an API from before the expiry (no expiry fields, no deleted list): no reminder, no buttons, no deleted
-     section, no page error;
+   - account page: the reminder at the top of the page (whatever tab is open) for a reminded testing quest,
+     gone after Keep testing (the POST goes to the right id); the submissions table shows each testing quest's
+     expiry date with Keep testing, Resubmit on an expired quest that can be resubmitted, "File removed" when it
+     cannot (a file purged by the old 30-day step); drafts never expire: the drafts table shows only the last
+     activity, with no Keep button, no deletion date, no reminder and no deleted-drafts section;
+   - an API from before the expiry (no expiry fields): no reminder, no buttons, no page error;
    - admin page: Expired and Retired filters; Retire on a published quest sends the note; testing rows show
      their expiry.
 
@@ -45,23 +45,22 @@ const day = (iso) => new Date(iso).toLocaleDateString("en-US"); // the browser b
 function freshApi(old) {
   const sub = (id, title, status, extra) => Object.assign({ id, title, status, note: null, submittedAt: "2026-11-01T10:00:00Z",
     reviewedAt: null, size: 4096 }, old ? {} : { lastActivity: "2026-11-01T10:00:00Z", expiresAt: null, remindedAt: null,
-    expiredAt: null, fileKeptUntil: null, canResubmit: false }, old ? {} : (extra || {}));
+    expiredAt: null, canResubmit: false }, old ? {} : (extra || {}));
   return {
     calls: [],
     submissions: [
       sub(1, "Rathalos at dawn", "testing", { expiresAt: "2026-11-15T10:00:00Z", remindedAt: "2026-11-12T10:00:00Z" }),
       sub(2, "Fresh one", "testing", { lastActivity: "2026-11-04T10:00:00Z", expiresAt: "2026-11-18T10:00:00Z" }),
-      sub(3, "Old hunt", "expired", { expiredAt: "2026-10-20T10:00:00Z", fileKeptUntil: "2026-11-19T10:00:00Z", canResubmit: true }),
+      sub(3, "Old hunt", "expired", { expiredAt: "2026-10-20T10:00:00Z", canResubmit: true }),
       sub(4, "Ancient hunt", "expired", { expiredAt: "2026-09-01T10:00:00Z" }),
       sub(5, "Published", "approved")
     ],
     drafts: [
       Object.assign({ id: 7, sourceQuestId: 0, variant: "d0", revision: 3, updatedAt: "2026-08-08T10:00:00Z", title: "Forgotten idea" },
-        old ? {} : { lastActivity: "2026-08-08T10:00:00Z", expiresAt: "2026-11-06T10:00:00Z", remindedAt: "2026-11-03T10:00:00Z" }),
+        old ? {} : { lastActivity: "2026-08-08T10:00:00Z" }),
       Object.assign({ id: 8, sourceQuestId: 0, variant: "d0", revision: 1, updatedAt: "2026-11-04T10:00:00Z", title: "New idea" },
-        old ? {} : { lastActivity: "2026-11-04T10:00:00Z", expiresAt: "2027-02-02T10:00:00Z", remindedAt: null })
+        old ? {} : { lastActivity: "2026-11-04T10:00:00Z" })
     ],
-    deleted: old ? null : [{ id: 9, title: "Deleted idea", deletedAt: "2026-11-01T10:00:00Z", purgeAt: "2026-12-01T10:00:00Z" }],
     slots: { used: 511, cap: 512, free: 1 },
     admin: [
       { id: 5, title: "Published", status: "approved", note: null, account: "author", size: 4096, submittedAt: "2026-10-01T10:00:00Z",
@@ -90,25 +89,10 @@ function fakeApi(page, api) {
     }
     if ((m = p.match(/^\/api\/account\/quest-submissions\/(\d+)\/resubmit$/))) {
       const s = api.submissions.find((x) => x.id === Number(m[1]));
-      Object.assign(s, { status: "testing", canResubmit: false, expiredAt: null, fileKeptUntil: null, expiresAt: "2026-11-19T12:00:00Z" });
+      Object.assign(s, { status: "testing", canResubmit: false, expiredAt: null, expiresAt: "2026-11-19T12:00:00Z" });
       return reply(200, { id: s.id, status: "testing" });
     }
     if (p === "/api/account/quest-drafts" && req.method() === "GET") return reply(200, api.drafts);
-    if (p === "/api/account/quest-drafts/deleted") {
-      return api.deleted ? reply(200, api.deleted) : reply(404, { message: "No draft with that id." });
-    }
-    if ((m = p.match(/^\/api\/account\/quest-drafts\/(\d+)\/keep$/))) {
-      const d = api.drafts.find((x) => x.id === Number(m[1]));
-      d.remindedAt = null; d.expiresAt = "2027-02-03T12:00:00Z";
-      return reply(200, { id: d.id, expiresAt: d.expiresAt });
-    }
-    if ((m = p.match(/^\/api\/account\/quest-drafts\/(\d+)\/restore$/))) {
-      const d = api.deleted.find((x) => x.id === Number(m[1]));
-      api.deleted = api.deleted.filter((x) => x !== d);
-      api.drafts.push({ id: d.id, sourceQuestId: 0, variant: "d0", revision: 1, updatedAt: "2026-11-01T10:00:00Z", title: d.title,
-        lastActivity: "2026-11-05T12:00:00Z", expiresAt: "2027-02-03T12:00:00Z", remindedAt: null });
-      return reply(200, { id: d.id, restored: true });
-    }
     if (p === "/api/admin/quest-submissions") {
       const status = new URL(req.url()).searchParams.get("status");
       return reply(200, api.admin.filter((x) => status === "all" || x.status === status));
@@ -150,7 +134,7 @@ async function account(browser, base) {
   const banner = await text(page, "#quest-reminders");
   check("reminder shows on the Overview tab", await page.isVisible("#quest-reminders"));
   check("reminder names the testing quest and its date", banner.includes("“Rathalos at dawn” expires on " + day("2026-11-15T10:00:00Z")), banner);
-  check("reminder names the draft and its date", banner.includes("“Forgotten idea” will be deleted on " + day("2026-11-06T10:00:00Z")), banner);
+  check("no reminder for a draft", !banner.includes("Forgotten idea") && !banner.includes("draft"), banner);
   check("no reminder for a quest not reminded", !banner.includes("Fresh one"), banner);
 
   // The submissions table.
@@ -159,7 +143,7 @@ async function account(browser, base) {
   const rows = await page.$$eval("#quest-submit-list tr", (trs) => trs.map((tr) => tr.textContent.replace(/\s+/g, " ").trim()));
   const rowOf = (t) => rows.find((r) => r.startsWith(t)) || "";
   check("testing quest shows its expiry and Keep testing", rowOf("Fresh one").includes(day("2026-11-18T10:00:00Z")) && rowOf("Fresh one").includes("Keep testing"), rowOf("Fresh one"));
-  check("expired quest with its file: Resubmit", rowOf("Old hunt").includes("File kept until " + day("2026-11-19T10:00:00Z")) && rowOf("Old hunt").includes("Resubmit"), rowOf("Old hunt"));
+  check("expired quest with its file: Resubmit", rowOf("Old hunt").includes("Expired " + day("2026-10-20T10:00:00Z")) && rowOf("Old hunt").includes("Resubmit"), rowOf("Old hunt"));
   check("expired quest without its file", rowOf("Ancient hunt").includes("File removed") && !rowOf("Ancient hunt").includes("Resubmit"), rowOf("Ancient hunt"));
   check("approved quest has no expiry", /-$/.test(rowOf("Published")) && !rowOf("Published").includes("Keep"), rowOf("Published"));
 
@@ -177,21 +161,13 @@ async function account(browser, base) {
   const old = await text(page, "#quest-submit-list tr:has-text('Old hunt')");
   check("the resubmitted quest is in testing", old.includes("testing") && old.includes("Keep testing"), old);
 
-  // Drafts: deletion dates, Keep, the deleted section and Restore.
+  // Drafts never expire: the last activity, a link to the builder, nothing to keep, nothing deleted.
   const drafts = await text(page, "#quest-draft-list");
-  check("draft shows its deletion date", drafts.includes(day("2026-11-06T10:00:00Z")) && drafts.includes(day("2027-02-02T10:00:00Z")), drafts);
+  check("draft shows its last activity", drafts.includes(day("2026-08-08T10:00:00Z")) && drafts.includes(day("2026-11-04T10:00:00Z")), drafts);
   check("draft links to the builder", await page.getAttribute("#quest-draft-list a >> nth=0", "href") === "/quest-editor.html?draft=7");
-  check("deleted section shows", await page.isVisible("#quest-deleted-wrap"));
-  check("deleted draft gone-for-good date", (await text(page, "#quest-deleted-list")).includes(day("2026-12-01T10:00:00Z")));
-  await page.click("#quest-draft-list tr:has-text('Forgotten idea') button:has-text('Keep')");
-  await page.waitForFunction(() => document.getElementById("quest-reminders").hidden, null, { timeout: 5000 }).catch(() => {});
-  check("Keep posts for draft 7", posted(api, "/api/account/quest-drafts/7/keep"));
-  check("no reminder left, banner hidden", await page.isHidden("#quest-reminders"));
-  await page.click("#quest-deleted-list button:has-text('Restore')");
-  await page.waitForFunction(() => /Deleted idea/.test(document.getElementById("quest-draft-list").textContent), null, { timeout: 5000 }).catch(() => {});
-  check("Restore posts for draft 9", posted(api, "/api/account/quest-drafts/9/restore"));
-  check("restored draft is listed", (await text(page, "#quest-draft-list")).includes("Deleted idea"));
-  check("deleted section hidden when empty", await page.isHidden("#quest-deleted-wrap"));
+  check("no Keep button on a draft", (await page.$$("#quest-draft-list button")).length === 0);
+  check("no deleted drafts section", (await page.$$("#quest-deleted-wrap")).length === 0);
+  check("no call for deleted drafts", !api.calls.some((c) => /quest-drafts\/(deleted|\d+\/(keep|restore))/.test(c.path)));
   check("no page errors", !errors.length, errors.join("; "));
   await page.close();
 }
@@ -203,7 +179,6 @@ async function oldApi(browser, base) {
   await page.waitForFunction(() => /Forgotten/.test(document.getElementById("quest-draft-list").textContent), null, { timeout: 5000 }).catch(() => {});
   check("old API: no reminder", await page.isHidden("#quest-reminders"));
   check("old API: no buttons in the tables", (await page.$$("#quest-submit-list button, #quest-draft-list button")).length === 0);
-  check("old API: no deleted section", await page.isHidden("#quest-deleted-wrap"));
   check("old API: drafts still listed", (await text(page, "#quest-draft-list")).includes("New idea"));
   check("old API: no page errors", !errors.length, errors.join("; "));
   await page.close();

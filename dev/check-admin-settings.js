@@ -10,6 +10,9 @@
    - the history with what each change did, and Revert on the second click (POST with the version);
    - the Patch gate section's count of who it would refuse: the stored values (GET) when it opens, the form's
      values (POST) after an edit, a moderator's form falling back to the stored values;
+   - the Patch gate's Latest version following the latest release: the switch and its sentence, the field read-only
+     while it is on, "Set Current ... now", on (PUT enabled true), off (typed by hand again), a refusal shown, and an
+     API without the switch (404) leaving the field as it was;
    - a refused section says why; a missing table says so; markup in a value stays text; no horizontal overflow at
      375 px; no page errors;
    - the pure helpers under node.
@@ -127,6 +130,20 @@ function fakeApi(page, api) {
       if (req.method() === "POST" && api.moderator) return reply(403, { message: "Forbidden" });
       return reply(200, impactFor(req.method() === "POST" ? sent.value : (api.stored.patch_gate || {}).value));
     }
+    if (p === "/api/admin/settings/patch_gate/auto") {
+      if (!api.auto) return reply(404, { message: "Not Found" });
+      if (req.method() !== "PUT") return reply(200, api.auto);
+      if (api.autoFail) return reply(409, { message: api.autoFail, problems: [api.autoFail] });
+      api.auto.enabled = sent.enabled;
+      let changes = [];
+      if (sent.enabled && api.auto.current !== api.auto.latest) {
+        api.auto.current = api.auto.latest;
+        api.stored.patch_gate = { value: Object.assign({}, (api.stored.patch_gate || {}).value, { current: api.auto.latest }), version: 5, updatedBy: "boss", updatedAt: NOW, note: "follow the latest release (v" + api.auto.latest + ")" };
+        changes = [{ key: "current", label: "Latest version", before: "", after: api.auto.latest, beforeDefault: true, afterDefault: false }];
+      }
+      api.auto.inSync = api.auto.current === api.auto.latest;
+      return reply(200, { auto: api.auto, section: { stored: api.stored.patch_gate || null }, changes });
+    }
     let m = p.match(/^\/api\/admin\/settings\/([a-z_]+)\/check$/);
     if (m) {
       if (sent.value.solo_tickets > 100) return reply(200, { problems: ["MezFes: Solo tickets per week (solo_tickets) must be from 0 to 100."], changes: [] });
@@ -204,6 +221,14 @@ function helpers() {
     "v1.20 and newer play; clients that send no version (v1.18 or older) play too.",
     "Online now: 1 of 4 characters would be refused (1 exempt: staff or listed; 1 sent no version (v1.18 or older); 1 not recorded yet, judged at their next login).",
     "Seen in the last 7 days: 3 of 9 characters would be refused (1 exempt: staff or listed; 1 sent no version (v1.18 or older); 1 not recorded yet, judged at their next login)."]), JSON.stringify(lines));
+  const A = { tableReady: true, enabled: true, latest: "1.20", current: "1.20", inSync: true };
+  check("autoLine on", Set_.autoLine(A) === "Current: follows the latest release (v1.20).", Set_.autoLine(A));
+  check("autoLine on, not in step", Set_.autoLine(Object.assign({}, A, { current: "1.19", inSync: false })) === "Current: follows the latest release (v1.20). The stored Current is v1.19, not v1.20 yet."
+    && /is empty, not|is empty/.test("is empty") && /stored Current is empty/.test(Set_.autoLine(Object.assign({}, A, { current: "", inSync: false }))));
+  check("autoLine on, no release recorded", /no release recorded yet/.test(Set_.autoLine(Object.assign({}, A, { latest: null, inSync: false }))));
+  check("autoLine off", Set_.autoLine(Object.assign({}, A, { enabled: false })) === "Current is typed by hand. The latest release recorded is v1.20."
+    && Set_.autoLine({ tableReady: true, enabled: false, latest: null }) === "Current is typed by hand.");
+  check("autoLine without the table or the API", /needs the patch_gate_auto table/.test(Set_.autoLine({ tableReady: false })) && Set_.autoLine(null) === "");
   check("impactLines without tracking", /does not record client patches yet/.test(Set_.impactLines({ tracking: false, describe: "Off." }).join(" ")));
   const irows = Set_.impactRows(impactFor({ mode: "latest" }));
   check("impactRows", JSON.stringify(irows.map((r) => r[3])) === JSON.stringify(["plays", "refused (unless exempt)", "plays", "judged at next login"])
@@ -216,6 +241,7 @@ async function settingsPage(browser, base) {
   const api = { calls: [], report: true, stored: { mezfes: { value: { solo_tickets: 9 }, version: 7, updatedBy: "boss", updatedAt: "2026-11-20T11:00:00Z", note: null } },
     states: { mezfes: { state: "applied", refusal: null, appliedAt: "2026-11-20T11:58:00Z", process: "hunsterverse", stale: false },
       sky_corridor: { state: "refused", refusal: "floor_rotation: must be one of [off weekly daily]", appliedAt: null, process: "hunsterverse", stale: false } } };
+  api.auto = { tableReady: true, enabled: true, latest: "1.20", current: "", inSync: false, updatedBy: "schema", updatedAt: NOW };
   api.stored.sky_corridor = { value: { floor_rotation: "hourly" }, version: 8, updatedBy: "boss", updatedAt: NOW, note: null };
   let r = await open(browser, base + "/admin.html#settings", api, 1280);
   const page = r.page;
@@ -321,6 +347,38 @@ async function settingsPage(browser, base) {
   const impRows = await page.$$eval("#set-impact-rows tr", (ns) => ns.map((n) => Array.from(n.children).map((c) => c.textContent).join(" | ")));
   check("impact table", impRows.length === 4 && impRows[1] === "v1.19 | 2 | 3 | refused (unless exempt)" && impRows[3] === "not recorded | 1 | 0 | judged at next login", JSON.stringify(impRows));
   await shot(page, "admin-settings-patch-gate-1280.png");
+
+  // The switch: on and stored Current empty (the release has not set it yet): the field is read-only.
+  check("auto sentence", (await text(page, "#set-auto-text")) === "Current: follows the latest release (v1.20). The stored Current is empty, not v1.20 yet.", await text(page, "#set-auto-text"));
+  check("auto: switch on", await page.$eval("#set-auto-on", (n) => n.checked));
+  check("auto: Current is read-only, with no config default box", await page.$eval("#set-f-current", (n) => n.disabled) && !(await page.$("[data-key=current] .set-default")));
+  check("auto: the field's help says it follows the release", /Current: follows the latest release \(v1\.20\)\./.test(await text(page, "[data-key=current]")));
+  check("other fields keep their config default boxes", !!(await page.$("[data-key=mode] .set-default")) && !!(await page.$("[data-key=allow_unknown] .set-default")));
+  check("auto: GET before any PUT", !!last(api, "GET", "/patch_gate/auto") && !last(api, "PUT", "/patch_gate/auto"));
+  await shot(page, "admin-settings-patch-gate-auto-1280.png");
+  // Set Current now: PUT enabled true, the API fills it, the form shows it stored and in step.
+  await page.click("#set-auto-now");
+  await page.waitForFunction(() => /Current is now v1\.20/.test(document.getElementById("set-ok").textContent), null, { timeout: 5000 });
+  check("auto: set now sends enabled true", JSON.stringify(last(api, "PUT", "/patch_gate/auto").body) === '{"enabled":true}');
+  await page.waitForFunction(() => document.getElementById("set-f-current") && document.getElementById("set-f-current").value === "1.20", null, { timeout: 5000 });
+  check("auto: in step, no Set-now button, field shows the release", (await text(page, "#set-auto-text")) === "Current: follows the latest release (v1.20)." && !(await page.$("#set-auto-now"))
+    && await page.$eval("#set-f-current", (n) => n.disabled));
+  // Off: typed by hand again, the field is editable.
+  await page.uncheck("#set-auto-on");
+  await page.waitForFunction(() => /typed by hand again/.test(document.getElementById("set-ok").textContent), null, { timeout: 5000 });
+  check("auto: off sends enabled false", JSON.stringify(last(api, "PUT", "/patch_gate/auto").body) === '{"enabled":false}');
+  await page.waitForFunction(() => /Current is typed by hand\./.test((document.getElementById("set-auto-text") || {}).textContent || ""), null, { timeout: 5000 });
+  check("auto: off sentence and an editable field", (await text(page, "#set-auto-text")) === "Current is typed by hand. The latest release recorded is v1.20."
+    && !(await page.$eval("#set-f-current", (n) => n.disabled)) && !(await page.$eval("#set-auto-on", (n) => n.checked)));
+  // A refusal (no release recorded): shown, the switch goes back off.
+  api.autoFail = "No release is recorded yet (release-patch.sh writes it at each release): type Current by hand once, then it follows the next release.";
+  await page.check("#set-auto-on");
+  await page.waitForFunction(() => /No release is recorded yet/.test(document.getElementById("set-alert").textContent), null, { timeout: 5000 });
+  check("auto: refusal shown, switch back off", !(await page.$eval("#set-auto-on", (n) => n.checked)));
+  api.autoFail = null;
+  await page.check("#set-auto-on");
+  await page.waitForFunction(() => /Latest version follows the latest release\./.test(document.getElementById("set-ok").textContent), null, { timeout: 5000 });
+  check("auto: on again (nothing to change)", JSON.stringify(last(api, "PUT", "/patch_gate/auto").body) === '{"enabled":true}');
   check("no errors on the admin page", r.errors.length === 0, r.errors.join("; "));
   await shot(page, "admin-settings-1280.png");
   await page.close();
@@ -335,6 +393,7 @@ async function settingsPage(browser, base) {
   await r.page.waitForTimeout(1200);
   const modText = await text(r.page, "#set-impact-text");
   check("moderator: stored values, no error", /With the stored values\./.test(modText) && !/Could not count/.test(modText), modText);
+  check("an API without the switch: no switch box, Current editable", !(await r.page.$("#set-auto")) && !!(await r.page.$("[data-key=current] .set-default")));
   check("no errors for a moderator", r.errors.length === 0, r.errors.join("; "));
   // 375 px with the patch gate open: the box adds no overflow of its own (the page's header has some already).
   const before375 = await (async () => {
