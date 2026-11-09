@@ -851,6 +851,35 @@
     return button;
   }
 
+  // Patch channel: which client patch the Mezeporta launcher gives the account (POST /api/admin/patch-channel).
+  // An API without the field shows "-" and no button.
+  function patchChannelCell(user) {
+    var cell = el("td", "patch-channel-cell");
+    if (user.patchChannel !== "stable" && user.patchChannel !== "pre") {
+      cell.textContent = "-";
+      return cell;
+    }
+    var pre = user.patchChannel === "pre";
+    cell.appendChild(pre ? el("span", "role-badge role-pre", "pre-release") : el("span", "admin-desc", "stable"));
+    var button = el("button", "ghost-btn small", pre ? "Make stable" : "Make pre-release");
+    button.type = "button";
+    button.addEventListener("click", function () {
+      button.disabled = true;
+      request("/api/admin/patch-channel", {
+        method: "POST",
+        body: JSON.stringify({ username: user.username, channel: pre ? "stable" : "pre" })
+      }).then(function (data) {
+        usersAlert((data && data.message) || "Saved.");
+        return loadUsers();
+      }).catch(function (error) {
+        button.disabled = false;
+        usersFail(error);
+      });
+    });
+    cell.appendChild(button);
+    return cell;
+  }
+
   function chatToggle(user, field) {
     var on = !!user[field];
     var button = el("button", "ghost-btn small" + (on ? " is-on" : ""), field);
@@ -882,7 +911,7 @@
     if (character.hr) bits.push("HR " + character.hr);
     if (character.gr) bits.push("GR " + character.gr);
     if (character.weapon) bits.push(character.weapon);
-    var patch = window.AdminPatches ? window.AdminPatches.chipLabel(character, tracking) : "";
+    var patch = window.AdminPatches ? window.AdminPatches.chipLabel(character, tracking, users.patchCurrent) : "";
     if (patch) bits.push(patch);
     var chip;
     if (character.deleted || character.isNew) {
@@ -1020,7 +1049,7 @@
       var empty = el("tr");
       var cell = el("td", "empty-cell", users.match === "character" ? "No character matches that search."
         : "No account or character matches that search.");
-      cell.colSpan = 10;
+      cell.colSpan = 11;
       empty.appendChild(cell);
       body.appendChild(empty);
       return;
@@ -1054,6 +1083,7 @@
       testerBtn.title = "Custom quest and road tester: can load and try custom content before it is published.";
       testerCell.appendChild(testerBtn);
       row.appendChild(testerCell);
+      row.appendChild(patchChannelCell(user));
       body.appendChild(row);
     });
   }
@@ -1072,7 +1102,15 @@
   function loadUsers() {
     return request("/api/admin/users?query=" + encodeURIComponent(users.query) + "&match=" + users.match
       + "&page=" + users.page + "&size=" + users.size)
-      .then(function (data) { renderUsers(data); renderPatches(data); });
+      .then(function (data) {
+        // The current patch version first (read once), so chips can mark pre-release versions.
+        var current = window.AdminPatches ? window.AdminPatches.loadCurrent() : Promise.resolve(null);
+        return current.then(function (value) {
+          users.patchCurrent = value;
+          renderUsers(data);
+          renderPatches(data);
+        });
+      });
   }
 
   function wireUsers() {

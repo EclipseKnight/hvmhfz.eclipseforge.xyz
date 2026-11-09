@@ -21,7 +21,7 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=5" />
+    <link rel="stylesheet" href="/css/styles.css?v=6" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/tablesort.js" defer></script>
     <script src="/js/background.js" defer></script>
@@ -484,6 +484,19 @@
           <p class="note-text" id="qol-note" aria-live="polite"></p>
         </section>
 
+        <section class="panel" id="patch-channel-panel" hidden>
+          <div class="panel-head"><h2>Pre-release client patch</h2><span class="panel-note">testers</span></div>
+          <p class="note-text"><b>Pre-release:</b> your Mezeporta launcher downloads the test patch at its next login. Use it to test changes before they go out to everyone.</p>
+          <p class="note-text"><b>Stable:</b> the launcher puts the normal patch back at its next login.</p>
+          <p class="note-text">Only the Mezeporta launcher follows this setting. When no pre-release is out, you get the stable patch either way.</p>
+          <p class="form-alert" id="patch-channel-alert" hidden></p>
+          <div class="patch-channel-choices" id="patch-channel-choices" role="group" aria-label="Client patch channel">
+            <button type="button" class="ghost-btn small" data-channel="stable" aria-pressed="false">Stable</button>
+            <button type="button" class="ghost-btn small" data-channel="pre" aria-pressed="false">Pre-release</button>
+          </div>
+          <p class="note-text" id="patch-channel-note" aria-live="polite"></p>
+        </section>
+
         <section class="panel">
           <div class="panel-head"><h2>Account</h2></div>
           <dl class="detail-list" id="account-details">
@@ -546,6 +559,7 @@
     <script src="/js/questlog.js?v=2"></script>
     <script src="/js/road-preference.js?v=1"></script>
     <script src="/js/account-qol.js?v=1"></script>
+    <script src="/js/account-patch-channel.js?v=1"></script>
     <script src="/js/quest-submissions.js?v=2"></script>
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>

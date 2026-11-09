@@ -1894,3 +1894,8 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .qol-name{min-width:0;overflow-wrap:anywhere}
 .qol-item .note-text{margin:4px 0 0;overflow-wrap:anywhere}
 .qol-hidden{color:var(--wax)}
+/* Account > Pre-release client patch (js/account-patch-channel.js) and the admin Users patch channel column */
+.patch-channel-choices{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+.patch-channel-choices .ghost-btn{min-height:44px}
+.patch-channel-choices .ghost-btn.is-on{border-color:#8a6a24;background:rgba(183,138,51,.16);font-weight:700}
+.role-badge.role-pre{border-color:#4c6f7a;color:#2f4d57;background:rgba(76,111,122,.12);font-weight:700}

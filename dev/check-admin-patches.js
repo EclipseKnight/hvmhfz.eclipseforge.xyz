@@ -3,7 +3,7 @@
    Chromium against a fake API (GET /api/admin/users as the API's docs/api-private.md) and this site's own
    data/patch-versions.json:
 
-   - the summary line: current / older / unknown, from the API's patches counts and the version marked current
+   - the summary line: current / pre-release (newer, when any) / older / unknown, from the API's patches counts and the version marked current
      (the check serves its own version file with v1.20 current); its tooltip lists each version;
    - each character chip shows the patch it last logged in with ("patch v1.19", "patch ≤v1.18"), none when not seen;
    - an API without the columns (patchTracking false) says the recording is off and the chips show no patch;
@@ -122,7 +122,7 @@ function pure() {
   check("value refused", P.versionValue("1.100") === null && P.versionValue("soon") === null && P.versionValue("") === null);
   check("current from the file", P.currentValue(VERSIONS) === 120);
   check("no current", P.currentValue({ patches: [{ version: "1.1" }] }) === null && P.currentValue(null) === null);
-  check("bucket", P.bucket(120, 120) === "current" && P.bucket(121, 120) === "current" && P.bucket(119, 120) === "older"
+  check("bucket", P.bucket(120, 120) === "current" && P.bucket(121, 120) === "pre" && P.bucket(119, 120) === "older"
     && P.bucket(0, 120) === "unknown" && P.bucket(null, 120) === "unknown" && P.bucket(119, null) === "known");
   const s = P.summarize(usersReply(true).patches, 120);
   check("summarize", s.current === 5 && s.older === 3 && s.unknown === 47 && s.notSeen === 40 && s.total === 55
@@ -135,6 +135,14 @@ function pure() {
   check("breakdown", P.breakdown(usersReply(true)).split("\n")[0] === "v1.20: 5 (4 in the last 7 days)");
   check("chip labels", P.chipLabel({ clientPatch: 119 }, true) === "patch v1.19" && P.chipLabel({ clientPatch: 0 }, true)
     === "patch ≤v1.18" && P.chipLabel({ clientPatch: null }, true) === "" && P.chipLabel({ clientPatch: 119 }, false) === "");
+  // A version newer than the current one is a pre-release (only testers get one).
+  check("chip pre-release", P.chipLabel({ clientPatch: 121 }, true, 120) === "patch v1.21 pre-release"
+    && P.chipLabel({ clientPatch: 120 }, true, 120) === "patch v1.20" && P.chipLabel({ clientPatch: 121 }, true) === "patch v1.21");
+  const pre = usersReply(true);
+  pre.patches = pre.patches.concat([{ clientPatch: 121, characters: 2, seenLast7Days: 2 }]);
+  const preText = P.summaryText(pre, 120);
+  check("summary with a pre-release", preText === "Client patch, played characters: 5 current (v1.20) · 2 pre-release (newer) · "
+    + "3 older · 47 unknown (7 on v1.18 or older, 40 not seen since recording started).", preText);
 }
 
 async function main() {

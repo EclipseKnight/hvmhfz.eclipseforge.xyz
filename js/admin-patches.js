@@ -3,7 +3,8 @@
    older, which send nothing; null = not logged in since the recording started). GET /api/admin/users carries it per
    character (clientPatch) and a count per value over every account (patches). The current version comes from this
    site's data/patch-versions.json (the entry with "current": true), the same file play.html shows.
-   Summary buckets: current (the current version or newer), older (a version below it), unknown (0 or null). */
+   Summary buckets: current (the current version), pre (newer than it: a pre-release, which only testers get, see the
+   Patch channel column), older (a version below it), unknown (0 or null). */
 (function () {
   "use strict";
 
@@ -34,12 +35,13 @@
   function bucket(value, current) {
     if (value === null || value === undefined || value === 0) return "unknown";
     if (current === null || current === undefined) return "known";
-    return value >= current ? "current" : "older";
+    if (value > current) return "pre";
+    return value === current ? "current" : "older";
   }
 
   // The API's patches list summed per bucket: {current, older, unknown, known, recent, total}.
   function summarize(patches, current) {
-    var out = { current: 0, older: 0, unknown: 0, known: 0, recent: 0, total: 0, notSeen: 0 };
+    var out = { current: 0, pre: 0, older: 0, unknown: 0, known: 0, recent: 0, total: 0, notSeen: 0 };
     (patches || []).forEach(function (p) {
       var b = bucket(p.clientPatch, current);
       out[b] += p.characters;
@@ -60,7 +62,7 @@
       return "Client patch, played characters: " + num(s.known) + " with a version · " + unknown + ".";
     }
     return "Client patch, played characters: " + num(s.current) + " current (" + patchName(current) + ") · "
-      + num(s.older) + " older · " + unknown + ".";
+      + (s.pre ? num(s.pre) + " pre-release (newer) · " : "") + num(s.older) + " older · " + unknown + ".";
   }
 
   // Tooltip of the summary: one line per version.
@@ -70,10 +72,13 @@
     }).join("\n");
   }
 
-  // The short label on a character chip; "" when the API has no tracking.
-  function chipLabel(character, tracking) {
+  // The short label on a character chip; "" when the API has no tracking. With the current version known, a newer
+  // one is marked as a pre-release.
+  function chipLabel(character, tracking, current) {
     if (!tracking || character.clientPatch === null || character.clientPatch === undefined) return "";
-    return character.clientPatch === 0 ? "patch ≤v1.18" : "patch " + patchName(character.clientPatch);
+    if (character.clientPatch === 0) return "patch ≤v1.18";
+    var label = "patch " + patchName(character.clientPatch);
+    return current && character.clientPatch > current ? label + " pre-release" : label;
   }
 
   function num(n) {
