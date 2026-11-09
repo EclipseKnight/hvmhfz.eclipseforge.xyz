@@ -852,22 +852,46 @@
   }
 
   // Patch channel: which client patch the Mezeporta launcher gives the account (POST /api/admin/patch-channel).
+  // The API says "stable" or "pre:<slot>" ("pre" from an older API means the default slot, mods). A select offers
+  // Stable, each published slot and, when the account sits on a slot that is not out, that slot too.
   // An API without the field shows "-" and no button.
+  function patchSlotOf(channel) {
+    if (channel === "pre") return "mods";
+    var m = /^pre:([a-z0-9][a-z0-9-]*)$/.exec(String(channel || ""));
+    return m ? m[1] : null;
+  }
+
   function patchChannelCell(user) {
     var cell = el("td", "patch-channel-cell");
-    if (user.patchChannel !== "stable" && user.patchChannel !== "pre") {
+    var slot = patchSlotOf(user.patchChannel);
+    if (user.patchChannel !== "stable" && slot === null) {
       cell.textContent = "-";
       return cell;
     }
-    var pre = user.patchChannel === "pre";
-    cell.appendChild(pre ? el("span", "role-badge role-pre", "pre-release") : el("span", "admin-desc", "stable"));
-    var button = el("button", "ghost-btn small", pre ? "Make stable" : "Make pre-release");
+    var current = slot === null ? "stable" : "pre:" + slot;
+    cell.appendChild(slot !== null ? el("span", "role-badge role-pre", "pre: " + slot) : el("span", "admin-desc", "stable"));
+    var select = el("select", "patch-channel-select");
+    select.setAttribute("aria-label", "Patch channel of " + user.username);
+    var published = (users.slots || []).map(function (s) { return s.slot; });
+    function option(value, text) {
+      var o = el("option", "", text);
+      o.value = value;
+      select.appendChild(o);
+    }
+    option("stable", "Stable");
+    (users.slots || []).forEach(function (s) {
+      option("pre:" + s.slot, s.slot + (s.version ? " (" + s.version + ")" : ""));
+    });
+    if (slot !== null && published.indexOf(slot) === -1) option(current, slot + " (not out)");
+    select.value = current;
+    cell.appendChild(select);
+    var button = el("button", "ghost-btn small", "Set");
     button.type = "button";
     button.addEventListener("click", function () {
       button.disabled = true;
       request("/api/admin/patch-channel", {
         method: "POST",
-        body: JSON.stringify({ username: user.username, channel: pre ? "stable" : "pre" })
+        body: JSON.stringify({ username: user.username, channel: select.value })
       }).then(function (data) {
         usersAlert((data && data.message) || "Saved.");
         return loadUsers();
@@ -878,6 +902,58 @@
     });
     cell.appendChild(button);
     return cell;
+  }
+
+  // "Pre-release slots" panel (GET /api/admin/patch-slots): each published slot with its version, publish time,
+  // release id, notes and the accounts on it, then accounts on a slot that is not out (they get stable).
+  // `data` null: the API has no such endpoint (older API), so the panel stays hidden.
+  function userNames(list) {
+    return (list || []).map(function (u) { return u.username; }).join(", ") || "nobody";
+  }
+
+  function renderPatchSlots(data) {
+    var panel = $("patch-slots-panel");
+    var body = $("patch-slots-body");
+    if (!panel || !body) return;
+    clear(body);
+    panel.hidden = !data;
+    if (!data) return;
+    if (data.slotsAvailable === false) {
+      body.appendChild(el("p", "form-alert", "Could not load the pre-releases from the game server."));
+      return;
+    }
+    var slots = data.slots || [];
+    if (!slots.length) body.appendChild(el("p", "note-text", "No pre-release is out right now."));
+    slots.forEach(function (s) {
+      var box = el("div", "patch-slot");
+      var head = el("p", "patch-slot-head");
+      head.appendChild(el("b", "", s.slot));
+      head.appendChild(document.createTextNode(" " + (s.version || "version unknown")));
+      box.appendChild(head);
+      var meta = [];
+      if (s.published) meta.push("published " + since(s.published));
+      if (s.release) meta.push("release " + s.release);
+      if (meta.length) box.appendChild(el("p", "admin-desc", meta.join(" · ")));
+      if (s.notes && s.notes.length) {
+        var list = el("ul", "patch-slot-notes");
+        s.notes.forEach(function (n) { list.appendChild(el("li", "", n)); });
+        box.appendChild(list);
+      }
+      box.appendChild(el("p", "admin-desc", "On it: " + userNames(s.users)));
+      body.appendChild(box);
+    });
+    var lost = data.unpublished || [];
+    if (lost.length) {
+      body.appendChild(el("h3", "patch-slot-sub", "On a slot that is not out (they get stable)"));
+      lost.forEach(function (s) {
+        var box = el("div", "patch-slot");
+        var head = el("p", "patch-slot-head");
+        head.appendChild(el("b", "", s.slot));
+        head.appendChild(document.createTextNode(": " + userNames(s.users)));
+        box.appendChild(head);
+        body.appendChild(box);
+      });
+    }
   }
 
   function chatToggle(user, field) {
@@ -1100,17 +1176,22 @@
   }
 
   function loadUsers() {
-    return request("/api/admin/users?query=" + encodeURIComponent(users.query) + "&match=" + users.match
-      + "&page=" + users.page + "&size=" + users.size)
-      .then(function (data) {
-        // The current patch version first (read once), so chips can mark pre-release versions.
-        var current = window.AdminPatches ? window.AdminPatches.loadCurrent() : Promise.resolve(null);
-        return current.then(function (value) {
-          users.patchCurrent = value;
-          renderUsers(data);
-          renderPatches(data);
-        });
+    // The pre-release slots first (the select in each row needs them); an older API answers 404: no slots, no panel.
+    var slotsRead = request("/api/admin/patch-slots").catch(function () { return null; });
+    return slotsRead.then(function (slotData) {
+      users.slots = slotData && slotData.slotsAvailable !== false ? (slotData.slots || []) : [];
+      renderPatchSlots(slotData);
+      return request("/api/admin/users?query=" + encodeURIComponent(users.query) + "&match=" + users.match
+        + "&page=" + users.page + "&size=" + users.size);
+    }).then(function (data) {
+      // The current patch version first (read once), so chips can mark pre-release versions.
+      var current = window.AdminPatches ? window.AdminPatches.loadCurrent() : Promise.resolve(null);
+      return current.then(function (value) {
+        users.patchCurrent = value;
+        renderUsers(data);
+        renderPatches(data);
       });
+    });
   }
 
   function wireUsers() {

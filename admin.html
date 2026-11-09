@@ -602,7 +602,11 @@
           <span class="panel-note" id="users-page"></span>
           <button type="button" class="ghost-btn small" id="users-next">Next</button>
         </div>
-        <p class="note-text">Roles apply at the account's next request. Nobody can remove their own admin role, and the last admin cannot be removed. Search is case-insensitive and finds an account by its name or by any of its characters (matching characters are highlighted); account names themselves are case-sensitive. Each character links to its hunter page; deleted and never-played slots are listed but not linked. <b>Link</b> sets an account's Discord user id by hand, the same link <code>/link</code> makes (the Hunter role follows within 30 minutes); <b>Unlink</b> takes two clicks. Chat toggles are the in-game <code>op</code> (chat commands) and <code>timer</code> (quest timer) flags. <b>Patch channel</b> says which client patch the Mezeporta launcher gives the account: <code>stable</code> or <code>pre-release</code> (only tester, moderator and admin accounts can have pre-release); the button switches it, and the player can switch it too on the account page.</p>
+        <p class="note-text">Roles apply at the account's next request. Nobody can remove their own admin role, and the last admin cannot be removed. Search is case-insensitive and finds an account by its name or by any of its characters (matching characters are highlighted); account names themselves are case-sensitive. Each character links to its hunter page; deleted and never-played slots are listed but not linked. <b>Link</b> sets an account's Discord user id by hand, the same link <code>/link</code> makes (the Hunter role follows within 30 minutes); <b>Unlink</b> takes two clicks. Chat toggles are the in-game <code>op</code> (chat commands) and <code>timer</code> (quest timer) flags. <b>Patch channel</b> says which client patch the Mezeporta launcher gives the account: <code>stable</code> or <code>pre: &lt;slot&gt;</code> (only tester, moderator and admin accounts can have a pre-release); pick Stable or a slot and press Set, and the player can switch it too on the account page. A slot that is not out gives stable.</p>
+      </section>
+      <section class="panel" id="patch-slots-panel" hidden>
+        <div class="panel-head"><h2>Pre-release slots</h2><span class="panel-note">published by the game server</span></div>
+        <div id="patch-slots-body" aria-live="polite"></div>
       </section>
       </div>
 
@@ -697,8 +701,8 @@
     <script src="/js/admin-settings.js"></script>
     <script src="/js/admin-notices.js"></script>
     <script src="/js/admin-content.js"></script>
-    <script src="/js/admin-patches.js?v=2"></script>
-    <script src="/js/admin.js?v=4"></script>
+    <script src="/js/admin-patches.js?v=3"></script>
+    <script src="/js/admin.js?v=5"></script>
     <script src="/js/search.js" defer></script>
   </body>
 </html>

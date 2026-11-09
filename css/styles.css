@@ -1982,3 +1982,13 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .patch-channel-choices .ghost-btn{min-height:44px}
 .patch-channel-choices .ghost-btn.is-on{border-color:#8a6a24;background:rgba(183,138,51,.16);font-weight:700}
 .role-badge.role-pre{border-color:#4c6f7a;color:#2f4d57;background:rgba(76,111,122,.12);font-weight:700}
+/* Account > Client patch: characters, published slots and the Test-land warning; admin Pre-release slots panel */
+.patch-chars{list-style:none;margin:8px 0;padding:0}
+.patch-chars li{margin:3px 0}
+.patch-notes,.patch-slot-notes{margin:4px 0 8px 1.2em;padding:0}
+.patch-warning{margin:12px 0 0;padding:10px 12px;border:2px solid #a23b2a;border-left-width:6px;border-radius:6px;background:rgba(162,59,42,.1);color:var(--ink);font-weight:600;overflow-wrap:anywhere}
+.patch-channel-cell .patch-channel-select{max-width:11em;margin:0 6px}
+.patch-slot{margin:0 0 12px;padding:0 0 8px;border-bottom:1px solid rgba(0,0,0,.12)}
+.patch-slot-head{margin:0 0 2px;overflow-wrap:anywhere}
+.patch-slot-sub{margin:14px 0 6px;font-size:1rem}
+.patch-sub{margin:12px 0 4px;font-size:1rem}
