@@ -91,6 +91,16 @@
     [5, "Fixed difficulty"], [6, "High conquest"]];
   var FLAGS3 = [[0, "No reward skills"], [1, "GSR to GR"], [2, "No easy drink"], [3, "No GP skills"], [7, "No sigils"]];
   var FLAGS1_G_RANK = 0x08;
+  /* Reward extras (docs/quest-builder-gap.md task 5; API README "Reward extras"). body.rewardFlag (+0x90) is one of
+     Pax's five modes (names from data/quest-fields.json; these are the fallback), the API takes 0..4.
+     body.previewItems (+0xb0) is Reward 1/2/3 of the quest list, three item ids: an approved quest shows them, the
+     testing copy has them cleared (it pays no items either). Money is paid in both. "Use the main target's rewards"
+     takes the three items the main target reward groups (0x8001) weigh most, as 2,585 of the 3,501 live quests that
+     list items do. */
+  var REWARD_FLAGS = { 0: "First main reward fixed, sub-target rewards drawn", 1: "First main and first sub-target reward fixed",
+    2: "Fixed rewards", 3: "Unknown (fixed)", 4: "No fixed reward" };
+  var MAIN_REWARD_GROUP = 0x8001;
+  var PREVIEW_ITEMS = 3;
   var G_CLASSES = [7, 9];
   /* body.faintPenalty: the faints allowed in a G rank or Zenith quest (the live files use 3, a few 5; the API takes
      1..9), else the money taken from the reward money at each faint (the quest fails when it runs out). */
@@ -883,7 +893,7 @@
     g.appendChild(numberFor(F("body.rewardMoney"), "Reward money", {
       id: "meta-money", value: b.rewardMoney, min: 0, unit: "zenny",
       onChange: writes(function (v) { b.rewardMoney = v; })
-    }, "Paid for the main target, on a clear."));
+    }, "Paid for the main target, on a clear. Custom quests pay it, in testing too."));
     var countField = null;
     g.appendChild(fieldFor(F("body.iconLabelId"), "Item needed to enter", UI.picker({
       options: itemOptions(), value: b.iconLabelId, kind: "item", showIds: true,
@@ -1669,11 +1679,11 @@
   }
 
   /* The three objective records: the main target and sub-targets A and B, each with the body field that pays
-     its reward money (builder item 14). */
+     its reward money (builder item 14; a used sub-target edits its own, subTargetMoney). */
   var OBJECTIVES = [
     { key: "objective0", name: "Main target", money: "body.rewardMoney", paid: "Reward money, under Basics" },
-    { key: "objective1", name: "Sub-target A", money: "body.objective1Money", paid: "kept from the blank, not edited here" },
-    { key: "objective2", name: "Sub-target B", money: "body.objective2Money", paid: "kept from the blank, not edited here" }
+    { key: "objective1", name: "Sub-target A", money: "body.objective1Money" },
+    { key: "objective2", name: "Sub-target B", money: "body.objective2Money" }
   ];
 
   /** The first empty picture ends the list of five, so pictures fill from the left (builder item 13). */
@@ -1688,6 +1698,21 @@
     return moved;
   }
 
+  /** Sub-target A or B's reward money (body +0x18, +0x1c; the API takes 0..999,999, as for the main reward money). */
+  function subTargetMoney(b, index) {
+    var hint = "Paid for this sub-target, on top of the main reward money. Custom quests pay it, in testing too.";
+    if (index === 1) {
+      return numberFor(F("body.objective1Money"), "Reward money", {
+        id: "obj-1-money", value: b.objective1Money, min: 0, unit: "zenny",
+        onChange: writes(function (v) { b.objective1Money = v; })
+      }, hint);
+    }
+    return numberFor(F("body.objective2Money"), "Reward money", {
+      id: "obj-2-money", value: b.objective2Money, min: 0, unit: "zenny",
+      onChange: writes(function (v) { b.objective2Money = v; })
+    }, hint);
+  }
+
   function objectivesSection(model) {
     var b = model.body;
     var p = UI.section("Objectives", "what the hunters must do",
@@ -1697,7 +1722,7 @@
       if (!objective) return;
       p.appendChild(UI.subhead(spec.name));
       var money = refText(spec.money);
-      if (money) p.appendChild(note("Its reward money is " + money + " (" + spec.paid + ")."));
+      if (money && index === 0) p.appendChild(note("Its reward money is " + money + " (" + spec.paid + ")."));
       var g = grid();
       g.appendChild(fieldFor(F("body.objective#.type", index), "Type", UI.picker({
         options: typeOptions(), value: objective.type, showIds: true,
@@ -1716,6 +1741,7 @@
           id: "obj-" + index + "-count", value: objective.count, min: 0,
           onChange: writes(function (v) { objective.count = v; })
         }));
+        if (index > 0) g.appendChild(subTargetMoney(b, index));
       }
       p.appendChild(g);
     });
@@ -2021,8 +2047,8 @@
     p.appendChild(UI.subhead("Rewards"));
     p.appendChild(note("Each group is paid when its condition holds, and draws its rewards by weight. The game"
       + " reads the weights as percent, so a group's weights should add up to 100; Share is each item's part of"
-      + " the group's total. A quest submitted for testing is served with its rewards emptied, so a test clear"
-      + " pays nothing."));
+      + " the group's total. While the quest is in testing it is served with these rewards emptied, so a test clear"
+      + " pays no items; once an admin approves it, it pays them. The reward money is paid in both."));
     var groups = model.rewardGroups || [];
     groups.forEach(function (group, i) { p.appendChild(rewardGroupBlock(model, groups, group, i)); });
     var actions = el("div", "bui-actions");
@@ -2033,16 +2059,184 @@
       changed();
     }, "add"));
     p.appendChild(actions);
+    p.appendChild(rewardExtras(model));
     return p;
   }
 
+  function rewardFlagOptions() {
+    var named = (fieldRef["body.rewardFlag"] || {}).values || REWARD_FLAGS;
+    return Object.keys(named).map(Number).sort(function (a, b) { return a - b; }).map(function (id) {
+      return { value: id, label: capital(valueName(named[id])) };
+    });
+  }
+
+  /** The three items the main target reward groups weigh most (else the first group's), for Reward 1/2/3. */
+  function mainRewardItems(model) {
+    var groups = (model.rewardGroups || []).filter(function (g) { return g.groupId === MAIN_REWARD_GROUP; });
+    if (!groups.length) groups = (model.rewardGroups || []).slice(0, 1);
+    var order = [];
+    var weight = {};
+    groups.forEach(function (g) {
+      (g.entries || []).forEach(function (e) {
+        if (!e.itemId) return;
+        if (!(e.itemId in weight)) { order.push(e.itemId); weight[e.itemId] = 0; }
+        weight[e.itemId] += Number(e.weight) || 0;
+      });
+    });
+    var top = order.map(function (id, i) { return { id: id, w: weight[id], i: i }; })
+      .sort(function (a, b) { return b.w - a.w || a.i - b.i; }).slice(0, PREVIEW_ITEMS)
+      .map(function (x) { return x.id; });
+    while (top.length < PREVIEW_ITEMS) top.push(0);
+    return top;
+  }
+
+  /** Every item some reward group pays. */
+  function paidItems(model) {
+    var paid = {};
+    (model.rewardGroups || []).forEach(function (g) {
+      (g.entries || []).forEach(function (e) { if (e.itemId) paid[e.itemId] = true; });
+    });
+    return paid;
+  }
+
+  /* Reward 1/2/3 of the quest list and the reward flag (gap plan task 5). */
+  function rewardExtras(model) {
+    var b = model.body;
+    var box = el("div", "bui-reward-extras");
+    box.appendChild(UI.subhead("Quest list rewards"));
+    box.appendChild(note("Reward 1, 2 and 3: the items the quest list shows for this quest. They show once an admin"
+      + " approves the quest; the testing copy lists none, as it pays no items. Usually the main target's best"
+      + " rewards."));
+    var items = Array.isArray(b.previewItems) ? b.previewItems : [0, 0, 0];
+    var g = grid();
+    [0, 1, 2].forEach(function (i) {
+      g.appendChild(fieldFor(F("body.previewItems[]", i), "Reward " + (i + 1), UI.picker({
+        options: itemOptions(), value: items[i] || 0, kind: "item", showIds: true, unknownLabel: itemName,
+        label: "Quest list reward " + (i + 1),
+        onChange: writes(function (v) {
+          var list = (Array.isArray(b.previewItems) ? b.previewItems : [0, 0, 0]).slice();
+          list[i] = v;
+          b.previewItems = list;
+        })
+      })));
+    });
+    box.appendChild(g);
+    var actions = el("div", "bui-actions");
+    var fill = UI.button("Use the main target's rewards", function () {
+      b.previewItems = mainRewardItems(model);
+      redraw("rewards");
+      changed();
+    });
+    fill.id = "reward-preview-fill";
+    fill.disabled = !mainRewardItems(model)[0];
+    if (fill.disabled) fill.title = "Add a main target reward first.";
+    actions.appendChild(fill);
+    box.appendChild(actions);
+
+    var flags = grid();
+    flags.appendChild(fieldFor(F("body.rewardFlag"), "Fixed rewards", UI.picker({
+      options: rewardFlagOptions(), value: typeof b.rewardFlag === "number" ? b.rewardFlag : 0, showIds: true,
+      unknownLabel: function (v) { return "Value " + v + " (the server accepts 0 to 4)"; },
+      onChange: writes(function (v) { b.rewardFlag = v; })
+    }), "Which rewards a clear always pays rather than drawing them by weight. Pax's editor's names; not traced in"
+      + " the game's code, so test it."));
+    box.appendChild(flags);
+    return box;
+  }
+
   // ---- 6. text -------------------------------------------------------------------------------
+
+  /* Text auto-fill (gap plan task 5, as Pax's editor's buttons): the target lines from the objectives, the clear line
+     from the targets required, the fail line from the faint rule. The last fill can be undone until the next one. */
+  var lastFill = null;
+
+  function article(word) {
+    return /^[aeiou]/i.test(word) ? "an" : "a";
+  }
+
+  /** "Hunt a Tigrex", "Slay 3 Velociprey", "Deliver 5 Herbs"; "None" for an unused objective. */
+  function objectiveLine(o) {
+    if (!o || o.type === 0) return "None";
+    var item = isItemObjective(o.type);
+    var what = item ? itemName(o.target) : monsterName(o.target);
+    var n = Number(o.count) || 0;
+    var verb = {
+      1: "Hunt", 257: "Capture", 513: "Slay", 2: "Deliver", 4098: "Deliver", 32772: "Damage", 98308: "Slay or damage"
+    }[o.type];
+    if (o.type === 16388) return "Break " + (n === 1 ? "a part" : n + " parts") + " of " + article(what) + " " + what;
+    if (verb) return verb + " " + (n === 1 ? article(what) : n) + " " + what;
+    var named = valueName(((fieldRef["body.objective0.type"] || {}).values || objectiveTypes)[String(o.type)]);
+    return (named || "Objective") + ": " + n + " " + what;
+  }
+
+  function targetLines(model) {
+    var b = model.body;
+    return { 1: objectiveLine(b.objective0), 2: objectiveLine(b.objective1), 3: objectiveLine(b.objective2) };
+  }
+
+  function clearFailLines(model) {
+    var b = model.body;
+    var clear = { 3: "Complete the main target and sub-target A", 4: "Complete all targets" }[b.objectiveMode]
+      || "Complete the main target";
+    var faints = Number(b.faintPenalty) || 0;
+    var fail = isG(b) ? "Faint " + (faints === 1 ? "once" : faints + " times") + " / Time runs out"
+      : faints > 0 ? "Reward money hits zero / Time runs out" : "Time runs out";
+    return { 4: clear, 5: fail };
+  }
+
+  function fillTexts(model, lines, what) {
+    var before = {};
+    var names = [];
+    Object.keys(lines).forEach(function (index) {
+      var slot = slotByIndex(model, Number(index));
+      if (!slot) return;
+      before[index] = slot.text || "";
+      slot.text = lines[index];
+      names.push((SLOTS[index] || { name: "Text " + index }).name);
+    });
+    lastFill = { before: before, text: "Wrote " + names.join(", ") + " " + what + "." };
+    redraw("text");
+    changed();
+  }
+
+  function undoFill(model) {
+    if (!lastFill) return;
+    Object.keys(lastFill.before).forEach(function (index) {
+      var slot = slotByIndex(model, Number(index));
+      if (slot) slot.text = lastFill.before[index];
+    });
+    lastFill = null;
+    redraw("text");
+    changed();
+  }
 
   function textSection(model) {
     var p = UI.section("Quest text", "what the quest card says",
       "Each text has a set room in bytes: a plain letter takes 1, a Japanese character 2. Longer text is not"
       + " cut; it is stored at the end of the file. English and Japanese only. What the texts marked"
       + " (unconfirmed) are was read from sample quest files, not from the game's code.");
+    var actions = el("div", "bui-actions");
+    var targets = UI.button("Write the target lines", function () {
+      fillTexts(model, targetLines(model), "from the objectives");
+    });
+    targets.id = "text-fill-targets";
+    var rules = UI.button("Write the clear and fail lines", function () {
+      fillTexts(model, clearFailLines(model), "from the targets required and the faint rule");
+    });
+    rules.id = "text-fill-rules";
+    actions.appendChild(targets);
+    actions.appendChild(rules);
+    p.appendChild(actions);
+    if (lastFill) {
+      var done = note(lastFill.text + " ", "bui-fill-note");
+      var undo = UI.button("Undo", function () { undoFill(model); });
+      undo.id = "text-fill-undo";
+      done.appendChild(undo);
+      p.appendChild(done);
+    } else {
+      p.appendChild(note("The two buttons write the main and sub-target lines, or the clear and fail lines, from what"
+        + " you set above, over what the texts hold; edit them after."));
+    }
     var g = grid();
     TEXT_ORDER.forEach(function (index) {
       var slot = slotByIndex(model, index);
@@ -2115,6 +2309,18 @@
     [rankProblem(b.postRankMin, b.postRankMax, "post"), rankProblem(b.rank, b.joinRankMax, "join")].forEach(function (why) {
       if (why) list.push(why + " (Rules and restrictions)");
     });
+    OBJECTIVES.slice(1).forEach(function (spec) {
+      var paid = Number(b[spec.money.replace("body.", "")]) || 0;
+      if (paid && !used(b, spec.key)) {
+        list.push(spec.name + " is not used but pays " + paid.toLocaleString() + " zenny (Objectives).");
+      }
+    });
+    var paidNow = paidItems(model);
+    (Array.isArray(b.previewItems) ? b.previewItems : []).forEach(function (id, i) {
+      if (id && !paidNow[id]) {
+        list.push("Quest list reward " + (i + 1) + " (" + itemName(id) + ") is not an item any reward group pays (Rewards).");
+      }
+    });
     var none = 0;
     (model.rewardGroups || []).forEach(function (g, i) {
       (g.entries || []).forEach(function (e) { if (!e.itemId) none += 1; });
@@ -2144,6 +2350,19 @@
     });
     if (exact) parts.push(exact + " at an exact spot");
     return parts.join(", ");
+  }
+
+  function moneyText(b) {
+    var z = function (v) { return Number(v || 0).toLocaleString() + " zenny"; };
+    var parts = ["fee " + z(b.zenny), "reward " + z(b.rewardMoney)];
+    if (b.objective1Money) parts.push("sub-target A " + z(b.objective1Money));
+    if (b.objective2Money) parts.push("sub-target B " + z(b.objective2Money));
+    return parts.join(", ") + " (paid in testing too)";
+  }
+
+  function previewText(b) {
+    var ids = (Array.isArray(b.previewItems) ? b.previewItems : []).filter(Boolean);
+    return ids.length ? ids.map(itemName).join(", ") + " (shown once approved; the testing copy lists none)" : "none";
   }
 
   function renderReview() {
@@ -2180,13 +2399,16 @@
       ["Start area", model.startAreas && model.startAreas.length ? areaName(model.startAreas[0].areaId, b.mapId) : "–"],
       ["Time and players", Math.round((b.timeLimit || 0) / TICKS_PER_MINUTE) + " minutes, "
         + ((b.maxHunters & 7) === 1 ? "solo" : "up to " + ((b.maxHunters & 7) || 4) + " hunters")],
-      ["Money", "fee " + Number(b.zenny || 0).toLocaleString() + " zenny, reward " + Number(b.rewardMoney || 0).toLocaleString() + " zenny"],
+      ["Money", moneyText(b)],
       ["Objectives", (goals.length ? goals.join("; ") : "none set") + (required ? " (to clear: " + required.toLowerCase() + ")" : "")],
       ["Monsters", spawns.length ? spawns.map(function (s) { return s.count + " × " + formName(model, s.monsterId); }).join(", ") : "none yet"],
       ["Strength and size", strengthText(model)],
       ["Rules", rulesText(model)],
       ["Forced equipment", equipmentText(model)],
-      ["Supplies and rewards", supplies + (supplies === 1 ? " supply item, " : " supply items, ") + rewards + (rewards === 1 ? " reward" : " rewards")]
+      ["Supplies and rewards", supplies + (supplies === 1 ? " supply item, " : " supply items, ") + rewards + (rewards === 1 ? " reward" : " rewards")
+        + " (" + optionLabel(rewardFlagOptions(), typeof b.rewardFlag === "number" ? b.rewardFlag : 0, "reward flag " + b.rewardFlag).toLowerCase()
+        + "); paid once approved, none while testing"],
+      ["Quest list rewards", previewText(b)]
     ];
     var dl = el("dl", "bui-review");
     facts.forEach(function (f) {
@@ -2522,6 +2744,11 @@
     state.model = model;
     if (!model.largeSpawnAreas) model.largeSpawnAreas = [];
     if (!model.rewardGroups) model.rewardGroups = [];
+    // A draft saved before Reward 1/2/3 were in the model holds the old blank's three items in its raw bytes, which
+    // nobody chose: it starts with none, as a new quest does (API README "Reward extras").
+    var b = model.body;
+    if (b && model.layout === "QUEST" && !Array.isArray(b.previewItems)) b.previewItems = [0, 0, 0];
+    lastFill = null;
     panels(model);
     titleEl.textContent = "New quest";
     document.title = "New quest · Hunsterverse";

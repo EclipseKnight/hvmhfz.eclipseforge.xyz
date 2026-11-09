@@ -63,7 +63,7 @@ turns disagreements into a diff instead of a silent bug.
 ## Test deployment
 
 Unchanged, and it depends on the room pin built for Roads: a token per account, a reserved quest id block,
-token-gated serving, no rewards and no board entries, automatic expiry.
+token-gated serving, no item rewards (the money is paid; owner, 2026-11-09) and no board entries, automatic expiry.
 
 ## Safety
 
@@ -106,7 +106,7 @@ documents it. The builder now starts from a blank quest the API owns:
 | `GET /api/account/quest-drafts/{id}` | `{id, sourceQuestId, variant, revision, model}`; another account's id is a 404, a draft seeded from a live quest is a 403 |
 | `PUT /api/account/quest-drafts/{id}` `{model}` | validates by packing and writing it with the codec (400 with the codec's message), stores it, bumps `revision` |
 | `GET /api/account/quest-drafts/{id}/file` | the `.bin` as `application/octet-stream`, attachment `new-quest.bin` |
-| `POST /api/account/quest-drafts/{id}/submit` | reward-stripped copy via `QuestFile`, a `quest_submission` row with status `testing`, the sandbox quest published by `QuestSubmissionController`'s own method; `{submissionId, sandboxQuestId}` |
+| `POST /api/account/quest-drafts/{id}/submit` | the testing copy via `QuestFile.withNoRewards` (no item rewards, no Reward 1/2/3; money kept), a `quest_submission` row with status `testing`, the sandbox quest published by `QuestSubmissionController`'s own method; `{submissionId, sandboxQuestId}` |
 
 `quest_draft(id, account_id, source_quest_id, variant, model jsonb, revision, created_at, updated_at)`,
 DDL in the API repo at `src/main/resources/db/quest-draft.sql`. `source_quest_id` is 0 for every draft the
@@ -143,7 +143,8 @@ longer carries an edit action, and `?id=` shows the server's refusal instead of 
 
 **What Pax's editor has that the builder lacks** (counter and mark, flags, restrictions, forced equipment,
 monster size, level and coordinates, reward preview) and the plan for it: `docs/quest-builder-gap.md`
-(2026-11-09).
+(2026-11-09). All five tasks are built; how they ship together and what to test in game:
+`docs/quest-builder-release.md`.
 
 **Listing options (gap plan task 1, 9 Nov 2026).** "Quest board listing": Counter (the eight event counters
 the API takes for authors: 18 HR Event by default, 24, 26, 28, 31, 38, 39, 43) and Mark (none, Recommended,
@@ -222,10 +223,31 @@ Not tested in game: any forced set, a piece for one gender only, decorations bey
 gate that skips forcing in some party states (`0x10a827b0`, not traced; Pax's README says forcing sometimes does
 not apply). Check: `dev/check-quest-equipment.js`.
 
-**Owner decisions for later chunks (2026-11-09, not built yet).** Custom quests keep paying their reward money.
-Testing copies are reward-stripped; approved quests pay their full rewards (Erupe branch `erupe-approved-rewards`,
-`85d282f`). The Reward 1/2/3 list items (body +0xb0..+0xb4) are shown for approved quests and cleared in the testing
-copy. These settle the two owner questions in `docs/quest-builder-gap.md` (chunk 5).
+**Rewards and text extras (gap plan task 5, 9 Nov 2026).** Owner decisions (2026-11-09): custom quests keep paying
+their reward money; the testing copy has no item rewards and lists no Reward 1/2/3; an approved quest pays the author's
+rewards and lists their items (Erupe branch `erupe-approved-rewards`, `85d282f`, serves `data` once approved and
+`data_stripped` in testing, for the file and the list entry alike). API README "Reward extras".
+- **Sub-target money**: under Objectives, each used sub-target has its own "Reward money" (`body.objective1Money`,
+  `objective2Money`, body +0x18, +0x1c; 0..999,999 as the main reward money). The review lists a sub-target that is
+  not used but still pays money.
+- **Quest list rewards** (Rewards and supplies): Reward 1, 2 and 3 (`body.previewItems`, body +0xb0, +0xb2, +0xb4),
+  three item pickers with the game's icons. "Use the main target's rewards" fills them with the three items the main
+  target reward groups (0x8001) weigh most, else the first group's (as 2,585 of the 3,501 live quests that list items
+  do). The review names them, "shown once approved", and lists one no reward group pays.
+- **Fixed rewards** (`body.rewardFlag`, body +0x90): Pax's five modes, 0..4; not traced in the client, so marked
+  unconfirmed. The review shows it with the reward count.
+- **Text auto-fill** (Quest text): "Write the target lines" writes the main and sub-target lines from the objectives
+  ("Hunt a Tigrex", "Slay 3 Velociprey", "None" for an unused one); "Write the clear and fail lines" writes the
+  clear line from the targets required and the fail line from the faint rule ("Faint 3 times / Time runs out" in G
+  rank, else "Reward money hits zero / Time runs out", or "Time runs out" with no money lost per faint). Both write
+  over the texts; "Undo" puts back the last fill.
+- **Wording**: the account page, the builder, the admin page and the quest list now say the testing copy pays no
+  items (the money is paid) and an approved quest pays its rewards.
+- **Older drafts and the blank**: the API's blank listed the source quest's three items (Capcom's); it lists none now.
+  A draft saved before these fields opens with Reward 1/2/3 empty, so it stops listing those items when saved.
+- **Not done**: Pax's per-box entry limits (24 in the first group, 4 in the others): 1,187 live reward groups have
+  more, so they are not the client's limit. Reward JSON export and import: skipped, as the plan says.
+Check: `dev/check-quest-rewards.js`.
 
 **Still open.** The `quest_submission` queue, MAX_ACTIVE and the sandbox id block are unchanged; a draft is
 never a submission until Submit. Nothing here deletes drafts (the API caps an account at 50), and the private

@@ -940,14 +940,20 @@
    "size": 4,
    "type": "u32",
    "seen": "0..18,000",
-   "builder": "carried",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 204",
     "ReFrontier FrontierDataTool/Program.cs:520 (zennySubA)",
     "hvmhfz_rest_api QuestCodec.java:400, 624",
-    "survey of the 13,867 local quest files (2026-11-02)"
+    "survey of the 13,867 local quest files (2026-11-02)",
+    "hvmhfz_rest_api QuestModelRanges.body (0..999,999)"
    ],
-   "confidence": "confirmed"
+   "confidence": "confirmed",
+   "range": {
+    "min": 0,
+    "max": 999999
+   },
+   "notes": "Paid when this sub-target is done (or with the main reward when the objectives required include it). The builder offers 0..999,999, as for the main reward money. Custom quests pay it, in testing too."
   },
   {
    "key": "body.objective2Money",
@@ -958,14 +964,20 @@
    "size": 4,
    "type": "u32",
    "seen": "0..6,000",
-   "builder": "carried",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 205",
     "ReFrontier FrontierDataTool/Program.cs:521 (zennySubB)",
     "hvmhfz_rest_api QuestCodec.java:401, 625",
-    "survey of the 13,867 local quest files (2026-11-02)"
+    "survey of the 13,867 local quest files (2026-11-02)",
+    "hvmhfz_rest_api QuestModelRanges.body (0..999,999)"
    ],
-   "confidence": "confirmed"
+   "confidence": "confirmed",
+   "range": {
+    "min": 0,
+    "max": 999999
+   },
+   "notes": "Paid when this sub-target is done (or with the main reward when the objectives required include it). The builder offers 0..999,999, as for the main reward money. Custom quests pay it, in testing too."
   },
   {
    "key": "body.timeLimit",
@@ -1762,6 +1774,58 @@
    "count": 3,
    "editorHint": "body +0xb6",
    "notes": "As body.monsterVariants[0-1], for slots 3 to 5 (body +0xb4 + slot)."
+  },
+  {
+   "key": "body.rewardFlag",
+   "label": "Reward flag",
+   "section": "rewards",
+   "struct": "body",
+   "offset": "0x90",
+   "size": 1,
+   "type": "u8enum",
+   "range": {
+    "min": 0,
+    "max": 4
+   },
+   "values": {
+    "0": "first main reward fixed, sub-target rewards drawn",
+    "1": "first main and first sub-target reward fixed",
+    "2": "fixed rewards",
+    "3": "unknown (fixed)",
+    "4": "no fixed reward"
+   },
+   "seen": "0 (3,246), 4 (766), 2 (691), 1 (262), 3 (35) of the 5,000 live files",
+   "notes": "Pax's names; no client reader traced here. The API refuses anything past 4.",
+   "builder": "edits",
+   "source": [
+    "PaxMHFZQuestEditor src/Utils/QuestParams (Reward Flag, names only, cross-check)",
+    "hvmhfz_rest_api QuestCodec.java (rewardFlag), QuestModelRanges.rewardExtras",
+    "survey of the 5,000 live and 13,869 local quest files (2026-11-09, quest builder task 5)"
+   ],
+   "confidence": "one source"
+  },
+  {
+   "key": "body.previewItems[]",
+   "label": "Reward 1, 2 and 3 (quest list)",
+   "section": "rewards",
+   "struct": "body",
+   "offset": "0xb0",
+   "size": 6,
+   "type": "u16enum",
+   "count": 3,
+   "valuesFrom": "data/item-ids.json",
+   "values": {
+    "0": "none"
+   },
+   "seen": "set in 3,501 of the 5,000 live files; in 2,585 of those only items of the main target reward group (0x8001)",
+   "notes": "Item ids the quest list shows as the quest's rewards (Pax: \"in the quest listing\"; no client reader traced). The testing copy of a custom quest has them cleared (QuestFile.withNoRewards), an approved quest shows the author's. The blank lists none.",
+   "builder": "edits",
+   "source": [
+    "PaxMHFZQuestEditor src/Utils/QuestParams (Reward 1/2/3, cross-check)",
+    "hvmhfz_rest_api QuestCodec.java (previewItems), QuestFile.withNoRewards",
+    "survey of the 5,000 live and 13,869 local quest files (2026-11-09, quest builder task 5)"
+   ],
+   "confidence": "one source"
   },
   {
    "key": "body.iconMonsters[]",

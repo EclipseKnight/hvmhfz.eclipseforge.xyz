@@ -157,8 +157,10 @@ with the builder and plans the missing ones.
 | `body.zenny` | Contract fee (zenny) | body | 0x0c | 4 | u32 | 0..999999 |  | edits | confirmed |
 | `body.rewardMoney` | Main reward money | body | 0x10 | 4 | u32 | 0..999999 |  | edits | confirmed |
 | `body.faintPenalty` | Death count (faint penalty) | body | 0x14 | 4 | u32 |  | faints allowed (1..9) with `variantFlags1` bit 3, else zenny per faint (0..999,999) | edits | confirmed |
-| `body.objective1Money` | Sub-target A reward money | body | 0x18 | 4 | u32 |  |  | carried | confirmed |
-| `body.objective2Money` | Sub-target B reward money | body | 0x1c | 4 | u32 |  |  | carried | confirmed |
+| `body.objective1Money` | Sub-target A reward money | body | 0x18 | 4 | u32 | 0..999999 |  | edits | confirmed |
+| `body.objective2Money` | Sub-target B reward money | body | 0x1c | 4 | u32 | 0..999999 |  | edits | confirmed |
+| `body.rewardFlag` | Reward flag | body | 0x90 | 1 | u8enum | 0..4 | Pax's five modes: 0 first main fixed, 1 first main and sub fixed, 2 fixed, 3 unknown, 4 none fixed | edits | one source |
+| `body.previewItems[]` | Reward 1, 2 and 3 (quest list) | body | 0xb0 | 6 (3 x 2) | u16enum |  | 0 = none; item-ids.json; cleared in the testing copy | edits | one source |
 | `body.gRankPoints[]` | G rank points (3) | body | 0xa4 | 12 (3 x 4) | u32 |  |  | not in the model | guess |
 | `startItems[].itemId` | Supply item | startItem | 0x00 | 2 | u16enum |  | 0 = empty slot; item-ids.json | edits | one source |
 | `startItems[].count` | Supply item count | startItem | 0x02 | 2 | u16 | 1..99 |  | edits | one source |

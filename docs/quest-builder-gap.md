@@ -302,7 +302,13 @@ and the changelog when it goes live. API deploys and the one migration need the 
    file's ids. Then UI: one picker per slot from `/api/public/catalog/equipment?slot=`, "No forced piece" by
    default. API: `equipment[6]` and `+0x8c` in the model, ids checked against the catalog. Tests: round trip,
    refused ids. Mark the section "test in game before submitting".
-5. **Rewards and text extras.** Depends on the owner's answers below. Reward 1/2/3 pickers (auto-filled from
+5. **Rewards and text extras.** Built 2026-11-09 (site branch `questbuilder-gap`, API branch `qb-chunk1`; not
+   live): `docs/quest-editor-web.md` "Rewards and text extras", API README "Reward extras"; deploy with chunks 1-4 as
+   `docs/quest-builder-release.md` says. Per the owner's answers the money is kept (no zeroing, no RE step needed);
+   `withNoRewards` also clears Reward 1/2/3, so the testing copy lists none and an approved quest (served from `data`
+   by Erupe `erupe-approved-rewards`) lists the author's. The API's blank no longer carries its source quest's three
+   items. Per-box limits left out: 1,187 live groups (1,140 local) exceed Pax's 24/4, so they are not the client's.
+   The plan as written: Reward 1/2/3 pickers (auto-filled from
    the main reward group), reward flag, sub-target money, per-box limits, text auto-fill buttons, and the
    stripping fix: `withNoRewards` (or a sibling) zeroes the money per the owner's answer, after an RE or
    in-game check of what a zero faint pool does (fails at the first faint, or at once).
