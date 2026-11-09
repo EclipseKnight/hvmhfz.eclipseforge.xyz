@@ -823,7 +823,7 @@
   }
 
   function roleBadge(role) {
-    var extra = role === "ROLE_ADMIN" ? " role-admin" : role === "ROLE_MODERATOR" ? " role-mod" : role === "ROLE_TESTER" ? " role-tester" : "";
+    var extra = role === "ROLE_ADMIN" ? " role-admin" : role === "ROLE_MODERATOR" ? " role-mod" : role === "ROLE_TESTER" ? " role-tester" : role === "ROLE_PLAYTESTER" ? " role-playtester" : "";
     return el("span", "role-badge" + extra, role.replace("ROLE_", ""));
   }
 
@@ -1125,7 +1125,7 @@
       var empty = el("tr");
       var cell = el("td", "empty-cell", users.match === "character" ? "No character matches that search."
         : "No account or character matches that search.");
-      cell.colSpan = 11;
+      cell.colSpan = 12;
       empty.appendChild(cell);
       body.appendChild(empty);
       return;
@@ -1159,6 +1159,11 @@
       testerBtn.title = "Custom quest and road tester: can load and try custom content before it is published.";
       testerCell.appendChild(testerBtn);
       row.appendChild(testerCell);
+      var playtesterCell = el("td");
+      var playtesterBtn = roleButton(user, "ROLE_PLAYTESTER", "playtester");
+      playtesterBtn.title = "Playtester: may choose a pre-release client patch (players also join on their account page).";
+      playtesterCell.appendChild(playtesterBtn);
+      row.appendChild(playtesterCell);
       row.appendChild(patchChannelCell(user));
       body.appendChild(row);
     });

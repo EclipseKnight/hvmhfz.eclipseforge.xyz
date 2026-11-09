@@ -490,15 +490,21 @@
           <p class="form-alert" id="patch-channel-alert" hidden></p>
           <h3 class="patch-sub">Your characters</h3>
           <ul class="patch-chars" id="patch-chars"></ul>
+          <div id="playtest-box" hidden>
+            <h3 class="patch-sub">Playtest</h3>
+            <label class="qol-label" for="playtest-toggle"><input type="checkbox" role="switch" id="playtest-toggle"><span class="qol-name">Join the playtest</span></label>
+            <p class="note-text">Playtesters can try pre-release client patches before everyone else. Joining only makes the choice below available; it changes nothing by itself and you can leave at any time (leaving puts you back on the Stable patch).</p>
+            <p class="note-text" id="playtest-note" aria-live="polite"></p>
+          </div>
           <h3 class="patch-sub">Pre-releases</h3>
           <div id="patch-slots" aria-live="polite"></div>
           <div id="patch-switch" hidden>
             <p class="note-text">Choose which patch the Mezeporta launcher gives you at its next login. Only the Mezeporta launcher follows this setting.</p>
             <div class="patch-channel-choices" id="patch-channel-choices" role="group" aria-label="Client patch channel"></div>
-            <p class="patch-warning" id="patch-warning" role="note"><b>Test land only.</b> A pre-release patch plays ONLY on the Test land (Playtest: nothing you do there is saved). It cannot play on normal lands. To play normally, switch back to Stable here and restart the launcher. If you enter a normal land with a pre-release patch, the server switches your account back to Stable for you.</p>
+            <p class="patch-warning" id="patch-warning" role="note">Pre-release patches play only on the Test land, where nothing is saved. They cannot play on normal lands; switch back to Stable to play normally (if you try a normal land, you are switched back automatically).</p>
             <p class="note-text" id="patch-channel-note" aria-live="polite"></p>
           </div>
-          <p class="note-text" id="patch-not-eligible" hidden>Pre-releases are for playtesters, moderators and admins.</p>
+          <p class="note-text" id="patch-not-eligible" hidden>Pre-releases are for playtesters. Join the playtest above to choose one.</p>
         </section>
 
         <section class="panel">
@@ -563,7 +569,7 @@
     <script src="/js/questlog.js?v=2"></script>
     <script src="/js/road-preference.js?v=1"></script>
     <script src="/js/account-qol.js?v=2"></script>
-    <script src="/js/account-patch-channel.js?v=2"></script>
+    <script src="/js/account-patch-channel.js?v=3"></script>
     <script src="/js/quest-submissions.js?v=2"></script>
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>

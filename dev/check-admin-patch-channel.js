@@ -3,7 +3,7 @@
    in headless Chromium against a fake API (GET /api/admin/users rows with "patchChannel", GET /api/admin/patch-slots,
    POST /api/admin/patch-channel):
 
-   - the column follows Tester; a "pre:mods" row shows a "pre: mods" badge, a "stable" row says stable;
+   - the Playtester column follows Tester and the patch channel column follows it; a "pre:mods" row shows a "pre: mods" badge, a "stable" row says stable;
    - each row has a select (Stable + each published slot + the user's own slot when it is not out) and a Set button;
      Set posts {"username", "channel"}, then the list is read again and the row changed;
    - the panel lists each slot (version, published, release id, notes, users) and "On a slot that is not out
@@ -62,7 +62,7 @@ function usersReply(channels) {
   };
   return { total: 3, page: 0, size: 25, summary: { accounts: 3, admins: 1, moderators: 0, linked: 0 },
     users: [row(1, "boss", ["ROLE_ADMIN"], channels.boss), row(2, "tester", ["ROLE_TESTER"], channels.tester),
-      row(3, "player", ["ROLE_USER"], channels.player)],
+      row(3, "player", ["ROLE_USER", "ROLE_PLAYTESTER"], channels.player)],
     patchTracking: false, patches: [] };
 }
 
@@ -118,13 +118,20 @@ const rowOf = (page, name) => page.$$eval("#user-rows tr", (rows, n) => {
     const state = { channels: { boss: "pre:mods", tester: "stable", player: "pre:ghost" }, posts: [], reads: 0, refuse: false };
     const { page, errors } = await open(browser, base, state);
     const head = await page.$$eval("#user-rows", (b) => Array.from(b[0].closest("table").querySelectorAll("thead th")).map((t) => t.textContent));
-    check("column after Tester", head.length === 11 && head[9] === "Tester" && head[10] === "Patch channel", head.join(","));
+    check("columns: Tester, Playtester, then Patch channel", head.length === 12 && head[9] === "Tester" && head[10] === "Playtester" && head[11] === "Patch channel", head.join(","));
     let boss = await rowOf(page, "boss"), tester = await rowOf(page, "tester"), player = await rowOf(page, "player");
     const std = ["stable=Stable", "pre:mods=mods (v1.21-pre2)", "pre:balance=balance (v1.21-pre1)"];
-    check("pre row: badge, select, button", boss.cells === 11 && boss.badge === "pre: mods" && boss.button === "Set" && boss.selected === "pre:mods"
+    check("pre row: badge, select, button", boss.cells === 12 && boss.badge === "pre: mods" && boss.button === "Set" && boss.selected === "pre:mods"
       && JSON.stringify(boss.options) === JSON.stringify(std), JSON.stringify(boss));
     check("stable row: text, select, button", tester.badge === null && tester.text.includes("stable") && tester.button === "Set"
       && tester.selected === "stable" && JSON.stringify(tester.options) === JSON.stringify(std), JSON.stringify(tester));
+    // The Playtester role shows as a badge and has its own button (the others offer "Make playtester").
+    const pt = await page.$$eval("#user-rows tr", (rows) => rows.map((r) => ({ name: r.querySelector(".cell-name") && r.querySelector(".cell-name").textContent,
+      badges: Array.from(r.querySelectorAll(".role-cell .role-badge")).map((x) => x.textContent + (x.classList.contains("role-playtester") ? "*" : "")),
+      button: Array.from(r.querySelectorAll("td button")).map((x) => x.textContent).filter((t) => /playtester/.test(t))[0] || null })));
+    const ptRow = (n) => pt.find((x) => x.name && x.name.startsWith(n));
+    check("playtester badge and Remove button", ptRow("player").badges.includes("PLAYTESTER*") && ptRow("player").button === "Remove playtester", J(pt));
+    check("others offer Make playtester", ptRow("boss").button === "Make playtester" && !ptRow("boss").badges.some((x) => /PLAYTESTER/.test(x)), J(pt));
     check("unpublished slot offered for its user", player.badge === "pre: ghost" && player.selected === "pre:ghost"
       && JSON.stringify(player.options) === JSON.stringify(std.concat(["pre:ghost=ghost (not out)"])), JSON.stringify(player));
 
@@ -170,7 +177,7 @@ const rowOf = (page, name) => page.$$eval("#user-rows tr", (rows, n) => {
     // An API without the field.
     const old = await open(browser, base, { channels: {}, posts: [], reads: 0, noSlots: true });
     const o = await rowOf(old.page, "tester");
-    check("old API: dash and no button", o.cells === 11 && o.text === "-" && o.button === null && o.options === null, JSON.stringify(o));
+    check("old API: dash and no button", o.cells === 12 && o.text === "-" && o.button === null && o.options === null, JSON.stringify(o));
     check("old API: no slots panel", !(await old.page.isVisible("#patch-slots-panel")));
     check("old API: no page errors", !old.errors.length, old.errors.join("; "));
 
