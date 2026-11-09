@@ -1498,6 +1498,46 @@ a.char-chip:hover{border-color:#8a6a24;background:rgba(183,138,51,.18)}
 .bui-problems{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}
 .bui-problems li{padding:8px 12px;border:1px solid rgba(139,47,39,.35);border-left:4px solid var(--wax);border-radius:3px;
   background:rgba(139,47,39,.07);font-size:.9rem}
+/* Quest builder alignment (all sections). One grid for every field: label row, bytes row, control row, hint row, so
+   the controls of a row line up whatever the label or bytes text takes; selects, pickers and number inputs are one
+   height (44px, 40px in table rows); units sit inside the number input; checkboxes in even rows. */
+.bui-section .editor-grid{align-items:start;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.bui-section .editor-grid > :is(.bui-wide:has(> .bui-picker),.field:only-child:not(.bui-wide)){grid-column:span 2}
+.bui-section .editor-grid > .field{min-width:0}
+.bui-section .field > :is(label:not(.bui-check),.field-head,.slot-lab){min-height:15px}
+.bui-section .field-head{min-height:15px;margin-bottom:6px}
+.bui-section .field-head .bui-help{display:flex;align-items:center;height:15px}
+.bui-section .field > .note-text{margin:6px 0 0;font-size:.84rem;line-height:1.5}
+.bui-section :is(.bui-picker-btn,input[type="number"],input[type="text"],select){height:44px;min-height:44px}
+.bui-section :is(input[type="number"],input[type="text"],select){padding-top:0;padding-bottom:0}
+.bui-section :is(.bui-table,.bui-position) :is(.bui-picker-btn,input[type="number"],select){height:40px;min-height:40px}
+.bui-section .bui-table input[type="number"]{padding-left:10px;padding-right:8px}
+.bui-position .bui-axis input{font:400 .95rem var(--font-body);color:var(--ink);letter-spacing:0;text-transform:none}
+.bui-unit-wrap{position:relative;display:block}
+.bui-unit-wrap .bui-number{width:100%;padding-right:5.4em;-moz-appearance:textfield;appearance:textfield}
+.bui-unit-wrap .bui-number::-webkit-inner-spin-button,.bui-unit-wrap .bui-number::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.bui-unit-wrap .bui-unit{position:absolute;top:50%;right:12px;transform:translateY(-50%);pointer-events:none}
+.bui-section .bui-group-head{margin-bottom:10px}
+.bui-section .slot-lab{align-items:baseline;gap:2px 14px;margin-bottom:6px}
+.bui-section .slot-lab .slot-count{margin-left:auto}
+.bui-section .bui-actions{margin:4px 0 18px}
+.bui-flags{gap:0}
+.field label.bui-check{padding:4px 0;align-items:flex-start}
+.field .bui-check input[type="checkbox"]{align-self:flex-start;margin-top:1px}
+.bui-check-hint{padding-left:26px;margin-top:-2px}
+@supports (grid-template-rows:subgrid){
+  .bui-section .editor-grid > .field{display:grid;grid-template-rows:subgrid;grid-row:span 4;row-gap:0;align-content:start}
+  .bui-section .editor-grid > .field > *{grid-column:1;align-self:start;min-width:0}
+  .bui-section .editor-grid > .field > :is(label:not(.bui-check),.field-head,.slot-lab){grid-row:1}
+  .bui-section .editor-grid > .field > .bui-bytes{grid-row:2}
+  .bui-section .editor-grid > .field > .note-text{grid-row:4}
+  .bui-section .editor-grid > .field > :not(label:not(.bui-check),.field-head,.slot-lab,.bui-bytes,.note-text){grid-row:3}
+}
+@media (max-width:560px){
+  .bui-section .editor-grid{grid-template-columns:minmax(0,1fr)}
+  .bui-section .editor-grid > :is(.bui-wide:has(> .bui-picker),.field:only-child:not(.bui-wide)){grid-column:auto}
+  .bui-section .field label.bui-check{padding:6px 0}
+}
 /* Quest builder, forced equipment (js/quest-editor.js equipmentSection): a slot's piece and its catalog search. */
 .qe-gear{display:flex;flex-direction:column;gap:6px;min-width:0}
 .qe-gear.is-invalid .qe-gear-current{color:#7f1d17}
