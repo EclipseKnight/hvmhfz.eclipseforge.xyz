@@ -1847,3 +1847,12 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
   .detail-list dd{margin-bottom:8px}
   .detail-box-table td:nth-child(5){min-width:160px}
 }
+
+/* Account > Game options: one switch per client feature (js/account-qol.js) */
+.qol-item{padding:10px 0;border-top:1px solid var(--frame)}
+.qol-item:first-child{border-top:0;padding-top:0}
+.qol-label{display:flex;align-items:center;gap:10px;font-weight:600;cursor:pointer;min-height:44px}
+.qol-label input{width:20px;height:20px;flex:none;accent-color:var(--gold)}
+.qol-name{min-width:0;overflow-wrap:anywhere}
+.qol-item .note-text{margin:4px 0 0;overflow-wrap:anywhere}
+.qol-hidden{color:var(--wax)}

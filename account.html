@@ -21,7 +21,7 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=4" />
+    <link rel="stylesheet" href="/css/styles.css?v=5" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/tablesort.js" defer></script>
     <script src="/js/background.js" defer></script>
@@ -544,6 +544,14 @@
           <button type="button" class="btn btn-primary btn-small" id="road-pref-save">Save Road</button>
         </section>
 
+        <section class="panel" id="qol-panel">
+          <div class="panel-head"><h2>Game options</h2><span class="panel-note">display only</span></div>
+          <p class="note-text">Changes take effect at your next login to the game.</p>
+          <p class="form-alert" id="qol-alert" hidden></p>
+          <div id="qol-list" class="qol-list" aria-live="polite"><span class="skeleton-line w60"></span></div>
+          <p class="note-text" id="qol-note" aria-live="polite"></p>
+        </section>
+
         <section class="panel">
           <div class="panel-head"><h2>Account</h2></div>
           <dl class="detail-list" id="account-details">
@@ -605,6 +613,7 @@
     <script src="/js/monster-links.js"></script>
     <script src="/js/questlog.js?v=2"></script>
     <script src="/js/road-preference.js?v=1"></script>
+    <script src="/js/account-qol.js?v=1"></script>
     <script src="/js/quest-submissions.js?v=2"></script>
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>
