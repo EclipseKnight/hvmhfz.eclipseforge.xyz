@@ -8,6 +8,11 @@
    - the card says changes take effect at the next login;
    - a toggle PUTs only that feature id and shows the saved message, true raw and true element each on their own;
      a refused save (400) puts the switch back and shows an error;
+   - the Keys part renders from the "keys" of the GET answer (retire key, retire on death select with the carts
+     select only for "When I cart", skip-wait key, five remote talk keys, the two hints); a picker captures Ctrl+R from
+     a real keydown, ignores a lone modifier, says so for a key outside the list and cancels on Escape; Save refuses
+     a letter without Ctrl/Alt and a Shift talk key before sending anything; Save sends PUT /api/account/qol/keys with
+     all five settings; a 400 message from the API is shown;
    - at 375px the card and the page content stay inside the screen;
    - no page errors.
 
@@ -42,19 +47,22 @@ const check = (label, ok, detail) => { if (!ok) failures.push(label + (detail ? 
 
 const DESC = "Shows weapon attack as the true value damage uses, without the weapon-class multiplier (a Great Sword's 1022 shows as 213). Display only: damage and the server's numbers do not change.";
 const DESC_ELEMENT = "Shows weapon element and status values as the weapon stores them, without the 0 the game adds at the end (Fire 250 shows as 25, Poison 120 as 12), on the equipment and smithy weapon details, the equipment list and item details. Display only: damage and the server's numbers do not change.";
+let keysState = { retireKey: "Ctrl+R", retireOnDeath: "off", retireCarts: 1, skipWaitKey: null, talkKeys: [null, null, null, null, null] };
 function state(flags) {
   const defs = [
     { id: "trueRaw", bit: 0, name: "True raw attack", description: DESC, revealsHiddenInfo: false, minPatch: "1.20" },
     { id: "trueElement", bit: 1, name: "True element", description: DESC_ELEMENT, revealsHiddenInfo: false, minPatch: "1.20" },
     { id: "monsterBar", bit: 2, name: "Monster health bar", description: "Shows the monster's remaining health.", revealsHiddenInfo: true, minPatch: "1.21" }
   ];
-  return { features: defs.map((d) => Object.assign({ enabled: (flags & (1 << d.bit)) !== 0 }, d)), flags, takesEffect: "next login" };
+  return { features: defs.map((d) => Object.assign({ enabled: (flags & (1 << d.bit)) !== 0 }, d)), flags, keys: keysState, takesEffect: "next login" };
 }
 
 async function run(browser, base) {
   let flags = 0;
   let refuse = false;
+  let refuseKeys = false;
   const puts = [];
+  const keyPuts = [];
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, locale: "en-US" });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -66,6 +74,13 @@ async function run(browser, base) {
     const p = new URL(req.url()).pathname;
     const reply = (status, body) => route.fulfill({ status, contentType: "application/json", headers: CORS, body: JSON.stringify(body) });
     if (p === "/api/account/qol" && req.method() === "GET") return reply(200, state(flags));
+    if (p === "/api/account/qol/keys" && req.method() === "PUT") {
+      const body = JSON.parse(req.postData());
+      keyPuts.push(body);
+      if (refuseKeys) return reply(400, { message: "Ctrl+R is used twice" });
+      keysState = body;
+      return reply(200, state(flags));
+    }
     if (p === "/api/account/qol" && req.method() === "PUT") {
       const body = JSON.parse(req.postData());
       puts.push(body);
@@ -122,6 +137,84 @@ async function run(browser, base) {
   await page.waitForSelector("#qol-alert:not([hidden])", { timeout: 5000 }).catch(() => {});
   check("error shown", /Could not save/.test(await page.textContent("#qol-alert")));
   check("switch put back after a refused save", !(await page.isChecked("#qol-monsterBar")));
+
+  // Keys part.
+  refuse = false;
+  const btnText = (id) => page.textContent("#" + id).then((t) => t.trim());
+  const alertText = () => page.textContent("#qol-alert").then((t) => t.trim());
+  const alertShown = () => page.isVisible("#qol-alert");
+  check("keys part is shown", await page.isVisible("#qol-keys"));
+  const keysText = (await page.textContent("#qol-keys")).replace(/\s+/g, " ");
+  check("keys part has the hints", keysText.includes("No key: always skip") && keysText.includes("In the game, target the NPC or object and press Shift + the key to remember it (saved on that PC)"), keysText);
+  check("retire key from the GET", (await btnText("qol-key-retire-key")) === "Ctrl+R");
+  check("skip-wait and talk keys show None", (await btnText("qol-key-skip-wait-key")) === "None" && (await btnText("qol-key-remote-talk-key-1")) === "None" && (await btnText("qol-key-remote-talk-key-5")) === "None");
+  check("five talk pickers", (await page.$$eval("[id^=qol-key-remote-talk-key-].qol-key-btn", (n) => n.length)) === 5 && (await page.$$eval(".qol-key-btn", (n) => n.length)) === 7);
+  const modeOptions = await page.$$eval("#qol-retire-mode option", (n) => n.map((o) => [o.value, o.textContent]));
+  check("retire on death options", JSON.stringify(modeOptions) === JSON.stringify([["off", "Off"], ["cart", "When I cart"], ["health", "When my health reaches 0"]]), JSON.stringify(modeOptions));
+  check("carts select hidden while Off", !(await page.isVisible("#qol-retire-carts")));
+  await page.selectOption("#qol-retire-mode", "health");
+  check("carts select hidden for health", !(await page.isVisible("#qol-retire-carts")));
+  await page.selectOption("#qol-retire-mode", "cart");
+  check("carts select shown for When I cart", await page.isVisible("#qol-retire-carts"));
+  check("carts options 1-3", JSON.stringify(await page.$$eval("#qol-retire-carts option", (n) => n.map((o) => o.value))) === JSON.stringify(["1", "2", "3"]));
+
+  // A picker captures Ctrl+R from a keydown.
+  await page.click("#qol-key-retire-key-clear");
+  check("clear sets None", (await btnText("qol-key-retire-key")) === "None");
+  await page.click("#qol-key-retire-key");
+  check("click asks for a key", (await btnText("qol-key-retire-key")) === "Press a key\u2026");
+  await page.keyboard.press("Control+KeyR");
+  check("picker captured Ctrl+R", (await btnText("qol-key-retire-key")) === "Ctrl+R", await btnText("qol-key-retire-key"));
+
+  // Skip-wait picker: a lone modifier is ignored, a key outside the list is refused, Escape cancels.
+  await page.click("#qol-key-skip-wait-key");
+  await page.keyboard.press("Shift");
+  check("lone modifier ignored", (await btnText("qol-key-skip-wait-key")) === "Press a key\u2026");
+  await page.keyboard.press("Backspace");
+  check("key outside the list refused", (await alertShown()) && /cannot be used/.test(await alertText()) && (await btnText("qol-key-skip-wait-key")) === "Press a key\u2026", await alertText());
+  await page.keyboard.press("Escape");
+  check("Escape cancels", (await btnText("qol-key-skip-wait-key")) === "None");
+
+  // A letter without Ctrl/Alt is refused before anything is sent.
+  await page.click("#qol-key-remote-talk-key-1");
+  await page.keyboard.press("KeyA");
+  check("plain letter captured as A", (await btnText("qol-key-remote-talk-key-1")) === "A");
+  await page.click("#qol-keys-save");
+  check("letter without modifier refused", (await alertShown()) && /letters and digits need Ctrl or Alt/.test(await alertText()) && !keyPuts.length, await alertText() + " puts " + keyPuts.length);
+
+  // A Shift talk key is refused too.
+  await page.click("#qol-key-remote-talk-key-1");
+  await page.keyboard.press("F7");
+  await page.click("#qol-key-remote-talk-key-2");
+  await page.keyboard.press("Shift+F3");
+  check("Shift talk key captured", (await btnText("qol-key-remote-talk-key-2")) === "Shift+F3");
+  await page.click("#qol-keys-save");
+  check("Shift talk key refused", (await alertShown()) && /cannot use Shift/.test(await alertText()) && !keyPuts.length, await alertText() + " puts " + keyPuts.length);
+
+  // A duplicate key is refused.
+  await page.click("#qol-key-remote-talk-key-2");
+  await page.keyboard.press("Control+KeyR");
+  await page.click("#qol-keys-save");
+  check("duplicate key refused", (await alertShown()) && /same key/.test(await alertText()) && !keyPuts.length, await alertText() + " puts " + keyPuts.length);
+
+  // Save sends all five settings.
+  await page.click("#qol-key-remote-talk-key-2");
+  await page.keyboard.press("Control+Alt+Numpad5");
+  check("Ctrl+Alt+Num5 captured", (await btnText("qol-key-remote-talk-key-2")) === "Ctrl+Alt+Num5");
+  await page.selectOption("#qol-retire-carts", "2");
+  await page.click("#qol-keys-save");
+  await page.waitForFunction(() => /Keys saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
+  const want = { retireKey: "Ctrl+R", retireOnDeath: "cart", retireCarts: 2, skipWaitKey: null, talkKeys: ["F7", "Ctrl+Alt+Num5", null, null, null] };
+  check("Save sends the PUT body with all five keys", keyPuts.length === 1 && JSON.stringify(keyPuts[0]) === JSON.stringify(want), JSON.stringify(keyPuts));
+  check("keys saved message", /Keys saved\. They take effect from your next login/.test(await page.textContent("#qol-note")), await page.textContent("#qol-note"));
+  check("pickers show the saved keys", (await btnText("qol-key-remote-talk-key-2")) === "Ctrl+Alt+Num5" && (await page.inputValue("#qol-retire-mode")) === "cart" && (await page.inputValue("#qol-retire-carts")) === "2");
+
+  // A 400 message from the API is shown.
+  refuseKeys = true;
+  await page.click("#qol-keys-save");
+  await page.waitForSelector("#qol-alert:not([hidden])", { timeout: 5000 }).catch(() => {});
+  check("API 400 message shown", /Ctrl\+R is used twice/.test(await alertText()), await alertText());
+  check("keys stay after a refused save", (await btnText("qol-key-retire-key")) === "Ctrl+R" && keyPuts.length === 2);
 
   // Mobile: no sideways scroll.
   await page.setViewportSize({ width: 375, height: 800 });
