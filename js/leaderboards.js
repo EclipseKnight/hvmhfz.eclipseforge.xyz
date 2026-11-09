@@ -171,7 +171,7 @@
 
   // "26 Oct to now, resets in 4d 8h" for a running period, "19 Oct to 25 Oct (UTC)" for a finished one.
   function periodNote(data) {
-    if (!data.from) return "all time";
+    if (!data.from) return "all time, in-game Monster List counts";
     var text = day(data.from) + " to ";
     if (!data.resetsAt) return text + day(new Date(data.to).getTime() - 1) + " (UTC)";
     var left = Math.max(0, new Date(data.resetsAt).getTime() - Date.now());

@@ -154,7 +154,7 @@
     loadMine();
   }
 
-  /* Signed in: add up the kill logs of all the player's characters (the same per-character call the
+  /* Signed in: add up the lifetime hunt counts of all the player's characters (the same per-character call the
      account page's hunt log uses). Optional: any failure just leaves the "by you" counts out. */
   function loadMine() {
     var value = signedIn();

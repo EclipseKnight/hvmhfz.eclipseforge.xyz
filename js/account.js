@@ -734,7 +734,7 @@
       });
     }
 
-    document.getElementById("hunts-note").textContent = data.totalKills ? "from the server kill log" : "";
+    document.getElementById("hunts-note").textContent = data.totalKills ? "lifetime numbers are your in-game Monster List counts (slain and captured); recent kills come from the server kill log" : "";
   }
 
   function loadHunts(characterId) {

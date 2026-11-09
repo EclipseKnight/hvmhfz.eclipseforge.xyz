@@ -795,7 +795,7 @@
       var monsters = el("section", "panel");
       var mh = el("div", "panel-head");
       mh.appendChild(el("h2", null, "Most hunted"));
-      mh.appendChild(el("span", "panel-note", "from the kill log"));
+      mh.appendChild(el("span", "panel-note", "lifetime, from the in-game Monster List"));
       monsters.appendChild(mh);
 
       var wrap = el("div", "table-wrap");
