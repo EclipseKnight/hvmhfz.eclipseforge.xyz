@@ -8,6 +8,8 @@
      edited and the note); a number box left empty is caught before any request;
    - list editors (guild member limits, login notices): add and remove rows;
    - the history with what each change did, and Revert on the second click (POST with the version);
+   - the Patch gate section's count of who it would refuse: the stored values (GET) when it opens, the form's
+     values (POST) after an edit, a moderator's form falling back to the stored values;
    - a refused section says why; a missing table says so; markup in a value stays text; no horizontal overflow at
      375 px; no page errors;
    - the pure helpers under node.
@@ -68,14 +70,34 @@ const SPEC = {
       pair: [{ label: "From guild rank", min: 0, max: 255 }, { label: "Members", min: 1, max: 100 }] })] },
   login_notices: { name: "login_notices", title: "Login notices", effect: "At the next login", help: "MHFML.", rules: [], fields: [
     f("hide", "Hide the notices", "bool"),
-    f("notices", "Notices", "strings", { maxItems: 8, maxLength: 4000 })] }
+    f("notices", "Notices", "strings", { maxItems: 8, maxLength: 4000 })] },
+  patch_gate: { name: "patch_gate", title: "Patch gate", effect: "At each login", help: "Which client patches may play.",
+    rules: [{ id: "patch_gate_versions", text: "Versions are MAJOR.MINOR." }], fields: [
+    f("mode", "Mode", "string", { enumValues: ["off", "latest", "latest_n", "minimum"] }),
+    f("current", "Latest version", "string", { maxLength: 6 }),
+    f("allow_unknown", "Allow unknown versions", "bool"),
+    f("exempt_accounts", "Exempt accounts (ids)", "strings", { maxItems: 50, maxLength: 10 })] }
 };
 
+/* The API's count for a gate value (the shape of PatchGateImpact.Impact). */
+function impactFor(value) {
+  const latest = value && value.mode === "latest";
+  const count = (n, refused) => ({ characters: n, refused, exempt: latest ? 1 : 0, noVersion: 1, notRecorded: 1 });
+  return { tracking: true, mode: latest ? "latest" : "off", oldestAllowed: latest ? 120 : null, allowUnknown: true,
+    describe: latest ? "v1.20 and newer play; clients that send no version (v1.18 or older) play too." : "Off: every client patch plays.",
+    problems: [], recentDays: 7, online: count(4, latest ? 1 : 0), recent: count(9, latest ? 3 : 0),
+    versions: [{ clientPatch: 120, name: "v1.20", online: 1, recent: 4, refused: false },
+      { clientPatch: 119, name: "v1.19", online: 2, recent: 3, refused: latest },
+      { clientPatch: 0, name: "v1.18 or older", online: 0, recent: 2, refused: false },
+      { clientPatch: null, name: "not recorded", online: 1, recent: 0, refused: false }] };
+}
+
 function overview(api) {
-  const sections = ["mezfes", "sky_corridor", "guild", "login_notices"].map((name) => ({
+  const sections = ["mezfes", "sky_corridor", "guild", "login_notices", "patch_gate"].map((name) => ({
     spec: SPEC[name], stored: api.stored[name] || null,
     defaults: api.report ? { mezfes: { solo_tickets: 5, group_tickets: 1, switch_minigame: true }, sky_corridor: { floor_rotation: "weekly", floor_record_multiplier: 3 },
-      guild: { member_limits: [[0, 30], [3, 40]] }, login_notices: { hide: true, notices: ["<BODY>Welcome"] } }[name] : null,
+      guild: { member_limits: [[0, 30], [3, 40]] }, login_notices: { hide: true, notices: ["<BODY>Welcome"] },
+      patch_gate: { mode: "off", current: "1.20", allow_unknown: true, exempt_accounts: null } }[name] : null,
     effective: api.report ? { mezfes: { solo_tickets: 9, group_tickets: 1, switch_minigame: true } }[name] || null : null,
     state: api.states[name] || { state: api.report ? "default" : "no-game-server", refusal: null, appliedAt: null, process: null, stale: false }
   }));
@@ -101,6 +123,10 @@ function fakeApi(page, api) {
     if (p === "/api/admin/distributions/options") return reply(200, { lists: {}, items: {}, needsItemId: [], maxCharacters: 100 });
     if (p === "/api/admin/distributions") return reply(200, []);
     if (p === "/api/admin/settings") return reply(200, overview(api));
+    if (p === "/api/admin/settings/patch_gate/impact") {
+      if (req.method() === "POST" && api.moderator) return reply(403, { message: "Forbidden" });
+      return reply(200, impactFor(req.method() === "POST" ? sent.value : (api.stored.patch_gate || {}).value));
+    }
     let m = p.match(/^\/api\/admin\/settings\/([a-z_]+)\/check$/);
     if (m) {
       if (sent.value.solo_tickets > 100) return reply(200, { problems: ["MezFes: Solo tickets per week (solo_tickets) must be from 0 to 100."], changes: [] });
@@ -173,6 +199,15 @@ function helpers() {
   check("historyChanges deleted", Set_.historyChanges(sec, { solo_tickets: 9 }, null).pop() === "row deleted: every value back to config.json");
   check("limits", Set_.limits(sec.fields[0]) === "0 to 100, whole number" && Set_.limits(SPEC.sky_corridor.fields[0]) === "one of off, weekly, daily"
     && /1 to 20 rows; From guild rank 0-255, Members 1-100/.test(Set_.limits(SPEC.guild.fields[0])), Set_.limits(SPEC.guild.fields[0]));
+  const lines = Set_.impactLines(impactFor({ mode: "latest" }));
+  check("impactLines", JSON.stringify(lines) === JSON.stringify([
+    "v1.20 and newer play; clients that send no version (v1.18 or older) play too.",
+    "Online now: 1 of 4 characters would be refused (1 exempt: staff or listed; 1 sent no version (v1.18 or older); 1 not recorded yet, judged at their next login).",
+    "Seen in the last 7 days: 3 of 9 characters would be refused (1 exempt: staff or listed; 1 sent no version (v1.18 or older); 1 not recorded yet, judged at their next login)."]), JSON.stringify(lines));
+  check("impactLines without tracking", /does not record client patches yet/.test(Set_.impactLines({ tracking: false, describe: "Off." }).join(" ")));
+  const irows = Set_.impactRows(impactFor({ mode: "latest" }));
+  check("impactRows", JSON.stringify(irows.map((r) => r[3])) === JSON.stringify(["plays", "refused (unless exempt)", "plays", "judged at next login"])
+    && irows[1][0] === "v1.19" && irows[1][1] === "2", JSON.stringify(irows));
 }
 
 /* ---- the page ---- */
@@ -187,7 +222,7 @@ async function settingsPage(browser, base) {
   await page.waitForSelector("#set-sections .set-tab", { timeout: 5000 });
   check("tab shown", !(await page.$eval("#panel-settings", (n) => n.hidden)));
   const tabs = await page.$$eval("#set-sections .set-tab", (ns) => ns.map((n) => n.textContent));
-  check("sections with states", JSON.stringify(tabs) === JSON.stringify(["MezFesapplied", "Sky Corridorrefused", "Guildconfig", "Login noticesconfig"]), JSON.stringify(tabs));
+  check("sections with states", JSON.stringify(tabs) === JSON.stringify(["MezFesapplied", "Sky Corridorrefused", "Guildconfig", "Login noticesconfig", "Patch gateconfig"]), JSON.stringify(tabs));
   const status = await text(page, "#set-status");
   check("game server report", /hunsterverse: runs version 7, .*read the table Fri 20 Nov 2026 11:59 UTC; refused: sky_corridor\./.test(status), status);
   const ro = await page.$$eval("#set-restart li", (ns) => ns.map((n) => n.textContent));
@@ -268,9 +303,54 @@ async function settingsPage(browser, base) {
   await page.click("[data-section=login_notices]");
   await page.waitForSelector("[data-key=notices] textarea", { timeout: 5000 });
   check("notice text", (await page.$eval("[data-key=notices] textarea", (n) => n.value)) === "<BODY>Welcome");
+  check("no impact box outside the patch gate", !(await page.$("#set-impact")));
+
+  // Patch gate: the stored values' count when it opens, the form's after an edit (POST with the form's value).
+  await page.click("[data-section=patch_gate]");
+  await page.waitForFunction(() => /With the stored values\./.test((document.getElementById("set-impact-text") || {}).textContent || ""), null, { timeout: 5000 });
+  let imp = await text(page, "#set-impact");
+  check("impact of the stored values", /Off: every client patch plays\./.test(imp) && /Online now: 0 of 4 characters would be refused/.test(imp), imp);
+  check("impact is a GET first", !!last(api, "GET", "/patch_gate/impact") && !last(api, "POST", "/patch_gate/impact"));
+  await (await page.$("[data-key=mode] .set-default input")).uncheck();
+  await page.selectOption("#set-f-mode", "latest");
+  await page.waitForFunction(() => /not saved yet/.test(document.getElementById("set-impact-text").textContent), null, { timeout: 5000 });
+  imp = await text(page, "#set-impact");
+  const posted = last(api, "POST", "/patch_gate/impact");
+  check("impact of the form", posted && posted.body.value.mode === "latest" && !("current" in posted.body.value)
+    && /Online now: 1 of 4 characters would be refused \(1 exempt: staff/.test(imp) && /Seen in the last 7 days: 3 of 9/.test(imp), imp + " " + JSON.stringify(posted && posted.body));
+  const impRows = await page.$$eval("#set-impact-rows tr", (ns) => ns.map((n) => Array.from(n.children).map((c) => c.textContent).join(" | ")));
+  check("impact table", impRows.length === 4 && impRows[1] === "v1.19 | 2 | 3 | refused (unless exempt)" && impRows[3] === "not recorded | 1 | 0 | judged at next login", JSON.stringify(impRows));
+  await shot(page, "admin-settings-patch-gate-1280.png");
   check("no errors on the admin page", r.errors.length === 0, r.errors.join("; "));
   await shot(page, "admin-settings-1280.png");
   await page.close();
+
+  // A moderator editing the gate: the count falls back to the stored values.
+  r = await open(browser, base + "/admin.html#settings", { calls: [], report: true, moderator: true, stored: {}, states: {} }, 1280);
+  await r.page.waitForSelector("[data-section=patch_gate]", { timeout: 5000 });
+  await r.page.click("[data-section=patch_gate]");
+  await r.page.waitForSelector("#set-f-mode", { timeout: 5000 });
+  await (await r.page.$("[data-key=mode] .set-default input")).uncheck();
+  await r.page.selectOption("#set-f-mode", "latest");
+  await r.page.waitForTimeout(1200);
+  const modText = await text(r.page, "#set-impact-text");
+  check("moderator: stored values, no error", /With the stored values\./.test(modText) && !/Could not count/.test(modText), modText);
+  check("no errors for a moderator", r.errors.length === 0, r.errors.join("; "));
+  // 375 px with the patch gate open: the box adds no overflow of its own (the page's header has some already).
+  const before375 = await (async () => {
+    const pg = await open(browser, base + "/admin.html#settings", { calls: [], report: true, stored: {}, states: {} }, 375);
+    await pg.page.waitForSelector("#set-f-solo_tickets", { timeout: 5000 });
+    const o = await pg.page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    await pg.page.click("[data-section=patch_gate]");
+    await pg.page.waitForFunction(() => /With the stored values/.test((document.getElementById("set-impact-text") || {}).textContent || ""), null, { timeout: 5000 });
+    const o2 = await pg.page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    const box = await pg.page.$eval("#set-impact", (n) => n.getBoundingClientRect().right - document.documentElement.clientWidth);
+    await shot(pg.page, "admin-settings-patch-gate-375.png");
+    await pg.page.close();
+    return { o, o2, box };
+  })();
+  check("patch gate at 375 px adds no overflow", before375.o2 <= before375.o && before375.box <= 0, JSON.stringify(before375));
+  await r.page.close();
 
   // 375 px: no horizontal overflow.
   r = await open(browser, base + "/admin.html#settings", { calls: [], report: true, stored: {}, states: {} }, 375);

@@ -4,7 +4,9 @@
    table every minute and reports what it runs. The forms are built from the section spec the API sends (labels,
    limits, help, when a change takes effect): nothing about the sections is hard-coded here. A field on "config
    default" is left out of the saved value, so the game server uses its config.json value. Save always shows the
-   changes first (the API's check), and the history keeps every change with a Revert. All times here are UTC. */
+   changes first (the API's check), and the history keeps every change with a Revert. The Patch gate section also
+   shows who it would refuse right now (the API's /api/admin/settings/patch_gate/impact), for the stored values and
+   again for the form's values as they are edited. All times here are UTC. */
 (function () {
   "use strict";
 
@@ -155,9 +157,42 @@
     return "";
   }
 
+  /** One group of the patch gate's count as a sentence: "Online now: 2 of 4 characters would be refused (...)." */
+  function impactCount(label, c) {
+    var more = [];
+    if (c.exempt) more.push(c.exempt + " exempt: staff or listed");
+    if (c.noVersion) more.push(c.noVersion + " sent no version (v1.18 or older)");
+    if (c.notRecorded) more.push(c.notRecorded + " not recorded yet, judged at their next login");
+    return label + ": " + c.refused + " of " + c.characters + " character" + (c.characters === 1 ? "" : "s")
+      + " would be refused" + (more.length ? " (" + more.join("; ") + ")" : "") + ".";
+  }
+
+  /** The patch gate's impact (API) as sentences: what plays, then online and recent counts. */
+  function impactLines(impact) {
+    if (!impact) return [];
+    var out = [impact.describe];
+    if (!impact.tracking) {
+      out.push("The game server does not record client patches yet (Erupe's 2026-11-client-patch.sql and config "
+        + "PatchVersion.Enabled): nobody can be counted.");
+      return out;
+    }
+    out.push(impactCount("Online now", impact.online));
+    out.push(impactCount("Seen in the last " + impact.recentDays + " days", impact.recent));
+    return out;
+  }
+
+  /** The impact's versions as table rows: [version, online, recent, what the gate does]. */
+  function impactRows(impact) {
+    return ((impact && impact.versions) || []).map(function (v) {
+      return [v.name, String(v.online), String(v.recent),
+        v.clientPatch === null || v.clientPatch === undefined ? "judged at next login" : v.refused ? "refused (unless exempt)" : "plays"];
+    });
+  }
+
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { utc: utc, show: show, formValue: formValue, formInputs: formInputs, stateText: stateText,
-      stateBadge: stateBadge, diffRows: diffRows, historyChanges: historyChanges, limits: limits };
+      stateBadge: stateBadge, diffRows: diffRows, historyChanges: historyChanges, limits: limits,
+      impactLines: impactLines, impactRows: impactRows };
   }
   if (typeof document === "undefined") return;
 
@@ -307,7 +342,90 @@
     var grid = el("div", "set-fields");
     view.spec.fields.forEach(function (f) { grid.appendChild(fieldRow(view, f)); });
     box.appendChild(grid);
+    if (view.spec.name === "patch_gate") {
+      box.appendChild(impactBox());
+      refreshImpact(false);
+    }
     $("set-note-text").value = "";
+  }
+
+  /* --- the patch gate's count of who it would refuse --- */
+
+  var impactTimer = null, impactSeq = 0;
+
+  function impactBox() {
+    var wrap = el("div", "set-impact");
+    wrap.id = "set-impact";
+    wrap.appendChild(el("h4", "subhead", "Who this would refuse right now"));
+    var text = el("div", "set-impact-text");
+    text.id = "set-impact-text";
+    text.appendChild(el("p", "note-text", "Counting…"));
+    wrap.appendChild(text);
+    var tw = el("div", "table-wrap");
+    var table = el("table", "data-table admin-table");
+    var head = el("thead");
+    var hr = el("tr");
+    ["Client patch", "Online", "Last 7 days", "With these values"].forEach(function (h) { hr.appendChild(el("th", null, h)); });
+    head.appendChild(hr);
+    table.appendChild(head);
+    var body = el("tbody");
+    body.id = "set-impact-rows";
+    table.appendChild(body);
+    tw.appendChild(table);
+    wrap.appendChild(tw);
+    return wrap;
+  }
+
+  // fromForm: count the form's values (admins; POST); else the stored ones. A moderator's form count falls back to
+  // the stored values. Only the newest answer is shown.
+  function refreshImpact(fromForm) {
+    var view = state.current;
+    if (!view || view.spec.name !== "patch_gate" || !$("set-impact")) return;
+    var seq = ++impactSeq;
+    var req = fromForm
+      ? request("/api/admin/settings/patch_gate/impact", { method: "POST", body: JSON.stringify({ value: formValue(view.spec, state.inputs).value }) })
+      : request("/api/admin/settings/patch_gate/impact");
+    req.then(function (impact) {
+      if (seq === impactSeq) renderImpact(impact, fromForm ? "With the values in the form (not saved yet)." : "With the stored values.");
+    }).catch(function (error) {
+      if (seq !== impactSeq) return;
+      if (fromForm && /Only admin/.test(error.message)) {
+        refreshImpact(false);
+        return;
+      }
+      var text = $("set-impact-text");
+      clear(text);
+      text.appendChild(el("p", "form-alert", "Could not count: " + error.message));
+    });
+  }
+
+  function scheduleImpact() {
+    if (!state.current || state.current.spec.name !== "patch_gate") return;
+    clearTimeout(impactTimer);
+    impactTimer = setTimeout(function () { refreshImpact(true); }, 400);
+  }
+
+  function renderImpact(impact, which) {
+    var text = $("set-impact-text"), body = $("set-impact-rows");
+    if (!text || !body) return;
+    clear(text);
+    text.appendChild(el("p", "note-text set-effect", which));
+    impactLines(impact).forEach(function (line) { text.appendChild(el("p", "note-text", line)); });
+    (impact.problems || []).forEach(function (p) { text.appendChild(el("p", "form-alert", p)); });
+    clear(body);
+    var rows = impactRows(impact);
+    if (!rows.length) {
+      var tr = el("tr");
+      var td = el("td", "empty-cell", "No character online or seen in the last " + (impact.recentDays || 7) + " days.");
+      td.colSpan = 4;
+      tr.appendChild(td);
+      body.appendChild(tr);
+    }
+    rows.forEach(function (r) {
+      var tr = el("tr");
+      r.forEach(function (c) { tr.appendChild(el("td", null, c)); });
+      body.appendChild(tr);
+    });
   }
 
   function fieldRow(view, f) {
@@ -336,6 +454,7 @@
       $("set-review").hidden = true;
       var fresh = editorFor(f, input, id);
       control.replaceChild(fresh, control.firstChild);
+      scheduleImpact();
     });
     useDefault.appendChild(cb);
     useDefault.appendChild(document.createTextNode(" config default" + (f.key in defaults ? " (" + show(defaults[f.key]) + ")" : "")));
@@ -351,6 +470,7 @@
   function changed() {
     state.reviewed = null;
     $("set-review").hidden = true;
+    scheduleImpact();
   }
 
   function editorFor(f, input, id) {
