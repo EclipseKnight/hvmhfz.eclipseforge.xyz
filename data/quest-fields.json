@@ -34,6 +34,11 @@
    "size": 4,
    "count": 40
   },
+  "forcedPiece": {
+   "at": "body +0x5c (6 records: legs, weapon, head, chest, arms, waist)",
+   "size": 8,
+   "count": 6
+  },
   "rewardGroup": {
    "at": "header pointer 3 (+0x0c)",
    "size": 8,
@@ -1813,29 +1818,102 @@
    "bits": {
     "1": "becomes bit 14 of the forced weapon id"
    },
-   "builder": "carried",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 231",
-    "hvmhfz_rest_api QuestCodec.java:425, 651"
+    "hvmhfz_rest_api QuestCodec.java:425, 651",
+    "hvmhfz_re docs/quest-files.md, \"Forced equipment\" (part 79)"
    ],
-   "confidence": "one source"
+   "confidence": "confirmed",
+   "notes": "Only bit 1 is read: the forced weapon's id bit 14 (melee ids 16,384 and up; 14 Capcom records use it). The builder sets it with the forced weapon and clears it without one; the API refuses it set without a forced weapon."
   },
   {
-   "key": "body.equipment[]",
-   "label": "Forced equipment (6 records)",
+   "key": "body.equipment[].piece",
+   "label": "Forced piece",
    "section": "other",
-   "struct": "body",
-   "offset": "0x5c",
-   "size": 48,
-   "type": "bytes",
-   "count": 6,
-   "codec": false,
-   "notes": "Six 8-byte records. Record 1: +0x64 weapon id (14 bits, bit 15 weapon type, bit 14 off), +0x66 bit 15 active.",
-   "builder": "not in the model",
+   "struct": "forcedPiece",
+   "offset": "0x00",
+   "size": 2,
+   "type": "u16",
+   "values": {
+    "0": "no piece (armour)"
+   },
+   "valuesFrom": "data/forced-equipment.json, names from the API catalog",
+   "notes": "Record in file order 0 legs, 1 weapon, 2 head, 3 chest, 4 arms, 5 waist (the client's equipment kinds). Armour: the id in the slot's table in mhfdat.bin (+0x60 legs, +0x50 head, +0x54 chest, +0x58 arms, +0x5c waist), the same ids as data/equipment-icons.json (every row's rarity equal). Weapon: low 14 bits the id in the melee (+0x7c) or, with bit 15, the ranged (+0x80) table; body.flagsAtC0 bit 1 is id bit 14. Bit 14 switches the record off. The client checks no bound: the builder offers only data/forced-equipment.json's pieces; armour id 0 forces the slot empty.",
+   "builder": "edits",
    "source": [
-    "hvmhfz_re docs/quest-files.md lines 220-221"
+    "hvmhfz_re docs/quest-files.md, \"Forced equipment\" (part 79: 0x10812fe0, 0x10bad8b0)",
+    "hvmhfz_rest_api QuestCodec.java (ForcedPiece), QuestModelRanges.forcedEquipment",
+    "PaxMHFZQuestEditor src/Utils/QuestParams/equipment_utils.js (order and names, cross-check only)",
+    "survey of the 13,869 local and 5,000 live quest files (2026-11-09, quest builder task 4)"
    ],
-   "confidence": "one source"
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.equipment[].word1",
+   "label": "Decoration 1 (and in force)",
+   "section": "other",
+   "struct": "forcedPiece",
+   "offset": "0x02",
+   "size": 2,
+   "type": "bitfield",
+   "bits": {
+    "15": "in force"
+   },
+   "valuesFrom": "data/forced-equipment.json decorations (low 15 bits)",
+   "notes": "Bit 15: the record is in force (with piece bit 14 clear; 0x10812fe0). Low 15 bits: a decoration item id, 0 for none. Capcom's files: 0x8000 in most records in force.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md, \"Forced equipment\" (part 79: 0x10812fe0, 0x10bad8b0)",
+    "hvmhfz_rest_api QuestCodec.java (ForcedPiece), QuestModelRanges.forcedEquipment",
+    "PaxMHFZQuestEditor src/Utils/QuestParams/equipment_utils.js (order and names, cross-check only)",
+    "survey of the 13,869 local and 5,000 live quest files (2026-11-09, quest builder task 4)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.equipment[].word2",
+   "label": "Decoration 2",
+   "section": "other",
+   "struct": "forcedPiece",
+   "offset": "0x04",
+   "size": 2,
+   "type": "bitfield",
+   "bits": {
+    "15": "set with the record"
+   },
+   "valuesFrom": "data/forced-equipment.json decorations (low 15 bits)",
+   "notes": "Low 15 bits: a decoration item id, 0 for none. Bit 15 is set in every record in force in Capcom's files (no reader of it traced).",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md, \"Forced equipment\" (part 79: 0x10812fe0, 0x10bad8b0)",
+    "hvmhfz_rest_api QuestCodec.java (ForcedPiece), QuestModelRanges.forcedEquipment",
+    "PaxMHFZQuestEditor src/Utils/QuestParams/equipment_utils.js (order and names, cross-check only)",
+    "survey of the 13,869 local and 5,000 live quest files (2026-11-09, quest builder task 4)"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "key": "body.equipment[].word3",
+   "label": "Decoration 3",
+   "section": "other",
+   "struct": "forcedPiece",
+   "offset": "0x06",
+   "size": 2,
+   "type": "bitfield",
+   "bits": {
+    "15": "set with the record"
+   },
+   "valuesFrom": "data/forced-equipment.json decorations (low 15 bits)",
+   "notes": "As word2.",
+   "builder": "edits",
+   "source": [
+    "hvmhfz_re docs/quest-files.md, \"Forced equipment\" (part 79: 0x10812fe0, 0x10bad8b0)",
+    "hvmhfz_rest_api QuestCodec.java (ForcedPiece), QuestModelRanges.forcedEquipment",
+    "PaxMHFZQuestEditor src/Utils/QuestParams/equipment_utils.js (order and names, cross-check only)",
+    "survey of the 13,869 local and 5,000 live quest files (2026-11-09, quest builder task 4)"
+   ],
+   "confidence": "confirmed"
   },
   {
    "key": "body.gRankPoints[]",

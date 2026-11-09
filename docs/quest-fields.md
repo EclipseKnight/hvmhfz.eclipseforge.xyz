@@ -204,8 +204,11 @@ with the builder and plans the missing ones.
 | `body.variantFlags3` | Variant flags 3 | body | 0x99 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 5, 6, 7 (JSON); bit 4 with a Zenith monster; bit 5 refused | edits | confirmed |
 | `body.specialListTab` | Special list tab | body | 0xa0 | 2 | u16 |  | 0 = tabs 1-4; 1 = tab 5 only | derived | one source |
 | `body.infoNumber` | Info page 2 number | body | 0xbe | 2 | u16 |  |  | carried | guess |
-| `body.flagsAtC0` | Body flags at +0xc0 | body | 0xc0 | 4 | bitfield |  | bits 1 (JSON) | carried | one source |
-| `body.equipment[]` | Forced equipment (6 records) | body | 0x5c | 48 (6 x 8) | bytes |  |  | not in the model | one source |
+| `body.flagsAtC0` | Body flags at +0xc0 | body | 0xc0 | 4 | bitfield |  | bit 1 = forced weapon id bit 14 | edits | confirmed |
+| `body.equipment[].piece` | Forced piece | forcedPiece | 0x00 | 2 | u16 |  | armour id (0 = no piece) or weapon id (low 14 bits, bit 15 gunner, bit 14 off); forced-equipment.json | edits | confirmed |
+| `body.equipment[].word1` | Decoration 1 (and in force) | forcedPiece | 0x02 | 2 | bitfield |  | bit 15 in force; low 15 bits a decoration item id | edits | confirmed |
+| `body.equipment[].word2` | Decoration 2 | forcedPiece | 0x04 | 2 | bitfield |  | bit 15 set with the record; low 15 bits a decoration item id | edits | confirmed |
+| `body.equipment[].word3` | Decoration 3 | forcedPiece | 0x06 | 2 | bitfield |  | as word2 | edits | confirmed |
 
 ### Text slot meanings
 

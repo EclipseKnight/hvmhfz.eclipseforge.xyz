@@ -148,6 +148,7 @@ const WRITERS = {
   writeObjective: { at: "objective" },
   writeStartAreas: { table: "startArea" },
   writeStartItems: { table: "startItem" },
+  writeForcedEquipment: { at: "forcedPiece" },
   writeMap: { at: "mapRecord" },
   writeRewards: { at: "rewardGroup", entry: "rewardEntry" },
   writeSmallSpawns: { slot: "smallSpawnSlot" },
@@ -159,6 +160,7 @@ const READERS = {
   parseBody: { body: "body" },
   parseStartAreas: { at: "startArea", table: "startArea" },
   parseStartItems: { table: "startItem" },
+  parseForcedEquipment: { at: "forcedPiece" },
   parseMap: { at: "mapRecord" },
   parseRewards: { at: "rewardGroup", entry: "rewardEntry" },
   parseSmallSpawns: { at: "smallSpawnSlot" },
@@ -317,6 +319,7 @@ const EDITOR_VARS = {
   spawn: ["largeSpawnAreas[].spawns[].", "smallSpawnGroups[].areas[].spawns[]."],
   entry: ["startItems[].", "rewardGroups[].entries[]."],
   a: ["startAreas[]."],
+  rec: ["body.equipment[]."],
   group: ["rewardGroups[]."],
   slot: ["texts[0].", "texts[1].", "texts[2].", "texts[3].", "texts[4].", "texts[5].", "texts[6].", "texts[7]."]
 };
@@ -327,8 +330,8 @@ const PUSHED = [
   { has: "weight", prefix: "rewardGroups[].entries[]." },
   { has: "monsterId", prefix: "largeSpawnAreas[].spawns[]." }
 ];
-/* Containers and editor-only properties: not file fields. */
-const NOT_FIELDS = ["spawns", "entries"];
+/* Containers and editor-only properties: not file fields (body.equipment is the list of forced-equipment records). */
+const NOT_FIELDS = ["spawns", "entries", "equipment"];
 
 const allKeys = new Set();
 fields.forEach(function (f) { allKeys.add(f.key); (f.alsoKeys || []).forEach(function (k) { allKeys.add(k); }); });

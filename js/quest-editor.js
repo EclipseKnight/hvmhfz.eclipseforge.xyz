@@ -100,6 +100,32 @@
   /* The restriction list and the Hardcore notes (data/quest-condition-notes.json); these are the fallback. */
   var conditionNotes = { notes: [], groups: [], hardcore: { ids: [109, 110, 111, 112, 113, 118], written: 109, questClass: 3 } };
 
+  /* Forced equipment (docs/quest-builder-gap.md task 4; API README "Forced equipment"; hvmhfz_re docs/quest-files.md
+     "Forced equipment"): body.equipment, six 8-byte records { piece, word1, word2, word3 } in file order legs, weapon,
+     head, chest, arms, waist. A record is in force when word1 bit 15 is set (and piece bit 14 clear); the low 15 bits of
+     the three words are decoration item ids; for the weapon, piece bit 15 picks the gunner table and body.flagsAtC0 bit 1
+     is its id bit 14. The game looks the ids up with no bound check, so only data/forced-equipment.json's pieces are
+     offered (names from the API catalog, icons from js/game-icons.js), and the API refuses the rest. Nothing here was
+     tested in game. */
+  var GEAR_SLOTS = [
+    { name: "Legs", table: "legs", catalog: "legs" },
+    { name: "Weapon", weapon: true },
+    { name: "Head", table: "head", catalog: "heads" },
+    { name: "Chest", table: "chest", catalog: "chests" },
+    { name: "Arms", table: "arms", catalog: "arms" },
+    { name: "Waist", table: "waist", catalog: "waists" }
+  ];
+  var GEAR_ORDER = [1, 2, 3, 4, 5, 0]; // on screen: weapon, then head to legs
+  var GEAR_WEAPON = 1;
+  var GEAR_ON = 0x8000;      // word1: the record is in force; word2, word3: set with it in every Capcom file
+  var GEAR_OFF = 0x4000;     // piece: the record is switched off
+  var GEAR_GUNNER = 0x8000;  // weapon piece: the ranged table
+  var GEAR_DECO = 0x7fff;
+  var GEAR_ID_BIT14 = 2;     // body.flagsAtC0 bit 1
+  var forcedGear = null;     // data/forced-equipment.json
+  var gearIcons = null;      // data/equipment-icons.json, through js/game-icons.js
+  var gearNames = {};        // "<table>:<id>" -> the API catalog's name
+
   /* Objective types no quest file uses; their names come from the overlay only (builder item 11). */
   var UNTESTED_TYPES = { 16: true, 131072: true, 262144: true };
 
@@ -192,12 +218,15 @@
     return Promise.all([
       grab("/data/map-ids.json"), grab("/data/map-areas.json"), grab("/data/area-ids.json"),
       grab("/data/item-ids.json"), grab("/data/objective-types.json"), grab("/data/monster-ids.json"),
-      grab("/data/quest-fields.json"), UI.loadIcons(["monsters", "items"]), grab("/data/quest-condition-notes.json")
+      grab("/data/quest-fields.json"), UI.loadIcons(["monsters", "items"]), grab("/data/quest-condition-notes.json"),
+      grab("/data/forced-equipment.json"), window.HvGameIcons ? window.HvGameIcons.load() : null
     ]).then(function (r) {
       mapIds = r[0] || {}; mapAreas = r[1] || {}; areaIds = r[2] || {}; itemIds = r[3] || {};
       objectiveTypes = r[4] || {}; monsterIds = r[5] || {};
       ((r[6] || {}).fields || []).forEach(function (f) { fieldRef[f.key] = f; });
       if (r[8] && Array.isArray(r[8].notes)) conditionNotes = r[8];
+      if (r[9] && typeof r[9].melee === "string" && Array.isArray(r[9].decorations)) forcedGear = r[9];
+      gearIcons = r[10] || null;
     });
   }
 
@@ -1172,6 +1201,361 @@
     return parts.length ? parts.join("; ") : "none";
   }
 
+  // ---- 2c. forced equipment (arena quests) ----------------------------------------------------
+
+  function emptyRecord() {
+    return { piece: 0, word1: 0, word2: 0, word3: 0 };
+  }
+
+  /** The six records, or six empty ones for a draft saved before the field existed (sent only once edited). */
+  function gearList(b) {
+    return Array.isArray(b.equipment) && b.equipment.length === GEAR_SLOTS.length ? b.equipment
+      : GEAR_SLOTS.map(emptyRecord);
+  }
+
+  function gearRecord(b, slot) {
+    if (!Array.isArray(b.equipment) || b.equipment.length !== GEAR_SLOTS.length) b.equipment = gearList(b);
+    return b.equipment[slot];
+  }
+
+  function inForce(rec) {
+    return !!rec && (rec.word1 & GEAR_ON) !== 0 && (rec.piece & GEAR_OFF) === 0;
+  }
+
+  function blankRecord(rec) {
+    return !rec || !(rec.piece || rec.word1 || rec.word2 || rec.word3);
+  }
+
+  /** A forced record's piece: { id, ranged } (a weapon's id takes bit 14 from body.flagsAtC0). */
+  function gearPiece(b, slot, rec) {
+    if (slot !== GEAR_WEAPON) return { id: rec.piece, ranged: false };
+    return { id: (rec.piece & 0x3fff) | ((b.flagsAtC0 || 0) & GEAR_ID_BIT14 ? 0x4000 : 0), ranged: !!(rec.piece & GEAR_GUNNER) };
+  }
+
+  /** "a" any hunter, "b" blademaster, "g" gunner, or "-" when data/forced-equipment.json does not offer the piece. */
+  function gearKind(slot, id, ranged) {
+    if (!forcedGear) return "-";
+    if (slot === GEAR_WEAPON) {
+      return (forcedGear[ranged ? "ranged" : "melee"] || "").charAt(id) === "w" && id > 0 ? (ranged ? "g" : "b") : "-";
+    }
+    return (forcedGear[GEAR_SLOTS[slot].table] || "").charAt(id) || "-";
+  }
+
+  /** "b" or "g" when the forced pieces other than slot `skip` are for blademasters or gunners only, else "". */
+  function gearSetKind(b, skip) {
+    var kind = "";
+    gearList(b).forEach(function (rec, slot) {
+      if (slot === skip || !inForce(rec)) return;
+      var p = gearPiece(b, slot, rec);
+      var k = gearKind(slot, p.id, p.ranged);
+      if (k === "b" || k === "g") kind = kind && kind !== k ? "x" : k;
+    });
+    return kind;
+  }
+
+  function gearTable(slot, ranged) {
+    return slot === GEAR_WEAPON ? (ranged ? "ranged" : "melee") : GEAR_SLOTS[slot].table;
+  }
+
+  /* The API catalog's equipment ids are the game's id as 4 hex digits, low byte first ("EB19" is 6635). */
+  function catalogKey(id) {
+    function two(n) { return (n < 16 ? "0" : "") + n.toString(16).toUpperCase(); }
+    return two(id & 0xff) + two((id >> 8) & 0xff);
+  }
+
+  function catalogId(raw) {
+    var hex = String(raw || "").trim();
+    return /^[0-9a-f]{4}$/i.test(hex) ? parseInt(hex.slice(2, 4) + hex.slice(0, 2), 16) : null;
+  }
+
+  /** Pieces of a slot whose name (or id, for a number) matches: [{ id, ranged, name }] from the API catalog. */
+  function searchGear(slot, term) {
+    var number = /^\d+$/.test(term) ? Number(term) : null;
+    var lists = slot === GEAR_WEAPON ? ["melee", "ranged"] : [GEAR_SLOTS[slot].catalog];
+    return Promise.all(lists.map(function (list) {
+      var q = number === null ? term : catalogKey(number);
+      return fetch(API + "/api/public/catalog/equipment?slot=" + list + "&size=40&q=" + encodeURIComponent(q))
+        .then(function (r) { return r.ok ? r.json() : { items: [] }; })
+        .then(function (page) {
+          return (page.items || []).map(function (e) {
+            var ranged = list === "ranged";
+            var id = catalogId(e.id);
+            if (id !== null && e.name) gearNames[gearTable(slot, ranged) + ":" + id] = e.name;
+            return { id: id, ranged: ranged, name: e.name || "" };
+          }).filter(function (e) { return e.id !== null && (number === null || e.id === number); });
+        });
+    })).then(function (parts) { return [].concat.apply([], parts); });
+  }
+
+  /** The catalog name of a forced piece, fetched once; then() runs when it came in. */
+  function gearNameOf(slot, piece, then) {
+    var key = gearTable(slot, piece.ranged) + ":" + piece.id;
+    if (gearNames[key] !== undefined) return gearNames[key];
+    gearNames[key] = null;
+    searchGear(slot, String(piece.id)).then(function () {
+      if (gearNames[key] === null) gearNames[key] = "";
+      if (then) then();
+    }).catch(function () { gearNames[key] = ""; });
+    return null;
+  }
+
+  function gearLabel(slot, piece, name) {
+    if (slot !== GEAR_WEAPON && piece.id === 0) return "No piece: the slot is left empty";
+    return name || (slot === GEAR_WEAPON ? (piece.ranged ? "Gunner weapon" : "Blademaster weapon") : GEAR_SLOTS[slot].name + " piece")
+      + " #" + piece.id;
+  }
+
+  function gearIcon(slot, piece) {
+    if (!window.HvGameIcons || (slot !== GEAR_WEAPON && piece.id === 0)) return el("span", "gi gi-equip gi-unknown");
+    var look = slot === GEAR_WEAPON ? { kind: piece.ranged ? "ranged" : "melee", id: piece.id }
+      : { kind: "armour", slot: GEAR_SLOTS[slot].table, id: piece.id };
+    return window.HvGameIcons.equipmentIcon(gearIcons, look, "gi-small");
+  }
+
+  var KIND_NAMES = { b: "blademasters", g: "gunners" };
+
+  /**
+   * The forced piece of one slot: what is forced now, and a search of the API catalog (only pieces
+   * data/forced-equipment.json offers, and not a blademaster piece in a gunner set or the other way round).
+   * onPick({ id, ranged }) forces a piece; onPick(null) stops forcing the slot.
+   */
+  function gearChooser(model, slot, onPick) {
+    var b = model.body;
+    var s = GEAR_SLOTS[slot];
+    var rec = gearList(b)[slot];
+    var wrap = el("div", "qe-gear");
+    var current = el("div", "qe-gear-current");
+    wrap.appendChild(current);
+    function drawCurrent() {
+      current.textContent = "";
+      wrap.classList.remove("is-invalid");
+      if (!inForce(rec)) {
+        current.appendChild(el("span", "qe-gear-none", blankRecord(rec) ? "Not forced" : "Not forced (old bytes left: Clear)"));
+        return;
+      }
+      var piece = gearPiece(b, slot, rec);
+      current.appendChild(gearIcon(slot, piece));
+      current.appendChild(el("span", "qe-gear-name", gearLabel(slot, piece, gearNameOf(slot, piece, drawCurrent))));
+      var kind = gearKind(slot, piece.id, piece.ranged);
+      if (kind === "-") {
+        wrap.classList.add("is-invalid");
+        current.appendChild(el("span", "qe-gear-why", "not a piece the server takes: pick another"));
+      } else if (kind === "b" || kind === "g") {
+        current.appendChild(el("span", "qe-gear-kind", KIND_NAMES[kind] + " only"));
+      }
+    }
+    drawCurrent();
+
+    var actions = el("div", "qe-gear-actions");
+    var chooseBtn = UI.button(inForce(rec) ? "Change" : "Choose", function () {
+      panel.hidden = !panel.hidden;
+      if (!panel.hidden) input.focus();
+    }, "add", "Choose the forced " + s.name.toLowerCase());
+    actions.appendChild(chooseBtn);
+    if (!blankRecord(rec)) {
+      actions.appendChild(UI.button("Clear", function () { onPick(null); }, "remove", "Stop forcing the " + s.name.toLowerCase()));
+    }
+    wrap.appendChild(actions);
+
+    var panel = el("div", "qe-gear-search");
+    panel.hidden = true;
+    var input = el("input");
+    input.type = "search";
+    input.placeholder = slot === GEAR_WEAPON ? "Type a weapon's name or id" : "Type a " + s.name.toLowerCase() + " piece's name or id";
+    input.setAttribute("aria-label", "Search " + s.name.toLowerCase() + " pieces");
+    panel.appendChild(input);
+    if (slot !== GEAR_WEAPON) {
+      var bare = UI.button("Force no piece", function () { onPick({ id: 0, ranged: false }); }, null,
+        "Force the " + s.name.toLowerCase() + " slot empty");
+      bare.classList.add("qe-gear-bare");
+      panel.appendChild(bare);
+    }
+    var found = el("ul", "qe-gear-results");
+    var status = note("Type at least 2 letters, or an id.");
+    panel.appendChild(status);
+    panel.appendChild(found);
+    wrap.appendChild(panel);
+
+    var timer = null;
+    var asked = 0;
+    input.addEventListener("input", function () {
+      clearTimeout(timer);
+      var term = input.value.trim();
+      found.textContent = "";
+      if (term.length < 2 && !/^\d+$/.test(term)) { status.textContent = "Type at least 2 letters, or an id."; return; }
+      status.textContent = "Searching…";
+      timer = setTimeout(function () {
+        var mine = ++asked;
+        searchGear(slot, term).then(function (list) {
+          if (mine !== asked) return;
+          var setKind = gearSetKind(b, slot);
+          var shown = 0;
+          var hidden = 0;
+          list.forEach(function (e) {
+            var kind = gearKind(slot, e.id, e.ranged);
+            if (kind === "-") { hidden += 1; return; }
+            var clash = (kind === "b" || kind === "g") && (setKind === "b" || setKind === "g") && kind !== setKind;
+            var li = el("li");
+            var btn = el("button", "qe-gear-option");
+            btn.type = "button";
+            btn.appendChild(gearIcon(slot, e));
+            btn.appendChild(el("span", "qe-gear-name", e.name));
+            btn.appendChild(el("span", "bui-id", "#" + e.id));
+            if (clash) {
+              btn.disabled = true;
+              btn.appendChild(el("span", "bui-hint", "for " + KIND_NAMES[kind] + "; the set is for " + KIND_NAMES[setKind]));
+            } else if (kind === "b" || kind === "g") {
+              btn.appendChild(el("span", "bui-hint", KIND_NAMES[kind] + " only"));
+            }
+            btn.addEventListener("click", function () { onPick({ id: e.id, ranged: e.ranged }); });
+            li.appendChild(btn);
+            found.appendChild(li);
+            shown += 1;
+          });
+          status.textContent = shown ? (list.length >= 40 ? "The first matches; type more of the name to narrow them." : "")
+            + (hidden ? " " + hidden + " placeholder " + (hidden === 1 ? "row" : "rows") + " of the game's tables left out." : "")
+            : list.length ? "Only placeholder rows of the game's tables match: they cannot be forced."
+              : "Nothing matches “" + term + "”.";
+        }).catch(function () {
+          if (mine === asked) status.textContent = "The equipment list could not be loaded. Try again in a moment.";
+        });
+      }, 250);
+    });
+    return wrap;
+  }
+
+  var decoList = null;
+  /** None, then the decorations Capcom's quest files force (data/forced-equipment.json), by name. */
+  function decoOptions() {
+    if (decoList) return decoList;
+    decoList = [{ value: 0, label: "None" }].concat(((forcedGear || {}).decorations || []).map(function (id) {
+      return { value: id, label: itemName(id) };
+    }).sort(byLabel));
+    return decoList;
+  }
+
+  function equipmentSection(model) {
+    var b = model.body;
+    var p = UI.section("Forced equipment (arena)", "the gear every hunter must use");
+    p.appendChild(note("Untested in game: no forced equipment made here has been tried in the game yet. The game"
+      + " swaps each hunter's gear for these pieces when the quest starts (read from its code); try the quest in"
+      + " testing before you submit it.", "bui-notice bui-warn qe-gear-untested"));
+    p.appendChild(note("Leave a slot “Not forced” to let hunters bring their own. Pieces come from the game's"
+      + " equipment tables, placeholder rows left out; a set cannot mix blademaster and gunner pieces. An arena quest"
+      + " usually also has a supply box (Rewards) and a restriction such as “No items” (Rules and restrictions); the"
+      + " quest file has no pouch of its own."));
+    if (!forcedGear) {
+      p.appendChild(note("The list of pieces could not be loaded, so nothing can be forced now. Reload the page to try"
+        + " again.", "bui-notice bui-warn"));
+      return p;
+    }
+    var rows = [];
+    GEAR_ORDER.forEach(function (slot) {
+      var s = GEAR_SLOTS[slot];
+      var rec = gearList(b)[slot];
+      var forced = inForce(rec);
+      var cells = [{ label: "Slot", node: el("strong", null, s.name) }];
+      if (slot === GEAR_WEAPON) {
+        cells.push({ label: "Forced piece", ref: F(["body.equipment[].piece", "body.flagsAtC0"], slot),
+          node: gearChooser(model, slot, function (piece) {
+            var rec = gearRecord(b, slot);
+            var keep = inForce(rec);
+            rec.piece = piece ? (piece.id & 0x3fff) | (piece.ranged ? GEAR_GUNNER : 0) : 0;
+            b.flagsAtC0 = ((b.flagsAtC0 || 0) & ~GEAR_ID_BIT14) | (piece && piece.id & 0x4000 ? GEAR_ID_BIT14 : 0);
+            rec.word1 = piece ? GEAR_ON | (keep ? rec.word1 & GEAR_DECO : 0) : 0;
+            rec.word2 = piece ? GEAR_ON | (keep ? rec.word2 & GEAR_DECO : 0) : 0;
+            rec.word3 = piece ? GEAR_ON | (keep ? rec.word3 & GEAR_DECO : 0) : 0;
+            redraw("equipment");
+            changed();
+          }) });
+      } else {
+        cells.push({ label: "Forced piece", ref: F("body.equipment[].piece", slot),
+          node: gearChooser(model, slot, function (piece) {
+            var rec = gearRecord(b, slot);
+            var keep = inForce(rec) && piece && piece.id !== 0;
+            rec.piece = piece ? piece.id : 0;
+            rec.word1 = piece ? GEAR_ON | (keep ? rec.word1 & GEAR_DECO : 0) : 0;
+            rec.word2 = piece ? GEAR_ON | (keep ? rec.word2 & GEAR_DECO : 0) : 0;
+            rec.word3 = piece ? GEAR_ON | (keep ? rec.word3 & GEAR_DECO : 0) : 0;
+            redraw("equipment");
+            changed();
+          }) });
+      }
+      var decos = forced && (slot === GEAR_WEAPON || rec.piece !== 0);
+      function decoPicker(word, ref, write) {
+        var d = UI.picker({ options: decoOptions(), value: rec[word] & GEAR_DECO, kind: "item", compact: true, showIds: true,
+          label: s.name + " decoration " + word.slice(-1), disabled: !decos, unknownLabel: itemName, onChange: writes(write) });
+        var v = rec[word] & GEAR_DECO;
+        if (decos && v && !decoOptions().some(function (o) { return o.value === v; })) {
+          d.setProblem("The server does not take this decoration: pick another, or None.");
+        }
+        cells.push({ label: "Decoration " + word.slice(-1), ref: ref, node: d.el });
+      }
+      decoPicker("word1", F("body.equipment[].word1", slot), function (v) {
+        var rec = gearRecord(b, slot);
+        rec.word1 = GEAR_ON | v;
+      });
+      decoPicker("word2", F("body.equipment[].word2", slot), function (v) {
+        var rec = gearRecord(b, slot);
+        rec.word2 = GEAR_ON | v;
+      });
+      decoPicker("word3", F("body.equipment[].word3", slot), function (v) {
+        var rec = gearRecord(b, slot);
+        rec.word3 = GEAR_ON | v;
+      });
+      rows.push(cells);
+    });
+    var wrap = UI.table(["Slot", "Forced piece", "Decoration 1", "Decoration 2", "Decoration 3"], rows, "", "qe-gear-table");
+    // Each row's record index, so a refusal naming body.equipment[N] lands in its row (placeFor).
+    [].forEach.call(wrap.querySelectorAll("tbody tr"), function (tr, i) {
+      [].forEach.call(tr.querySelectorAll("td[data-fields]"), function (td) { td.setAttribute("data-index", String(GEAR_ORDER[i])); });
+    });
+    p.appendChild(wrap);
+    p.appendChild(note("Decorations: only the ones Capcom's own quests force are offered, and the game was not seen"
+      + " to check a piece's slots, so a piece may show more decorations than it has slots. Also untested: a piece for"
+      + " one gender only (Capcom's quests force some)."));
+    return p;
+  }
+
+  /** "Great Sword X, Head #4, legs left empty" or "none" for the review. */
+  function equipmentText(model) {
+    var b = model.body;
+    var parts = [];
+    GEAR_ORDER.forEach(function (slot) {
+      var rec = gearList(b)[slot];
+      if (!inForce(rec)) return;
+      var piece = gearPiece(b, slot, rec);
+      if (slot !== GEAR_WEAPON && piece.id === 0) { parts.push(GEAR_SLOTS[slot].name.toLowerCase() + " left empty"); return; }
+      var name = gearNames[gearTable(slot, piece.ranged) + ":" + piece.id];
+      var decos = [rec.word1, rec.word2, rec.word3].filter(function (w) { return w & GEAR_DECO; }).length;
+      parts.push((name || GEAR_SLOTS[slot].name + " #" + piece.id) + (decos ? " (" + decos + (decos === 1 ? " decoration)" : " decorations)") : ""));
+    });
+    return parts.length ? parts.join(", ") + " — not tested in game" : "none (hunters bring their own)";
+  }
+
+  /** What the page sees wrong in the forced equipment, for the review list. */
+  function equipmentProblems(model) {
+    var b = model.body;
+    var out = [];
+    if (!forcedGear || !Array.isArray(b.equipment)) return out;
+    var weapon = false;
+    b.equipment.forEach(function (rec, slot) {
+      var s = GEAR_SLOTS[slot];
+      if (!inForce(rec)) {
+        if (!blankRecord(rec)) out.push("The " + s.name.toLowerCase() + " slot holds old bytes: clear it (Forced equipment).");
+        return;
+      }
+      if (slot === GEAR_WEAPON) weapon = true;
+      var piece = gearPiece(b, slot, rec);
+      if (gearKind(slot, piece.id, piece.ranged) === "-") {
+        out.push("The forced " + s.name.toLowerCase() + " (#" + piece.id + ") is not a piece the server takes (Forced equipment).");
+      }
+    });
+    if (gearSetKind(b, -1) === "x") out.push("The forced set mixes blademaster and gunner pieces (Forced equipment).");
+    if (!weapon && (b.flagsAtC0 || 0) & GEAR_ID_BIT14) out.push("A weapon bit is left without a forced weapon: force a weapon or clear it (Forced equipment).");
+    return out;
+  }
+
   // ---- 3. map and start area -----------------------------------------------------------------
 
   function allSpawns(model) {
@@ -1741,7 +2125,7 @@
       }
     });
     if (none) list.push(none + (none === 1 ? " reward has" : " rewards have") + " no item (Rewards).");
-    return list;
+    return list.concat(equipmentProblems(model));
   }
 
   /** "difficulty 26 · HR5, size 100% (95–110%), 1 at an exact spot" for the review. */
@@ -1801,6 +2185,7 @@
       ["Monsters", spawns.length ? spawns.map(function (s) { return s.count + " × " + formName(model, s.monsterId); }).join(", ") : "none yet"],
       ["Strength and size", strengthText(model)],
       ["Rules", rulesText(model)],
+      ["Forced equipment", equipmentText(model)],
       ["Supplies and rewards", supplies + (supplies === 1 ? " supply item, " : " supply items, ") + rewards + (rewards === 1 ? " reward" : " rewards")]
     ];
     var dl = el("dl", "bui-review");
@@ -1823,7 +2208,7 @@
   // ---- drawing -------------------------------------------------------------------------------
 
   var SECTIONS = [
-    ["basics", basicsSection], ["listing", listingSection], ["rules", rulesSection], ["map", mapSection], ["objectives", objectivesSection], ["monsters", monstersSection],
+    ["basics", basicsSection], ["listing", listingSection], ["rules", rulesSection], ["equipment", equipmentSection], ["map", mapSection], ["objectives", objectivesSection], ["monsters", monstersSection],
     ["rewards", rewardsSection], ["text", textSection]
   ];
   var drawn = {};
@@ -1922,6 +2307,19 @@
     m = /body\.(variantFlags[23]) bit \d \((Road|Interception)\)/.exec(text);
     if (m) {
       out.push({ key: "body." + m[1], text: "The server does not take the " + m[2] + " flag." });
+    }
+    var gear = /body\.equipment\[(\d)\]\.piece: (?:[\w ]+?) (\d+) is not a/g;
+    while ((m = gear.exec(text))) {
+      out.push({ key: "body.equipment[" + m[1] + "].piece", text: "The server does not take this "
+        + (GEAR_SLOTS[Number(m[1])] || { name: "piece" }).name.toLowerCase() + " (#" + m[2] + "): pick another." });
+    }
+    var deco = /body\.equipment\[(\d)\]\.(word[123]): decoration (\d+) is not one/g;
+    while ((m = deco.exec(text))) {
+      out.push({ key: "body.equipment[" + m[1] + "]." + m[2], text: "The server does not take decoration " + itemName(m[3])
+        + " (#" + m[3] + "): pick another, or None." });
+    }
+    if (/body\.equipment mixes blademaster and gunner pieces/.test(text)) {
+      out.push({ key: "body.equipment[1].piece", text: "The server refused a set that mixes blademaster and gunner pieces." });
     }
     m = /Map (\d+) has no area tables on this server/.exec(text);
     if (m) {

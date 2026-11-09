@@ -195,6 +195,33 @@ A draft from before these fields (no rank limits or flags in its model) shows ne
 review gains a Rules line. Not tested in game yet: the Hardcore switch, a conquest flag and the restrictions the
 game may enforce. Check: `dev/check-quest-rules.js`.
 
+**Forced equipment (gap plan task 4, 9 Nov 2026).** A section "Forced equipment (arena)" after the rules, with a red
+"Untested in game" note at its top: no forced set made here has been tried in the game.
+- **What the client does** (`hvmhfz_re` `docs/quest-files.md`, "Forced equipment", part 79): `body.equipment` is six
+  8-byte records at body +0x5c, in file order legs, weapon, head, chest, arms, waist. When the quest starts the game
+  replaces each hunter's piece by the record's (`0x10812fe0`), looking the id up in its equipment tables **without a
+  bounds check**. The weapon's id is 14 bits with bit 15 for the gunner table; `body.flagsAtC0` bit 1 is its id bit
+  14 (melee ids 16,384 and up). The three other words hold decoration item ids (low 15 bits).
+- **Ids**: the site's equipment ids (`data/equipment-icons.json`, the API catalog) are the game's table rows: every
+  row's rarity matches the client's `mhfdat.bin` tables, the five armour slots and both weapon tables. The tables
+  hold placeholder rows (ダミー, 使用禁止, 欠番, blank), so the builder offers only `data/forced-equipment.json`'s pieces
+  (`dev/make-forced-equipment.py`, from the same dumps; the API keeps a copy and refuses anything else). Every piece
+  forced in Capcom's quest files is in it (254 sets in the local files, 470 in the live sample).
+- **Per slot**: "Not forced" (all four words 0) by default; "Choose" searches the API catalog by name or id (game
+  icons from `js/game-icons.js`), placeholder rows left out and said so; armour also has "Force no piece" (id 0, the
+  slot forced empty, as Capcom's arena quests do); "Clear" stops forcing it. A blademaster-only piece cannot join a
+  gunner set or the other way round (no Capcom file mixes them; the API refuses it).
+- **Decorations**: three pickers per forced piece, from the 224 decorations Capcom's quest files force. The game was
+  not seen to check a piece's slots, so this is not limited by slot count. No sigils: the format has none.
+- **Not in the format**: a pouch or ammo of its own. An arena quest is forced gear plus the supply box (Rewards) and a
+  restriction such as "No items" (Rules and restrictions).
+A server refusal naming `body.equipment[N]` shows in that slot's row. The review gains a "Forced equipment" line
+("... — not tested in game") and lists a placeholder piece, a blademaster/gunner mix or a stray weapon bit. A draft
+from before the field (no `body.equipment`) shows six "Not forced" rows and saves without it until a slot is set.
+Not tested in game: any forced set, a piece for one gender only, decorations beyond a piece's slots, and the client's
+gate that skips forcing in some party states (`0x10a827b0`, not traced; Pax's README says forcing sometimes does
+not apply). Check: `dev/check-quest-equipment.js`.
+
 **Owner decisions for later chunks (2026-11-09, not built yet).** Custom quests keep paying their reward money.
 Testing copies are reward-stripped; approved quests pay their full rewards (Erupe branch `erupe-approved-rewards`,
 `85d282f`). The Reward 1/2/3 list items (body +0xb0..+0xb4) are shown for approved quests and cleared in the testing

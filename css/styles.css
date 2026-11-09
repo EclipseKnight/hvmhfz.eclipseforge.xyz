@@ -1498,6 +1498,23 @@ a.char-chip:hover{border-color:#8a6a24;background:rgba(183,138,51,.18)}
 .bui-problems{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}
 .bui-problems li{padding:8px 12px;border:1px solid rgba(139,47,39,.35);border-left:4px solid var(--wax);border-radius:3px;
   background:rgba(139,47,39,.07);font-size:.9rem}
+/* Quest builder, forced equipment (js/quest-editor.js equipmentSection): a slot's piece and its catalog search. */
+.qe-gear{display:flex;flex-direction:column;gap:6px;min-width:0}
+.qe-gear.is-invalid .qe-gear-current{color:#7f1d17}
+.qe-gear-current{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-height:24px}
+.qe-gear-none{color:var(--ink-soft)}
+.qe-gear-name{overflow-wrap:anywhere}
+.qe-gear-kind,.qe-gear-why{font:.72rem var(--font-ui);color:var(--ink-soft)}
+.qe-gear-why{color:#7f1d17;font-weight:600}
+.qe-gear-actions{display:flex;flex-wrap:wrap;gap:6px}
+.qe-gear-search{display:flex;flex-direction:column;gap:6px;padding:8px;border:1px solid var(--line);border-radius:3px;max-width:100%}
+.qe-gear-search input{width:100%;min-width:0;box-sizing:border-box}
+.qe-gear-results{list-style:none;margin:0;padding:0;max-height:280px;overflow-y:auto;display:grid;gap:2px}
+.qe-gear-option{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;width:100%;min-height:36px;padding:4px 6px;border:0;
+  border-radius:3px;background:none;color:inherit;font:inherit;font-size:.9rem;text-align:left;cursor:pointer}
+.qe-gear-option:hover:not(:disabled),.qe-gear-option:focus-visible{background:rgba(183,138,51,.16)}
+.qe-gear-option:disabled{opacity:.55;cursor:not-allowed}
+.qe-gear-option .bui-hint{margin-left:auto}
 .note-text.bui-warn-head{margin-bottom:6px;color:var(--ink);font-weight:600}
 .note-text.bui-ok{color:var(--teal)}
 @media (max-width:640px){

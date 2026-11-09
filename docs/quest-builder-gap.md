@@ -291,7 +291,13 @@ and the changelog when it goes live. API deploys and the one migration need the 
    "(unconfirmed)" where one source), death count. API: add the three rank fields to `QuestCodec.Body`,
    refuse Flags 2 bit 7 and notes outside the list, derive the class-bound bits. Before shipping, test in game
    which of "Fix HC" and note 109 makes a quest Hardcore, and one conquest quest.
-4. **Equipment restrictions (forced loadouts).** First a short RE step (one Ghidra run, `hvmhfz_re`): the
+4. **Equipment restrictions (forced loadouts).** Built 2026-11-09 (site branch `questbuilder-gap`, API branch
+   `qb-chunk1`, RE part 79 on `hvmhfz_re` branch `qb-chunk4`; not live, **not tested in game**):
+   `docs/quest-editor-web.md` "Forced equipment", API README "Forced equipment". RE result: record order legs,
+   weapon, head, chest, arms, waist; the catalog ids are the client's table rows (every rarity equal); the client
+   checks no bound, so only real pieces (`data/forced-equipment.json`) are offered; `+0xc0` bit 1 is weapon id bit
+   14; words 1-3 hold decoration item ids; no pouch block. `+0x8c` has no client reader and stays carried.
+   The plan as written: First a short RE step (one Ghidra run, `hvmhfz_re`): the
    six records' slots, the weapon id encoding, word 1 and `+0xc0` bit 1, and whether the catalog ids are the
    file's ids. Then UI: one picker per slot from `/api/public/catalog/equipment?slot=`, "No forced piece" by
    default. API: `equipment[6]` and `+0x8c` in the model, ids checked against the catalog. Tests: round trip,
