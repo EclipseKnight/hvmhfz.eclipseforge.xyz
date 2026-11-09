@@ -3,6 +3,17 @@
   "current": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip",
   "patches": [
     {
+      "version": "1.19",
+      "published": "2026-11-09T01:00Z",
+      "sha256": "6d4023f6f149c805b1c5a810bddda1fe628acaa215ad299f45abd621ca89709b",
+      "size": 58033782,
+      "files": 100,
+      "changes": "Cheaper armour upgrades: one Armour Sphere per level for Low and High Rank armour (from the community Armor Sphere Patch), about a fifth fewer materials to craft the next piece; Gypceros U upgrades fixed; the game now tells the server its patch version.",
+      "changelog": "/changelog.html#d-2026-11-09-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.19/Frontier_Patch.zip",
+      "current": true
+    },
+    {
       "version": "1.18",
       "published": "2026-11-08T19:20Z",
       "sha256": "e581fc15641bb9026972b92fab3c3e5f9e47948526d9ddea4c57302fe522335f",
@@ -11,7 +22,7 @@
       "changes": "Guild card pages 4 and up no longer crash: 120 numbers in the game data are back to the originals.",
       "changelog": "/changelog.html#d-2026-11-08-client-patch",
       "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.18/Frontier_Patch.zip",
-      "current": true
+      "current": false
     },
     {
       "version": "1.17",
