@@ -67,6 +67,18 @@
     { value: 3, label: "Main target and sub-target A", needs: ["objective1"] },
     { value: 4, label: "All three targets", needs: ["objective1", "objective2"] }];
 
+  /* Monster tuning (docs/quest-builder-gap.md task 2; API README "Monster tuning"). header.monsterLevel picks the
+     row of the monsters' stat tables (Difficulty). The names are Pax's editor's; the 5,000 live quest files use
+     0..80. The API takes 0..78, a G rank level (53 and up) only in a G rank quest (class 7), and the Zenith ranks
+     64..67 only with a Zenith monster (they have their own picker, zenithRank). */
+  var LEVEL_MAX = 78;
+  var G_RANK_LEVEL = 53;
+  var G_RANK_CLASS = 7;
+  var LEVEL_NAMES = { 11: "Low / High rank", 26: "HR5", 31: "HR5", 42: "HR5", 53: "G rank", 54: "Musou 1",
+    55: "Musou 2", 71: "Interception", 72: "Interception", 73: "Interception" };
+  /* The levels the live files use most, for the hint: 53 (982 files), 26 (560), 6 (537), 12 (460). */
+  var COMMON_LEVELS = { 6: true, 12: true, 26: true, 53: true };
+
   /* Objective types no quest file uses; their names come from the overlay only (builder item 11). */
   var UNTESTED_TYPES = { 16: true, 131072: true, 262144: true };
 
@@ -102,7 +114,7 @@
   var buttons = [saveBtn, downloadBtn, submitBtn];
 
   var state = { model: null, listing: copyListing(null), draftId: null, revision: 0, busy: false, mapMessage: "",
-    supplyShown: {}, serverMaps: null, mapsNote: "" };
+    supplyShown: {}, serverMaps: null, mapsNote: "", spots: {}, bounds: {}, exactSpawns: [] };
 
   /** The draft's listing as the API answers it, the defaults for what it leaves out. */
   function copyListing(from) {
@@ -174,6 +186,9 @@
       if (!list || !list.length) throw new Error("empty map list");
       state.serverMaps = {};
       list.forEach(function (id) { state.serverMaps[String(id)] = true; });
+      // Usual spots and allowed positions per map (an API from before monster tuning sends neither).
+      state.spots = answer.spots && typeof answer.spots === "object" ? answer.spots : {};
+      state.bounds = answer.bounds && typeof answer.bounds === "object" ? answer.bounds : {};
     }).catch(function () {
       state.serverMaps = {};
       state.serverMaps[String(BLANK_MAP)] = true;
@@ -353,6 +368,187 @@
   /** A monster as the quest has it: "Zenith Rathalos" when the quest makes it Zenith. */
   function formName(model, id) {
     return (zenithSet(model)[id] ? "Zenith " : "") + monsterName(id);
+  }
+
+  // ---- monster strength, size and position (task 2) ---------------------------------------------
+
+  /** Pax's name for a monster level: 1-10 Low rank, 12-20 High rank, the others in LEVEL_NAMES; "" for none. */
+  function levelName(n) {
+    if (n >= 1 && n <= 10) return "Low rank";
+    if (n >= 12 && n <= 20) return "High rank";
+    return LEVEL_NAMES[n] || "";
+  }
+
+  function levelLabel(n) {
+    var name = levelName(n);
+    return name ? n + " \u00b7 " + name : String(n);
+  }
+
+  /** Every level the API takes but the Zenith ranks; a G rank level is offered in a G rank quest only. */
+  function levelOptions(model) {
+    var gRank = model.body.questClass === G_RANK_CLASS;
+    var list = [];
+    for (var n = 0; n <= LEVEL_MAX; n++) {
+      if (ZENITH_LEVELS.indexOf(n) >= 0) continue;
+      var g = n >= G_RANK_LEVEL;
+      list.push({ value: n, label: levelLabel(n), disabled: g && !gRank && n !== model.header.monsterLevel,
+        hint: g && !gRank ? "G rank quests only" : (COMMON_LEVELS[n] ? "common in Capcom's quests" : "") });
+    }
+    return list;
+  }
+
+  /** What the server would refuse about header.monsterLevel, in words; "" when nothing. */
+  function levelProblem(model) {
+    var level = model.header && model.header.monsterLevel;
+    if (typeof level !== "number") return "";
+    if (ZENITH_LEVELS.indexOf(level) >= 0) {
+      return Object.keys(zenithSet(model)).length ? "" : "Levels 64 to 67 are the Zenith ranks, for a quest with a"
+        + " Zenith monster only: pick another level.";
+    }
+    if (level > LEVEL_MAX) return "The server takes levels 0 to " + LEVEL_MAX + ": pick another.";
+    if (level >= G_RANK_LEVEL && model.body.questClass !== G_RANK_CLASS) {
+      return "Levels from " + G_RANK_LEVEL + " up are G rank levels, for a G rank quest only: pick a lower level, or"
+        + " set the quest class to G rank (Basics, More settings).";
+    }
+    return "";
+  }
+
+  /** Size spread choices from the field reference (header.sizeClass: 0 "100-100%" ... 4 "85-125%"). */
+  function spreadOptions() {
+    var named = (fieldRef["header.sizeClass"] || {}).values || {};
+    return Object.keys(named).map(Number).sort(function (a, b) { return a - b; }).map(function (v) {
+      var range = String(valueName(named[v])).replace("-", "\u2013");
+      return { value: v, label: v === 0 ? "None (always 100%)" : range, hint: v === 2 ? "the blank's" : "" };
+    });
+  }
+
+  /** The usual spot of an area on a map ([x, y, z], from GET /api/account/quests/maps); null when unknown. */
+  function spotOf(mapId, areaId) {
+    var areas = state.spots[String(mapId)];
+    var p = areas && areas[String(areaId)];
+    return Array.isArray(p) && p.length === 3 ? p : null;
+  }
+
+  /** Where an exact position may lie on a map ({min, max}, three numbers each); null with an older API. */
+  function boundsOf(mapId) {
+    var box = state.bounds[String(mapId)];
+    return box && Array.isArray(box.min) && Array.isArray(box.max) ? box : null;
+  }
+
+  /** No position, or 0, 0, 0: the server gives the monster its area's usual spot. */
+  function emptyPosition(p) {
+    return !Array.isArray(p) || (p[0] === 0 && p[1] === 0 && p[2] === 0);
+  }
+
+  function samePosition(a, b) {
+    return !!a && !!b && [0, 1, 2].every(function (i) { return Math.abs(a[i] - b[i]) < 0.05; });
+  }
+
+  /** True when the row shows X, Y and Z: the author chose "Set exactly", or the position is not the usual spot. */
+  function isExact(spawn, mapId) {
+    if (state.exactSpawns.indexOf(spawn) >= 0) return true;
+    return !emptyPosition(spawn.position) && !samePosition(spawn.position, spotOf(mapId, spawn.areaId));
+  }
+
+  function forgetExact(spawn) {
+    var i = state.exactSpawns.indexOf(spawn);
+    if (i >= 0) state.exactSpawns.splice(i, 1);
+  }
+
+  function roundCoord(v) {
+    return Math.round(v * 10) / 10;
+  }
+
+  function coordsText(p) {
+    return "x " + roundCoord(p[0]) + ", y " + roundCoord(p[1]) + ", z " + roundCoord(p[2]);
+  }
+
+  /** True when an exact position lies outside the map's allowed box (always false with an older API). */
+  function outsideBounds(p, mapId) {
+    var box = boundsOf(mapId);
+    return !!box && Array.isArray(p) && [0, 1, 2].some(function (i) { return p[i] < box.min[i] || p[i] > box.max[i]; });
+  }
+
+  /** The Position cell of a large-monster row: the usual spot, or X, Y and Z within the map's bounds. */
+  function positionCell(model, spawn) {
+    var mapId = model.body.mapId;
+    var usual = spotOf(mapId, spawn.areaId);
+    var box = boundsOf(mapId);
+    var ref = F("largeSpawnAreas[].spawns[].position");
+    var wrap = el("div", "bui-position");
+    if (!isExact(spawn, mapId)) {
+      wrap.appendChild(el("span", "bui-position-text", usual ? "Usual spot (" + coordsText(usual) + ")" : "Usual spot"));
+      wrap.appendChild(UI.button("Set exactly", function () {
+        // Start from the usual spot, else the middle of the map's box, else a spot near most quests' (10000, 0, 10000).
+        spawn.position = usual ? usual.slice() : box ? [0, 1, 2].map(function (i) {
+          return Math.round((box.min[i] + box.max[i]) / 2);
+        }) : [10000, 0, 10000];
+        state.exactSpawns.push(spawn);
+        redraw("monsters");
+        changed();
+      }, null, "Set the exact position of " + monsterName(spawn.monsterId)));
+      return { label: "Position", ref: ref, node: wrap };
+    }
+    var start = Array.isArray(spawn.position) && spawn.position.length === 3 ? spawn.position : [0, 0, 0];
+    ["x", "y", "z"].forEach(function (axis, i) {
+      var item = el("label", "bui-axis");
+      item.appendChild(el("span", null, axis));
+      item.appendChild(UI.numberInput({
+        value: roundCoord(start[i]), step: "any", label: axis + " of " + monsterName(spawn.monsterId),
+        min: box ? box.min[i] : -50000, max: box ? box.max[i] : 50000,
+        onChange: writes(function (v) {
+          var next = (Array.isArray(spawn.position) ? spawn.position : start).slice();
+          next[i] = v;
+          spawn.position = next;
+        })
+      }));
+      wrap.appendChild(item);
+    });
+    wrap.appendChild(UI.button("Use the usual spot", function () {
+      spawn.position = null;
+      forgetExact(spawn);
+      redraw("monsters");
+      changed();
+    }, null, "Put " + monsterName(spawn.monsterId) + " back at the usual spot"));
+    if (box) {
+      wrap.appendChild(el("span", "bui-position-text", "Allowed here: x " + box.min[0] + " to " + box.max[0] + ", y "
+        + box.min[1] + " to " + box.max[1] + ", z " + box.min[2] + " to " + box.max[2] + "."));
+    }
+    return { label: "Position", ref: ref, node: wrap };
+  }
+
+  /** Difficulty (or the Zenith rank while a monster is Zenith), size and size spread. */
+  function strengthFields(model) {
+    var header = model.header;
+    var g = grid();
+    if (Object.keys(zenithSet(model)).length) {
+      g.appendChild(zenithRank(model));
+    } else if (typeof header.monsterLevel === "number") {
+      var level = null;
+      g.appendChild(fieldFor(F("header.monsterLevel"), "Difficulty", level = UI.picker({
+        options: levelOptions(model), value: header.monsterLevel,
+        unknownLabel: function (v) { return "Level " + v + (ZENITH_LEVELS.indexOf(v) >= 0 ? " (a Zenith rank)" : ""); },
+        onChange: writes(function (v) { header.monsterLevel = v; level.setProblem(levelProblem(model)); })
+      }), null, { help: "The row of the monsters' stat tables the quest uses: the higher, the stronger. Capcom's"
+        + " quests use 1 to 10 in Low rank, 12 to 20 in High rank, 26 to 42 from HR 100 and 53 up in G rank. A"
+        + " monster with no data for a level plays at its base strength." }));
+      level.setProblem(levelProblem(model));
+    }
+    if (typeof header.monsterSize === "number") {
+      g.appendChild(numberFor(F("header.monsterSize"), "Size", {
+        id: "monster-size", value: header.monsterSize, min: 70, max: 150, unit: "%",
+        onChange: writes(function (v) { header.monsterSize = v; })
+      }, "Every large monster's size; 100 is normal. Capcom's quests use 70 to 150."));
+    }
+    var spreads = spreadOptions();
+    if (typeof header.sizeClass === "number" && spreads.length) {
+      g.appendChild(fieldFor(F("header.sizeClass"), "Size spread", UI.picker({
+        options: spreads, value: header.sizeClass,
+        unknownLabel: function (v) { return "Spread " + v + " (the server takes 0 to 4)"; },
+        onChange: writes(function (v) { header.sizeClass = v; })
+      }), "Each monster's size varies at random within this range of the size above."));
+    }
+    return g;
   }
 
   var zenithList = null;
@@ -666,7 +862,11 @@
       g2.appendChild(fieldFor(F(["body.questClass", "header.questClass"]), "Quest class", UI.picker({
         options: classes, value: b.questClass, showIds: true,
         unknownLabel: function (v) { return "Unnamed class (value " + v + ")"; },
-        onChange: writes(function (v) { b.questClass = v; if (model.header) model.header.questClass = v; })
+        onChange: writes(function (v) {
+          b.questClass = v;
+          if (model.header) model.header.questClass = v;
+          redraw("monsters"); // G rank levels follow the class
+        })
       }), "Sets both copies: the game reads the header's. The names come from the quest lists each class"
         + " appears in; the game's code names none."));
     } else {
@@ -749,6 +949,11 @@
       lines.push("Start area moved to " + areaName(areas[0], mapId) + ": the old one (id " + before + ") is not part of "
         + mapName(mapId) + ".");
     }
+    // A spot belongs to its map: every large monster starts again at its area's usual spot.
+    (model.largeSpawnAreas || []).forEach(function (area) {
+      (area.spawns || []).forEach(function (spawn) { spawn.position = null; });
+    });
+    state.exactSpawns = [];
     var off = allSpawns(model).filter(function (s) { return !areaOnMap(s.areaId, mapId); }).length;
     if (off) {
       lines.push(off + (off === 1 ? " monster is" : " monsters are") + " in an area that is not part of " + mapName(mapId)
@@ -938,17 +1143,27 @@
     // The first large-monster list holds the slots a Zenith form is kept in (keepForms).
     var forms = where === "largeSpawnAreas[0]" && canZenith(model);
     var zenith = forms ? zenithSet(model) : {};
+    // Large monsters have a position the author may set; small monsters keep the file's.
+    var large = where.indexOf("largeSpawnAreas") === 0;
     var rows = spawns.map(function (spawn, index) {
       var areaRef = F("largeSpawnAreas[].spawns[].areaId");
       var area = options.length ? UI.picker({
         options: options, value: spawn.areaId, compact: true, showIds: true, label: "Area of " + monsterName(spawn.monsterId),
         unknownLabel: function (v) { return areaLabel(v, mapId); },
-        onChange: writes(function (v) { spawn.areaId = v; area.setProblem(""); })
+        onChange: writes(function (v) {
+          spawn.areaId = v;
+          area.setProblem("");
+          // A spot belongs to its area: a new area starts at its usual spot.
+          if (large) { spawn.position = null; forgetExact(spawn); redraw("monsters"); }
+        })
       }) : UI.numberInput(ranged(areaRef, {
-        value: spawn.areaId, min: 0, label: "Area id", onChange: writes(function (v) { spawn.areaId = v; })
+        value: spawn.areaId, min: 0, label: "Area id", onChange: writes(function (v) {
+          spawn.areaId = v;
+          if (large) { spawn.position = null; forgetExact(spawn); }
+        })
       }));
       if (options.length && !areaOnMap(spawn.areaId, mapId)) area.setProblem("This area is not part of the chosen map: pick another.");
-      return [
+      var cells = [
         { label: "Monster", ref: F("largeSpawnAreas[].spawns[].monsterId"), node: UI.picker({
           options: forms ? zenithOptions() : monsterOptions(), kind: "monster", compact: true, showIds: true,
           value: zenith[spawn.monsterId] ? -spawn.monsterId : spawn.monsterId, iconOf: Math.abs, idOf: Math.abs,
@@ -966,15 +1181,19 @@
         { label: "How many", ref: F("largeSpawnAreas[].spawns[].count"), node: UI.numberInput(ranged(F("largeSpawnAreas[].spawns[].count"), {
           value: spawn.count, min: 0, max: 99, label: "How many", onChange: writes(function (v) { spawn.count = v; })
         })) },
-        { label: "Area", ref: areaRef, node: area },
-        { cls: "bui-row-end", node: UI.button("Remove", function () {
-          keepForms(model, function () { spawns.splice(index, 1); });
-          redraw("monsters");
-          changed();
-        }, "remove", "Remove " + monsterName(spawn.monsterId)) }
+        { label: "Area", ref: areaRef, node: area }
       ];
+      if (large) cells.push(positionCell(model, spawn));
+      cells.push({ cls: "bui-row-end", node: UI.button("Remove", function () {
+        keepForms(model, function () { spawns.splice(index, 1); });
+        forgetExact(spawn);
+        redraw("monsters");
+        changed();
+      }, "remove", "Remove " + monsterName(spawn.monsterId)) });
+      return cells;
     });
-    var t = UI.table(["Monster", "How many", "Area", { label: "", cls: "bui-row-end" }], rows, "No monsters here yet.");
+    var headers = ["Monster", "How many", "Area"].concat(large ? ["Position"] : []);
+    var t = UI.table(headers.concat([{ label: "", cls: "bui-row-end" }]), rows, "No monsters here yet.");
     t.setAttribute("data-where", where);
     return t;
   }
@@ -1013,13 +1232,13 @@
         + " first list of large monsters: a monster is Zenith everywhere in the quest, so its other rows change with it."));
     }
     var large = model.largeSpawnAreas || [];
-    if (model.header && Object.keys(zenithSet(model)).length) {
-      var rank = grid();
-      rank.appendChild(zenithRank(model));
-      p.appendChild(rank);
-    }
+    p.appendChild(UI.subhead("Strength and size"));
+    p.appendChild(strengthFields(model));
     p.appendChild(UI.subhead("Large monsters"));
-    if (!large.length) p.appendChild(UI.table(["Monster", "How many", "Area", ""], [], "No monsters yet."));
+    p.appendChild(note("Position is where the monster starts in its area. The usual spot is where Capcom's quests put"
+      + " a large monster in that area; \u201cSet exactly\u201d lets you type x, y (height) and z. A new area or map"
+      + " starts again at the usual spot."));
+    if (!large.length) p.appendChild(UI.table(["Monster", "How many", "Area", "Position", ""], [], "No monsters yet."));
     large.forEach(function (area, a) { p.appendChild(spawnTable(model, spawnsOf(area), "largeSpawnAreas[" + a + "]")); });
     var actions = el("div", "bui-actions");
     actions.appendChild(UI.button("Add a monster", function () { addMonster(model); }, "add"));
@@ -1240,6 +1459,18 @@
     }
     var off = allSpawns(model).filter(function (s) { return !areaOnMap(s.areaId, b.mapId); }).length;
     if (off) list.push(off + (off === 1 ? " monster is" : " monsters are") + " in an area that is not part of the map (Monsters).");
+    var level = levelProblem(model);
+    if (level) list.push("Difficulty: " + level + " (Monsters).");
+    var size = model.header && model.header.monsterSize;
+    if (typeof size === "number" && (size < 70 || size > 150)) {
+      list.push("The size is " + size + "%; the server takes 70 to 150 (Monsters).");
+    }
+    var far = 0;
+    (model.largeSpawnAreas || []).forEach(function (area) {
+      (area.spawns || []).forEach(function (s) { if (!emptyPosition(s.position) && outsideBounds(s.position, b.mapId)) far += 1; });
+    });
+    if (far) list.push(far + (far === 1 ? " monster's exact position is" : " monsters' exact positions are")
+      + " outside what the server allows on this map (Monsters).");
     var none = 0;
     (model.rewardGroups || []).forEach(function (g, i) {
       (g.entries || []).forEach(function (e) { if (!e.itemId) none += 1; });
@@ -1251,6 +1482,24 @@
     });
     if (none) list.push(none + (none === 1 ? " reward has" : " rewards have") + " no item (Rewards).");
     return list;
+  }
+
+  /** "difficulty 26 · HR5, size 100% (95–110%), 1 at an exact spot" for the review. */
+  function strengthText(model) {
+    var h = model.header;
+    if (!h) return "\u2013";
+    var zenith = ZENITH_LEVELS.indexOf(h.monsterLevel);
+    var parts = [zenith >= 0 && Object.keys(zenithSet(model)).length ? "Zenith \u2605" + (zenith + 1)
+      : "difficulty " + levelLabel(h.monsterLevel)];
+    if (typeof h.monsterSize === "number") {
+      parts.push("size " + h.monsterSize + "% (" + optionLabel(spreadOptions(), h.sizeClass, "spread " + h.sizeClass) + ")");
+    }
+    var exact = 0;
+    (model.largeSpawnAreas || []).forEach(function (area) {
+      (area.spawns || []).forEach(function (s) { if (isExact(s, model.body.mapId)) exact += 1; });
+    });
+    if (exact) parts.push(exact + " at an exact spot");
+    return parts.join(", ");
   }
 
   function renderReview() {
@@ -1290,6 +1539,7 @@
       ["Money", "fee " + Number(b.zenny || 0).toLocaleString() + " zenny, reward " + Number(b.rewardMoney || 0).toLocaleString() + " zenny"],
       ["Objectives", (goals.length ? goals.join("; ") : "none set") + (required ? " (to clear: " + required.toLowerCase() + ")" : "")],
       ["Monsters", spawns.length ? spawns.map(function (s) { return s.count + " × " + formName(model, s.monsterId); }).join(", ") : "none yet"],
+      ["Strength and size", strengthText(model)],
       ["Supplies and rewards", supplies + (supplies === 1 ? " supply item, " : " supply items, ") + rewards + (rewards === 1 ? " reward" : " rewards")]
     ];
     var dl = el("dl", "bui-review");
@@ -1379,6 +1629,20 @@
     var season = /body\.seasonFlags sets ([^;]*?), which no quest file does/g;
     while ((m = season.exec(text))) {
       out.push({ key: "body.seasonFlags", text: "The server refused the time of day or season: it " + m[1] + "." });
+    }
+    m = /(largeSpawnAreas\[\d+\]\.spawns\[\d+\]\.position) is ([^;]+) on map (\d+); allowed (x [^(]*?) \(/.exec(text);
+    if (m) {
+      out.push({ key: m[1], text: "This position (" + m[2] + ") is outside what the server allows on this map: "
+        + m[4] + ". Move it, or use the usual spot." });
+    }
+    m = /(largeSpawnAreas\[\d+\]\.spawns\[\d+\]\.position) must stay within (-?\d+)\.\.(-?\d+)/.exec(text);
+    if (m) {
+      out.push({ key: m[1], text: "The server takes positions from " + m[2] + " to " + m[3] + " only." });
+    }
+    m = /header\.monsterLevel (\d+) is a (G rank|Zenith) level/.exec(text);
+    if (m) {
+      out.push({ key: "header.monsterLevel", text: "The server refused difficulty " + m[1] + ": " + (m[2] === "Zenith"
+        ? "it is a Zenith rank, for a quest with a Zenith monster only." : "it is a G rank level, for a G rank quest only.") });
     }
     m = /Map (\d+) has no area tables on this server/.exec(text);
     if (m) {

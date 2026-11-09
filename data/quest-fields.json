@@ -136,17 +136,19 @@
    "size": 2,
    "type": "u16",
    "range": {
-    "min": 1,
-    "max": 65535
+    "min": 70,
+    "max": 150
    },
-   "seen": "70..150 (100 in 8,717 files)",
-   "builder": "carried",
+   "seen": "70..150 in 4,945 of the 5,000 live files (100 in 3,472); 30..410 in 55 special quests",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 146",
     "hvmhfz_rest_api QuestCodec.java:302, 587",
-    "survey of the 13,867 local quest files (2026-11-02)"
+    "survey of the 13,867 local quest files (2026-11-02)",
+    "survey of the 5,000 live quest files (2026-11-09, quest builder task 2)"
    ],
-   "confidence": "one source"
+   "confidence": "one source",
+   "notes": "Size of every large monster, percent. The builder and the API take 70..150 (what Capcom's ordinary quests use); the 55 live files outside it are special quests, untested on any monster. The game multiplies it by a random factor from header.sizeClass (RE 0x10ab1e60)."
   },
   {
    "key": "header.sizeClass",
@@ -168,13 +170,14 @@
     "4": "85-125%"
    },
    "notes": "Above 4 is treated as 4.",
-   "builder": "carried",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 147",
     "hvmhfz_rest_api QuestCodec.java:303, 588",
     "survey of the 13,867 local quest files (2026-11-02)"
    ],
-   "confidence": "one source"
+   "confidence": "one source",
+   "seen": "0 (1,041), 1 (684), 2 (513), 3 (799), 4 (1,963) in the 5,000 live files"
   },
   {
    "key": "header.monsterLevel",
@@ -186,17 +189,55 @@
    "type": "u8",
    "range": {
     "min": 0,
-    "max": 255
+    "max": 78
    },
-   "seen": "0..70",
+   "seen": "0..80 in the 5,000 live files: 53 (982), 26 (560), 6 (537), 12 (460) most; 53 and up in G rank quests (class 7) and Zenith quests only; 64..67 only with a Zenith monster, 79 and 80 in 13 Zenith quests",
    "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 148",
     "hvmhfz_rest_api QuestCodec.java:304, 589",
-    "survey of the 13,867 local quest files (2026-11-02)"
+    "survey of the 13,867 local quest files (2026-11-02)",
+    "Pax's editor src/Data/difficulties.js (names; read only, no licence)",
+    "survey of the 5,000 live quest files (2026-11-09, quest builder task 2)"
    ],
    "confidence": "one source",
-   "notes": "The builder sets it only for a quest with a Zenith monster: Zenith rank 1 to 4 is 64 to 67, as in the 617 live Zenith quests (64 by default); the API refuses a Zenith monster at another level."
+   "notes": "Picks the row of the monsters' stat tables (Difficulty in the builder). Names are Pax's editor's. The API takes 0..78; 53 and up (G rank) only in a G rank quest (class 7); 64..67 (Zenith 1-4) only with a Zenith monster, and a Zenith monster needs 64..67 (the builder's Zenith rank picker). A monster with no data for a level plays at its base strength.",
+   "values": {
+    "1": "Low rank",
+    "2": "Low rank",
+    "3": "Low rank",
+    "4": "Low rank",
+    "5": "Low rank",
+    "6": "Low rank",
+    "7": "Low rank",
+    "8": "Low rank",
+    "9": "Low rank",
+    "10": "Low rank",
+    "11": "Low / High rank",
+    "12": "High rank",
+    "13": "High rank",
+    "14": "High rank",
+    "15": "High rank",
+    "16": "High rank",
+    "17": "High rank",
+    "18": "High rank",
+    "19": "High rank",
+    "20": "High rank",
+    "26": "HR5",
+    "31": "HR5",
+    "42": "HR5",
+    "53": "G rank",
+    "54": "Musou 1",
+    "55": "Musou 2",
+    "64": "Zenith 1",
+    "65": "Zenith 2",
+    "66": "Zenith 3",
+    "67": "Zenith 4",
+    "71": "Interception",
+    "72": "Interception",
+    "73": "Interception"
+   },
+   "valuesConfidence": "one source"
   },
   {
    "key": "header.objective0Points",
@@ -2198,14 +2239,19 @@
    "alsoKeys": [
     "smallSpawnGroups[].areas[].spawns[].position"
    ],
-   "notes": "x, y, z. For a new quest the server sets each large monster's position to that of a real quest's large monster in the same map and area (its per-map template folder); where no real quest has one, it keeps the model's, 0, 0, 0 for a new monster. The client is not known to read it (RE: data only).",
-   "builder": "carried",
+   "notes": "x, y (height), z, f32. Large monsters: the builder shows the area's usual spot (where a real quest puts a large monster in that map and area, from the API's per-map template folder; GET /api/account/quests/maps answers it as spots) or x, y, z the author types (Set exactly). The API fills an empty position (null, or 0, 0, 0) with the usual spot and keeps any other on every save, if it lies inside the map's bounds: the box around every large-monster position of the real quests on that map, widened by 5,000 on x and z and 2,000 on y, never past 50,000 (live files: x -14,000..23,873, y -9,203..4,017, z 2,000..37,600). Changing the area or the map sends an empty position again. Small monsters keep the file's. The client is not known to read it (RE: data only); Pax's editor edits it.",
+   "builder": "edits",
    "source": [
     "hvmhfz_re docs/quest-files.md line 118",
     "hvmhfz_rest_api QuestCodec.java:578-579, 790-793 (a3aca9a)",
-    "hvmhfz_rest_api QuestMaps.java:44-53, 182 (a3aca9a)"
+    "hvmhfz_rest_api QuestMaps.java:44-53, 182 (a3aca9a)",
+    "hvmhfz_rest_api QuestMaps.java (apply, bounds; quest builder task 2)"
    ],
-   "confidence": "one source"
+   "confidence": "one source",
+   "range": {
+    "min": -50000,
+    "max": 50000
+   }
   },
   {
    "key": "largeSpawnAreas[].spawns[].arrival",

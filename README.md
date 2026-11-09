@@ -166,7 +166,8 @@ dev/check-signin-return.js checks in headless Chromium, against a fake API, that
 dev/check-sky.js     checks sky-corridor.html and the hunter Sky Corridor tab in headless Chromium against a fake API (sample data, empty, 404, tracking off), with screenshots to dev-shots/ (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-sky.js)
 dev/check-quest-maps.js checks the quest builder in headless Chromium against a fake API: only the server's maps can be chosen, a 400 shows next to its field, no unnamed areas (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-quest-maps.js)
 dev/check-quest-zenith.js checks the quest builder's Zenith forms (slot bytes, Zenith flag and rank) in headless Chromium against a fake API (NODE_PATH as above)
-dev/check-quest-listing.js checks the quest builder's listing options (counter, mark, players, stars, time of day, season, targets required, the three "?" buttons) and the admin's counter and mark change at publishing in headless Chromium against a fake API (NODE_PATH as above)
+dev/check-quest-listing.js checks the quest builder's listing options (counter, mark, players, stars, time of day, season, targets required, the "?" buttons) and the admin's counter and mark change at publishing in headless Chromium against a fake API (NODE_PATH as above)
+dev/check-quest-monsters.js checks the quest builder's monster tuning (difficulty and its G rank rule, size, size spread, each large monster's usual or exact position, the server's position refusal, an older API without spots) in headless Chromium against a fake API (NODE_PATH as above)
 dev/check-links.py    checks every local link, picture and #anchor on the site (python3 dev/check-links.py [pages])
 dev/make-hv-summary.py writes the comparison tables of guide-frontier-hunsterverse.html from the guide's notes (--check: one note per section, page up to date)
 CNAME                 hvmhfz.eclipseforge.xyz

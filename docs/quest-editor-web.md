@@ -160,6 +160,23 @@ season, and lists a required sub-target that is not set. Only three fields have 
 (Counter, Season, Targets required; `BuilderUI.helpTip`), the owner's preference for few help buttons. Check:
 `dev/check-quest-listing.js`.
 
+**Monster tuning (gap plan task 2, 9 Nov 2026).** Under Monsters, "Strength and size": Difficulty
+(`header.monsterLevel` 0..78, Pax's names, the one quiet "?" here; levels from 53 are offered in a G rank quest
+only, and while a monster is Zenith the Zenith rank picker takes its place), Size (`header.monsterSize`, 70..150 %)
+and Size spread (`header.sizeClass`, 0..4 with its percentages). Each large-monster row has a Position: "Usual
+spot" (with its x, y, z when the server knows one) or, after "Set exactly", x, y and z inputs held to the map's
+bounds. "Use the usual spot", a new area or a new map send an empty position, which the API fills with the usual
+spot; any other position is kept. Both come from `GET /api/account/quests/maps` (`spots`, `bounds`; API README
+"Monster tuning"); with an older API the inputs take -50,000..50,000. The builder has no map pictures, so the usual
+spot and the allowed range are the coordinate help. Pax has no facing angle, and neither do we. Monster forms
+other than Zenith stay out (an unknown form may load a model file that does not exist). The review shows strength,
+size and how many monsters stand at an exact spot. Check: `dev/check-quest-monsters.js`.
+
+**Owner decisions for later chunks (2026-11-09, not built yet).** Custom quests keep paying their reward money.
+Testing copies are reward-stripped; approved quests pay their full rewards (Erupe branch `erupe-approved-rewards`,
+`85d282f`). The Reward 1/2/3 list items (body +0xb0..+0xb4) are shown for approved quests and cleared in the testing
+copy. These settle the two owner questions in `docs/quest-builder-gap.md` (chunk 5).
+
 **Still open.** The `quest_submission` queue, MAX_ACTIVE and the sandbox id block are unchanged; a draft is
 never a submission until Submit. Nothing here deletes drafts (the API caps an account at 50), and the private
 API docs have no entry for these routes yet.

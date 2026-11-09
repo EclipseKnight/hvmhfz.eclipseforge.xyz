@@ -268,7 +268,12 @@ and the changelog when it goes live. API deploys and the one migration need the 
    (upload path: defaults 18, 0, the file's players), validation of the lists, admin can change type and
    mark when approving. Tests: publish writes the row's values (Testcontainers), refused types, mode/bit 6
    consistency. Erupe: none.
-2. **Monster tuning: size, size spread, difficulty, exact coordinates.** UI: size % 70..150, spread 0..4 with
+2. **Monster tuning: size, size spread, difficulty, exact coordinates.** Built 2026-11-09 (site branch
+   `questbuilder-gap`, API branch `qb-chunk1`; not live): `docs/quest-editor-web.md` "Monster tuning", API README
+   "Monster tuning". Choices: size 70..150 (55 of 5,000 live files go 30..410: special quests, left out), level
+   0..78 with G rank levels (53 up) in class 7 only and 64..67 with a Zenith monster only, positions kept unless
+   empty and held to the map's box of real spots plus 5,000 (y 2,000); Pax has no facing angle. The API's template
+   folder gains `position-extents.tsv` (rebuild it with `QuestMapsTest` when deploying). UI: size % 70..150, spread 0..4 with
    its percentages, a level picker (values the live files use, named where Pax and the class agree, others as
    numbers), X/Y/Z per large monster with "use the usual spot". API: tighter ranges, a level/class check,
    `QuestMaps.withPositions` keeps an author's position, bounds check per map. Monster variants other than
@@ -291,6 +296,11 @@ and the changelog when it goes live. API deploys and the one migration need the 
    in-game check of what a zero faint pool does (fails at the first faint, or at once).
 
 ## Open questions for the owner
+
+Answered 2026-11-09 (owner): custom quests keep paying their reward money (the account page's "no zenny" line
+must change instead); testing copies are reward-stripped and approved quests pay their full rewards (Erupe
+`erupe-approved-rewards`, `85d282f`); Reward 1/2/3 list items are shown for approved quests and cleared in the
+testing copy. Chunk 5 builds on these. The questions as they were asked:
 
 - Reward money: custom quests pay it today although the account page says they grant no zenny (finding 1).
   Zero it in the served copy (if a zero faint pool still lets players faint normally), cap it, or keep paying

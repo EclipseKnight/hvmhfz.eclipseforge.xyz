@@ -122,9 +122,9 @@ with the builder and plans the missing ones.
 
 | Key | Label | Struct | Offset | Bytes | Type | Range | Values | Builder | Confidence |
 |---|---|---|---|---|---|---|---|---|---|
-| `header.monsterSize` | Large-monster size (percent) | header | 0x44 | 2 | u16 | 1..65535 |  | carried | one source |
-| `header.sizeClass` | Size spread class | header | 0x46 | 1 | u8 | 0..4 | 0 = 100-100%; 1 = 100-105%; 2 = 95-110%; 3 = 87-114%; 4 = 85-125% | carried | one source |
-| `header.monsterLevel` | Large-monster level | header | 0x48 | 1 | u8 | 0..255 | 64-67 = Zenith rank 1-4 | edits | one source |
+| `header.monsterSize` | Large-monster size (percent) | header | 0x44 | 2 | u16 | 70..150 |  | edits | one source |
+| `header.sizeClass` | Size spread class | header | 0x46 | 1 | u8 | 0..4 | 0 = 100-100%; 1 = 100-105%; 2 = 95-110%; 3 = 87-114%; 4 = 85-125% | edits | one source |
+| `header.monsterLevel` | Large-monster level | header | 0x48 | 1 | u8 | 0..78 | 1-10 Low rank; 11 Low / High; 12-20 High rank; 26, 31, 42 HR5; 53 G rank; 54, 55 Musou 1, 2; 64-67 = Zenith rank 1-4; 71-73 Interception (Pax's names) | edits | one source |
 | `header.secondMonsterLevel` | Second monster level | header | 0x61 | 1 | u8 |  |  | carried | one source |
 | `header.specialFight` | Special fight selector | header | 0x62 | 2 | u16 |  | 0 = off; 2 = monster 0x5c behaviour; 3 = monster 0x5b behaviour | carried | one source |
 | `body.monsterVariants[0-1]` | Large monster form, slots 1-2 | body | 0x91 | 2 (2 x 1) | u8enum |  | 0 = normal, 16 = Zenith | derived | confirmed |
@@ -140,7 +140,7 @@ with the builder and plans the missing ones.
 | `largeSpawnAreas[].spawns[].monsterId` | Monster | spawnRecord | 0x00 | 2 | u16enum | 1..176 | 65535 = end of the records; monster-ids.json | edits | confirmed |
 | `largeSpawnAreas[].spawns[].count` | Spawn count | spawnRecord | 0x04 | 1 | s8 | 0..99 |  | edits | confirmed |
 | `largeSpawnAreas[].spawns[].areaId` | Spawn area | spawnRecord | 0x08 | 2 | u16enum |  | area-ids.json | edits | confirmed |
-| `largeSpawnAreas[].spawns[].position` | Spawn position | spawnRecord | 0x20 | 12 (3 x 4) | f32 |  |  | carried | one source |
+| `largeSpawnAreas[].spawns[].position` | Spawn position | spawnRecord | 0x20 | 12 (3 x 4) | f32 | -50000..50000 |  | edits | one source |
 | `largeSpawnAreas[].spawns[].arrival` | Random arrival spot flag (not in the codec) | spawnRecord | 0x0b | 1 | u8 |  | 1 = start at a random spot of the area (header +0x34) | not in the model | one source |
 
 ### Rewards
@@ -323,9 +323,10 @@ all in the API repo; 1-3 and 5 are fixed in `hvmhfz_rest_api` `a3aca9a` (live si
    points `monsterIdsOffset` at it; a sixth monster in one area is refused with 400 ("Large monster area 1
    has 6 different monsters ..."). What the client does with the list is not traced.
 2. **Spawn positions. Fixed.** The position (3 f32 at +0x20) is a model field, `spawns[].position`, read and
-   written by the codec. For a new quest `QuestMaps` sets each large monster's position to that of a real
-   quest's large monster in the same map and area; where none has one it keeps the model's (0, 0, 0 for a new
-   monster).
+   written by the codec. For a new quest `QuestMaps` gives a large monster with an empty position (none, or 0, 0,
+   0) that of a real quest's large monster in the same map and area; where none has one it keeps the model's.
+   Since quest builder task 2 (2026-11-09) a position the author typed is kept on every save, within the map's
+   bounds (API README "Monster tuning"); before, every save overwrote it.
 3. **Duplicated fields kept in step. Fixed.** `QuestModelWriter.prepare` copies `body.questClass` into
    `header.questClass`, `body.mapId` into `map.mapId` and the first start area into `map.areaId`.
 4. **Overlapping views of the same bytes. Fixed** (2026-11-09, quest builder chunk 1). `body.flags` (u32 at

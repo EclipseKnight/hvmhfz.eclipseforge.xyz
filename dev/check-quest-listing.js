@@ -10,7 +10,8 @@
    - with sub-target A set, "Main target and sub-target A" saves objectiveMode 3 and seasonFlags bit 6; taking
      sub-target A away lists a problem in the review; "Main target only" clears bit 6;
    - the review shows the quest list row (stars, mark, name, counter) and "Night, cold season";
-   - only three quiet "?" buttons (Counter, Season, Targets required); a click keeps the text open, Escape closes it
+   - only four quiet "?" buttons (Counter, Season, Targets required, and Monsters' Difficulty from task 2); a click
+     keeps the text open, Escape closes it
      and it stays closed while the button keeps focus (it would cover the picker under it);
    - a draft's stored listing (43, Recommended) is shown; a draft without one (an older API) shows the defaults and
      saves {18, 0};
@@ -147,12 +148,12 @@ async function editor(browser, base) {
   check(modes.length === 3 && !modes[0].disabled && modes[1].disabled && modes[2].disabled,
     "two-target choices disabled without sub-targets: " + JSON.stringify(modes));
 
-  // Exactly three quiet "?" buttons, and a click keeps one open until Escape.
+  // Exactly four quiet "?" buttons (the fourth is Difficulty, under Monsters), and a click keeps one open until Escape.
   const tips = page.locator(".bui-help .help-tip");
-  check(await tips.count() === 3, "three help buttons: " + await tips.count());
+  check(await tips.count() === 4, "four help buttons: " + await tips.count());
   const names = await tips.evaluateAll((bs) => bs.map((b) => b.getAttribute("aria-label")));
-  check(JSON.stringify(names) === JSON.stringify(["What is Counter?", "What is Season?", "What is Targets required to clear?"]),
-    "help buttons on Counter, Season and Targets required: " + names);
+  check(JSON.stringify(names) === JSON.stringify(["What is Counter?", "What is Season?", "What is Targets required to clear?",
+    "What is Difficulty?"]), "help buttons on Counter, Season, Targets required and Difficulty: " + names);
   await tips.first().scrollIntoViewIfNeeded();
   await tips.first().click();
   check(await page.locator(".help-pop.is-open").count() === 1 && await tips.first().getAttribute("aria-expanded") === "true",
