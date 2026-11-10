@@ -491,21 +491,26 @@
           <p class="form-alert" id="patch-channel-alert" hidden></p>
           <h3 class="patch-sub">Your characters</h3>
           <ul class="patch-chars" id="patch-chars"></ul>
-          <div id="playtest-box" hidden>
-            <h3 class="patch-sub">Playtest</h3>
-            <label class="qol-label" for="playtest-toggle"><input type="checkbox" role="switch" id="playtest-toggle"><span class="qol-name">Join the playtest</span></label>
-            <p class="note-text">Playtesters can try pre-release client patches before everyone else. Joining only makes the choice below available; it changes nothing by itself and you can leave at any time (leaving puts you back on the Stable patch).</p>
-            <p class="note-text" id="playtest-note" aria-live="polite"></p>
-          </div>
           <h3 class="patch-sub">Pre-releases</h3>
           <div id="patch-slots" aria-live="polite"></div>
           <div id="patch-switch" hidden>
-            <p class="note-text">Choose which patch the Mezeporta launcher gives you at its next login. Only the Mezeporta launcher follows this setting.</p>
+            <p class="note-text">Choose which patch the Mezeporta launcher gives you at its next login: Stable, or one of the pre-releases above. Only the Mezeporta launcher follows this setting.</p>
             <div class="patch-channel-choices" id="patch-channel-choices" role="group" aria-label="Client patch channel"></div>
             <p class="patch-warning" id="patch-warning" role="note">Pre-release patches play only on the Test land, where nothing is saved. They cannot play on normal lands; switch back to Stable to play normally (if you try a normal land, you are switched back automatically).</p>
+            <div class="patch-confirm" id="patch-confirm" role="alertdialog" aria-labelledby="patch-confirm-title" hidden>
+              <h4 id="patch-confirm-title">Before you try a pre-release</h4>
+              <ul>
+                <li>A pre-release patch plays only on the Test land, and nothing you do there is saved.</li>
+                <li>You cannot play on the normal lands with it. Switch back to Stable any time; if you try a normal land, the server switches you back for you.</li>
+                <li>Choosing a pre-release makes you a Playtester (the playtest feedback channel on Discord opens for you). You keep that for 7 days after you last use a pre-release.</li>
+              </ul>
+              <div class="patch-channel-choices">
+                <button type="button" class="ghost-btn small" id="patch-confirm-ok">I understand</button>
+                <button type="button" class="ghost-btn small" id="patch-confirm-cancel">Cancel</button>
+              </div>
+            </div>
             <p class="note-text" id="patch-channel-note" aria-live="polite"></p>
           </div>
-          <p class="note-text" id="patch-not-eligible" hidden>Pre-releases are for playtesters. Join the playtest above to choose one.</p>
         </section>
 
         <section class="panel">
@@ -570,7 +575,7 @@
     <script src="/js/questlog.js?v=2"></script>
     <script src="/js/road-preference.js?v=1"></script>
     <script src="/js/account-qol.js?v=3"></script>
-    <script src="/js/account-patch-channel.js?v=3"></script>
+    <script src="/js/account-patch-channel.js?v=4"></script>
     <script src="/js/quest-submissions.js?v=2"></script>
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>

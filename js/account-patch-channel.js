@@ -1,15 +1,16 @@
 /* "Client patch" box on the Account tab. GET /api/account/patch-channel gives
-   {channel, slot, eligible, slotsAvailable, slots: [{slot, version, notes, published}], characters: [{name,
-   clientPatch, clientPatchName, clientPatchSeenAt}], currentPatch}. The box shows to every signed-in account once
-   the GET answers (it stays hidden when the call fails or the answer has no slots: an older API):
+   {channel, slot, eligible, confirmationRequired, slotsAvailable, slots: [{slot, version, notes, published}],
+   characters: [{name, clientPatch, clientPatchName, clientPatchSeenAt}], currentPatch}. The box shows to every
+   signed-in account once the GET answers (it stays hidden when the call fails or the answer has no slots: an older API):
    - each character's last client patch version, "pre-release" for a build newer than the current patch;
    - the pre-releases that are out, with the notes of what to test;
-   - the "Join the playtest" switch above the pre-releases (GET/PUT /api/account/playtest {joined} / {join: bool}; the
-     API adds or removes ROLE_PLAYTESTER; leaving also puts the channel back to stable). It is hidden when that
-     endpoint is missing (an older API);
-   - for eligible accounts (playtester, tester, moderator, admin) the switch: Stable and one button per published slot, saved at
-     once with PUT /api/account/patch-channel {channel: "stable" | "pre:<slot>"}, and the Test-land warning next
-     to it; the Mezeporta launcher reads the choice at its next login. Others get one line saying who it is for.
+   - the one patch choice: Stable and one button per published slot, saved at once with
+     PUT /api/account/patch-channel {channel: "stable" | "pre:<slot>"}, and the Test-land warning next to it; the
+     Mezeporta launcher reads the choice at its next login. Hidden when no pre-release is out and the account is on Stable;
+   - the first pre-release choice of a player who is not staff and not a playtester yet (confirmationRequired) first shows
+     the explanation with "I understand" and then sends the same PUT with confirm: true, which gives the Playtester role
+     and sets the channel in one call (the role goes 7 days after the last pre-release use; no switch for it any more).
+     A 409 {confirmationRequired} answer shows the same explanation.
    All API text goes in with textContent. */
 (function () {
   "use strict";
@@ -24,12 +25,12 @@
   var slotsNode = document.getElementById("patch-slots");
   var switchNode = document.getElementById("patch-switch");
   var choicesNode = document.getElementById("patch-channel-choices");
-  var notEligible = document.getElementById("patch-not-eligible");
-  var playtestBox = document.getElementById("playtest-box");
-  var playtestToggle = document.getElementById("playtest-toggle");
-  var playtestNote = document.getElementById("playtest-note");
-  var NOT_ELIGIBLE_OLD = "Pre-releases are for playtesters, moderators and admins.";
-  var NOT_ELIGIBLE = notEligible ? notEligible.textContent : NOT_ELIGIBLE_OLD;
+  var confirmNode = document.getElementById("patch-confirm");
+  var confirmOk = document.getElementById("patch-confirm-ok");
+  var confirmCancel = document.getElementById("patch-confirm-cancel");
+  // True while the account has not confirmed the pre-release explanation yet; pending: the slot waiting for "I understand".
+  var needsConfirm = false;
+  var pending = null;
 
   function token() {
     try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; }
@@ -139,7 +140,7 @@
     b.setAttribute("data-channel", channel);
     b.setAttribute("aria-pressed", "false");
     if (gone) { b.setAttribute("data-gone", "1"); b.disabled = true; }
-    else b.addEventListener("click", function () { save(channel); });
+    else b.addEventListener("click", function () { request(channel); });
     choicesNode.appendChild(b);
   }
 
@@ -154,40 +155,58 @@
     // On a slot that is not out: the launcher gives stable, and the box says so.
     if (data.slot && !published[data.slot]) choice("pre:" + data.slot, data.slot + " (not out: you get stable)", true);
     mark(data.slot ? "pre:" + data.slot : "stable");
+    needsConfirm = data.confirmationRequired === true || (data.confirmationRequired === undefined && data.eligible === false);
+    hideConfirm();
   }
 
-  function save(channel) {
+  function showConfirm(channel) {
+    pending = channel;
+    confirmNode.hidden = false;
+    say("");
+    confirmOk.focus();
+  }
+
+  function hideConfirm() {
+    pending = null;
+    confirmNode.hidden = true;
+  }
+
+  // A click on a choice: the first pre-release of a player who has not confirmed asks first.
+  function request(channel) {
+    if (channel !== "stable" && needsConfirm) showConfirm(channel);
+    else { hideConfirm(); save(channel, false); }
+  }
+
+  confirmOk.addEventListener("click", function () { var c = pending; hideConfirm(); if (c) save(c, true); });
+  confirmCancel.addEventListener("click", function () { hideConfirm(); say(""); });
+
+  function save(channel, confirmed) {
     busy(true);
     say("Saving.");
     fetch(API + "/api/account/patch-channel", {
       method: "PUT",
       headers: { Authorization: "Bearer " + token(), "Content-Type": "application/json" },
-      body: JSON.stringify({ channel: channel })
+      body: JSON.stringify(confirmed ? { channel: channel, confirm: true } : { channel: channel })
     }).then(function (r) {
-      return r.json().catch(function () { return null; }).then(function (data) { return { ok: r.ok, data: data }; });
+      return r.json().catch(function () { return null; }).then(function (data) { return { ok: r.ok, status: r.status, data: data }; });
     }).then(function (res) {
       busy(false);
+      if (res.status === 409 && res.data && res.data.confirmationRequired) {
+        needsConfirm = true;
+        showConfirm(channel);
+        return;
+      }
       if (!res.ok) {
         say((res.data && res.data.message) || "Could not save. Try again in a moment.", true);
         return;
       }
+      if (confirmed) needsConfirm = false;
       if (res.data && res.data.channel) mark(res.data.channel);
       say((res.data && res.data.message) || "Saved.");
     }).catch(function () {
       busy(false);
       say("Could not save. Try again in a moment.", true);
     });
-  }
-
-  // The playtest switch: null (switch hidden) when the endpoint is missing or fails, else the joined flag.
-  function loadPlaytest() {
-    return fetch(API + "/api/account/playtest", { headers: { Authorization: "Bearer " + token() }, cache: "no-store" })
-      .then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      }).then(function (data) {
-        return data && typeof data.joined === "boolean" ? data.joined : null;
-      }).catch(function () { return null; });
   }
 
   function loadChannel() {
@@ -198,54 +217,17 @@
       });
   }
 
-  function setPlaytest(join) {
-    playtestToggle.disabled = true;
-    playtestNote.textContent = "Saving.";
-    fetch(API + "/api/account/playtest", {
-      method: "PUT",
-      headers: { Authorization: "Bearer " + token(), "Content-Type": "application/json" },
-      body: JSON.stringify({ join: join })
-    }).then(function (r) {
-      return r.json().catch(function () { return null; }).then(function (data) { return { ok: r.ok, data: data }; });
-    }).then(function (res) {
-      playtestToggle.disabled = false;
-      if (!res.ok) {
-        playtestToggle.checked = !join;
-        playtestNote.textContent = "";
-        say((res.data && res.data.message) || "Could not save. Try again in a moment.", true);
-        return;
-      }
-      // Eligibility and the channel changed (leaving resets it to Stable): draw the box again, then say what happened.
-      say("");
-      load(function () { playtestNote.textContent = (res.data && res.data.message) || "Saved."; });
-    }).catch(function () {
-      playtestToggle.disabled = false;
-      playtestToggle.checked = !join;
-      playtestNote.textContent = "";
-      say("Could not save. Try again in a moment.", true);
-    });
-  }
-
-  if (playtestToggle) playtestToggle.addEventListener("change", function () { setPlaytest(playtestToggle.checked); });
-
-  function load(done) {
+  function load() {
     if (!token()) return;
-    Promise.all([loadChannel(), loadPlaytest()]).then(function (both) {
-      var data = both[0];
-      var joined = both[1];
+    loadChannel().then(function (data) {
       // An API from before slots has no "slots": its answer would show a wrong picture, so the box stays hidden.
       if (!data || !Array.isArray(data.slots)) throw new Error("no slots");
       renderCharacters(data);
       renderSlots(data);
-      var eligible = data.eligible === true;
-      playtestBox.hidden = joined === null;
-      if (joined !== null) playtestToggle.checked = joined;
-      switchNode.hidden = !eligible;
-      notEligible.hidden = eligible;
-      notEligible.textContent = joined === null ? NOT_ELIGIBLE_OLD : NOT_ELIGIBLE;
-      if (eligible) renderSwitch(data);
+      // The choice is for everyone; with no pre-release out (and none chosen) there is nothing to choose.
+      switchNode.hidden = !(data.slots.length || data.slot);
+      if (!switchNode.hidden) renderSwitch(data);
       panel.hidden = false;
-      if (done) done();
     }).catch(function () { panel.hidden = true; /* older API or not signed in: the box stays hidden */ });
   }
 
