@@ -114,6 +114,18 @@
     }
     body.appendChild(objectiveRow);
     if (details) {
+      [["subA", "Sub-objective A"], ["subB", "Sub-objective B"]].forEach(function (s) {
+        var en = details[s[0] + "En"], jp = details[s[0] + "Jp"];
+        if (!en && !jp) return;
+        var subRow = row(s[1], en || jp);
+        if (en && jp) {
+          var subJp = document.createElement("div");
+          subJp.className = "cell-sub muted";
+          subJp.textContent = jp;
+          subRow.lastChild.appendChild(subJp);
+        }
+        body.appendChild(subRow);
+      });
       if (details.clientEn || details.client) {
       var clientRow = row("Client", details.clientEn || details.client);
       if (details.clientEn && details.client) {

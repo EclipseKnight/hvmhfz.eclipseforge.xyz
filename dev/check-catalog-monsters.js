@@ -8,7 +8,8 @@
    2. data/quests.json is what dev/make-quest-monsters.py writes (run it with --check).
    3. The English objective of every quest (data/quests.json "objective") names the same Dos-/prey/boar/Cephalos
       monsters as its "monsters" list (Iodrome and Gendrome, Ioprey and Genprey were once swapped), and the
-      English texts of data/quest-details.json say what their Japanese text says (dev/fix-quest-text-names.py --check).
+      English texts of data/quest-details.json say what their Japanese text says (dev/fix-quest-text-names.py --check), and every objective is the quest
+      files' (dev/check-quest-objectives.py: main and sub-objectives against data/quest-objectives.json).
    4. The index: each entry has its data file and the file the same name, every picture it names exists,
       slugs and old slugs are unique, every link form monster.html accepts (slug, oldSlug, formerSlugs)
       opens the entry, and every monster id of data/monster-ids.json belongs to an entry or is a known gap.
@@ -78,6 +79,9 @@ quests.forEach(function (quest) {
 });
 const texts = childProcess.spawnSync("python3", [path.join(ROOT, "dev/fix-quest-text-names.py"), "--check"], { encoding: "utf8" });
 if (texts.status !== 0) fail((texts.stdout || texts.stderr || "dev/fix-quest-text-names.py --check failed").trim().split("\n").slice(0, 6).join(" | "));
+// The objectives are the quest files' (data/quest-objectives.json): dev/check-quest-objectives.py.
+const objectives = childProcess.spawnSync("python3", [path.join(ROOT, "dev/check-quest-objectives.py")], { encoding: "utf8" });
+if (objectives.status !== 0) fail((objectives.stdout || objectives.stderr || "dev/check-quest-objectives.py failed").trim().split("\n").slice(0, 6).join(" | "));
 
 // ---- 4. the index ----
 const forms = {};
