@@ -114,8 +114,8 @@ async function run(browser, base) {
     check("on: stop hidden", await page.locator("#road-test-stop").isHidden());
     const warning = (await page.textContent("#road-test-warning")).replace(/\s+/g, " ").trim();
     check("on: no-save warning shown before use", await page.locator("#road-test-warning").isVisible() &&
-      warning === "Test runs are not saved: everything from the start of a test run until you log out is discarded " +
-      "(Road points, items, anything else). Use a short session just for testing.", warning);
+      warning.startsWith("Nothing is saved from the moment a test Road starts until you log out.") &&
+      warning.includes("thrown away when you log out") && warning.includes("short session just for testing"), warning);
 
     sent.length = 0;
     await page.fill("#road-name", "");

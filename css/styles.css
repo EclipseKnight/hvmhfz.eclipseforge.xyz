@@ -1982,3 +1982,9 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .patch-channel-choices .ghost-btn{min-height:44px}
 .patch-channel-choices .ghost-btn.is-on{border-color:#8a6a24;background:rgba(183,138,51,.16);font-weight:700}
 .role-badge.role-pre{border-color:#4c6f7a;color:#2f4d57;background:rgba(76,111,122,.12);font-weight:700}
+
+/* Road builder: Test in game steps and no-save warning */
+.road-test-steps { margin: 0.4rem 0 0.8rem 1.2rem; padding: 0; }
+.road-test-steps li { margin: 0.25rem 0; }
+.callout.callout-warn { border: 1px solid #b4542a; border-left-width: 4px; background: rgba(180, 84, 42, 0.10); border-radius: 6px; padding: 0.6rem 0.9rem; margin: 0.6rem 0 0.8rem; }
+.callout.callout-warn p { margin: 0.3rem 0; }
