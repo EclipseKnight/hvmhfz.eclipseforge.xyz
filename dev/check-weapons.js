@@ -11,9 +11,13 @@
  *    below green, negative affinity, the 3000 attack cap.
  * 2. Data: data/weapons/index.json and one file per type: the source patch, field lists, a sharpness bar
  *    for every melee weapon, moves with one MV per hit.
- * 3. Page (when Playwright is found): loads, lists Great Swords, picks one, the calculator shows the
+ * 3. Usage tab (js/weapons-usage.js): HvWeaponsUsage.view() on a stubbed /api/public/weapons/usage answer
+ *    (order, shares, band filter, played before tracking began).
+ * 4. Page (when Playwright is found): loads, lists Great Swords, picks one, the calculator shows the
  *    numbers HvWeaponsCalc gives for it, a gunner type hides the form, no script errors, and no sideways
- *    scrolling at 375 px.
+ *    scrolling at 375 px. The Usage tab with the stubbed answer (routed in Chromium): 14 bars, 7/30 days,
+ *    band filter, style bars; and its message when the API answers 404 or not at all.
+ *    SHOTS also gets usage-desktop.png and usage-phone.png.
  */
 "use strict";
 const fs = require("fs");
@@ -22,6 +26,7 @@ const http = require("http");
 
 const ROOT = path.resolve(__dirname, "..");
 const Calc = require(path.join(ROOT, "js/weapons-calc.js"));
+const Usage = require(path.join(ROOT, "js/weapons-usage.js"));
 const index = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons/index.json"), "utf8"));
 const cases = JSON.parse(fs.readFileSync(path.join(ROOT, "dev/weapons-cases.json"), "utf8"));
 const K = index.constants;
@@ -76,7 +81,54 @@ index.types.forEach(function (t) {
   }
 });
 
-/* ---------- 3. page ---------- */
+/* ---------- 3. usage tab ---------- */
+// A stubbed /api/public/weapons/usage answer (API README "Weapon usage"): weaponType t has 14 - t hunters now
+// in the 7-day window (twice that in 30 days), all in one band per type, styles one short of current.
+function usageStub(playedSince) {
+  const names = index.types.map(function (t) { return t.name; });
+  function win(days, k) {
+    const weapons = names.map(function (name, t) {
+      const current = (14 - t) * k;
+      const bands = [0, 0, 0, 0, 0];
+      bands[t % 5] = current;
+      const styles = [0, 0, 0, 0];
+      if (current) { styles[t % 4] = current - 1; }
+      return { weaponType: t, weapon: name, current: current, played: current + 2, bands: bands, styles: styles };
+    }).reverse(); // the API sends most used first; the page must not rely on it
+    const sumBy = function (key, n) {
+      return Array.from({ length: n }, function (_, i) { return weapons.reduce(function (a, w) { return a + w[key][i]; }, 0); });
+    };
+    const hunters = weapons.reduce(function (a, w) { return a + w.current; }, 0) + 3; // 3 with no known weapon
+    return { days: days, hunters: hunters, bands: sumBy("bands", 5), styles: sumBy("styles", 4), weapons: weapons };
+  }
+  return {
+    generatedAt: "2026-11-10T14:00:00Z", playedSince: playedSince,
+    bands: ["GR 900-999", "GR 500-899", "GR 1-499", "HR 100-999", "HR 1-99"],
+    styles: ["Earth", "Heaven", "Storm", "Extreme"],
+    windows: [win(7, 1), win(30, 2)]
+  };
+}
+const STUB = usageStub("2026-10-29T00:00:00Z");
+{
+  const v = Usage.view(STUB, 7, -1);
+  check(v.rows.length === 14 && v.rows[0].name === "Great Sword" && v.rows[0].current === 14, "usage: Great Sword first with 14, got " + (v.rows[0] && v.rows[0].name));
+  check(v.rows.every(function (r, i) { return !i || v.rows[i - 1].current >= r.current; }), "usage: most used first");
+  check(v.hunters === 108 && v.total === 105, "usage 7d: 108 hunters, 105 with a weapon, got " + v.hunters + "/" + v.total);
+  check(v.rows[0].share === "13%" && v.rows[13].current === 1 && v.rows[13].share === "<1%", "usage: shares 14/105 13%, 1/105 <1%: " + v.rows[0].share + " " + v.rows[13].share);
+  check(v.rows[0].played === 16 && v.rows[0].styles.length === 4, "usage: played and styles with all bands");
+  const b = Usage.view(STUB, 30, 0); // band 0 holds types 0, 5, 10
+  check(b.hunters === 54 && b.rows[0].current === 28 && b.rows[0].share === "52%" && b.rows[0].played === null && b.styles === null,
+    "usage band filter: band counts, no played or styles");
+  check(b.rows.filter(function (r) { return r.current; }).length === 3, "usage band filter: 3 types in band 0");
+  check(Usage.view(usageStub(null), 7, -1).rows[0].played === null, "usage: no played before tracking began");
+  check(Usage.view(STUB, 90, -1) === null, "usage: an unknown window gives null");
+  check(Usage.pct(0, 0) === "0%" && Usage.pct(1, 300) === "<1%" && Usage.pct(1, 3) === "33%", "usage: pct");
+  check(Usage.TYPES.length === 14 && Usage.TYPES.every(function (t, i) { return index.types[i].class === i && index.types[i].slug === t[0]; }),
+    "usage: weaponType i is index.types[i] (class and slug)");
+  check(Usage.TYPES.every(function (t) { return fs.existsSync(path.join(ROOT, "assets/icons/1x", t[1] + "-0.png")); }), "usage: every class icon exists");
+}
+
+/* ---------- 4. page ---------- */
 let chromium = null;
 try { chromium = require("playwright").chromium; } catch (e) { /* no browser part */ }
 
@@ -153,6 +205,74 @@ async function page() {
       check(await pg.isHidden("#calc-form"), view.name + ": gunner type hides the calculator form");
       check(errors.length === 0, view.name + ": no script errors: " + errors.join(" | "));
       await ctx.close();
+
+      // The Usage tab, with the stubbed answer.
+      const uctx = await browser.newContext({ viewport: { width: view.width, height: view.height }, deviceScaleFactor: view.name === "phone" ? 2 : 1 });
+      const up = await uctx.newPage();
+      const uerrors = [];
+      up.on("pageerror", function (e) { uerrors.push(e.message); });
+      await up.addInitScript(function () { localStorage.setItem("hvmhfz.consent", JSON.stringify({ choice: "declined", at: new Date().toISOString() })); });
+      await up.route(/api\.hvmhfz\.eclipseforge\.xyz/, function (r) {
+        if (/\/api\/public\/weapons\/usage$/.test(r.request().url())) {
+          r.fulfill({ status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: JSON.stringify(STUB) });
+        } else r.abort();
+      });
+      await up.goto(base + "/weapons.html#usage", { waitUntil: "load" });
+      await up.waitForSelector("#wu-list .wu-row");
+      check(await up.isHidden("#panel-database") && await up.isVisible("#panel-usage"), view.name + ": #usage opens the Usage tab");
+      check(await up.getAttribute("#tab-usage", "aria-selected") === "true", view.name + ": Usage tab marked selected");
+      const urows = await up.$$eval("#wu-list .wu-row", function (rs) {
+        return rs.map(function (r) { return { name: r.querySelector(".wu-name").textContent, cur: r.querySelector(".wu-current").textContent,
+          played: (r.querySelector(".wu-played") || {}).textContent, segs: r.querySelectorAll(".wu-seg").length,
+          href: (r.querySelector(".wu-name a") || {}).getAttribute ? r.querySelector(".wu-name a").getAttribute("href") : null }; });
+      });
+      check(urows.length === 14, view.name + ": usage shows 14 weapon types, got " + urows.length);
+      check(urows[0].name === "Great Sword" && /^14 · 13%/.test(urows[0].cur) && urows[0].played === "played 16" && urows[0].segs === 1,
+        view.name + ": usage first row Great Sword 14 · 13%, played 16, a style bar: " + JSON.stringify(urows[0]));
+      check(urows[0].href === "/weapons.html?type=great-sword", view.name + ": usage row links to its type");
+      check(/108 hunters logged in during the last 7 days/.test(await up.textContent("#wu-summary")), view.name + ": usage summary, 7 days");
+      check(/Updated/.test(await up.textContent("#wu-updated")), view.name + ": usage shows when it was updated");
+      check(/Earth \d+%/.test(await up.textContent("#wu-overall")), view.name + ": overall style split");
+      const uoverflow = await up.evaluate(function () {
+        const m = document.querySelector("main");
+        return Math.max(m.scrollWidth - m.clientWidth, Math.ceil(m.getBoundingClientRect().right - document.documentElement.clientWidth));
+      });
+      check(uoverflow <= 0, view.name + ": usage, no sideways scrolling (" + uoverflow + " px)");
+      if (shots) await up.screenshot({ path: path.join(shots, "usage-" + view.name + ".png"), fullPage: true });
+      await up.click("#wu-days .chip[data-days='30']");
+      check(/213 hunters logged in during the last 30 days/.test(await up.textContent("#wu-summary")), view.name + ": usage 30 days");
+      await up.selectOption("#wu-band", "0");
+      check(/in GR 900-999/.test(await up.textContent("#wu-summary")) && await up.$$eval("#wu-list .wu-played", function (x) { return x.length; }) === 0
+        && await up.isHidden("#wu-overall") && !await up.isHidden("#wu-note"), view.name + ": band filter hides played and styles, says why");
+      check(await up.textContent("#wu-list .wu-row:first-child .wu-current") === "28 · 52% of hunters by current weapon", view.name + ": band share: " + await up.textContent("#wu-list .wu-row:first-child .wu-current"));
+      if (shots) await up.screenshot({ path: path.join(shots, "usage-" + view.name + "-band.png"), fullPage: true });
+      // The Database tab still works from here.
+      await up.click("#tab-database");
+      check(await up.isVisible("#panel-database") && !/#usage/.test(up.url()), view.name + ": Database tab back, #usage dropped");
+      check(uerrors.length === 0, view.name + ": usage, no script errors: " + uerrors.join(" | "));
+      await uctx.close();
+
+      // Not deployed (404), then not answering at all.
+      for (const c of [{ name: "404", status: 404, text: /not published yet/, retry: false }, { name: "no answer", status: 0, text: /could not be loaded/, retry: true }]) {
+        const nctx = await browser.newContext({ viewport: { width: view.width, height: view.height } });
+        const np = await nctx.newPage();
+        const nerrors = [];
+        np.on("pageerror", function (e) { nerrors.push(e.message); });
+        await np.route(/api\.hvmhfz\.eclipseforge\.xyz/, function (r) {
+          if (c.status) r.fulfill({ status: c.status, contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: "{}" });
+          else r.abort();
+        });
+        await np.goto(base + "/weapons.html", { waitUntil: "load" });
+        await np.click("#tab-usage");
+        await np.waitForSelector("#wu-msg:not([hidden])");
+        check(c.text.test(await np.textContent("#wu-msg")), view.name + " " + c.name + ": usage message, got " + await np.textContent("#wu-msg"));
+        check(await np.isHidden("#wu-body") && await np.isHidden("#wu-loading"), view.name + " " + c.name + ": no empty list, no spinner");
+        check((await np.$$("#wu-msg .wu-retry")).length === (c.retry ? 1 : 0), view.name + " " + c.name + ": Try again button " + (c.retry ? "shown" : "not shown"));
+        check(/#usage$/.test(np.url()), view.name + " " + c.name + ": the Usage tab puts #usage in the address");
+        if (shots && view.name === "desktop") await np.locator("#panel-usage").screenshot({ path: path.join(shots, "usage-" + c.name.replace(/ /g, "-") + ".png") });
+        check(nerrors.length === 0, view.name + " " + c.name + ": no script errors: " + nerrors.join(" | "));
+        await nctx.close();
+      }
     }
   } finally {
     await browser.close();
@@ -164,5 +284,5 @@ async function page() {
   if (chromium) await page();
   else console.log("(Playwright not found: page part skipped; set NODE_PATH=/root/work/pw-tools/node_modules)");
   if (failed) { console.log(failed + " check(s) failed"); process.exit(1); }
-  console.log("weapons OK: " + cases.cases.length + " formula cases, " + index.types.length + " types" + (chromium ? ", page in Chromium" : ""));
+  console.log("weapons OK: " + cases.cases.length + " formula cases, " + index.types.length + " types, usage view" + (chromium ? ", page and Usage tab in Chromium" : ""));
 })();

@@ -119,6 +119,12 @@
         <p class="page-sub">Every weapon in the game with its sharpness and its moves per style, and a damage calculator that uses the game's own formula. Read from the client's data files (<span id="wp-source">client patch</span>). Pick a type, then a weapon.</p>
       </header>
 
+      <nav class="tabs" role="tablist" aria-label="Weapons sections">
+        <a class="tab" id="tab-database" role="tab" aria-controls="panel-database" aria-selected="true" href="#database">Database</a>
+        <a class="tab" id="tab-usage" role="tab" aria-controls="panel-usage" aria-selected="false" tabindex="-1" href="#usage">Usage</a>
+      </nav>
+
+      <div class="tab-panel" id="panel-database" role="tabpanel" aria-labelledby="tab-database">
       <section class="panel" aria-labelledby="wp-list-h">
         <div class="panel-head"><h2 id="wp-list-h">Weapon list</h2><span class="panel-note" id="wp-count"></span></div>
         <div class="chips" id="wp-types" role="group" aria-label="Weapon type"></div>
@@ -228,6 +234,34 @@
           <p>Not counted: monster defence and rage multipliers, quest modifiers, status build-up, gunner shots, Lance's top-level technique bonus and other skills whose numbers are not mapped. Open details: rounding inside the attack build-up (rounded down after each step here), the order of Fencing+2 and the crit, and each move's hit class (a ×1.05 on some hits; taken as 1.0). Damage type: the game takes the larger of cut and impact, each scaled by the weapon's share; pick the one the move deals.</p>
         </div>
       </section>
+      </div>
+
+      <div class="tab-panel" id="panel-usage" role="tabpanel" aria-labelledby="tab-usage" hidden>
+        <section class="panel" aria-labelledby="wu-h">
+          <div class="panel-head"><h2 id="wu-h">Weapon usage</h2><span class="panel-note" id="wu-updated"></span></div>
+          <p class="wp-help">How many hunters use each weapon type on Hunsterverse. <strong>Now</strong> counts every hunter who logged in during the period once, under the weapon they had at their last save, with its share of all of them. <strong>Played</strong> counts the hunters the server saw online with that weapon during the period; someone who switches weapons counts under each, so these add up to more than the hunters. The small bar is the hunting style those hunters have set for the weapon. Counts only, no names; the server works them out once an hour.</p>
+          <p class="wp-help" id="wu-loading" hidden>Loading usage stats…</p>
+          <p class="form-alert" id="wu-msg" role="status" hidden></p>
+          <div id="wu-body" hidden>
+            <div class="toolbar">
+              <div class="chips wu-days" id="wu-days" role="group" aria-label="Period">
+                <button type="button" class="chip" data-days="7" aria-pressed="true">7 days</button>
+                <button type="button" class="chip" data-days="30" aria-pressed="false">30 days</button>
+              </div>
+              <label class="select-wrap">
+                <span class="search-label">Rank band</span>
+                <select id="wu-band"><option value="">All hunters</option></select>
+              </label>
+            </div>
+            <p class="wp-summary" id="wu-summary" aria-live="polite"></p>
+            <p class="wp-help" id="wu-note" hidden></p>
+            <p class="wu-overall" id="wu-overall"></p>
+            <p class="wu-legend" id="wu-legend" aria-hidden="true"><span class="wu-key is-earth"></span>Earth <span class="wu-key is-heaven"></span>Heaven <span class="wu-key is-storm"></span>Storm <span class="wu-key is-extreme"></span>Extreme <span class="wu-key"></span>not read</p>
+            <div class="wu-row wu-head" aria-hidden="true"><span>Weapon</span><span></span><span class="wu-current">Now</span><span class="wu-played wu-allbands">Played</span><span class="wu-allbands">Style</span></div>
+            <ol class="wu-list" id="wu-list"></ol>
+          </div>
+        </section>
+      </div>
     </main>
 
     <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
@@ -270,6 +304,7 @@
 
     <script src="/js/weapons-calc.js?v=1"></script>
     <script src="/js/weapons.js?v=1"></script>
+    <script src="/js/weapons-usage.js?v=1"></script>
     <script src="/js/search.js" defer></script>
   </body>
 </html>

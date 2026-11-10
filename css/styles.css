@@ -2078,3 +2078,38 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
   .wp-results td,.wp-results th{padding:8px 6px}
   .wp-results th{letter-spacing:.03em}
 }
+/* Weapons page, Usage tab (js/weapons-usage.js): a bar per weapon type, played, and a stacked style bar */
+.wu-days{margin:0}
+.wu-list{list-style:none;margin:8px 0 6px;padding:0;display:grid;gap:8px}
+.wu-row{display:grid;grid-template-columns:170px minmax(0,1fr) 92px 82px 150px;align-items:center;gap:12px;
+  font:.86rem var(--font-ui);color:var(--ink)}
+.is-banded .wu-row{grid-template-columns:170px minmax(0,1fr) 92px}
+.is-banded .wu-allbands{display:none}
+.wu-head{font:700 .66rem/1.3 var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.wu-head .wu-current,.wu-head .wu-played{white-space:normal}
+.wu-row.is-zero{color:var(--ink-soft);opacity:.7}
+.wu-name .weapon-icon{width:18px;height:18px;vertical-align:-4px;margin-right:6px}
+.wu-current,.wu-played{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-soft);white-space:nowrap}
+.wu-current strong{color:var(--ink)}
+.wu-styles{display:flex;height:10px;background:rgba(94,75,52,.14);border-radius:2px;overflow:hidden}
+.wu-seg{display:block;height:100%}
+.wu-key{display:inline-block;width:10px;height:10px;margin:0 4px 0 10px;vertical-align:-1px;border-radius:2px;
+  background:rgba(94,75,52,.14);border:1px solid rgba(94,75,52,.25)}
+.wu-key:first-child{margin-left:0}
+.is-earth{background:#9a7426}.is-heaven{background:var(--blue)}.is-storm{background:var(--teal)}.is-extreme{background:var(--wax)}
+.wu-overall{display:grid;grid-template-columns:170px minmax(0,1fr);gap:4px 12px;align-items:center;margin:0 0 6px;
+  font:600 .82rem var(--font-ui);color:var(--ink)}
+.wu-overall .wu-styles{height:12px}
+.wu-overall-text{grid-column:2;font-weight:400;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.wu-legend{margin:0 0 10px;font:.78rem var(--font-ui);color:var(--ink-soft)}
+.wu-retry{margin-left:6px}
+@media (max-width:720px){
+  .wu-head{display:none}
+  .wu-row,.is-banded .wu-row{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name cur" "bar bar" "sty pl";
+    gap:4px 10px;font-size:.8rem;padding-bottom:6px;border-bottom:1px solid rgba(94,75,52,.15)}
+  .is-banded .wu-row{grid-template-areas:"name cur" "bar bar"}
+  .wu-name{grid-area:name;min-width:0}.wu-bar{grid-area:bar}.wu-current{grid-area:cur}
+  .wu-played{grid-area:pl}.wu-row .wu-style-cell{grid-area:sty;min-width:0}
+  .wu-overall{grid-template-columns:1fr}
+  .wu-overall-text{grid-column:1}
+}
