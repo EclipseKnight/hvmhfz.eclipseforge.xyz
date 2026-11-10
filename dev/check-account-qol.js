@@ -19,6 +19,13 @@
      PUT /api/account/qol/viewer with exactly the six keys and the chosen values, redraws from the answer and says
      so; a 400 message is shown; the part is hidden without "viewer" (an older API) and without the iframeViewer
      feature;
+   - features the API marks preReleaseOnly are listed in their own section "Being tested: pre-release only" (slot name, "These
+     work only on a pre-release patch on the Test land"), apart from the stable switches, with the Keys and Viewer
+     options parts inside it; while the API gives a lockedMessage ("Switch to the pre-release (mods) to try these")
+     their switches, key pickers, selects and viewer options are greyed out (disabled) and show that message, the
+     stable switches stay usable; on a slot that has them everything works and saves; the card reloads without a page
+     reload when the Client patch box fires "hvmhfz:patch-channel"; once preReleaseOnly is false (a stable release
+     reached the feature) the section is gone and the features are in the normal list;
    - at 375px the card and the page content stay inside the screen;
    - no page errors.
 
@@ -56,6 +63,8 @@ const DESC_ELEMENT = "Shows weapon element and status values as the weapon store
 const EVENT_RULE = "Turned off by itself in Speedrun Cup and VS Bracket quests. A cup time or VS result made while a viewer was showing does not count.";
 let viewerState = { iframeBar: true, iframeCount: false, hitstopBar: true, hitIndicator: false, position: "left", size: "large" };
 let sendViewer = true;
+// "off": an API without the pre-release fields; "locked": on Stable, "open": on a slot that has them; "moved": stable has reached 1.21
+let preMode = "off";
 let listViewer = true;
 let keysState = { retireKey: "Ctrl+R", retireOnDeath: "off", retireCarts: 1, skipWaitKey: null, talkKeys: [null, null, null, null, null] };
 function state(flags) {
@@ -65,7 +74,22 @@ function state(flags) {
     { id: "monsterBar", bit: 2, name: "Monster health bar", description: "Shows the monster's remaining health.", revealsHiddenInfo: true, minPatch: "1.21" },
     { id: "iframeViewer", bit: 5, name: "Iframe viewer", description: "Draws bars over the game for your invulnerability frames.", revealsHiddenInfo: true, minPatch: "1.21" }
   ].filter((d) => listViewer || d.id !== "iframeViewer");
+  if (preMode !== "off") {
+    defs.splice(3, 0,
+      { id: "quickRetire", bit: 3, name: "Quick retire", description: "Leave a quest at once with your retire key.", revealsHiddenInfo: false, minPatch: "1.21" },
+      { id: "skipCompleteWait", bit: 4, name: "Skip the quest-complete wait", description: "Skip the wait before the results.", revealsHiddenInfo: false, minPatch: "1.21" },
+      { id: "quickTalk", bit: 8, name: "Remote talk", description: "Talk to a chosen NPC from anywhere.", revealsHiddenInfo: false, minPatch: "1.21" });
+  }
   const out = { features: defs.map((d) => Object.assign({ enabled: (flags & (1 << d.bit)) !== 0 }, d)), flags, keys: keysState, takesEffect: "next login" };
+  if (preMode !== "off") {
+    for (const f of out.features) {
+      f.preReleaseOnly = preMode !== "moved" && f.minPatch === "1.21";
+      f.preReleaseSlot = f.preReleaseOnly ? "mods" : null;
+      f.lockedMessage = f.preReleaseOnly && preMode === "locked" ? "Switch to the pre-release (mods) to try these" : null;
+    }
+    out.stablePatch = preMode === "moved" ? "v1.21" : "v1.20";
+    out.channel = preMode === "open" ? "pre:mods" : "stable";
+  }
   if (sendViewer) out.viewer = viewerState;
   return out;
 }
@@ -160,7 +184,7 @@ async function run(browser, base) {
   // click, not check: check() re-reads the box after the click, and the refused save may already have put it back
   await page.click("#qol-monsterBar");
   await page.waitForSelector("#qol-alert:not([hidden])", { timeout: 5000 }).catch(() => {});
-  check("error shown", /Could not save/.test(await page.textContent("#qol-alert")));
+  check("error shown with the API's message", /Unknown option/.test(await page.textContent("#qol-alert")), await page.textContent("#qol-alert"));
   check("switch put back after a refused save", !(await page.isChecked("#qol-monsterBar")));
 
   // Keys part.
@@ -282,6 +306,73 @@ async function run(browser, base) {
   check("viewer API 400 message shown", /position must be top/.test(await alertText()), await alertText());
   check("viewer part stays with the chosen value after a refused save", (await page.isVisible("#qol-viewer")) && (await page.inputValue("#qol-viewer-size")) === "small" && (await page.isEnabled("#qol-viewer-save")) && viewerPuts.length === 2);
   refuseViewer = false;
+
+
+  // ---- Pre-release-only features ----
+  const lockedText = "Switch to the pre-release (mods) to try these";
+  const ids = (sel) => page.$$eval(sel, (n) => n.map((b) => b.id));
+  const preCheck = async (label) => {
+    check(label + ": the section is on the page and labelled", (await page.isVisible("#qol-pre"))
+      && (await page.textContent("#qol-pre h3")) === "Being tested: pre-release only"
+      && (await page.textContent("#qol-pre-note")) === "Slot: mods. These work only on a pre-release patch on the Test land.", await page.textContent("#qol-pre-note"));
+    check(label + ": stable and pre-release switches are apart", JSON.stringify(await ids("#qol-list input[type=checkbox]")) === JSON.stringify(["qol-trueRaw", "qol-trueElement"])
+      && JSON.stringify(await ids("#qol-pre-list input[type=checkbox]")) === JSON.stringify(["qol-monsterBar", "qol-quickRetire", "qol-skipCompleteWait", "qol-quickTalk", "qol-iframeViewer"]),
+    JSON.stringify([await ids("#qol-list input[type=checkbox]"), await ids("#qol-pre-list input[type=checkbox]")]));
+    check(label + ": Keys and Viewer options are inside the section", await page.evaluate(() => !!document.querySelector("#qol-pre #qol-keys") && !!document.querySelector("#qol-pre #qol-viewer")));
+  };
+  const enabledIn = (sel) => page.$$eval(sel, (n) => n.map((b) => !b.disabled));
+  preMode = "locked";
+  flags = 0;
+  await page.reload();
+  await page.waitForSelector("#qol-pre-list input", { timeout: 5000 });
+  await page.waitForSelector("#qol-viewer:not([hidden])", { timeout: 5000 });
+  await preCheck("on Stable");
+  check("on Stable: stable switches usable, pre-release ones greyed out", (await enabledIn("#qol-list input")).every(Boolean) && (await enabledIn("#qol-pre-list input")).every((e) => !e));
+  const rowsText = await page.$$eval("#qol-pre-list .qol-item", (n) => n.map((x) => x.textContent));
+  check("on Stable: each greyed switch says what to do", rowsText.length === 5 && rowsText.every((t) => t.includes(lockedText)), JSON.stringify(rowsText));
+  check("on Stable: stable switches carry no such message", !(await page.textContent("#qol-list")).includes("Switch to the pre-release"));
+  check("on Stable: key pickers, selects and Save keys disabled", (await enabledIn("#qol-keys button, #qol-keys select")).every((e) => !e) && (await page.$$("#qol-keys button")).length === 15, JSON.stringify(await enabledIn("#qol-keys button, #qol-keys select")));
+  check("on Stable: key groups show the message", (await page.$$eval("#qol-keys .qol-locked", (n) => n.map((x) => x.textContent))).join("|") === [lockedText, lockedText, lockedText].join("|"));
+  check("on Stable: viewer options and Save disabled with the message", (await enabledIn("#qol-viewer input, #qol-viewer select, #qol-viewer button")).every((e) => !e)
+    && (await page.textContent("#qol-viewer")).includes(lockedText));
+  const before = puts.length;
+  await page.check("#qol-trueRaw");
+  await page.waitForFunction(() => /True raw attack is on/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
+  check("on Stable: a stable switch still saves", puts.length === before + 1 && JSON.stringify(puts[before]) === JSON.stringify({ trueRaw: true }), JSON.stringify(puts));
+
+  // The Client patch box tells the card the channel changed: it reloads without a page reload.
+  await page.evaluate(() => { window.__sameDocument = 1; });
+  preMode = "open";
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent("hvmhfz:patch-channel", { detail: { channel: "pre:mods" } })));
+  await page.waitForFunction(() => !document.getElementById("qol-monsterBar").disabled, null, { timeout: 5000 }).catch(() => {});
+  check("on a slot with them: reloaded in place, nothing greyed out", (await page.evaluate(() => window.__sameDocument)) === 1
+    && (await enabledIn("#qol-pre-list input, #qol-keys button, #qol-keys select, #qol-viewer input, #qol-viewer select, #qol-viewer button")).every(Boolean)
+    && !(await page.textContent("#qol-pre")).includes("Switch to the pre-release"));
+  await preCheck("on a slot");
+  check("on a slot: the stable choice the player made is kept", await page.isChecked("#qol-trueRaw"));
+  await page.check("#qol-monsterBar");
+  await page.waitForFunction(() => /Monster health bar is on/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
+  check("on a slot: a pre-release switch saves", JSON.stringify(puts[puts.length - 1]) === JSON.stringify({ monsterBar: true }), JSON.stringify(puts));
+  const kp = keyPuts.length;
+  await page.click("#qol-keys-save");
+  await page.waitForFunction(() => /Keys saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
+  check("on a slot: Save keys sends", keyPuts.length === kp + 1);
+
+  // Back to Stable: values stay, greyed out again.
+  preMode = "locked";
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent("hvmhfz:patch-channel", { detail: { channel: "stable" } })));
+  await page.waitForFunction(() => document.getElementById("qol-monsterBar").disabled, null, { timeout: 5000 }).catch(() => {});
+  check("back on Stable: greyed out again, the stored switch stays on", (await page.isDisabled("#qol-monsterBar")) && (await page.isChecked("#qol-monsterBar")));
+
+  // A stable release reaches 1.21: the features move up into the normal list, no section.
+  preMode = "moved";
+  await page.reload();
+  await page.waitForSelector("#qol-list input", { timeout: 5000 });
+  await page.waitForSelector("#qol-viewer:not([hidden])", { timeout: 5000 });
+  check("once stable has them: no pre-release section", !(await page.isVisible("#qol-pre")));
+  check("once stable has them: they are in the normal list and usable", (await ids("#qol-list input[type=checkbox]")).length === 7 && (await enabledIn("#qol-list input")).every(Boolean)
+    && await page.evaluate(() => !document.querySelector("#qol-pre #qol-keys") && !document.querySelector("#qol-pre #qol-viewer")));
+  preMode = "off";
 
   // Mobile: no sideways scroll.
   await page.setViewportSize({ width: 375, height: 800 });
