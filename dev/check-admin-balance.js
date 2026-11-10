@@ -710,6 +710,8 @@ async function gridPage(browser, base) {
   check("grid weapons: the draft's Iron Sword attack", (await page.$eval(cellSel("1", "attack") + " .bal-now", (n) => n.textContent)) === "62"
     && (await page.$eval(cellSel("1", "attack") + " .bal-was", (n) => n.textContent)) === "60" && /Iron Sword/.test(await page.$eval('#bal-gbody tr[data-ref="1"] th', (n) => n.textContent)));
   check("grid weapons: paged", /^1780 weapons \(Great Sword\), page 1 of 36\.$/.test(await text(page, "#bal-gcount")) && (await page.$$("#bal-gbody tr")).length === 50, await text(page, "#bal-gcount"));
+  check("grid weapons: every weapon row has its icon (Iron Sword: great-sword, first colour)", await page.$$eval("#bal-gbody tr", (t) => t.length > 0 && t.every((r) => { const i = r.querySelector("th .gi img"); return i && i.src.indexOf("no-icon.svg") < 0; }))
+    && /great-sword-0\.png$/.test(await page.$eval('#bal-gbody tr[data-ref="1"] th .gi img', (i) => i.src)));
   await page.click("#bal-gnext");
   check("grid weapons: next page", /page 2 of 36/.test(await text(page, "#bal-gcount")) && (await page.$$('#bal-gbody tr[data-ref="1"]')).length === 0);
   await page.fill("#bal-gfilter", "blue wing");

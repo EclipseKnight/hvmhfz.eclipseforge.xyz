@@ -11,9 +11,13 @@
  *    below green, negative affinity, the 3000 attack cap.
  * 2. Data: data/weapons/index.json and one file per type: the source patch, field lists, a sharpness bar
  *    for every melee weapon, moves with one MV per hit.
+ *    Icons: every weapon of all 14 types gets its in-game icon from js/game-icons.js (the lookup the catalog uses):
+ *    a class that is the weapon's type, an icon file that exists, the weapon's rarity; no row without one.
  * 3. Usage tab (js/weapons-usage.js): HvWeaponsUsage.view() on a stubbed /api/public/weapons/usage answer
  *    (order, shares, band filter, played before tracking began).
- * 4. Page (when Playwright is found): loads, lists Great Swords, picks one, the calculator shows the
+ * 4. Page (when Playwright is found): loads, lists Great Swords, an icon on every row of every type's first page
+ *    (the same src the catalog page gives for the same ids, with the API answer stubbed), in the detail and the
+ *    calculator line, picks one, the calculator shows the
  *    numbers HvWeaponsCalc gives for it, a gunner type hides the form, no script errors, and no sideways
  *    scrolling at 375 px. The Usage tab with the stubbed answer (routed in Chromium): 14 bars, 7/30 days,
  *    band filter, style bars; and its message when the API answers 404 or not at all.
@@ -27,6 +31,7 @@ const http = require("http");
 const ROOT = path.resolve(__dirname, "..");
 const Calc = require(path.join(ROOT, "js/weapons-calc.js"));
 const Usage = require(path.join(ROOT, "js/weapons-usage.js"));
+const Icons = require(path.join(ROOT, "js/game-icons.js"));
 const index = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons/index.json"), "utf8"));
 const cases = JSON.parse(fs.readFileSync(path.join(ROOT, "dev/weapons-cases.json"), "utf8"));
 const K = index.constants;
@@ -80,6 +85,27 @@ index.types.forEach(function (t) {
     check(d.tech && d.tech.length === 4, t.slug + ": four technique levels");
   }
 });
+
+/* ---------- 2b. icons ---------- */
+// The weapon types' slugs here, and the sprite names the icons use, where they differ.
+const SPRITE = { "dual-swords": "dual-blades", "switch-axe-f": "switch-axe" };
+const iconData = JSON.parse(fs.readFileSync(path.join(ROOT, "data/equipment-icons.json"), "utf8"));
+const iconLook = function (kind, id) { return Icons.equipmentLook(iconData, { id: id, kind: kind === "melee" ? "melee" : "ranged" }); };
+let withoutIcon = 0, weaponsSeen = 0;
+index.types.forEach(function (t) {
+  const d = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons", t.slug + ".json"), "utf8"));
+  const sprite = SPRITE[t.slug] || t.slug;
+  let bad = 0;
+  d.weapons.forEach(function (w) {
+    weaponsSeen++;
+    const look = iconLook(d.kind, w[0]);
+    const file = look.key && path.join(ROOT, "assets/icons/1x", look.key + ".png");
+    if (!look.key || look.key.indexOf(sprite + "-") !== 0 || !fs.existsSync(file) || look.rarity + 1 !== w[2]) { bad++; withoutIcon++; }
+  });
+  check(bad === 0, t.slug + ": " + bad + " of " + d.weapons.length + " weapons without their icon (class " + sprite + ", file, rarity)");
+});
+check(withoutIcon === 0 && weaponsSeen > 16000, "icons: rows without an icon = " + withoutIcon + " of " + weaponsSeen);
+check(iconLook("melee", 1).key === "great-sword-0" && iconLook("ranged", 1).key !== null, "icons: Iron Sword is a great-sword in the first colour");
 
 /* ---------- 3. usage tab ---------- */
 // A stubbed /api/public/weapons/usage answer (API README "Weapon usage"): weaponType t has 14 - t hunters now
@@ -146,6 +172,47 @@ function serve() {
   });
 }
 
+/* The icon src of each type's highest rarity weapon on the weapons page equals the catalog page's for the same
+   id (the API answer stubbed: the game id as 4 hex digits, low byte first). */
+async function sameAsCatalog(browser, base) {
+  const picks = index.types.map(function (t) {
+    const d = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons", t.slug + ".json"), "utf8"));
+    const top = d.weapons.reduce(function (a, w) { return w[2] > a[2] ? w : a; });
+    return { slug: t.slug, kind: d.kind === "melee" ? "melee" : "ranged", id: top[0], name: top[1] };
+  });
+  const hex = function (id) { return [id & 0xff, (id >> 8) & 0xff].map(function (n) { return n.toString(16).toUpperCase().padStart(2, "0"); }).join(""); };
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const pg = await ctx.newPage();
+  const errors = [];
+  pg.on("pageerror", function (e) { errors.push(e.message); });
+  await pg.addInitScript(function () { localStorage.setItem("hvmhfz.consent", JSON.stringify({ choice: "declined", at: new Date().toISOString() })); });
+  await pg.route(/api\.hvmhfz\.eclipseforge\.xyz/, function (r) {
+    const m = /catalog\/equipment\?slot=(\w+)/.exec(r.request().url());
+    if (!m) { r.abort(); return; }
+    const items = picks.filter(function (p) { return p.kind === m[1]; }).map(function (p) { return { id: hex(p.id), name: p.name }; });
+    r.fulfill({ status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*" },
+      body: JSON.stringify({ total: items.length, page: 0, size: 50, items: items }) });
+  });
+  const catalogSrc = {};
+  await pg.goto(base + "/catalog.html", { waitUntil: "load" });
+  for (const slot of ["melee", "ranged"]) {
+    await pg.click("#catalog-slots .chip[data-slot='" + slot + "']");
+    await pg.waitForFunction(function (s) { return document.querySelector("#catalog-slots .chip[data-slot='" + s + "']").getAttribute("aria-pressed") === "true" && document.querySelectorAll("#catalog-body tr td.mono").length > 0; }, slot);
+    await pg.waitForTimeout(300);
+    const rows = await pg.$$eval("#catalog-body tr", function (rs) { return rs.map(function (r) { const i = r.querySelector("img"); return [r.children[1].textContent, i ? i.src : ""]; }); });
+    rows.forEach(function (r) { catalogSrc[r[0]] = r[1]; });
+  }
+  for (const p of picks) {
+    await pg.goto(base + "/weapons.html?type=" + p.slug, { waitUntil: "load" });
+    await pg.waitForSelector("#wp-body .wp-pick");
+    await pg.fill("#wp-search", String(p.id));
+    const src = await pg.$eval("#wp-body tr:first-child .gi img", function (i) { return i.src; });
+    check(!!catalogSrc[hex(p.id)] && src === catalogSrc[hex(p.id)], p.slug + " #" + p.id + " (" + p.name + "): weapons page icon " + src + " = catalog icon " + catalogSrc[hex(p.id)]);
+  }
+  check(errors.length === 0, "catalog cross-check: no script errors: " + errors.join(" | "));
+  await ctx.close();
+}
+
 async function page() {
   const srv = await serve();
   const base = "http://127.0.0.1:" + srv.address().port;
@@ -166,6 +233,13 @@ async function page() {
       const rows = await pg.$$eval("#wp-body tr", function (t) { return t.length; });
       check(rows === 100, view.name + ": first page lists 100 Great Swords, got " + rows);
       check(await pg.textContent("#wp-detail-h") === "Iron Sword", view.name + ": ?w=1 opens Iron Sword");
+      // The icons: on every row, in the weapon's heading, and on the calculator's weapon line.
+      const NOICON = "no-icon.svg";
+      check(await pg.$$eval("#wp-body tr", function (t, no) { return t.every(function (r) { const i = r.querySelector(".gi img"); return i && i.src.indexOf(no) < 0; }); }, NOICON),
+        view.name + ": every listed Great Sword has its icon");
+      check(await pg.$eval("#wp-detail-h .gi img", function (i, no) { return i.src.indexOf(no) < 0 && /great-sword-0\.png$/.test(i.src); }, NOICON),
+        view.name + ": Iron Sword's heading shows the great-sword icon in the first colour");
+      check(await pg.$eval("#calc-weapon-note .gi img", function (i, no) { return i.src.indexOf(no) < 0; }, NOICON), view.name + ": the calculator's weapon line has the icon");
       // The calculator's first move row must be what HvWeaponsCalc gives for the same inputs.
       const fromPage = await pg.evaluate(function () {
         const first = document.querySelector("#calc-body tr");
@@ -199,12 +273,24 @@ async function page() {
         await pg.locator("#wp-detail").screenshot({ path: path.join(shots, view.name + "-detail.png") });
         await pg.locator("#calc").screenshot({ path: path.join(shots, view.name + "-calc.png") });
       }
+      // Every type: the first page of its list has an icon on each row, of the type's sprite.
+      for (let i = 0; i < index.types.length; i++) {
+        const t = index.types[i];
+        await pg.locator("#wp-types .chip").nth(i).click();
+        await pg.waitForFunction(function (n) { return document.getElementById("wp-detail-type").textContent === n; }, t.name);
+        const sprite = SPRITE[t.slug] || t.slug;
+        const got = await pg.$$eval("#wp-body tr", function (rs) { return rs.map(function (r) { const i = r.querySelector(".gi img"); return i ? i.src : ""; }); });
+        const bad = got.filter(function (src) { return src.indexOf("/assets/icons/1x/" + sprite + "-") < 0; }).length;
+        check(got.length > 0 && bad === 0, view.name + " " + t.slug + ": " + bad + " of " + got.length + " listed rows without a " + sprite + " icon");
+      }
       // A gunner type: list works, calculator form hidden.
       await pg.click("#wp-types .chip:has-text('Heavy Bowgun')");
       await pg.waitForFunction(function () { return !document.getElementById("calc-gunner").hidden; });
       check(await pg.isHidden("#calc-form"), view.name + ": gunner type hides the calculator form");
       check(errors.length === 0, view.name + ": no script errors: " + errors.join(" | "));
       await ctx.close();
+
+      if (view.name === "desktop") await sameAsCatalog(browser, base);
 
       // The Usage tab, with the stubbed answer.
       const uctx = await browser.newContext({ viewport: { width: view.width, height: view.height }, deviceScaleFactor: view.name === "phone" ? 2 : 1 });

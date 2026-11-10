@@ -11,6 +11,7 @@
   "use strict";
 
   var Calc = window.HvWeaponsCalc;
+  var Icons = window.HvGameIcons;
   var PAGE_SIZE = 100;
   var STYLE_NAMES = { E: "Earth", H: "Heaven", S: "Storm", X: "Extreme" };
   var ELEMENT_ZONE = { Fire: "fire", Water: "water", Thunder: "thunder", Dragon: "dragon", Ice: "ice" };
@@ -22,6 +23,7 @@
   var cache = {};
   var state = { sort: "id", dir: 1, page: 0, weapon: null, style: "", rows: [] };
   var monsterCache = {};
+  var iconData = null;      // data/equipment-icons.json (null until loaded, or when it cannot be): placeholders then
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -35,6 +37,12 @@
       if (!r.ok) throw new Error(url + ": " + r.status);
       return r.json();
     });
+  }
+
+  /* A weapon's in-game icon, its type in its rank colour (js/game-icons.js, the same lookup as the catalog), as
+     a <span class="gi">. extra: the size class (gi-small 20 px, gi-large 48 px). null when the helper is missing. */
+  function weaponIcon(w, extra) {
+    return Icons ? Icons.equipmentIcon(iconData, { id: field(w, "id"), kind: isMelee() ? "melee" : "ranged" }, extra) : null;
   }
 
   function field(w, name) { return w[doc.fields.indexOf(name)]; }
@@ -171,6 +179,8 @@
       cols.forEach(function (c) {
         var td = el("td", c.num ? "num" : "");
         if (c.key === "name") {
+          var ic = weaponIcon(w, "gi-small");
+          if (ic) td.appendChild(ic);
           var b = el("button", "wp-pick", field(w, "name"));
           b.type = "button";
           b.addEventListener("click", function () { pick(w, true); });
@@ -290,7 +300,10 @@
     var w = state.weapon;
     $("wp-detail").hidden = false;
     $("wp-detail-type").textContent = doc.name;
-    $("wp-detail-h").textContent = w ? field(w, "name") : doc.name + " moves";
+    var head = $("wp-detail-h");
+    head.textContent = w ? field(w, "name") : doc.name + " moves";
+    var big = w && weaponIcon(w, "gi-large");
+    if (big) head.insertBefore(big, head.firstChild);
     var dl = $("wp-stats");
     dl.textContent = "";
     var bar = $("wp-detail-bar");
@@ -497,8 +510,11 @@
       $("c-element").value = field(w, "elementValue");
       var ends = doc.bars[field(w, "sharpness")];
       $("c-sharp").value = String(maxLevel(ends));
-      $("calc-weapon-note").textContent = "Weapon: " + field(w, "name") + " (true attack " + field(w, "attack") +
+      var note = $("calc-weapon-note");
+      note.textContent = "Weapon: " + field(w, "name") + " (true attack " + field(w, "attack") +
         (field(w, "element") ? ", " + elemText(w, "element") : "") + "). Sharpness is set to its top colour; change any number to try other values.";
+      var small = weaponIcon(w, "gi-small");
+      if (small) note.insertBefore(small, note.firstChild);
     }
     var u = new URL(location.href);
     u.searchParams.set("type", doc.type);
@@ -550,7 +566,11 @@
       fillCalcControls();
       var params = new URLSearchParams(location.search);
       loadMonsters();
-      return openType(params.get("type") || "great-sword", params.get("w"));
+      // The icon data first, so the first list already has its icons; without it the placeholder shows.
+      return getJson("/data/equipment-icons.json").catch(function () { return null; }).then(function (data) {
+        iconData = data;
+        return openType(params.get("type") || "great-sword", params.get("w"));
+      });
     }).catch(function (e) {
       $("wp-body").innerHTML = "";
       var tr = el("tr", "no-results"), td = el("td", "", "The weapon data could not be loaded (" + e.message + ").");

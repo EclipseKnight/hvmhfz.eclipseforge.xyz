@@ -2112,6 +2112,9 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .wp-pick:hover{color:var(--link-hover)}
 .wp-pick:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .wp-id{margin-left:8px;font:.75rem var(--font-mono);color:var(--ink-soft)}
+.wp-table td .gi{width:28px;height:28px;margin-right:8px;vertical-align:middle}
+#calc-weapon-note .gi{margin-right:8px;vertical-align:-5px}
+.bal-gname .gi{float:left;margin:2px 8px 0 0}
 .wp-table tr.is-picked{background:rgba(183,138,51,.22) !important}
 .sharp-bar{display:flex;width:120px;height:12px;border:1px solid #3b2a17;border-radius:2px;background:#1b130d;overflow:hidden;vertical-align:middle}
 .sharp-bar.big{width:100%;max-width:520px;height:22px;margin:4px 0 6px}

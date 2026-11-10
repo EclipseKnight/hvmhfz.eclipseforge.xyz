@@ -10,6 +10,7 @@
    not live; Publish is). New rows take the session reason (asked once when empty); a row's reason can be changed in
    the Changes table. Rows the grid cannot show (any type, any style for one move, ...) stay in the Changes table and
    the form under "Other rows".
+   Weapon rows carry the weapon's in-game icon (type and rank colour, js/game-icons.js, data/equipment-icons.json).
    The page part needs js/admin-balance.js (window.hvBalance, window.hvBalanceHelpers). */
 (function () {
   "use strict";
@@ -131,6 +132,7 @@
   var cells = [];        // {td, key, current, spec, factorOnly}
   var editing = null;    // the cell being edited
   var queue = Promise.resolve(), queued = 0;
+  var iconData = null;   // data/equipment-icons.json, for the weapon rows' icons (js/game-icons.js); null = placeholders
   var asking = null;     // a change waiting for the session reason
 
   function C() { return window.hvBalance; }
@@ -210,6 +212,7 @@
         if (!matches(view.filter, w[nameCol], w[idCol])) return;
         var weapon = { row: w, fields: F };
         out.push({ name: w[nameCol], sub: "#" + w[idCol] + (rarCol >= 0 ? " · rarity " + w[rarCol] : ""), off: false, ref: String(w[idCol]),
+          piece: { id: w[idCol], kind: kind },
           key: function (f) { return { kind: kind, weaponClass: null, style: null, entry: null, recordId: w[idCol], field: f }; },
           current: function (f) { return H().weaponValue(weapon, f); } });
       });
@@ -296,6 +299,8 @@
       row.dataset.ref = l.ref;
       var th = el("th", "bal-gname");
       th.scope = "row";
+      var icon = l.piece && window.HvGameIcons ? window.HvGameIcons.equipmentIcon(iconData, l.piece, "gi-small") : null;
+      if (icon) th.appendChild(icon);
       th.appendChild(el("span", "bal-gtitle", l.name));
       th.appendChild(el("span", "bal-gsub", l.sub));
       if (l.off) th.title = "Not reached in this style (by the data)";
@@ -540,6 +545,12 @@
   function wire() {
     if (wired) return;
     wired = true;
+    // The weapon rows' icons: drawn with placeholders until this is in, then the table is built again once.
+    fetch("/data/equipment-icons.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      .then(function (data) {
+        iconData = data;
+        if (data && view.mode === "weapons" && !editing) { built = null; render(); }
+      });
     var t = null;
     $("bal-gfilter").addEventListener("input", function () {
       clearTimeout(t);
