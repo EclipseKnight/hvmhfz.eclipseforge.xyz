@@ -199,6 +199,12 @@ dev/check-quest-equipment.js checks the quest builder's forced equipment (catalo
 dev/check-quest-rewards.js checks the quest builder's reward and text extras (Reward 1/2/3 with game icons and the fill from the main target's rewards, fixed rewards, sub-target money, the target, clear and fail line fill and its Undo, the review, a server refusal, an older draft, the pages' reward wording, 375 px) in headless Chromium against a fake API (NODE_PATH as above)
 dev/check-quest-monsters.js checks the quest builder's monster tuning (difficulty and its G rank rule, size, size spread, each large monster's usual or exact position, the server's position refusal, an older API without spots) in headless Chromium against a fake API (NODE_PATH as above)
 dev/check-links.py    checks every local link, picture and #anchor on the site (python3 dev/check-links.py [pages])
+dev/make-og.py        writes the 1200x630 preview cards in assets/og/ (one per page, assets/og/monster/<slug>.png, assets/og/weapon/<type>.png; python3 dev/make-og.py [page cards ...]); dev/set-og.py points each page's og:image at its card
+dev/make-share-pages.py writes the share pages in s/ (see "Link previews"; --check: s/ up to date)
+dev/check-embeds.py   checks every page's and share page's preview tags and pictures (--serve: also fetches a sample as Discordbot from a local server and prints each preview)
+dev/check-share.js    checks the share pages' redirects and the Copy link button in headless Chromium (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-share.js)
+js/share.js           "Copy link" in the breadcrumbs of the monster, quest, item, weapon and changelog pages: copies the share page's address
+s/                    share pages (generated, noindex): s/monster/, s/quest/, s/item/, s/weapon/, s/changelog/
 dev/make-hv-summary.py writes the comparison tables of guide-frontier-hunsterverse.html from the guide's notes (--check: one note per section, page up to date)
 CNAME                 hvmhfz.eclipseforge.xyz
 ```
@@ -359,7 +365,8 @@ same change:
 4. Move the entries that went live out of "Coming next". For a game server build, the source is that
    build's player notes ("Next build" in Erupe's `docs/hvmhfz-changelog.md`).
 5. Update "Last update listed" in the page's meta line, and "Known issues" if one was fixed or found.
-6. Run `python3 dev/check-changelog.py` ("changelog OK") and `python3 dev/check-site.py`. `python3 dev/check-changelog.py`
+6. Run `python3 dev/make-share-pages.py` (the day's share page, see "Link previews").
+7. Run `python3 dev/check-changelog.py` ("changelog OK") and `python3 dev/check-site.py`. `python3 dev/check-changelog.py`
    also checks the drop-downs (newest 3 days open, the rest closed); `NODE_PATH=/root/work/pw-tools/node_modules node
    dev/check-changelog-folds.js` ("changelog folds OK", headless Chromium) checks that links open them.
 
@@ -481,6 +488,31 @@ python3 -m http.server 8000
 Put a sign-in token in the browser first (sign in on the home page, or `localStorage.setItem("hvmhfz.token", ...)` with any JWT-shaped value whose `exp` is in the future), else the page shows only the Sign in button. Open `http://localhost:8000/report.html?api=http://localhost:8099`. The `?api=` override and
 Cloudflare's always-pass test Turnstile key are only used on `localhost` and `127.0.0.1`; the live
 site always uses the real API and key.
+
+## Link previews
+
+Discord, X and other apps build a link's preview from the page's static `og:`/`twitter:` tags; they do not run
+scripts. Every page has its own title, description and 1200x630 card (`assets/og/`, `dev/make-og.py` and
+`dev/set-og.py`; the sign-in, admin, error and legal pages keep the brand card). A detail link with a query
+(`/monster.html?m=...`, `/quest.html?id=...`) or an anchor (`/changelog.html#d-...`) still shows its page's
+generic card, because the crawler fetches the same file. So each thing of the site's own data has a share page:
+
+| Share page | Preview | Opens |
+|---|---|---|
+| `/s/monster/<slug>.html` | name, kind, weak elements, HP range, forms; its own card (icon, `assets/og/monster/`) | `/monster.html?m=<slug>` |
+| `/s/quest/<id>.html` | name, category, monsters, objective, time, reward; its first monster's card | `/quest.html?id=<id>` |
+| `/s/item/<id>.html` (items with sources) | name, best drop and how many monsters, quests that need it | `/item.html?id=<id>` |
+| `/s/weapon/<type>.html[?w=<id>]` | the weapon type, its count and what the database shows; the type's card | `/weapons.html?type=<type>[&w=<id>]` |
+| `/s/changelog/<date>.html[#d-<date>-<topic>]` | the day, its topics and headlines | `/changelog.html#d-<date>[-<topic>]` |
+
+About 11,750 files (mostly the 9,152 quests and 2,403 items), about 1.5 KB each. A share page sends a browser on with
+`location.replace` (a meta refresh without JavaScript, a link last). One page per weapon would be 16,000 more files,
+so a weapon link previews as its type and still opens the weapon. The "Copy link" button (`js/share.js`) copies
+these addresses; with no share page it copies the page's own address. Run `python3 dev/make-share-pages.py` after
+the data (`data/monsters`, `data/quests.json`, `data/items`, `data/weapons`) or the changelog change, and
+`python3 dev/make-og.py` after the monster or weapon data change; `python3 dev/check-embeds.py` says when s/ is
+out of date. Hunters, guilds and leaderboards come from the API, so their links keep the page's card: a preview
+of one hunter or guild needs a server that answers crawlers (a Cloudflare Worker or an API share endpoint).
 
 ## Links
 

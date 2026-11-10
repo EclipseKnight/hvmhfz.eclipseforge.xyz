@@ -16,7 +16,16 @@ PAGE_CARD = {
     "events.html": "events", "road-vote.html": "road-vote", "road.html": "road-vote",
     "road-history.html": "road-vote", "catalog.html": "catalog", "set-builder.html": "set-builder",
     "changelog.html": "changelog", "api.html": "api",
+    "play.html": "play", "weapons.html": "weapons", "balance.html": "balance", "tournaments.html": "tournaments",
+    "sky-corridor.html": "sky-corridor", "road-data.html": "road-data", "road-history.html": "road-history",
+    "road.html": "road", "report.html": "report", "guide-roads.html": "guide-roads",
+    "guide-frontier.html": "guide-frontier",
 }
+# Every Frontier guide chapter with a card of its own (dev/make-og.py); the moved chapters keep the guide's.
+for _card in sorted((ROOT / "assets" / "og").glob("guide-frontier-*.png")):
+    if (ROOT / (_card.stem + ".html")).exists() and _card.stem not in (
+            "guide-frontier-activities", "guide-frontier-equipment", "guide-frontier-reference"):
+        PAGE_CARD[_card.stem + ".html"] = _card.stem
 
 BASE = "https://hvmhfz.eclipseforge.xyz"
 seen_desc = {}
