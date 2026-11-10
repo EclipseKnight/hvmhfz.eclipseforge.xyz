@@ -1994,3 +1994,9 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .patch-slot-head{margin:0 0 2px;overflow-wrap:anywhere}
 .patch-slot-sub{margin:14px 0 6px;font-size:1rem}
 .patch-sub{margin:12px 0 4px;font-size:1rem}
+
+/* Road builder: Test in game steps and no-save warning */
+.road-test-steps { margin: 0.4rem 0 0.8rem 1.2rem; padding: 0; }
+.road-test-steps li { margin: 0.25rem 0; }
+.callout.callout-warn { border: 1px solid #b4542a; border-left-width: 4px; background: rgba(180, 84, 42, 0.10); border-radius: 6px; padding: 0.6rem 0.9rem; margin: 0.6rem 0 0.8rem; }
+.callout.callout-warn p { margin: 0.3rem 0; }
