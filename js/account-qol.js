@@ -66,7 +66,7 @@
     row.appendChild(el("p", "note-text qol-desc", f.description));
     if (f.minPatch) row.appendChild(el("p", "note-text qol-patch", "Needs client patch v" + f.minPatch + " or newer"));
     if (f.revealsHiddenInfo) row.appendChild(el("p", "note-text qol-hidden", "Shows information the game normally hides"));
-    if (f.id === "iframeViewer") row.appendChild(el("p", "note-text qol-event", VIEWER_EVENT_RULE));
+    if (f.id === "iframeViewer" || f.id === "damageNumbers") row.appendChild(el("p", "note-text qol-event", VIEWER_EVENT_RULE));
     if (f.lockedMessage) {
       box.disabled = true;
       row.classList.add("is-locked");
