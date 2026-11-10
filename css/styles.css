@@ -2037,3 +2037,44 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .qol-item.is-locked .qol-label{cursor:not-allowed}
 .qol-locked{font-style:italic}
 .patch-switched{margin:8px 0;padding:8px 10px;border:1px solid #8a6a24;border-radius:6px;background:rgba(183,138,51,.12);color:var(--ink);overflow-wrap:anywhere}
+/* Weapons page (weapons.html, js/weapons.js): sortable list, sharpness bars, move list, damage calculator */
+.wp-table th .wp-sort{all:unset;cursor:pointer;color:inherit;font:inherit}
+.wp-table th .wp-sort:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wp-table th[aria-sort="ascending"] .wp-sort::after{content:" \25B2";font-size:.7em}
+.wp-table th[aria-sort="descending"] .wp-sort::after{content:" \25BC";font-size:.7em}
+.wp-pick{all:unset;cursor:pointer;color:var(--link);border-bottom:1px dotted currentColor;font-weight:600}
+.wp-pick:hover{color:var(--link-hover)}
+.wp-pick:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wp-id{margin-left:8px;font:.75rem var(--font-mono);color:var(--ink-soft)}
+.wp-table tr.is-picked{background:rgba(183,138,51,.22) !important}
+.sharp-bar{display:flex;width:120px;height:12px;border:1px solid #3b2a17;border-radius:2px;background:#1b130d;overflow:hidden;vertical-align:middle}
+.sharp-bar.big{width:100%;max-width:520px;height:22px;margin:4px 0 6px}
+.sharp-seg{display:block;height:100%}
+.wp-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px 18px;margin:0 0 14px}
+.wp-stat dt{font:700 .66rem/1.3 var(--font-ui);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)}
+.wp-stat dd{margin:2px 0 0;font-weight:600;overflow-wrap:anywhere}
+.wp-sub{margin:18px 0 6px;font-size:1.05rem;color:var(--ink)}
+.wp-help{margin:0 0 12px;font:.85rem/1.5 var(--font-ui);color:var(--ink-soft)}
+.wp-guess{font-size:.58rem;vertical-align:middle}
+.wp-moves td,.wp-results td{white-space:normal}
+.wp-calc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 22px}
+.wp-fs{margin:0 0 12px;padding:12px 14px 0;border:1px solid var(--line);border-radius:3px;min-width:0}
+.wp-fs legend{padding:0 6px;font:700 .74rem/1 var(--font-ui);letter-spacing:.13em;text-transform:uppercase;color:var(--gold-ink)}
+.wp-fs .field{margin-bottom:12px}
+.wp-fs select{max-width:none;width:100%}
+.wp-checks label{display:flex;align-items:center;gap:8px;margin:0 0 8px;font:600 .85rem/1.3 var(--font-ui);letter-spacing:0;text-transform:none;color:var(--ink)}
+.wp-checks input{width:20px;height:20px;margin:0;flex:none}
+.wp-summary{margin:6px 0 12px;font:600 .9rem/1.5 var(--font-ui);color:var(--ink)}
+.wp-expected{font-weight:700}
+.wp-how ul{margin:0 0 10px;padding-left:1.2em}
+.wp-how li{margin:4px 0}
+@media (max-width:1100px){.wp-calc{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){
+  .wp-calc{grid-template-columns:1fr}
+  .weapons-page .search input{min-width:0;width:100%}
+  .weapons-page .toolbar .search{flex:1 1 100%}
+  .sharp-bar{width:84px}
+  .wp-results .wp-wide{display:none}
+  .wp-results td,.wp-results th{padding:8px 6px}
+  .wp-results th{letter-spacing:.03em}
+}

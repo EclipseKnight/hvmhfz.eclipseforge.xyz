@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weapons · Hunsterverse</title>
+    <meta name="description" content="Every weapon in Monster Hunter Frontier Z with its sharpness, motion values per style, and a damage calculator that uses the game's own formula." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Weapons · Hunsterverse" />
+    <meta property="og:description" content="Every weapon in Monster Hunter Frontier Z with its sharpness, motion values per style, and a damage calculator that uses the game's own formula." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/weapons.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/catalog.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Weapons · Hunsterverse" />
+    <meta name="twitter:description" content="Every weapon in Monster Hunter Frontier Z with its sharpness, motion values per style, and a damage calculator that uses the game's own formula." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/catalog.png" />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png?v=2" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
+    <link rel="stylesheet" href="/css/styles.css?v=3" />
+    <script src="/js/nav.js" defer></script>
+    <script src="/js/background.js" defer></script>
+    <script src="/js/consent.js" defer></script>
+  </head>
+
+  <body class="public-page">
+    <!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <div class="nav-status" data-state="loading">
+          <button type="button" class="nav-status-toggle" aria-expanded="false" aria-controls="nav-status-panel">
+            <span class="nav-status-dot" aria-hidden="true"></span><span class="nav-status-label">Server</span>
+          </button>
+          <div class="nav-status-panel" id="nav-status-panel" role="region" aria-label="Server status and how to connect" hidden>
+            <p class="nav-status-head"><span class="nav-status-dot" aria-hidden="true"></span><strong class="nav-status-title">Checking the server</strong></p>
+            <p class="nav-status-sub">Hunters online and which ports answer, checked every minute.</p>
+            <ul class="nav-status-ports"></ul>
+            <h3 class="nav-status-h">Connect in the launcher</h3>
+            <table class="nav-status-connect">
+              <tbody>
+                <tr><th scope="row">Host</th><td><code data-connect="host">129.213.54.221</code></td><td><button type="button" class="nav-copy" data-nav-copy="host">Copy</button></td></tr>
+                <tr><th scope="row">Launcher port</th><td><code data-connect="launcherPort">8080</code></td><td><button type="button" class="nav-copy" data-nav-copy="launcherPort">Copy</button></td></tr>
+                <tr><th scope="row">Game port</th><td><code data-connect="gamePort">53310</code></td><td><button type="button" class="nav-copy" data-nav-copy="gamePort">Copy</button></td></tr>
+                <tr><th scope="row">Server mode</th><td><code data-connect="mode">API</code></td><td></td></tr>
+                <tr><th scope="row">Version</th><td><code data-connect="version">ZZ</code></td><td></td></tr>
+              </tbody>
+            </table>
+            <p class="nav-status-note">API mode will not log in? Use launcher port <code data-connect="signPort">53312</code> with mode <code data-connect="fallbackMode">SignV1</code>.</p>
+            <p class="nav-status-links"><a href="/play.html">Setup guide</a><a href="/worlds.html">Worlds</a><a href="https://discord.gg/NQrvRdRwU8">Discord</a></p>
+          </div>
+        </div>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/play.html">Play</a>
+              <a class="navlink" href="/guide-frontier.html">Frontier guide</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/weapons.html" aria-current="page">Weapons</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+              <a class="navlink" href="/quest-editor.html">Quest builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-road">Hunting Road</button>
+            <div class="nav-menu" id="nav-road">
+              <a class="navlink" href="/road-vote.html">Rotation and vote</a>
+              <a class="navlink" href="/road.html">Road builder</a>
+              <a class="navlink" href="/road-history.html">Past winners</a>
+              <a class="navlink" href="/road-data.html">Road data</a>
+              <a class="navlink" href="/guide-roads.html">Roads in game</a>
+              <a class="navlink" href="/sky-corridor.html">Sky Corridor</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="https://discord.gg/NQrvRdRwU8">Discord</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/tournaments.html">Tournaments</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/report.html">Report a problem</a>
+            </div>
+          </div>
+          <a class="navlink nav-cta nav-account" href="/account.html">Sign in</a>
+        </nav>
+      </div>
+    </header>
+    <!-- /site-shell:header -->
+
+    <main id="content" class="wrap page wide weapons-page">
+      <!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Database</li><li aria-current="page">Weapons</li></ol></nav>
+      <!-- /site-shell:crumbs -->
+      <header class="page-head">
+        <h1>Weapons</h1>
+        <p class="page-sub">Every weapon in the game with its sharpness and its moves per style, and a damage calculator that uses the game's own formula. Read from the client's data files (<span id="wp-source">client patch</span>). Pick a type, then a weapon.</p>
+      </header>
+
+      <section class="panel" aria-labelledby="wp-list-h">
+        <div class="panel-head"><h2 id="wp-list-h">Weapon list</h2><span class="panel-note" id="wp-count"></span></div>
+        <div class="chips" id="wp-types" role="group" aria-label="Weapon type"></div>
+        <div class="toolbar">
+          <label class="search">
+            <span class="search-label">Search</span>
+            <input type="search" id="wp-search" placeholder="Weapon name or id" autocomplete="off" />
+          </label>
+          <label class="select-wrap" id="wp-elem-wrap">
+            <span class="search-label">Element or status</span>
+            <select id="wp-elem"><option value="">Any</option></select>
+          </label>
+          <label class="select-wrap">
+            <span class="search-label">Rarity</span>
+            <select id="wp-rarity"><option value="">Any</option></select>
+          </label>
+          <span class="toolbar-note" id="wp-results"></span>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table wp-table" data-nosort>
+            <thead id="wp-head"></thead>
+            <tbody id="wp-body"><tr><td colspan="9"><span class="skeleton-line w70"></span></td></tr></tbody>
+          </table>
+        </div>
+        <div class="pager" id="wp-pager" hidden>
+          <button type="button" class="ghost-btn small" id="wp-prev">Previous</button>
+          <span class="pager-note" id="wp-page-note"></span>
+          <button type="button" class="ghost-btn small" id="wp-next">Next</button>
+        </div>
+      </section>
+
+      <section class="panel" id="wp-detail" aria-labelledby="wp-detail-h" hidden>
+        <div class="panel-head"><h2 id="wp-detail-h">Weapon</h2><span class="panel-note" id="wp-detail-type"></span></div>
+        <dl class="wp-stats" id="wp-stats"></dl>
+        <div id="wp-detail-bar"></div>
+        <h3 class="wp-sub">Moves</h3>
+        <p class="wp-help">Every attack record this weapon type uses, from the client's <code>mhfsdt.bin</code>: motion value (MV) per hit, element or status of the move, KO (stun) and the extra MV with Charge Attack Up. Styles: E Earth, H Heaven, S Storm, X Extreme; X is read from the game's action table, E/H/S from its code (an upper bound), blank when not known. Names are community names matched by MV, so they are guesses.</p>
+        <div class="chips" id="wp-styles" role="group" aria-label="Style"></div>
+        <div class="table-wrap">
+          <table class="data-table wp-moves" data-nosort>
+            <thead><tr><th>Move</th><th>Styles</th><th class="num">Hits</th><th>MV per hit</th><th>Element / status</th><th class="num">KO</th><th>Charge Attack Up</th></tr></thead>
+            <tbody id="wp-moves-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="calc" aria-labelledby="calc-h">
+        <div class="panel-head"><h2 id="calc-h">Damage calculator</h2><span class="panel-note">Blademaster weapons</span></div>
+        <p class="wp-help" id="calc-weapon-note">Pick a weapon in the list to fill in its numbers, or type them in.</p>
+        <p class="form-alert" id="calc-gunner" hidden>Gunner damage needs the shot factors, which are not mapped yet; the calculator covers blademaster weapons. The move list above still shows the shots' motion values.</p>
+        <form class="wp-calc" id="calc-form" autocomplete="off" onsubmit="return false">
+          <fieldset class="wp-fs">
+            <legend>Weapon</legend>
+            <div class="field"><label for="c-attack">True attack</label><input type="number" id="c-attack" min="0" max="3000" value="500" inputmode="numeric" /></div>
+            <div class="field"><label for="c-affinity">Weapon affinity %</label><input type="number" id="c-affinity" min="-100" max="100" value="0" inputmode="numeric" /></div>
+            <div class="field"><label for="c-sharp">Sharpness</label><select id="c-sharp"></select></div>
+            <div class="field"><label for="c-style">Style</label><select id="c-style"><option value="E">Earth</option><option value="H">Heaven</option><option value="S">Storm</option><option value="X">Extreme</option></select></div>
+            <div class="field"><label for="c-element">True element or status <span class="field-optional">(shown value / 10)</span></label><input type="number" id="c-element" min="0" max="255" value="0" inputmode="numeric" /></div>
+          </fieldset>
+          <fieldset class="wp-fs">
+            <legend>Skills</legend>
+            <div class="field"><label for="c-crit-eye">Critical Eye</label><select id="c-crit-eye"><option value="0">None</option></select></div>
+            <div class="field"><label for="c-ceaseless">Ceaseless</label><select id="c-ceaseless"><option value="0">None</option><option value="1">Level 1 (+0.10)</option><option value="2">Level 2 (+0.15)</option><option value="3">Level 3 (+0.20)</option></select></div>
+            <div class="field"><label for="c-charge">Charge Attack Up</label><select id="c-charge"><option value="0">None</option></select></div>
+            <div class="field"><label for="c-tech">Weapon technique</label><select id="c-tech"><option value="0">None</option></select></div>
+            <div class="field"><label for="c-mult">Adrenaline / Worry</label><select id="c-mult"><option value="1">None</option></select></div>
+            <div class="field wp-only" data-only="6"><label for="c-demon">Demon mode level</label><select id="c-demon"></select></div>
+            <div class="field wp-checks">
+              <label><input type="checkbox" id="c-wolf" /> <span id="c-wolf-label">Starving Wolf+2</span></label>
+              <label><input type="checkbox" id="c-fencing" /> <span id="c-fencing-label">Fencing+2</span></label>
+              <label class="wp-only" data-only="7"><input type="checkbox" id="c-spirit" /> Spirit gauge (×1.2375)</label>
+            </div>
+            <div class="field"><label for="c-flat">Attack bonus <span class="field-optional">(items, food: true attack)</span></label><input type="number" id="c-flat" min="0" max="1000" value="0" inputmode="numeric" /></div>
+            <div class="field"><label for="c-aff-extra">Other affinity %</label><input type="number" id="c-aff-extra" min="-100" max="100" value="0" inputmode="numeric" /></div>
+            <div class="field"><label for="c-elem-skill">Element skill %</label><input type="number" id="c-elem-skill" min="0" max="300" value="100" inputmode="numeric" /></div>
+          </fieldset>
+          <fieldset class="wp-fs">
+            <legend>Monster</legend>
+            <div class="field"><label for="c-monster">Hitzones from</label><select id="c-monster"><option value="">Type them in</option></select></div>
+            <div class="field" id="c-part-wrap" hidden><label for="c-part">Part</label><select id="c-part"></select></div>
+            <div class="field"><label for="c-type">Damage type</label><select id="c-type"><option value="cut">Cut</option><option value="impact">Impact</option></select></div>
+            <div class="field"><label for="c-zone">Raw hitzone</label><input type="number" id="c-zone" min="0" max="200" value="45" inputmode="numeric" /></div>
+            <div class="field"><label for="c-ezone">Element hitzone</label><input type="number" id="c-ezone" min="0" max="200" value="20" inputmode="numeric" /></div>
+            <p class="wp-help" id="c-zone-note">Monster hitzones are the ones on the monster pages (community data).</p>
+          </fieldset>
+        </form>
+        <p class="wp-summary" id="calc-summary" aria-live="polite"></p>
+        <div class="table-wrap">
+          <table class="data-table wp-results" data-nosort>
+            <thead><tr><th>Move</th><th class="wp-wide">Styles</th><th class="num">Hits</th><th class="wp-wide">MV per hit</th><th class="num">No crit</th><th class="num">Crit</th><th class="num">Expected</th></tr></thead>
+            <tbody id="calc-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="wp-how-h">
+        <div class="panel-head"><h2 id="wp-how-h">How the damage is worked out</h2></div>
+        <div class="wp-how">
+          <p>One hit, as the game client computes it (found in the client's hit function and checked against its code):</p>
+          <ul>
+            <li><strong>True attack</strong> = weapon attack + bonus, × Adrenaline+2 (1.5) or Worry (0.7), × weapon technique (Novice 0.8, Kaiden 1.1, top level 1.2; Sword and Shield 1.2 and 1.3; Magnet Spike top level 1.03), × Dual Swords demon mode (1.0 to 1.2), × 99/80 with the Long Sword spirit gauge; at most 3000.</li>
+            <li><strong>MV</strong> = the move's motion value per hit, + the Charge Attack Up bonus on charged moves, × 1.2 with Fencing+2 on the moves it covers (Tonfa; Long Sword in Storm and Extreme).</li>
+            <li><strong>Crit</strong>: the MV × 1.25 (1.35 with Starving Wolf+2, plus 0.10 to 0.20 with Ceaseless); negative affinity gives MV × 0.75. The chance is the affinity, at most 100%. <strong>Below green sharpness there are no crits at all</strong>, negative ones included.</li>
+            <li><strong>Raw</strong> = MV × hitzone / 100 × sharpness (red 0.6, orange 0.85, yellow 1.1, green 1.325, blue 1.45, white 1.6, purple 1.7, sky 1.8) × true attack / 100, rounded down, at least 1.</li>
+            <li><strong>Element</strong> = element hitzone / 100 × true element × the same sharpness numbers × element skill, rounded down. Each hit is raw + element; <em>Expected</em> weighs crits by the affinity.</li>
+          </ul>
+          <p>Not counted: monster defence and rage multipliers, quest modifiers, status build-up, gunner shots, Lance's top-level technique bonus and other skills whose numbers are not mapped. Open details: rounding inside the attack build-up (rounded down after each step here), the order of Fencing+2 and the crit, and each move's hit class (a ×1.05 on some hits; taken as 1.0). Damage type: the game takes the larger of cut and impact, each scaled by the weapon's share; pick the one the move deals.</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <div class="foot-col">
+            <h2 class="foot-head">Guides</h2>
+            <a href="/play.html">Play</a>
+            <a href="/guide-frontier.html">Frontier guide</a>
+            <a href="/guide-roads.html">Roads in game</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Explore</h2>
+            <a href="/monsters.html">Monsters</a>
+            <a href="/quests.html">Quests</a>
+            <a href="/catalog.html">Catalog</a>
+            <a href="/leaderboards.html">Leaderboards</a>
+            <a href="/road-vote.html">Hunting Road</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Server</h2>
+            <a href="/changelog.html">Changelog</a>
+            <a href="/worlds.html">Worlds</a>
+            <a href="/report.html">Report a problem</a>
+            <a href="/api.html">API</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">About</h2>
+            <a href="/privacy.html">Privacy</a>
+                <a href="/bot-terms.html">Bot terms</a>
+            <a href="https://discord.gg/NQrvRdRwU8">Discord</a>
+            <a href="https://hunstermonter.net">hunstermonter.net</a>
+          </div>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+    <!-- /site-shell:footer -->
+
+    <script src="/js/weapons-calc.js?v=1"></script>
+    <script src="/js/weapons.js?v=1"></script>
+    <script src="/js/search.js" defer></script>
+  </body>
+</html>

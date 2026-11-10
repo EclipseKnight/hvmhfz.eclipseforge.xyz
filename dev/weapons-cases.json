@@ -1,0 +1,809 @@
+{
+ "_about": "Reference cases for dev/check-weapons.js, written by dev/make-weapons-data.py with hvmhfz_re tools/weapons/moves.py (record MVs, melee_crit, crit_factor).",
+ "source": {
+  "patch": "v1.19",
+  "zip": "Frontier_Patch-6d4023f6.zip",
+  "zipSha256": "6d4023f6f149c805b1c5a810bddda1fe628acaa215ad299f45abd621ca89709b",
+  "mhfdatSha256": "84f8df96fbf4ec20b537eb1715cff55aea77c5821add7108baad4908bf9b695c",
+  "mhfsdtSha256": "1d1e8b417344916c20fa8ebc6eeb8aba1ea7d5efd80b9db3f0556a7a1fe53222",
+  "mhfsdt": "the game client's dat/mhfsdt.bin (not in our patch)",
+  "tools": "hvmhfz_re bb7b76e tools/weapons (weapons.py, moves.py, styles.py)",
+  "script": "dev/make-weapons-data.py"
+ },
+ "cases": [
+  {
+   "type": "great-sword",
+   "kind": 0,
+   "id": 165,
+   "mv": [
+    92
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 1000,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 5,
+   "zone": 45,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 30,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 662,
+    "crit": 828,
+    "negCrit": 496,
+    "expected": 711.8,
+    "attackTotal": 1000
+   }
+  },
+  {
+   "type": "great-sword",
+   "kind": 0,
+   "id": 166,
+   "mv": [
+    112
+   ],
+   "bonus": [
+    7
+   ],
+   "attack": 1000,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 6,
+   "zone": 45,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 30,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "chargeUp": 1,
+   "expect": {
+    "nonCrit": 910,
+    "crit": 1132,
+    "negCrit": 680,
+    "expected": 976.6,
+    "attackTotal": 1000
+   }
+  },
+  {
+   "type": "great-sword",
+   "kind": 0,
+   "id": 167,
+   "mv": [
+    157
+   ],
+   "bonus": [
+    15
+   ],
+   "attack": 1200,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 7,
+   "zone": 70,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 100,
+   "starvingWolf": true,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "chargeUp": 2,
+   "expect": {
+    "nonCrit": 2600,
+    "crit": 3507,
+    "negCrit": 1950,
+    "expected": 3507.0,
+    "attackTotal": 1200
+   }
+  },
+  {
+   "type": "great-sword",
+   "kind": 0,
+   "id": 168,
+   "mv": [
+    200
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 1200,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 2,
+   "zone": 70,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 100,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 1848,
+    "crit": 1848,
+    "negCrit": 1848,
+    "expected": 1848.0,
+    "attackTotal": 1200
+   }
+  },
+  {
+   "type": "great-sword",
+   "kind": 0,
+   "id": 261,
+   "mv": [
+    125
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 900,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 3,
+   "zone": 30,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": -40,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 447,
+    "crit": 558,
+    "negCrit": 332,
+    "expected": 401.0,
+    "attackTotal": 900
+   }
+  },
+  {
+   "type": "long-sword",
+   "kind": 0,
+   "id": 158,
+   "mv": [
+    26
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 800,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 5,
+   "zone": 60,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 50,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": true,
+   "expect": {
+    "nonCrit": 238,
+    "crit": 291,
+    "negCrit": 176,
+    "expected": 264.5,
+    "attackTotal": 800
+   }
+  },
+  {
+   "type": "long-sword",
+   "kind": 0,
+   "id": 250,
+   "mv": [
+    5
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 800,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": true,
+   "sharp": 6,
+   "zone": 55,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 0,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 46,
+    "crit": 55,
+    "negCrit": 27,
+    "expected": 46.0,
+    "attackTotal": 990
+   }
+  },
+  {
+   "type": "long-sword",
+   "kind": 0,
+   "id": 74,
+   "mv": [
+    28
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 700,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.2,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 4,
+   "zone": 40,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 20,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 136,
+    "crit": 170,
+    "negCrit": 102,
+    "expected": 142.8,
+    "attackTotal": 840
+   }
+  },
+  {
+   "type": "tonfa",
+   "kind": 100,
+   "id": 40,
+   "mv": [
+    2
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 600,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 6,
+   "zone": 50,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 40,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": true,
+   "expect": {
+    "nonCrit": 10,
+    "crit": 10,
+    "negCrit": 5,
+    "expected": 10.0,
+    "attackTotal": 600
+   }
+  },
+  {
+   "type": "tonfa",
+   "kind": 100,
+   "id": 1,
+   "mv": [
+    28
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 600,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 1,
+   "zone": 50,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 40,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 71,
+    "crit": 71,
+    "negCrit": 71,
+    "expected": 71.0,
+    "attackTotal": 600
+   }
+  },
+  {
+   "type": "hammer",
+   "kind": 0,
+   "id": 34,
+   "mv": [
+    32
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 1100,
+   "flat": 0,
+   "attackMult": 1.5,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 5,
+   "zone": 65,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 10,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 549,
+    "crit": 686,
+    "negCrit": 411,
+    "expected": 562.7,
+    "attackTotal": 1650
+   }
+  },
+  {
+   "type": "hammer",
+   "kind": 0,
+   "id": 11,
+   "mv": [
+    100
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 1100,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 0,
+   "zone": 65,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 10,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 429,
+    "crit": 429,
+    "negCrit": 429,
+    "expected": 429.0,
+    "attackTotal": 1100
+   }
+  },
+  {
+   "type": "lance",
+   "kind": 0,
+   "id": 231,
+   "mv": [
+    91
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 500,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 6,
+   "zone": 50,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 60,
+   "starvingWolf": false,
+   "ceaseless": 3,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 386,
+    "crit": 556,
+    "negCrit": 289,
+    "expected": 488.0,
+    "attackTotal": 500
+   }
+  },
+  {
+   "type": "lance",
+   "kind": 0,
+   "id": 229,
+   "mv": [
+    30
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 500,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 4,
+   "zone": 50,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": -100,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 108,
+    "crit": 134,
+    "negCrit": 79,
+    "expected": 79.0,
+    "attackTotal": 500
+   }
+  },
+  {
+   "type": "sword-and-shield",
+   "kind": 0,
+   "id": 222,
+   "mv": [
+    17
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 400,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.3,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 7,
+   "zone": 35,
+   "elementValue": 30,
+   "elementZone": 25,
+   "elementSkill": 100,
+   "affinity": 70,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 68,
+    "crit": 81,
+    "negCrit": 52,
+    "expected": 77.1,
+    "attackTotal": 520
+   }
+  },
+  {
+   "type": "sword-and-shield",
+   "kind": 0,
+   "id": 23,
+   "mv": [
+    31
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 400,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 3,
+   "zone": 35,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 70,
+   "starvingWolf": true,
+   "ceaseless": 1,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 57,
+    "crit": 81,
+    "negCrit": 42,
+    "expected": 73.8,
+    "attackTotal": 400
+   }
+  },
+  {
+   "type": "dual-swords",
+   "kind": 0,
+   "id": 1,
+   "mv": [
+    58
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 450,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.2,
+   "spirit": false,
+   "sharp": 5,
+   "zone": 40,
+   "elementValue": 45,
+   "elementZone": 30,
+   "elementSkill": 120,
+   "affinity": 25,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 225,
+    "crit": 273,
+    "negCrit": 173,
+    "expected": 237.0,
+    "attackTotal": 540
+   }
+  },
+  {
+   "type": "gunlance",
+   "kind": 0,
+   "id": 169,
+   "mv": [
+    25
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 520,
+   "flat": 0,
+   "attackMult": 0.7,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 4,
+   "zone": 45,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 15,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 59,
+    "crit": 73,
+    "negCrit": 42,
+    "expected": 61.1,
+    "attackTotal": 364
+   }
+  },
+  {
+   "type": "gunlance",
+   "kind": 0,
+   "id": 70,
+   "mv": [
+    38
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 520,
+   "flat": 25,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 5,
+   "zone": 45,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 0,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 149,
+    "crit": 184,
+    "negCrit": 109,
+    "expected": 149.0,
+    "attackTotal": 545
+   }
+  },
+  {
+   "type": "hunting-horn",
+   "kind": 0,
+   "id": 94,
+   "mv": [
+    26
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 1050,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 6,
+   "zone": 55,
+   "elementValue": 20,
+   "elementZone": 15,
+   "elementSkill": 100,
+   "affinity": 35,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 260,
+    "crit": 319,
+    "negCrit": 191,
+    "expected": 280.65,
+    "attackTotal": 1050
+   }
+  },
+  {
+   "type": "switch-axe-f",
+   "kind": 106,
+   "id": 1,
+   "mv": [
+    46
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 1150,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 5,
+   "zone": 50,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 20,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 423,
+    "crit": 524,
+    "negCrit": 312,
+    "expected": 443.2,
+    "attackTotal": 1150
+   }
+  },
+  {
+   "type": "magnet-spike",
+   "kind": 120,
+   "id": 1,
+   "mv": [
+    43
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 1200,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.03,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 6,
+   "zone": 50,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 45,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 451,
+    "crit": 556,
+    "negCrit": 336,
+    "expected": 498.25,
+    "attackTotal": 1236
+   }
+  },
+  {
+   "type": "magnet-spike",
+   "kind": 121,
+   "id": 8,
+   "mv": [
+    600
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 1200,
+   "flat": 0,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 7,
+   "zone": 80,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 100,
+   "starvingWolf": true,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 10368,
+    "crit": 13996,
+    "negCrit": 7776,
+    "expected": 13996.0,
+    "attackTotal": 1200
+   }
+  },
+  {
+   "type": "great-sword",
+   "kind": 0,
+   "id": 113,
+   "mv": [
+    215
+   ],
+   "bonus": [
+    0
+   ],
+   "attack": 1500,
+   "flat": 300,
+   "attackMult": 1.0,
+   "techMult": 1.0,
+   "demonMult": 1.0,
+   "spirit": false,
+   "sharp": 7,
+   "zone": 100,
+   "elementValue": 0,
+   "elementZone": 0,
+   "elementSkill": 100,
+   "affinity": 100,
+   "starvingWolf": false,
+   "ceaseless": 0,
+   "fencingHit": false,
+   "expect": {
+    "nonCrit": 6966,
+    "crit": 8683,
+    "negCrit": 5216,
+    "expected": 8683.0,
+    "attackTotal": 1800
+   }
+  }
+ ]
+}

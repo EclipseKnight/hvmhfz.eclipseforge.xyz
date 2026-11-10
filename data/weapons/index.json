@@ -1,0 +1,284 @@
+{
+ "_about": "Weapon database and damage calculator data, written by dev/make-weapons-data.py from the game's own files (see source). Formula: hvmhfz_re docs/weapons.md sections 4 and 5.",
+ "source": {
+  "patch": "v1.19",
+  "zip": "Frontier_Patch-6d4023f6.zip",
+  "zipSha256": "6d4023f6f149c805b1c5a810bddda1fe628acaa215ad299f45abd621ca89709b",
+  "mhfdatSha256": "84f8df96fbf4ec20b537eb1715cff55aea77c5821add7108baad4908bf9b695c",
+  "mhfsdtSha256": "1d1e8b417344916c20fa8ebc6eeb8aba1ea7d5efd80b9db3f0556a7a1fe53222",
+  "mhfsdt": "the game client's dat/mhfsdt.bin (not in our patch)",
+  "tools": "hvmhfz_re bb7b76e tools/weapons (weapons.py, moves.py, styles.py)",
+  "script": "dev/make-weapons-data.py"
+ },
+ "types": [
+  {
+   "slug": "great-sword",
+   "name": "Great Sword",
+   "short": "GS",
+   "class": 0,
+   "kind": "melee",
+   "displayFactor": 480,
+   "weapons": 1780,
+   "moves": 34
+  },
+  {
+   "slug": "heavy-bowgun",
+   "name": "Heavy Bowgun",
+   "short": "HBG",
+   "class": 1,
+   "kind": "bowgun",
+   "displayFactor": 120,
+   "weapons": 808,
+   "moves": 57
+  },
+  {
+   "slug": "hammer",
+   "name": "Hammer",
+   "short": "HA",
+   "class": 2,
+   "kind": "melee",
+   "displayFactor": 520,
+   "weapons": 1565,
+   "moves": 30
+  },
+  {
+   "slug": "lance",
+   "name": "Lance",
+   "short": "LA",
+   "class": 3,
+   "kind": "melee",
+   "displayFactor": 230,
+   "weapons": 1416,
+   "moves": 19
+  },
+  {
+   "slug": "sword-and-shield",
+   "name": "Sword and Shield",
+   "short": "SnS",
+   "class": 4,
+   "kind": "melee",
+   "displayFactor": 140,
+   "weapons": 1841,
+   "moves": 25
+  },
+  {
+   "slug": "light-bowgun",
+   "name": "Light Bowgun",
+   "short": "LBG",
+   "class": 5,
+   "kind": "bowgun",
+   "displayFactor": 120,
+   "weapons": 828,
+   "moves": 58
+  },
+  {
+   "slug": "dual-swords",
+   "name": "Dual Swords",
+   "short": "DS",
+   "class": 6,
+   "kind": "melee",
+   "displayFactor": 140,
+   "weapons": 1661,
+   "moves": 59
+  },
+  {
+   "slug": "long-sword",
+   "name": "Long Sword",
+   "short": "LS",
+   "class": 7,
+   "kind": "melee",
+   "displayFactor": 480,
+   "weapons": 1624,
+   "moves": 40
+  },
+  {
+   "slug": "hunting-horn",
+   "name": "Hunting Horn",
+   "short": "HH",
+   "class": 8,
+   "kind": "melee",
+   "displayFactor": 520,
+   "weapons": 1255,
+   "moves": 14
+  },
+  {
+   "slug": "gunlance",
+   "name": "Gunlance",
+   "short": "GL",
+   "class": 9,
+   "kind": "melee",
+   "displayFactor": 230,
+   "weapons": 1239,
+   "moves": 22
+  },
+  {
+   "slug": "bow",
+   "name": "Bow",
+   "short": "BW",
+   "class": 10,
+   "kind": "bow",
+   "displayFactor": 120,
+   "weapons": 1306,
+   "moves": 22
+  },
+  {
+   "slug": "tonfa",
+   "name": "Tonfa",
+   "short": "TO",
+   "class": 11,
+   "kind": "melee",
+   "displayFactor": 180,
+   "weapons": 330,
+   "moves": 116
+  },
+  {
+   "slug": "switch-axe-f",
+   "name": "Switch Axe F",
+   "short": "SAF",
+   "class": 12,
+   "kind": "melee",
+   "displayFactor": 540,
+   "weapons": 287,
+   "moves": 85
+  },
+  {
+   "slug": "magnet-spike",
+   "name": "Magnet Spike",
+   "short": "MS",
+   "class": 13,
+   "kind": "melee",
+   "displayFactor": 540,
+   "weapons": 134,
+   "moves": 58
+  }
+ ],
+ "colours": [
+  "Red",
+  "Orange",
+  "Yellow",
+  "Green",
+  "Blue",
+  "White",
+  "Purple",
+  "Sky"
+ ],
+ "colourRgb": [
+  "#c50f3a",
+  "#e85218",
+  "#f3c832",
+  "#5ed300",
+  "#3068ee",
+  "#f0f0f0",
+  "#de7aff",
+  "#86f4f4"
+ ],
+ "sharpMult": [
+  [
+   0.6,
+   0.6,
+   0.5
+  ],
+  [
+   0.85,
+   0.85,
+   0.75
+  ],
+  [
+   1.1,
+   1.1,
+   1.0
+  ],
+  [
+   1.325,
+   1.325,
+   1.125
+  ],
+  [
+   1.45,
+   1.45,
+   1.25
+  ],
+  [
+   1.6,
+   1.6,
+   2.0
+  ],
+  [
+   1.7,
+   1.7,
+   2.2
+  ],
+  [
+   1.8,
+   1.8,
+   2.5
+  ]
+ ],
+ "constants": {
+  "critBase": 1.25,
+  "critStarvingWolf": 1.350000023841858,
+  "critNegative": 0.75,
+  "ceaseless": [
+   0.0,
+   0.1,
+   0.15,
+   0.2
+  ],
+  "critEye": [
+   10,
+   20,
+   30,
+   40,
+   50
+  ],
+  "affinityCap": 100,
+  "attackCap": 3000,
+  "tech": {
+   "1": 0.8,
+   "2": 1.0,
+   "3": 1.1,
+   "4": 1.2,
+   "snsLevel3": 1.2,
+   "snsLevel4": 1.3,
+   "msLevel4": 1.03
+  },
+  "adrenaline": 1.5,
+  "worry": 0.7,
+  "demon": [
+   1.0,
+   1.05,
+   1.1,
+   1.15,
+   1.2
+  ],
+  "spiritNum": 99,
+  "spiritDen": 80,
+  "fencing": 1.2,
+  "minCritSharpness": 3
+ },
+ "skills": {
+  "critEye": [
+   "Critical Eye +1",
+   "Critical Eye +2",
+   "Critical Eye +3",
+   "Critical Eye +4",
+   "Critical Eye +5"
+  ],
+  "starvingWolf": "Starving Wolf+2",
+  "ceaseless": "Ceaseless",
+  "fencing": "Fencing+2",
+  "chargeUp": [
+   "Charge Attack Up+1",
+   "Charge Attack Up+2"
+  ],
+  "adrenaline": "Adrenaline+2",
+  "worry": "Worry"
+ },
+ "notes": [
+  "Rarity is the record's low 4 bits + 1 (the game's RARE number; the +1 is a guess).",
+  "Critical Eye +1..+5 add 10..50 affinity (the client's skill descriptions).",
+  "Rounding inside the attack build-up is not mapped; the calculator truncates after each multiplier.",
+  "The hit's T factor (docs/weapons.md section 5) is taken as 1.0: which hit class a move has is open.",
+  "Fencing+2's x1.2 is applied after the crit, as the hit caller does per hit; their order is not mapped."
+ ]
+}

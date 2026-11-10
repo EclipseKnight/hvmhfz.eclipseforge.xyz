@@ -16,6 +16,7 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile; `?name=` opens the one hunter of that exact name (else the list, searching), for pages the API gives no character id; `?q=` opens the list searching for a name. |
 | `/leaderboards.html` | Timed hunt boards: top hunters, top guilds (hunts by current members) and most hunted monsters for this week, last week, this month, last month and all time (UTC; weeks start Monday), from `/api/public/leaderboards/hunts`; plus guild RP. `#<board>-<period>` picks one (`#hunters-week`, `#guilds-month`, `#monsters-all`, `#rp`); the old `#hr`, `#gr` and `#guilds` links still land on a board. Tied scores share a rank. |
 | `/catalog.html` | Item and equipment catalog with section chips and search. `?q=` opens it searching (monster drop tables link here). |
+| `/weapons.html` | Weapon database and damage calculator, static: pick a weapon type (chips), then a sortable, searchable list (element/status and rarity filters, 100 a page) with attack as shown and true, affinity, element, status, slots and the sharpness bar drawn (gunners: charge levels and arc shot, or recoil and reload). A weapon opens its stats and the move list of its type (MV per hit, element/status, KO, Charge Attack Up bonus; styles E/H/S/X; community move names marked "guess"). The calculator (blademasters) shows per move no crit, crit and expected damage from the game's formula (hvmhfz_re `docs/weapons.md` sections 4-5: crits do nothing below green sharpness), with Critical Eye, Starving Wolf+2, Ceaseless, Fencing+2, Charge Attack Up, weapon technique, Adrenaline+2/Worry, DS demon mode, LS spirit, hitzones typed in or taken from a monster page. `?type=<slug>&w=<id>` opens a weapon. Data: `data/weapons/` from `dev/make-weapons-data.py`. |
 | `/quests.html` | Quest catalog from `data/quests.json`: every quest file, search and filters, monster icons linking to their pages. `?q=` opens it searching, `?monster=<guide name>` filtered to one monster. |
 | `/quest.html?id=N` | One quest: category, area, objective, time, rewards money, monsters (each to its page), description, tracked runs. |
 | `/worlds.html` | Live world status, the live board (who is online, in town or on a quest and which quest, and who is questing together, from `/api/public/activity`; each name links to its hunter profile by `charId`, or to the Hunters page searching for it when the answer has no `charId`) and server wide hunt totals, refreshed every 30 seconds. |
@@ -45,6 +46,7 @@ guilds.html           guild directory and detail
 hunters.html          hunter directory and profile
 leaderboards.html     timed hunt leaderboards and guild RP
 catalog.html          item and equipment catalog
+weapons.html          weapon database and damage calculator (data/weapons/, js/weapons.js, js/weapons-calc.js)
 worlds.html           world status, live board and hunt totals
 play.html            Play: Windows, Linux / Steam Deck and character transfer checklists
 guide-windows.html    redirect to /play.html#windows (old Windows guide)
@@ -114,6 +116,8 @@ js/admin-content.js   admin panel Content tab: the event content editors (/api/a
 js/admin-patches.js   admin panel Users tab: client patch per character and the current / older / unknown count (GET /api/admin/users, data/patch-versions.json); its helpers also run under node
 js/tournaments.js     Tournaments page: Speedrun Cup standings and the VS Bracket; its helpers also run under node
 js/catalog.js         catalog browsing
+js/weapons.js         weapons page: list, weapon detail with moves, calculator form and monster hitzone presets
+js/weapons-calc.js    the damage formula (one melee hit as the client computes it, in single-precision floats); browser and Node
 js/monster-links.js   a monster's field guide link from the server's id or name or the guide's name (data/monsters/index.json); used by the quest pages, leaderboards, hunters, account and worlds; also runs under node
 js/worlds.js          world status polling
 js/activity.js        live board on the Worlds page (/api/public/activity); its pure part also runs under node
@@ -135,6 +139,8 @@ dev/check-road-summary.js  checks js/road-summary.js on a small made-up Road (no
 dev/check-road-zenith.js  checks the Road builder's Zenith forms in headless Chromium against a fake API on a made-up Road (NODE_PATH=/root/work/pw-tools/node_modules)
 dev/make-road-data.py writes the Road tables into road-data.html from decoded Road files (rengoku-build decode)
 dev/check-road-data.py checks dev/make-road-data.py on two small made-up Roads (python3 dev/check-road-data.py)
+dev/make-weapons-data.py writes data/weapons/*.json and dev/weapons-cases.json from a client patch zip (mhfdat.bin, mhfpac.bin) and the client's mhfsdt.bin with the hvmhfz_re tools (tools/weapons, build/unpack_cli); run it again when a patch changes dat/mhfdat.bin
+dev/check-weapons.js checks js/weapons-calc.js against the moves.py reference cases (24), the weapon data, and with NODE_PATH as above the page in headless Chromium (SHOTS=<dir> also saves desktop and phone screenshots)
 dev/check-road-rewards.js checks js/road-rewards.js on made-up reward rows, with and without boards
 dev/site-shell.py     writes the skip link, nav, breadcrumbs and footer into every page from dev/shell/ (nav.html, footer.html, pages.json)
 dev/check-site.py     checks that every page is in sync with dev/shell/, has the skip link and the shared scripts, then runs dev/check-nav.py
@@ -159,6 +165,7 @@ dev/check-quest-fields.js checks data/quest-fields.json against the API codec, j
 dev/check-exact-links.js checks in headless Chromium, against a fake API with and without the ids API 5b6d085 added, that hunter and guild names link by id (else by name) and that a refused quest upload or Road draft save shows the API's message (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-exact-links.js)
 dev/check-play.js     checks play.html and js/play.js in headless Chromium: three checklists, ticks kept across reloads, copy buttons, hidden slots, home page links, the client patch versions (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-play.js)
 data/patch-versions.json  client patch versions, newest first: version, release time (UTC), sha256, size, files, what changed, known problem, changelog link, download, current
+data/weapons/          index.json (source patch and sha256s, types, sharpness multipliers and colours, formula constants, skill names from the client's text, open points) and one file per weapon type (weapons as rows of `fields`, the sharpness bars they use, technique skills, moves, Charge Attack Up list, Fencing+2 records); written by dev/make-weapons-data.py
 dev/check-patch-versions.py checks data/patch-versions.json: versions in order without gaps, one current (the newest), changelog ids that exist, each version's own download (python3 dev/check-patch-versions.py [--backups /root/backups/client-patch])
 data/patch-files.json  sha256 of the key game files (mhf.exe, mhfo-hd.dll, mhfo.dll, dat/mhfdat.bin, dat/mhfpac.bin, dat/mhfinf.bin, hvmods.dll) inside each client patch zip, by version (pre-releases as 1.21-pre3); the API's Diagnostics upload compares a player's hvdiag.txt with it. Rewrite it after every release: python3 dev/make-patch-files.py --backups /root/backups/client-patch (check only: --check; it fails while a version in patch-versions.json has no entry)
 dev/check-diag.js     checks the account page's Diagnostics box (js/account-diag.js: help, upload of the file as it is, the answer, refusals, 256 KB, 375 px) and the admin page's Diagnostics tab and Users tab Logins button (js/admin-diag.js) in headless Chromium against a fake API (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-diag.js)
@@ -249,7 +256,7 @@ load it. It keeps everything else on the page (head, main, scripts).
 - Nav, same on every page: five menus and the account button. Labels use the game's and the Discord bot's
   own words (Worlds as the bot's `/worlds`, Hunting Road and Road).
   - **Guides:** Play, Frontier guide.
-  - **Database:** Monsters, Quests, Catalog, Set builder, Quest builder.
+  - **Database:** Monsters, Quests, Catalog, Weapons, Set builder, Quest builder.
   - **Hunting Road:** Rotation and vote, Road builder, Past winners, Road data, Roads in game (`guide-roads.html`), Sky Corridor.
   - **Community:** Hunters, Guilds, Leaderboards, Discord.
   - **Server:** Worlds, Events, Changelog, Report a problem.
@@ -264,7 +271,7 @@ load it. It keeps everything else on the page (head, main, scripts).
   privacy, admin and API mark nothing, and a monster's page marks Monsters. On a wide screen a menu opens on hover, or on click and
   keyboard (`js/nav.js`). Below 1160px the bar folds behind the Menu button and lists every group open.
   Both guides also switch between Windows and Linux at the top.
-- Width: data pages (monsters, monster, catalog, hunters, guilds, events, worlds, account, set builder) add
+- Width: data pages (monsters, monster, catalog, weapons, hunters, guilds, events, worlds, account, set builder) add
   `wide` to their `main` and use the screen up to `--wrap-wide` (1760px); reading pages (guides, changelog, report)
   keep `--wrap` (1120px). Below 1340px the nav folds behind the Menu button.
 - Each page also has the skip link (`<a class="skip-link" href="#content">`), a `main` with `id="content"`,
