@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Balance changes · Hunsterverse</title>
+    <meta name="description" content="The server's balance changes to weapons and moves: what changed from the game's own values, and why, version by version." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Balance changes · Hunsterverse" />
+    <meta property="og:description" content="The server's balance changes to weapons and moves: what changed from the game's own values, and why, version by version." />
+    <meta property="og:url" content="https://hvmhfz.eclipseforge.xyz/balance.html" />
+    <meta property="og:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/catalog.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Balance changes · Hunsterverse" />
+    <meta name="twitter:description" content="The server's balance changes to weapons and moves: what changed from the game's own values, and why, version by version." />
+    <meta name="twitter:image" content="https://hvmhfz.eclipseforge.xyz/assets/og/catalog.png" />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png?v=2" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
+    <link rel="stylesheet" href="/css/styles.css?v=3" />
+    <script src="/js/nav.js" defer></script>
+    <script src="/js/background.js" defer></script>
+    <script src="/js/consent.js" defer></script>
+  </head>
+
+  <body class="public-page">
+    <!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <div class="nav-status" data-state="loading">
+          <button type="button" class="nav-status-toggle" aria-expanded="false" aria-controls="nav-status-panel">
+            <span class="nav-status-dot" aria-hidden="true"></span><span class="nav-status-label">Server</span>
+          </button>
+          <div class="nav-status-panel" id="nav-status-panel" role="region" aria-label="Server status and how to connect" hidden>
+            <p class="nav-status-head"><span class="nav-status-dot" aria-hidden="true"></span><strong class="nav-status-title">Checking the server</strong></p>
+            <p class="nav-status-sub">Hunters online and which ports answer, checked every minute.</p>
+            <ul class="nav-status-ports"></ul>
+            <h3 class="nav-status-h">Connect in the launcher</h3>
+            <table class="nav-status-connect">
+              <tbody>
+                <tr><th scope="row">Host</th><td><code data-connect="host">129.213.54.221</code></td><td><button type="button" class="nav-copy" data-nav-copy="host">Copy</button></td></tr>
+                <tr><th scope="row">Launcher port</th><td><code data-connect="launcherPort">8080</code></td><td><button type="button" class="nav-copy" data-nav-copy="launcherPort">Copy</button></td></tr>
+                <tr><th scope="row">Game port</th><td><code data-connect="gamePort">53310</code></td><td><button type="button" class="nav-copy" data-nav-copy="gamePort">Copy</button></td></tr>
+                <tr><th scope="row">Server mode</th><td><code data-connect="mode">API</code></td><td></td></tr>
+                <tr><th scope="row">Version</th><td><code data-connect="version">ZZ</code></td><td></td></tr>
+              </tbody>
+            </table>
+            <p class="nav-status-note">API mode will not log in? Use launcher port <code data-connect="signPort">53312</code> with mode <code data-connect="fallbackMode">SignV1</code>.</p>
+            <p class="nav-status-links"><a href="/play.html">Setup guide</a><a href="/worlds.html">Worlds</a><a href="https://discord.gg/NQrvRdRwU8">Discord</a></p>
+          </div>
+        </div>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/play.html">Play</a>
+              <a class="navlink" href="/guide-frontier.html">Frontier guide</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/weapons.html">Weapons</a>
+              <a class="navlink" href="/balance.html" aria-current="page">Balance changes</a>
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+              <a class="navlink" href="/quest-editor.html">Quest builder</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-road">Hunting Road</button>
+            <div class="nav-menu" id="nav-road">
+              <a class="navlink" href="/road-vote.html">Rotation and vote</a>
+              <a class="navlink" href="/road.html">Road builder</a>
+              <a class="navlink" href="/road-history.html">Past winners</a>
+              <a class="navlink" href="/road-data.html">Road data</a>
+              <a class="navlink" href="/guide-roads.html">Roads in game</a>
+              <a class="navlink" href="/sky-corridor.html">Sky Corridor</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="https://discord.gg/NQrvRdRwU8">Discord</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/tournaments.html">Tournaments</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/report.html">Report a problem</a>
+            </div>
+          </div>
+          <a class="navlink nav-cta nav-account" href="/account.html">Sign in</a>
+        </nav>
+      </div>
+    </header>
+    <!-- /site-shell:header -->
+
+    <main id="content" class="wrap page wide balance-page">
+      <!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Database</li><li aria-current="page">Balance changes</li></ol></nav>
+      <!-- /site-shell:crumbs -->
+      <header class="page-head">
+        <h1>Balance changes</h1>
+        <p class="page-sub">What the server changes in the game's own weapon and move values, and why. The game server sends this table to every client when it logs in; each change links to its discussion. Names and the game's values come from the <a href="/weapons.html">weapon database</a>.</p>
+      </header>
+
+      <p class="wp-help" id="bal-loading">Loading the balance table…</p>
+      <section class="panel bal-off" id="bal-off" hidden>
+        <h2>Not published yet</h2>
+        <p>The balance table is not published on this site yet. Until it is, the game plays with its own values; the <a href="/weapons.html">weapon database</a> lists them.</p>
+      </section>
+      <p class="form-alert" id="bal-error" role="status" hidden>The balance table could not be loaded right now: the server did not answer. <button type="button" class="ghost-btn small" id="bal-retry">Try again</button></p>
+
+      <section class="panel" id="bal-current" aria-labelledby="bal-version" hidden>
+        <div class="panel-head"><h2 id="bal-version">Version</h2><span class="panel-note" id="bal-date"></span></div>
+        <p class="bal-note" id="bal-note" hidden></p>
+        <p class="bal-count muted" id="bal-count"></p>
+        <p class="bal-empty" id="bal-empty" hidden><strong>No balance changes: the game's own values.</strong> Every weapon and move plays as in the original game.</p>
+        <div id="bal-changes" hidden>
+          <p class="wp-help">Grouped by weapon type and hunting style. <strong>Game → new</strong> is the game's own value and the server's; a factor (×1.1) multiplies the game's value, rounded down. A ? is a value the weapon database does not list. Changes for all types or all styles apply first, the narrower ones after them.</p>
+          <div id="bal-groups"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="bal-history-panel" aria-labelledby="bal-history-h" hidden>
+        <div class="panel-head"><h2 id="bal-history-h">History</h2><span class="panel-note">Newest first</span></div>
+        <ol class="bal-history" id="bal-history"></ol>
+      </section>
+    </main>
+
+    <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <div class="foot-col">
+            <h2 class="foot-head">Guides</h2>
+            <a href="/play.html">Play</a>
+            <a href="/guide-frontier.html">Frontier guide</a>
+            <a href="/guide-roads.html">Roads in game</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Explore</h2>
+            <a href="/monsters.html">Monsters</a>
+            <a href="/quests.html">Quests</a>
+            <a href="/catalog.html">Catalog</a>
+            <a href="/leaderboards.html">Leaderboards</a>
+            <a href="/road-vote.html">Hunting Road</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Server</h2>
+            <a href="/changelog.html">Changelog</a>
+            <a href="/worlds.html">Worlds</a>
+            <a href="/report.html">Report a problem</a>
+            <a href="/api.html">API</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">About</h2>
+            <a href="/privacy.html">Privacy</a>
+                <a href="/bot-terms.html">Bot terms</a>
+            <a href="https://discord.gg/NQrvRdRwU8">Discord</a>
+            <a href="https://hunstermonter.net">hunstermonter.net</a>
+          </div>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+    <!-- /site-shell:footer -->
+
+    <script src="/js/balance-public.js?v=1"></script>
+    <script src="/js/search.js" defer></script>
+  </body>
+</html>

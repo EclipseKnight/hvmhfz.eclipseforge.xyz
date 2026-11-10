@@ -2124,3 +2124,40 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
   .wu-overall{grid-template-columns:1fr}
   .wu-overall-text{grid-column:1}
 }
+
+/* Balance changes page (balance.html, js/balance-public.js) */
+.bal-note{margin:0 0 6px;font-size:1rem;color:var(--ink)}
+.bal-count{margin:0 0 14px;font:600 .8rem/1.4 var(--font-ui)}
+.bal-empty{margin:4px 0 6px;padding:12px 14px;border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.55);color:var(--ink)}
+.bal-off h2{margin-top:0}
+.bal-group{margin:0 0 18px}
+.bal-group-h{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;margin:0 0 8px;font-size:1.02rem}
+.bal-group-h .weapon-icon{margin-right:0}
+.bal-style{font:600 .7rem/1.3 var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.bal-table td{vertical-align:top}
+.bal-table td.bal-what{white-space:normal;min-width:150px;font-weight:600}
+.bal-table td.bal-reason-cell{white-space:normal;min-width:220px;overflow-wrap:anywhere}
+.bal-change{font-variant-numeric:tabular-nums}
+.bal-from{color:var(--ink-soft)}
+.bal-ref{margin-left:8px;font:400 .75rem/1.2 var(--font-ui);color:var(--ink-soft)}
+.bal-arrow{color:var(--ink-soft)}
+.bal-history{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.bal-version{padding:10px 12px;border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.45)}
+.bal-version.is-current{border-color:var(--gold)}
+.bal-version p{margin:0}
+.bal-version-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
+.bal-version-note,.bal-version-meta{margin-top:4px !important;overflow-wrap:anywhere}
+.bal-badge{font:700 .62rem/1.2 var(--font-ui);letter-spacing:.12em;text-transform:uppercase;padding:2px 6px;border-radius:2px;
+  background:var(--gold);color:#1a110a}
+@media (max-width:640px){
+  /* one card per change on a phone, each cell under its own label */
+  .bal-group .table-wrap{overflow:visible;border:0;background:none}
+  .bal-table,.bal-table tbody,.bal-table tr,.bal-table td{display:block;width:100%}
+  .bal-table thead{display:none}
+  .bal-table tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2px 12px;margin:0 0 10px;padding:8px 10px;
+    border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.55)}
+  .bal-table td.bal-what,.bal-table td.bal-reason-cell{grid-column:1 / -1;min-width:0}
+  .bal-table td{padding:3px 0;border:0;white-space:normal;min-width:0}
+  .bal-table td[data-label]::before{content:attr(data-label);display:block;margin-bottom:2px;font:700 .64rem/1.2 var(--font-ui);
+    letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+}
