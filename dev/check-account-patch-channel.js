@@ -7,7 +7,7 @@
      their notes, and the one choice (Stable + one button per slot, Stable marked, the Test-land warning); there is
      no "Join the playtest" switch any more;
    - a plain user's first pre-release click shows the explanation (Test land only, nothing saved, no normal lands, switch
-     back, Playtester role kept 7 days) and sends nothing; "Cancel" sends nothing; "I understand" PUTs
+     back, Playtester role lost again on Stable) and sends nothing; "Cancel" sends nothing; "I understand" PUTs
      {"channel": "pre:<slot>", "confirm": true}, shows the API's message and marks the slot; the next pre-release click
      and Stable need no confirmation; a stale page whose PUT answers 409 shows the explanation too;
    - "No pre-release is out right now." with no slots (and no choice); "Could not load the pre-releases." when slotsAvailable is false;
@@ -15,6 +15,11 @@
      next to it; a click PUTs {"channel": "pre:<slot>"}, shows the API's message and moves the mark, and it
      survives a reload; a slot that is not published shows as "(not out: you get stable)";
    - a 403 refusal shows the API's message as an error and leaves the mark where it was;
+   - the box refreshes by itself (fake clock, no reload): the GET repeats every 20 seconds while the page is visible; when
+     the server put the account back on Stable the box shows Stable marked and the notice "Your account was switched back
+     to Stable (you joined a normal land on a pre-release patch)", and the Game options card is asked again; a choice
+     made by the player shows no notice; nothing is fetched while the page is hidden, and the box refreshes at once when
+     it is visible again or gets focus; a failing refresh keeps the box; a refresh leaves an open confirmation alone;
    - no horizontal overflow at 375px, no page errors.
 
      NODE_PATH=/root/work/pw-tools/node_modules node dev/check-account-patch-channel.js
@@ -60,10 +65,11 @@ const CHARS = [
 // mode: "user" (not eligible until it confirms a pre-release), "missing" (404), "broken" (500), "old" (API before slots), "tester";
 // state.slots, state.slotsAvailable; state.role (a confirmed player holds the Playtester role, default false);
 // state.stale (GET says no confirmation is needed, the PUT still asks for it)
-async function open(browser, base, mode, state, width) {
+async function open(browser, base, mode, state, width, clock) {
   const page = await browser.newPage({ viewport: { width: width || 1280, height: 900 }, locale: "en-US" });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
+  if (clock) await page.clock.install();
   await page.addInitScript((t) => localStorage.setItem("hvmhfz.token", t), TOKEN);
   await page.route("https://challenges.cloudflare.com/**", (route) => route.abort());
   await page.route("https://api.hvmhfz.eclipseforge.xyz/**", (route) => {
@@ -75,7 +81,9 @@ async function open(browser, base, mode, state, width) {
       if (mode === "missing") return reply(404, { message: "Not found" });
       if (mode === "broken") return reply(500, { message: "boom" });
       if (mode === "old" && req.method() === "GET") return reply(200, { channel: "pre", eligible: true });
+      if (req.method() === "GET" && state.fail === true) return reply(500, { message: "boom" });
       if (req.method() === "GET") {
+        state.gets = (state.gets || 0) + 1;
         const slot = state.channel.startsWith("pre:") ? state.channel.slice(4) : null;
         return reply(200, { channel: state.channel, slot, eligible: mode === "tester" || state.role === true,
           confirmationRequired: !(mode === "tester" || state.role === true || state.stale === true), slotsAvailable: state.slotsAvailable !== false,
@@ -95,6 +103,7 @@ async function open(browser, base, mode, state, width) {
       }
     }
     if (p === "/api/account") return reply(200, { name: "author", roles: ["ROLE_USER"], characters: 0, lastLogin: null });
+    if (p === "/api/account/qol") state.qolGets = (state.qolGets || 0) + 1;
     if (p === "/api/account/qol") return reply(200, { features: [], flags: 0, takesEffect: "next login" });
     if (p.startsWith("/api/public/")) return reply(200, []);
     return reply(200, p.endsWith("/distributions") ? { global: [], targeted: [] } : []);
@@ -149,7 +158,7 @@ async function run(browser, base) {
     check("explanation shown, nothing sent", await page.isVisible("#patch-confirm") && st.puts.length === 0 && st.channel === "stable", J(st.puts));
     const text = await page.textContent("#patch-confirm");
     check("explanation text", ["only on the Test land", "nothing you do there is saved", "cannot play on the normal lands", "Switch back to Stable any time",
-      "the server switches you back", "Playtester", "7 days after you last use a pre-release"].every((t) => text.includes(t)), text);
+      "the server switches you back", "Playtester", "You lose that again as soon as you are back on Stable"].every((t) => text.includes(t)), text);
     check("buttons", (await page.textContent("#patch-confirm-ok")) === "I understand" && (await page.textContent("#patch-confirm-cancel")) === "Cancel");
     check("mark still on stable while asking", J(await marked(page)) === J(["stable"]));
     await page.click("#patch-confirm-cancel");
@@ -257,6 +266,82 @@ async function run(browser, base) {
     check("unpublished slot shown", J(gone) === J(["ghost (not out: you get stable)"]), J(gone));
     check("unpublished slot marked", J(await marked(o.page)) === J(["pre:ghost"]));
     await o.page.close();
+  }
+
+  // The box refreshes by itself, without a reload. A fake clock drives the 20 second poll.
+  {
+    const st = { channel: "pre:mods", puts: [], slots: SLOTS, role: true };
+    const { page, errors } = await open(browser, base, "user", st, 1280, true);
+    await page.evaluate(() => { window.__sameDocument = 1; });
+    const SWITCHED = "Your account was switched back to Stable (you joined a normal land on a pre-release patch).";
+    check("starts on the pre-release, no notice", J(await marked(page)) === J(["pre:mods"]) && !(await page.isVisible("#patch-switched-notice")));
+    const g0 = st.gets, q0 = st.qolGets;
+    await page.clock.runFor(19000);
+    check("no refresh before 20 seconds", st.gets === g0, st.gets + " vs " + g0);
+    await page.clock.runFor(1500);
+    await page.waitForTimeout(300);
+    check("refresh after 20 seconds", st.gets === g0 + 1, st.gets + " vs " + g0);
+    check("same channel: no notice, Game options not reloaded", !(await page.isVisible("#patch-switched-notice")) && st.qolGets === q0, st.qolGets + " vs " + q0);
+
+    // The game server puts the account back on Stable (the role goes with it).
+    st.channel = "stable"; st.role = false;
+    await page.clock.runFor(20000);
+    await page.waitForFunction(() => !document.getElementById("patch-switched-notice").hidden, null, { timeout: 5000 }).catch(() => {});
+    check("notice shown", (await page.textContent("#patch-switched-notice")) === SWITCHED, await page.textContent("#patch-switched-notice"));
+    check("Stable marked without a reload", J(await marked(page)) === J(["stable"]) && (await page.evaluate(() => window.__sameDocument)) === 1);
+    check("Game options card asked again", st.qolGets === q0 + 1, st.qolGets + " vs " + q0);
+    // Not eligible any more: the next pre-release click asks again.
+    await page.click('[data-channel="pre:mods"]');
+    check("the next pre-release asks for the confirmation again", await page.isVisible("#patch-confirm") && st.puts.length === 0, J(st.puts));
+    // A refresh leaves the open confirmation alone.
+    await page.clock.runFor(20000);
+    await page.waitForTimeout(300);
+    check("refresh leaves an open confirmation alone", await page.isVisible("#patch-confirm"));
+    await page.click("#patch-confirm-cancel");
+
+    // A choice made here shows no notice and tells the card.
+    st.channel = "stable"; st.role = true;
+    const q1 = st.qolGets;
+    await page.click('[data-channel="pre:mods"]');
+    await page.click("#patch-confirm-ok"); // the page still knows the role is gone
+    await page.waitForFunction(() => /Pre-release mods on/.test(document.getElementById("patch-channel-note").textContent), null, { timeout: 5000 }).catch(() => {});
+    check("own choice: no notice, card reloaded", !(await page.isVisible("#patch-switched-notice")) && st.qolGets === q1 + 1, st.qolGets + " vs " + q1);
+    await page.click('[data-channel="stable"]');
+    await page.waitForFunction(() => /Stable patch on/.test(document.getElementById("patch-channel-note").textContent), null, { timeout: 5000 }).catch(() => {});
+    await page.clock.runFor(20000);
+    await page.waitForTimeout(300);
+    check("own switch to Stable shows no notice", !(await page.isVisible("#patch-switched-notice")));
+
+    // Hidden: nothing is fetched; visible again: refresh at once.
+    const hide = (hidden) => page.evaluate((h) => {
+      Object.defineProperty(document, "hidden", { configurable: true, get: () => h });
+      document.dispatchEvent(new Event("visibilitychange"));
+    }, hidden);
+    await hide(true);
+    await page.waitForTimeout(200);
+    const gh = st.gets;
+    await page.clock.runFor(70000);
+    await page.waitForTimeout(300);
+    check("nothing fetched while hidden", st.gets === gh, st.gets + " vs " + gh);
+    st.channel = "pre:balance";
+    await hide(false);
+    await page.waitForFunction(() => document.querySelector('#patch-channel-choices [data-channel="pre:balance"].is-on'), null, { timeout: 5000 }).catch(() => {});
+    check("visible again: refresh at once", st.gets === gh + 1 && J(await marked(page)) === J(["pre:balance"]), st.gets + " vs " + gh + " " + J(await marked(page)));
+    await page.clock.runFor(20000);
+    await page.waitForTimeout(300);
+    check("polling resumes", st.gets === gh + 2, st.gets + " vs " + gh);
+    st.channel = "pre:mods";
+    await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+    await page.waitForFunction(() => document.querySelector('#patch-channel-choices [data-channel="pre:mods"].is-on'), null, { timeout: 5000 }).catch(() => {});
+    check("focus refreshes", st.gets === gh + 3 && J(await marked(page)) === J(["pre:mods"]), st.gets + " vs " + gh);
+
+    // A failing refresh keeps the box as it is.
+    st.fail = true;
+    await page.clock.runFor(20000);
+    await page.waitForTimeout(300);
+    check("failing refresh keeps the box", await page.isVisible("#patch-channel-panel") && J(await marked(page)) === J(["pre:mods"]));
+    check("no page errors (refresh)", !errors.length, errors.join("; "));
+    await page.close();
   }
 
   // 375px: nothing passes the screen (tester, long notes; the page's own tab strip scrolls sideways, so only the box is measured).

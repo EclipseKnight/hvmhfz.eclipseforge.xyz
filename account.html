@@ -483,12 +483,18 @@
           <div id="qol-list" class="qol-list" aria-live="polite"><span class="skeleton-line w60"></span></div>
           <div id="qol-keys" class="qol-keys" hidden></div>
           <div id="qol-viewer" class="qol-keys" hidden></div>
+          <div id="qol-pre" class="qol-keys qol-pre" hidden>
+            <h3>Being tested: pre-release only</h3>
+            <p class="note-text" id="qol-pre-note"></p>
+            <div id="qol-pre-list" class="qol-list"></div>
+          </div>
           <p class="note-text" id="qol-note" aria-live="polite"></p>
         </section>
 
         <section class="panel" id="patch-channel-panel" hidden>
           <div class="panel-head"><h2>Client patch</h2></div>
           <p class="form-alert" id="patch-channel-alert" hidden></p>
+          <p class="note-text patch-switched" id="patch-switched-notice" role="status" hidden></p>
           <h3 class="patch-sub">Your characters</h3>
           <ul class="patch-chars" id="patch-chars"></ul>
           <h3 class="patch-sub">Pre-releases</h3>
@@ -502,7 +508,7 @@
               <ul>
                 <li>A pre-release patch plays only on the Test land, and nothing you do there is saved.</li>
                 <li>You cannot play on the normal lands with it. Switch back to Stable any time; if you try a normal land, the server switches you back for you.</li>
-                <li>Choosing a pre-release makes you a Playtester (the playtest feedback channel on Discord opens for you). You keep that for 7 days after you last use a pre-release.</li>
+                <li>Choosing a pre-release makes you a Playtester (the playtest feedback channel on Discord opens for you). You lose that again as soon as you are back on Stable.</li>
               </ul>
               <div class="patch-channel-choices">
                 <button type="button" class="ghost-btn small" id="patch-confirm-ok">I understand</button>
@@ -574,8 +580,8 @@
     <script src="/js/monster-links.js"></script>
     <script src="/js/questlog.js?v=2"></script>
     <script src="/js/road-preference.js?v=1"></script>
-    <script src="/js/account-qol.js?v=3"></script>
-    <script src="/js/account-patch-channel.js?v=4"></script>
+    <script src="/js/account-qol.js?v=4"></script>
+    <script src="/js/account-patch-channel.js?v=5"></script>
     <script src="/js/quest-submissions.js?v=2"></script>
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>

@@ -9,8 +9,13 @@
      Mezeporta launcher reads the choice at its next login. Hidden when no pre-release is out and the account is on Stable;
    - the first pre-release choice of a player who is not staff and not a playtester yet (confirmationRequired) first shows
      the explanation with "I understand" and then sends the same PUT with confirm: true, which gives the Playtester role
-     and sets the channel in one call (the role goes 7 days after the last pre-release use; no switch for it any more).
+     and sets the channel in one call (the role drops at once when the account is on Stable again).
      A 409 {confirmationRequired} answer shows the same explanation.
+   - the box refreshes by itself, without reloading the page: the GET is repeated every 20 seconds while the page is
+     visible (and when the tab becomes visible or gets focus again; nothing runs while it is hidden). When the channel
+     changed without a click here (the game server put the account back on Stable because the test client tried a
+     normal land) a notice says so; every channel change, ours or the server's, fires "hvmhfz:patch-channel" on
+     document ({detail: {channel}}) so the Game options card reloads its enabled state.
    All API text goes in with textContent. */
 (function () {
   "use strict";
@@ -28,6 +33,12 @@
   var confirmNode = document.getElementById("patch-confirm");
   var confirmOk = document.getElementById("patch-confirm-ok");
   var confirmCancel = document.getElementById("patch-confirm-cancel");
+  var switchedNode = document.getElementById("patch-switched-notice");
+  var POLL_MS = 20000;
+  // The channel the box last showed or saved ("stable" or "pre:<slot>"); null before the first answer.
+  var known = null;
+  var saving = false;
+  var timer = null;
   // True while the account has not confirmed the pre-release explanation yet; pending: the slot waiting for "I understand".
   var needsConfirm = false;
   var pending = null;
@@ -180,7 +191,19 @@
   confirmOk.addEventListener("click", function () { var c = pending; hideConfirm(); if (c) save(c, true); });
   confirmCancel.addEventListener("click", function () { hideConfirm(); say(""); });
 
+  function channelOf(data) { return data.slot ? "pre:" + data.slot : "stable"; }
+
+  // Remembers the channel and tells the Game options card when it changed.
+  function changed(channel) {
+    var first = known === null;
+    if (known === channel) return;
+    known = channel;
+    if (first) return; // the card loads its own first answer
+    try { document.dispatchEvent(new CustomEvent("hvmhfz:patch-channel", { detail: { channel: channel } })); } catch (e) { /* old browser */ }
+  }
+
   function save(channel, confirmed) {
+    saving = true;
     busy(true);
     say("Saving.");
     fetch(API + "/api/account/patch-channel", {
@@ -190,6 +213,7 @@
     }).then(function (r) {
       return r.json().catch(function () { return null; }).then(function (data) { return { ok: r.ok, status: r.status, data: data }; });
     }).then(function (res) {
+      saving = false;
       busy(false);
       if (res.status === 409 && res.data && res.data.confirmationRequired) {
         needsConfirm = true;
@@ -202,8 +226,12 @@
       }
       if (confirmed) needsConfirm = false;
       if (res.data && res.data.channel) mark(res.data.channel);
+      if (res.data && res.data.eligible === false) needsConfirm = true;
+      switchedNode.hidden = true;
       say((res.data && res.data.message) || "Saved.");
+      if (res.data && res.data.channel) changed(res.data.channel);
     }).catch(function () {
+      saving = false;
       busy(false);
       say("Could not save. Try again in a moment.", true);
     });
@@ -217,19 +245,61 @@
       });
   }
 
-  function load() {
+  var SWITCHED = "Your account was switched back to Stable (you joined a normal land on a pre-release patch).";
+
+  function show(data) {
+    renderCharacters(data);
+    renderSlots(data);
+    // The choice is for everyone; with no pre-release out (and none chosen) there is nothing to choose.
+    switchNode.hidden = !(data.slots.length || data.slot);
+    if (!switchNode.hidden) renderSwitch(data);
+    panel.hidden = false;
+  }
+
+  // refresh: a repeat of the GET (poll, focus, visible again): it leaves a confirmation or a save in progress alone and
+  // keeps the box as it is when the call fails.
+  function load(refresh) {
     if (!token()) return;
     loadChannel().then(function (data) {
       // An API from before slots has no "slots": its answer would show a wrong picture, so the box stays hidden.
       if (!data || !Array.isArray(data.slots)) throw new Error("no slots");
-      renderCharacters(data);
-      renderSlots(data);
-      // The choice is for everyone; with no pre-release out (and none chosen) there is nothing to choose.
-      switchNode.hidden = !(data.slots.length || data.slot);
-      if (!switchNode.hidden) renderSwitch(data);
-      panel.hidden = false;
-    }).catch(function () { panel.hidden = true; /* older API or not signed in: the box stays hidden */ });
+      var channel = channelOf(data);
+      if (refresh && (saving || pending)) return;
+      var before = known;
+      show(data);
+      if (before !== null && before !== channel) {
+        if (before !== "stable" && channel === "stable") {
+          switchedNode.textContent = SWITCHED;
+          switchedNode.hidden = false;
+        } else {
+          switchedNode.hidden = true;
+        }
+      }
+      changed(channel);
+    }).catch(function () {
+      if (!refresh) panel.hidden = true; /* older API or not signed in: the box stays hidden */
+    });
   }
 
-  load();
+  function stop() {
+    if (timer !== null) { clearInterval(timer); timer = null; }
+  }
+
+  function start() {
+    stop();
+    if (!token() || document.hidden) return;
+    timer = setInterval(function () { load(true); }, POLL_MS);
+  }
+
+  function wake() {
+    if (document.hidden) { stop(); return; }
+    load(true);
+    start();
+  }
+
+  document.addEventListener("visibilitychange", wake);
+  window.addEventListener("focus", function () { if (!document.hidden) wake(); });
+
+  load(false);
+  start();
 })();

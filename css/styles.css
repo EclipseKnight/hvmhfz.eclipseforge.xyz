@@ -2024,3 +2024,8 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .road-test-steps li { margin: 0.25rem 0; }
 .callout.callout-warn { border: 1px solid #b4542a; border-left-width: 4px; background: rgba(180, 84, 42, 0.10); border-radius: 6px; padding: 0.6rem 0.9rem; margin: 0.6rem 0 0.8rem; }
 .callout.callout-warn p { margin: 0.3rem 0; }
+.qol-pre .qol-keys{margin-top:12px}
+.qol-item.is-locked,.qol-keys-group .qol-locked{opacity:.75}
+.qol-item.is-locked .qol-label{cursor:not-allowed}
+.qol-locked{font-style:italic}
+.patch-switched{margin:8px 0;padding:8px 10px;border:1px solid #8a6a24;border-radius:6px;background:rgba(183,138,51,.12);color:var(--ink);overflow-wrap:anywhere}

@@ -5,7 +5,14 @@
    cart or death, skip-wait key, five remote talk keys); "Save keys" sends PUT /api/account/qol/keys.
    When the feature list has "iframeViewer" and the answer has "viewer", a Viewer options part shows four checkboxes
    (iframe bar, iframe count, hitstop bar, hit indicator), a position and a size; "Save viewer options" sends all six
-   keys with PUT /api/account/qol/viewer. */
+   keys with PUT /api/account/qol/viewer.
+   A feature the API marks "preReleaseOnly" (its minPatch is above the current stable patch; it moves up by itself when
+   a stable release reaches it) is listed in its own section, "Being tested: pre-release only", with the slot name and
+   a note that it works only on a pre-release patch on the Test land; the Keys and Viewer options parts go into that
+   section when every feature they belong to is pre-release only. A feature with a "lockedMessage" (the account is on
+   Stable, or on a slot without it) is greyed out: its switch, key pickers or viewer options are disabled and the
+   message ("Switch to the pre-release (<slot>) to try these") is shown. The card reloads when the Client patch box
+   fires "hvmhfz:patch-channel" (the channel changed, by the player or by the game server). */
 (function () {
   "use strict";
   var API = "https://api.hvmhfz.eclipseforge.xyz";
@@ -16,7 +23,11 @@
   var alertNode = document.getElementById("qol-alert");
   var keysBox = document.getElementById("qol-keys");
   var viewerBox = document.getElementById("qol-viewer");
+  var preBox = document.getElementById("qol-pre");
+  var preNote = document.getElementById("qol-pre-note");
+  var preList = document.getElementById("qol-pre-list");
   if (!list) return;
+  var byId = {};   // the features of the last answer, by id
 
   function token() {
     try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; }
@@ -38,28 +49,77 @@
 
   var VIEWER_EVENT_RULE = "Turned off by itself in Speedrun Cup and VS Bracket quests. A cup time or VS result made while a viewer was showing does not count.";
 
+  function lockOf(id) { return byId[id] && byId[id].lockedMessage ? byId[id].lockedMessage : ""; }
+
+  function featureRow(f) {
+    var row = el("div", "qol-item");
+    var label = el("label", "qol-label");
+    var box = el("input");
+    box.type = "checkbox";
+    box.setAttribute("role", "switch");
+    box.id = "qol-" + f.id;
+    box.checked = !!f.enabled;
+    label.htmlFor = box.id;
+    label.appendChild(box);
+    label.appendChild(el("span", "qol-name", f.name));
+    row.appendChild(label);
+    row.appendChild(el("p", "note-text qol-desc", f.description));
+    if (f.minPatch) row.appendChild(el("p", "note-text qol-patch", "Needs client patch v" + f.minPatch + " or newer"));
+    if (f.revealsHiddenInfo) row.appendChild(el("p", "note-text qol-hidden", "Shows information the game normally hides"));
+    if (f.id === "iframeViewer") row.appendChild(el("p", "note-text qol-event", VIEWER_EVENT_RULE));
+    if (f.lockedMessage) {
+      box.disabled = true;
+      row.classList.add("is-locked");
+      row.appendChild(el("p", "note-text qol-locked", f.lockedMessage));
+    }
+    box.addEventListener("change", function () { save(f, box); });
+    return row;
+  }
+
   function render(data) {
     list.innerHTML = "";
-    (data.features || []).forEach(function (f) {
-      var row = el("div", "qol-item");
-      var label = el("label", "qol-label");
-      var box = el("input");
-      box.type = "checkbox";
-      box.setAttribute("role", "switch");
-      box.id = "qol-" + f.id;
-      box.checked = !!f.enabled;
-      label.htmlFor = box.id;
-      label.appendChild(box);
-      label.appendChild(el("span", "qol-name", f.name));
-      row.appendChild(label);
-      row.appendChild(el("p", "note-text qol-desc", f.description));
-      if (f.minPatch) row.appendChild(el("p", "note-text qol-patch", "Needs client patch v" + f.minPatch + " or newer"));
-      if (f.revealsHiddenInfo) row.appendChild(el("p", "note-text qol-hidden", "Shows information the game normally hides"));
-      if (f.id === "iframeViewer") row.appendChild(el("p", "note-text qol-event", VIEWER_EVENT_RULE));
-      box.addEventListener("change", function () { save(f, box); });
-      list.appendChild(row);
+    preList.innerHTML = "";
+    byId = {};
+    var features = data.features || [];
+    var slots = [];
+    features.forEach(function (f) {
+      byId[f.id] = f;
+      if (f.preReleaseOnly) {
+        preList.appendChild(featureRow(f));
+        if (f.preReleaseSlot && slots.indexOf(f.preReleaseSlot) < 0) slots.push(f.preReleaseSlot);
+      } else {
+        list.appendChild(featureRow(f));
+      }
     });
-    if (!(data.features || []).length) list.appendChild(el("p", "note-text", "No options are available yet."));
+    if (!features.length) list.appendChild(el("p", "note-text", "No options are available yet."));
+    preNote.textContent = (slots.length ? (slots.length > 1 ? "Slots: " : "Slot: ") + slots.join(", ") + ". " : "")
+      + "These work only on a pre-release patch on the Test land.";
+    place();
+  }
+
+  // The Keys and Viewer options parts sit in the pre-release section when every feature they belong to is pre-release only.
+  function inPre(ids) {
+    var any = false;
+    for (var i = 0; i < ids.length; i++) {
+      if (!byId[ids[i]]) continue;
+      if (!byId[ids[i]].preReleaseOnly) return false;
+      any = true;
+    }
+    return any;
+  }
+
+  function place() {
+    var anchor = preBox;
+    [[keysBox, ["quickRetire", "skipCompleteWait", "quickTalk"]], [viewerBox, ["iframeViewer"]]].forEach(function (p) {
+      if (inPre(p[1])) preBox.appendChild(p[0]);
+      else if (p[0].parentNode === preBox) anchor.parentNode.insertBefore(p[0], anchor);
+    });
+    // After a move back the two parts must keep their order: keys, then viewer.
+    if (keysBox.parentNode === viewerBox.parentNode && keysBox.compareDocumentPosition(viewerBox) & 2) {
+      keysBox.parentNode.insertBefore(keysBox, viewerBox);
+    }
+    preBox.hidden = !(preList.firstChild || (keysBox.parentNode === preBox && !keysBox.hidden)
+      || (viewerBox.parentNode === preBox && !viewerBox.hidden));
   }
 
   /* ---- Keys ---- */
@@ -136,7 +196,7 @@
   }
   document.addEventListener("keydown", onCaptureKey, true);
 
-  function picker(parent, label, get, set, hint) {
+  function picker(parent, label, get, set, hint, locked) {
     var row = el("div", "qol-key-row");
     var id = "qol-key-" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     row.appendChild(el("span", "qol-key-name", label));
@@ -162,6 +222,7 @@
       btn.textContent = "None";
       say("");
     });
+    if (locked) { btn.disabled = true; clear.disabled = true; }
     row.appendChild(btn);
     row.appendChild(clear);
     parent.appendChild(row);
@@ -184,8 +245,9 @@
     keysBox.hidden = false;
     keysBox.appendChild(el("h3", "", "Keys"));
 
+    var lock1 = lockOf("quickRetire"), lock2 = lockOf("skipCompleteWait"), lock3 = lockOf("quickTalk");
     var g1 = el("div", "qol-keys-group");
-    picker(g1, "Retire key", function () { return keyState.retire; }, function (v) { keyState.retire = v; });
+    picker(g1, "Retire key", function () { return keyState.retire; }, function (v) { keyState.retire = v; }, "", lock1);
     var modeRow = el("div", "field");
     var modeLabel = el("label", "", "Retire on death");
     modeLabel.htmlFor = "qol-retire-mode";
@@ -197,6 +259,7 @@
       mode.appendChild(opt);
     });
     mode.value = keyState.mode;
+    mode.disabled = !!lock1;
     modeRow.appendChild(modeLabel);
     modeRow.appendChild(mode);
     g1.appendChild(modeRow);
@@ -211,6 +274,7 @@
       carts.appendChild(co);
     }
     carts.value = String(keyState.carts);
+    carts.disabled = !!lock1;
     cartsRow.appendChild(cartsLabel);
     cartsRow.appendChild(carts);
     cartsRow.hidden = keyState.mode !== "cart";
@@ -220,19 +284,22 @@
       cartsRow.hidden = mode.value !== "cart";
     });
     carts.addEventListener("change", function () { keyState.carts = cartsValue(carts.value); });
+    if (lock1) g1.appendChild(el("p", "note-text qol-locked", lock1));
     keysBox.appendChild(g1);
 
     var g2 = el("div", "qol-keys-group");
-    picker(g2, "Skip-wait key", function () { return keyState.skip; }, function (v) { keyState.skip = v; }, "No key: always skip");
+    picker(g2, "Skip-wait key", function () { return keyState.skip; }, function (v) { keyState.skip = v; }, "No key: always skip", lock2);
+    if (lock2) g2.appendChild(el("p", "note-text qol-locked", lock2));
     keysBox.appendChild(g2);
 
     var g3 = el("div", "qol-keys-group");
     for (var t = 0; t < 5; t++) {
       (function (idx) {
-        picker(g3, "Remote talk key " + (idx + 1), function () { return keyState.talk[idx]; }, function (v) { keyState.talk[idx] = v; });
+        picker(g3, "Remote talk key " + (idx + 1), function () { return keyState.talk[idx]; }, function (v) { keyState.talk[idx] = v; }, "", lock3);
       })(t);
     }
     g3.appendChild(el("p", "note-text", "In the game, target the NPC or object and press Shift + the key to remember it (saved on that PC)"));
+    if (lock3) g3.appendChild(el("p", "note-text qol-locked", lock3));
     keysBox.appendChild(g3);
 
     var actions = el("div", "qol-keys-actions");
@@ -240,6 +307,7 @@
     saveBtn.type = "button";
     saveBtn.id = "qol-keys-save";
     saveBtn.addEventListener("click", function () { saveKeys(saveBtn); });
+    saveBtn.disabled = !!(lock1 && lock2 && lock3);
     actions.appendChild(saveBtn);
     keysBox.appendChild(actions);
   }
@@ -278,6 +346,7 @@
     var v = data.viewer;
     if (!has || !v || typeof v !== "object") { viewerBox.hidden = true; return; }
     viewerBox.hidden = false;
+    var viewerLock = lockOf("iframeViewer");
     viewerBox.appendChild(el("h3", "", "Viewer options"));
     viewerBox.appendChild(el("p", "note-text", "What the iframe viewer draws, where and how big. They apply while the Iframe viewer switch is on."));
     var boxes = {};
@@ -288,6 +357,7 @@
       box.type = "checkbox";
       box.id = "qol-viewer-" + b[0];
       box.checked = v[b[0]] !== false;
+      box.disabled = !!viewerLock;
       label.htmlFor = box.id;
       label.appendChild(box);
       label.appendChild(el("span", "qol-name", b[1]));
@@ -308,7 +378,11 @@
       body.size = size.value;
       saveViewer(saveBtn, body);
     });
+    position.disabled = !!viewerLock;
+    size.disabled = !!viewerLock;
+    saveBtn.disabled = !!viewerLock;
     actions.appendChild(saveBtn);
+    if (viewerLock) viewerBox.appendChild(el("p", "note-text qol-locked", viewerLock));
     viewerBox.appendChild(actions);
   }
 
@@ -332,6 +406,7 @@
       render(data);
       renderKeys(data.keys);
       renderViewer(data);
+      place();
       say("Viewer options saved. They take effect from your next login to the game.");
     }).catch(function (e) {
       btn.disabled = false;
@@ -398,6 +473,7 @@
       render(data);
       renderKeys(data.keys);
       renderViewer(data);
+      place();
       say("Keys saved. They take effect from your next login to the game.");
     }).catch(function (e) {
       btn.disabled = false;
@@ -415,20 +491,31 @@
       headers: { Authorization: "Bearer " + token(), "Content-Type": "application/json" },
       body: JSON.stringify(body)
     }).then(function (r) {
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
+      return r.json().catch(function () { return null; }).then(function (data) {
+        if (!r.ok) {
+          var err = new Error("HTTP " + r.status);
+          err.serverMessage = data && (data.message || data.error);
+          throw err;
+        }
+        return data;
+      });
     }).then(function (data) {
       render(data);
       say("Saved. " + feature.name + " is " + (box.checked ? "on" : "off") + " from your next login to the game.");
-    }).catch(function () {
+    }).catch(function (e) {
       box.checked = !box.checked;
       box.disabled = false;
-      say("Could not save. Try again in a moment.", true);
+      say(e.serverMessage || "Could not save. Try again in a moment.", true);
     });
   }
 
-  function load() {
-    if (!token()) { say("Sign in to change your game options."); list.innerHTML = ""; keysBox.hidden = true; viewerBox.hidden = true; return; }
+  // refresh: a reload after the channel changed; the card stays as it is when the call fails.
+  function load(refresh) {
+    if (!token()) {
+      say("Sign in to change your game options.");
+      list.innerHTML = ""; preList.innerHTML = ""; preBox.hidden = true; keysBox.hidden = true; viewerBox.hidden = true;
+      return;
+    }
     fetch(API + "/api/account/qol", { headers: { Authorization: "Bearer " + token() }, cache: "no-store" })
       .then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
@@ -437,14 +524,20 @@
         render(data);
         renderKeys(data.keys);
         renderViewer(data);
+        place();
       })
       .catch(function () {
+        if (refresh) return;
         list.innerHTML = "";
+        preList.innerHTML = "";
+        preBox.hidden = true;
         keysBox.hidden = true;
         viewerBox.hidden = true;
         say("Your game options could not be loaded right now.", true);
       });
   }
 
-  load();
+  document.addEventListener("hvmhfz:patch-channel", function () { load(true); });
+
+  load(false);
 })();
