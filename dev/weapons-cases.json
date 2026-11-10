@@ -7,7 +7,7 @@
   "mhfdatSha256": "84f8df96fbf4ec20b537eb1715cff55aea77c5821add7108baad4908bf9b695c",
   "mhfsdtSha256": "1d1e8b417344916c20fa8ebc6eeb8aba1ea7d5efd80b9db3f0556a7a1fe53222",
   "mhfsdt": "the game client's dat/mhfsdt.bin (not in our patch)",
-  "tools": "hvmhfz_re bb7b76e tools/weapons (weapons.py, moves.py, styles.py)",
+  "tools": "hvmhfz_re efc441e tools/weapons (weapons.py, moves.py, styles.py)",
   "script": "dev/make-weapons-data.py"
  },
  "cases": [

@@ -94,7 +94,8 @@
         base.push({ key: "special", label: { 8: "Notes", 9: "Shelling", 12: "Phial" }[doc.class] });
       }
     } else if (doc.kind === "bow") {
-      base.push({ key: "slots", label: "Slots", num: true }, { key: "charge", label: "Charge levels" },
+      base.push({ key: "element", label: "Element" },
+        { key: "slots", label: "Slots", num: true }, { key: "charge", label: "Charge levels" },
         { key: "arcShot", label: "Arc shot" });
     } else {
       base.push({ key: "slots", label: "Slots", num: true }, { key: "recoil", label: "Recoil", num: true },
@@ -324,6 +325,7 @@
         bar.appendChild(sharpBar(ends, true));
         bar.appendChild(el("p", "wp-help", "Bar row " + field(w, "sharpness") + ", gauge 0-400. Top colour: " + index.colours[maxLevel(ends)] + "."));
       } else if (doc.kind === "bow") {
+        stat(dl, "Element", elemText(w, "element"));
         stat(dl, "Charge levels", field(w, "charge"));
         stat(dl, "Arc shot", field(w, "arcShot"));
       } else {

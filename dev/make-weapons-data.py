@@ -115,7 +115,8 @@ def ranged_rows(rows, fac, cls, charge):
             continue
         base = [r["id"], r["name"], (r["rarity"] & 15) + 1, r["attack"], WEAPONS.shown_attack(r, fac),
                 r["affinity"], r["slots"], r["defense"]]
-        if cls == 10:
+        if cls == 10:   # bows: element at +0x21, value at +0x22 (weapons.py, a guess matched by names)
+            base += [WEAPONS.element_name(r.get("element", 0)), r.get("element_value", 0)]
             levels = charge.get(r["charge_row"], [])
             base += [" / ".join(levels), WEAPONS.ARC_SHOTS[r["arc_shot"]] if r["arc_shot"] < 4 else ""]
         else:
@@ -296,7 +297,7 @@ def main(argv):
         if cls in RANGED:
             doc["kind"] = "bow" if cls == 10 else "bowgun"
             doc["fields"] = ["id", "name", "rarity", "attack", "shown", "affinity", "slots", "defense"] + (
-                ["charge", "arcShot"] if cls == 10 else ["recoil", "reload"])
+                ["element", "elementValue", "charge", "arcShot"] if cls == 10 else ["recoil", "reload"])
             doc["weapons"] = ranged_rows(ranged, FACTORS, cls, charge)
         else:
             doc["kind"] = "melee"
