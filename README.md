@@ -204,7 +204,7 @@ dev/make-share-pages.py writes the share pages in s/ (see "Link previews"; --che
 dev/make-monster-data.py writes data/monsters/game/ (one file per monster id, index.json) and data/quests/rewards/ (quests by id ÷ 1000) from hvmhfz_re tools/monsters outputs (--src, default /root/work/monster-data; item names from hvmhfz_re data/item_sources.tsv); then run make-og.py and make-share-pages.py (monster cards and previews use it). Check: node dev/check-monster-pages.js
 dev/check-embeds.py   checks every page's and share page's preview tags and pictures (--serve: also fetches a sample as Discordbot from a local server and prints each preview)
 dev/check-share.js    checks the share pages' redirects and the Copy link button in headless Chromium (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-share.js)
-js/share.js           "Copy link" in the breadcrumbs of the monster, quest, item, weapon and changelog pages: copies the share page's address
+js/share.js           "Copy link" in the breadcrumbs of the monster, quest, item, weapon, changelog, hunter, guild and leaderboard pages: copies the share page's address (the API's share link for hunters, guilds and boards)
 s/                    share pages (generated, noindex): s/monster/, s/quest/, s/item/, s/weapon/, s/changelog/
 dev/make-hv-summary.py writes the comparison tables of guide-frontier-hunsterverse.html from the guide's notes (--check: one note per section, page up to date)
 CNAME                 hvmhfz.eclipseforge.xyz
@@ -512,8 +512,20 @@ so a weapon link previews as its type and still opens the weapon. The "Copy link
 these addresses; with no share page it copies the page's own address. Run `python3 dev/make-share-pages.py` after
 the data (`data/monsters`, `data/quests.json`, `data/items`, `data/weapons`) or the changelog change, and
 `python3 dev/make-og.py` after the monster or weapon data change; `python3 dev/check-embeds.py` says when s/ is
-out of date. Hunters, guilds and leaderboards come from the API, so their links keep the page's card: a preview
-of one hunter or guild needs a server that answers crawlers (a Cloudflare Worker or an API share endpoint).
+out of date. Hunters, guilds and leaderboards come from the API, so their share links are served by the API
+(its README, "Share links"): a small page with the preview tags and a card drawn for that hunter, guild or board,
+which then opens the page here. The Copy link button copies them, and so does the hunter profile's Copy profile
+link:
+
+| Page | Copy link copies |
+|---|---|
+| `/hunters.html?id=<id>` | `https://api.hvmhfz.eclipseforge.xyz/share/hunter/<id>` |
+| `/guilds.html?id=<id>` | `https://api.hvmhfz.eclipseforge.xyz/share/guild/<id>` |
+| `/leaderboards.html#<board>-<period>` (no hash: `hunters-week`) | `.../share/leaderboard/<board>/<period>` (hunters, guilds, monsters) |
+| `/leaderboards.html#rp` (and the old `#guilds`) | `.../share/leaderboard/rp` |
+| `/leaderboards.html#road`, `#road-solo` | `.../share/leaderboard/road/open`, `.../road/solo` (the live rotation only) |
+
+A past Road rotation and the hunter and guild lists copy the page's own address.
 
 ## Links
 

@@ -11,6 +11,10 @@ site root and every share page under s/ (dev/make-share-pages.py):
   - a public page has a picture of its own, not the plain brand card (GENERIC_OK lists the exceptions);
   - a share page sends people to a page and a thing that exist (monster, quest, item, weapon type,
     changelog day), and s/ is what dev/make-share-pages.py writes now.
+Hunters, guilds and leaderboards are API data: their pages here keep the page's card, and their share links
+are served by the API (https://api.hvmhfz.eclipseforge.xyz/share/hunter/<id>, /share/guild/<id>,
+/share/leaderboard/<board>[/<option>]; the API README's "Share links", tested by its ShareEndpointTests),
+so this script does not check them; dev/check-share.js checks that Copy link copies them.
 
     python3 dev/check-embeds.py           the checks above
     python3 dev/check-embeds.py --serve   also serves the site locally and fetches a sample of links the way
@@ -201,7 +205,9 @@ def serve_and_fetch(problems):
     first_item = min(int(p.stem) for p in (ROOT / "data" / "items").glob("*.json") if p.stem.isdigit())
     sample = ["/", "/play.html", "/guide-frontier-zenith.html", "/weapons.html", "/monster.html?m=akantor",
               "/s/monster/akantor.html", f"/s/quest/{first_quest}.html", f"/s/item/{first_item}.html",
-              "/s/weapon/lance.html?w=812", f"/s/changelog/{newest}.html#d-{newest}", "/hunters.html?id=1"]
+              "/s/weapon/lance.html?w=812", f"/s/changelog/{newest}.html#d-{newest}",
+              # API data: the page's own card here; the preview of one hunter is the API's /share/hunter/<id>
+              "/hunters.html?id=1"]
     handler = functools.partial(Quiet, directory=str(ROOT))
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
     threading.Thread(target=server.serve_forever, daemon=True).start()

@@ -8,6 +8,11 @@
      current slug's share page, a quest and an item theirs, the weapon page the type's share page with the
      open weapon, the changelog the day of its #d- anchor; an item without a share page (no sources) and
      the changelog without an anchor copy the page's own address;
+   - on the hunter, guild and leaderboard pages (API data) it copies the API's share link
+     (https://api.hvmhfz.eclipseforge.xyz/share/...; the API README's "Share links"): a hunter or guild by
+     id, the board in the hash (no hash: this week's top hunters; old #guilds: Guild RP), the live Road's
+     board; a past Road rotation and the hunter list copy the page's own address. The hunter profile's own
+     "Copy profile link" copies the hunter's share link too;
    - the button fits beside the breadcrumbs at 375 px.
 
      NODE_PATH=/root/work/pw-tools/node_modules node dev/check-share.js
@@ -80,7 +85,9 @@ async function main() {
     await button.click();
     await page.waitForFunction(() => document.querySelector(".share-copy").textContent === "Copied", null, { timeout: 5000 }).catch(() => {});
     const got = await page.evaluate(() => navigator.clipboard.readText());
-    check("Copy link on " + from + " copies " + want, got === base + want, "copied " + got);
+    // a want with its own scheme is an address elsewhere (the API's share links), else a path on this site
+    const full = /^https:/.test(want) ? want : base + want;
+    check("Copy link on " + from + " copies " + want, got === full, "copied " + got);
     if (width) {
       const fits = await page.evaluate(() => {
         const b = document.querySelector(".share-copy").getBoundingClientRect();
@@ -106,6 +113,39 @@ async function main() {
   await copies("/weapons.html?type=lance&w=" + lanceId, "/s/weapon/lance.html?w=" + lanceId);
   await copies("/changelog.html#" + topic, "/s/changelog/" + day + ".html#" + topic);
   await copies("/changelog.html", "/changelog.html");
+
+  const share = "https://api.hvmhfz.eclipseforge.xyz/share";
+  await copies("/hunters.html?id=42", share + "/hunter/42", 375);
+  await copies("/hunters.html", "/hunters.html");
+  await copies("/guilds.html?id=7", share + "/guild/7");
+  await copies("/leaderboards.html", share + "/leaderboard/hunters/week");
+  await copies("/leaderboards.html#guilds-lastmonth", share + "/leaderboard/guilds/lastmonth");
+  await copies("/leaderboards.html#monsters-all", share + "/leaderboard/monsters/all");
+  await copies("/leaderboards.html#guilds", share + "/leaderboard/rp");
+  await copies("/leaderboards.html#road-solo", share + "/leaderboard/road/solo");
+  await copies("/leaderboards.html#road-open-12", "/leaderboards.html#road-open-12");
+
+  // the hunter profile's own button: a stand-in profile, since the live API is not called here
+  {
+    const page = await context.newPage();
+    await page.route(/api\.hvmhfz\.eclipseforge\.xyz\/api\/public\/hunters\/42$/, (route) => route.fulfill({
+      status: 200, contentType: "application/json",
+      body: JSON.stringify({ id: 42, name: "Test Hunter", hr: 7, gr: 100, weapon: "Lance", topMonsters: [], weaponTime: [] })
+    }));
+    await page.goto(base + "/hunters.html?id=42");
+    const button = page.locator("button", { hasText: "Copy profile link" });
+    await button.waitFor({ timeout: 5000 }).catch(() => {});
+    if (await button.count()) {
+      await button.click();
+      await page.waitForFunction(() => Array.from(document.querySelectorAll("button")).some((b) => b.textContent === "Copied"),
+        null, { timeout: 5000 }).catch(() => {});
+      const got = await page.evaluate(() => navigator.clipboard.readText());
+      check("Copy profile link copies " + share + "/hunter/42", got === share + "/hunter/42", "copied " + got);
+    } else {
+      check("Copy profile link on /hunters.html?id=42", false, "no button");
+    }
+    await page.close();
+  }
 
   await browser.close();
   server.close();

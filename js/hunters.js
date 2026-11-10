@@ -677,7 +677,8 @@
     var copy = el("button", "ghost-btn small", "Copy profile link");
     copy.type = "button";
     copy.addEventListener("click", function () {
-      var url = location.origin + "/hunters.html?id=" + hunter.id;
+      // the API's share link: its preview names this hunter (js/share.js), then it opens this profile
+      var url = API + "/share/hunter/" + hunter.id;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(function () {
           copy.textContent = "Copied";
