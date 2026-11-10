@@ -293,6 +293,11 @@
       return document.createTextNode(text);
     }
     var frag = document.createDocumentFragment();
+    var move = findMove(data, row.weaponClass, row.entry, row.recordId), MN = window.HvMoveNames;
+    if (move && MN) {   // name, how sure, the id small, what it is on a tap (js/move-names.js, as the weapons page)
+      var type = typeByClass(data, classIndex(row.weaponClass));
+      return MN.fill(el("span", "bal-move"), move, moveRef(row), { slug: type && type.slug });
+    }
     frag.appendChild(document.createTextNode(text));
     if (!isNone(row.recordId) && text !== moveRef(row)) frag.appendChild(el("span", "bal-ref", moveRef(row)));
     return frag;
@@ -385,6 +390,11 @@
     var box = $("bal-groups");
     clear(box);
     groupRows(rows, data).forEach(function (g) { box.appendChild(groupNode(g)); });
+    var legend = $("bal-legend");
+    if (legend && window.HvMoveNames) {   // the badges' legend, when a move is listed
+      clear(legend);
+      if (box.querySelector(".mv-conf")) legend.appendChild(window.HvMoveNames.legend());
+    }
     renderHistory(answer);
   }
 

@@ -2124,7 +2124,27 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .wp-stat dd{margin:2px 0 0;font-weight:600;overflow-wrap:anywhere}
 .wp-sub{margin:18px 0 6px;font-size:1.05rem;color:var(--ink)}
 .wp-help{margin:0 0 12px;font:.85rem/1.5 var(--font-ui);color:var(--ink-soft)}
-.wp-guess{font-size:.58rem;vertical-align:middle}
+/* Move names (js/move-names.js): name, confidence badge, id small, tap detail; weapons page, Balance grid, balance page */
+.mv-line{display:inline}
+.mv-name{font-weight:600}
+.mv-name.is-unnamed{font:.85rem var(--font-mono);font-weight:400;color:var(--ink-soft)}
+.mv-id{margin-left:8px;font:.75rem var(--font-mono);color:var(--ink-soft);white-space:nowrap}
+.mv-conf{font-size:.56rem;padding:2px 5px;vertical-align:1px}
+.mv-confirmed{background:rgba(46,91,78,.12);color:var(--teal);border-color:rgba(46,91,78,.4)}
+.mv-likely{background:rgba(48,104,238,.08);color:#2a4f9e;border-color:rgba(48,104,238,.35)}
+.mv-guess{background:rgba(183,138,51,.14);color:#7a5714;border-color:rgba(183,138,51,.5)}
+.mv-unknown{background:transparent;color:var(--ink-soft);border-style:dashed}
+.mv-more{margin-top:3px;font:.8rem/1.45 var(--font-ui);color:var(--ink-soft);max-width:46em}
+.mv-more summary{cursor:pointer;color:var(--link);width:fit-content}
+.mv-more summary:hover{color:var(--link-hover)}
+.mv-more summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.mv-more p{margin:4px 0 0;color:var(--ink)}
+.mv-more .mv-src{color:var(--ink-soft)}
+.mv-legend{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0 0 12px;font:.8rem/1.5 var(--font-ui);color:var(--ink-soft)}
+.mv-legend-h{font-weight:700;color:var(--ink)}
+.mv-legend-item .mv-conf{margin-right:2px}
+.wp-moves .mv-cell,.wp-results .mv-cell{min-width:14em}
+@media (max-width:720px){.wp-moves .mv-cell,.wp-results .mv-cell{min-width:0}.wp-results .mv-cell{overflow-wrap:anywhere;font-size:.9rem}.wp-results .mv-id{display:block;margin-left:0}}
 .wp-moves td,.wp-results td{white-space:normal}
 .wp-calc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 22px}
 .wp-fs{margin:0 0 12px;padding:12px 14px 0;border:1px solid var(--line);border-radius:3px;min-width:0}

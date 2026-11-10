@@ -20,7 +20,7 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=3" />
+    <link rel="stylesheet" href="/css/styles.css?v=8" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
@@ -134,6 +134,7 @@
         <p class="bal-empty" id="bal-empty" hidden><strong>No balance changes: the game's own values.</strong> Every weapon and move plays as in the original game.</p>
         <div id="bal-changes" hidden>
           <p class="wp-help">Grouped by weapon type and hunting style. <strong>Game → new</strong> is the game's own value and the server's; a factor (×1.1) multiplies the game's value, rounded down. A ? is a value the weapon database does not list. Changes for all types or all styles apply first, the narrower ones after them.</p>
+          <div id="bal-legend"></div>
           <div id="bal-groups"></div>
         </div>
       </section>
@@ -182,7 +183,8 @@
     </footer>
     <!-- /site-shell:footer -->
 
-    <script src="/js/balance-public.js?v=1"></script>
+    <script src="/js/move-names.js?v=1"></script>
+    <script src="/js/balance-public.js?v=2"></script>
     <script src="/js/search.js" defer></script>
   </body>
 </html>

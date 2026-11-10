@@ -10,7 +10,7 @@
    - 404 and a body without a version: "not published yet"; no answer: Try again, which loads again;
    - phone (375 px) and desktop: no horizontal overflow, no page errors; the pure helpers under node.
 
-   Screenshots go to /srv/devbot/.bot-logs/balance-admin/ (public-*.png) when that folder exists, else dev-shots/.
+   Screenshots go to $SHOTS when set, else /srv/devbot/.bot-logs/balance-admin/ (public-*.png) when that folder exists, else dev-shots/.
 
      NODE_PATH=/root/work/pw-tools/node_modules node dev/check-balance-public.js
 
@@ -25,7 +25,7 @@ const B = require("../js/balance-public.js");
 
 const root = path.join(__dirname, "..");
 const LOGS = "/srv/devbot/.bot-logs/balance-admin";
-const shots = fs.existsSync(LOGS) ? LOGS : path.join(root, "dev-shots");
+const shots = process.env.SHOTS || (fs.existsSync(LOGS) ? LOGS : path.join(root, "dev-shots"));
 const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json",
   ".png": "image/png", ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml", ".jpg": "image/jpeg" };
 const server = http.createServer((req, res) => {
@@ -129,15 +129,22 @@ async function rows(browser, base) {
     const heads = await page.$$eval(".bal-group-h", (hs) => hs.map((h) => h.textContent));
     check(width + ": groups", heads.join("|") === "All weapon typesAll styles|Great SwordAll styles|Great SwordExtreme|Great SwordWeapon stats|HammerAll styles|Long SwordStorm",
       heads.join("|"));
-    const cells = await page.$$eval(".bal-table tbody tr", (trs) => trs.map((tr) => Array.from(tr.cells).map((c) => c.textContent)));
+    // A move's cell: its name line (name, confidence badge, id; js/move-names.js), not the tap detail under it.
+    const cells = await page.$$eval(".bal-table tbody tr", (trs) => trs.map((tr) => Array.from(tr.cells).map((c, i) => {
+      const line = i === 0 && c.querySelector(".mv-line");
+      return line ? [".mv-name", ".mv-conf", ".mv-id"].map((s) => (line.querySelector(s) || {}).textContent || "").filter(Boolean).join(" ") : c.textContent;
+    })));
     const flat = cells.map((c) => c.join(" ; "));
     check(width + ": every move scaled", flat[0] === "Every move ; Hitstop ; ×0.9 ; <b>less hitstop</b> everywhere", flat[0]);
-    check(width + ": named move, set", flat[1] === "k0 #2 ; Motion value ; 46 → 50 ; Combo", flat[1]);
-    check(width + ": named move with its ref, scaled with the result", flat[2] === "Lv1 chargek0 #165 ; Motion value ; ×1.1 92 → 101 ; Charge too slow for its damage", flat[2]);
-    check(width + ": KO from the data", flat[4] === "k0 #8 ; KO ; 20 → 30 ; Hammer KO felt weak: Discord thread", flat[3]);
-    check(width + ": empty reason", flat[5] === "k0 #59 ; Motion value ; 36 → 40 ; —", flat[4]);
-    check(width + ": weapon by name", flat[3] === "Iron Sword ; Attack ; 60 → 80 ; Starter sword buff", flat[5]);
-    check(width + ": weapon links to the weapons page", (await page.$eval(".bal-what a", (a) => a.getAttribute("href"))) === "/weapons.html?type=great-sword&w=1");
+    check(width + ": named move, set", flat[1] === "Horizontal Slash confirmed k0 #2 ; Motion value ; 46 → 50 ; Combo", flat[1]);
+    check(width + ": named move with its ref, scaled with the result", flat[2] === "Upswing charge Lv1 confirmed k0 #165 ; Motion value ; ×1.1 92 → 101 ; Charge too slow for its damage", flat[2]);
+    check(width + ": KO from the data", flat[4] === "Charge Lv1 / Lv2, first hit confirmed k0 #8 ; KO ; 20 → 30 ; Hammer KO felt weak: Discord thread", flat[4]);
+    check(width + ": empty reason", flat[5] === "Back Slash (Cut Down) confirmed k0 #59 ; Motion value ; 36 → 40 ; —", flat[5]);
+    check(width + ": weapon by name", flat[3] === "Iron Sword ; Attack ; 60 → 80 ; Starter sword buff", flat[3]);
+    check(width + ": a move's detail: what it is, input, linked source", await page.$eval(".bal-what details.mv-more", (d) => /Sweeping slash/.test(d.textContent)
+      && /Input: Horizontal Slash button/.test(d.querySelector("summary").textContent) && !!d.querySelector('a[href^="https://wycademy"]')));
+    check(width + ": the badges' legend", (await page.$$("#bal-legend .mv-conf")).length === 4);
+    check(width + ": weapon links to the weapons page", (await page.$eval(".bal-what > a", (a) => a.getAttribute("href"))) === "/weapons.html?type=great-sword&w=1");
     check(width + ": markup stays text", (await page.$$("#bal-groups b")).length === 0);
     const link = await page.$eval(".bal-reason a", (a) => ({ href: a.href, rel: a.rel, target: a.target }));
     check(width + ": reason link", link.href === THREAD && link.rel.indexOf("noopener") !== -1 && link.target === "_blank", JSON.stringify(link));

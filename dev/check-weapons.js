@@ -10,7 +10,8 @@
  *    damage number must be equal; the expected value to 1e-6. Plus the rules people ask about: no crit
  *    below green, negative affinity, the 3000 attack cap.
  * 2. Data: data/weapons/index.json and one file per type: the source patch, field lists, a sharpness bar
- *    for every melee weapon, moves with one MV per hit.
+ *    for every melee weapon, moves with one MV per hit. Move names (js/move-names.js): every move has a
+ *    confidence, a name unless unknown, public source keys only; the source links.
  *    Icons: every weapon of all 14 types gets its in-game icon from js/game-icons.js (the lookup the catalog uses):
  *    a class that is the weapon's type, an icon file that exists, the weapon's rarity; no row without one.
  * 3. Usage tab (js/weapons-usage.js): HvWeaponsUsage.view() on a stubbed /api/public/weapons/usage answer
@@ -18,7 +19,8 @@
  * 4. Page (when Playwright is found): loads, lists Great Swords, an icon on every row of every type's first page
  *    (the same src the catalog page gives for the same ids, with the API answer stubbed), in the detail and the
  *    calculator line, picks one, the calculator shows the
- *    numbers HvWeaponsCalc gives for it, a gunner type hides the form, no script errors, and no sideways
+ *    numbers HvWeaponsCalc gives for it, the move names (name, badge, id, tap detail, legend; "unnamed" for an
+ *    unknown move) in the move list and the calculator, a gunner type hides the form, no script errors, and no sideways
  *    scrolling at 375 px. The Usage tab with the stubbed answer (routed in Chromium): 14 bars, 7/30 days,
  *    band filter, style bars; and its message when the API answers 404 or not at all.
  *    SHOTS also gets usage-desktop.png and usage-phone.png.
@@ -32,6 +34,7 @@ const ROOT = path.resolve(__dirname, "..");
 const Calc = require(path.join(ROOT, "js/weapons-calc.js"));
 const Usage = require(path.join(ROOT, "js/weapons-usage.js"));
 const Icons = require(path.join(ROOT, "js/game-icons.js"));
+const MoveNames = require(path.join(ROOT, "js/move-names.js"));
 const index = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons/index.json"), "utf8"));
 const cases = JSON.parse(fs.readFileSync(path.join(ROOT, "dev/weapons-cases.json"), "utf8"));
 const K = index.constants;
@@ -85,6 +88,37 @@ index.types.forEach(function (t) {
     check(d.tech && d.tech.length === 4, t.slug + ": four technique levels");
   }
 });
+
+/* ---------- 2a. move names ---------- */
+// Every move has its name data (hvmhfz_re data/move_names.tsv, via dev/make-weapons-data.py): a confidence; a name
+// unless unknown; source keys the page can show; no private source text (client offsets, dump files) in the data.
+{
+  const seen = { confirmed: 0, likely: 0, guess: 0, unknown: 0 };
+  index.types.forEach(function (t) {
+    const d = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons", t.slug + ".json"), "utf8"));
+    const bad = d.moves.filter(function (m) {
+      if (MoveNames.ORDER.indexOf(m.conf) < 0) return true;
+      seen[m.conf]++;
+      if ((m.conf === "unknown") !== !m.name) return true;
+      if (m.conf === "unknown" && !m.desc) return true;
+      return (m.src || []).some(function (k) { return !/^(wycademy-calc|wycademy-notes|vipwiki|client|research|atwiki:\d+)$/.test(k); });
+    });
+    check(bad.length === 0, t.slug + ": moves without good name data: " + bad.slice(0, 3).map(function (m) { return m.set + " #" + m.id; }).join(", "));
+  });
+  const total = seen.confirmed + seen.likely + seen.guess + seen.unknown;
+  check(total > 600 && seen.confirmed > 250 && seen.unknown < 150, "move names: counts " + JSON.stringify(seen));
+  const gs = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons/great-sword.json"), "utf8")).moves;
+  const k2 = gs.find(function (m) { return m.kind === 0 && m.id === 2; }), k5 = gs.find(function (m) { return m.kind === 0 && m.id === 5; });
+  check(MoveNames.name(k2) === "Horizontal Slash" && MoveNames.conf(k2) === "confirmed" && k2.input === "Horizontal Slash button", "move names: GS k0 #2 is Horizontal Slash, confirmed");
+  check(MoveNames.name(k5) === null && MoveNames.conf(k5) === "unknown" && MoveNames.CONF.unknown.label === "unnamed", "move names: GS k0 #5 is unnamed");
+  check(MoveNames.searchText(k2).indexOf("sweeping slash") >= 0 && MoveNames.searchText(k2).indexOf("horizontal slash button") >= 0, "move names: search text has the description and input");
+  const src = MoveNames.sources({ src: ["atwiki:871", "wycademy-notes", "client", "research"] }, "long-sword");
+  check(src[0].href === "https://web.archive.org/web/2024/https://w.atwiki.jp/giurasu/pages/871.html" && src[1].href === "https://wycademy.vercel.app/hunter-notes/weapons/long-sword"
+    && src[2].href === null && src[3].href === null, "move names: source links " + JSON.stringify(src));
+  check(MoveNames.conf({ name: "x" }) === "guess" && MoveNames.conf({}) === "unknown", "move names: no conf: a name is a guess, none is unknown");
+  const raw = fs.readFileSync(path.join(ROOT, "data/weapons/great-sword.json"), "utf8");
+  check(!/client:|dump\/|0x[0-9a-f]{4,}@|guide@/.test(raw), "move names: no private source text in the data");
+}
 
 /* ---------- 2b. icons ---------- */
 // The weapon types' slugs here, and the sprite names the icons use, where they differ.
@@ -246,6 +280,23 @@ async function page() {
         return first ? first.children[4].textContent.replace(/,/g, "") : null;
       });
       check(fromPage !== null && Number(fromPage) > 0, view.name + ": calculator shows damage, got " + fromPage);
+      // Move names: the name first with its badge and id, a tap detail, unknown = id + "unnamed"; also in the calculator.
+      const mv = await pg.$$eval("#wp-moves-body tr", function (trs) {
+        return trs.map(function (tr) {
+          const c = tr.cells[0], q = function (s) { const n = c.querySelector(s); return n ? n.textContent : ""; };
+          return { name: q(".mv-name"), conf: q(".mv-conf"), id: q(".mv-id"), more: !!c.querySelector("details.mv-more") };
+        });
+      });
+      const h = mv.find(function (m) { return m.name === "Horizontal Slash"; });
+      check(h && h.conf === "confirmed" && h.id === "k0 #2" && h.more, view.name + ": move list shows Horizontal Slash, confirmed, k0 #2: " + JSON.stringify(h));
+      check(mv.some(function (m) { return m.name === "k0 #5" && m.conf === "unnamed" && !m.id; }), view.name + ": an unknown move shows its id and unnamed");
+      check(mv.length > 20 && mv.every(function (m) { return m.name && m.conf; }), view.name + ": every listed move has a name or id and a badge");
+      await pg.click("#wp-moves-body tr:nth-child(2) details.mv-more summary");
+      check(await pg.$eval("#wp-moves-body tr:nth-child(2) details.mv-more", function (d) { return d.open && /Sweeping slash/.test(d.textContent) && !!d.querySelector('a[href^="https://"]'); }),
+        view.name + ": tapping a move shows what it is and a source link");
+      check((await pg.$$("#wp-moves-legend .mv-conf")).length === 4 && (await pg.$$("#calc-legend .mv-conf")).length === 4, view.name + ": the badges' legend above both tables");
+      check(await pg.$$eval("#calc-body tr", function (t) { return t.length > 0 && t.every(function (r) { return r.cells[0].querySelector(".mv-name") && r.cells[0].querySelector(".mv-conf"); }); }),
+        view.name + ": every calculator row has the move's name and badge");
       // Search, then a sort by true attack.
       await pg.fill("#wp-search", "Iron Sword");
       check((await pg.$$eval("#wp-body .wp-pick", function (b) { return b.map(function (x) { return x.textContent; }); })).every(function (t) { return /Iron Sword/.test(t); }), view.name + ": search filters");

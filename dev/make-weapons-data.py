@@ -10,7 +10,8 @@ game's own data files, read with the hvmhfz_re tools (private repo, run here, ne
     weapon and skill names). Decoded with hvmhfz_re build/unpack_cli.
   - dat/mhfsdt.bin from the game client (our patch does not ship it): the motion values per hit.
   - tools/weapons/weapons.py reads the weapons, moves.py the moves (and their crit roll, which the
-    reference cases below use), styles.py the styles and the community move names (guesses by MV).
+    reference cases below use), styles.py the styles, move_names.py the move names (data/move_names.tsv:
+    name, description, input, how sure, sources; per move "name", "desc", "input", "conf", "src").
 
 The formula and every constant: hvmhfz_re docs/weapons.md sections 4 (attack build-up), 5 (the hit,
 crits) and 7.6 (skill names). Where that doc leaves a detail open, the choice is written next to the
@@ -125,6 +126,21 @@ def ranged_rows(rows, fac, cls, charge):
     return out
 
 
+# Public source keys of a move name (hvmhfz_re docs/weapons.md section 7.7); js/weapons.js links them.
+# Client offsets, dump files and notes stay in the private repo: they all become "client" or "research".
+def move_sources(text):
+    out = []
+    for part in text.split(";"):
+        p = part.strip()
+        m = re.match(r"(wycademy-calc|wycademy-notes|vipwiki)\b", p)
+        a = re.match(r"atwiki:(\d+)", p)
+        key = (m.group(1) if m else "atwiki:" + a.group(1) if a else "client" if p.startswith("client:")
+               else "research" if p else "")
+        if key and key not in out:
+            out.append(key)
+    return out
+
+
 def move_rows(rows, short):
     out = []
     for r in rows:
@@ -134,9 +150,23 @@ def move_rows(rows, short):
              "styles": r.get("styles", {}).get(short, ""), "how": r["weapons"][short]}
         if r["repeats"]:
             m["repeats"] = True
-        name = r.get("names", {}).get(short)
-        if name:
-            m["name"] = name   # community name matched by MV: always a guess (the page says so)
+        info = r.get("move_info", {}).get(short)
+        if info:   # hvmhfz_re data/move_names.tsv (part 97): name, description, input, how sure, sources
+            conf = info["confidence"]
+            if info["name"] and conf != "unknown":
+                m["name"] = info["name"]
+            for key, src in (("desc", "description"), ("input", "input")):
+                if info[src]:
+                    m[key] = info[src]
+            m["conf"] = conf
+            src = move_sources(info["source"])
+            if src:
+                m["src"] = src
+        else:
+            name = r.get("names", {}).get(short)
+            if name:   # a part 93 community match by MV only
+                m["name"] = name
+                m["conf"] = "guess"
         for key, src in (("element", "element"), ("elementValue", "elem_value"), ("status", "status_kind"),
                          ("ko", "stun")):
             if r[src]:
@@ -287,7 +317,7 @@ def main(argv):
     source = {"patch": "v" + args.version, "zip": pathlib.Path(args.zip).name, "zipSha256": sha(args.zip),
               "mhfdatSha256": hashlib.sha256(dat).hexdigest(), "mhfsdtSha256": sha(args.sdt),
               "mhfsdt": "the game client's dat/mhfsdt.bin (not in our patch)",
-              "tools": "hvmhfz_re %s tools/weapons (weapons.py, moves.py, styles.py)" % re_head,
+              "tools": "hvmhfz_re %s tools/weapons (weapons.py, moves.py, styles.py, move_names.py)" % re_head,
               "script": "dev/make-weapons-data.py"}
     OUT.mkdir(parents=True, exist_ok=True)
     types = []

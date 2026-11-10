@@ -15,7 +15,7 @@
    - a moderator: read only; a missing table; the weapon data missing (numbers typed by hand);
    - markup in a reason stays text; no horizontal overflow at 375 px; no page errors; the pure helpers under node.
 
-   Screenshots go to /srv/devbot/.bot-logs/balance-admin/ (balance-*.png) when that folder exists, else dev-shots/.
+   Screenshots go to $SHOTS when set, else /srv/devbot/.bot-logs/balance-admin/ (balance-*.png) when that folder exists, else dev-shots/.
 
      NODE_PATH=/root/work/pw-tools/node_modules node dev/check-admin-balance.js
 
@@ -31,9 +31,9 @@ const G = require("../js/admin-balance-grid.js");
 
 const root = path.join(__dirname, "..");
 const LOGS = "/srv/devbot/.bot-logs/balance-admin";
-const shots = fs.existsSync(LOGS) ? LOGS : path.join(root, "dev-shots");
+const shots = process.env.SHOTS || (fs.existsSync(LOGS) ? LOGS : path.join(root, "dev-shots"));
 const GRID_LOGS = "/srv/devbot/.bot-logs/balance-grid";
-const gridShots = fs.existsSync(GRID_LOGS) ? GRID_LOGS : path.join(root, "dev-shots");
+const gridShots = process.env.SHOTS || (fs.existsSync(GRID_LOGS) ? GRID_LOGS : path.join(root, "dev-shots"));
 const dataRoot = fs.existsSync(path.join(root, "data", "weapons")) ? path.join(root, "data", "weapons") : "/srv/devbot/weapon-db/data/weapons";
 const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json",
   ".png": "image/png", ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml", ".jpg": "image/jpeg" };
@@ -266,7 +266,7 @@ async function balancePage(browser, base) {
   check("status line", /Published: v2, 4 rows, by boss, 2026-11-10 15:00 UTC \(first pass\)/.test(status) && /Draft: 4 of at most 4096 rows/.test(status), status);
   const cells = await page.$$eval("#bal-rows tr", (trs) => trs.map((t) => Array.from(t.children).map((c) => c.textContent)));
   check("rows count", cells.length === 4, String(cells.length));
-  check("row 1: names, current, change", cells[0][1] === "Great Sword, Storm, Lv1 charge (k0 #165)" && cells[0][2] === "mv" && cells[0][3] === "92" && cells[0][4] === "set 100", JSON.stringify(cells[0]));
+  check("row 1: names, current, change", cells[0][1] === "Great Sword, Storm, Upswing charge Lv1 (k0 #165)" && cells[0][2] === "mv" && cells[0][3] === "92" && cells[0][4] === "set 100", JSON.stringify(cells[0]));
   check("row 2: any move scale, no current", /^Long Sword, any style, any move$/.test(cells[1][1]) && cells[1][3] === "unknown" && cells[1][4] === "x 1.05", JSON.stringify(cells[1]));
   const reason2 = await page.inputValue("#bal-rows tr:nth-child(2) .bal-reason-edit input");
   check("row 2: markup stays text", reason2 === "<b>all LS</b>" && (await page.$$("#bal-rows b")).length === 0, reason2);
@@ -284,10 +284,10 @@ async function balancePage(browser, base) {
   await page.click("#bal-advanced summary");
   await page.selectOption("#bal-type", "GS");
   await page.selectOption("#bal-style", "storm");
-  await page.fill("#bal-mfilter", "lv1");
+  await page.fill("#bal-mfilter", "upswing charge lv1");
   const picks = await page.$$eval("#bal-move option", (o) => o.map((x) => x.textContent));
-  check("move filter keeps the match", picks.some((t) => /^Lv1 charge k0 #165 mv 92 X$/.test(t)) && !picks.some((t) => /Lv2 charge/.test(t)), picks.join("|"));
-  await page.selectOption("#bal-move", { label: picks.find((t) => /^Lv1 charge/.test(t)) });
+  check("move filter keeps the match", picks.some((t) => /^Upswing charge Lv1 k0 #165 mv 92 X$/.test(t)) && !picks.some((t) => /charge Lv2/.test(t)), picks.join("|"));
+  await page.selectOption("#bal-move", { label: picks.find((t) => /^Upswing charge Lv1/.test(t)) });
   check("picking a move fills entry and id", (await page.inputValue("#bal-entry")) === "0" && (await page.inputValue("#bal-id")) === "165");
   await page.selectOption("#bal-field", "mv");
   await page.fill("#bal-value", "100");
@@ -369,7 +369,7 @@ async function balancePage(browser, base) {
   check("edit fills the form", (await text(page, "#bal-form-title")) === "Edit row #3" && (await page.inputValue("#bal-type")) === "GS" && (await page.inputValue("#bal-style")) === "storm"
     && (await page.inputValue("#bal-entry")) === "0" && (await page.inputValue("#bal-id")) === "165" && (await page.inputValue("#bal-field")) === "mv"
     && (await page.inputValue("#bal-reason")) === "https://discord.example/t/1" && (await text(page, "#bal-save")) === "Save row"
-    && /Lv1 charge/.test(await page.$eval("#bal-move", (s) => s.options[s.selectedIndex].textContent)));
+    && /Upswing charge Lv1/.test(await page.$eval("#bal-move", (s) => s.options[s.selectedIndex].textContent)));
   await page.fill("#bal-value", "110");
   await page.click("#bal-save");
   await page.waitForFunction(() => /Row #3 saved/.test(document.getElementById("bal-ok").textContent), null, { timeout: 5000 });
@@ -397,7 +397,7 @@ async function balancePage(browser, base) {
 
   // The diff.
   const diffText = await text(page, "#bal-diff");
-  check("diff: counts and lines", /Draft against v2: \d+ added, 1 removed, \d+ changed, \d+ unchanged\./.test(diffText) && /Removed \(1\)/.test(diffText) && /Sword and Shield, Storm, Sliding Attack \(sigil\) \? \(k0 #22\): mv set 30/.test(diffText) && /Before: .*set 90.*After: .*set 110/.test(diffText), diffText);
+  check("diff: counts and lines", /Draft against v2: \d+ added, 1 removed, \d+ changed, \d+ unchanged\./.test(diffText) && /Removed \(1\)/.test(diffText) && /Sword and Shield, Storm, Jump Slash, sword hit \(k0 #22\): mv set 30/.test(diffText) && /Before: .*set 90.*After: .*set 110/.test(diffText), diffText);
   await shot(page, "balance-diff.png", "#bal-diff");
 
   check("gate open: no reason, Publish on", (await page.$eval("#bal-gate", (n) => n.hidden)) && !(await page.$eval("#bal-publish-btn", (n) => n.disabled))
@@ -614,6 +614,27 @@ async function gridPage(browser, base) {
   const heads = await page.$$eval("#bal-ghead th", (t) => t.map((x) => x.textContent));
   check("grid: a column per attack field", heads.join() === "Move,delay,mv,reaction,element value,ko", heads.join());
   check("grid: a line per move and the multiplier line", (await page.$$("#bal-gbody tr")).length === 35 && /^All moves/.test(await page.$eval("#bal-gbody tr:first-child th", (n) => n.textContent)));
+  // Move names (js/move-names.js, data/weapons from hvmhfz_re data/move_names.tsv): name, badge, id, detail; unknown = id + "unnamed".
+  const nameOf = (ref) => page.$eval('#bal-gbody tr[data-ref="' + ref + '"] th', (th) => ({ name: (th.querySelector(".mv-name") || {}).textContent,
+    conf: (th.querySelector(".mv-conf") || {}).textContent, id: (th.querySelector(".mv-id") || {}).textContent || "",
+    detail: !!th.querySelector("details.mv-more"), title: (th.querySelector(".mv-line") || {}).title || "" }));
+  const n2 = await nameOf("0:2"), n5 = await nameOf("0:5");
+  check("grid: a move shows its name, badge and id", n2.name === "Horizontal Slash" && n2.conf === "confirmed" && n2.id === "k0 #2" && n2.detail
+    && /Sweeping slash/.test(n2.title), JSON.stringify(n2));
+  check("grid: an unknown move shows its id and unnamed", n5.name === "k0 #5" && n5.conf === "unnamed" && n5.id === "", JSON.stringify(n5));
+  check("grid: the badges' legend shows with the moves", !(await page.$eval("#bal-glegend", (n) => n.hidden)) && (await page.$$("#bal-glegend .mv-conf")).length === 4);
+  await page.click('#bal-gbody tr[data-ref="0:2"] th details.mv-more summary');
+  check("grid: tap opens what the move is", await page.$eval('#bal-gbody tr[data-ref="0:2"] th details.mv-more', (d) => d.open && /Sweeping slash/.test(d.textContent) && !!d.querySelector('a[href^="https://wycademy"]')));
+  await shot(page, "grid-move-names-1280.png", "#bal-grid-box", gridShots);
+  await page.fill("#bal-gfilter", "sweeping");
+  await page.waitForFunction(() => /found/.test(document.getElementById("bal-gcount").textContent), null, { timeout: 3000 });
+  const found = await page.$$eval("#bal-gbody tr[data-ref]", (t) => t.map((x) => x.dataset.ref).filter((r) => r !== "all"));
+  check("grid: find searches descriptions", found.indexOf("0:2") !== -1 && found.indexOf("0:165") === -1, found.join());
+  await page.fill("#bal-gfilter", "upswing charge");
+  await page.waitForFunction(() => document.querySelectorAll("#bal-gbody tr[data-ref]").length === 5, null, { timeout: 3000 });
+  check("grid: find searches names", (await page.$$eval("#bal-gbody tr[data-ref]", (t) => t.map((x) => x.dataset.ref))).join() === "all,0:165,0:166,0:167,0:168");
+  await page.fill("#bal-gfilter", "");
+  await page.waitForFunction(() => document.querySelectorAll("#bal-gbody tr").length === 35, null, { timeout: 3000 });
   check("grid: the game's value in a cell", (await cellText(page, "0:2", "mv")) === "46" && (await cellText(page, "0:2", "ko")) === "–" && (await cellText(page, "0:2", "delay")) === "–",
     [await cellText(page, "0:2", "mv"), await cellText(page, "0:2", "ko"), await cellText(page, "0:2", "delay")].join("|"));
   check("grid: a storm row is not in any style", (await cellText(page, "0:165", "mv")) === "92" && !(await page.$eval(cellSel("0:165", "mv"), (n) => n.classList.contains("is-changed"))));
@@ -639,7 +660,7 @@ async function gridPage(browser, base) {
   check("grid: the session reason is kept", (await page.inputValue("#bal-greason")) === "https://discord.example/t/77");
   check("grid: the cell shows the change", (await page.$eval(cellSel("0:2", "mv") + " .bal-now", (n) => n.textContent)) === "50"
     && (await page.$eval(cellSel("0:2", "mv") + " .bal-was", (n) => n.textContent)) === "46");
-  check("grid: the Changes table has it", (await page.$$("#bal-rows tr")).length === 5 && /Great Sword, Storm, k0 #2/.test(await text(page, "#bal-rows")), await text(page, "#bal-rows"));
+  check("grid: the Changes table has it", (await page.$$("#bal-rows tr")).length === 5 && /Great Sword, Storm, Horizontal Slash \(k0 #2\)/.test(await text(page, "#bal-rows")), await text(page, "#bal-rows"));
   const newId = add.body && api.rows[api.rows.length - 1].id;
 
   // Multiply with Tab: the row is updated (PUT, reason kept), the editor moves right.
@@ -705,6 +726,7 @@ async function gridPage(browser, base) {
   await page.click('#bal-gtypes .chip[title="Great Sword"]');
   await page.waitForSelector(cellSel("1", "attack"), { timeout: 5000 });
   const wh = await page.$$eval("#bal-ghead th", (t) => t.map((x) => x.textContent));
+  check("grid weapons: no badges' legend", await page.$eval("#bal-glegend", (n) => n.hidden));
   check("grid weapons: melee columns", wh.join() === "Weapon,sharpness,attack,affinity", wh.join());
   check("grid weapons: no style chips, no multiplier line", (await page.$eval("#bal-gstyles", (n) => n.hidden)) && (await page.$$('#bal-gbody tr[data-ref="all"]')).length === 0);
   check("grid weapons: the draft's Iron Sword attack", (await page.$eval(cellSel("1", "attack") + " .bal-now", (n) => n.textContent)) === "62"

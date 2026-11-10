@@ -231,21 +231,9 @@
 
   function styleText(s) { return s || "?"; }
 
-  function moveName(m) {
-    return m.name ? m.name : m.set + " #" + m.id;
-  }
-
+  // Name first, the confidence badge, the id small; what it is, input and sources in a tap detail (js/move-names.js).
   function moveCell(m) {
-    var td = el("td");
-    td.appendChild(document.createTextNode(moveName(m)));
-    if (m.name) {
-      var g = el("span", "badge wp-guess", "guess");
-      g.title = "Community name matched by motion value";
-      td.appendChild(document.createTextNode(" "));
-      td.appendChild(g);
-      td.appendChild(el("span", "wp-id", m.set + " #" + m.id));
-    }
-    return td;
+    return window.HvMoveNames.fill(el("td", "mv-cell"), m, m.set + " #" + m.id, { slug: doc.type });
   }
 
   function mvText(m) { return m.mv.join(" + ") + (m.repeats ? " (repeats)" : ""); }
@@ -424,7 +412,7 @@
       var tr = el("tr");
       tr.appendChild(moveCell(m));
       tr.appendChild(el("td", "wp-wide", styleText(m.styles)));
-      tr.appendChild(el("td", "num", String(m.mv.length)));
+      tr.appendChild(el("td", "num wp-wide", String(m.mv.length)));
       var mvs = m.mv.map(function (x, i) { return x + (c.bonus[i] ? "+" + c.bonus[i] : ""); }).join(" + ");
       tr.appendChild(el("td", "wp-wide", mvs + (m.repeats ? " (repeats)" : "")));
       tr.appendChild(el("td", "num", fmt(r.nonCrit)));
@@ -562,6 +550,7 @@
   }
 
   function init() {
+    ["wp-moves-legend", "calc-legend"].forEach(function (id) { $(id).appendChild(window.HvMoveNames.legend()); });
     getJson("/data/weapons/index.json").then(function (ix) {
       index = ix;
       $("wp-source").textContent = "client patch " + ix.source.patch + ", " + ix.source.zip;

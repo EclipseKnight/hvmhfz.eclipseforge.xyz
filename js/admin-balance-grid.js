@@ -188,7 +188,7 @@
     [null].concat(STYLES).forEach(function (s) {
       sl.appendChild(chip(s ? names[s] : "Any style", view.style === s, function () { setView({ style: s }); }));
     });
-    $("bal-gfilter").placeholder = view.mode === "moves" ? "move name, entry or id" : "weapon name or id";
+    $("bal-gfilter").placeholder = view.mode === "moves" ? "move name, what it does, entry or id" : "weapon name or id";
   }
 
   /* --- the lines of the table: moves or weapons, filtered and paged --- */
@@ -198,9 +198,11 @@
     if (view.mode === "moves") {
       var code = codeOf(type);
       (file.moves || []).forEach(function (m) {
-        var ref = "k" + m.kind + " #" + m.id;
-        if (!matches(view.filter, m.name, m.id, ref)) return;
-        out.push({ name: m.name || ref, sub: (m.name ? ref : "") + (m.name && m.styles ? " · " : "") + (m.styles ? (m.styles === "EHSX" ? "all styles" : "styles " + H().stylesText(m.styles)) : ""),
+        var ref = "k" + m.kind + " #" + m.id, MN = window.HvMoveNames, mname = MN ? MN.name(m) : m.name;
+        // The find box: the name, what it is and its input (js/move-names.js), the entry and id.
+        if (!matches(view.filter, mname, m.id, ref + " " + (MN ? MN.searchText(m) : ""))) return;
+        out.push({ name: mname || ref, move: MN ? m : null, moveRef: ref,
+          sub: m.styles ? (m.styles === "EHSX" ? "all styles" : "styles " + H().stylesText(m.styles)) : "",
           off: !inStyle(m.styles, view.style), ref: m.kind + ":" + m.id,
           key: function (f) { return { kind: "attack", weaponClass: code, style: view.style, entry: m.kind, recordId: m.id, field: f }; },
           current: function (f) { return H().moveValue(m, f); } });
@@ -240,6 +242,7 @@
       ctx.loadFile(type).then(function () { if (ctx.state.data.files[type.slug]) render(); });
       return;
     }
+    if ($("bal-glegend")) $("bal-glegend").hidden = view.mode !== "moves";
     var all = lines(type, file);
     var paged = pageOf(all, view.page, PAGE_SIZE);
     view.page = paged.page;
@@ -301,8 +304,9 @@
       th.scope = "row";
       var icon = l.piece && window.HvGameIcons ? window.HvGameIcons.equipmentIcon(iconData, l.piece, "gi-small") : null;
       if (icon) th.appendChild(icon);
-      th.appendChild(el("span", "bal-gtitle", l.name));
-      th.appendChild(el("span", "bal-gsub", l.sub));
+      if (l.move) window.HvMoveNames.fill(th.appendChild(el("span", "bal-gtitle bal-gmove")), l.move, l.moveRef, { slug: type.slug });
+      else th.appendChild(el("span", "bal-gtitle", l.name));
+      if (l.sub) th.appendChild(el("span", "bal-gsub", l.sub));
       if (l.off) th.title = "Not reached in this style (by the data)";
       row.appendChild(th);
       fields.forEach(function (f, col) {
@@ -551,6 +555,7 @@
         iconData = data;
         if (data && view.mode === "weapons" && !editing) { built = null; render(); }
       });
+    if (window.HvMoveNames && $("bal-glegend")) $("bal-glegend").appendChild(window.HvMoveNames.legend());
     var t = null;
     $("bal-gfilter").addEventListener("input", function () {
       clearTimeout(t);
