@@ -322,6 +322,12 @@ same change:
 1. Find the day under "Released updates" (`<section class="cl-day" id="d-YYYY-MM-DD">` inside its month,
    `<section class="cl-month" id="m-YYYY-MM">`), or add it at the top: heading `<h4 class="cl-day-title">`
    "Weekday D Month YYYY", and a link to it in the contents (`nav.cl-toc`).
+   Every day is a drop-down: `<details class="cl-fold cl-fold-day">`, a `<summary>` with the date, then the
+   `section.cl-day` (its `h4` is `visually-hidden`, the summary shows the date), and every month is one around its
+   `section.cl-month` (`cl-fold cl-fold-month`, summary "Month YYYY"). Only the newest 3 days carry `open` (and the
+   month that holds them): when you add a day, take `open` off the day that is now 4th. A new month gets its own
+   month drop-down. `js/changelog-folds.js` opens the folds around a link target (`#d-...`, `#m-...`), and the bot
+   feed and `update-news.py` read `section.cl-topic` wherever it sits, so keep the topics inside `section.cl-day`.
 2. Put each change under its topic for that day (`<section class="cl-topic" id="d-YYYY-MM-DD-<topic>">`, an
    `<h5>`; e.g. Sky Corridor, Gacha, Hunting Road, Client patch, Game server, Launcher, Website, Discord bot),
    newest release first; a new topic also goes in the day's topic line (`p.cl-topics`). Every change of that day
@@ -337,7 +343,9 @@ same change:
 4. Move the entries that went live out of "Coming next". For a game server build, the source is that
    build's player notes ("Next build" in Erupe's `docs/hvmhfz-changelog.md`).
 5. Update "Last update listed" in the page's meta line, and "Known issues" if one was fixed or found.
-6. Run `python3 dev/check-changelog.py` ("changelog OK") and `python3 dev/check-site.py`.
+6. Run `python3 dev/check-changelog.py` ("changelog OK") and `python3 dev/check-site.py`. `python3 dev/check-changelog.py`
+   also checks the drop-downs (newest 3 days open, the rest closed); `NODE_PATH=/root/work/pw-tools/node_modules node
+   dev/check-changelog-folds.js` ("changelog folds OK", headless Chromium) checks that links open them.
 
 The home page's "What's new" (`js/whatsnew.js`) shows the first changes of the newest day.
 

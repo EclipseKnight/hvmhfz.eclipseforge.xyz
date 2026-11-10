@@ -554,9 +554,30 @@ main.sheet .cl-toc-month{margin:.35em 0 0 .2em;line-height:1.7}
 main.sheet .cl-toc-month a:first-child{font-weight:700}
 main.sheet .cl-month-title{font-weight:700;font-size:1.5rem;line-height:1.2;letter-spacing:0;text-transform:none;color:#2a1c10;
   margin:2.2em 0 .2em;padding-bottom:.25em;border-bottom:3px double #a98b56}
+main.sheet .cl-month,main.sheet .cl-day{scroll-margin-top:calc(var(--nav-h,64px) + 12px)}
 main.sheet .cl-day{margin:1.6em 0 0;scroll-margin-top:calc(var(--nav-h,64px) + 12px)}
 main.sheet .cl-day-title{font:700 .86rem var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:#7a5418;
   margin:0 0 .3em;padding:.5em 0 .2em;border-bottom:1px solid rgba(120,90,50,.35)}
+/* Folds: each day, and each month as a whole, is a <details>; the newest days and their month are open. js/changelog-folds.js opens
+   the fold of a link target and adds Expand all / Collapse all. The h3/h4 inside stay for screen readers and the page structure. */
+main.sheet .cl-fold>summary{display:flex;align-items:center;gap:.6em;min-height:44px;cursor:pointer;list-style:none;
+  border-radius:3px;-webkit-tap-highlight-color:transparent}
+main.sheet .cl-fold>summary::-webkit-details-marker{display:none}
+main.sheet .cl-fold>summary::before{content:"";flex:none;width:.5em;height:.5em;margin:0 .35em 0 .15em;
+  border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(-45deg);transition:transform .15s}
+main.sheet .cl-fold[open]>summary::before{transform:rotate(45deg)}
+main.sheet .cl-fold>summary:focus-visible{outline:2px solid #7a5418;outline-offset:2px}
+main.sheet .cl-fold-month>summary{font-weight:700;font-size:1.5rem;line-height:1.2;color:#2a1c10;margin:1.4em 0 .2em;
+  border-bottom:3px double #a98b56}
+main.sheet .cl-fold-day{margin:.5em 0 0;border-bottom:1px solid rgba(120,90,50,.35)}
+main.sheet .cl-fold-day>summary{font:700 .86rem var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:#7a5418}
+main.sheet .cl-fold-day>summary:hover{color:#3a2a16}
+main.sheet .cl-fold-day>.cl-day{margin-top:.2em;padding-bottom:.8em}
+main.sheet .cl-fold-month>.cl-month>.cl-day:first-child{margin-top:0}
+main.sheet .cl-fold-all{margin:1.2em 0 0;font:.84rem var(--font-ui)}
+main.sheet .cl-fold-all button{font:inherit;min-height:44px;padding:0 14px;margin:0 8px 0 0;border:1px solid #a98b56;border-radius:3px;
+  background:rgba(255,250,236,.6);color:#3a2a16;cursor:pointer}
+main.sheet .cl-fold-all button:hover{background:rgba(255,250,236,.95)}
 main.sheet .cl-topics{margin:.3em 0 .6em;font-size:.88rem;color:var(--ink-soft)}
 main.sheet .cl-topic{margin:.9em 0 0 .2em;scroll-margin-top:calc(var(--nav-h,64px) + 12px)}
 main.sheet .cl-topic-title{font-weight:700;font-size:1.08rem;line-height:1.3;color:#3a2a16;margin:.4em 0 .3em}
@@ -621,7 +642,7 @@ main.sheet footer::before{content:"MHFZ";display:inline-grid;place-items:center;
   main.sheet h2{padding-left:36px}
   main.sheet h2::before{left:14px}
   main.sheet .toc ol{columns:1}
-  main.sheet .cl-month-title{font-size:1.3rem}
+  main.sheet .cl-month-title,main.sheet .cl-fold-month>summary{font-size:1.3rem}
   main.sheet .cl-topic{margin-left:0}
   main.sheet table{display:block;overflow-x:auto}
 }

@@ -5,6 +5,10 @@ an older copy of the page, that no change was lost when entries were regrouped.
 Layout (always):
   - "Released updates" holds section.cl-month > section.cl-day > section.cl-topic, newest day first, each day
     in its own month, ids m-YYYY-MM, d-YYYY-MM-DD and d-YYYY-MM-DD-<topic> (unique);
+  - folds: every day sits in its own details.cl-fold (with a summary first), every month in a details.cl-fold
+    around its section.cl-month; the newest OPEN_DAYS days are open and every older day is closed, a month is
+    open exactly when it holds an open day; the parsers of the bot feed and update-news.py need the topics to
+    stay in section.cl-day, so only whole days and months are wrapped;
   - every change (a top-level <li> of a topic) starts with <time class="cl-when">: "D Mon YYYY, HH:MM UTC"
     with datetime="YYYY-MM-DDTHH:MMZ", or the date only "D Mon YYYY" with datetime="YYYY-MM-DD" and class
     cl-date; its date is the day it sits under. Only a "How to get it" note (li.cl-howto) has no time;
@@ -28,6 +32,7 @@ from html.parser import HTMLParser
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DEFAULT_OLD = "8e02a4c"
+OPEN_DAYS = 3  # the newest days that start open; the older ones are drop-downs
 VOID = {"br", "img", "meta", "link", "input", "hr", "source", "wbr", "col", "area", "base", "embed", "track"}
 MON = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10,
        "Nov": 11, "Dec": 12}
@@ -199,13 +204,21 @@ def check_layout(src):
         want = f"{MONTH_NAMES[int(m.group(2)) - 1]} {m.group(1)}"
         if title is None or norm(title.text()) != want:
             problems.append(f"{mid}: month title should be {want!r}")
-        for day in (c for c in month.children if isinstance(c, Node) and "cl-day" in c.classes()):
+        problems += check_fold(month)
+        for day in (c for c in month.iter() if "cl-day" in c.classes()):
             did = day.attrs.get("id", "")
+            problems += check_fold(day)
             d = re.fullmatch(r"d-(\d{4})-(\d{2})-(\d{2})", did)
             if not d or f"m-{d.group(1)}-{d.group(2)}" != mid:
                 problems.append(f"day {did!r} is not d-YYYY-MM-DD inside its month {mid}")
                 continue
             days_seen.append(did)
+            fold = day.parent
+            if fold is not None and fold.tag == "details":
+                is_open = "open" in fold.attrs
+                if is_open != (len(days_seen) <= OPEN_DAYS):
+                    problems.append(f"{did}: the day should be {'open' if len(days_seen) <= OPEN_DAYS else 'closed'}"
+                                    f" (only the newest {OPEN_DAYS} days start open)")
             date = did[2:]
             topics = [c for c in day.children if isinstance(c, Node) and "cl-topic" in c.classes()]
             if not topics:
@@ -221,6 +234,12 @@ def check_layout(src):
                 for ul in (c for c in t.children if isinstance(c, Node) and c.tag == "ul"):
                     for li in (c for c in ul.children if isinstance(c, Node) and c.tag == "li"):
                         problems += check_time(li, date, tid)
+    for month in months:
+        fold = month.parent
+        has_open = any(n.tag == "details" and "open" in n.attrs for n in month.iter())
+        if fold is not None and fold.tag == "details" and ("open" in fold.attrs) != has_open:
+            problems.append(f"{month.attrs.get('id')}: the month should be {'open' if has_open else 'closed'}"
+                            " (open exactly when it holds an open day)")
     if days_seen != sorted(days_seen, reverse=True):
         problems.append("days are not newest first: " + ", ".join(days_seen))
     toc = next((n for n in main.iter() if "cl-toc" in n.classes()), None)
@@ -232,6 +251,17 @@ def check_layout(src):
         if "#" + mon.attrs.get("id", "") not in toc_links:
             problems.append(f"the contents do not link #{mon.attrs.get('id')}")
     return problems
+
+
+def check_fold(section):
+    """A day or month section sits directly in a details.cl-fold whose first child is a summary."""
+    fold, sid = section.parent, section.attrs.get("id", "")
+    if fold is None or fold.tag != "details" or "cl-fold" not in fold.classes():
+        return [f"{sid}: not inside a details.cl-fold"]
+    first = next((c for c in fold.children if isinstance(c, Node)), None)
+    if first is None or first.tag != "summary" or not norm(first.text()):
+        return [f"{sid}: the details must start with a summary that says what it holds"]
+    return []
 
 
 def check_time(li, date, where):
@@ -259,11 +289,13 @@ def check_time(li, date, where):
 def self_test():
     shell = ('<main><nav class="toc cl-toc"><a href="#m-2026-11">x</a><a href="#d-2026-11-03">x</a></nav>'
              '<h2 id="next">Next</h2><h2 id="live">Released</h2>'
+             '<details class="cl-fold" open><summary>November 2026</summary>'
              '<section class="cl-month" id="m-2026-11"><h3 class="cl-month-title">November 2026</h3>'
+             '<details class="cl-fold" open><summary>3 Nov</summary>'
              '<section class="cl-day" id="d-2026-11-03"><h4 class="cl-day-title">3 Nov</h4>'
              '<p class="cl-topics"><a href="#d-2026-11-03-sky">Sky</a></p>'
              '<section class="cl-topic" id="d-2026-11-03-sky"><h5>Sky</h5><ul>{items}</ul></section>'
-             '</section></section><h2 id="known">Known</h2></main>')
+             '</section></details></section></details><h2 id="known">Known</h2></main>')
     old = ('<main><h2 id="next">Next</h2><h2 id="live">Released</h2><h3>3 Nov</h3><ul>'
            '<li><b>Tower:</b> open, see <a href="/sky.html">Sky</a>.</li>'
            '<li><b>How to get it:</b> download <code>Frontier_Patch.zip</code> again from the setup guide and copy '
@@ -284,6 +316,12 @@ def self_test():
         ("a time on the wrong day", good.replace("2026-11-03T03:41Z", "2026-11-02T03:41Z"), True, False),
         ("a time text that disagrees", good.replace("03:41 UTC", "03:42 UTC"), True, False),
         ("a day missing from the contents", good.replace('<a href="#d-2026-11-03">x</a>', ""), True, False),
+        ("a day outside a drop-down", good.replace('<details class="cl-fold" open><summary>3 Nov</summary>', "")
+         .replace("</section></details></section>", "</section></section>"), True, False),
+        ("a newest day closed", good.replace('<details class="cl-fold" open><summary>3 Nov',
+                                             '<details class="cl-fold"><summary>3 Nov'), True, False),
+        ("a month closed around an open day", good.replace('<details class="cl-fold" open><summary>November',
+                                                           '<details class="cl-fold"><summary>November'), True, False),
         ("a topic missing from the day's line", good.replace('<a href="#d-2026-11-03-sky">Sky</a>', ""), True, False),
     ]
     failed = 0
