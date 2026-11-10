@@ -128,6 +128,7 @@
         <a class="tab" id="tab-road" role="tab" aria-controls="panel-road" aria-selected="false" href="#road">Hunting Road</a>
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests <span class="tab-count" id="count-quests"></span></a>
         <a class="tab" id="tab-users" role="tab" aria-controls="panel-users" aria-selected="false" href="#users">Users <span class="tab-count" id="count-users"></span></a>
+        <a class="tab" id="tab-diagnostics" role="tab" aria-controls="panel-diagnostics" aria-selected="false" href="#diagnostics">Diagnostics</a>
         <a class="tab" id="tab-server" role="tab" aria-controls="panel-server" aria-selected="false" href="#server">Server</a>
         <a class="tab" id="tab-audit" role="tab" aria-controls="panel-audit" aria-selected="false" href="#audit">Audit</a>
       </nav>
@@ -604,6 +605,18 @@
         </div>
         <p class="note-text">Roles apply at the account's next request. Nobody can remove their own admin role, and the last admin cannot be removed. Search is case-insensitive and finds an account by its name or by any of its characters (matching characters are highlighted); account names themselves are case-sensitive. Each character links to its hunter page; deleted and never-played slots are listed but not linked. <b>Link</b> sets an account's Discord user id by hand, the same link <code>/link</code> makes (the Hunter role follows within 30 minutes); <b>Unlink</b> takes two clicks. Chat toggles are the in-game <code>op</code> (chat commands) and <code>timer</code> (quest timer) flags. <b>Patch channel</b> says which client patch the Mezeporta launcher gives the account: <code>stable</code> or <code>pre: &lt;slot&gt;</code> (only playtester, tester, moderator and admin accounts can have a pre-release; players join the playtest on their account page, and the <b>Playtester</b> button here gives or takes the role by hand); pick Stable or a slot and press Set, and the player can switch it too on the account page. A slot that is not out gives stable.</p>
       </section>
+      <!-- Recent logins of one account: js/admin-diag.js (GET /api/admin/users/{id}/logins) -->
+      <section class="panel" id="logins-panel" hidden>
+        <div class="panel-head"><h2>Recent logins <span id="logins-account"></span></h2><button type="button" class="ghost-btn small" id="logins-close">Close</button></div>
+        <p class="form-alert" id="logins-alert" hidden></p>
+        <div class="table-wrap">
+          <table class="data-table admin-table" data-nosort>
+            <thead><tr><th>Login (UTC)</th><th>Logout</th><th>Character</th><th>Land</th><th>Patch</th><th>Game options sent</th><th>Refused</th><th>How it ended</th></tr></thead>
+            <tbody id="logins-rows"></tbody>
+          </table>
+        </div>
+        <p class="note-text">One row per channel login, written by the game server; kept 30 days. <b>Refused</b>: the patch gate (<code>gate</code>), a test client outside the Test land (<code>test-land</code>) or a Speedrun Cup or VS run that did not count (<code>event-rule</code>). <b>How it ended</b>: <code>logout</code>, <code>connection closed</code> (the game closed or the network dropped), <code>timeout</code>, <code>refused (…)</code>, <code>kicked (ban)</code>, <code>server shutdown</code>; empty while the session runs or when the server stopped without a logout. <button type="button" class="ghost-btn small" id="logins-diag">This account's diagnostics</button></p>
+      </section>
       <section class="panel" id="patch-slots-panel" hidden>
         <div class="panel-head"><h2>Pre-release slots</h2><span class="panel-note">published by the game server</span></div>
         <div id="patch-slots-body" aria-live="polite"></div>
@@ -636,6 +649,37 @@
             <tbody id="ops-audit"><tr><td colspan="5" class="empty-cell">Loading</td></tr></tbody>
           </table>
         </div>
+      </section>
+      </div>
+
+      <!-- Diagnostics uploads: js/admin-diag.js (GET /api/admin/diagnostics[/{id}]) -->
+      <div class="tab-panel" id="panel-diagnostics" hidden>
+      <section class="panel" id="diag-list-panel">
+        <div class="panel-head"><h2>Diagnostics reports</h2><span class="panel-note">players' hvdiag.txt and crash files, kept 90 days</span></div>
+        <p class="form-alert" id="diag-admin-alert" hidden></p>
+        <div class="admin-search">
+          <input id="diag-user" type="number" min="1" placeholder="Account # (empty: all)" aria-label="Account number" />
+          <button type="button" class="ghost-btn small" id="diag-filter">Show</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table admin-table" data-nosort>
+            <thead><tr><th>#</th><th>Uploaded (UTC)</th><th>Account</th><th>File</th><th>Patch</th><th>Outcome</th><th>Problems</th><th></th></tr></thead>
+            <tbody id="diag-rows"><tr><td colspan="8" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+        <div class="admin-pager">
+          <button type="button" class="ghost-btn small" id="diag-newest">Newest</button>
+          <button type="button" class="ghost-btn small" id="diag-older">Older</button>
+        </div>
+        <p class="note-text">What the player saw is the outcome and the findings; open a report for the facts and the whole file. Staff guide: the research repo's <code>docs/diagnostics.md</code> ("Staff guide"); <code>tools/diag/explain_crash.py</code> explains a file in more depth (frames, nearest function). The reports hold a character name and id and the PC's Windows version, locale and memory: keep them to staff.</p>
+      </section>
+      <section class="panel" id="diag-view-panel" hidden>
+        <div class="panel-head"><h2>Report <span id="diag-view-title"></span></h2><button type="button" class="ghost-btn small" id="diag-view-close">Close</button></div>
+        <p class="diag-outcome" id="diag-view-outcome"></p>
+        <ul class="diag-findings" id="diag-view-findings"></ul>
+        <dl class="detail-list diag-facts" id="diag-view-facts"></dl>
+        <p class="subhead">The file</p>
+        <pre class="diag-raw" id="diag-view-raw"></pre>
       </section>
       </div>
 
@@ -702,7 +746,8 @@
     <script src="/js/admin-notices.js"></script>
     <script src="/js/admin-content.js"></script>
     <script src="/js/admin-patches.js?v=3"></script>
-    <script src="/js/admin.js?v=5"></script>
+    <script src="/js/admin-diag.js?v=1"></script>
+    <script src="/js/admin.js?v=6"></script>
     <script src="/js/search.js" defer></script>
   </body>
 </html>

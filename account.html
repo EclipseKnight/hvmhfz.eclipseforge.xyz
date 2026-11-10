@@ -508,6 +508,27 @@
           <p class="note-text" id="patch-not-eligible" hidden>Pre-releases are for playtesters. Join the playtest above to choose one.</p>
         </section>
 
+        <!-- Diagnostics upload: js/account-diag.js (POST /api/account/diagnostics) -->
+        <section class="panel" id="diag-panel">
+          <div class="panel-head"><h2>Diagnostics</h2></div>
+          <p class="note-text">The game crashed, loaded Mezeporta instead of a map, or lost the connection? The game writes a report of what happened. Upload it here for a plain answer; staff see it too.</p>
+          <ol class="diag-steps">
+            <li>Open the game folder: right-click the game's shortcut, <em>Open file location</em> (the folder with <code>mhf.exe</code>, <code>mhfo-hd.dll</code> and <code>hvmods.dll</code>).</li>
+            <li>Find <code>hvdiag.txt</code>, and any <code>hvcrash-&hellip;.txt</code> file. Crash files are named by the time of the crash (UTC): take the newest.</li>
+            <li>Upload one file at a time below (text files only, up to 256&nbsp;KB).</li>
+          </ol>
+          <p class="note-text">No <code>hvdiag.txt</code>? The game ran without <code>hvmods.dll</code> (an old patch, or the file is missing): run the launcher to update. The files hold your character's name and id and your PC's Windows version, language and memory; no passwords, no Windows user name or folder path.</p>
+          <div class="field"><label for="diag-file">Report file</label><input id="diag-file" type="file" accept=".txt,text/plain" /></div>
+          <button type="button" class="btn btn-primary btn-small" id="diag-upload" disabled>Upload</button>
+          <p class="form-alert" id="diag-alert" role="alert" hidden></p>
+          <div class="diag-answer" id="diag-answer" aria-live="polite" hidden>
+            <p class="diag-outcome" id="diag-outcome"></p>
+            <ul class="diag-findings" id="diag-findings"></ul>
+            <p class="subhead">From the report</p>
+            <dl class="detail-list" id="diag-facts"></dl>
+          </div>
+        </section>
+
         <section class="panel">
           <div class="panel-head"><h2>Account</h2></div>
           <dl class="detail-list" id="account-details">
@@ -571,6 +592,7 @@
     <script src="/js/road-preference.js?v=1"></script>
     <script src="/js/account-qol.js?v=3"></script>
     <script src="/js/account-patch-channel.js?v=3"></script>
+    <script src="/js/account-diag.js?v=1"></script>
     <script src="/js/quest-submissions.js?v=2"></script>
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>

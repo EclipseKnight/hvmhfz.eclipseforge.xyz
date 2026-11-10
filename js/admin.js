@@ -729,7 +729,7 @@
 
   /* ---------- tabs ---------- */
 
-  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", notices: "panel-notices", content: "panel-content", road: "panel-road", quests: "panel-quests", users: "panel-users", server: "panel-server", audit: "panel-audit" };
+  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", notices: "panel-notices", content: "panel-content", road: "panel-road", quests: "panel-quests", users: "panel-users", diagnostics: "panel-diagnostics", server: "panel-server", audit: "panel-audit" };
   var roadStarted = false;
   var usersWired = false;
   var serverWired = false;
@@ -764,6 +764,9 @@
     }
     if (name === "content") {
       if (window.startAdminContent) window.startAdminContent();
+    }
+    if (name === "diagnostics") {
+      if (window.startAdminDiag) window.startAdminDiag();
     }
     if (name === "users") {
       if (!usersWired) {
@@ -1136,6 +1139,14 @@
       var name = el("td", "cell-name");
       name.appendChild(el("span", null, user.username));
       if (currentName && user.username === currentName) name.appendChild(el("span", "admin-desc", "you"));
+      if (window.AdminDiag) {
+        // Recent logins of this account (js/admin-diag.js, Erupe's login_history)
+        var logins = el("button", "ghost-btn small", "Logins");
+        logins.type = "button";
+        logins.title = "Recent logins of this account (land, patch, refusals, how each ended)";
+        logins.addEventListener("click", function () { window.AdminDiag.showLogins(user); });
+        name.appendChild(logins);
+      }
       row.appendChild(name);
       var roles = el("td", "role-cell");
       if (!user.roles.length) roles.appendChild(el("span", "role-badge", "none"));

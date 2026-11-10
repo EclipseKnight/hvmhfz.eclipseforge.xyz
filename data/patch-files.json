@@ -1,0 +1,204 @@
+{
+ "_about": "sha256 of the key game files in each client patch zip, by version (pre-releases as 1.21-pre3). A file a version's zip does not ship is not listed. Read by the API's Diagnostics upload to compare a player's files (hvdiag.txt [files]) with the release. Written by dev/make-patch-files.py --backups DIR.",
+ "current": "1.20",
+ "files": [
+  "mhf.exe",
+  "mhfo-hd.dll",
+  "mhfo.dll",
+  "dat/mhfdat.bin",
+  "dat/mhfpac.bin",
+  "dat/mhfinf.bin",
+  "hvmods.dll"
+ ],
+ "versions": {
+  "1.20": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "e51e4cf3db841c2efda0307dd622f686f15aeae131429ff4eef3dc5f09b6ea61",
+   "mhfo.dll": "bd5665d92d641feb8b0587627dee09eaae7c73c06bcc025988b1a5d96f534b01",
+   "dat/mhfdat.bin": "3f110a0da61927504e7418111cc7786c9702fea83a300ec460cca0c51ebf4edc",
+   "dat/mhfpac.bin": "e837d1d232d535594702c05e4cb6b9d5e0273703ebb994821e9b9f2e0c6ffae2",
+   "dat/mhfinf.bin": "665cbb327c004930e6555effbae514e91df65deac43897dc093ad80e5bbd0093"
+  },
+  "1.19": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "7fdc707cef4ab1c307e247621b89c57bbf124171b3377f7cfffa47cdfe539716",
+   "mhfo.dll": "7539d6dfc57be468a956efea4b5625062e7d1ad631272e30e77bc0b3d009adcd",
+   "dat/mhfdat.bin": "3f110a0da61927504e7418111cc7786c9702fea83a300ec460cca0c51ebf4edc",
+   "dat/mhfpac.bin": "e837d1d232d535594702c05e4cb6b9d5e0273703ebb994821e9b9f2e0c6ffae2",
+   "dat/mhfinf.bin": "665cbb327c004930e6555effbae514e91df65deac43897dc093ad80e5bbd0093"
+  },
+  "1.18": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "38c0ebc069d8cef8f176f0414aa80c503b206cd63025c8f618718a2533f51be5",
+   "mhfo.dll": "b156bb5935b92a38061b9849ab873753635335fcedcdecee1ba21632a47ca5b2",
+   "dat/mhfdat.bin": "a2a6b712c4ed2409ceebdb576e1bbfdd7fd08c25df16b9e9113072e1aed70125",
+   "dat/mhfpac.bin": "e837d1d232d535594702c05e4cb6b9d5e0273703ebb994821e9b9f2e0c6ffae2",
+   "dat/mhfinf.bin": "665cbb327c004930e6555effbae514e91df65deac43897dc093ad80e5bbd0093"
+  },
+  "1.17": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "38c0ebc069d8cef8f176f0414aa80c503b206cd63025c8f618718a2533f51be5",
+   "mhfo.dll": "b156bb5935b92a38061b9849ab873753635335fcedcdecee1ba21632a47ca5b2",
+   "dat/mhfdat.bin": "94a4bc148888f3fdf1135d2d4cdf2cff928c445850eb3f31b70973674dffe5a4",
+   "dat/mhfpac.bin": "75fc80bc9a117221fcc23d5033eb408e828ad04e6f552154cf7ede7f40438c30",
+   "dat/mhfinf.bin": "665cbb327c004930e6555effbae514e91df65deac43897dc093ad80e5bbd0093"
+  },
+  "1.16": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "38c0ebc069d8cef8f176f0414aa80c503b206cd63025c8f618718a2533f51be5",
+   "mhfo.dll": "b156bb5935b92a38061b9849ab873753635335fcedcdecee1ba21632a47ca5b2",
+   "dat/mhfdat.bin": "94a4bc148888f3fdf1135d2d4cdf2cff928c445850eb3f31b70973674dffe5a4",
+   "dat/mhfpac.bin": "129a8199ca5db74dfe3f73645dba3078015fe93874f52e610f2376eb75357953",
+   "dat/mhfinf.bin": "665cbb327c004930e6555effbae514e91df65deac43897dc093ad80e5bbd0093"
+  },
+  "1.15": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "8f24b55c38dca890128ffd80cd7b25ae7b7ba80545623069c20e4af00a1193f4",
+   "mhfo.dll": "0b2488c88e58920c83ab16aa8f15e33ca4300f7df29edd44c64831085963cd8e",
+   "dat/mhfdat.bin": "94a4bc148888f3fdf1135d2d4cdf2cff928c445850eb3f31b70973674dffe5a4",
+   "dat/mhfpac.bin": "129a8199ca5db74dfe3f73645dba3078015fe93874f52e610f2376eb75357953",
+   "dat/mhfinf.bin": "665cbb327c004930e6555effbae514e91df65deac43897dc093ad80e5bbd0093"
+  },
+  "1.14": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "8f24b55c38dca890128ffd80cd7b25ae7b7ba80545623069c20e4af00a1193f4",
+   "mhfo.dll": "0b2488c88e58920c83ab16aa8f15e33ca4300f7df29edd44c64831085963cd8e",
+   "dat/mhfdat.bin": "94a4bc148888f3fdf1135d2d4cdf2cff928c445850eb3f31b70973674dffe5a4",
+   "dat/mhfpac.bin": "129a8199ca5db74dfe3f73645dba3078015fe93874f52e610f2376eb75357953",
+   "dat/mhfinf.bin": "665cbb327c004930e6555effbae514e91df65deac43897dc093ad80e5bbd0093"
+  },
+  "1.13": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "5c907000090e67f25b7ae6b8de515537ff077b65309fc485fd23a6fca45229ba",
+   "mhfo.dll": "bbc333b830ed3c8d89e8a0d19dd17b9041df79ea10dd75b2f073361fe7ef88ef",
+   "dat/mhfdat.bin": "94a4bc148888f3fdf1135d2d4cdf2cff928c445850eb3f31b70973674dffe5a4",
+   "dat/mhfpac.bin": "129a8199ca5db74dfe3f73645dba3078015fe93874f52e610f2376eb75357953",
+   "dat/mhfinf.bin": "ea0edc7cf0853413d7584d05fa0f9b7138c236f8afe020378b8dbd14d4498e6c"
+  },
+  "1.12": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "6de3494a2677f970aa447ad4d6c326c90926ec44f968a89edeeadd176fa0c425",
+   "mhfo.dll": "dadffd649dc639774a380330305755a809bb492ad92f296b1e969e5074ca06d8",
+   "dat/mhfdat.bin": "2dbf1189bf719b3b7aab14340c887b409dccebcdd7169058a8f0ed642d4571fe",
+   "dat/mhfpac.bin": "a30ae1606e117956045d079ce8adeba0e2ee0b08b208de0feef5a427dc1c2745",
+   "dat/mhfinf.bin": "ea0edc7cf0853413d7584d05fa0f9b7138c236f8afe020378b8dbd14d4498e6c"
+  },
+  "1.11": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "f8f050fb10a7f3ee81efd256c67d9d2a3132a4dbc6357575439b9add5e7ddcac",
+   "mhfo.dll": "87ff71bf3b66bb4032bcd3551092d11b86c0336028c260a0d88f5cd13b673f0f",
+   "dat/mhfdat.bin": "d8252cca9eae793a4ad70734540858a5744dae73361a1534e02c3a982d01cdeb",
+   "dat/mhfpac.bin": "ff9fec018432bdb703ee777c678ba36eba5539564b5e3c622a8ab71d42c8e591",
+   "dat/mhfinf.bin": "a26e6d06d0720f65790e009588f692ed0c47a155ddb00067a439f57acf672c0f"
+  },
+  "1.10": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "f8f050fb10a7f3ee81efd256c67d9d2a3132a4dbc6357575439b9add5e7ddcac",
+   "mhfo.dll": "87ff71bf3b66bb4032bcd3551092d11b86c0336028c260a0d88f5cd13b673f0f",
+   "dat/mhfdat.bin": "d8252cca9eae793a4ad70734540858a5744dae73361a1534e02c3a982d01cdeb",
+   "dat/mhfpac.bin": "ff9fec018432bdb703ee777c678ba36eba5539564b5e3c622a8ab71d42c8e591",
+   "dat/mhfinf.bin": "9599f91807c9305383f8c859a9dc52c09caea59f28fba455357c771ddf70d2ed"
+  },
+  "1.9": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "f8f050fb10a7f3ee81efd256c67d9d2a3132a4dbc6357575439b9add5e7ddcac",
+   "mhfo.dll": "87ff71bf3b66bb4032bcd3551092d11b86c0336028c260a0d88f5cd13b673f0f",
+   "dat/mhfdat.bin": "2d5e04008bcfd4f978e90fc89eba0f8366b3a3de6bf4ce14bb317b70a8f6baa7",
+   "dat/mhfpac.bin": "3bd1e4e02ff39d851ad3dba5c8bbf3451e5a5538816c5d2cf6bb2aaf87d5a932",
+   "dat/mhfinf.bin": "4abed34956ee2775ca825c3ca4025245269d1bb1c0f02ecd944865b1b7d7c817"
+  },
+  "1.8": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "5be852f73036a33791c65b61a4836304495e23c0ce0e44f29643bc7fae82ea6d",
+   "mhfo.dll": "3e2b1b8bd6c0d20ec39053e5e245009287752d6d827904b4cb81a24fdf36b7ac",
+   "dat/mhfdat.bin": "c6243a208705cbfbb35d28cb30f04e5ed7e5db70b038f86d7f3b8c4319ac3611",
+   "dat/mhfpac.bin": "fc9e9c9dd832d9e883bea0587b569aae6f625e48b31f1a10271fb05515fa3036",
+   "dat/mhfinf.bin": "c78ff0a633e6e1f2827d15252039d55e6bb2c09967784da6042f8d80cdafac1c"
+  },
+  "1.7": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "5be852f73036a33791c65b61a4836304495e23c0ce0e44f29643bc7fae82ea6d",
+   "mhfo.dll": "3e2b1b8bd6c0d20ec39053e5e245009287752d6d827904b4cb81a24fdf36b7ac",
+   "dat/mhfdat.bin": "f7940508b0434003d9fd1357d1b5487594866d0c548d0fbeb8a747f43b9fdfaf",
+   "dat/mhfpac.bin": "b0b70c59db2e6d9078e1dadd3511a7be6034845311f6ad00bab369fe445f5847",
+   "dat/mhfinf.bin": "c78ff0a633e6e1f2827d15252039d55e6bb2c09967784da6042f8d80cdafac1c"
+  },
+  "1.6": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "5be852f73036a33791c65b61a4836304495e23c0ce0e44f29643bc7fae82ea6d",
+   "mhfo.dll": "3e2b1b8bd6c0d20ec39053e5e245009287752d6d827904b4cb81a24fdf36b7ac",
+   "dat/mhfdat.bin": "f7940508b0434003d9fd1357d1b5487594866d0c548d0fbeb8a747f43b9fdfaf",
+   "dat/mhfpac.bin": "8409bb45c405e11cf27a657990e84f5bd7ec8fa7d733a9f091f50c98293b27f2",
+   "dat/mhfinf.bin": "c78ff0a633e6e1f2827d15252039d55e6bb2c09967784da6042f8d80cdafac1c"
+  },
+  "1.5": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "5be852f73036a33791c65b61a4836304495e23c0ce0e44f29643bc7fae82ea6d",
+   "mhfo.dll": "3e2b1b8bd6c0d20ec39053e5e245009287752d6d827904b4cb81a24fdf36b7ac",
+   "dat/mhfdat.bin": "f7940508b0434003d9fd1357d1b5487594866d0c548d0fbeb8a747f43b9fdfaf"
+  },
+  "1.4": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "5be852f73036a33791c65b61a4836304495e23c0ce0e44f29643bc7fae82ea6d",
+   "mhfo.dll": "3e2b1b8bd6c0d20ec39053e5e245009287752d6d827904b4cb81a24fdf36b7ac",
+   "dat/mhfdat.bin": "f7940508b0434003d9fd1357d1b5487594866d0c548d0fbeb8a747f43b9fdfaf",
+   "dat/mhfpac.bin": "7028ead185483bd563ee56d497328c7f55febe1651eec688dfd358411f998b67",
+   "dat/mhfinf.bin": "2889ded4ad67b15686a55db7ee31a28b1c6145960311dbecf7e285e472e9e43f"
+  },
+  "1.3": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "8e34008074a045c4dcd3b2a2bd9d2d98ce7bfa6a6475a3d8c3d813462dce893b",
+   "mhfo.dll": "47c72962aefe90d11df66d75a9d75b9a76456729ccc77151f3d20ce4844fe85f",
+   "dat/mhfdat.bin": "f7940508b0434003d9fd1357d1b5487594866d0c548d0fbeb8a747f43b9fdfaf",
+   "dat/mhfpac.bin": "7028ead185483bd563ee56d497328c7f55febe1651eec688dfd358411f998b67",
+   "dat/mhfinf.bin": "432d44842adfa019edc0b005a38f3ce322d7d0656d5d67b03e8b73cfce221f06"
+  },
+  "1.2": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "01f980a4b892ca0dbebad8eb54b224d080b32253bb8e793e23cd060089003d25",
+   "mhfo.dll": "a21322ca5864d6a4c8599fd4522fdbcc8997225c05d82d958d9aeba2678adfc7",
+   "dat/mhfdat.bin": "f7940508b0434003d9fd1357d1b5487594866d0c548d0fbeb8a747f43b9fdfaf",
+   "dat/mhfpac.bin": "7028ead185483bd563ee56d497328c7f55febe1651eec688dfd358411f998b67",
+   "dat/mhfinf.bin": "37d733cb98f0ed9c2fc81939661d40aa6c6f09cbeb7bac4dc41df1e01f7556db"
+  },
+  "1.1": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "01f980a4b892ca0dbebad8eb54b224d080b32253bb8e793e23cd060089003d25",
+   "mhfo.dll": "a21322ca5864d6a4c8599fd4522fdbcc8997225c05d82d958d9aeba2678adfc7",
+   "dat/mhfdat.bin": "f7940508b0434003d9fd1357d1b5487594866d0c548d0fbeb8a747f43b9fdfaf"
+  },
+  "1.0": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "01f980a4b892ca0dbebad8eb54b224d080b32253bb8e793e23cd060089003d25",
+   "mhfo.dll": "a21322ca5864d6a4c8599fd4522fdbcc8997225c05d82d958d9aeba2678adfc7",
+   "dat/mhfdat.bin": "f7940508b0434003d9fd1357d1b5487594866d0c548d0fbeb8a747f43b9fdfaf"
+  },
+  "1.21-pre3": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "b0590b256553efacb7949bef9d229d38848d5383a1c0daae21571e646cec9efe",
+   "mhfo.dll": "39cf012fe696536edeaf9ed8507c1c048893a0fff1a3a8e1257e181d31e73efa",
+   "dat/mhfdat.bin": "3f110a0da61927504e7418111cc7786c9702fea83a300ec460cca0c51ebf4edc",
+   "dat/mhfpac.bin": "e837d1d232d535594702c05e4cb6b9d5e0273703ebb994821e9b9f2e0c6ffae2",
+   "dat/mhfinf.bin": "665cbb327c004930e6555effbae514e91df65deac43897dc093ad80e5bbd0093",
+   "hvmods.dll": "84df0ba727eeaf867d76794430450cd7320bde91d6524a80b37a05e79e0a3cc4"
+  },
+  "1.21-pre2": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "8897f6336cddcfb830afeff7bb49abbdde8cc6c0bb5afcd47d08602f79890265",
+   "mhfo.dll": "1608704091cb899f0b5bb1d28697b8cc4be936445275c0ef33e514909a03cec4",
+   "dat/mhfdat.bin": "3f110a0da61927504e7418111cc7786c9702fea83a300ec460cca0c51ebf4edc",
+   "dat/mhfpac.bin": "e837d1d232d535594702c05e4cb6b9d5e0273703ebb994821e9b9f2e0c6ffae2",
+   "dat/mhfinf.bin": "665cbb327c004930e6555effbae514e91df65deac43897dc093ad80e5bbd0093",
+   "hvmods.dll": "357590293026aacf3782443448562584123cf650b5e69d3ded5e21456b43b645"
+  },
+  "1.21-pre1": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "48b136434169f4c410f1246cf5dbb1ff5d9b4ca5e98a9c77ceaf3166c54845a5",
+   "mhfo.dll": "a8125c98764061c00fb008fab080eaecddebb042c1496dac8cdd930afcf87c6d",
+   "dat/mhfdat.bin": "3f110a0da61927504e7418111cc7786c9702fea83a300ec460cca0c51ebf4edc",
+   "dat/mhfpac.bin": "e837d1d232d535594702c05e4cb6b9d5e0273703ebb994821e9b9f2e0c6ffae2",
+   "dat/mhfinf.bin": "665cbb327c004930e6555effbae514e91df65deac43897dc093ad80e5bbd0093",
+   "hvmods.dll": "2431def091cdac891eeadd47f167e499ab17341642db8b0b26f563f604a6f77c"
+  }
+ }
+}
