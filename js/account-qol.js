@@ -6,6 +6,9 @@
    When the feature list has "iframeViewer" and the answer has "viewer", a Viewer options part shows four checkboxes
    (iframe bar, iframe count, hitstop bar, hit indicator), a position and a size; "Save viewer options" sends all six
    keys with PUT /api/account/qol/viewer.
+   Under the "damageNumbers" switch (when the answer has "damageNumbers"): "Other players' hits", "Size" and "Show move
+   id"; under the "damageMeter" switch (when the answer has "damageMeter"): "Corner" and "Size". Each change saves at
+   once with only that key: PUT /api/account/qol/damage-numbers or /damage-meter. Greyed out with the switch.
    A feature the API marks "preReleaseOnly" (its minPatch is above the current stable patch; it moves up by itself when
    a stable release reaches it) is listed in its own section, "Being tested: pre-release only", with the slot name and
    a note that it works only on a pre-release patch on the Test land; the Keys and Viewer options parts go into that
@@ -28,6 +31,7 @@
   var preList = document.getElementById("qol-pre-list");
   if (!list) return;
   var byId = {};   // the features of the last answer, by id
+  var lastData = null;   // the last answer, for the options under the damage switches
 
   function token() {
     try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; }
@@ -72,11 +76,84 @@
       row.classList.add("is-locked");
       row.appendChild(el("p", "note-text qol-locked", f.lockedMessage));
     }
+    var sub = SUB_OPTIONS[f.id];
+    if (sub && lastData && lastData[sub.key] && typeof lastData[sub.key] === "object") row.appendChild(subOptions(f, sub, lastData[sub.key]));
     box.addEventListener("change", function () { save(f, box); });
     return row;
   }
 
+  /* ---- Options under the damage numbers and damage meter switches ---- */
+  var OVERLAY_SIZES = [["small", "Small"], ["normal", "Normal"], ["large", "Large"], ["huge", "Huge"]];
+  var SUB_OPTIONS = {
+    damageNumbers: { key: "damageNumbers", path: "damage-numbers", prefix: "qol-dn-", name: "Damage numbers", fields: [
+      { id: "othersHits", type: "check", label: "Other players' hits", hint: "Also shows the other hunters' hits, in grey." },
+      { id: "size", type: "select", label: "Size", options: OVERLAY_SIZES, fallback: "normal" },
+      { id: "showMoveId", type: "check", label: "Show move id", hint: "Shows which move hit (its attack record id, weapon and style) next to each of your damage numbers, and writes every hit to hvmods.log in the game folder so you can send us the list. For testing move names." }
+    ] },
+    damageMeter: { key: "damageMeter", path: "damage-meter", prefix: "qol-dm-", name: "Damage meter", fields: [
+      { id: "corner", type: "select", label: "Corner", options: [["topRight", "Top right"], ["topLeft", "Top left"], ["bottomRight", "Bottom right"], ["bottomLeft", "Bottom left"]], fallback: "topRight" },
+      { id: "size", type: "select", label: "Size", options: OVERLAY_SIZES, fallback: "normal" }
+    ] }
+  };
+
+  function subOptions(f, sub, values) {
+    var box = el("div", "qol-sub");
+    box.id = sub.prefix + "options";
+    var lock = !!f.lockedMessage;
+    sub.fields.forEach(function (o) {
+      var id = sub.prefix + o.id;
+      var input;
+      if (o.type === "check") {
+        var label = el("label", "qol-label");
+        input = el("input");
+        input.type = "checkbox";
+        input.id = id;
+        input.checked = values[o.id] === true;
+        label.htmlFor = id;
+        label.appendChild(input);
+        label.appendChild(el("span", "qol-name", o.label));
+        box.appendChild(label);
+      } else {
+        input = viewerSelect(box, id, o.label, o.options, pick(o.options, values[o.id], o.fallback));
+      }
+      if (o.hint) box.appendChild(el("p", "note-text", o.hint));
+      input.disabled = lock;
+      input.addEventListener("change", function () {
+        var body = {};
+        body[o.id] = o.type === "check" ? input.checked : input.value;
+        saveSub(sub, input, body);
+      });
+    });
+    return box;
+  }
+
+  function saveSub(sub, input, body) {
+    input.disabled = true;
+    say("Saving.");
+    fetch(API + "/api/account/qol/" + sub.path, {
+      method: "PUT",
+      headers: { Authorization: "Bearer " + token(), "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json().catch(function () { return null; }).then(function (data) {
+        if (!r.ok) {
+          var err = new Error("HTTP " + r.status);
+          err.serverMessage = data && (data.message || data.error);
+          throw err;
+        }
+        return data;
+      });
+    }).then(function (data) {
+      render(data);
+      say(sub.name + " options saved. They take effect from your next login to the game.");
+    }).catch(function (e) {
+      if (lastData) render(lastData);
+      say(e.serverMessage ? "Could not save the " + sub.name.toLowerCase() + " options: " + e.serverMessage : "Could not save the " + sub.name.toLowerCase() + " options. Try again in a moment.", true);
+    });
+  }
+
   function render(data) {
+    lastData = data;
     list.innerHTML = "";
     preList.innerHTML = "";
     byId = {};

@@ -19,6 +19,10 @@
      PUT /api/account/qol/viewer with exactly the six keys and the chosen values, redraws from the answer and says
      so; a 400 message is shown; the part is hidden without "viewer" (an older API) and without the iframeViewer
      feature;
+   - under the "damageNumbers" switch: "Other players' hits", "Size" and "Show move id" (with its help text), under
+     "damageMeter": "Corner" and "Size", showing the GET values; each change sends PUT /api/account/qol/damage-numbers
+     or /damage-meter with only that key, redraws and says so; a 400 message is shown and the control goes back; they
+     are greyed out with the switch while locked, and missing when the answer has no "damageNumbers"/"damageMeter";
    - features the API marks preReleaseOnly are listed in their own section "Being tested: pre-release only" (slot name, "These
      work only on a pre-release patch on the Test land"), apart from the stable switches, with the Keys and Viewer
      options parts inside it; while the API gives a lockedMessage ("Switch to the pre-release (mods) to try these")
@@ -66,13 +70,19 @@ let sendViewer = true;
 // "off": an API without the pre-release fields; "locked": on Stable, "open": on a slot that has them; "moved": stable has reached 1.21
 let preMode = "off";
 let listViewer = true;
+let numbersState = { othersHits: true, size: "large", showMoveId: false };
+let meterState = { corner: "bottomLeft", size: "small" };
+let sendOverlays = true;
+const MOVE_ID_HELP = "Shows which move hit (its attack record id, weapon and style) next to each of your damage numbers, and writes every hit to hvmods.log in the game folder so you can send us the list. For testing move names.";
 let keysState = { retireKey: "Ctrl+R", retireOnDeath: "off", retireCarts: 1, skipWaitKey: null, talkKeys: [null, null, null, null, null] };
 function state(flags) {
   const defs = [
     { id: "trueRaw", bit: 0, name: "True raw attack", description: DESC, revealsHiddenInfo: false, minPatch: "1.20" },
     { id: "trueElement", bit: 1, name: "True element", description: DESC_ELEMENT, revealsHiddenInfo: false, minPatch: "1.20" },
     { id: "monsterBar", bit: 2, name: "Monster health bar", description: "Shows the monster's remaining health.", revealsHiddenInfo: true, minPatch: "1.21" },
-    { id: "iframeViewer", bit: 5, name: "Iframe viewer", description: "Draws bars over the game for your invulnerability frames.", revealsHiddenInfo: true, minPatch: "1.21" }
+    { id: "iframeViewer", bit: 5, name: "Iframe viewer", description: "Draws bars over the game for your invulnerability frames.", revealsHiddenInfo: true, minPatch: "1.21" },
+    { id: "damageNumbers", bit: 6, name: "Damage numbers", description: "Shows the damage of your own hits as numbers over the monster.", revealsHiddenInfo: true, minPatch: "1.21" },
+    { id: "damageMeter", bit: 9, name: "Damage meter", description: "Shows, per monster, the damage each hunter dealt this quest.", revealsHiddenInfo: true, minPatch: "1.21" }
   ].filter((d) => listViewer || d.id !== "iframeViewer");
   if (preMode !== "off") {
     defs.splice(3, 0,
@@ -91,6 +101,7 @@ function state(flags) {
     out.channel = preMode === "open" ? "pre:mods" : "stable";
   }
   if (sendViewer) out.viewer = viewerState;
+  if (sendOverlays) { out.damageNumbers = numbersState; out.damageMeter = meterState; }
   return out;
 }
 
@@ -102,6 +113,8 @@ async function run(browser, base) {
   const puts = [];
   const keyPuts = [];
   const viewerPuts = [];
+  const overlayPuts = [];
+  let refuseOverlay = false;
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, locale: "en-US" });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -127,6 +140,14 @@ async function run(browser, base) {
       viewerState = Object.assign({}, viewerState, body);
       return reply(200, state(flags));
     }
+    if ((p === "/api/account/qol/damage-numbers" || p === "/api/account/qol/damage-meter") && req.method() === "PUT") {
+      const body = JSON.parse(req.postData());
+      overlayPuts.push([p.split("/").pop(), body]);
+      if (refuseOverlay) return reply(400, { error: "Option \"size\" must be one of [normal, small, large, huge]" });
+      if (p.endsWith("numbers")) numbersState = Object.assign({}, numbersState, body);
+      else meterState = Object.assign({}, meterState, body);
+      return reply(200, state(flags));
+    }
     if (p === "/api/account/qol" && req.method() === "PUT") {
       const body = JSON.parse(req.postData());
       puts.push(body);
@@ -144,8 +165,8 @@ async function run(browser, base) {
   check("card heading", (await page.textContent("#qol-panel h2")) === "Game options");
   check("card is visible on the Account tab", await page.isVisible("#qol-panel"));
   check("next-login note", /Changes take effect at your next login to the game\./.test(await page.textContent("#qol-panel")));
-  const boxes = await page.$$eval("#qol-list input[type=checkbox]", (n) => n.map((b) => [b.id, b.checked]));
-  check("one switch per listed feature, all off", JSON.stringify(boxes) === JSON.stringify([["qol-trueRaw", false], ["qol-trueElement", false], ["qol-monsterBar", false], ["qol-iframeViewer", false]]), JSON.stringify(boxes));
+  const boxes = await page.$$eval("#qol-list input[role=switch]", (n) => n.map((b) => [b.id, b.checked]));
+  check("one switch per listed feature, all off", JSON.stringify(boxes) === JSON.stringify([["qol-trueRaw", false], ["qol-trueElement", false], ["qol-monsterBar", false], ["qol-iframeViewer", false], ["qol-damageNumbers", false], ["qol-damageMeter", false]]), JSON.stringify(boxes));
   const items = await page.$$eval(".qol-item", (n) => n.map((x) => x.textContent.replace(/\s+/g, " ").trim()));
   check("name and description", items[0].includes("True raw attack") && items[0].includes("a Great Sword's 1022 shows as 213"), items[0]);
   check("true element name and description", items[1].includes("True element") && items[1].includes("Fire 250 shows as 25"), items[1]);
@@ -307,6 +328,33 @@ async function run(browser, base) {
   check("viewer part stays with the chosen value after a refused save", (await page.isVisible("#qol-viewer")) && (await page.inputValue("#qol-viewer-size")) === "small" && (await page.isEnabled("#qol-viewer-save")) && viewerPuts.length === 2);
   refuseViewer = false;
 
+  // Options under the damage numbers and damage meter switches.
+  const dnText = (await page.textContent("#qol-dn-options")).replace(/\s+/g, " ");
+  check("damage numbers options under its switch", await page.evaluate(() => !!document.querySelector(".qol-item #qol-damageNumbers") && document.getElementById("qol-damageNumbers").closest(".qol-item").contains(document.getElementById("qol-dn-options"))));
+  check("damage numbers labels and the move id help", dnText.includes("Other players' hits") && dnText.includes("Size") && dnText.includes("Show move id") && dnText.includes(MOVE_ID_HELP), dnText);
+  check("damage numbers show the GET values", (await page.isChecked("#qol-dn-othersHits")) && !(await page.isChecked("#qol-dn-showMoveId")) && (await page.inputValue("#qol-dn-size")) === "large");
+  check("damage numbers size options", JSON.stringify(await optionsOf("qol-dn-size")) === JSON.stringify([["small", "Small"], ["normal", "Normal"], ["large", "Large"], ["huge", "Huge"]]), JSON.stringify(await optionsOf("qol-dn-size")));
+  check("damage meter options under its switch", await page.evaluate(() => document.getElementById("qol-damageMeter").closest(".qol-item").contains(document.getElementById("qol-dm-options"))));
+  check("damage meter labels", /Corner/.test(await page.textContent("#qol-dm-options")) && /Size/.test(await page.textContent("#qol-dm-options")));
+  check("damage meter corner options", JSON.stringify(await optionsOf("qol-dm-corner")) === JSON.stringify([["topRight", "Top right"], ["topLeft", "Top left"], ["bottomRight", "Bottom right"], ["bottomLeft", "Bottom left"]]), JSON.stringify(await optionsOf("qol-dm-corner")));
+  check("damage meter shows the GET values", (await page.inputValue("#qol-dm-corner")) === "bottomLeft" && (await page.inputValue("#qol-dm-size")) === "small");
+  await page.click("#qol-dn-showMoveId");
+  await page.waitForFunction(() => /Damage numbers options saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
+  check("Show move id sends only that key", JSON.stringify(overlayPuts) === JSON.stringify([["damage-numbers", { showMoveId: true }]]), JSON.stringify(overlayPuts));
+  check("damage numbers saved message", /Damage numbers options saved\. They take effect from your next login/.test(await page.textContent("#qol-note")), await page.textContent("#qol-note"));
+  check("redrawn from the answer", (await page.isChecked("#qol-dn-showMoveId")) && (await page.isChecked("#qol-dn-othersHits")) && (await page.isEnabled("#qol-dn-showMoveId")));
+  await page.selectOption("#qol-dm-corner", "topLeft");
+  await page.waitForFunction(() => /Damage meter options saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
+  await page.selectOption("#qol-dm-size", "huge");
+  await page.waitForFunction((n) => document.getElementById("qol-dm-size").value === "huge" && !document.getElementById("qol-dm-size").disabled, null, { timeout: 5000 }).catch(() => {});
+  check("damage meter changes send one key each", JSON.stringify(overlayPuts.slice(1)) === JSON.stringify([["damage-meter", { corner: "topLeft" }], ["damage-meter", { size: "huge" }]]), JSON.stringify(overlayPuts));
+  check("damage meter shows the saved values", (await page.inputValue("#qol-dm-corner")) === "topLeft" && (await page.inputValue("#qol-dm-size")) === "huge");
+  refuseOverlay = true;
+  await page.selectOption("#qol-dn-size", "small");
+  await page.waitForSelector("#qol-alert:not([hidden])", { timeout: 5000 }).catch(() => {});
+  check("damage numbers 400 message shown", /Could not save the damage numbers options: Option "size"/.test(await alertText()), await alertText());
+  check("the control goes back to the stored value", (await page.inputValue("#qol-dn-size")) === "large" && (await page.isEnabled("#qol-dn-size")) && overlayPuts.length === 4);
+  refuseOverlay = false;
 
   // ---- Pre-release-only features ----
   const lockedText = "Switch to the pre-release (mods) to try these";
@@ -315,9 +363,9 @@ async function run(browser, base) {
     check(label + ": the section is on the page and labelled", (await page.isVisible("#qol-pre"))
       && (await page.textContent("#qol-pre h3")) === "Being tested: pre-release only"
       && (await page.textContent("#qol-pre-note")) === "Slot: mods. These work only on a pre-release patch on the Test land.", await page.textContent("#qol-pre-note"));
-    check(label + ": stable and pre-release switches are apart", JSON.stringify(await ids("#qol-list input[type=checkbox]")) === JSON.stringify(["qol-trueRaw", "qol-trueElement"])
-      && JSON.stringify(await ids("#qol-pre-list input[type=checkbox]")) === JSON.stringify(["qol-monsterBar", "qol-quickRetire", "qol-skipCompleteWait", "qol-quickTalk", "qol-iframeViewer"]),
-    JSON.stringify([await ids("#qol-list input[type=checkbox]"), await ids("#qol-pre-list input[type=checkbox]")]));
+    check(label + ": stable and pre-release switches are apart", JSON.stringify(await ids("#qol-list input[role=switch]")) === JSON.stringify(["qol-trueRaw", "qol-trueElement"])
+      && JSON.stringify(await ids("#qol-pre-list input[role=switch]")) === JSON.stringify(["qol-monsterBar", "qol-quickRetire", "qol-skipCompleteWait", "qol-quickTalk", "qol-iframeViewer", "qol-damageNumbers", "qol-damageMeter"]),
+    JSON.stringify([await ids("#qol-list input[role=switch]"), await ids("#qol-pre-list input[role=switch]")]));
     check(label + ": Keys and Viewer options are inside the section", await page.evaluate(() => !!document.querySelector("#qol-pre #qol-keys") && !!document.querySelector("#qol-pre #qol-viewer")));
   };
   const enabledIn = (sel) => page.$$eval(sel, (n) => n.map((b) => !b.disabled));
@@ -329,12 +377,14 @@ async function run(browser, base) {
   await preCheck("on Stable");
   check("on Stable: stable switches usable, pre-release ones greyed out", (await enabledIn("#qol-list input")).every(Boolean) && (await enabledIn("#qol-pre-list input")).every((e) => !e));
   const rowsText = await page.$$eval("#qol-pre-list .qol-item", (n) => n.map((x) => x.textContent));
-  check("on Stable: each greyed switch says what to do", rowsText.length === 5 && rowsText.every((t) => t.includes(lockedText)), JSON.stringify(rowsText));
+  check("on Stable: each greyed switch says what to do", rowsText.length === 7 && rowsText.every((t) => t.includes(lockedText)), JSON.stringify(rowsText));
   check("on Stable: stable switches carry no such message", !(await page.textContent("#qol-list")).includes("Switch to the pre-release"));
   check("on Stable: key pickers, selects and Save keys disabled", (await enabledIn("#qol-keys button, #qol-keys select")).every((e) => !e) && (await page.$$("#qol-keys button")).length === 15, JSON.stringify(await enabledIn("#qol-keys button, #qol-keys select")));
   check("on Stable: key groups show the message", (await page.$$eval("#qol-keys .qol-locked", (n) => n.map((x) => x.textContent))).join("|") === [lockedText, lockedText, lockedText].join("|"));
   check("on Stable: viewer options and Save disabled with the message", (await enabledIn("#qol-viewer input, #qol-viewer select, #qol-viewer button")).every((e) => !e)
     && (await page.textContent("#qol-viewer")).includes(lockedText));
+  const overlayEnabled = await enabledIn("#qol-dn-options input, #qol-dn-options select, #qol-dm-options select");
+  check("on Stable: damage numbers and meter options greyed out", overlayEnabled.length === 5 && overlayEnabled.every((e) => !e), JSON.stringify(overlayEnabled));
   const before = puts.length;
   await page.check("#qol-trueRaw");
   await page.waitForFunction(() => /True raw attack is on/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
@@ -370,7 +420,7 @@ async function run(browser, base) {
   await page.waitForSelector("#qol-list input", { timeout: 5000 });
   await page.waitForSelector("#qol-viewer:not([hidden])", { timeout: 5000 });
   check("once stable has them: no pre-release section", !(await page.isVisible("#qol-pre")));
-  check("once stable has them: they are in the normal list and usable", (await ids("#qol-list input[type=checkbox]")).length === 7 && (await enabledIn("#qol-list input")).every(Boolean)
+  check("once stable has them: they are in the normal list and usable", (await ids("#qol-list input[role=switch]")).length === 9 && (await enabledIn("#qol-list input")).every(Boolean)
     && await page.evaluate(() => !document.querySelector("#qol-pre #qol-keys") && !document.querySelector("#qol-pre #qol-viewer")));
   preMode = "off";
 
@@ -387,11 +437,14 @@ async function run(browser, base) {
 
   // An older API (no "viewer" in the answer): the part is hidden, the switch stays.
   sendViewer = false;
+  sendOverlays = false;
   await page.reload();
   await page.waitForSelector("#qol-list input", { timeout: 5000 });
   await page.waitForSelector("#qol-keys:not([hidden])", { timeout: 5000 }).catch(() => {});
   check("viewer part hidden without viewer", !(await page.isVisible("#qol-viewer")) && !(await page.$("#qol-viewer-save")));
   check("iframe viewer switch still listed without viewer", !!(await page.$("#qol-iframeViewer")));
+  check("no damage options without damageNumbers/damageMeter, switches stay", !(await page.$("#qol-dn-options")) && !(await page.$("#qol-dm-options")) && !!(await page.$("#qol-damageNumbers")) && !!(await page.$("#qol-damageMeter")));
+  sendOverlays = true;
   // Viewer in the answer but the list has no iframeViewer: hidden too.
   sendViewer = true;
   listViewer = false;
