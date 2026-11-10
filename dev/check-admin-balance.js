@@ -27,10 +27,13 @@ const fs = require("fs");
 const path = require("path");
 const { chromium } = require("playwright");
 const B = require("../js/admin-balance.js");
+const G = require("../js/admin-balance-grid.js");
 
 const root = path.join(__dirname, "..");
 const LOGS = "/srv/devbot/.bot-logs/balance-admin";
 const shots = fs.existsSync(LOGS) ? LOGS : path.join(root, "dev-shots");
+const GRID_LOGS = "/srv/devbot/.bot-logs/balance-grid";
+const gridShots = fs.existsSync(GRID_LOGS) ? GRID_LOGS : path.join(root, "dev-shots");
 const dataRoot = fs.existsSync(path.join(root, "data", "weapons")) ? path.join(root, "data", "weapons") : "/srv/devbot/weapon-db/data/weapons";
 const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json",
   ".png": "image/png", ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml", ".jpg": "image/jpeg" };
@@ -183,9 +186,9 @@ async function open(browser, url, api, width) {
   return { page, errors };
 }
 
-async function shot(page, name, selector) {
-  fs.mkdirSync(shots, { recursive: true });
-  const file = path.join(shots, name);
+async function shot(page, name, selector, dir) {
+  fs.mkdirSync(dir || shots, { recursive: true });
+  const file = path.join(dir || shots, name);
   if (selector) await (await page.$(selector)).screenshot({ path: file });
   else await page.screenshot({ path: file, fullPage: true });
 }
@@ -265,7 +268,8 @@ async function balancePage(browser, base) {
   check("rows count", cells.length === 4, String(cells.length));
   check("row 1: names, current, change", cells[0][1] === "Great Sword, Storm, Lv1 charge (k0 #165)" && cells[0][2] === "mv" && cells[0][3] === "92" && cells[0][4] === "set 100", JSON.stringify(cells[0]));
   check("row 2: any move scale, no current", /^Long Sword, any style, any move$/.test(cells[1][1]) && cells[1][3] === "unknown" && cells[1][4] === "x 1.05", JSON.stringify(cells[1]));
-  check("row 2: markup stays text", cells[1][5] === "<b>all LS</b>" && (await page.$$("#bal-rows b")).length === 0, cells[1][5]);
+  const reason2 = await page.inputValue("#bal-rows tr:nth-child(2) .bal-reason-edit input");
+  check("row 2: markup stays text", reason2 === "<b>all LS</b>" && (await page.$$("#bal-rows b")).length === 0, reason2);
   check("row 3: weapon name, current", cells[2][1] === "Iron Sword (Great Sword, #1)" && cells[2][3] === "60" && cells[2][4] === "set 62", JSON.stringify(cells[2]));
   check("row 4: unknown move and its problem", cells[3][1] === "Great Sword, Storm, k99 #9999" && cells[3][3] === "unknown" && cells[3][7] === "ko: no such record", JSON.stringify(cells[3]));
   check("problem list above the table", /Row #6: ko: no such record/.test(await text(page, "#bal-draft-problems")));
@@ -275,7 +279,9 @@ async function balancePage(browser, base) {
   check("nothing of the tab runs past the screen at 1280", (await panelOverflow(page)).length === 0, JSON.stringify(await panelOverflow(page)));
   await shot(page, "balance-1280.png");
 
-  // The form: an attack move.
+  // The form ("Other rows", closed at first): an attack move.
+  check("the form starts closed", !(await page.isVisible("#bal-form")));
+  await page.click("#bal-advanced summary");
   await page.selectOption("#bal-type", "GS");
   await page.selectOption("#bal-style", "storm");
   await page.fill("#bal-mfilter", "lv1");
@@ -358,7 +364,7 @@ async function balancePage(browser, base) {
 
   // Edit the first row.
   await page.selectOption("#bal-kind", "attack");
-  await page.click("#bal-rows tr:nth-child(1) button:nth-child(1)");
+  await page.click("#bal-rows tr:nth-child(1) .bal-actions button:nth-child(1)");
   await page.waitForFunction(() => document.getElementById("bal-value").value === "100", null, { timeout: 5000 });
   check("edit fills the form", (await text(page, "#bal-form-title")) === "Edit row #3" && (await page.inputValue("#bal-type")) === "GS" && (await page.inputValue("#bal-style")) === "storm"
     && (await page.inputValue("#bal-entry")) === "0" && (await page.inputValue("#bal-id")) === "165" && (await page.inputValue("#bal-field")) === "mv"
@@ -373,19 +379,19 @@ async function balancePage(browser, base) {
 
   // Order and delete.
   const idsBefore = (api.rows).map((x) => x.id);
-  await page.click("#bal-rows tr:nth-child(2) button:nth-child(3)"); // Up on row 2
+  await page.click("#bal-rows tr:nth-child(2) .bal-actions button:nth-child(3)"); // Up on row 2
   await page.waitForFunction(() => /Order saved/.test(document.getElementById("bal-ok").textContent), null, { timeout: 5000 });
   const order = last(api, "POST", "/rows/order").body.ids;
   check("up: the order sent", order[0] === idsBefore[1] && order[1] === idsBefore[0] && order.length === idsBefore.length, JSON.stringify(order));
-  check("first row has Up disabled, last has Down disabled", (await page.$eval("#bal-rows tr:first-child button:nth-child(3)", (b) => b.disabled)) && (await page.$eval("#bal-rows tr:last-child button:nth-child(4)", (b) => b.disabled)));
-  await page.click("#bal-rows tr:nth-child(1) button:nth-child(4)"); // Down on row 1
+  check("first row has Up disabled, last has Down disabled", (await page.$eval("#bal-rows tr:first-child .bal-actions button:nth-child(3)", (b) => b.disabled)) && (await page.$eval("#bal-rows tr:last-child .bal-actions button:nth-child(4)", (b) => b.disabled)));
+  await page.click("#bal-rows tr:nth-child(1) .bal-actions button:nth-child(4)"); // Down on row 1
   await page.waitForFunction(() => document.querySelectorAll("#bal-rows tr").length > 0, null, { timeout: 5000 });
   await page.waitForTimeout(300);
   check("down: sent", count(api, "POST", "/rows/order") === 2);
   const victim = api.rows[api.rows.length - 1].id;
-  await page.click("#bal-rows tr:last-child button:nth-child(2)");
-  check("delete: first click asks", (await page.$eval("#bal-rows tr:last-child button:nth-child(2)", (b) => b.textContent)) === "Click again to delete" && count(api, "POST", "/delete") === 0);
-  await page.click("#bal-rows tr:last-child button:nth-child(2)");
+  await page.click("#bal-rows tr:last-child .bal-actions button:nth-child(2)");
+  check("delete: first click asks", (await page.$eval("#bal-rows tr:last-child .bal-actions button:nth-child(2)", (b) => b.textContent)) === "Click again to delete" && count(api, "POST", "/delete") === 0);
+  await page.click("#bal-rows tr:last-child .bal-actions button:nth-child(2)");
   await page.waitForFunction(() => /deleted/.test(document.getElementById("bal-ok").textContent), null, { timeout: 5000 });
   check("delete: second click deletes", last(api, "POST", "/delete").path === "/api/admin/balance/rows/" + victim + "/delete" && (await page.$$("#bal-rows tr")).length === 6);
 
@@ -480,6 +486,8 @@ async function balancePage(browser, base) {
   check("moderator: no form, no publish, no row buttons", (await page.$eval("#bal-edit", (n) => n.hidden)) && (await page.$eval("#bal-publish", (n) => n.hidden))
     && (await page.$$("#bal-rows button")).length === 0 && (await page.$$("#bal-versions button")).length === 0);
   check("moderator: still sees rows, diff and versions", (await page.$$("#bal-rows tr")).length === 4 && /Draft against v2/.test(await text(page, "#bal-diff")) && /v2 \(latest\)/.test(await text(page, "#bal-versions")));
+  check("moderator: the grid shows values, nothing to tap", (await page.$$("#bal-gbody .bal-cell-val")).length > 0 && (await page.$$("#bal-gbody .bal-cell-btn")).length === 0
+    && (await page.$$("#bal-gbody .bal-cell-reset")).length === 0);
   await shot(page, "balance-moderator.png");
   check("no errors for a moderator", r.errors.length === 0, r.errors.join("; "));
   await page.close();
@@ -489,6 +497,7 @@ async function balancePage(browser, base) {
   page = r.page;
   await page.waitForSelector("#bal-rows tr td:nth-child(2)", { timeout: 8000 });
   check("375 px: nothing of the tab runs past the screen", (await panelOverflow(page)).length === 0, JSON.stringify(await panelOverflow(page)));
+  await page.click("#bal-advanced summary");
   await page.selectOption("#bal-type", "GS");
   await page.waitForSelector("#bal-move option:nth-child(5)", { state: "attached", timeout: 5000 });
   check("375 px: the same with a move list", (await panelOverflow(page)).length === 0, JSON.stringify(await panelOverflow(page)));
@@ -511,6 +520,7 @@ async function balancePage(browser, base) {
   r = await open(browser, base + "/admin.html#balance", api3, 1280);
   page = r.page;
   await page.waitForSelector("#bal-rows tr td:nth-child(2)", { timeout: 8000 });
+  check("no data: no grid, the form open", (await page.$eval("#bal-grid-box", (n) => n.hidden)) && (await page.isVisible("#bal-form")));
   check("no data: the note shows", !(await page.$eval("#bal-nodata", (n) => n.hidden)) && /weapon names are missing/.test(await text(page, "#bal-nodata")));
   const cells3 = await page.$$eval("#bal-rows tr", (trs) => trs.map((t) => Array.from(t.children).map((c) => c.textContent)));
   check("no data: rows by number", cells3[0][1] === "GS, Storm, k0 #165" && cells3[0][3] === "unknown" && cells3[2][1] === "weapon #1", JSON.stringify(cells3.slice(0, 3)));
@@ -542,13 +552,240 @@ async function balancePage(browser, base) {
   serveData = true;
 }
 
+/* ---- the grid: pure helpers ---- */
+
+function gridHelpers() {
+  const mvSpec = FIELDS[1], koSpec = FIELDS[4], reaction = FIELDS[2], aff = FIELDS[7];
+  const key = { kind: "attack", weaponClass: "GS", style: "storm", entry: 0, recordId: 165, field: "mv" };
+  const rows = [row(3, 1), row(4, 2, { style: null }), row(5, 3, { field: "ko" }), row(6, 4, { kind: "melee", weaponClass: null, style: null, entry: null, recordId: 165 })];
+  check("grid cellRows: exactly the cell", JSON.stringify(G.cellRows(rows, key).map((r) => r.id)) === "[3]"
+    && G.cellRows(rows, Object.assign({}, key, { style: null })).map((r) => r.id).join() === "4");
+  const P = (t, spec, cur, f) => JSON.stringify(G.parseCell(t, spec, cur, f));
+  check("grid parseCell: set, multiply, clear", P("100", mvSpec, 92) === '{"op":"set","value":100}' && P(" x1.05 ", mvSpec, 92) === '{"op":"scale","value":1.05}'
+    && P("*2", mvSpec, 92) === '{"op":"scale","value":2}' && P("", mvSpec, 92) === '{"clear":true}' && P("92", mvSpec, 92) === '{"clear":true}'
+    && P("-5", aff, 0) === '{"op":"set","value":-5}');
+  check("grid parseCell: errors", /0 to 255/.test(G.parseCell("300", koSpec, 7).error) && /whole number/.test(G.parseCell("1.5", mvSpec, 92).error)
+    && /cannot be multiplied/.test(G.parseCell("x1.1", reaction, 3).error) && /Enter a number/.test(G.parseCell("abc", mvSpec, 92).error)
+    && /at most 4 decimals/.test(G.parseCell("x1.00001", mvSpec, 92).error) && /above 0/.test(G.parseCell("x0", mvSpec, 92).error));
+  check("grid parseCell: a multiplier cell", P("1.05", mvSpec, null, true) === '{"op":"scale","value":1.05}' && P("1", mvSpec, null, true) === '{"clear":true}'
+    && P("x1.2", mvSpec, null, true) === '{"op":"scale","value":1.2}');
+  const create = G.planCell([], { op: "set", value: 100 }, key, " thread ");
+  check("grid planCell: create", JSON.stringify(create) === JSON.stringify([{ action: "create", body: { kind: "attack", weaponClass: "GS", style: "storm", entry: 0, recordId: 165, field: "mv", op: "set", value: 100, reason: "thread" } }]), JSON.stringify(create));
+  const upd = G.planCell([rows[0]], { op: "scale", value: 1.1 }, key, "new");
+  check("grid planCell: update keeps reason and position", upd.length === 1 && upd[0].action === "update" && upd[0].id === 3 && upd[0].body.op === "scale" && upd[0].body.value === 1.1
+    && upd[0].body.reason === "https://discord.example/t/1" && upd[0].body.position === 1, JSON.stringify(upd));
+  check("grid planCell: same value, clear, error", G.planCell([rows[0]], { op: "set", value: 100 }, key, "x").length === 0
+    && JSON.stringify(G.planCell([rows[0], rows[1]], { clear: true }, key, "")) === '[{"action":"delete","id":3},{"action":"delete","id":4}]'
+    && G.planCell([], { clear: true }, key, "").length === 0 && G.planCell([], { error: "no" }, key, "").length === 0);
+  const V = (r, c, m) => JSON.stringify(G.cellView(r, c, m, B.scaled));
+  check("grid cellView", V(row(1, 1), 92) === '{"own":true,"was":92,"text":"100","note":""}'
+    && V(row(1, 1, { op: "scale", value: 1.05 }), 92) === '{"own":true,"was":92,"text":"96","note":"x1.05"}'
+    && V(null, 58, { value: 1.05 }) === '{"own":false,"was":58,"text":"60","note":"x1.05 (all moves)"}'
+    && V(null, null, null) === '{"own":false,"was":null,"text":"–","note":""}' && V(null, "Fire", null) === '{"own":false,"was":null,"text":"Fire","note":""}');
+  const pg = G.pageOf([1, 2, 3, 4, 5], 9, 2);
+  check("grid pageOf", pg.page === 2 && pg.pages === 3 && pg.items.join() === "5" && G.pageOf([], 0, 50).pages === 1);
+  check("grid inStyle and matches", G.inStyle("X", "extreme") && !G.inStyle("X", "storm") && G.inStyle("", "storm") && G.inStyle("EHS", null)
+    && G.matches("iron", "Iron Sword", 1) && G.matches("1", "Iron Sword", 1) && !G.matches("12", "Iron Sword", 1) && G.matches("k0 #16", "x", 165, "k0 #165"));
+  check("weaponValue: text fields", B.weaponValue({ row: [7, "Blue Wing", "Fire"], fields: ["id", "name", "element"] }, "element") === "Fire");
+}
+
+/* ---- the grid in the page ---- */
+
+const cellSel = (ref, field) => '#bal-gbody tr[data-ref="' + ref + '"] td[data-field="' + field + '"]';
+const cellText = (page, ref, field) => page.$eval(cellSel(ref, field), (n) => n.textContent);
+const chipClick = (page, box, label) => page.click("#" + box + ' .chip:has-text("' + label + '")');
+async function editCell(page, ref, field, value, key) {
+  await page.click(cellSel(ref, field) + " .bal-cell-btn");
+  await page.fill(cellSel(ref, field) + " input", value);
+  await page.press(cellSel(ref, field) + " input", key || "Enter");
+}
+const settled = (page) => page.waitForFunction(() => /Saved to the draft/.test(document.getElementById("bal-ok").textContent)
+  && !document.querySelector("#bal-gbody .is-saving"), null, { timeout: 5000 });
+
+async function gridPage(browser, base) {
+  serveData = true;
+  const api = newApi();
+  let r = await open(browser, base + "/admin.html#balance", api, 1280);
+  let page = r.page;
+  await page.waitForSelector(cellSel("0:165", "mv") + " .bal-cell-btn", { timeout: 8000 });
+  check("grid: move sets of Great Sword first", (await page.getAttribute('#bal-gmode .chip:has-text("Move sets")', "aria-pressed")) === "true"
+    && (await page.getAttribute('#bal-gtypes .chip[title="Great Sword"]', "aria-pressed")) === "true"
+    && (await page.getAttribute('#bal-gstyles .chip:has-text("Any style")', "aria-pressed")) === "true");
+  const heads = await page.$$eval("#bal-ghead th", (t) => t.map((x) => x.textContent));
+  check("grid: a column per attack field", heads.join() === "Move,delay,mv,reaction,element value,ko", heads.join());
+  check("grid: a line per move and the multiplier line", (await page.$$("#bal-gbody tr")).length === 35 && /^All moves/.test(await page.$eval("#bal-gbody tr:first-child th", (n) => n.textContent)));
+  check("grid: the game's value in a cell", (await cellText(page, "0:2", "mv")) === "46" && (await cellText(page, "0:2", "ko")) === "–" && (await cellText(page, "0:2", "delay")) === "–",
+    [await cellText(page, "0:2", "mv"), await cellText(page, "0:2", "ko"), await cellText(page, "0:2", "delay")].join("|"));
+  check("grid: a storm row is not in any style", (await cellText(page, "0:165", "mv")) === "92" && !(await page.$eval(cellSel("0:165", "mv"), (n) => n.classList.contains("is-changed"))));
+  // The draft row 3 (GS, storm, k0 #165, mv set 100) shows in the storm grid.
+  await chipClick(page, "bal-gstyles", "Storm");
+  await page.waitForFunction(() => document.querySelector('#bal-gbody tr[data-ref="0:165"] td[data-field="mv"].is-changed'), null, { timeout: 3000 });
+  check("grid: an existing draft row in its cell", (await page.$eval(cellSel("0:165", "mv") + " .bal-was", (n) => n.textContent)) === "92"
+    && (await page.$eval(cellSel("0:165", "mv") + " .bal-now", (n) => n.textContent)) === "100" && (await page.$$(cellSel("0:165", "mv") + " .bal-cell-reset")).length === 1);
+  check("grid: a move not reached in storm is dimmed", await page.$eval('#bal-gbody tr[data-ref="0:165"]', (n) => n.classList.contains("is-off")));
+
+  // Edit a cell: no reason yet, so it is asked once.
+  const posts = () => count(api, "POST", "/balance/rows") - count(api, "POST", "/delete") - count(api, "POST", "/order");
+  await editCell(page, "0:2", "mv", "50");
+  await page.waitForSelector("#bal-gask:not([hidden])", { timeout: 3000 });
+  check("grid: the reason is asked, nothing sent", posts() === 0 && /mv 50/.test(await text(page, "#bal-gask")));
+  await page.click("#bal-gask-yes");
+  check("grid: an empty reason is refused", !(await page.$eval("#bal-gask-err", (n) => n.hidden)) && posts() === 0);
+  await page.fill("#bal-gask-reason", "https://discord.example/t/77");
+  await page.press("#bal-gask-reason", "Enter");
+  await settled(page);
+  const add = last(api, "POST", "/balance/rows");
+  check("grid: edit a cell -> the row sent", JSON.stringify(add.body) === JSON.stringify({ kind: "attack", weaponClass: "GS", style: "storm", entry: 0, recordId: 2, field: "mv", op: "set", value: 50, reason: "https://discord.example/t/77" }), JSON.stringify(add.body));
+  check("grid: the session reason is kept", (await page.inputValue("#bal-greason")) === "https://discord.example/t/77");
+  check("grid: the cell shows the change", (await page.$eval(cellSel("0:2", "mv") + " .bal-now", (n) => n.textContent)) === "50"
+    && (await page.$eval(cellSel("0:2", "mv") + " .bal-was", (n) => n.textContent)) === "46");
+  check("grid: the Changes table has it", (await page.$$("#bal-rows tr")).length === 5 && /Great Sword, Storm, k0 #2/.test(await text(page, "#bal-rows")), await text(page, "#bal-rows"));
+  const newId = add.body && api.rows[api.rows.length - 1].id;
+
+  // Multiply with Tab: the row is updated (PUT, reason kept), the editor moves right.
+  await editCell(page, "0:2", "mv", "x1.1", "Tab");
+  await page.waitForFunction(() => document.activeElement && document.activeElement.closest('td[data-field="reaction"]'), null, { timeout: 3000 });
+  check("grid: Tab moves to the next cell", await page.evaluate(() => document.activeElement.closest("tr").dataset.ref === "0:2" && document.activeElement.tagName === "INPUT"));
+  await page.keyboard.press("Escape");
+  check("grid: Esc closes the editor", (await page.$$("#bal-gbody input")).length === 0);
+  await settled(page);
+  const put = last(api, "PUT", "/rows/" + newId);
+  check("grid: multiply -> PUT of the same row", put && put.body.op === "scale" && put.body.value === 1.1 && put.body.reason === "https://discord.example/t/77" && put.body.recordId === 2, JSON.stringify(put));
+  check("grid: a multiplied cell shows the result", (await page.$eval(cellSel("0:2", "mv") + " .bal-now", (n) => n.textContent)) === "50"
+    && /x1\.1/.test(await cellText(page, "0:2", "mv")), await cellText(page, "0:2", "mv"));
+
+  // A range error: shown in the cell, nothing sent; Esc puts the value back.
+  const callsBefore = api.calls.length;
+  await editCell(page, "0:2", "ko", "300");
+  check("grid: range error shown", (await page.$eval(cellSel("0:2", "ko") + " .bal-cell-err", (n) => !n.hidden && n.textContent)) === "ko goes from 0 to 255."
+    && (await page.getAttribute(cellSel("0:2", "ko") + " input", "aria-invalid")) === "true" && api.calls.length === callsBefore);
+  await shot(page, "grid-range-error.png", "#bal-grid-box", gridShots);
+  await page.press(cellSel("0:2", "ko") + " input", "Escape");
+  check("grid: Esc after an error", (await cellText(page, "0:2", "ko")) === "–" && api.calls.length === callsBefore, await cellText(page, "0:2", "ko") + " " + (api.calls.length - callsBefore));
+
+  // Enter moves down.
+  await editCell(page, "0:2", "ko", "8");
+  await page.waitForFunction(() => document.activeElement && document.activeElement.tagName === "INPUT", null, { timeout: 3000 });
+  const below = await page.evaluate(() => [document.activeElement.closest("tr").dataset.ref, document.activeElement.closest("td").dataset.field]);
+  const order = await page.$$eval("#bal-gbody tr", (t) => t.map((x) => x.dataset.ref));
+  check("grid: Enter moves down", below[1] === "ko" && below[0] === order[order.indexOf("0:2") + 1], JSON.stringify(below));
+  await page.keyboard.press("Escape");
+  await settled(page);
+  check("grid: Enter saved the ko", last(api, "POST", "/balance/rows").body.field === "ko" && last(api, "POST", "/balance/rows").body.value === 8);
+
+  // Reset: the reset button deletes the row; typing the game's value deletes it too.
+  const koId = api.rows.find((x) => x.recordId === 2 && x.field === "ko").id;
+  await page.click(cellSel("0:2", "ko") + " .bal-cell-reset");
+  await settled(page);
+  check("grid: reset -> delete", last(api, "POST", "/delete").path === "/api/admin/balance/rows/" + koId + "/delete" && (await cellText(page, "0:2", "ko")) === "–", (last(api, "POST", "/delete") || {}).path + " " + await cellText(page, "0:2", "ko"));
+  await editCell(page, "0:165", "mv", "92");
+  await settled(page);
+  await page.keyboard.press("Escape");
+  check("grid: the game's value -> delete", last(api, "POST", "/delete").path === "/api/admin/balance/rows/3/delete" && !api.rows.some((x) => x.id === 3));
+
+  // The multiplier line: a scale row for the type and style; the moves show the result.
+  await editCell(page, "all", "mv", "1.05");
+  await settled(page);
+  check("grid: Enter from the multiplier line goes to the first move", await page.evaluate(() => document.activeElement.closest("tr").dataset.ref === "0:1"));
+  await page.keyboard.press("Escape");
+  const mult = last(api, "POST", "/balance/rows").body;
+  check("grid: multiplier -> scale row", mult.weaponClass === "GS" && mult.style === "storm" && mult.entry === null && mult.recordId === null && mult.op === "scale" && mult.value === 1.05, JSON.stringify(mult));
+  check("grid: moves show the multiplied value", (await page.$eval(cellSel("0:1", "mv") + " .bal-now", (n) => n.textContent)) === "60"
+    && /x1\.05 \(all moves\)/.test(await cellText(page, "0:1", "mv")));
+  check("grid: no multiplier for a set-only field", (await page.$$(cellSel("all", "reaction"))).length === 0 && (await page.$$('#bal-gbody tr[data-ref="all"] td.is-na')).length === 1);
+  // Another type, any style: the draft's LS "any move x1.05" shows on its multiplier line.
+  await page.click('#bal-gtypes .chip[title="Long Sword"]');
+  await chipClick(page, "bal-gstyles", "Any style");
+  await page.waitForFunction(() => document.querySelector('#bal-gbody tr[data-ref="all"] td[data-field="mv"].is-changed'), null, { timeout: 5000 });
+  check("grid: an existing multiplier row", /x1\.05/.test(await cellText(page, "all", "mv")));
+  await shot(page, "grid-moves-1280.png", "#bal-grid-box", gridShots);
+
+  // Weapons.
+  await chipClick(page, "bal-gmode", "Weapons");
+  await page.click('#bal-gtypes .chip[title="Great Sword"]');
+  await page.waitForSelector(cellSel("1", "attack"), { timeout: 5000 });
+  const wh = await page.$$eval("#bal-ghead th", (t) => t.map((x) => x.textContent));
+  check("grid weapons: melee columns", wh.join() === "Weapon,sharpness,attack,affinity", wh.join());
+  check("grid weapons: no style chips, no multiplier line", (await page.$eval("#bal-gstyles", (n) => n.hidden)) && (await page.$$('#bal-gbody tr[data-ref="all"]')).length === 0);
+  check("grid weapons: the draft's Iron Sword attack", (await page.$eval(cellSel("1", "attack") + " .bal-now", (n) => n.textContent)) === "62"
+    && (await page.$eval(cellSel("1", "attack") + " .bal-was", (n) => n.textContent)) === "60" && /Iron Sword/.test(await page.$eval('#bal-gbody tr[data-ref="1"] th', (n) => n.textContent)));
+  check("grid weapons: paged", /^1780 weapons \(Great Sword\), page 1 of 36\.$/.test(await text(page, "#bal-gcount")) && (await page.$$("#bal-gbody tr")).length === 50, await text(page, "#bal-gcount"));
+  await page.click("#bal-gnext");
+  check("grid weapons: next page", /page 2 of 36/.test(await text(page, "#bal-gcount")) && (await page.$$('#bal-gbody tr[data-ref="1"]')).length === 0);
+  await page.fill("#bal-gfilter", "blue wing");
+  await page.waitForFunction(() => /found/.test(document.getElementById("bal-gcount").textContent), null, { timeout: 3000 });
+  check("grid weapons: search", (await page.$$('#bal-gbody tr[data-ref="7"]')).length === 1 && (await page.$eval("#bal-gpager", (n) => n.hidden)), await text(page, "#bal-gcount"));
+  await editCell(page, "7", "affinity", "-5");
+  await settled(page);
+  check("grid weapons: edit -> melee row", JSON.stringify(last(api, "POST", "/balance/rows").body) === JSON.stringify({ kind: "melee", weaponClass: null, style: null, entry: null, recordId: 7, field: "affinity", op: "set", value: -5, reason: "https://discord.example/t/77" }), JSON.stringify(last(api, "POST", "/balance/rows").body));
+  await page.fill("#bal-gfilter", "");
+  await page.check("#bal-gchanged");
+  await page.waitForFunction(() => document.querySelectorAll("#bal-gbody tr").length === 2, null, { timeout: 3000 });
+  check("grid weapons: changed only", (await page.$$eval("#bal-gbody tr", (t) => t.map((x) => x.dataset.ref))).join() === "1,7");
+  await shot(page, "grid-weapons-1280.png", "#bal-grid-box", gridShots);
+  await page.uncheck("#bal-gchanged");
+  // A ranged type: its own fields; the range is the API's.
+  await page.click('#bal-gtypes .chip[title="Heavy Bowgun"]');
+  await page.waitForSelector(cellSel("13", "recoil"), { timeout: 5000 });
+  check("grid weapons: ranged columns and value", (await page.$$eval("#bal-ghead th", (t) => t.map((x) => x.textContent))).join() === "Weapon,attack,recoil,charge row"
+    && (await cellText(page, "13", "recoil")) === "2");
+  await editCell(page, "13", "recoil", "25");
+  check("grid weapons: ranged range error", /recoil goes from 0 to 20/.test(await page.$eval(cellSel("13", "recoil"), (n) => n.textContent)) || /recoil goes from 0 to 20/.test(await page.$eval(cellSel("13", "recoil") + " .bal-cell-err", (n) => n.textContent)));
+  await page.press(cellSel("13", "recoil") + " input", "Escape");
+  // Back to move sets: the mode keeps its type.
+  await chipClick(page, "bal-gmode", "Move sets");
+  await page.waitForSelector('#bal-gbody tr[data-ref="all"]', { timeout: 5000 });
+  check("grid: back to move sets", (await page.$$eval("#bal-ghead th", (t) => t[0].textContent)) === "Move" && /Heavy Bowgun/.test(await text(page, "#bal-gcount")));
+
+  // The Changes table: a row's reason edited in place.
+  const firstId = api.rows[0].id;
+  await page.fill("#bal-rows tr:nth-child(1) .bal-reason-edit input", "better link");
+  await page.click("#bal-rows tr:nth-child(1) .bal-reason-edit button");
+  await page.waitForFunction(() => /reason saved/.test(document.getElementById("bal-ok").textContent), null, { timeout: 5000 });
+  const rput = last(api, "PUT", "/rows/" + firstId).body;
+  check("changes: reason saved by PUT, the rest unchanged", rput.reason === "better link" && rput.value === api.rows[0].value && rput.field === api.rows[0].field && rput.position === api.rows[0].position, JSON.stringify(rput));
+  check("no errors in the grid", r.errors.length === 0, r.errors.join("; "));
+  await page.close();
+
+  // ---- a phone ----
+  r = await open(browser, base + "/admin.html#balance", newApi(), 375);
+  page = r.page;
+  await page.waitForSelector(cellSel("0:2", "mv") + " .bal-cell-btn", { timeout: 8000 });
+  check("phone: nothing of the tab runs past the screen", (await panelOverflow(page)).length === 0, JSON.stringify(await panelOverflow(page)));
+  const ph = await page.evaluate(() => {
+    const wrap = document.querySelector(".bal-grid-wrap"), name = document.querySelector("#bal-gbody th.bal-gname");
+    const btn = document.querySelector('#bal-gbody tr[data-ref="0:2"] .bal-cell-btn').getBoundingClientRect();
+    return { scrolls: wrap.scrollWidth > wrap.clientWidth, sticky: getComputedStyle(name).position, h: btn.height, w: btn.width,
+      chip: document.querySelector("#bal-gtypes .chip").getBoundingClientRect().height, short: document.querySelector("#bal-gtypes .chip").innerText };
+  });
+  check("phone: the grid scrolls sideways with a sticky first column", ph.scrolls && ph.sticky === "sticky", JSON.stringify(ph));
+  check("phone: large tap targets, short type names", ph.h >= 40 && ph.w >= 60 && ph.chip >= 40 && ph.short === "GS", JSON.stringify(ph));
+  await page.evaluate(() => { document.querySelector(".bal-grid-wrap").scrollLeft = 200; });
+  const stuck = await page.evaluate(() => document.querySelector('#bal-gbody tr[data-ref="0:2"] th').getBoundingClientRect().left - document.querySelector(".bal-grid-wrap").getBoundingClientRect().left);
+  check("phone: the name stays in view when scrolled", Math.abs(stuck) <= 2, String(stuck));
+  await page.evaluate(() => { document.querySelector(".bal-grid-wrap").scrollLeft = 0; });
+  await page.click(cellSel("0:2", "mv") + " .bal-cell-btn");
+  check("phone: a tap opens the editor", (await page.$$(cellSel("0:2", "mv") + " input")).length === 1);
+  await page.fill(cellSel("0:2", "mv") + " input", "x2");
+  await shot(page, "grid-phone-editing.png", "#bal-grid-box", gridShots);
+  await page.press(cellSel("0:2", "mv") + " input", "Escape");
+  await chipClick(page, "bal-gmode", "Weapons");
+  await page.waitForSelector(cellSel("1", "attack"), { timeout: 5000 });
+  check("phone: weapons fit too", (await panelOverflow(page)).length === 0, JSON.stringify(await panelOverflow(page)));
+  await shot(page, "grid-phone-weapons.png", "#bal-grid-box", gridShots);
+  check("no errors on the phone", r.errors.length === 0, r.errors.join("; "));
+  await page.close();
+}
+
 (async () => {
   helpers();
+  gridHelpers();
   await new Promise((ok) => server.listen(0, "127.0.0.1", ok));
   const base = "http://127.0.0.1:" + server.address().port;
   const browser = await chromium.launch();
   try {
     await balancePage(browser, base);
+    await gridPage(browser, base);
   } catch (e) {
     failures.push("crashed: " + (e && e.stack || e));
   } finally {

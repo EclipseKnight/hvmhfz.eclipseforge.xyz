@@ -5,7 +5,9 @@
    record id), which field, and set or multiply, with a required reason.
    Names and the game's current values come from data/weapons/ (index.json and one file per weapon type); when
    that folder is not on the site (the weapon database is on its own branch until merged) the tab still works with
-   numbers typed by hand and says so. Markup from the API stays text (textContent). Draft rows, a diff against
+   numbers typed by hand and says so. Most edits go through the grid (js/admin-balance-grid.js: one cell per value
+   of a move set or a weapon type); the form below it ("Other rows") is for rows the grid cannot show, like any
+   weapon type or a record by number. The draft rows table is the Changes list, with each row's reason editable. Markup from the API stays text (textContent). Draft rows, a diff against
    the published version, publishing (two steps, with the draft's fingerprint) and versions with a roll back.
    Until the stable client patch can receive tables (the API's publishGate) only an empty table can be published:
    the reason shows above Publish, which is off for a draft with rows (and Roll back for a version with rows).
@@ -37,7 +39,8 @@
 
   var MOVE_KEYS = { elementvalue: "elementValue", ko: "ko" };
   var WEAPON_KEYS = { attack: "attack", affinity: "affinity", elementvalue: "elementValue", statusvalue: "statusValue",
-    sharpness: "sharpness", recoil: "recoil", reload: "reload", chargerow: "charge", charge: "charge", arcshot: "arcShot" };
+    sharpness: "sharpness", recoil: "recoil", reload: "reload", chargerow: "charge", charge: "charge", arcshot: "arcShot",
+    element: "element", status: "status", special: "special" };
 
   /** A move's current value for an API field (mv is the first number of mv); null when the data has none. */
   function moveValue(move, field) {
@@ -281,14 +284,15 @@
     return new Date(t).toISOString().slice(0, 16).replace("T", " ") + " UTC";
   }
 
-  if (typeof module !== "undefined" && module.exports) {
-    module.exports = { stylesText: stylesText, norm: norm, moveValue: moveValue, weaponValue: weaponValue, scaled: scaled,
+  var helpers = { stylesText: stylesText, norm: norm, moveValue: moveValue, weaponValue: weaponValue, scaled: scaled,
       typeFor: typeFor, typeName: typeName, findMove: findMove, moveLabel: moveLabel, findWeapon: findWeapon,
       searchWeapons: searchWeapons, whatText: whatText, currentOf: currentOf, changeText: changeText, rowLine: rowLine,
       diffCounts: diffCounts, diffEmpty: diffEmpty, publishQuestion: publishQuestion, publishBlocked: publishBlocked, nextVersion: nextVersion,
-      moveIds: moveIds, parseAny: parseAny, buildRow: buildRow, utc: utc, showValue: showValue };
-  }
+      moveIds: moveIds, parseAny: parseAny, buildRow: buildRow, utc: utc, showValue: showValue, STYLE_NAMES: STYLE_NAMES };
+  if (typeof module !== "undefined" && module.exports) module.exports = helpers;
   if (typeof document === "undefined") return;
+  // For the grid (js/admin-balance-grid.js).
+  window.hvBalanceHelpers = helpers;
 
   /* ---------- the page ---------- */
 
@@ -452,6 +456,9 @@
     renderRows();
     renderDiff();
     renderVersions();
+    // Without the weapon data there is no grid: the form is the only way in, so it starts open.
+    if (state.data.ok === false) $("bal-advanced").open = true;
+    if (window.hvBalanceGrid) window.hvBalanceGrid.render();
     $("bal-edit").hidden = !state.canWrite;
     $("bal-publish").hidden = !state.canWrite;
     var g = state.overview.publishGate, blocked = publishBlocked(state.overview, state.rows.length);
@@ -744,6 +751,7 @@
     $("bal-cancel").hidden = false;
     problemList("bal-problems", []);
     renderRows();
+    $("bal-advanced").open = true;
     $("bal-edit").scrollIntoView({ block: "start" });
   }
 
@@ -792,7 +800,7 @@
       tr.appendChild(el("td", null, r.field));
       tr.appendChild(el("td", null, showValue(cur)));
       tr.appendChild(el("td", null, changeText(r, cur)));
-      tr.appendChild(el("td", null, r.reason));
+      tr.appendChild(reasonCell(r));
       tr.appendChild(el("td", null, r.author));
       tr.appendChild(el("td", null, (byRow[r.id] || []).join(" ")));
       var act = el("td");
@@ -818,6 +826,34 @@
       tr.appendChild(act);
       body.appendChild(tr);
     });
+  }
+
+  // The reason of a row, editable in place for admins (the grid gives new rows the session reason).
+  function reasonCell(r) {
+    var td = el("td", "bal-reason-edit");
+    if (!state.canWrite) { td.textContent = r.reason; return td; }
+    var input = el("input", "bal-reason-input");
+    input.type = "text";
+    input.maxLength = 500;
+    input.value = r.reason || "";
+    input.setAttribute("aria-label", "Reason of row " + r.id);
+    var save = el("button", "ghost-btn small", "Save reason");
+    save.type = "button";
+    save.disabled = true;
+    input.addEventListener("input", function () { save.disabled = !input.value.trim() || input.value.trim() === r.reason; });
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter" && !save.disabled) { e.preventDefault(); saveReason(r, input.value.trim()); } });
+    save.addEventListener("click", function () { saveReason(r, input.value.trim()); });
+    td.appendChild(input);
+    td.appendChild(save);
+    return td;
+  }
+
+  function saveReason(r, reason) {
+    var body = { kind: r.kind, weaponClass: r.weaponClass, style: r.style, entry: r.entry, recordId: r.recordId, field: r.field,
+      op: r.op, value: r.value, reason: reason, position: r.position };
+    request("/api/admin/balance/rows/" + r.id, { method: "PUT", body: JSON.stringify(body) })
+      .then(function () { return load().then(function (good) { if (good) ok("Row #" + r.id + ": reason saved."); }); })
+      .catch(fail);
   }
 
   // Two clicks, like the other tabs: the first asks, the second does it.
@@ -975,6 +1011,9 @@
     $("bal-rollback-no").addEventListener("click", function () { state.rollbackTo = null; $("bal-rollback").hidden = true; });
     $("bal-pnote").addEventListener("input", function () { say("bal-alert", ""); });
   }
+
+  // What the grid (js/admin-balance-grid.js) uses of this tab.
+  window.hvBalance = { state: state, request: request, reload: load, ok: ok, fail: fail, classes: classes, loadFile: loadFile };
 
   window.startAdminBalance = function () {
     if (started) { load(); return; }

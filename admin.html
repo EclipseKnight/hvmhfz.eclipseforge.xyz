@@ -667,7 +667,40 @@
           <p class="note-text">Every value the game uses for a move, a melee weapon or a ranged weapon can be changed here. Rows are the <b>draft</b>: nothing reaches players until it is published. Rows apply in order, wide rows (any) first. Publishing sends the table to every player online at once and to each player at login; a player in a quest gets it at the next town visit. It needs the client patch with server balance and the game server's balance support, neither live yet. Moderators can look; only admins can change.</p>
           <div id="bal-status" class="note-text"></div>
 
+          <!-- The grid: js/admin-balance-grid.js -->
+          <div id="bal-grid-box">
+            <h3 class="subhead">The values</h3>
+            <p class="note-text">Each cell shows the game's value; a changed one shows the new value with the game's struck through. Tap a cell to change it: <b>Enter</b> saves and goes down, <b>Tab</b> saves and goes right, <b>Esc</b> cancels. A whole number sets the value, <b>x1.05</b> multiplies it; nothing, the game's value or the &#8634; button puts it back. Every change goes to the draft at once; players get nothing until it is published.</p>
+            <div class="chips bal-chips" role="group" aria-label="What to edit" id="bal-gmode"></div>
+            <div class="chips bal-chips" role="group" aria-label="Weapon type" id="bal-gtypes"></div>
+            <div class="chips bal-chips" role="group" aria-label="Style" id="bal-gstyles"></div>
+            <div class="admin-grid">
+              <div class="field"><label for="bal-greason">Reason for these changes <span class="field-optional">the #weapon-balancing thread link, given to each new row</span></label><input id="bal-greason" type="text" maxlength="500" autocomplete="off" /></div>
+              <div class="field"><label for="bal-gfilter">Find</label><input id="bal-gfilter" type="search" autocomplete="off" /></div>
+              <div class="field bal-gcheck"><label class="cal-check"><input type="checkbox" id="bal-gchanged" /> Changed only</label></div>
+            </div>
+            <div class="admin-confirm" id="bal-gask" hidden>
+              <p>Each change needs a reason (the #weapon-balancing thread link). It is given to <span id="bal-gask-what"></span> and every new change after it, until you change it above.</p>
+              <div class="field admin-wide"><label for="bal-gask-reason">Reason</label><input id="bal-gask-reason" type="text" maxlength="500" autocomplete="off" /></div>
+              <p class="form-alert" id="bal-gask-err" hidden>Write the reason first.</p>
+              <div class="admin-actions">
+                <button type="button" class="btn btn-primary" id="bal-gask-yes">Save the change</button>
+                <button type="button" class="ghost-btn" id="bal-gask-no">Cancel</button>
+              </div>
+            </div>
+            <p class="note-text" id="bal-gcount"></p>
+            <div class="table-wrap bal-grid-wrap">
+              <table class="data-table bal-grid" id="bal-grid" data-nosort><thead id="bal-ghead"></thead><tbody id="bal-gbody"></tbody></table>
+            </div>
+            <div class="admin-pager" id="bal-gpager" hidden>
+              <button type="button" class="ghost-btn small" id="bal-gprev">Previous page</button>
+              <button type="button" class="ghost-btn small" id="bal-gnext">Next page</button>
+            </div>
+          </div>
+
           <div id="bal-edit">
+          <details class="admin-limits bal-advanced" id="bal-advanced">
+            <summary>Other rows: any weapon type, any move, a record by number</summary>
             <h3 class="subhead" id="bal-form-title">Add a row</h3>
             <form id="bal-form" class="admin-form" novalidate>
               <div class="admin-grid">
@@ -715,10 +748,11 @@
                 <button type="button" class="ghost-btn" id="bal-cancel" hidden>Cancel edit</button>
               </div>
             </form>
+          </details>
           </div>
 
           <div class="ops-log-head">
-            <h3 class="subhead">Draft rows</h3>
+            <h3 class="subhead">Changes (the draft rows)</h3>
             <div class="ops-log-actions"><button type="button" class="ghost-btn small" id="bal-refresh">Refresh</button></div>
           </div>
           <ul class="road-problems" id="bal-draft-problems" hidden></ul>
@@ -867,6 +901,7 @@
     <script src="/js/admin-patches.js?v=3"></script>
     <script src="/js/admin-diag.js?v=1"></script>
     <script src="/js/admin-balance.js"></script>
+    <script src="/js/admin-balance-grid.js"></script>
     <script src="/js/admin.js?v=7"></script>
     <script src="/js/search.js" defer></script>
   </body>
