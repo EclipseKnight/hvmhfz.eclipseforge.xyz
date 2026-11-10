@@ -118,7 +118,7 @@
       <!-- /site-shell:crumbs -->
       <header class="page-head">
         <h1>Admin</h1>
-        <p class="page-sub">Gifts (distributions), the event calendar, the live game settings, the event content, the Hunting Road rotation and the accounts of the server. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
+        <p class="page-sub">Gifts (distributions), the event calendar, the live game settings, the event content, the weapon balance, the Hunting Road rotation and the accounts of the server. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
 
       <nav class="tabs" role="tablist" aria-label="Admin sections">
         <a class="tab" id="tab-gifts" role="tab" aria-controls="panel-gifts" aria-selected="true" href="#gifts">Gifts</a>
@@ -126,6 +126,7 @@
         <a class="tab" id="tab-settings" role="tab" aria-controls="panel-settings" aria-selected="false" href="#settings">Settings</a>
         <a class="tab" id="tab-notices" role="tab" aria-controls="panel-notices" aria-selected="false" href="#notices">Notices</a>
         <a class="tab" id="tab-content" role="tab" aria-controls="panel-content" aria-selected="false" href="#content">Content</a>
+        <a class="tab" id="tab-balance" role="tab" aria-controls="panel-balance" aria-selected="false" href="#balance">Balance</a>
         <a class="tab" id="tab-road" role="tab" aria-controls="panel-road" aria-selected="false" href="#road">Hunting Road</a>
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests <span class="tab-count" id="count-quests"></span></a>
         <a class="tab" id="tab-users" role="tab" aria-controls="panel-users" aria-selected="false" href="#users">Users <span class="tab-count" id="count-users"></span></a>
@@ -653,6 +654,121 @@
       </section>
       </div>
 
+      <!-- Balance: js/admin-balance.js (/api/admin/balance/**); names from data/weapons/ when it exists -->
+      <div class="tab-panel" id="panel-balance" hidden>
+      <section class="panel" id="balance-panel">
+        <div class="panel-head"><h2>Balance</h2><span class="panel-note" id="bal-note"></span></div>
+        <p class="form-alert" id="bal-alert" hidden></p>
+        <p class="road-ok" id="bal-ok" hidden></p>
+        <p class="form-alert" id="bal-notable" hidden>The balance tables are not there yet: the API's db/balance.sql must run first.</p>
+        <p class="form-alert" id="bal-nodata" hidden>The weapon names are missing (data/weapons/ is not on this site yet), so moves and weapons are typed by number: weapon type, style, entry and record id.</p>
+        <div id="bal-main" hidden>
+          <p class="note-text">Every value the game uses for a move, a melee weapon or a ranged weapon can be changed here. Rows are the <b>draft</b>: nothing reaches players until it is published. Rows apply in order, wide rows (any) first. Publishing sends the table to every player online at once and to each player at login; a player in a quest gets it at the next town visit. It needs the client patch with server balance and the game server's balance support, neither live yet. Moderators can look; only admins can change.</p>
+          <div id="bal-status" class="note-text"></div>
+
+          <div id="bal-edit">
+            <h3 class="subhead" id="bal-form-title">Add a row</h3>
+            <form id="bal-form" class="admin-form" novalidate>
+              <div class="admin-grid">
+                <div class="field">
+                  <label for="bal-kind">What to change</label>
+                  <select id="bal-kind">
+                    <option value="attack">An attack move</option>
+                    <option value="melee">A melee weapon</option>
+                    <option value="ranged">A ranged weapon</option>
+                  </select>
+                </div>
+              </div>
+              <div id="bal-attack-group">
+                <div class="admin-grid">
+                  <div class="field"><label for="bal-type">Weapon type</label><select id="bal-type"></select></div>
+                  <div class="field"><label for="bal-style">Style</label><select id="bal-style"></select></div>
+                  <div class="field" id="bal-mfilter-field"><label for="bal-mfilter">Find a move</label><input id="bal-mfilter" type="text" placeholder="name, entry or id" autocomplete="off" /></div>
+                  <div class="field" id="bal-move-field"><label for="bal-move">Move</label><select id="bal-move"></select></div>
+                  <div class="field"><label for="bal-entry">Entry (kind) <span class="field-optional">* = any</span></label><input id="bal-entry" type="text" inputmode="numeric" autocomplete="off" /></div>
+                  <div class="field"><label for="bal-id">Record id <span class="field-optional">* = any</span></label><input id="bal-id" type="text" inputmode="numeric" autocomplete="off" /></div>
+                </div>
+                <p class="note-text" id="bal-move-note"></p>
+              </div>
+              <div id="bal-weapon-group" hidden>
+                <div class="admin-grid">
+                  <div class="field" id="bal-wsearch-field"><label for="bal-wsearch">Find a weapon by name</label><input id="bal-wsearch" type="text" autocomplete="off" /></div>
+                  <div class="field"><label for="bal-wid">Weapon id</label><input id="bal-wid" type="text" inputmode="numeric" autocomplete="off" /></div>
+                </div>
+                <ul class="bal-results" id="bal-wresults" hidden></ul>
+                <p class="note-text" id="bal-weapon-note"></p>
+              </div>
+              <div class="admin-grid">
+                <div class="field"><label for="bal-field">Field</label><select id="bal-field"></select></div>
+                <div class="field"><label for="bal-op">Change</label><select id="bal-op"><option value="set">Set to</option><option value="scale">Multiply by</option></select></div>
+                <div class="field"><label for="bal-value">Value</label><input id="bal-value" type="text" inputmode="decimal" autocomplete="off" /></div>
+              </div>
+              <p class="note-text" id="bal-current"></p>
+              <div class="field admin-wide">
+                <label for="bal-reason">Reason <span class="field-optional">required: the #weapon-balancing thread link</span></label>
+                <input id="bal-reason" type="text" maxlength="500" autocomplete="off" />
+              </div>
+              <ul class="road-problems" id="bal-problems" hidden></ul>
+              <div class="admin-actions">
+                <button type="submit" class="btn btn-primary" id="bal-save">Add row</button>
+                <button type="button" class="ghost-btn" id="bal-cancel" hidden>Cancel edit</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="ops-log-head">
+            <h3 class="subhead">Draft rows</h3>
+            <div class="ops-log-actions"><button type="button" class="ghost-btn small" id="bal-refresh">Refresh</button></div>
+          </div>
+          <ul class="road-problems" id="bal-draft-problems" hidden></ul>
+          <div class="table-wrap">
+            <table class="data-table admin-table" data-nosort>
+              <thead><tr><th>#</th><th>What</th><th>Field</th><th>Now</th><th>Change</th><th>Reason</th><th>Author</th><th>Problems</th><th></th></tr></thead>
+              <tbody id="bal-rows"><tr><td colspan="9" class="empty-cell">Loading</td></tr></tbody>
+            </table>
+          </div>
+
+          <h3 class="subhead">Draft against the published version</h3>
+          <div id="bal-diff"></div>
+
+          <div id="bal-publish">
+            <h3 class="subhead">Publish</h3>
+            <div class="field admin-wide">
+              <label for="bal-pnote">Note <span class="field-optional">required, kept with the version</span></label>
+              <input id="bal-pnote" type="text" maxlength="500" autocomplete="off" />
+            </div>
+            <div class="admin-actions"><button type="button" class="btn btn-primary" id="bal-publish-btn">Publish the draft</button></div>
+            <div class="admin-confirm" id="bal-confirm" hidden>
+              <p id="bal-confirm-text"></p>
+              <div class="admin-actions">
+                <button type="button" class="btn btn-primary" id="bal-confirm-yes">Confirm</button>
+                <button type="button" class="ghost-btn" id="bal-confirm-no">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="subhead">Versions</h3>
+          <div class="table-wrap">
+            <table class="data-table admin-table" data-nosort>
+              <thead><tr><th>Version</th><th>When</th><th>Who</th><th>Rows</th><th>Note</th><th></th></tr></thead>
+              <tbody id="bal-versions"><tr><td colspan="6" class="empty-cell">Loading</td></tr></tbody>
+            </table>
+          </div>
+          <div class="admin-confirm" id="bal-rollback" hidden>
+            <p id="bal-rollback-text"></p>
+            <div class="field admin-wide">
+              <label for="bal-rnote">Note <span class="field-optional">required</span></label>
+              <input id="bal-rnote" type="text" maxlength="500" autocomplete="off" />
+            </div>
+            <div class="admin-actions">
+              <button type="button" class="btn btn-primary" id="bal-rollback-yes">Roll back</button>
+              <button type="button" class="ghost-btn" id="bal-rollback-no">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      </div>
+
       <!-- Diagnostics uploads: js/admin-diag.js (GET /api/admin/diagnostics[/{id}]) -->
       <div class="tab-panel" id="panel-diagnostics" hidden>
       <section class="panel" id="diag-list-panel">
@@ -748,7 +864,8 @@
     <script src="/js/admin-content.js"></script>
     <script src="/js/admin-patches.js?v=3"></script>
     <script src="/js/admin-diag.js?v=1"></script>
-    <script src="/js/admin.js?v=6"></script>
+    <script src="/js/admin-balance.js"></script>
+    <script src="/js/admin.js?v=7"></script>
     <script src="/js/search.js" defer></script>
   </body>
 </html>

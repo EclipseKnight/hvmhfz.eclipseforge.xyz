@@ -1075,6 +1075,17 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 tr.is-disabled td{color:var(--ink-soft);font-style:italic}
 .ghost-btn.is-armed{border-color:var(--wax);color:var(--wax)}
 
+/* admin Balance tab (js/admin-balance.js) */
+.bal-results{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.bal-results .bal-none{color:var(--ink-soft);font-style:italic}
+.bal-results .ghost-btn{text-align:left;white-space:normal}
+.bal-actions{min-width:150px}
+.bal-actions .ghost-btn{margin:0 4px 4px 0}
+.bal-diff-list{margin:0 0 12px;padding-left:20px;font-size:.88rem;overflow-wrap:anywhere}
+.bal-diff-list.is-added li::marker{color:var(--teal)}
+.bal-diff-list.is-removed li::marker{color:var(--wax)}
+#balance-panel .admin-grid .field select,#balance-panel .admin-grid .field input{min-width:0}
+
 
 /* ---------- Hunting Road (road.html, road-vote.html, road-history.html, account and admin blocks) ---------- */
 .road-links{display:flex;gap:8px 12px;flex-wrap:wrap;margin:16px 0 0}
