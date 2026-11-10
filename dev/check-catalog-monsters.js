@@ -6,7 +6,10 @@
       (js/monster-links.js), to an index entry whose data file data/monsters/<slug>.json exists; except
       the known gaps below (monsters of the game the guide has no page for yet).
    2. data/quests.json is what dev/make-quest-monsters.py writes (run it with --check).
-   3. The index: each entry has its data file and the file the same name, every picture it names exists,
+   3. The English objective of every quest (data/quests.json "objective") names the same Dos-/prey/boar/Cephalos
+      monsters as its "monsters" list (Iodrome and Gendrome, Ioprey and Genprey were once swapped), and the
+      English texts of data/quest-details.json say what their Japanese text says (dev/fix-quest-text-names.py --check).
+   4. The index: each entry has its data file and the file the same name, every picture it names exists,
       slugs and old slugs are unique, every link form monster.html accepts (slug, oldSlug, formerSlugs)
       opens the entry, and every monster id of data/monster-ids.json belongs to an entry or is a known gap.
 
@@ -62,7 +65,21 @@ Object.keys(unresolved).forEach(function (name) {
 const gen = childProcess.spawnSync("python3", [path.join(ROOT, "dev/make-quest-monsters.py"), "--check"], { encoding: "utf8" });
 if (gen.status !== 0) fail((gen.stdout || gen.stderr || "dev/make-quest-monsters.py --check failed").trim());
 
-// ---- 3. the index ----
+// ---- 3. English objectives name the monsters of the catalog ----
+// The family whose names the translators swapped; other monsters have several English spellings per Japanese name
+// (subspecies, rare species), so only this family is compared as a set.
+const FAMILY = ["Velociprey", "Velocidrome", "Giaprey", "Genprey", "Gendrome", "Ioprey", "Iodrome", "Bullfango", "Bulldrome",
+  "Cephalos", "Cephadrome", "Blango", "Blangonga"];
+quests.forEach(function (quest) {
+  if (!quest.objective) return;
+  const named = FAMILY.filter(function (name) { return new RegExp("\\b" + name + "(s|es)?\\b", "i").test(quest.objective); });
+  const listed = FAMILY.filter(function (name) { return (quest.monsters || []).indexOf(name) !== -1; });
+  if (named.join() !== listed.join()) fail("quest " + quest.id + ": objective \"" + quest.objective + "\" names " + (named.join(", ") || "none of " + "the Dos-/prey family") + ", the monsters list says " + (listed.join(", ") || "none"));
+});
+const texts = childProcess.spawnSync("python3", [path.join(ROOT, "dev/fix-quest-text-names.py"), "--check"], { encoding: "utf8" });
+if (texts.status !== 0) fail((texts.stdout || texts.stderr || "dev/fix-quest-text-names.py --check failed").trim().split("\n").slice(0, 6).join(" | "));
+
+// ---- 4. the index ----
 const forms = {};
 index.forEach(function (m) {
   const file = "data/monsters/" + m.slug + ".json";
