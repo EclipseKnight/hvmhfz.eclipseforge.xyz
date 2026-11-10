@@ -7,6 +7,8 @@
    that folder is not on the site (the weapon database is on its own branch until merged) the tab still works with
    numbers typed by hand and says so. Markup from the API stays text (textContent). Draft rows, a diff against
    the published version, publishing (two steps, with the draft's fingerprint) and versions with a roll back.
+   Until the stable client patch can receive tables (the API's publishGate) only an empty table can be published:
+   the reason shows above Publish, which is off for a draft with rows (and Roll back for a version with rows).
    Moderators can look; only admins can change (the API answers 403 anyway). */
 (function () {
   "use strict";
@@ -193,6 +195,16 @@
     return "Publish v" + version + ": " + c.added + " added, " + c.removed + " removed, " + c.changed + " changed";
   }
 
+  /**
+   * Why a table with `rowCount` rows cannot be published now (the API's publishGate: the stable client patch cannot
+   * receive tables yet), null when it can. An empty table (the game's own values) always can; an API without
+   * publishGate decides on its own.
+   */
+  function publishBlocked(overview, rowCount) {
+    var g = overview && overview.publishGate;
+    return g && !g.allowed && rowCount > 0 ? (g.reason || "The stable patch cannot receive tables yet.") : null;
+  }
+
   /** The next version number: one above the newest known. */
   function nextVersion(versions, published) {
     var top = published && published.version ? published.version : 0;
@@ -273,7 +285,7 @@
     module.exports = { stylesText: stylesText, norm: norm, moveValue: moveValue, weaponValue: weaponValue, scaled: scaled,
       typeFor: typeFor, typeName: typeName, findMove: findMove, moveLabel: moveLabel, findWeapon: findWeapon,
       searchWeapons: searchWeapons, whatText: whatText, currentOf: currentOf, changeText: changeText, rowLine: rowLine,
-      diffCounts: diffCounts, diffEmpty: diffEmpty, publishQuestion: publishQuestion, nextVersion: nextVersion,
+      diffCounts: diffCounts, diffEmpty: diffEmpty, publishQuestion: publishQuestion, publishBlocked: publishBlocked, nextVersion: nextVersion,
       moveIds: moveIds, parseAny: parseAny, buildRow: buildRow, utc: utc, showValue: showValue };
   }
   if (typeof document === "undefined") return;
@@ -442,6 +454,11 @@
     renderVersions();
     $("bal-edit").hidden = !state.canWrite;
     $("bal-publish").hidden = !state.canWrite;
+    var g = state.overview.publishGate, blocked = publishBlocked(state.overview, state.rows.length);
+    $("bal-gate").textContent = g && !g.allowed ? g.reason || "" : "";
+    $("bal-gate").hidden = !(g && !g.allowed);
+    $("bal-publish-btn").disabled = !!blocked;
+    $("bal-publish-btn").title = blocked || "";
   }
 
   function renderStatus() {
@@ -873,6 +890,8 @@
         return;
       }
       if (diffEmpty(state.diff)) { say("bal-alert", "Nothing to publish: the draft equals the published version."); return; }
+      var blocked = publishBlocked(state.overview, state.rows.length);
+      if (blocked) { say("bal-alert", blocked); return; }
       var next = nextVersion(state.versions, state.overview.published);
       state.pending = { fingerprint: all[0].fingerprint };
       $("bal-confirm-text").textContent = publishQuestion(next, state.diff) + ". Players get it at their next login.";
@@ -913,6 +932,9 @@
       if (state.canWrite && i > 0) {
         var b = el("button", "ghost-btn small", "Roll back");
         b.type = "button";
+        var blocked = publishBlocked(state.overview, v.rowCount);
+        b.disabled = !!blocked;
+        b.title = blocked || "";
         b.addEventListener("click", function () { askRollback(v); });
         act.appendChild(b);
       }

@@ -10,6 +10,8 @@
    - Edit, Delete on the second click, Up and Down (the order sent);
    - the diff; Publish with a required note, the two steps, the fingerprint sent, a 409 shown;
    - versions and Roll back (note required);
+   - the publish gate: while the stable patch cannot receive tables the reason shows, Publish is off for a draft
+     with rows (on for an empty one) and Roll back is off for a version with rows;
    - a moderator: read only; a missing table; the weapon data missing (numbers typed by hand);
    - markup in a reason stays text; no horizontal overflow at 375 px; no page errors; the pure helpers under node.
 
@@ -84,7 +86,8 @@ function newApi(extra) {
       { version: 1, sha256: "cd", rowCount: 2, publishedBy: "boss", publishedAt: "2026-11-09T15:00:00Z", note: "start", rollbackOf: null }],
     publishedRows: [row(3, 1, { value: 90 }), row(5, 2, { kind: "melee", weaponClass: null, style: null, entry: null, recordId: 1, field: "attack", op: "set", value: 62, reason: "iron sword" }),
       row(7, 3, { weaponClass: "SnS", entry: 0, recordId: 22, field: "mv", value: 30, reason: "old" })],
-    fingerprint: "f1"
+    fingerprint: "f1",
+    publishGate: { allowed: true, stablePatch: "v1.21", minimumPatch: "v1.21-pre8", reason: null }
   }, extra || {});
   if (!extra || !extra.problems) api.problems = [{ rowId: 6, message: "ko: no such record" }];
   return api;
@@ -92,7 +95,8 @@ function newApi(extra) {
 
 function overview(api) {
   return { tableReady: api.tableReady, publicEnabled: false, fields: FIELDS, classes: CLASSES, styles: ["earth", "heaven", "storm", "extreme"],
-    maxRows: 4096, meleeRecords: 17568, rangedRecords: 4223, rows: api.rows, problems: api.problems, fingerprint: api.fingerprint, published: api.published };
+    maxRows: 4096, meleeRecords: 17568, rangedRecords: 4223, rows: api.rows, problems: api.problems, fingerprint: api.fingerprint, published: api.published,
+    publishGate: api.publishGate };
 }
 
 function diffOf(api) {
@@ -225,6 +229,9 @@ function helpers() {
   check("stylesText", B.stylesText("EHSX") === "Earth, Heaven, Storm, Extreme" && B.stylesText("X") === "Extreme" && B.stylesText("") === "none");
   check("diff words", B.publishQuestion(3, { added: [1], removed: [], changed: [1, 2] }) === "Publish v3: 1 added, 0 removed, 2 changed"
     && B.diffEmpty({ added: [], removed: [], changed: [], orderChanged: false }) && !B.diffEmpty({ added: [], removed: [], changed: [], orderChanged: true }));
+  const shut = { publishGate: { allowed: false, reason: "stable is v1.20" } };
+  check("publishBlocked", B.publishBlocked(shut, 1) === "stable is v1.20" && B.publishBlocked(shut, 0) === null
+    && B.publishBlocked({ publishGate: { allowed: true, reason: null } }, 5) === null && B.publishBlocked({}, 5) === null);
   check("nextVersion", B.nextVersion([{ version: 3 }, { version: 2 }], { version: 3 }) === 4 && B.nextVersion([], null) === 1);
   check("moveIds", JSON.stringify(B.moveIds([{ id: 3 }, { id: 1 }, { id: 2 }], 1, -1)) === "[1,3,2]" && B.moveIds([{ id: 3 }], 0, -1) === null && B.moveIds([{ id: 3 }, { id: 4 }], 1, 1) === null);
   check("parseAny", B.parseAny("*") === null && B.parseAny("") === null && B.parseAny(" 165 ") === 165 && B.parseAny("x") === undefined && B.parseAny("70000") === undefined && B.parseAny("-1") === undefined);
@@ -387,6 +394,8 @@ async function balancePage(browser, base) {
   check("diff: counts and lines", /Draft against v2: \d+ added, 1 removed, \d+ changed, \d+ unchanged\./.test(diffText) && /Removed \(1\)/.test(diffText) && /Sword and Shield, Storm, Sliding Attack \(sigil\) \? \(k0 #22\): mv set 30/.test(diffText) && /Before: .*set 90.*After: .*set 110/.test(diffText), diffText);
   await shot(page, "balance-diff.png", "#bal-diff");
 
+  check("gate open: no reason, Publish on", (await page.$eval("#bal-gate", (n) => n.hidden)) && !(await page.$eval("#bal-publish-btn", (n) => n.disabled))
+    && (await page.$$eval("#bal-versions button", (bs) => bs.every((b) => !b.disabled))));
   // Publish: note first, two steps, the fingerprint.
   await page.click("#bal-publish-btn");
   check("publish: note required", /Write a note/.test(await text(page, "#bal-alert")) && (await page.$eval("#bal-confirm", (n) => n.hidden)));
@@ -433,6 +442,35 @@ async function balancePage(browser, base) {
   check("roll back: POST", rb && rb.body.note === "back to start");
   check("roll back: shows in the list", /roll back to v1/.test(await text(page, "#bal-versions")));
   check("no errors on the admin page", r.errors.length === 0, r.errors.join("; "));
+  await page.close();
+
+  // ---- the stable patch cannot receive tables yet ----
+  const REASON = "Only an empty table (the game's own values) can be published until the stable patch can receive tables: "
+    + "stable is v1.20, tables need v1.21-pre8 or newer.";
+  const shutApi = newApi({ problems: [], publishGate: { allowed: false, stablePatch: "v1.20", minimumPatch: "v1.21-pre8", reason: REASON },
+    versions: [
+      { version: 3, sha256: "ee", rowCount: 0, publishedBy: "boss", publishedAt: "2026-11-10T16:00:00Z", note: "defaults", rollbackOf: null },
+      { version: 2, sha256: "ab", rowCount: 4, publishedBy: "boss", publishedAt: "2026-11-10T15:00:00Z", note: "first pass", rollbackOf: null },
+      { version: 1, sha256: "cd", rowCount: 0, publishedBy: "boss", publishedAt: "2026-11-09T15:00:00Z", note: "start", rollbackOf: null }] });
+  r = await open(browser, base + "/admin.html#balance", shutApi, 1280);
+  page = r.page;
+  await page.waitForSelector("#bal-rows tr td:nth-child(2)", { timeout: 8000 });
+  check("gate shut: the reason shows", !(await page.$eval("#bal-gate", (n) => n.hidden)) && (await text(page, "#bal-gate")) === REASON, await text(page, "#bal-gate"));
+  check("gate shut: Publish off for a draft with rows", (await page.$eval("#bal-publish-btn", (n) => n.disabled)) && (await page.getAttribute("#bal-publish-btn", "title")) === REASON);
+  const rbState = await page.$$eval("#bal-versions button", (bs) => bs.map((b) => b.disabled));
+  check("gate shut: Roll back off for v2 (rows), on for v1 (empty)", JSON.stringify(rbState) === "[true,false]", JSON.stringify(rbState));
+  await shot(page, "balance-gate-shut.png", "#bal-publish");
+  // An empty draft (back to the game's values) may still be published.
+  shutApi.rows = [];
+  shutApi.fingerprint = "empty";
+  await page.click("#bal-refresh");
+  await page.waitForFunction(() => !document.getElementById("bal-publish-btn").disabled, null, { timeout: 5000 });
+  check("gate shut: an empty draft can publish, reason still shown", (await text(page, "#bal-gate")) === REASON && (await page.$$("#bal-rows tr td:nth-child(2)")).length === 0);
+  await page.fill("#bal-pnote", "defaults");
+  await page.click("#bal-publish-btn");
+  await page.waitForFunction(() => !document.getElementById("bal-confirm").hidden || document.getElementById("bal-alert").textContent, null, { timeout: 5000 });
+  check("gate shut: the empty draft reaches the question", !(await page.$eval("#bal-confirm", (n) => n.hidden)), await text(page, "#bal-alert"));
+  check("no errors with the gate shut", r.errors.length === 0, r.errors.join("; "));
   await page.close();
 
   // ---- a moderator: read only ----
