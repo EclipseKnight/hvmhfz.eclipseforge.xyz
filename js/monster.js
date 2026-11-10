@@ -186,7 +186,24 @@
     return panel;
   }
 
-  function render(detail) {
+  function keyStats(panel, game) {
+    var sum = window.HvMonsterGame.summary(game);
+    panel.appendChild(el("h2", "panel-head", "Key stats"));
+    var list = el("dl", "mg-keystats");
+    function item(label, value) {
+      list.appendChild(el("dt", null, label));
+      list.appendChild(el("dd", null, value));
+    }
+    item("Base HP", num(game.baseHp));
+    var hps = (game.levels || []).map(function (l) { return l[0]; }).filter(function (v) { return v > 0; });
+    if (hps.length) item("HP range", num(Math.min.apply(null, hps)) + " to " + num(Math.max.apply(null, hps)));
+    if (sum.weak.length) item("Weak to", sum.weak.map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(", ") + " (" + sum.rank + ")");
+    sum.weakPoints.forEach(function (w) { item("Best " + w[0].toLowerCase(), w[1] + " (" + w[2] + ")"); });
+    panel.appendChild(list);
+    panel.appendChild(el("p", "panel-note", "From the game's data (" + sum.rank + ", normal state). The tabs below have every rank."));
+  }
+
+  function render(detail, game) {
     document.title = detail.name + " · Hunsterverse";
     document.getElementById("monster-head").hidden = true; // the monster's own heading follows
     if (window.HvCrumbs) window.HvCrumbs.item(detail.name);
@@ -249,7 +266,7 @@
       var label = el("label", "monster-form-pick");
       label.appendChild(el("span", "monster-form-label", "Form"));
       label.appendChild(select);
-      actions.appendChild(label);
+      if (!game) actions.appendChild(label);
       select.addEventListener("change", function () {
         var index = Number(select.value);
         renderForms(index < 0 ? detail : forms[index]);
@@ -262,7 +279,13 @@
     var grid = el("div", "monster-columns");
     var statPanel = el("section", "panel", null);
     statPanel.id = "stat-panel";
-    grid.appendChild(statPanel);
+    var keyPanel = statPanel;
+    if (game) { // the game's numbers lead; the community tables move to a labelled fold below
+      keyPanel = el("section", "panel");
+      keyPanel.id = "key-stats";
+      keyStats(keyPanel, game);
+    }
+    grid.appendChild(keyPanel);
 
     var zonePanel = el("aside", "panel monster-zone-panel");
     zonePanel.appendChild(el("h2", "panel-head", "Map"));
@@ -285,14 +308,29 @@
     root.appendChild(grid);
 
     var hzPanel = el("section", "panel");
-    hzPanel.appendChild(el("h2", "panel-head", "Hitzones"));
+    hzPanel.appendChild(el("h2", "panel-head", game ? "Community stagger notes" : "Hitzones"));
     var hzBody = el("div");
     hzPanel.appendChild(hzBody);
-    root.appendChild(hzPanel);
+    var fold = null;
+    if (game) {
+      window.HvMonsterGame.render(root, game, { communityAttacks: detail.attacks });
+      fold = el("details", "panel monster-details mg-community");
+      fold.id = "community";
+      fold.appendChild(el("summary", null, "Community tables (Ferias project): status text, HP labels, stagger notes"));
+      fold.appendChild(el("p", "panel-note", "Kept for the notes the game's data does not have (break requirements, level labels). Where the numbers differ, the game's data above is what the game uses."));
+      if (forms.length) fold.appendChild(label);
+      statPanel.className = "";
+      fold.appendChild(statPanel);
+      fold.appendChild(hzPanel);
+      hzPanel.className = "";
+      root.appendChild(fold);
+    } else {
+      root.appendChild(hzPanel);
+    }
 
     function renderForms(form) {
       clear(statPanel);
-      statPanel.appendChild(el("h2", "panel-head", "Stats"));
+      statPanel.appendChild(el("h2", "panel-head", game ? "Community stats" : "Stats"));
       if (form.enrage) statPanel.appendChild(el("p", "monster-enrage", "Enrage: " + form.enrage));
       statPanel.appendChild(el("h3", "subhead", "Status resistance"));
       statPanel.appendChild(statusTable(form.status));
@@ -300,20 +338,25 @@
       statPanel.appendChild(levelsTable(form.levels));
       var mods = modifiersTable(form.modifiers);
       if (mods) statPanel.appendChild(mods);
-      var attacks = attacksTable(form.attacks);
+      var attacks = game ? null : attacksTable(form.attacks); // with game data: in the Attacks tab
       if (attacks) statPanel.appendChild(attacks);
 
       clear(hzBody);
-      hzBody.appendChild(el("h3", "subhead", "Normal"));
-      hzBody.appendChild(hitzonesTable(form.hitzones));
-      if (form.hitzonesEnraged && form.hitzonesEnraged.length) {
+      if (!game) hzBody.appendChild(el("h3", "subhead", "Normal"));
+      if (!game) hzBody.appendChild(hitzonesTable(form.hitzones));
+      if (!game && form.hitzonesEnraged && form.hitzonesEnraged.length) {
         hzBody.appendChild(el("h3", "subhead", "Enraged"));
         hzBody.appendChild(hitzonesTable(form.hitzonesEnraged));
       }
       hzBody.appendChild(el("h3", "subhead", "Stagger limits"));
       hzBody.appendChild(staggerTable(form.stagger));
     }
-    root.appendChild(dropsPanel(detail.drops));
+    // The game's drop tables replace the community's; those stay where the game's data has none.
+    if (!game || !game.drops || !game.drops.length) {
+      var dp = dropsPanel(detail.drops);
+      if (game) dp.querySelector(".panel-head").textContent = "Drops and carves (community tables)";
+      root.appendChild(dp);
+    }
 
     if (detail.ferias === false) { // not from the Ferias tables: no credit line for them
       renderForms(detail);
@@ -321,7 +364,7 @@
       return;
     }
     var credit = el("p", "panel-note monster-credit");
-    credit.appendChild(document.createTextNode("Monster data from the "));
+    credit.appendChild(document.createTextNode(game ? "Community tables from the " : "Monster data from the "));
     var link = el("a", null, "MHF-Z Ferias English Project");
     link.href = "https://xl3lackout.github.io/MHFZ-Ferias-English-Project/";
     credit.appendChild(link);
@@ -359,14 +402,26 @@
     // Slugs are the English names now. An older link (or a Discord post from before the rename) still
     // names the old slug (oldSlug), or the short English one used from 28 to 29 Oct 2026 (formerSlugs),
     // so the index is checked before giving up.
-    load(slug).then(render).catch(function () {
-      fetch("/data/monsters/index.json").then(function (r) { return r.json(); }).then(function (list) {
+    var index = fetch("/data/monsters/index.json").then(function (r) { return r.json(); });
+    // The game's own data (data/monsters/game/<id>.json) by the entry's first monster id; none: community only.
+    function withGame(detail, entry) {
+      var id = entry && entry.ids && entry.ids[0];
+      if (!id || !window.HvMonsterGame) return render(detail, null);
+      return fetch("/data/monsters/game/" + id + ".json").then(function (r) { return r.ok ? r.json() : null; })
+        .catch(function () { return null; })
+        .then(function (game) { render(detail, game && game.ranks ? game : null); });
+    }
+    function entryOf(list, s) { return (list || []).filter(function (m) { return m.slug === s; })[0]; }
+    load(slug).then(function (detail) {
+      return index.catch(function () { return []; }).then(function (list) { return withGame(detail, entryOf(list, slug)); });
+    }, function () {
+      return index.then(function (list) {
         var hit = (list || []).filter(function (m) {
           return m.oldSlug === slug || (m.formerSlugs || []).indexOf(slug) !== -1;
         })[0];
         if (!hit) throw new Error("unknown");
-        return load(hit.slug).then(render);
-      }).catch(function () { fail("That monster is not in the database."); });
-    });
+        return load(hit.slug).then(function (detail) { return withGame(detail, hit); });
+      });
+    }).catch(function () { fail("That monster is not in the database."); });
   }
 })();

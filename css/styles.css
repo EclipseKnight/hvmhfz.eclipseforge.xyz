@@ -2239,3 +2239,32 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
   .bal-table td[data-label]::before{content:attr(data-label);display:block;margin-bottom:2px;font:700 .64rem/1.2 var(--font-ui);
     letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
 }
+
+/* ===== Monster page: the game's own data (js/monster-game.js) ===== */
+.mg-panel .panel-head{align-items:baseline}
+.mg-source{font-style:italic}
+.mg-tabs{margin:0 0 14px}
+.mg-ranks{margin:0 0 14px}
+.mg-ranks .chip,.mg-drop-ranks .chip{min-height:36px}
+.mg-heat td.mg-hz{text-align:center;font-weight:600;font-variant-numeric:tabular-nums;color:#2b1a08;min-width:38px}
+.mg-heat td.mg-best{outline:2px solid #7a2c0c;outline-offset:-3px;color:#5a1a02}
+.mg-heat th.mg-part{text-align:left;white-space:nowrap;font-weight:600}
+.mg-weak{margin:2px 0 8px;font-size:13px}
+.mg-keystats{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:0 0 10px;font-size:14px}
+.mg-keystats dt{color:var(--text-dim);font-weight:600}
+.mg-keystats dd{margin:0;font-variant-numeric:tabular-nums}
+.mg-dmg-form{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 10px}
+.mg-dmg-form .field{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.mg-dmg-form select,.mg-dmg-form input{min-height:36px;max-width:100%}
+.mg-community{margin-top:24px}
+.mg-community > summary{font-size:15px}
+.mg-status td,.mg-attacks td,.mg-breaks td,.quest-hp td{font-variant-numeric:tabular-nums}
+.quest-reward-group{margin:0 0 16px}
+.quest-reward-group h3{margin:0 0 6px}
+@media (max-width:640px){
+  .mg-heat th,.mg-heat td{padding:5px 4px;font-size:12px}
+  .mg-heat td.mg-hz{min-width:28px}
+}
+.mg-note{color:#5a4326;font-size:12.5px;line-height:1.45;margin:8px 0 0;text-transform:none;letter-spacing:0}
+.mg-keystats dt{color:#6b4a20}
+.data-table.mg-breaks{width:auto;min-width:min(100%,320px)}

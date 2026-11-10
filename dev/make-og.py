@@ -176,17 +176,51 @@ def weak_elements(detail):
     return [e.capitalize() for e in best[:2] if avg[e] >= max(10, avg[best[0]] * 0.75)]
 
 
+GAME_COLS = ["cut", "impact", "shot", "fire", "water", "thunder", "dragon", "ice", "stun"]
+
+
+def game_data(entry):
+    """The game's own data for the entry's first monster id (data/monsters/game/<id>.json, dev/make-monster-data.py)."""
+    for mid in entry.get("ids") or []:
+        path = ROOT / "data" / "monsters" / "game" / f"{mid}.json"
+        if path.exists():
+            game = json.loads(path.read_text())
+            if game.get("ranks"):
+                return game
+    return None
+
+
+def game_zones(game):
+    """The highest rank's normal hitzones as the community rows' dicts."""
+    top = game["ranks"][-1]
+    rows = top["hz"][0]["rows"] if top.get("hz") else []
+    return top["label"], [dict(zip(["part"] + GAME_COLS, [r[0]] + r[2:])) for r in rows]
+
+
 def monster_summary(entry):
-    """(subtitle, extra line) for a monster's card and share page, from data/monsters/<slug>.json."""
+    """(subtitle, extra line) for a monster's card and share page: the game's own data when the monster has it
+    (weak elements and best cut spot at its highest rank, base HP), else data/monsters/<slug>.json."""
     detail = json.loads((ROOT / "data" / "monsters" / f"{entry['slug']}.json").read_text())
     kind = entry.get("category") or detail.get("category") or "Monster"
-    weak = weak_elements(detail)
-    subtitle = kind + (" · weak to " + " and ".join(weak) if weak else "")
-    hps = [lv.get("hp") for lv in detail.get("levels") or [] if lv.get("hp")]
-    forms = [v for v in entry.get("variants") or []]
+    game = game_data(entry)
     extra = []
-    if hps:
-        extra.append(f"HP {min(hps):,} to {max(hps):,}" if min(hps) != max(hps) else f"HP {hps[0]:,}")
+    if game:
+        rank, zones = game_zones(game)
+        weak = weak_elements({"hitzones": zones})
+        extra.append(f"Base HP {game['baseHp']:,}")
+        if zones:
+            for col in ("cut", "impact", "shot"):
+                top = max(zones, key=lambda z: z[col])
+                if top[col] > 0:
+                    extra.append(f"best {col} {top['part']} {top[col]}")
+                    break
+    else:
+        weak = weak_elements(detail)
+        hps = [lv.get("hp") for lv in detail.get("levels") or [] if lv.get("hp")]
+        if hps:
+            extra.append(f"HP {min(hps):,} to {max(hps):,}" if min(hps) != max(hps) else f"HP {hps[0]:,}")
+    subtitle = kind + (" · weak to " + " and ".join(weak) if weak else "")
+    forms = [v for v in entry.get("variants") or []]
     if forms:
         extra.append("forms: " + ", ".join(forms))
     return subtitle, " · ".join(extra), detail

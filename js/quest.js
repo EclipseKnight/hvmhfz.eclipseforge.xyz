@@ -201,16 +201,96 @@
       main.appendChild(desc);
     }
 
-    var rewards = section("Rewards", "being mapped");
-    rewards.appendChild(el("p", "note-text",
-      "The reward table in the quest file lists item indices from the game client's own item table, which is not mapped yet, so rewards are not shown rather than shown wrong."));
+    // The quest file's own reward groups and the monsters' HP at this quest (data/quests/rewards/<id/1000>.json,
+    // dev/make-monster-data.py from hvmhfz_re tools/monsters/quest_rewards.py). Filled in when the shard loads.
+    var rewards = section("Rewards", "from the game's data");
+    rewards.id = "rewards";
+    rewards.appendChild(el("p", "note-text", "Loading the rewards…"));
     main.appendChild(rewards);
+    var hpPanel = section("Monster HP", "from the game's data");
+    hpPanel.id = "monster-hp";
+    hpPanel.hidden = true;
+    main.appendChild(hpPanel);
+    fetch("/data/quests/rewards/" + Math.floor(quest.id / 1000) + ".json")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+      .then(function (shard) {
+        return fetch("/data/monsters/game/index.json").then(function (r) { return r.ok ? r.json() : {}; })
+          .catch(function () { return {}; }).then(function (gindex) { showRewards(shard, gindex); });
+      });
+
+    function showRewards(shard, gindex) {
+      var q = shard && shard.quests && shard.quests[String(quest.id)];
+      rewards.textContent = "";
+      var head = el("div", "panel-head");
+      head.appendChild(el("h2", null, "Rewards"));
+      head.appendChild(el("span", "panel-note", "from the game's data"));
+      rewards.appendChild(head);
+      if (!q || !q.rewards.length) {
+        rewards.appendChild(el("p", "note-text", q ? "This quest file has no reward groups." : "No reward data for this quest."));
+      } else {
+        q.rewards.forEach(function (g) {
+          var box = el("div", "quest-reward-group");
+          box.appendChild(el("h3", "subhead", rewardWhen(g)));
+          var list = el("div", "drop-list");
+          g.items.forEach(function (it) {
+            var line = el("div", "drop-row");
+            var name = el(it[0] ? "a" : "span", "drop-name", it[0] ? (shard.names[String(it[0])] || "Item " + it[0]) : "Nothing");
+            if (it[0]) name.href = "/item.html?id=" + it[0];
+            line.appendChild(name);
+            line.appendChild(el("span", "drop-qty", "x" + it[1]));
+            var bar = el("span", "drop-bar");
+            var fill = el("span", "drop-fill");
+            fill.style.width = Math.max(0, Math.min(100, it[2] || 0)) + "%";
+            bar.appendChild(fill);
+            line.appendChild(bar);
+            line.appendChild(el("span", "drop-pct", (Math.round((it[2] || 0) * 10) / 10) + "%"));
+            list.appendChild(line);
+          });
+          box.appendChild(list);
+          rewards.appendChild(box);
+        });
+        rewards.appendChild(el("p", "note-text", "Chance of each item on one draw of its group. How many draws a group gives (the reward slots) is not read from the game yet."));
+      }
+      if (q && q.monsters.length) {
+        hpPanel.hidden = false;
+        var t = el("table", "data-table quest-hp");
+        var thr = el("tr");
+        ["Monster", "HP"].forEach(function (h) { thr.appendChild(el("th", null, h)); });
+        t.appendChild(el("thead")).appendChild(thr);
+        var tb = el("tbody");
+        q.monsters.forEach(function (m) {
+          var tr = el("tr");
+          var info = gindex[String(m[0])];
+          var cell = el("td");
+          if (info && info[1]) cell.appendChild(el("a", null, info[0] || m[1])).href = "/monster.html?m=" + encodeURIComponent(info[1]);
+          else cell.textContent = (info && info[0]) || m[1] || ("Monster " + m[0]);
+          tr.appendChild(cell);
+          tr.appendChild(el("td", null, m[2] ? Number(m[2]).toLocaleString("en-US") : "-"));
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        hpPanel.appendChild(t);
+        hpPanel.appendChild(el("p", "note-text", (q.rank ? q.rank + ", " : "") + "monster level " + q.level +
+          ": base HP times that level's multiplier. Some monsters spawn up to 2 levels higher, which this does not add."));
+      }
+    }
 
     var back = el("p", "note-text");
     var link = el("a", null, "Back to the quest catalog");
     link.href = "/quests.html";
     back.appendChild(link);
     main.appendChild(back);
+  }
+
+  // What the reward screen pays a group for (hvmhfz_re docs/monsters-data.md section 4).
+  function rewardWhen(g) {
+    var when = g.when || "";
+    if (when === "every clear") return "Every clear";
+    if (when === "main target") return "Main target done";
+    if (/^sub-target/.test(when)) return "Sub-target " + when.slice(-1) + " done (likely)";
+    if (/^extra condition/.test(when)) return "Extra condition " + when.slice(-1) + " (not named yet)";
+    return "Condition 0x" + Number(g.g).toString(16) + " (not named yet)";
   }
 
   if (isNaN(id)) {

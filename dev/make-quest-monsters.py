@@ -56,7 +56,7 @@ JP = {
     "チャチャブー": "shakalaka", "ディアブロス": "diablos", "ディアブロス亜種": "black-diablos",
     "ディオレックス": "diorex", "ディスフィロア": "disufiroa", "ティガレックス": "tigrex",
     "テオ・テスカトル": "teostra", "デュラガウア": "dyuragaua", "トア・テスカトラ": "toa-tesukatora",
-    "ドスイーオス": "gendrome", "ドスガレオス": "cephadrome", "ドスゲネポス": "iodrome",
+    "ドスイーオス": "iodrome", "ドスガレオス": "cephadrome", "ドスゲネポス": "gendrome",
     "ドスファンゴ": "bulldrome", "ドスランポス": "velocidrome", "ドドブランゴ": "blangonga",
     "ドラギュロス": "doragyurosu", "トリドクレス": "toridcless", "ナナ・テスカトリ": "lunastra",
     "ナルガクルガ": "nargacuga", "ババコンガ": "congalala", "ババコンガ変種": "congalala",

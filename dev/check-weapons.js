@@ -308,6 +308,25 @@ async function page() {
       await pg.selectOption("#c-sharp", "0");
       await pg.fill("#c-affinity", "100");
       check(/no crits below green/.test(await pg.textContent("#calc-summary")), view.name + ": red sharpness says no crits");
+      // Monster presets: the game's hitzones (data/monsters/game/1.json) per rank and part; Rathian opens on its
+      // highest rank (G rank: head cut 50), Low rank's head is 70; a monster without game data says "community".
+      const gameRathian = JSON.parse(fs.readFileSync(path.join(ROOT, "data/monsters/game/1.json"), "utf8"));
+      await pg.waitForFunction(function () { return !!document.querySelector('#c-monster option[value="g:1"]'); });
+      await pg.selectOption("#c-monster", "g:1");
+      await pg.waitForFunction(function () { return !document.getElementById("c-part-wrap").hidden; });
+      const groups = await pg.$$eval("#c-part optgroup", function (g) { return g.map(function (x) { return x.label; }); });
+      check(JSON.stringify(groups) === JSON.stringify(gameRathian.ranks.map(function (r) { return r.label; })),
+        view.name + ": Rathian's parts grouped by the game data's ranks: " + groups);
+      check(await pg.inputValue("#c-zone") === "50" && /game's data: Rathian, G rank/.test(await pg.textContent("#c-zone-note")),
+        view.name + ": Rathian preset starts on G rank head, cut 50, from the game's data: " + await pg.inputValue("#c-zone"));
+      await pg.selectOption("#c-part", { label: "Head" }); // the first "Head" is Low rank's
+      check(await pg.inputValue("#c-zone") === "70", view.name + ": Low rank head cut 70, got " + await pg.inputValue("#c-zone"));
+      const zinState = await pg.evaluate(function () {
+        return Array.prototype.some.call(document.querySelectorAll("#c-monster option"), function (o) { return /\(community\)$/.test(o.textContent) && o.value.indexOf("c:") === 0; })
+          || Array.prototype.every.call(document.querySelectorAll("#c-monster option"), function (o) { return !o.value || o.value.indexOf("g:") === 0; });
+      });
+      check(zinState, view.name + ": monsters without game hitzones are labelled community, or every preset is the game's");
+      await pg.selectOption("#c-monster", "");
       // The page's own content (the site header's Menu button is checked by check-nav-mobile.js).
       const overflow = await pg.evaluate(function () {
         const m = document.querySelector("main");

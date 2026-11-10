@@ -102,7 +102,9 @@ def monsters():
         subtitle, extra, _ = make_og.monster_summary(entry)
         card = f"/assets/og/monster/{entry['slug']}.png"
         by_name[entry["name"]] = card
-        desc = subtitle + ". " + (extra + ". " if extra else "") + "Hitzones, HP by level, stagger limits, maps and drops."
+        tail = ("Hitzones per rank, status, drops, attacks and HP from the game's data." if make_og.game_data(entry)
+                else "Hitzones, HP by level, stagger limits, maps and drops.")
+        desc = subtitle + ". " + (extra + ". " if extra else "") + tail
         yield f"monster/{entry['slug']}.html", page(f"monster/{entry['slug']}.html", entry["name"], desc,
                                                     f"/monster.html?m={entry['slug']}", card)
     monsters.cards = by_name

@@ -3,7 +3,8 @@
  * Data: data/weapons/index.json (types, sharpness multipliers, formula constants, skill names) and one
  * data/weapons/<type>.json per weapon type, both written by dev/make-weapons-data.py from the game files.
  * The formula itself is js/weapons-calc.js (HvWeaponsCalc), tested by dev/check-weapons.js.
- * Monster hitzone presets come from the monster pages' data (data/monsters/<slug>.json).
+ * Monster hitzone presets come from the game's data (data/monsters/game/<id>.json), per rank, state and part;
+ * monsters without it use their page's community table (data/monsters/<slug>.json).
  *
  * URL: ?type=<slug>&w=<weapon id> opens a type and a weapon.
  */
@@ -439,16 +440,43 @@
 
   /* ---------- monster presets ---------- */
 
+  // Presets: the game's own hitzones (data/monsters/game/<id>.json, dev/make-monster-data.py) per rank, state and
+  // part; a monster without them falls back to its page's community table ("c:<slug>"), labelled as such.
+  var GAME_COLS = ["cut", "impact", "shot", "fire", "water", "thunder", "dragon", "ice", "stun"];
+
   function loadMonsters() {
-    getJson("/data/monsters/index.json").then(function (list) {
+    Promise.all([getJson("/data/monsters/index.json"),
+      getJson("/data/monsters/game/index.json").catch(function () { return {}; })]).then(function (res) {
+      var list = res[0], game = res[1], seen = {}, opts = [];
+      list.forEach(function (m) {
+        var id = (m.ids || []).filter(function (i) { return game[i] && game[i][2]; })[0];
+        if (id && !seen[id]) { seen[id] = true; opts.push([m.name, "g:" + id]); }
+        else if (!id && m.hasHitzones) opts.push([m.name + " (community)", "c:" + m.slug]);
+      });
+      Object.keys(game).forEach(function (id) {
+        if (!seen[id] && game[id][2] && !game[id][1]) opts.push([game[id][0], "g:" + id]);
+      });
       var sel = $("c-monster");
-      list.filter(function (m) { return m.hasHitzones; }).sort(function (a, b) { return a.name.localeCompare(b.name); })
-        .forEach(function (m) { sel.add(new Option(m.name, m.slug)); });
+      opts.sort(function (a, b) { return a[0].localeCompare(b[0]); })
+        .forEach(function (o) { sel.add(new Option(o[0], o[1])); });
     }).catch(function () { $("c-zone-note").textContent = "Monster hitzones could not be loaded; type them in."; });
   }
 
   function partRows(m) {
     var out = [], count = {};
+    if (m.ranks) { // the game's data: one group per rank, a line per state and part
+      m.ranks.forEach(function (rank) {
+        rank.hz.forEach(function (state) {
+          state.rows.forEach(function (r) {
+            var row = {};
+            GAME_COLS.forEach(function (c, i) { row[c] = r[i + 2]; });
+            out.push({ group: rank.label, rank: rank.label, row: row,
+              label: r[0] + (state.label === "Normal" ? "" : " (" + state.label.toLowerCase() + ")") });
+          });
+        });
+      });
+      return out;
+    }
     function add(rows, suffix) {
       (rows || []).forEach(function (r) {
         var key = r.part + suffix;
@@ -461,30 +489,48 @@
     return out;
   }
 
+  function monsterUrl(key) {
+    return key.slice(0, 2) === "g:" ? "/data/monsters/game/" + key.slice(2) + ".json" : "/data/monsters/" + key.slice(2) + ".json";
+  }
+
   function pickMonster() {
-    var slug = $("c-monster").value;
+    var key = $("c-monster").value;
     var wrap = $("c-part-wrap"), part = $("c-part");
-    if (!slug) { wrap.hidden = true; return; }
-    var p = monsterCache[slug] ? Promise.resolve(monsterCache[slug]) : getJson("/data/monsters/" + slug + ".json");
+    if (!key) { wrap.hidden = true; return; }
+    var p = monsterCache[key] ? Promise.resolve(monsterCache[key]) : getJson(monsterUrl(key));
     p.then(function (m) {
-      monsterCache[slug] = m;
-      part.length = 0;
-      partRows(m).forEach(function (r, i) { part.add(new Option(r.label, String(i))); });
+      monsterCache[key] = m;
+      part.textContent = "";
+      var groups = {}, last = null;
+      partRows(m).forEach(function (r, i) {
+        var opt = new Option(r.label, String(i));
+        if (r.group) {
+          if (!groups[r.group]) {
+            groups[r.group] = document.createElement("optgroup");
+            groups[r.group].label = r.group;
+            part.appendChild(groups[r.group]);
+          }
+          groups[r.group].appendChild(opt);
+          if (!last || last.group !== r.group) last = { group: r.group, index: i };
+        } else part.appendChild(opt);
+      });
+      if (last) part.value = String(last.index); // the highest rank's first part
       wrap.hidden = false;
       applyPart();
     });
   }
 
   function applyPart() {
-    var slug = $("c-monster").value;
-    if (!slug || !monsterCache[slug]) { renderCalc(); return; }
-    var rows = partRows(monsterCache[slug]);
+    var key = $("c-monster").value;
+    if (!key || !monsterCache[key]) { renderCalc(); return; }
+    var rows = partRows(monsterCache[key]);
     var r = rows[Number($("c-part").value)] || rows[0];
     if (!r) { renderCalc(); return; }
     $("c-zone").value = r.row[$("c-type").value];
-    var w = state.weapon, key = w && isMelee() ? ELEMENT_ZONE[field(w, "element")] : null;
-    var note = "Hitzones from the " + monsterCache[slug].name + " page (community data).";
-    if (key) $("c-ezone").value = r.row[key];
+    var w = state.weapon, ekey = w && isMelee() ? ELEMENT_ZONE[field(w, "element")] : null;
+    var note = r.rank ? "Hitzones from the game's data: " + monsterCache[key].name + ", " + r.rank + "."
+      : "Hitzones from the " + monsterCache[key].name + " page (community data).";
+    if (ekey && r.row[ekey] !== undefined) $("c-ezone").value = r.row[ekey];
     else if (w && isMelee() && field(w, "element")) note += " " + field(w, "element") + " has no column there: type its hitzone in.";
     $("c-zone-note").textContent = note;
     renderCalc();
