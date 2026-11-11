@@ -729,7 +729,7 @@
 
   /* ---------- tabs ---------- */
 
-  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", notices: "panel-notices", content: "panel-content", balance: "panel-balance", road: "panel-road", quests: "panel-quests", users: "panel-users", diagnostics: "panel-diagnostics", server: "panel-server", audit: "panel-audit" };
+  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", notices: "panel-notices", content: "panel-content", balance: "panel-balance", flags: "panel-flags", road: "panel-road", quests: "panel-quests", users: "panel-users", diagnostics: "panel-diagnostics", server: "panel-server", audit: "panel-audit" };
   var roadStarted = false;
   var usersWired = false;
   var serverWired = false;
@@ -767,6 +767,9 @@
     }
     if (name === "balance") {
       if (window.startAdminBalance) window.startAdminBalance();
+    }
+    if (name === "flags") {
+      if (window.startAdminFlags) window.startAdminFlags();
     }
     if (name === "diagnostics") {
       if (window.startAdminDiag) window.startAdminDiag();
@@ -1545,6 +1548,7 @@
     }
     wireTabs();
     activateTab(window.location.hash.replace("#", "") || "gifts");
+    if (window.hvFlagsBadge) window.hvFlagsBadge();
     request("/api/users/self")
       .then(function (self) { currentName = (self && self.username) || ""; })
       .catch(function () { /* the list still works; only the "you" mark is missing */ });

@@ -22,6 +22,7 @@
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
     <link rel="stylesheet" href="/css/styles.css?v=14" />
+    <link rel="stylesheet" href="/css/admin-flags.css?v=1" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/tablesort.js" defer></script>
     <script src="/js/background.js" defer></script>
@@ -126,7 +127,7 @@
       <!-- /site-shell:crumbs -->
       <header class="page-head">
         <h1>Admin</h1>
-        <p class="page-sub">Gifts (distributions), the event calendar, the live game settings, the event content, the weapon balance, the Hunting Road rotation and the accounts of the server. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
+        <p class="page-sub">Gifts (distributions), the event calendar, the live game settings, the event content, the weapon balance, the flagged accounts, the Hunting Road rotation and the accounts of the server. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
 
       <nav class="tabs" role="tablist" aria-label="Admin sections">
         <a class="tab" id="tab-gifts" role="tab" aria-controls="panel-gifts" aria-selected="true" href="#gifts">Gifts</a>
@@ -138,6 +139,7 @@
         <a class="tab" id="tab-road" role="tab" aria-controls="panel-road" aria-selected="false" href="#road">Hunting Road</a>
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests <span class="tab-count" id="count-quests"></span></a>
         <a class="tab" id="tab-users" role="tab" aria-controls="panel-users" aria-selected="false" href="#users">Users <span class="tab-count" id="count-users"></span></a>
+        <a class="tab" id="tab-flags" role="tab" aria-controls="panel-flags" aria-selected="false" href="#flags">Flags <span class="fl-badge" id="count-flags" hidden></span><span class="fl-badge is-critical" id="count-flags-critical" hidden></span></a>
         <a class="tab" id="tab-diagnostics" role="tab" aria-controls="panel-diagnostics" aria-selected="false" href="#diagnostics">Diagnostics</a>
         <a class="tab" id="tab-server" role="tab" aria-controls="panel-server" aria-selected="false" href="#server">Server</a>
         <a class="tab" id="tab-audit" role="tab" aria-controls="panel-audit" aria-selected="false" href="#audit">Audit</a>
@@ -813,6 +815,86 @@
       </section>
       </div>
 
+      <!-- Flags: js/admin-flags.js (/api/admin/flags/**); admins write, moderators read -->
+      <div class="tab-panel" id="panel-flags" hidden>
+      <section class="panel" id="flags-panel">
+        <div class="panel-head"><h2>Flags</h2><span class="panel-note" id="fl-note"></span></div>
+        <p class="form-alert" id="fl-alert" hidden></p>
+        <p class="road-ok" id="fl-ok" hidden></p>
+        <p class="form-alert" id="fl-notable" hidden>The flags tables are not installed yet.</p>
+        <div id="fl-main" hidden>
+          <p class="note-text">Accounts the server found odd: a lot of GCP or other points, or a save that cannot be real. Look at each flag and mark it <b>Approved</b> (the account is fine) or <b>Cheat</b> (the currency is set down; Undo in the flag's history puts it back). Moderators can look; only admins can change.</p>
+          <p class="note-text" id="fl-counts"></p>
+          <div class="fl-filters">
+            <div class="chips" id="fl-status" role="group" aria-label="Status">
+              <button type="button" class="chip" data-status="open" aria-pressed="true">Open</button>
+              <button type="button" class="chip" data-status="approved" aria-pressed="false">Approved</button>
+              <button type="button" class="chip" data-status="cheat" aria-pressed="false">Cheat</button>
+              <button type="button" class="chip" data-status="all" aria-pressed="false">All</button>
+            </div>
+            <div class="field fl-rule-filter"><label for="fl-rule">Rule</label><select id="fl-rule"><option value="">All rules</option></select></div>
+            <button type="button" class="ghost-btn small" id="fl-refresh">Refresh</button>
+          </div>
+          <div class="fl-scanrow">
+            <span class="note-text" id="fl-scanline"></span>
+            <button type="button" class="ghost-btn small" id="fl-scan" hidden>Scan now</button>
+          </div>
+          <div class="fl-bulkbar" id="fl-bulkbar" hidden>
+            <label class="cal-check"><input type="checkbox" id="fl-select-all" /> Select all</label>
+            <span class="note-text" id="fl-bulk-count">none selected</span>
+            <button type="button" class="ghost-btn small" id="fl-bulk-approve" disabled>Approve selected</button>
+            <button type="button" class="btn btn-primary btn-small" id="fl-bulk-cheat" disabled>Cheat selected</button>
+          </div>
+
+          <div class="admin-confirm" id="fl-confirm" hidden>
+            <p id="fl-confirm-text"></p>
+            <ul class="fl-lines" id="fl-confirm-lines"></ul>
+            <div class="field admin-wide" id="fl-value-field">
+              <label for="fl-value">Value to set <span class="field-optional" id="fl-value-hint"></span></label>
+              <input id="fl-value" type="text" inputmode="numeric" autocomplete="off" />
+            </div>
+            <div class="field admin-wide" id="fl-note-field">
+              <label for="fl-cnote">Note <span class="field-optional">kept with the flag</span></label>
+              <input id="fl-cnote" type="text" maxlength="500" autocomplete="off" />
+            </div>
+            <p class="form-alert" id="fl-confirm-msg" hidden></p>
+            <div class="admin-actions">
+              <button type="button" class="btn btn-primary" id="fl-confirm-yes">Confirm</button>
+              <button type="button" class="ghost-btn" id="fl-confirm-no">Cancel</button>
+            </div>
+          </div>
+
+          <div class="fl-results" id="fl-results" hidden>
+            <h3 class="subhead" id="fl-results-head"></h3>
+            <ul class="fl-results-list" id="fl-results-list"></ul>
+            <button type="button" class="ghost-btn small" id="fl-results-close">Close</button>
+          </div>
+
+          <div class="fl-detail" id="fl-detail" hidden>
+            <div class="ops-log-head">
+              <h3 class="subhead" id="fl-detail-title"></h3>
+              <div class="ops-log-actions"><button type="button" class="ghost-btn small" id="fl-detail-close">Close details</button></div>
+            </div>
+            <div id="fl-detail-body"></div>
+          </div>
+
+          <h3 class="subhead">Queue</h3>
+          <div id="fl-list"></div>
+
+          <details class="fl-rules" id="fl-rules">
+            <summary>Rules <span class="panel-note" id="fl-rules-note"></span></summary>
+            <p class="note-text">What the scan looks for. A change applies from the next scan; the ceiling is the value a cheat sets by default, only for rules with a currency (a blank box keeps the current one).</p>
+            <div class="table-wrap">
+              <table class="data-table admin-table" data-nosort>
+                <thead><tr><th>Rule</th><th>Currency</th><th>Enabled</th><th>Threshold</th><th>Severity</th><th>Ceiling</th><th></th></tr></thead>
+                <tbody id="fl-rules-body"><tr><td colspan="7" class="empty-cell">Loading</td></tr></tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+      </section>
+      </div>
+
       <!-- Diagnostics uploads: js/admin-diag.js (GET /api/admin/diagnostics[/{id}]) -->
       <div class="tab-panel" id="panel-diagnostics" hidden>
       <section class="panel" id="diag-list-panel">
@@ -923,7 +1005,8 @@
     <script src="/js/game-icons.js?v=2"></script>
     <script src="/js/move-names.js?v=1"></script>
     <script src="/js/admin-balance-grid.js?v=4"></script>
-    <script src="/js/admin.js?v=7"></script>
+    <script src="/js/admin-flags.js?v=2"></script>
+    <script src="/js/admin.js?v=8"></script>
     <script src="/js/search.js?v=2" defer></script>
   </body>
 </html>
