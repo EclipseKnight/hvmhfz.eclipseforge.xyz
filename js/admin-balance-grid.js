@@ -13,6 +13,9 @@
    Every field shows the game's value (js/balance-fields.js: a move's record values, data/weapons/ "rec"); a coded
    field (element, status, special, arc shot, charge row, a move's element/status flags) shows the game's name and is
    edited with a list of the game's names, sending the API's code.
+   Move rows say how each move is used (js/move-names.js, data/weapons "use"): the moves the game never uses are left
+   out unless "Show unused and unknown moves" is on (a move with a draft row always shows); later hits of a move sit
+   under it behind "+N later hits" (opened by itself when one of them has a draft row), and page with it.
    Weapon rows carry the weapon's in-game icon (type and rank colour, js/game-icons.js, data/equipment-icons.json).
    The page part needs js/balance-fields.js and js/admin-balance.js (window.hvBalance, window.hvBalanceHelpers). */
 (function () {
@@ -243,12 +246,25 @@
           current: function (f) { return H().weaponCode(weapon, f, optsOf(type, kind, f)); } });
       });
     }
-    if (view.changedOnly) {
-      var rows = C().state.rows, fields = fieldsOf(view.mode === "moves" ? "attack" : weaponKind(type));
-      out = out.filter(function (l) { return fields.some(function (f) { return cellRows(rows, l.key(f.name)).length > 0; }); });
+    var rows = C().state.rows, fields = fieldsOf(view.mode === "moves" ? "attack" : weaponKind(type));
+    var changed = function (l) { return fields.some(function (f) { return cellRows(rows, l.key(f.name)).length > 0; }); };
+    if (view.changedOnly) out = out.filter(changed);
+    var MN = window.HvMoveNames;
+    if (view.mode === "moves" && MN) {
+      // Never-used moves only with the toggle on (or a draft row); later hits under their parent (js/move-names.js).
+      var all = MN.showAll(), hid = 0;
+      out = out.filter(function (l) { var keep = !MN.hidden(l.move, all) || changed(l); if (!keep) hid++; return keep; });
+      out = MN.fold(out, function (l) { return l.move; }).map(function (g) {
+        g.item.later = g.later;
+        g.item.laterChanged = g.later.some(changed);
+        return g.item;
+      });
+      out.hidden = hid;
     }
     return out;
   }
+
+  var openFolds = {};   // "type:k0:8" -> open, kept across rebuilds
 
   function render() {
     var ctx = C();
@@ -268,10 +284,13 @@
     }
     if ($("bal-glegend")) $("bal-glegend").hidden = view.mode !== "moves";
     var all = lines(type, file);
+    var tog = $("bal-glegend") && $("bal-glegend").querySelector(".mv-toggle");
+    if (tog) tog.setCount(all.hidden || 0);
     var paged = pageOf(all, view.page, PAGE_SIZE);
     view.page = paged.page;
     var kind = view.mode === "moves" ? "attack" : weaponKind(type);
-    var sig = [view.mode, view.type, view.style, view.page, view.filter, view.changedOnly, all.length, ctx.state.canWrite].join("|");
+    var sig = [view.mode, view.type, view.style, view.page, view.filter, view.changedOnly, all.length, ctx.state.canWrite,
+      window.HvMoveNames ? window.HvMoveNames.showAll() : ""].join("|");
     if (sig !== built) { build(type, kind, paged.items); built = sig; }
     else refresh();
     var what = view.mode === "moves" ? "moves" : "weapons";
@@ -321,15 +340,19 @@
       e.appendChild(td);
       body.appendChild(e);
     }
-    items.forEach(function (l) {
-      var row = el("tr", l.off ? "is-off" : "");
+    var byRef = {};
+    ((ctx.state.data.files[type.slug] || {}).moves || []).forEach(function (m) { byRef[window.HvMoveNames ? window.HvMoveNames.ref(m) : ""] = m; });
+    var line = function (l, cls) {
+      var row = el("tr", (l.off ? "is-off " : "") + (cls || "") + (l.move && l.move.show === "hide" ? " mv-unused" : ""));
       row.dataset.ref = l.ref;
       var th = el("th", "bal-gname");
       th.scope = "row";
       var icon = l.piece && window.HvGameIcons ? window.HvGameIcons.equipmentIcon(iconData, l.piece, "gi-small") : null;
       if (icon) th.appendChild(icon);
-      if (l.move) window.HvMoveNames.fill(th.appendChild(el("span", "bal-gtitle bal-gmove")), l.move, l.moveRef, { slug: type.slug });
-      else th.appendChild(el("span", "bal-gtitle", l.name));
+      if (l.move) {
+        window.HvMoveNames.fill(th.appendChild(el("span", "bal-gtitle bal-gmove")), l.move, l.moveRef,
+          { slug: type.slug, parent: l.move.use && byRef[l.move.use.parent] || null });
+      } else th.appendChild(el("span", "bal-gtitle", l.name));
       if (l.sub) th.appendChild(el("span", "bal-gsub", l.sub));
       if (l.off) th.title = "Not reached in this style (by the data)";
       row.appendChild(th);
@@ -339,6 +362,16 @@
         addCell(td, l.key(f.name), l.current(f.name), f, false, col, optsOf(type, kind, f.name));
       });
       body.appendChild(row);
+      return row;
+    };
+    items.forEach(function (l) {
+      var row = line(l);
+      var later = (l.later || []).map(function (c) { return line(c, "mv-later"); });
+      if (later.length) {
+        var key = type.slug + ":" + l.ref;
+        var open = key in openFolds ? openFolds[key] : !!l.laterChanged;
+        row.cells[0].appendChild(window.HvMoveNames.foldButton(later, open, function (o) { openFolds[key] = o; }));
+      }
     });
     refresh();
   }
@@ -499,7 +532,7 @@
     return true;
   }
 
-  function editable(c) { return c && c.td.querySelector(".bal-cell-btn"); }
+  function editable(c) { return c && !c.td.parentNode.hidden && c.td.querySelector(".bal-cell-btn"); }
 
   function go(c, dir) {
     var i = cells.indexOf(c), next = null;
@@ -604,7 +637,10 @@
         iconData = data;
         if (data && view.mode === "weapons" && !editing) { built = null; render(); }
       });
-    if (window.HvMoveNames && $("bal-glegend")) $("bal-glegend").appendChild(window.HvMoveNames.legend());
+    if (window.HvMoveNames && $("bal-glegend")) {
+      $("bal-glegend").appendChild(window.HvMoveNames.legend());
+      $("bal-glegend").appendChild(window.HvMoveNames.toggle(function () { setView({ page: 0 }); }));
+    }
     var t = null;
     $("bal-gfilter").addEventListener("input", function () {
       clearTimeout(t);

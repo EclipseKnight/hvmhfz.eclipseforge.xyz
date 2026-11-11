@@ -265,9 +265,46 @@
 
   function styleText(s) { return s || "?"; }
 
-  // Name first, the confidence badge, the id small; what it is, input and sources in a tap detail (js/move-names.js).
+  // Name first, the confidence badge, the id small; how it is used under it; what it is, input and sources in a tap
+  // detail (js/move-names.js).
   function moveCell(m) {
-    return window.HvMoveNames.fill(el("td", "mv-cell"), m, m.set + " #" + m.id, { slug: doc.type });
+    return window.HvMoveNames.fill(el("td", "mv-cell"), m, m.set + " #" + m.id, { slug: doc.type, parent: parentOf(m) });
+  }
+
+  // The move a later hit belongs to (its "use".parent), or null.
+  function parentOf(m) {
+    var p = m.use && m.use.parent, MN = window.HvMoveNames;
+    return p ? doc.moves.filter(function (x) { return MN.ref(x) === p; })[0] || null : null;
+  }
+
+  // Both move tables (list and calculator): the moves of a style the toggle lets through, later hits folded under
+  // their parent (js/move-names.js fold). row(m) makes a move's row; a parent row gets the "+N later hits" button,
+  // its later hits follow it, hidden until opened (kept open across redraws). A never-used move, shown when the
+  // toggle is on, is dimmed. Returns the number of rows; the toggles say how many moves the toggle hides.
+  var openFolds = {};
+  function moveRows(body, list, row, legendId) {
+    var MN = window.HvMoveNames, all = MN.showAll(), n = 0;
+    var kept = list.filter(function (m) { return !MN.hidden(m, all); });
+    var toggle = $(legendId).querySelector(".mv-toggle");
+    if (toggle) toggle.setCount(list.length - kept.length);
+    MN.fold(kept).forEach(function (g) {
+      var tr = row(g.item);
+      if (g.item.show === "hide") tr.classList.add("mv-unused");
+      body.appendChild(tr);
+      n++;
+      var later = g.later.map(function (m) {
+        var r = row(m);
+        r.classList.add("mv-later");
+        body.appendChild(r);
+        n++;
+        return r;
+      });
+      if (later.length) {
+        var key = doc.type + ":" + MN.ref(g.item);
+        tr.cells[0].appendChild(MN.foldButton(later, openFolds[key], function (o) { openFolds[key] = o; }));
+      }
+    });
+    return n;
   }
 
   function mvText(m) { return m.mv.join(" + ") + (m.repeats ? " (repeats)" : ""); }
@@ -278,7 +315,7 @@
     var body = $("wp-moves-body");
     body.textContent = "";
     var style = state.style;
-    doc.moves.filter(function (m) { return !style || !m.styles || m.styles.indexOf(style) >= 0; }).forEach(function (m) {
+    moveRows(body, doc.moves.filter(function (m) { return !style || !m.styles || m.styles.indexOf(style) >= 0; }), function (m) {
       var tr = el("tr");
       tr.appendChild(moveCell(m));
       tr.appendChild(el("td", "", styleText(m.styles)));
@@ -291,8 +328,8 @@
       tr.appendChild(el("td", "num", m.ko ? String(m.ko) : ""));
       var bon = m.chain.map(function (id) { return bonusOf(m.kind, id); }).filter(Boolean);
       tr.appendChild(el("td", "", bon.length ? bon.map(function (b) { return "+" + b[0] + " / +" + b[1]; }).join(", ") : ""));
-      body.appendChild(tr);
-    });
+      return tr;
+    }, "wp-moves-legend");
   }
 
   function renderStyleChips() {
@@ -439,10 +476,11 @@
     var charge = Number($("c-charge").value), fencing = $("c-fencing").checked && doc.fencing;
     var body = $("calc-body");
     body.textContent = "";
-    var shown = 0;
-    doc.moves.forEach(function (m) {
-      if (m.styles && m.styles.indexOf(style) < 0) return;
-      if (!m.mv.some(function (x) { return x > 0; })) return;
+    // A later hit shows its own damage when its parent is opened; it is not added to the parent's numbers (the
+    // data does not say every later hit lands: Lv1 and Lv2 charges share a first hit, Rotation repeats its middle).
+    var shown = moveRows(body, doc.moves.filter(function (m) {
+      return !(m.styles && m.styles.indexOf(style) < 0) && m.mv.some(function (x) { return x > 0; });
+    }), function (m) {
       var c = Object.assign({}, base, { mv: m.mv });
       c.bonus = m.chain.map(function (id) { var b = bonusOf(m.kind, id); return b && charge ? b[charge - 1] : 0; });
       var fenceHit = fencing && m.kind === doc.fencing.kind && doc.fencing.styles.indexOf(style) >= 0;
@@ -463,9 +501,8 @@
       tr.appendChild(el("td", "num", fmt(r.nonCrit)));
       tr.appendChild(el("td", "num", r.canCrit ? fmt(r.crit) : "no crit"));
       tr.appendChild(el("td", "num wp-expected", (Math.round(r.expected * 10) / 10).toFixed(1)));
-      body.appendChild(tr);
-      shown++;
-    });
+      return tr;
+    }, "calc-legend");
     if (!shown) {
       var tr0 = el("tr", "no-results"), td0 = el("td", "", "No move of this weapon type is known for this style.");
       td0.colSpan = 7;
@@ -662,7 +699,10 @@
   var calcShown = false;
 
   function init() {
-    ["wp-moves-legend", "calc-legend"].forEach(function (id) { $(id).appendChild(window.HvMoveNames.legend()); });
+    ["wp-moves-legend", "calc-legend"].forEach(function (id) {
+      $(id).appendChild(window.HvMoveNames.legend());
+      $(id).appendChild(window.HvMoveNames.toggle(function () { if (doc) { renderMoves(); renderCalc(); } }));
+    });
     getJson("/data/weapons/index.json").then(function (ix) {
       index = ix;
       $("wp-source").textContent = "client patch " + ix.source.patch + ", " + ix.source.zip;

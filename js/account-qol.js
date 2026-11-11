@@ -14,6 +14,9 @@
    When the answer has "sharpness" ("Show sharpness hits left": no flags bit, the option alone turns it on), it gets its
    own switch line right under the Damage numbers line, with the API's name, description and lock; a toggle sends
    PUT /api/account/qol/sharpness {hitsLeft: true|false}.
+   When the answer has "controller" ("Controller buttons", users.qol_keys[6] bit 14), it gets its own line at the end of
+   its section: a PlayStation / Xbox select with the API's description and lock; a change sends
+   PUT /api/account/qol/controller {buttons: "playstation"|"xbox"}. While locked only the way back to PlayStation is open.
    A feature the API marks "preReleaseOnly" (its minPatch is above the current stable patch; it moves up by itself when
    a stable release reaches it) is listed in its own section, "Being tested: pre-release only", with the slot name and
    a note that it works only on a pre-release patch on the Test land; the Keys and Viewer options parts go into that
@@ -84,6 +87,24 @@
     var sub = SUB_OPTIONS[f.id];
     if (sub && lastData && lastData[sub.key] && typeof lastData[sub.key] === "object") row.appendChild(subOptions(f, sub, lastData[sub.key]));
     box.addEventListener("change", function () { save(f, box); });
+    return row;
+  }
+
+  var BUTTONS = [["playstation", "PlayStation"], ["xbox", "Xbox"]];
+  function controllerRow(c) {
+    var row = el("div", "qol-item");
+    var value = pick(BUTTONS, c.buttons, "playstation");
+    var select = viewerSelect(row, "qol-controller", c.name || "Controller buttons", BUTTONS, value);
+    row.appendChild(el("p", "note-text qol-desc", c.description || ""));
+    if (c.minPatch) row.appendChild(el("p", "note-text qol-patch", "Needs client patch v" + c.minPatch + " or newer"));
+    if (c.lockedMessage) {
+      row.classList.add("is-locked");
+      row.appendChild(el("p", "note-text qol-locked", c.lockedMessage));
+      select.disabled = value !== "xbox";   // the way back to the game's own buttons stays open
+    }
+    select.addEventListener("change", function () {
+      saveSub({ path: "controller", name: "Controller buttons" }, select, { buttons: select.value });
+    });
     return row;
   }
 
@@ -191,6 +212,12 @@
       if (numbersRow && !!byId.damageNumbers.preReleaseOnly === !!sh.preReleaseOnly) numbersRow.parentNode.insertBefore(shRow, numbersRow.nextSibling);
       else (sh.preReleaseOnly ? preList : list).appendChild(shRow);
       if (sh.preReleaseOnly && sh.preReleaseSlot && slots.indexOf(sh.preReleaseSlot) < 0) slots.push(sh.preReleaseSlot);
+    }
+    // "Controller buttons": its own line with a select, at the end of its section.
+    var co = data.controller;
+    if (co && typeof co === "object") {
+      (co.preReleaseOnly ? preList : list).appendChild(controllerRow(co));
+      if (co.preReleaseOnly && co.preReleaseSlot && slots.indexOf(co.preReleaseSlot) < 0) slots.push(co.preReleaseSlot);
     }
     if (!features.length) list.appendChild(el("p", "note-text", "No options are available yet."));
     preNote.textContent = (slots.length ? (slots.length > 1 ? "Slots: " : "Slot: ") + slots.join(", ") + ". " : "")

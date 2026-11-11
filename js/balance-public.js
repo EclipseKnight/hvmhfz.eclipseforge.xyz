@@ -318,8 +318,10 @@
     var frag = document.createDocumentFragment();
     var move = findMove(data, row.weaponClass, row.entry, row.recordId), MN = window.HvMoveNames;
     var type = isNone(row.weaponClass) ? null : typeByClass(data, classIndex(row.weaponClass));
-    if (move && MN) {   // name, how sure, the id small, what it is on a tap (js/move-names.js, as the weapons page)
-      frag.appendChild(MN.fill(el("span", "bal-move"), move, moveRef(row), { slug: type && type.slug }));
+    if (move && MN) {   // name, how sure, the id small, how it is used, what it is on a tap (js/move-names.js, as the weapons page)
+      var pm = /^k(\d+):(\d+)$/.exec(move.use && move.use.parent || "");
+      var parent = pm ? findMove(data, row.weaponClass, Number(pm[1]), Number(pm[2])) : null;
+      frag.appendChild(MN.fill(el("span", "bal-move"), move, moveRef(row), { slug: type && type.slug, parent: parent }));
     } else {
       frag.appendChild(document.createTextNode(text));
       if (!isNone(row.recordId) && text !== moveRef(row)) frag.appendChild(el("span", "bal-ref", moveRef(row)));
