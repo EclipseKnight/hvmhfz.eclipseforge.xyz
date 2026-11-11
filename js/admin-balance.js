@@ -37,19 +37,14 @@
   /** The data-file key of an API field name; "element_value" -> "elementvalue". */
   function norm(name) { return String(name || "").toLowerCase().replace(/[^a-z]/g, ""); }
 
-  var MOVE_KEYS = { elementvalue: "elementValue", ko: "ko" };
+  // The game's values and names of every field (js/balance-fields.js, also used by the public balance page).
+  var BF = typeof module !== "undefined" && module.exports ? require("./balance-fields.js") : window.HvBalanceFields;
   var WEAPON_KEYS = { attack: "attack", affinity: "affinity", elementvalue: "elementValue", statusvalue: "statusValue",
-    sharpness: "sharpness", recoil: "recoil", reload: "reload", chargerow: "charge", charge: "charge", arcshot: "arcShot",
+    sharpness: "sharpness", recoil: "recoil", reload: "reload", chargerow: "chargeRow", arcshot: "arcShot",
     element: "element", status: "status", special: "special" };
 
   /** A move's current value for an API field (mv is the first number of mv); null when the data has none. */
-  function moveValue(move, field) {
-    if (!move) return null;
-    var key = norm(field);
-    if (key === "mv") return move.mv && typeof move.mv[0] === "number" ? move.mv[0] : null;
-    var k = MOVE_KEYS[key];
-    return k && typeof move[k] === "number" ? move[k] : null;
-  }
+  function moveValue(move, field) { return BF.moveValue(move, field); }
 
   /** A weapon's current value; the weapon is {row, fields} (a weapons[] row and its file's fields[]). */
   function weaponValue(weapon, field) {
@@ -63,13 +58,22 @@
     return typeof v === "string" && v !== "" ? v : null;
   }
 
+  /** A weapon's value of a coded field as the API's code (opts: its names; "" in the list = none = 0); null if unknown. */
+  function weaponCode(weapon, field, opts) {
+    if (!opts) return weaponValue(weapon, field);
+    var k = weapon ? WEAPON_KEYS[norm(field)] : null, i = k ? weapon.fields.indexOf(k) : -1;
+    return i < 0 ? null : BF.codeOf(opts, weapon.row[i]);
+  }
+
   /** current x factor, truncated, the way the client does it (value / 10000 in whole numbers); null when unknown. */
   function scaled(current, factor) {
     if (typeof current !== "number" || typeof factor !== "number" || !isFinite(factor)) return null;
     return Math.trunc(current * Math.round(factor * 10000) / 10000);
   }
 
-  function showValue(v) { return v === null || v === undefined ? "unknown" : String(v); }
+  function showValue(v, opts, field) {
+    return v === null || v === undefined ? "unknown" : opts ? BF.label(opts, v, field) : String(v);
+  }
 
   /** The data's type entry (index.json types[]) for a class code of the API ("GS") or null. */
   function typeFor(data, code, classes) {
@@ -159,27 +163,37 @@
     return w ? w.name + " (" + w.type.name + ", #" + row.recordId + ")" : "weapon #" + row.recordId;
   }
 
-  /** The game's current value of the row's field: a number or text, or null when not known (or many records). */
+  /** The game's names for the row's field ([{value, name}], js/balance-fields.js), or null for a plain number. */
+  function optionsOf(row, data, classes) {
+    var codes = data && data.index && data.index.codes;
+    if (row.kind === "attack") return BF.options(codes, "attack", row.field, null);
+    var w = findWeapon(data, row.kind, row.recordId);
+    return BF.options(codes, row.kind, row.field, w ? w.type["class"] : null);
+  }
+
+  /** The game's current value of the row's field: a number (a code for a named field), or null when not known. */
   function currentOf(row, data, classes) {
     if (row.kind === "attack") {
       if (row.entry === null || row.recordId === null) return null;
       return moveValue(findMove(data, row.weaponClass, classes, row.entry, row.recordId), row.field);
     }
-    return weaponValue(findWeapon(data, row.kind, row.recordId), row.field);
+    return weaponCode(findWeapon(data, row.kind, row.recordId), row.field, optionsOf(row, data, classes));
   }
 
-  /** "set 100", "x 1.05" and, when the current value is known, " -> 105". */
-  function changeText(row, current) {
+  /** "set 100" ("set 3 (Thunder)" for a named field), "x 1.05" and, when the current value is known, " = 105". */
+  function changeText(row, current, opts) {
     if (row.op === "scale") {
       var r = scaled(current, Number(row.value));
       return "x " + row.value + (r === null ? "" : " = " + r);
     }
-    return "set " + row.value;
+    var name = opts ? BF.label(opts, Number(row.value), row.field) : null;
+    return "set " + row.value + (name !== null && name !== String(row.value) ? " (" + name + ")" : "");
   }
 
   /** One row on one line, for the diff. */
   function rowLine(row, data, classes) {
-    return whatText(row, data, classes) + ": " + row.field + " " + changeText(row, currentOf(row, data, classes));
+    var opts = optionsOf(row, data, classes), cur = currentOf(row, data, classes);
+    return whatText(row, data, classes) + ": " + row.field + " " + changeText(row, cur, opts);
   }
 
   /** "Published v2 -> draft": the counts. */
@@ -284,9 +298,9 @@
     return new Date(t).toISOString().slice(0, 16).replace("T", " ") + " UTC";
   }
 
-  var helpers = { stylesText: stylesText, norm: norm, moveValue: moveValue, weaponValue: weaponValue, scaled: scaled,
+  var helpers = { stylesText: stylesText, norm: norm, moveValue: moveValue, weaponValue: weaponValue, weaponCode: weaponCode, scaled: scaled,
       typeFor: typeFor, typeName: typeName, findMove: findMove, moveLabel: moveLabel, findWeapon: findWeapon,
-      searchWeapons: searchWeapons, whatText: whatText, currentOf: currentOf, changeText: changeText, rowLine: rowLine,
+      searchWeapons: searchWeapons, whatText: whatText, optionsOf: optionsOf, currentOf: currentOf, changeText: changeText, rowLine: rowLine,
       diffCounts: diffCounts, diffEmpty: diffEmpty, publishQuestion: publishQuestion, publishBlocked: publishBlocked, nextVersion: nextVersion,
       moveIds: moveIds, parseAny: parseAny, buildRow: buildRow, utc: utc, showValue: showValue, STYLE_NAMES: STYLE_NAMES };
   if (typeof module !== "undefined" && module.exports) module.exports = helpers;
@@ -794,12 +808,12 @@
     if (!state.rows.length) { emptyRow(body, 9, "The draft has no rows."); return; }
     state.rows.forEach(function (r, i) {
       var tr = el("tr");
-      var cur = currentOf(r, state.data, cl);
+      var cur = currentOf(r, state.data, cl), opts = optionsOf(r, state.data, cl);
       tr.appendChild(el("td", null, String(i + 1)));
       tr.appendChild(el("td", null, whatText(r, state.data, cl)));
       tr.appendChild(el("td", null, r.field));
-      tr.appendChild(el("td", null, showValue(cur)));
-      tr.appendChild(el("td", null, changeText(r, cur)));
+      tr.appendChild(el("td", null, showValue(cur, opts, r.field)));
+      tr.appendChild(el("td", null, changeText(r, cur, opts)));
       tr.appendChild(reasonCell(r));
       tr.appendChild(el("td", null, r.author));
       tr.appendChild(el("td", null, (byRow[r.id] || []).join(" ")));

@@ -7,7 +7,7 @@
   "mhfdatSha256": "84f8df96fbf4ec20b537eb1715cff55aea77c5821add7108baad4908bf9b695c",
   "mhfsdtSha256": "1d1e8b417344916c20fa8ebc6eeb8aba1ea7d5efd80b9db3f0556a7a1fe53222",
   "mhfsdt": "the game client's dat/mhfsdt.bin (not in our patch)",
-  "tools": "hvmhfz_re 40621cc tools/weapons (weapons.py, moves.py, styles.py, move_names.py)",
+  "tools": "hvmhfz_re d679c5c tools/weapons (weapons.py, moves.py, styles.py, move_names.py)",
   "script": "dev/make-weapons-data.py"
  },
  "types": [
@@ -273,6 +273,212 @@
   ],
   "adrenaline": "Adrenaline+2",
   "worry": "Worry"
+ },
+ "codes": {
+  "element": [
+   "None",
+   "Fire",
+   "Water",
+   "Thunder",
+   "Dragon",
+   "Ice",
+   "Blaze",
+   "Light",
+   "L. Rod",
+   "Tensho",
+   "Okiko",
+   "B. Flame",
+   "Music",
+   "Dark",
+   "C. Demon",
+   "Wind",
+   "Sound",
+   "B. Zero",
+   "E. Roar"
+  ],
+  "status": [
+   "None",
+   "Poison",
+   "Paralysis",
+   "Sleep",
+   "Blast"
+  ],
+  "shell": [
+   "Normal 1",
+   "Long 1",
+   "Spread 1",
+   "Normal 2",
+   "Long 2",
+   "Spread 2",
+   "Normal 3",
+   "Long 3",
+   "Spread 3",
+   "Normal 4",
+   "Long 4",
+   "Spread 4",
+   "Normal 5",
+   "Long 5",
+   "Spread 5",
+   "Normal 6",
+   "Long 6",
+   "Spread 6",
+   "Normal 7",
+   "Long 7",
+   "Spread 7",
+   "Normal 8",
+   "Long 8",
+   "Spread 8",
+   "Normal 9",
+   "Long 9",
+   "Spread 9"
+  ],
+  "phial": [
+   "None",
+   "Power",
+   "Element",
+   "Status",
+   "Stun"
+  ],
+  "notes": [
+   "Notes 0",
+   "Notes 1",
+   "Notes 2",
+   "Notes 3",
+   "Notes 4",
+   "Notes 5",
+   "Notes 6",
+   "Notes 7",
+   "Notes 8",
+   "Notes 9",
+   "Notes 10",
+   "Notes 11",
+   "Notes 12",
+   "Notes 13",
+   "Notes 14",
+   "Notes 15",
+   "Notes 16",
+   "Notes 17",
+   "Notes 18",
+   "Notes 19"
+  ],
+  "arcShot": [
+   "Wide",
+   "Narrow",
+   "Bomb",
+   "Slicing"
+  ],
+  "chargeRow": [
+   "Rapid 2 / Pierce 1 / Spread 1 / Pierce 2",
+   "Rapid 2 / Pierce 1 / Spread 2 / Pierce 2",
+   "Rapid 2 / Spread 2 / Pierce 2 / Pierce 3",
+   "Spread 1 / Pierce 2 / Pierce 3 / Rapid 2",
+   "Spread 2 / Spread 2 / Pierce 3 / Rapid 3",
+   "Spread 3 / Spread 3 / Pierce 3 / Rapid 4",
+   "Spread 3 / Spread 3 / Pierce 4 / Rapid 4",
+   "Spread 1 / Spread 2 / Spread 3 / Rapid 3",
+   "Spread 3 / Pierce 3 / Spread 4 / Rapid 4",
+   "Rapid 3 / Pierce 3 / Rapid 4 / Spread 4",
+   "Rapid 3 / Spread 1 / Pierce 1 / Rapid 4",
+   "Rapid 2 / Pierce 3 / Rapid 4 / Spread 4",
+   "Spread 2 / Spread 3 / Rapid 3 / Rapid 4",
+   "Rapid 1 / Rapid 1 / Rapid 2 / Spread 2",
+   "Rapid 1 / Spread 1 / Rapid 3 / Spread 3",
+   "Rapid 1 / Spread 2 / Rapid 3 / Spread 4",
+   "Rapid 2 / Pierce 2 / Rapid 3 / Pierce 4",
+   "Rapid 2 / Pierce 3 / Rapid 3 / Pierce 4",
+   "Rapid 1 / Spread 1 / Rapid 2 / Spread 2",
+   "Rapid 1 / Pierce 1 / Rapid 3 / Spread 3",
+   "Pierce 3 / Spread 3 / Pierce 4 / Rapid 4",
+   "Spread 3 / Rapid 3 / Spread 4 / Pierce 4",
+   "Spread 1 / Spread 2 / Pierce 3 / Spread 3",
+   "Spread 2 / Spread 3 / Pierce 3 / Pierce 4",
+   "Pierce 1 / Pierce 2 / Rapid 2 / Rapid 3",
+   "Rapid 1 / Rapid 2 / Rapid 3 / Pierce 4",
+   "Rapid 2 / Rapid 2 / Rapid 3 / Pierce 4",
+   "Rapid 2 / Rapid 3 / Rapid 4 / Pierce 4",
+   "Rapid 1 / Rapid 2 / Pierce 2 / Pierce 3",
+   "Rapid 1 / Rapid 2 / Pierce 3 / Pierce 4",
+   "Pierce 2 / Pierce 3 / Pierce 4 / Rapid 3",
+   "Rapid 1 / Rapid 2 / Rapid 3 / Spread 2",
+   "Rapid 1 / Spread 1 / Rapid 2 / Spread 4",
+   "Rapid 2 / Spread 2 / Rapid 4 / Spread 4",
+   "Pierce 1 / Pierce 2 / Spread 1 / Rapid 2",
+   "Pierce 2 / Pierce 2 / Pierce 3 / Spread 2",
+   "Pierce 2 / Pierce 3 / Pierce 4 / Spread 3",
+   "Rapid 1 / Spread 2 / Pierce 2 / Pierce 4",
+   "Rapid 2 / Spread 2 / Pierce 2 / Pierce 4",
+   "Rapid 2 / Spread 3 / Pierce 3 / Pierce 4",
+   "Rapid 1 / Rapid 1 / Rapid 1 / Rapid 1",
+   "Spread 3 / Rapid 2 / Rapid 1 / Pierce 3",
+   "Pierce 1 / Pierce 1 / Pierce 2 / Rapid 2",
+   "Pierce 1 / Pierce 2 / Pierce 3 / Rapid 3",
+   "Pierce 1 / Rapid 2 / Pierce 3 / Rapid 4",
+   "Rapid 3 / Rapid 4 / Pierce 4 / Rapid 4",
+   "Spread 1 / Pierce 3 / Rapid 3 / Rapid 4",
+   "Spread 3 / Rapid 3 / Spread 4 / Pierce 3",
+   "Spread 1 / Spread 2 / Spread 3 / Pierce 2",
+   "Spread 2 / Rapid 2 / Spread 3 / Pierce 3",
+   "Spread 3 / Rapid 2 / Spread 4 / Pierce 3",
+   "Spread 3 / Pierce 3 / Rapid 4 / Pierce 4",
+   "Pierce 1 / Rapid 2 / Spread 2 / Spread 3",
+   "Pierce 1 / Rapid 3 / Spread 3 / Spread 4",
+   "Pierce 1 / Pierce 2 / Spread 3 / Rapid 2",
+   "Pierce 2 / Pierce 2 / Spread 4 / Rapid 3",
+   "Rapid 1 / Spread 1 / Rapid 3 / Spread 3",
+   "Spread 1 / Spread 3 / Pierce 2 / Pierce 4",
+   "Rapid 2 / Spread 2 / Pierce 3 / Rapid 3",
+   "Rapid 2 / Spread 3 / Rapid 4 / Spread 4",
+   "Pierce 2 / Rapid 2 / Pierce 3 / Rapid 4",
+   "Spread 2 / Spread 3 / Spread 4 / Spread 4",
+   "Rapid 3 / Spread 3 / Pierce 4 / Spread 4",
+   "Rapid 2 / Pierce 3 / Rapid 3 / Pierce 4",
+   "Spread 3 / Pierce 3 / Rapid 4 / Pierce 4",
+   "Rapid 1 / Rapid 1 / Rapid 1 / Rapid 1",
+   "Rapid 1 / Rapid 1 / Rapid 1 / Rapid 1",
+   "Rapid 1 / Rapid 1 / Rapid 1 / Rapid 1"
+  ],
+  "moveFlags": [
+   [
+    0,
+    "None"
+   ],
+   [
+    16,
+    "Fire"
+   ],
+   [
+    32,
+    "Water"
+   ],
+   [
+    64,
+    "Thunder"
+   ],
+   [
+    128,
+    "Dragon"
+   ],
+   [
+    512,
+    "Ice"
+   ],
+   [
+    1,
+    "Poison"
+   ],
+   [
+    2,
+    "Paralysis"
+   ],
+   [
+    4,
+    "Sleep"
+   ],
+   [
+    8,
+    "Status 8 (unnamed)"
+   ]
+  ]
  },
  "notes": [
   "Rarity is the record's low 4 bits + 1 (the game's RARE number; the +1 is a guess).",

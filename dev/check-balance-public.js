@@ -58,6 +58,16 @@ const VERSIONS = [
 ];
 const WITH_ROWS = { version: 3, publishedAt: "2026-11-12T18:30:00Z", note: VERSIONS[0].note, rows: ROWS, versions: VERSIONS };
 const EMPTY = { version: 1, publishedAt: "2026-11-10T15:00:00Z", note: "The game's own values", rows: [], versions: [VERSIONS[2]] };
+// Every field's game value and the game's names of coded fields (js/balance-fields.js, data/weapons "rec" and "codes").
+const CODED_ROWS = [
+  { kind: "attack", weaponClass: "GS", style: null, entry: 0, recordId: 2, field: "hitstop", op: "set", value: 3, reason: "a" },
+  { kind: "attack", weaponClass: "GS", style: null, entry: 0, recordId: 2, field: "element_flags", op: "set", value: 16, reason: "b" },
+  { kind: "melee", weaponClass: null, style: null, entry: null, recordId: 7, field: "element", op: "set", value: 3, reason: "c" },
+  { kind: "melee", weaponClass: null, style: null, entry: null, recordId: 110, field: "special", op: "set", value: 4, reason: "d" },
+  { kind: "ranged", weaponClass: null, style: null, entry: null, recordId: 78, field: "arc_shot", op: "set", value: 2, reason: "e" }
+];
+const WITH_CODES = { version: 4, publishedAt: "2026-11-13T18:30:00Z", note: "Codes", rows: CODED_ROWS,
+  versions: [{ version: 4, publishedAt: "2026-11-13T18:30:00Z", note: "Codes", rowCount: 5, rollbackOf: null }] };
 const NONE = { version: null, publishedAt: null, note: null, rows: [], versions: [] };
 
 function helpers() {
@@ -77,6 +87,15 @@ function helpers() {
   check("groups: all types first, then by class and style", g.map((x) => x.type + "/" + x.style).join(",") ===
     "All weapon types/All styles,Great Sword/All styles,Great Sword/Extreme,Hammer/All styles,Long Sword/Storm,Melee weapons/Weapon stats",
     g.map((x) => x.type + "/" + x.style).join(","));
+  const data = { index: { codes: { element: ["None", "Fire", "Water", "Thunder"], moveFlags: [[0, "None"], [16, "Fire"]] },
+    types: [{ slug: "great-sword", class: 0, kind: "melee" }] },
+    files: { "great-sword": { fields: ["id", "name", "element"], weapons: [[7, "Blue Wing", "Fire"]],
+      moves: [{ kind: 0, id: 2, mv: [46], rec: [52, 14, 1, 0, 1, 5, 0] }] } } };
+  const el = CODED_ROWS[2], fl = CODED_ROWS[1];
+  check("game value: a coded weapon field is its code, shown by name", B.gameValue(el, data) === 1 && B.valueText(1, B.optionsOf(el, data), "element") === "Fire"
+    && B.valueText(3, B.optionsOf(el, data), "element") === "Thunder" && B.valueText(null, null, "x") === "?");
+  check("game value: every move field", B.gameValue(CODED_ROWS[0], data) === 5 && B.gameValue(fl, data) === 0 && B.valueText(16, B.optionsOf(fl, data), fl.field) === "Fire"
+    && B.gameValue(Object.assign({}, CODED_ROWS[0], { field: "ko" }), data) === 0);
   check("without data a move is its ref", B.whatText(ROWS[3], null) === "k0 #59" && B.whatText(ROWS[2], null) === "Every move");
 }
 
@@ -197,6 +216,17 @@ async function down(browser, base) {
   await page.close();
 }
 
+async function coded(browser, base) {
+  const { page, errors } = await open(browser, base, WITH_CODES, 1280);
+  await page.waitForSelector(".bal-group");
+  const flat = await page.$$eval(".bal-table tbody tr", (trs) => trs.map((tr) => Array.from(tr.cells).slice(1, 3).map((c) => c.textContent).join(" ; ")));
+  check("coded: the game's values and names", flat.join("|") === "Hitstop ; 5 → 3|Element flags ; None → Fire|Element ; Fire → Thunder|Special ; Normal 1 → Long 2|Arc shot ; Wide → Bomb",
+    flat.join("|"));
+  check("coded: no errors", errors.length === 0, errors.join("; "));
+  await shot(page, "public-coded-1280.png");
+  await page.close();
+}
+
 async function weaponsLink(browser, base) {
   const page = await browser.newPage();
   await page.route("https://api.hvmhfz.eclipseforge.xyz/**", (route) => route.abort());
@@ -216,6 +246,7 @@ async function weaponsLink(browser, base) {
     await empty(browser, base);
     await off(browser, base);
     await down(browser, base);
+    await coded(browser, base);
     await weaponsLink(browser, base);
   } catch (e) {
     failures.push("crashed: " + (e && e.stack || e));

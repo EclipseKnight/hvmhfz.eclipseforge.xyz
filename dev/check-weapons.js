@@ -35,6 +35,7 @@ const Calc = require(path.join(ROOT, "js/weapons-calc.js"));
 const Usage = require(path.join(ROOT, "js/weapons-usage.js"));
 const Icons = require(path.join(ROOT, "js/game-icons.js"));
 const MoveNames = require(path.join(ROOT, "js/move-names.js"));
+const Fields = require(path.join(ROOT, "js/balance-fields.js"));
 const index = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons/index.json"), "utf8"));
 const cases = JSON.parse(fs.readFileSync(path.join(ROOT, "dev/weapons-cases.json"), "utf8"));
 const K = index.constants;
@@ -118,6 +119,52 @@ index.types.forEach(function (t) {
   check(MoveNames.conf({ name: "x" }) === "guess" && MoveNames.conf({}) === "unknown", "move names: no conf: a name is a guess, none is unknown");
   const raw = fs.readFileSync(path.join(ROOT, "data/weapons/great-sword.json"), "utf8");
   check(!/client:|dump\/|0x[0-9a-f]{4,}@|guide@/.test(raw), "move names: no private source text in the data");
+}
+
+/* ---------- 2a2. balance fields ---------- */
+// The game's value of every attack field the balance table can change (data/weapons "rec", in "recordFields" =
+// js/balance-fields.js REC_FIELDS), and the game's names of the coded fields (index.json "codes"), which every
+// weapon's element, status, special, arc shot and charge row text must map back to (the admin grid and the public
+// balance page show and send the API's code).
+{
+  const C = index.codes || {};
+  check(C.element && C.element.length === 19 && C.element[1] === "Fire" && C.element[18] === "E. Roar", "codes: element 0-18, the client's names");
+  check(C.status && C.status.join() === "None,Poison,Paralysis,Sleep,Blast", "codes: status 0-4");
+  check(C.shell && C.shell.length === 27 && C.shell[0] === "Normal 1" && C.shell[26] === "Spread 9", "codes: 27 gunlance shells");
+  check(C.phial && C.phial.join() === "None,Power,Element,Status,Stun" && C.notes && C.notes.length === 20, "codes: phials, 20 note sets");
+  check(C.arcShot && C.arcShot.join() === "Wide,Narrow,Bomb,Slicing" && C.chargeRow && C.chargeRow.length === 68, "codes: arc shots, 68 charge rows");
+  check(C.moveFlags && C.moveFlags[0].join() === "0,None" && C.moveFlags.some(function (f) { return f[0] === 16 && f[1] === "Fire"; }), "codes: move element/status flags");
+  const flagValues = (C.moveFlags || []).map(function (f) { return f[0]; });
+  let recs = 0;
+  index.types.forEach(function (t) {
+    const d = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons", t.slug + ".json"), "utf8"));
+    check(JSON.stringify(d.recordFields) === JSON.stringify(Fields.REC_FIELDS), t.slug + ": recordFields as js/balance-fields.js");
+    const badRec = d.moves.filter(function (m) {
+      recs++;
+      return !m.rec || m.rec.length !== Fields.REC_FIELDS.length || !m.rec.every(function (v) { return v === (v >>> 0); })
+        || ["delay", "active", "reaction", "element_flags", "hit_type", "hitstop", "spirit", "mv", "ko", "element_value"]
+          .some(function (f) { return Fields.moveValue(m, f) === null; })
+        || flagValues.indexOf(m.rec[3]) < 0;
+    });
+    check(badRec.length === 0, t.slug + ": moves without every record value or with unnamed flags: " + badRec.slice(0, 3).map(function (m) { return m.set + " #" + m.id; }).join(", "));
+    const coded = d.kind === "melee" ? ["element", "status", "special"] : d.class === 10 ? ["arcShot", "chargeRow"] : [];
+    const api = { element: "element", status: "status", special: "special", arcShot: "arc_shot", chargeRow: "charge_row" };
+    coded.forEach(function (key) {
+      const opts = Fields.options(C, d.kind === "melee" ? "melee" : "ranged", api[key], d.class);
+      if (!opts) return;   // a class whose special has no names
+      const col = d.fields.indexOf(key);
+      const bad = d.weapons.filter(function (w) { return col < 0 || Fields.codeOf(opts, w[col]) === null; });
+      check(bad.length === 0, t.slug + ": " + key + " without its code: " + bad.slice(0, 3).map(function (w) { return w[0] + " " + w[col]; }).join(", "));
+    });
+    if (d.class === 10) {
+      const ci = d.fields.indexOf("charge"), ri = d.fields.indexOf("chargeRow");
+      check(d.weapons.every(function (w) { return C.chargeRow[w[ri]] === w[ci]; }), t.slug + ": the charge row's levels are the bow's");
+    }
+  });
+  check(recs > 600, "balance fields: " + recs + " moves with their record values");
+  const gs = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons/great-sword.json"), "utf8"));
+  const k2 = gs.moves.find(function (m) { return m.kind === 0 && m.id === 2; });
+  check(Fields.moveValue(k2, "delay") === 52 && Fields.moveValue(k2, "hitstop") === 5 && Fields.moveValue(k2, "ko") === 0, "balance fields: GS k0 #2 delay 52, hitstop 5, ko 0");
 }
 
 /* ---------- 2b. icons ---------- */

@@ -10,8 +10,11 @@
    not live; Publish is). New rows take the session reason (asked once when empty); a row's reason can be changed in
    the Changes table. Rows the grid cannot show (any type, any style for one move, ...) stay in the Changes table and
    the form under "Other rows".
+   Every field shows the game's value (js/balance-fields.js: a move's record values, data/weapons/ "rec"); a coded
+   field (element, status, special, arc shot, charge row, a move's element/status flags) shows the game's name and is
+   edited with a list of the game's names, sending the API's code.
    Weapon rows carry the weapon's in-game icon (type and rank colour, js/game-icons.js, data/equipment-icons.json).
-   The page part needs js/admin-balance.js (window.hvBalance, window.hvBalanceHelpers). */
+   The page part needs js/balance-fields.js and js/admin-balance.js (window.hvBalance, window.hvBalanceHelpers). */
 (function () {
   "use strict";
 
@@ -84,20 +87,35 @@
   /**
    * What a cell shows: {text, was, own, note}. `was` is the game's value when a change replaces it (struck through);
    * `mult` is the type's multiplier row for the field, shown as an inherited result when the cell has no row.
+   * `name` (optional) shows a coded value by the game's name ("Fire" for element 1); `was` is then the name too.
    */
-  function cellView(row, current, mult, scaled) {
+  function cellView(row, current, mult, scaled, name) {
     var cur = current === null || current === undefined ? null : current;
+    var show = function (v) { return name ? name(v) : String(v); };
+    var was = cur === null || !name ? cur : show(cur);
     if (row) {
       if (row.op === "scale") {
         var r = scaled(cur, Number(row.value));
-        return { own: true, was: cur, text: r === null ? "x" + row.value : String(r), note: "x" + row.value };
+        return { own: true, was: was, text: r === null ? "x" + row.value : String(r), note: "x" + row.value };
       }
-      return { own: true, was: cur, text: String(row.value), note: "" };
+      return { own: true, was: was, text: show(Number(row.value)), note: "" };
     }
     if (mult && typeof cur === "number") {
       return { own: false, was: cur, text: String(scaled(cur, Number(mult.value))), note: "x" + mult.value + " (all moves)" };
     }
-    return { own: false, was: null, text: cur === null ? "–" : String(cur), note: "" };
+    return { own: false, was: null, text: cur === null ? "–" : show(cur), note: "" };
+  }
+
+  /**
+   * The choices of a coded cell's list: the game's names in the field's range, plus the game's own value when the
+   * names do not have it (shown as a number), so the list always holds what the cell has now.
+   */
+  function choices(opts, spec, current) {
+    var out = (opts || []).filter(function (o) { return o.value >= spec.min && o.value <= spec.max; });
+    if (typeof current === "number" && !out.some(function (o) { return o.value === current; })) {
+      out.unshift({ value: current, name: String(current) });
+    }
+    return out;
   }
 
   /** The page `page` (from 0) of a list: {items, page, pages}; the page is kept inside the list. */
@@ -120,7 +138,7 @@
     return (String(name || "") + " " + String(extra || "")).toLowerCase().indexOf(s) !== -1;
   }
 
-  var pure = { cellRows: cellRows, parseCell: parseCell, planCell: planCell, editText: editText, cellView: cellView,
+  var pure = { cellRows: cellRows, parseCell: parseCell, planCell: planCell, editText: editText, cellView: cellView, choices: choices,
     pageOf: pageOf, inStyle: inStyle, matches: matches, PAGE_SIZE: PAGE_SIZE };
   if (typeof module !== "undefined" && module.exports) module.exports = pure;
   if (typeof document === "undefined") return;
@@ -151,6 +169,12 @@
   function codeOf(type) { return C().classes()[type["class"]] || type.short; }
   function weaponKind(type) { return type.kind === "melee" ? "melee" : "ranged"; }
   function fieldsOf(kind) { return (C().state.overview.fields || []).filter(function (f) { return f.kind === kind; }); }
+  function BF() { return window.HvBalanceFields; }
+  // The game's names of a field of this type (null: a plain number).
+  function optsOf(type, kind, field) {
+    var d = C().state.data;
+    return BF() ? BF().options(d.index && d.index.codes, kind, field, type["class"]) : null;
+  }
 
   function chip(text, pressed, onClick, short, title) {
     var b = el("button", "chip");
@@ -216,7 +240,7 @@
         out.push({ name: w[nameCol], sub: "#" + w[idCol] + (rarCol >= 0 ? " · rarity " + w[rarCol] : ""), off: false, ref: String(w[idCol]),
           piece: { id: w[idCol], kind: kind },
           key: function (f) { return { kind: kind, weaponClass: null, style: null, entry: null, recordId: w[idCol], field: f }; },
-          current: function (f) { return H().weaponValue(weapon, f); } });
+          current: function (f) { return H().weaponCode(weapon, f, optsOf(type, kind, f)); } });
       });
     }
     if (view.changedOnly) {
@@ -312,15 +336,15 @@
       fields.forEach(function (f, col) {
         var td = el("td", "num bal-cell");
         row.appendChild(td);
-        addCell(td, l.key(f.name), l.current(f.name), f, false, col);
+        addCell(td, l.key(f.name), l.current(f.name), f, false, col, optsOf(type, kind, f.name));
       });
       body.appendChild(row);
     });
     refresh();
   }
 
-  function addCell(td, key, current, spec, factorOnly, col) {
-    var c = { td: td, key: key, current: current, spec: spec, factorOnly: factorOnly, col: col };
+  function addCell(td, key, current, spec, factorOnly, col, opts) {
+    var c = { td: td, key: key, current: current, spec: spec, factorOnly: factorOnly, col: col, opts: opts || null };
     td.dataset.col = String(col);
     td.dataset.field = key.field;
     cells.push(c);
@@ -357,7 +381,8 @@
     var sig = JSON.stringify([row && [row.id, row.op, row.value, row.reason], mult && mult.value, probs, ctx.state.canWrite, td.classList.contains("is-failed")]);
     if (c.drawn === sig) return;
     c.drawn = sig;
-    var v = cellView(row, c.factorOnly ? null : c.current, mult, H().scaled);
+    var v = cellView(row, c.factorOnly ? null : c.current, mult, H().scaled,
+      c.opts ? function (x) { return BF().label(c.opts, x, c.key.field); } : null);
     if (c.factorOnly && !row) v = { own: false, was: null, text: "x1", note: "" };
     clear(td);
     td.classList.toggle("is-changed", v.own);
@@ -395,12 +420,36 @@
     var own = cellRows(C().state.rows, c.key);
     var td = c.td;
     clear(td);
-    var input = el("input", "bal-cell-input");
-    input.type = "text";
-    input.inputMode = "decimal";
-    input.autocomplete = "off";
-    input.setAttribute("aria-label", c.spec.name + " (" + c.spec.min + " to " + c.spec.max + (c.spec.scale ? ", x1.05 multiplies" : "") + ")");
-    input.value = editText(own[own.length - 1] || null, c.current, c.factorOnly);
+    var input;
+    if (c.opts) {
+      // A coded field: the game's names; the choice is the API's code (the game's own choice clears the row).
+      input = el("select", "bal-cell-input bal-cell-select");
+      // Wider than the number box and left aligned (set here so css/styles.css, on every page, stays as it is).
+      input.style.width = "auto";
+      input.style.maxWidth = "280px";
+      input.style.textAlign = "left";
+      choices(c.opts, c.spec, c.current).forEach(function (o) {
+        var opt = el("option", null, o.name + (o.value === c.current ? " (game)" : ""));
+        opt.value = String(o.value);
+        input.appendChild(opt);
+      });
+      input.setAttribute("aria-label", c.spec.name + ": the game's names");
+      input.value = editText(own[own.length - 1] || null, c.current, false);
+      // A pick with the pointer saves at once; arrow keys only move the choice (Enter, Tab or leaving saves it).
+      var keyed = false;
+      input.addEventListener("keydown", function (e) { keyed = /^Arrow|^Page|^Home$|^End$/.test(e.key) || e.key.length === 1; });
+      input.addEventListener("change", function () {
+        if (keyed) { keyed = false; return; }
+        if (closeEditor(false) && !asking) focusCell(c);
+      });
+    } else {
+      input = el("input", "bal-cell-input");
+      input.type = "text";
+      input.inputMode = "decimal";
+      input.autocomplete = "off";
+      input.setAttribute("aria-label", c.spec.name + " (" + c.spec.min + " to " + c.spec.max + (c.spec.scale ? ", x1.05 multiplies" : "") + ")");
+      input.value = editText(own[own.length - 1] || null, c.current, c.factorOnly);
+    }
     td.appendChild(input);
     var err = el("span", "bal-cell-err");
     err.hidden = true;
@@ -415,7 +464,7 @@
     input.addEventListener("input", function () { err.hidden = true; input.removeAttribute("aria-invalid"); });
     input.addEventListener("blur", function () { if (editing === c && !c.leaving) closeEditor(false); });
     input.focus();
-    input.select();
+    if (input.select) input.select();
   }
 
   function cancel() {
@@ -432,7 +481,7 @@
   function closeEditor(discard) {
     var c = editing;
     if (!c) return true;
-    var input = c.td.querySelector("input");
+    var input = c.td.querySelector("input, select");
     if (discard || !input) { editing = null; drawCell(c); return true; }
     var parsed = parseCell(input.value, c.spec, c.factorOnly ? null : c.current, c.factorOnly);
     if (parsed.error) {

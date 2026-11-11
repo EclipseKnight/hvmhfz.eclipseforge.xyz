@@ -60,6 +60,11 @@ TECH_BASE = (0x139, 0x151, 0x141, 0x149, 0x131, 0x155, 0x135, 0x13D, 0x145, 0x14
 SKILL_IDS = {"critEye": [0x23, 0x24, 0x25, 0x11C, 0x11D], "starvingWolf": 0xFC, "ceaseless": 0x208,
              "fencing": 0x170, "chargeUp": [0x1C7, 0x1C8], "adrenaline": 0xB4, "worry": 0xB5}
 # Internal names the client keeps for unused records: "Dummy...", "<hex id>・<name>", "...使用禁止" (do not use).
+# The attack record fields the balance table can change (hvmhfz_re tools/weapons/balance_table.py FIELDS, the API's
+# BalanceTable) that a move row has no key for: per move "rec", in this order, the raw bytes of its own record
+# (moves.py record(): frame counters not halved). mv, ko and element_value are the move's "mv"[0], "ko", "elementValue".
+RECORD_FIELDS = (("delay", "delay"), ("active", "active"), ("reaction", "reaction"), ("element_flags", "elem_flags"),
+                 ("hit_type", "hit_type"), ("hitstop", "hitstop"), ("spirit", "ls_gauge"))
 HIDDEN_NAME = re.compile(r"^(Dummy|Nothing Equipped$)|^[0-9A-F]{3,4}[・･]|使用禁止")
 
 
@@ -119,7 +124,8 @@ def ranged_rows(rows, fac, cls, charge):
         if cls == 10:   # bows: element at +0x21, value at +0x22 (weapons.py, a guess matched by names)
             base += [WEAPONS.element_name(r.get("element", 0)), r.get("element_value", 0)]
             levels = charge.get(r["charge_row"], [])
-            base += [" / ".join(levels), WEAPONS.ARC_SHOTS[r["arc_shot"]] if r["arc_shot"] < 4 else ""]
+            base += [" / ".join(levels), WEAPONS.ARC_SHOTS[r["arc_shot"]] if r["arc_shot"] < 4 else "",
+                     r["charge_row"]]
         else:
             base += [r["recoil"], r["reload"]]
         out.append(base)
@@ -171,8 +177,27 @@ def move_rows(rows, short):
                          ("ko", "stun")):
             if r[src]:
                 m[key] = r[src]
+        m["rec"] = [r[src] for _, src in RECORD_FIELDS]
         out.append(m)
     return out
+
+
+def codes(charge):
+    """The game's names for the coded fields the balance table sets, by the API's code (the list index): melee
+    element 0-18 and status 0-4 (the client's name table, weapons.py element_name/status_name), special by class
+    (GL shell, SAF phial, HH note set as the weapon list names them), bow arc shot and charge row; an attack
+    record's element/status flags (moves.py ELEMENTS/STATUS bits) as [value, name] pairs."""
+    flags = [[0, "None"]] + [[bit, name.capitalize()] for bit, name in sorted(MOVES.ELEMENTS.items())]
+    flags += [[bit, "Status 8 (unnamed)" if name == "status8" else name.capitalize()]
+              for bit, name in sorted(MOVES.STATUS.items())]
+    return {"element": ["None"] + [WEAPONS.element_name(v) for v in range(1, 19)],
+            "status": ["None"] + [WEAPONS.status_name(v) for v in range(1, 5)],
+            "shell": ["%s %d" % (("Normal", "Long", "Spread")[v % 3], v // 3 + 1) for v in range(27)],   # weapons.py enrich
+            "phial": ["None"] + list(WEAPONS.PHIALS[1:]),
+            "notes": ["Notes %d" % v for v in range(20)],
+            "arcShot": list(WEAPONS.ARC_SHOTS),
+            "chargeRow": [" / ".join(charge.get(v, [])) for v in range(68)],
+            "moveFlags": flags}
 
 
 def tech_levels(pac, cls):
@@ -327,7 +352,7 @@ def main(argv):
         if cls in RANGED:
             doc["kind"] = "bow" if cls == 10 else "bowgun"
             doc["fields"] = ["id", "name", "rarity", "attack", "shown", "affinity", "slots", "defense"] + (
-                ["element", "elementValue", "charge", "arcShot"] if cls == 10 else ["recoil", "reload"])
+                ["element", "elementValue", "charge", "arcShot", "chargeRow"] if cls == 10 else ["recoil", "reload"])
             doc["weapons"] = ranged_rows(ranged, FACTORS, cls, charge)
         else:
             doc["kind"] = "melee"
@@ -338,6 +363,7 @@ def main(argv):
             doc["bars"] = {str(row): bars[cls][row] for row in used}
             doc["tech"] = tech_levels(pac, cls)
         doc["moves"] = move_rows(moves_rows, short)
+        doc["recordFields"] = [name for name, _ in RECORD_FIELDS]
         doc["mvBonus"] = {"%d:%d" % (kind, rid): list(b) for (w, kind, rid), b in bonus_by.items() if w == short}
         if slug in FENCING:
             doc["fencing"] = FENCING[slug]
@@ -364,6 +390,7 @@ def main(argv):
             "spiritDen": 80, "fencing": 1.2, "minCritSharpness": 3,
         },
         "skills": skills,
+        "codes": codes(charge),
         "notes": [
             "Rarity is the record's low 4 bits + 1 (the game's RARE number; the +1 is a guess).",
             "Critical Eye +1..+5 add 10..50 affinity (the client's skill descriptions).",

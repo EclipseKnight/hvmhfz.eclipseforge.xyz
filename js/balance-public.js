@@ -3,7 +3,8 @@
    {version, publishedAt, note, rows[{kind, weaponClass, style, entry, recordId, field, op, value, reason}],
    versions[{version, publishedAt, note, rowCount, rollbackOf}]}; no staff names). Rows are grouped by weapon type
    and style; each shows the move or weapon (names and the game's own values from data/weapons/), the field, the
-   game's value -> the new value (or the factor) and the reason, with http(s) links in it clickable. An empty table
+   game's value -> the new value (or the factor; js/balance-fields.js: every field's game value, coded fields such as
+   element, status, shell or phial by the game's names) and the reason, with http(s) links in it clickable. An empty table
    says the game's own values are in use; a 404 (the owner has not turned the page on) or no published version says
    "not published yet"; no answer offers Try again. Everything from the API stays text (textContent). */
 (function () {
@@ -77,24 +78,36 @@
     return null;
   }
 
-  var MOVE_KEYS = { element_value: "elementValue", ko: "ko" };
+  // Every field's game value and the game's names of coded fields (js/balance-fields.js).
+  var BF = typeof module !== "undefined" && module.exports ? require("./balance-fields.js") : window.HvBalanceFields;
   var WEAPON_KEYS = { attack: "attack", affinity: "affinity", element_value: "elementValue", status_value: "statusValue",
-    sharpness: "sharpness", recoil: "recoil", reload: "reload", charge_row: "charge", arc_shot: "arcShot" };
+    sharpness: "sharpness", recoil: "recoil", reload: "reload", charge_row: "chargeRow", arc_shot: "arcShot",
+    element: "element", status: "status", special: "special" };
 
-  /** The game's own value of the row's field (a number), or null when not known (or the row covers many records). */
+  /** The game's names of the row's field ([{value, name}]), or null for a plain number (or unknown weapon type). */
+  function optionsOf(row, data) {
+    var codes = data && data.index && data.index.codes;
+    if (row.kind === "attack") return BF.options(codes, "attack", row.field, null);
+    var w = findWeapon(data, row.kind, row.recordId);
+    return w ? BF.options(codes, row.kind, row.field, w.type["class"]) : null;
+  }
+
+  /** The game's own value of the row's field (a number; a code for a named field), or null when not known. */
   function gameValue(row, data) {
-    if (row.kind === "attack") {
-      var move = findMove(data, row.weaponClass, row.entry, row.recordId);
-      if (!move) return null;
-      if (row.field === "mv") return move.mv && typeof move.mv[0] === "number" ? move.mv[0] : null;
-      var k = MOVE_KEYS[row.field];
-      return k && typeof move[k] === "number" ? move[k] : null;
-    }
+    if (row.kind === "attack") return BF.moveValue(findMove(data, row.weaponClass, row.entry, row.recordId), row.field);
     var w = findWeapon(data, row.kind, row.recordId);
     var key = WEAPON_KEYS[row.field];
     if (!w || !key) return null;
     var i = w.fields.indexOf(key);
-    return i >= 0 && typeof w.row[i] === "number" ? w.row[i] : null;
+    if (i < 0) return null;
+    var opts = optionsOf(row, data);
+    return opts ? BF.codeOf(opts, w.row[i]) : typeof w.row[i] === "number" ? w.row[i] : null;
+  }
+
+  /** A value as the page shows it: the game's name for a named field ("Fire"), else the number; "?" when unknown. */
+  function valueText(v, opts, field) {
+    if (v === null || v === undefined) return "?";
+    return opts && typeof v === "number" ? BF.label(opts, v, field) : String(v);
   }
 
   /** value x factor, truncated as the client does (factor in 1/10000ths); null when unknown. */
@@ -207,7 +220,7 @@
 
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { fieldName: fieldName, styleName: styleName, findMove: findMove, findWeapon: findWeapon,
-      gameValue: gameValue, scaled: scaled, change: change, whatText: whatText, groupRows: groupRows,
+      gameValue: gameValue, optionsOf: optionsOf, valueText: valueText, scaled: scaled, change: change, whatText: whatText, groupRows: groupRows,
       linkParts: linkParts, when: when, stateOf: stateOf, countText: countText, moveRef: moveRef };
   }
   if (typeof document === "undefined") return;
@@ -268,14 +281,14 @@
 
   function changeNode(row) {
     var cur = gameValue(row, data);
-    var c = change(row, cur);
+    var c = change(row, cur), opts = c.factor ? null : optionsOf(row, data);
     var cell = el("span", "bal-change");
     if (c.factor) cell.appendChild(el("strong", "bal-factor", c.factor));
     if (c.from !== null || !c.factor) {
       if (c.factor) cell.appendChild(document.createTextNode(" "));
-      cell.appendChild(el("span", "bal-from", c.from === null ? "?" : String(c.from)));
+      cell.appendChild(el("span", "bal-from", valueText(c.from, opts, row.field)));
       cell.appendChild(el("span", "bal-arrow", " → "));
-      cell.appendChild(el("strong", "bal-to", c.to === null ? "?" : String(c.to)));
+      cell.appendChild(el("strong", "bal-to", valueText(c.to, opts, row.field)));
     }
     if (c.from === null && !c.factor) cell.title = "The game's own value is not in the weapon data";
     return cell;
