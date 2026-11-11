@@ -660,6 +660,24 @@ async function gridPage(browser, base) {
   await page.click('#bal-gbody tr[data-ref="0:2"] th details.mv-more summary');
   check("grid: tap opens what the move is", await page.$eval('#bal-gbody tr[data-ref="0:2"] th details.mv-more', (d) => d.open && /Sweeping slash/.test(d.textContent) && !!d.querySelector('a[href^="https://wycademy"]')));
   await shot(page, "grid-move-names-1280.png", "#bal-grid-box", gridShots);
+  // How each move is used (data/weapons "use"): Tonfa's never-used moves left out until the toggle is on, later hits
+  // folded under their parent behind "+N later hits", a how-to-use line under each move.
+  await page.click('#bal-gtypes .chip[title="Tonfa"]');
+  await page.waitForFunction(() => !!document.querySelector("#bal-gbody .mv-fold"), null, { timeout: 3000 });
+  const usage = () => page.evaluate(() => ({ unused: document.querySelectorAll("#bal-gbody tr.mv-unused").length,
+    folded: document.querySelectorAll("#bal-gbody tr.mv-later[hidden]").length, lines: document.querySelectorAll("#bal-gbody th .mv-use").length,
+    moves: document.querySelectorAll("#bal-gbody tr[data-ref]:not([data-ref=all])").length, hint: document.querySelector("#bal-glegend .mv-toggle").textContent }));
+  let u = await usage();
+  check("grid: toggle off: no never-used move, later hits folded, a usage line per move", u.unused === 0 && u.folded > 0 && u.lines === u.moves && /24 never used moves hidden/.test(u.hint), JSON.stringify(u));
+  await page.click("#bal-gbody .mv-fold");
+  check("grid: +N later hits opens", (await page.getAttribute("#bal-gbody .mv-fold", "aria-expanded")) === "true");
+  await page.check("#bal-glegend .mv-toggle input");
+  await page.waitForFunction(() => document.querySelectorAll("#bal-gbody tr.mv-unused").length > 0, null, { timeout: 3000 });
+  u = await usage();
+  check("grid: toggle on: never-used moves shown, dimmed", u.unused > 0 && !/hidden/.test(u.hint) && /[?&]unused=1/.test(page.url()), JSON.stringify(u) + " " + page.url());
+  await page.uncheck("#bal-glegend .mv-toggle input");
+  await page.click('#bal-gtypes .chip[title="Great Sword"]');
+  await page.waitForFunction(() => document.querySelectorAll("#bal-gbody tr").length === 35, null, { timeout: 3000 });
   await page.fill("#bal-gfilter", "sweeping");
   await page.waitForFunction(() => /found/.test(document.getElementById("bal-gcount").textContent), null, { timeout: 3000 });
   const found = await page.$$eval("#bal-gbody tr[data-ref]", (t) => t.map((x) => x.dataset.ref).filter((r) => r !== "all"));

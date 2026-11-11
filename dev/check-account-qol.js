@@ -29,6 +29,10 @@
      numbers, with the API's name and description, "Needs client patch v1.21" and the hidden-info mark; a toggle sends
      PUT /api/account/qol/sharpness {hitsLeft} and says so; a refused save puts it back; greyed out with the message
      while locked, in the pre-release section with Damage numbers; missing when the answer has no "sharpness";
+   - "Controller buttons" (the answer's "controller"): its own line at the end of its section, a PlayStation / Xbox
+     select with the API's description; a change sends PUT /api/account/qol/controller {buttons} and only that; a
+     refused save puts it back; while locked the select is disabled with the message (open when it is on Xbox, so the
+     way back works); missing when the answer has no "controller";
    - features the API marks preReleaseOnly are listed in their own section "Being tested: pre-release only" (slot name, "These
      work only on a pre-release patch on the Test land"), apart from the stable switches, with the Keys and Viewer
      options parts inside it; while the API gives a lockedMessage ("Switch to the pre-release (mods) to try these")
@@ -79,6 +83,8 @@ let listViewer = true;
 let numbersState = { othersHits: true, size: "large", showMoveId: false, multiHit: "spread" };
 let meterState = { corner: "bottomLeft", size: "small", showHealth: false, statusBuildUp: false, effectiveHp: false, dpsGraph: false, timeToKill: false };
 let sharpnessOn = false;
+let controllerButtons = "playstation";
+const CONTROLLER_DESC = "Shows A/B/X/Y, LB/RB, LT/RT and LS/RS in the game's button prompts instead of the PlayStation symbols. Takes effect at your next login.";
 const SHARPNESS_DESC = "Shows a number right of the game's sharpness gauge: how many hits before the colour drops (a normal hit uses one point). Works without the other viewers. Turned off by itself in Speedrun Cup and VS Bracket quests.";
 const METER_MORE = [["effectiveHp", "Health as effective HP", "Shows the health bar's numbers divided by the monster's defence rate: how much raw damage is left. Needs \"Show monster health\"."],
   ["statusBuildUp", "Show status build-up", "Shows sleep, paralysis, stun, poison and blast on each monster: build-up now / needed, or ACTIVE. Only statuses with build-up show."],
@@ -121,6 +127,8 @@ function state(flags) {
     const pre = preMode !== "off" && preMode !== "moved";
     out.sharpness = { hitsLeft: sharpnessOn, name: "Show sharpness hits left", description: SHARPNESS_DESC, revealsHiddenInfo: true, minPatch: "1.21",
       preReleaseOnly: pre, lockedMessage: pre && preMode === "locked" ? "Switch to the pre-release (mods) to try these" : null, preReleaseSlot: pre ? "mods" : null };
+    out.controller = { buttons: controllerButtons, name: "Controller buttons", description: CONTROLLER_DESC, minPatch: "1.21",
+      preReleaseOnly: pre, lockedMessage: pre && preMode === "locked" ? "Switch to the pre-release (mods) to try these" : null, preReleaseSlot: pre ? "mods" : null };
   }
   return out;
 }
@@ -137,6 +145,8 @@ async function run(browser, base) {
   let refuseOverlay = false;
   const sharpnessPuts = [];
   let refuseSharpness = false;
+  const controllerPuts = [];
+  let refuseController = false;
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, locale: "en-US" });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -175,6 +185,13 @@ async function run(browser, base) {
       sharpnessPuts.push(body);
       if (refuseSharpness) return reply(400, { error: "Switch to the pre-release (mods) to try these" });
       sharpnessOn = body.hitsLeft;
+      return reply(200, state(flags));
+    }
+    if (p === "/api/account/qol/controller" && req.method() === "PUT") {
+      const body = JSON.parse(req.postData());
+      controllerPuts.push(body);
+      if (refuseController) return reply(400, { error: "Switch to the pre-release (mods) to try these" });
+      controllerButtons = body.buttons;
       return reply(200, state(flags));
     }
     if (p === "/api/account/qol" && req.method() === "PUT") {
@@ -425,6 +442,26 @@ async function run(browser, base) {
   check("sharpness refused: back on, message shown", (await page.isChecked("#qol-sharpnessHitsLeft")) && /Switch to the pre-release/.test(await alertText()), await alertText());
   refuseSharpness = false;
   sharpnessOn = false;
+  // Controller buttons: its own line at the end of the list, a PlayStation / Xbox select.
+  const coRow = await page.evaluate(() => {
+    const sel = document.getElementById("qol-controller");
+    const row = sel && sel.closest(".qol-item");
+    return row ? { text: row.textContent.replace(/\s+/g, " "), last: row === row.parentNode.lastElementChild && row.parentNode.id === "qol-list",
+      options: Array.from(sel.options).map((o) => o.value + "=" + o.textContent), value: sel.value, label: document.querySelector('label[for="qol-controller"]').textContent } : null;
+  });
+  check("controller line: last in the list, PlayStation / Xbox, PlayStation by default", !!coRow && coRow.last && coRow.label === "Controller buttons"
+    && coRow.options.join() === "playstation=PlayStation,xbox=Xbox" && coRow.value === "playstation", JSON.stringify(coRow));
+  check("controller line: description and patch", !!coRow && coRow.text.includes(CONTROLLER_DESC) && coRow.text.includes("Needs client patch v1.21 or newer"), coRow && coRow.text);
+  await page.selectOption("#qol-controller", "xbox");
+  await page.waitForFunction(() => /Controller buttons options saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
+  check("controller sends PUT /controller {buttons: xbox} only", JSON.stringify(controllerPuts) === JSON.stringify([{ buttons: "xbox" }])
+    && (await page.inputValue("#qol-controller")) === "xbox" && !puts.some((b) => "buttons" in b), JSON.stringify(controllerPuts));
+  refuseController = true;
+  await page.selectOption("#qol-controller", "playstation");
+  await page.waitForSelector("#qol-alert:not([hidden])", { timeout: 5000 }).catch(() => {});
+  check("controller refused: back to Xbox, message shown", (await page.inputValue("#qol-controller")) === "xbox" && /Switch to the pre-release/.test(await alertText()), await alertText());
+  refuseController = false;
+  controllerButtons = "playstation";
 
   // ---- Pre-release-only features ----
   const lockedText = "Switch to the pre-release (mods) to try these";
@@ -447,7 +484,16 @@ async function run(browser, base) {
   await preCheck("on Stable");
   check("on Stable: stable switches usable, pre-release ones greyed out", (await enabledIn("#qol-list input")).every(Boolean) && (await enabledIn("#qol-pre-list input")).every((e) => !e));
   const rowsText = await page.$$eval("#qol-pre-list .qol-item", (n) => n.map((x) => x.textContent));
-  check("on Stable: each greyed switch says what to do", rowsText.length === 8 && rowsText.every((t) => t.includes(lockedText)), JSON.stringify(rowsText));
+  check("on Stable: the controller select is greyed out at the end of the section", await page.$eval("#qol-controller", (s) => s.disabled
+    && s.closest(".qol-item") === document.getElementById("qol-pre-list").lastElementChild));
+  controllerButtons = "xbox";   // stored Xbox while locked: the select stays open for the way back
+  await page.reload();
+  await page.waitForSelector("#qol-controller", { timeout: 5000 });
+  check("on Stable: on Xbox the controller select stays usable", await page.$eval("#qol-controller", (s) => !s.disabled && s.value === "xbox"));
+  controllerButtons = "playstation";
+  await page.reload();
+  await page.waitForSelector("#qol-viewer:not([hidden])", { timeout: 5000 });
+  check("on Stable: each greyed switch says what to do", rowsText.length === 9 && rowsText.every((t) => t.includes(lockedText)), JSON.stringify(rowsText));
   check("on Stable: stable switches carry no such message", !(await page.textContent("#qol-list")).includes("Switch to the pre-release"));
   check("on Stable: key pickers, selects and Save keys disabled", (await enabledIn("#qol-keys button, #qol-keys select")).every((e) => !e) && (await page.$$("#qol-keys button")).length === 15, JSON.stringify(await enabledIn("#qol-keys button, #qol-keys select")));
   check("on Stable: key groups show the message", (await page.$$eval("#qol-keys .qol-locked", (n) => n.map((x) => x.textContent))).join("|") === [lockedText, lockedText, lockedText].join("|"));
@@ -515,6 +561,7 @@ async function run(browser, base) {
   check("iframe viewer switch still listed without viewer", !!(await page.$("#qol-iframeViewer")));
   check("no damage options without damageNumbers/damageMeter, switches stay", !(await page.$("#qol-dn-options")) && !(await page.$("#qol-dm-options")) && !!(await page.$("#qol-damageNumbers")) && !!(await page.$("#qol-damageMeter")));
   check("no sharpness line without sharpness", !(await page.$("#qol-sharpnessHitsLeft")));
+  check("no controller line without controller", !(await page.$("#qol-controller")));
   sendOverlays = true;
   // Viewer in the answer but the list has no iframeViewer: hidden too.
   sendViewer = true;

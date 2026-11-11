@@ -163,6 +163,11 @@ async function rows(browser, base) {
     check(width + ": a move's detail: what it is, input, linked source", await page.$eval(".bal-what details.mv-more", (d) => /Sweeping slash/.test(d.textContent)
       && /Input: Horizontal Slash button/.test(d.querySelector("summary").textContent) && !!d.querySelector('a[href^="https://wycademy"]')));
     check(width + ": the badges' legend", (await page.$$("#bal-legend .mv-conf")).length === 4);
+    // How each move is used (data/weapons "use", js/move-names.js): a line under each move, the kinds in the legend.
+    const uses = await page.$$eval(".bal-what .mv-use", (us) => us.map((u) => u.querySelector(".mv-kind").textContent + "|" + u.querySelector(".mv-how").textContent));
+    const gs2 = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/weapons/great-sword.json"), "utf8")).moves.find((m) => m.kind === 0 && m.id === 2).use;
+    check(width + ": a how-to-use line under each of the 4 moves", uses.length === 4 && uses.indexOf((gs2.kind === "direct" ? "own input" : gs2.kind) + "|" + gs2.how) >= 0, uses.join(" ; "));
+    check(width + ": the usage kinds in the legend", (await page.$$("#bal-legend .mv-kind")).length === 6);
     check(width + ": weapon links to the weapons page", (await page.$eval(".bal-what > a:not(.bal-open)", (a) => a.getAttribute("href"))) === "/weapons.html?type=great-sword&w=1");
     const ids = await page.$$eval(".bal-group", (gs) => gs.map((g) => g.id));
     check(width + ": group ids (first group of a type is its slug)", ids.join(",") === ",great-sword,great-sword-extreme,great-sword-weapon-stats,hammer,long-sword", ids.join(","));

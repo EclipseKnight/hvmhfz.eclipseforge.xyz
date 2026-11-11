@@ -145,6 +145,47 @@ index.types.forEach(function (t) {
   check(!/client:|dump\/|0x[0-9a-f]{4,}@|guide@/.test(raw), "move names: no private source text in the data");
 }
 
+/* ---------- 2b. how each move is used ---------- */
+// hvmhfz_re data/move_usage.tsv (docs/weapons.md 7.8): every move has a kind and a how; "show" is "hide" exactly for
+// the never-used ones and "fold" exactly for later hits, whose parent is a move of the same file.
+{
+  const seen = {}, orphans = [];
+  index.types.forEach(function (t) {
+    const d = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons", t.slug + ".json"), "utf8"));
+    const refs = {};
+    d.moves.forEach(function (m) { refs[MoveNames.ref(m)] = m; });
+    const bad = d.moves.filter(function (m) {
+      const u = MoveNames.usage(m);
+      if (!u || !u.how || !u.sure) return true;
+      seen[u.kind] = (seen[u.kind] || 0) + 1;
+      if ((m.show === "hide") !== (u.kind === "unreachable")) return true;
+      if ((m.show === "fold") !== (u.kind === "continuation")) return true;
+      if (u.kind === "continuation" && !refs[u.parent]) { orphans.push(t.slug + " " + MoveNames.ref(m)); return false; }
+      return u.kind === "continuation" && refs[u.parent].show === "fold";
+    });
+    check(bad.length === 0, t.slug + ": moves without good usage data: " + bad.slice(0, 3).map(function (m) { return MoveNames.ref(m) + " " + JSON.stringify(m.use) + " " + m.show; }).join(", "));
+  });
+  // Hammer's Swinging Slam hits 1-2 name record 0 (not a listed move) as their first hit: they stand alone on the page.
+  check(orphans.join() === "hammer k0:214,hammer k0:215", "move usage: later hits whose parent is not a listed move: " + orphans.join(", "));
+  check(seen.unreachable > 40 && seen.continuation > 100 && seen.direct > 200 && seen.combo > 80, "move usage: counts " + JSON.stringify(seen));
+  // The toggle's state: the URL first (?unused=1 / 0), then the stored choice, off by default.
+  check(MoveNames.readShowAll("", null) === false && MoveNames.readShowAll("", "1") === true && MoveNames.readShowAll("?type=x&unused=1", "0") === true
+    && MoveNames.readShowAll("?unused=0", "1") === false, "move usage: readShowAll reads the URL, then storage, off by default");
+  const hide = { set: "k0", id: 1, show: "hide", use: { kind: "unreachable" } }, plain = { set: "k0", id: 2, use: { kind: "direct" } };
+  check(MoveNames.hidden(hide, false) && !MoveNames.hidden(hide, true) && !MoveNames.hidden(plain, false)
+    && !MoveNames.hidden({ set: "k0", id: 3, use: { kind: "unknown" } }, false), "move usage: off hides only never-used moves, not unknown ones");
+  // fold: later hits go under their listed parent, in order; one whose parent is not listed stands alone.
+  const a = { set: "k0", id: 1 }, a2 = { set: "k0", id: 2, show: "fold", use: { kind: "continuation", parent: "k0:1" } };
+  const b = { set: "k0", id: 3 }, a3 = { set: "k0", id: 4, show: "fold", use: { kind: "continuation", parent: "k0:1" } };
+  const orphan = { set: "k0", id: 5, show: "fold", use: { kind: "continuation", parent: "k0:9" } };
+  const g = MoveNames.fold([a, a2, b, a3, orphan]);
+  check(g.length === 3 && g[0].item === a && g[0].later.length === 2 && g[0].later[0] === a2 && g[0].later[1] === a3 && g[1].item === b
+    && g[2].item === orphan && g[2].later.length === 0, "move usage: fold groups later hits under their parent");
+  const sa = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons/switch-axe-f.json"), "utf8")).moves;
+  const sg = MoveNames.fold(sa);
+  check(sg.length === sa.length - sa.filter(function (m) { return m.show === "fold"; }).length, "move usage: every Switch Axe F later hit folds under its parent");
+}
+
 /* ---------- 2a2. balance fields ---------- */
 // The game's value of every attack field the balance table can change (data/weapons "rec", in "recordFields" =
 // js/balance-fields.js REC_FIELDS), and the game's names of the coded fields (index.json "codes"), which every
@@ -492,6 +533,56 @@ async function page() {
         if (touch) check(hs.every(function (h) { return h >= 39.5; }), view.name + ": touch tap targets >= 40 px: " + hs.map(Math.round));
         else check(hs.every(function (h) { return h < 36; }), view.name + ": the desktop table stays compact: " + hs.map(Math.round));
         await tctx.close();
+      }
+
+      // How each move is used (Tonfa: never-used and later-hit moves): a line under every move, never-used moves left
+      // out until "Show unused and unknown moves" is on (written to the URL and localStorage, both tables follow),
+      // later hits folded under their parent behind "+N later hits".
+      {
+        const mctx = await browser.newContext({ viewport: { width: view.width, height: view.height }, deviceScaleFactor: view.name === "phone" ? 2 : 1 });
+        await mctx.addInitScript(function () { localStorage.setItem("hvmhfz.consent", JSON.stringify({ choice: "declined", at: new Date().toISOString() })); });
+        const mp = await mctx.newPage();
+        const merr = [];
+        mp.on("pageerror", function (e) { merr.push(e.message); });
+        await mp.route(/api\.hvmhfz\.eclipseforge\.xyz/, function (r) { r.abort(); });
+        const to = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons/tonfa.json"), "utf8")).moves;
+        const nHide = to.filter(function (m) { return m.show === "hide"; }).length, nFold = to.filter(function (m) { return m.show === "fold"; }).length;
+        await mp.goto(base + "/weapons.html?type=tonfa", { waitUntil: "load" });
+        await mp.waitForSelector("#wp-body .wp-pick");
+        await mp.click("#wp-body .wp-pick");
+        await mp.waitForSelector("#wp-moves-body tr");
+        const rowsOf = function () {
+          return mp.$$eval("#wp-moves-body tr", function (trs) {
+            return trs.map(function (tr) { return { hidden: tr.hidden, unused: tr.classList.contains("mv-unused"), later: tr.classList.contains("mv-later"), use: !!tr.querySelector(".mv-use .mv-kind") }; });
+          });
+        };
+        let r = await rowsOf();
+        check(r.length === to.length - nHide && !r.some(function (x) { return x.unused; }) && r.every(function (x) { return x.use; }),
+          view.name + ": toggle off: Tonfa lists " + r.length + " of " + to.length + " moves, none never-used, each with a how-to-use line");
+        check(r.filter(function (x) { return x.later && x.hidden; }).length === nFold, view.name + ": the " + nFold + " later hits are folded");
+        check(/24 never used moves hidden/.test(await mp.textContent("#wp-moves-legend .mv-toggle")), view.name + ": the toggle says how many moves it hides");
+        if (shots) await mp.locator("#wp-detail").screenshot({ path: path.join(shots, "moves-off-" + view.name + ".png") });
+        await mp.click("#wp-moves-body .mv-fold");
+        check((await mp.getAttribute("#wp-moves-body .mv-fold", "aria-expanded")) === "true" && /^Hide \d+ later hits?$/.test(await mp.textContent("#wp-moves-body .mv-fold")),
+          view.name + ": +N later hits opens the fold");
+        await mp.check("#wp-moves-legend .mv-toggle input");
+        r = await rowsOf();
+        check(r.length === to.length && r.filter(function (x) { return x.unused; }).length === nHide, view.name + ": toggle on: all " + to.length + " moves, " + nHide + " dimmed as never used");
+        check(new URL(mp.url()).searchParams.get("unused") === "1" && await mp.evaluate(function () { return localStorage.getItem("hv-moves-unused"); }) === "1"
+          && await mp.isChecked("#calc-legend .mv-toggle input"), view.name + ": the toggle writes ?unused=1 and localStorage, the calculator's toggle follows");
+        if (shots) await mp.locator("#wp-detail").screenshot({ path: path.join(shots, "moves-on-" + view.name + ".png") });
+        await mp.goto(base + "/weapons.html?type=tonfa", { waitUntil: "load" });
+        await mp.waitForSelector("#wp-body .wp-pick");
+        await mp.click("#wp-body .wp-pick");
+        await mp.waitForSelector("#wp-moves-body tr");
+        check((await rowsOf()).length === to.length && await mp.isChecked("#wp-moves-legend .mv-toggle input"), view.name + ": the stored choice keeps the toggle on without ?unused");
+        await mp.goto(base + "/weapons.html?type=tonfa&unused=0", { waitUntil: "load" });
+        await mp.waitForSelector("#wp-body .wp-pick");
+        await mp.click("#wp-body .wp-pick");
+        await mp.waitForSelector("#wp-moves-body tr");
+        check((await rowsOf()).length === to.length - nHide, view.name + ": ?unused=0 in the URL wins over the stored choice");
+        check(merr.length === 0, view.name + ": no script errors on the Tonfa moves: " + merr.join(" | "));
+        await mctx.close();
       }
 
       if (view.name === "desktop") await sameAsCatalog(browser, base);

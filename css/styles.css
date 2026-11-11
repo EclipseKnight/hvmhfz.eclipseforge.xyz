@@ -2166,6 +2166,26 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .mv-legend-h{font-weight:700;color:var(--ink)}
 .mv-legend-item .mv-conf{margin-right:2px}
 .wp-moves .mv-cell,.wp-results .mv-cell{min-width:14em}
+.mv-use{margin-top:3px;font:.8rem/1.45 var(--font-ui);color:var(--ink-soft);max-width:46em}
+.mv-use.is-long:not(.is-open){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.mv-use.is-long{cursor:pointer}
+.mv-use.is-long:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.mv-sure{white-space:nowrap}
+.mv-kind{font-size:.56rem;padding:2px 5px;vertical-align:1px;text-transform:none}
+.mv-kind-direct{background:rgba(46,91,78,.12);color:var(--teal);border-color:rgba(46,91,78,.4)}
+.mv-kind-combo{background:rgba(48,104,238,.08);color:#2a4f9e;border-color:rgba(48,104,238,.35)}
+.mv-kind-continuation{background:transparent;color:var(--ink-soft)}
+.mv-kind-conditional{background:rgba(183,138,51,.14);color:#7a5714;border-color:rgba(183,138,51,.5)}
+.mv-kind-unknown{background:transparent;color:var(--ink-soft);border-style:dashed}
+.mv-kind-unreachable{background:rgba(180,40,40,.08);color:#8f2525;border-color:rgba(180,40,40,.35)}
+.mv-toggle{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 12px;font:.85rem/1.4 var(--font-ui);cursor:pointer;width:fit-content}
+.mv-toggle input{margin:0}
+.mv-toggle-hint{color:var(--ink-soft)}
+.mv-fold{display:block;margin-top:4px;padding:2px 8px;font:600 .75rem var(--font-ui);color:var(--link);background:transparent;border:1px solid currentColor;border-radius:999px;cursor:pointer}
+.mv-fold:hover{color:var(--link-hover)}
+.mv-fold:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+tr.mv-later>:first-child{padding-left:2em;border-left:3px solid var(--line)}
+tr.mv-unused{opacity:.65}
 @media (max-width:720px){.wp-moves .mv-cell,.wp-results .mv-cell{min-width:0}.wp-results .mv-cell{overflow-wrap:anywhere;font-size:.9rem}.wp-results .mv-id{display:block;margin-left:0}}
 .wp-moves td,.wp-results td{white-space:normal}
 .wp-calc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 22px}

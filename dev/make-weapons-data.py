@@ -175,6 +175,13 @@ def move_rows(rows, short):
             if name:   # a part 93 community match by MV only
                 m["name"] = name
                 m["conf"] = "guess"
+        use = r.get("usage", {}).get(short)
+        if use:    # hvmhfz_re data/move_usage.tsv (part 113, docs/weapons.md 7.8): how the move is reached
+            m["use"] = {"kind": use["kind"], "how": use["how"], "sure": use["certainty"]}
+            if use["parent"]:
+                m["use"]["parent"] = use["parent"]
+            if use["show"]:
+                m["show"] = use["show"]   # "hide": never used (behind the toggle); "fold": a later hit of its parent
         for key, src in (("element", "element"), ("elementValue", "elem_value"), ("status", "status_kind"),
                          ("ko", "stun")):
             if r[src]:
@@ -367,7 +374,7 @@ def main(argv):
     source = {"patch": "v" + args.version, "zip": pathlib.Path(args.zip).name, "zipSha256": sha(args.zip),
               "mhfdatSha256": hashlib.sha256(dat).hexdigest(), "mhfsdtSha256": sha(args.sdt),
               "mhfsdt": "the game client's dat/mhfsdt.bin (not in our patch)",
-              "tools": "hvmhfz_re %s tools/weapons (weapons.py, moves.py, styles.py, move_names.py)" % re_head,
+              "tools": "hvmhfz_re %s tools/weapons (weapons.py, moves.py, styles.py, move_names.py, move_usage.py)" % re_head,
               "script": "dev/make-weapons-data.py"}
     OUT.mkdir(parents=True, exist_ok=True)
     types = []
