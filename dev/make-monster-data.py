@@ -7,7 +7,7 @@ Reads the outputs of hvmhfz_re tools/monsters (part 100, docs/monsters-data.md s
     SRC/out/monsters.json               HP per level, hitzones per quest class and state, breaks, status, modifiers
     SRC/out/quest_rewards.json          the live quest files' reward groups and monsters
     SRC/out-drops/monster_drops.json    carves, tail carves, shiny drops, captures, breaks (and Zenith)
-    SRC/out-attacks/monster_attacks.json  attack records (monsters 99 and up)
+    SRC/out-attacks/monster_attacks.json  attack records (monsters 99 and up from mhfsdt; the older monsters' linked DLL rows, part 103)
 and item names from hvmhfz_re data/item_sources.tsv (part 99; data/item-ids.json fills the rest).
 
 Writes, compact and only the fields the pages use:
@@ -250,6 +250,9 @@ def drops_block(dr, names, site, zenith):
 
 
 def attacks_block(att):
+    """Lines [rows, power, ko, elements, community name, how sure, reach]; rows with the same numbers and the same
+    confidence are one line. How sure: 0 = the game's attack file (mhfsdt, confirmed), 1 = a linked DLL row read the
+    same on HD and SD, 2 = HD only. Reach: how many monsters' code can use the row (DLL rows; 0 for the file's)."""
     if not att or not att.get("attacks"):
         return None
     seen = {}
@@ -258,11 +261,18 @@ def attacks_block(att):
         if not r.get("power"):
             continue
         elems = [n for b, n in ELEMENT_BITS if r.get("type_mask", 0) & b]
-        key = (r["power"], r.get("ko", 0), tuple(elems))
+        dll = str(r.get("set", "")).startswith("dll")
+        sure = (1 if r.get("emu") == "hd+sd" else 2) if dll else 0
+        key = (r["power"], r.get("ko", 0), tuple(elems), sure)
         if key not in seen:
-            seen[key] = [[], r["power"], r.get("ko", 0), "+".join(elems), r.get("community") or ""]
+            seen[key] = [[], r["power"], r.get("ko", 0), "+".join(elems), "", sure, 0]
             order.append(key)
-        seen[key][0].append(r["row"])
+        line = seen[key]
+        line[0].append(r["row"])
+        line[4] = line[4] or r.get("community") or ""
+        line[6] = max(line[6], r.get("reach") or 0) if dll else 0
+    for line in seen.values():
+        line[0] = sorted(set(line[0]))
     return [seen[k] for k in order]
 
 

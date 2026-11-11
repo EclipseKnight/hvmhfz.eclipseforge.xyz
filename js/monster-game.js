@@ -220,6 +220,20 @@
     return box;
   }
 
+  function badge(text, title, cls) {
+    var b = el("span", "badge " + cls, text.trim());
+    b.title = title;
+    b.style.marginLeft = text.charAt(0) === " " ? "6px" : "0";
+    return b;
+  }
+
+  /* How sure a line is: 0 = the game's attack file, 1 = a DLL row read the same on HD and SD, 2 = HD only. */
+  function sure(n) {
+    return n === 0 ? badge("Game file", "Read from the game's attack file (mhfsdt): confirmed", "good")
+      : n === 1 ? badge("HD + SD", "Confirmed in the game's code, same row on the HD and the SD client", "good")
+        : badge("HD only", "Confirmed in the HD client's code; the SD client was not checked or differs", "");
+  }
+
   function attacksTab(game, community) {
     var box = el("div");
     var levels = game.levels || [];
@@ -237,18 +251,23 @@
         form.appendChild(label);
       });
       box.appendChild(form);
+      var allShared = game.attacks.every(function (r) { return r[6] > 1; }); // the note says it; no badge on each line
       var holder = el("div");
       box.appendChild(holder);
       var draw = function () {
         var a = (levels[Number(lv.value)] || [0, 1])[1];
         var d = Math.max(1, Number(def.value) || 1);
         holder.textContent = "";
-        holder.appendChild(table(["Hit", "Power", "KO", "Element", "Damage to you"], game.attacks.map(function (r) {
+        holder.appendChild(table(["Hit", "Certainty", "Power", "KO", "Element", "Damage to you"], game.attacks.map(function (r) {
           var dmg = Math.floor(r[1] * a * 80 / (d * 0.5 + 80));
-          var hit = el("span", null, (r[4] ? r[4] + " · " : "") + "row " + r[0].slice(0, 2).join(", ") +
+          var hit = el("span", null, (r[4] ? r[4] + " " : "") + "row " + r[0].slice(0, 2).join(", ") +
             (r[0].length > 2 ? " +" + (r[0].length - 2) : ""));
           hit.title = "Records " + r[0].join(", ");
-          return [hit, num(r[1]), num(r[2]), r[3] || "-",
+          var cell = el("span");
+          cell.appendChild(hit);
+          if (r[4]) cell.appendChild(badge(" guess", "The name is a community match by power: a guess", ""));
+          if (r[6] > 1 && !allShared) cell.appendChild(badge(" family", "This row is used by the code of " + r[6] + " monsters of one family, so this monster's family can use it", ""));
+          return [cell, sure(r[5] || 0), num(r[1]), num(r[2]), r[3] || "-",
             num(dmg) + (r[3] ? " before resist" : "")];
         }), "mg-attacks"));
       };
@@ -256,11 +275,17 @@
       lv.addEventListener("change", draw);
       def.addEventListener("input", draw);
       draw();
-      box.appendChild(el("p", "mg-note", "Each line is one hit of the game's attack table (rows with the same numbers together). " +
+      var shared = game.attacks.some(function (r) { return r[6] > 1; });
+      box.appendChild(el("p", "mg-note", "Each line is one hit of the game's attack table (rows with the same numbers and the same certainty together). " +
         "Damage = power × the level's attack × 80 / (defence ÷ 2 + 80); an element hit then loses your resistance in %. " +
-        "Move names are not in the records; the element names come from monsters whose element is known (likely)."));
+        "Move names are not in the records; a name marked guess is the community list's attack with the same power, the element names come from monsters whose element is known (likely)."));
+      if (shared) {
+        box.appendChild(el("p", "mg-note", (allShared ? "These rows are" : "Rows marked family are") +
+          " attack tables that the code of several monsters shares (Rathian, Rathalos and their relatives, for one), " +
+          "so this monster's family can use these; which of them this monster itself throws is not told apart."));
+      }
     } else {
-      box.appendChild(el("p", "empty-state", "The game's attack records for this monster sit inside the game's program and are not read yet."));
+      box.appendChild(el("p", "empty-state", "Not mapped yet: this monster's attack records are not tied to it in our data."));
     }
     if (community && community.length) {
       var det = el("details", "monster-details");

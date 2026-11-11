@@ -6,12 +6,12 @@
       with 84 level rows and ranks whose hitzone rows have a name, a name source and 9 values; values the community
       tables also give (the hvmhfz_re lane checked them against the client): Rathian HP at level 3 is 3499, Low
       rank head cut 70, G rank head cut 50, poison 200 (+75, 4 times), Low rank carves (3) with Rathian Scale 37%;
-      Zinogre's attack records with thunder hits; every drop and reward item id is in data/item-ids.json; every
+      Zinogre's attack records with thunder hits (from the game's file); Rathian, Tigrex and Akantor's linked DLL rows with the right counts, certainty and family reach; Cephalos with none; every drop and reward item id is in data/item-ids.json; every
       quest of data/quests.json has its rewards shard entry; quest 1065 pays Ioprey Fang 30% for the main target
       and lists Iodrome with 1,000 HP. HvMonsterGame.summary(Rathian) is weak to dragon.
    2. Pages (when Playwright is found), desktop 1280 and phone 375: Rathian shows Key stats, "from the game's
       data", the five tabs and rank chips; the hitzone table is heat-coloured with the best cell of each column
-      outlined; Status, Drops (item links to /item.html?id=), Attacks (Zinogre: damage changes with defence) and
+      outlined; Status, Drops (item links to /item.html?id=), Attacks (Rathian: 18 lines with certainty badges and the family note; Cephalos: "Not mapped yet"; Zinogre: damage changes with defence) and
       Stats work; community tables sit in a labelled fold and no community hitzone table shows outside it; a
       monster without game data (Musou Zinogre) keeps its community page; quest 1065 shows Rewards and Monster
       HP linking to the monster page; no sideways scrolling and no script errors. SHOTS=<dir> saves screenshots.
@@ -75,6 +75,19 @@ const sum = Game.summary(rath);
 check(sum.weak[0] === "dragon" && sum.baseHp === 5000, "Rathian summary: weak to dragon, base HP 5000: " + JSON.stringify(sum));
 const zin = readJson("data/monsters/game/146.json");
 check(zin.attacks && zin.attacks.some(function (a) { return a[3] === "thunder" && a[1] > 0; }), "Zinogre has thunder attack records");
+// The older monsters' attacks (hvmhfz_re part 103): a line is [rows, power, ko, element, community name, certainty
+// (0 file, 1 HD+SD, 2 HD only), reach (monsters sharing the row)].
+const lineRows = function (g) { return g.attacks.reduce(function (n, a) { return n + a[0].length; }, 0); };
+[[1, "Rathian", 18, 44, 10], [76, "Tigrex", 25, 38, 3], [77, "Akantor", 29, 41, 3]].forEach(function (c) {
+  const m = readJson("data/monsters/game/" + c[0] + ".json");
+  check(m.attacks && m.attacks.length === c[2] && lineRows(m) === c[3], c[1] + " has " + c[2] + " attack lines of " + c[3] + " records, got " +
+    (m.attacks && m.attacks.length) + " of " + (m.attacks && lineRows(m)));
+  check(m.attacks.every(function (a) { return a.length === 7 && a[1] > 0 && (a[5] === 1 || a[5] === 2) && a[6] === c[4]; }), c[1] + "'s lines are DLL rows with a certainty and family reach " + c[4]);
+  check(m.attacks.some(function (a) { return a[5] === 1; }) && m.attacks.some(function (a) { return a[5] === 2; }), c[1] + " has both HD+SD and HD-only lines");
+});
+check(readJson("data/monsters/game/77.json").attacks.filter(function (a) { return a[4]; }).length === 3, "Akantor has 3 community-named lines");
+check(zin.attacks.every(function (a) { return a[5] === 0 && a[6] === 0; }), "Zinogre's lines come from the game's attack file (certainty 0)");
+check(!readJson("data/monsters/game/34.json").attacks, "Cephalos (no rows mapped) has no attacks list");
 const quests = readJson("data/quests.json").quests;
 const shards = {};
 let missing = 0;
@@ -166,6 +179,19 @@ async function pages() {
       check(await pg.$$eval("#game-data .levels-table tbody tr", function (t) { return t.length; }) === 84, V + ": Stats lists 84 levels");
       await noSideways("monster stats");
       check(errors.length === 0, V + ": no script errors on Rathian: " + errors.join(" | "));
+
+      await pg.click("#game-data .tab:has-text('Attacks')");
+      await pg.waitForSelector("#game-data .mg-attacks");
+      check(await pg.$$eval("#game-data .mg-attacks tbody tr", function (t) { return t.length; }) === 18, V + ": Rathian's Attacks tab lists 18 lines");
+      const rb = await pg.$$eval("#game-data .mg-attacks .badge", function (b) { return b.map(function (x) { return x.textContent; }); });
+      check(rb.indexOf("HD + SD") >= 0 && rb.indexOf("HD only") >= 0 && rb.indexOf("family") < 0, V + ": Rathian's lines show certainty badges (no family badge: all rows are shared): " + rb.slice(0, 4));
+      check(/this monster's family can use these/.test(await pg.textContent("#game-data")), V + ": Rathian's Attacks tab has the family note");
+      if (shots) await pg.locator("#game-data").screenshot({ path: path.join(shots, V + "-rathian-attacks.png") });
+      await noSideways("old monster attacks");
+
+      await pg.goto(base + "/monster.html?m=cephalos#attacks", { waitUntil: "load" });
+      await pg.waitForSelector("#game-data .mg-tabs");
+      check(/Not mapped yet/.test(await pg.textContent("#game-data")), V + ": Cephalos's Attacks tab says not mapped yet");
 
       await pg.goto(base + "/monster.html?m=zinogre#attacks", { waitUntil: "load" });
       await pg.waitForSelector("#game-data .mg-attacks");
