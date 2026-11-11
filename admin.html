@@ -832,6 +832,15 @@
         <p class="diag-outcome" id="diag-view-outcome"></p>
         <ul class="diag-findings" id="diag-view-findings"></ul>
         <dl class="detail-list diag-facts" id="diag-view-facts"></dl>
+        <div id="diag-view-moves" hidden>
+          <p class="subhead">Move hits <span class="panel-note" id="diag-moves-note"></span></p>
+          <div class="table-wrap">
+            <table class="data-table admin-table" data-nosort>
+              <thead><tr><th>Time (UTC)</th><th>Weapon</th><th>Style</th><th>Move id</th><th class="num">MV</th><th class="num">Damage</th><th>Crit</th></tr></thead>
+              <tbody id="diag-moves-rows"></tbody>
+            </table>
+          </div>
+        </div>
         <p class="subhead">The file</p>
         <pre class="diag-raw" id="diag-view-raw"></pre>
       </section>
@@ -900,7 +909,7 @@
     <script src="/js/admin-notices.js"></script>
     <script src="/js/admin-content.js"></script>
     <script src="/js/admin-patches.js?v=3"></script>
-    <script src="/js/admin-diag.js?v=1"></script>
+    <script src="/js/admin-diag.js?v=2"></script>
     <script src="/js/balance-fields.js?v=1"></script>
     <script src="/js/admin-balance.js?v=3"></script>
     <script src="/js/game-icons.js?v=2"></script>

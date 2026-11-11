@@ -2,7 +2,9 @@
    - Diagnostics: GET /api/admin/diagnostics?user=&before=&limit= lists the uploaded reports newest first
      ({id, userId, username, createdAt, kind, fileName, outcome, patchName, problems}); GET /api/admin/diagnostics/{id}
      gives one with its answer ({outcome, findings: [{kind, text}], facts: [[label, value]], summary}) and the file
-     ({text}). The API keeps them 90 days.
+     ({text}) and its [moves] lines ({moves}: the last 200 own hits while "Show move id" is on, hvmhfz_re part 109),
+     shown as a table (time, weapon, style, move id with its name from /data/weapons, MV, damage, crit); an id the
+     weapon data has no name for (missing or "unknown") is flagged "unnamed". The API keeps them 90 days.
    - Recent logins: GET /api/admin/users/{id}/logins answers {tracking, logins: [{loginAt, logoutAt, charId,
      charName, land, clientPatchName, qolNames, refusal, disconnect}]} from Erupe's login_history (30 days);
      tracking false: the game server does not write it yet.
@@ -124,11 +126,104 @@
         facts.appendChild(el("dt", null, pair[0]));
         facts.appendChild(el("dd", null, pair[1]));
       });
+      renderMoves(d.moves || []);
       $("diag-view-raw").textContent = d.text || "";
       $("diag-view-panel").hidden = false;
       $("diag-view-panel").scrollIntoView({ block: "start" });
     }).catch(function (e) {
       say($("diag-admin-alert"), e.message === "not found" ? "That report is gone (older than 90 days?)." : e.message);
+    });
+  }
+
+  /* ---------- Move hits ([moves], part 109) ---------- */
+
+  // A [moves] line: tools/diag/explain_crash.py MOVE_LINE.
+  var MOVE_LINE = /^(\d\d:\d\d:\d\dZ) (class \d+|\S+) (style \d+|\S+) kind (\d+) id (\d+) mv (\d+)(?: \(hit (\d+)\))? damage (\d+)(?: (crit|negative crit))?( \(no copy seen: id from \+6\))?$/;
+  // The weapon class numbers as the game's log names them (explain_crash.py MOVE_CLASSES).
+  var MOVE_CLASSES = ["GS", "HBG", "Hammer", "Lance", "SnS", "LBG", "DS", "LS", "HH", "GL", "Bow", "Tonfa", "SAF", "MS"];
+  var weaponData = { index: null, types: {} };   // promises: /data/weapons/index.json and one file per weapon type
+  var movesShown = 0;   // the view the move names belong to (a later View wins)
+
+  function getJson(url) {
+    return fetch(url).then(function (r) { if (!r.ok) throw new Error(url + " " + r.status); return r.json(); });
+  }
+
+  function weaponType(cls) {
+    if (!weaponData.index) weaponData.index = getJson("/data/weapons/index.json").catch(function () { weaponData.index = null; return null; });
+    return weaponData.index.then(function (idx) {
+      var t = idx && (idx.types || []).filter(function (x) { return x.class === cls; })[0];
+      if (!t) return null;
+      if (!weaponData.types[t.slug]) weaponData.types[t.slug] = getJson("/data/weapons/" + t.slug + ".json").catch(function () { delete weaponData.types[t.slug]; return null; });
+      return weaponData.types[t.slug].then(function (data) { return { type: t, data: data }; });
+    });
+  }
+
+  /** {time, cls, weapon, style, entry, id, mv, hitMv, damage, crit, fromPlus6}, or null for a line this page cannot read. */
+  function parseMove(line) {
+    var m = MOVE_LINE.exec(line);
+    if (!m) return null;
+    var cls = /^class (\d+)$/.test(m[2]) ? Number(m[2].slice(6)) : MOVE_CLASSES.indexOf(m[2]);
+    var kind = Number(m[4]);
+    return { time: m[1], cls: cls, weapon: m[2], style: m[3], kind: kind,
+      // the bowgun shots are entry 6 by class (k6v1 HBG, k6v5 LBG); everything else k<kind>
+      entry: kind === 6 && cls >= 0 ? "k6v" + cls : "k" + kind,
+      id: Number(m[5]), mv: m[6], hitMv: m[7] || "", damage: m[8], crit: m[9] || "", fromPlus6: !!m[10] };
+  }
+
+  function renderMoves(lines) {
+    var box = $("diag-view-moves");
+    var body = $("diag-moves-rows");
+    var shown = ++movesShown;
+    clear(body);
+    box.hidden = !lines.length;
+    if (!lines.length) return;
+    var hits = lines.map(parseMove);
+    var classes = [];
+    hits.forEach(function (h) { if (h && h.cls >= 0 && classes.indexOf(h.cls) < 0) classes.push(h.cls); });
+    var nameCells = [];
+    hits.forEach(function (h, i) {
+      var row = el("tr");
+      if (!h) {
+        var cell = el("td", null, lines[i] + " (a line this page cannot read)");
+        cell.colSpan = 7;
+        row.appendChild(cell);
+        body.appendChild(row);
+        return;
+      }
+      row.appendChild(el("td", null, h.time));
+      var weapon = el("td", "diag-move-weapon", h.weapon);
+      row.appendChild(weapon);
+      row.appendChild(el("td", null, h.style));
+      var idCell = el("td", "diag-move-id");
+      idCell.appendChild(el("span", null, h.entry + " #" + h.id + (h.fromPlus6 ? " (id from +6)" : "")));
+      row.appendChild(idCell);
+      row.appendChild(el("td", "num", h.mv + (h.hitMv ? " (hit " + h.hitMv + ")" : "")));
+      row.appendChild(el("td", "num", h.damage));
+      row.appendChild(el("td", null, h.crit));
+      body.appendChild(row);
+      nameCells.push({ hit: h, idCell: idCell, weaponCell: weapon });
+    });
+    $("diag-moves-note").textContent = "· " + lines.length + (lines.length === 1 ? " hit" : " hits") + ", oldest first; looking up the move names";
+    Promise.all(classes.map(function (c) { return weaponType(c).then(function (w) { return [c, w]; }); })).then(function (pairs) {
+      if (shown !== movesShown) return;
+      var byClass = {};
+      pairs.forEach(function (p) { byClass[p[0]] = p[1]; });
+      var unnamed = {};
+      nameCells.forEach(function (n) {
+        var w = byClass[n.hit.cls];
+        if (w && w.type) n.weaponCell.title = w.type.name;
+        var move = w && w.data && (w.data.moves || []).filter(function (mv) { return mv.set === n.hit.entry && mv.id === n.hit.id; })[0];
+        if (move && move.name && move.conf !== "unknown") {
+          n.idCell.appendChild(document.createTextNode(" " + move.name + (move.conf === "guess" ? " (guess)" : "")));
+        } else {
+          n.idCell.appendChild(document.createTextNode(" "));
+          n.idCell.appendChild(el("span", "badge bad", "unnamed"));
+          unnamed[n.hit.weapon + " " + n.hit.entry + " #" + n.hit.id] = 1;
+        }
+      });
+      var list = Object.keys(unnamed);
+      $("diag-moves-note").textContent = "· " + lines.length + (lines.length === 1 ? " hit" : " hits") + ", oldest first; "
+        + (list.length ? list.length + " unnamed " + (list.length === 1 ? "id" : "ids") + ": " + list.join(", ") : "every id has a name");
     });
   }
 

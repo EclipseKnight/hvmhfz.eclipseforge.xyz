@@ -8,8 +8,12 @@
    keys with PUT /api/account/qol/viewer.
    Under the "damageNumbers" switch (when the answer has "damageNumbers"): "Other players' hits", "Size", "Multi-hit
    numbers" (Spread / Combine) and "Show move id"; under the "damageMeter" switch (when the answer has "damageMeter"):
-   "Corner", "Size" and "Show monster health". Each change saves at
-   once with only that key: PUT /api/account/qol/damage-numbers or /damage-meter. Greyed out with the switch.
+   "Corner", "Size", "Show monster health", "Health as effective HP", "Show status build-up", "DPS graph" and "Time to
+   kill estimate". Each change saves at once with only that key: PUT /api/account/qol/damage-numbers or /damage-meter.
+   Greyed out with the switch.
+   When the answer has "sharpness" ("Show sharpness hits left": no flags bit, the option alone turns it on), it gets its
+   own switch line right under the Damage numbers line, with the API's name, description and lock; a toggle sends
+   PUT /api/account/qol/sharpness {hitsLeft: true|false}.
    A feature the API marks "preReleaseOnly" (its minPatch is above the current stable patch; it moves up by itself when
    a stable release reaches it) is listed in its own section, "Being tested: pre-release only", with the slot name and
    a note that it works only on a pre-release patch on the Test land; the Keys and Viewer options parts go into that
@@ -95,7 +99,11 @@
     damageMeter: { key: "damageMeter", path: "damage-meter", prefix: "qol-dm-", name: "Damage meter", fields: [
       { id: "corner", type: "select", label: "Corner", options: [["topRight", "Top right"], ["topLeft", "Top left"], ["bottomRight", "Bottom right"], ["bottomLeft", "Bottom left"]], fallback: "topRight" },
       { id: "size", type: "select", label: "Size", options: OVERLAY_SIZES, fallback: "normal" },
-      { id: "showHealth", type: "check", label: "Show monster health", hint: "Shows a health bar with the number for each monster. Off in Speedrun Cup and VS quests." }
+      { id: "showHealth", type: "check", label: "Show monster health", hint: "Shows a health bar with the number for each monster. Off in Speedrun Cup and VS quests." },
+      { id: "effectiveHp", type: "check", label: "Health as effective HP", hint: "Shows the health bar's numbers divided by the monster's defence rate: how much raw damage is left. Needs \"Show monster health\"." },
+      { id: "statusBuildUp", type: "check", label: "Show status build-up", hint: "Shows sleep, paralysis, stun, poison and blast on each monster: build-up now / needed, or ACTIVE. Only statuses with build-up show." },
+      { id: "dpsGraph", type: "check", label: "DPS graph", hint: "Shows the team's and your damage per second over the last 2 minutes, under the meter." },
+      { id: "timeToKill", type: "check", label: "Time to kill estimate", hint: "Shows each monster's remaining health over its health loss rate since its first hit: \"kill in ~m:ss\"." }
     ] }
   };
 
@@ -162,15 +170,28 @@
     byId = {};
     var features = data.features || [];
     var slots = [];
+    var numbersRow = null;
     features.forEach(function (f) {
       byId[f.id] = f;
+      var row = featureRow(f);
+      if (f.id === "damageNumbers") numbersRow = row;
       if (f.preReleaseOnly) {
-        preList.appendChild(featureRow(f));
+        preList.appendChild(row);
         if (f.preReleaseSlot && slots.indexOf(f.preReleaseSlot) < 0) slots.push(f.preReleaseSlot);
       } else {
-        list.appendChild(featureRow(f));
+        list.appendChild(row);
       }
     });
+    // "Show sharpness hits left": its own line, right under Damage numbers (or at the end of its section).
+    var sh = data.sharpness;
+    if (sh && typeof sh === "object") {
+      var shRow = featureRow({ id: "sharpnessHitsLeft", name: sh.name || "Show sharpness hits left", description: sh.description || "",
+        minPatch: sh.minPatch, revealsHiddenInfo: sh.revealsHiddenInfo, enabled: sh.hitsLeft === true, lockedMessage: sh.lockedMessage,
+        path: "/sharpness", bodyKey: "hitsLeft" });
+      if (numbersRow && !!byId.damageNumbers.preReleaseOnly === !!sh.preReleaseOnly) numbersRow.parentNode.insertBefore(shRow, numbersRow.nextSibling);
+      else (sh.preReleaseOnly ? preList : list).appendChild(shRow);
+      if (sh.preReleaseOnly && sh.preReleaseSlot && slots.indexOf(sh.preReleaseSlot) < 0) slots.push(sh.preReleaseSlot);
+    }
     if (!features.length) list.appendChild(el("p", "note-text", "No options are available yet."));
     preNote.textContent = (slots.length ? (slots.length > 1 ? "Slots: " : "Slot: ") + slots.join(", ") + ". " : "")
       + "These work only on a pre-release patch on the Test land.";
@@ -561,12 +582,13 @@
     });
   }
 
+  // feature.path / feature.bodyKey: a line that is not a flags bit (sharpness: PUT /api/account/qol/sharpness {hitsLeft}).
   function save(feature, box) {
     var body = {};
-    body[feature.id] = box.checked;
+    body[feature.bodyKey || feature.id] = box.checked;
     box.disabled = true;
     say("Saving.");
-    fetch(API + "/api/account/qol", {
+    fetch(API + "/api/account/qol" + (feature.path || ""), {
       method: "PUT",
       headers: { Authorization: "Bearer " + token(), "Content-Type": "application/json" },
       body: JSON.stringify(body)

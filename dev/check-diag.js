@@ -5,7 +5,8 @@
    - the help (game folder, hvdiag.txt, hvcrash files, 256 KB) is there; Upload is off until a file is picked;
    - the picker takes several files; 3 picked files are listed as queued, then uploaded one after another (never two
      at once): each POSTs the file as it is to /api/account/diagnostics?name=<file name> with the token and shows
-     its own outcome, one line per finding and the facts; API text goes in as text (no HTML);
+     its own outcome, one line per finding and the facts (with the one-line "Move hits" summary when the report has
+     move hits); API text goes in as text (no HTML);
    - 2 files dropped on the box (hover state while dragging) are queued and uploaded the same way;
    - a wrong file type or a file over 256 KB is listed as an error and never sent; an API refusal (400) on one file
      shows the API's message and the other files still go; more than 10 files at once are capped with a message;
@@ -14,6 +15,10 @@
    Admin page:
    - the Diagnostics tab lists the reports (GET /api/admin/diagnostics), View shows the answer and the whole file,
      the account filter and Older send user= and before=;
+   - a report with "moves" ([moves] lines, part 109) shows the Move hits table: time, weapon, style, move id with its
+     name from /data/weapons (a "(guess)" mark for guesses; bowgun shots by class, k6v1 for the HBG), MV with the
+     hit's own MV, damage, crit; ids without a name (missing, or "unknown" in the data) flagged "unnamed" and listed in
+     the note; a line it cannot read is shown as it is; a report without moves hides the table;
    - the Users tab's Logins button shows the account's recent logins (GET /api/admin/users/{id}/logins): land,
      patch, options, refusal, how it ended; "does not record logins yet" when tracking is false; the
      "This account's diagnostics" button opens the tab filtered to that account;
@@ -57,8 +62,19 @@ const ANSWER = {
     { kind: "patch-old", text: "Your patch is v1.19; the current one is v1.20: run the launcher to update." },
     { kind: "stage-file-missing", text: "Map file missing (<b>stage\\st394.pac</b>, stage 394): the game loaded Mezeporta instead." }
   ],
-  facts: [["Edition", "HD (mhfo-hd.dll)"], ["Patch", "v1.19 (119)"], ["Scene", "town (player state 0)"]]
+  facts: [["Edition", "HD (mhfo-hd.dll)"], ["Patch", "v1.19 (119)"], ["Scene", "town (player state 0)"],
+    ["Move hits", "312 move hits recorded (the last 6 in this report)"]]
 };
+// [moves] lines (hvmhfz_re part 109): named, a guess, the hit's own MV, an id the data has no record of, an "unknown"
+// record, a bowgun shot (entry 6 by class) and a line from an hvmods.dll this page does not know.
+const MOVES = [
+  "01:00:05Z GS storm kind 0 id 2 mv 46 damage 120 crit",
+  "01:00:06Z GS storm kind 0 id 4 mv 2 (hit 3) damage 5",
+  "01:00:07Z GS extreme kind 0 id 9999 mv 40 damage 75 (no copy seen: id from +6)",
+  "01:00:08Z LS heaven kind 0 id 207 mv 23 damage 30 negative crit",
+  "01:00:09Z HBG style 7 kind 6 id 7 mv 12 damage 9",
+  "01:00:10Z something new"
+];
 const LIST = [
   { id: 9, userId: 3, username: "player", createdAt: "2026-11-10T02:00:00Z", kind: "diag", fileName: "hvdiag.txt",
     outcome: "No problem recorded.", patchName: "v1.20", problems: [] },
@@ -113,7 +129,9 @@ async function open(browser, base, page_, state, width) {
     }
     if (p === "/api/admin/diagnostics") { state.gets.push(url.search); return reply(200, LIST); }
     if (p === "/api/admin/diagnostics/7") return reply(200, { id: 7, userId: 3, username: "player", createdAt: LIST[1].createdAt,
-      kind: "crash", fileName: LIST[1].fileName, answer: ANSWER, text: REPORT });
+      kind: "crash", fileName: LIST[1].fileName, answer: ANSWER, text: REPORT, moves: MOVES });
+    if (p === "/api/admin/diagnostics/9") return reply(200, { id: 9, userId: 3, username: "player", createdAt: LIST[0].createdAt,
+      kind: "diag", fileName: LIST[0].fileName, answer: { outcome: "No problem recorded.", findings: [], facts: [] }, text: "HVDIAG 1\r\n", moves: [] });
     if (p === "/api/admin/users") return reply(200, USERS);
     if (p === "/api/admin/users/3/logins") return reply(200, state.tracking === false ? { tracking: false, logins: [] } : LOGINS);
     if (p === "/api/admin/distributions/options") return reply(200, { lists: {}, items: {}, needsItemId: [], maxCharacters: 100 });
@@ -182,7 +200,9 @@ async function accountChecks(browser, base) {
   check("findings shown", items.length === 3 && items[1].includes("v1.19"), JSON.stringify(items));
   check("API text is text", items[2].includes("<b>stage") && (await page.$$("#diag-list b")).length === 0);
   const facts = await page.$$eval("#diag-list > li:first-child dt", (n) => n.map((x) => x.textContent));
-  check("facts shown", facts.join(",") === "Edition,Patch,Scene", facts.join(","));
+  check("facts shown", facts.join(",") === "Edition,Patch,Scene,Move hits", facts.join(","));
+  const movesFact = await page.$eval("#diag-list > li:first-child", (n) => n.textContent);
+  check("move hits summary in the player's answer", movesFact.includes("312 move hits recorded"), movesFact);
   check("Upload off when nothing is queued", await page.isDisabled("#diag-upload"));
   await page.screenshot({ path: SHOTS + "/2-three-answers.png", fullPage: true });
 
@@ -299,6 +319,24 @@ async function adminChecks(browser, base) {
   check("view outcome", (await page.textContent("#diag-view-outcome")) === ANSWER.outcome);
   check("view findings", (await page.$$("#diag-view-findings li")).length === 3);
   check("view raw file", (await page.textContent("#diag-view-raw")) === REPORT);
+  await page.waitForFunction(() => /unnamed id/.test(document.getElementById("diag-moves-note").textContent), null, { timeout: 5000 }).catch(() => {});
+  check("move hits table shown", await page.isVisible("#diag-view-moves"));
+  const moves = await page.$$eval("#diag-moves-rows tr", (n) => n.map((r) => Array.from(r.cells).map((c) => c.textContent)));
+  check("6 move rows, oldest first", moves.length === 6 && moves[0][0] === "01:00:05Z", JSON.stringify(moves));
+  check("named move: time, weapon, style, id with name, MV, damage, crit",
+    JSON.stringify(moves[0]) === JSON.stringify(["01:00:05Z", "GS", "storm", "k0 #2 Horizontal Slash", "46", "120", "crit"]), JSON.stringify(moves[0]));
+  check("a guess is marked, the hit's MV shown", moves[1][3] === "k0 #4 Kick (guess)" && moves[1][4] === "2 (hit 3)", JSON.stringify(moves[1]));
+  check("an id with no record is flagged", moves[2][3] === "k0 #9999 (id from +6) unnamed", JSON.stringify(moves[2]));
+  check("an unknown record is flagged", moves[3][3] === "k0 #207 unnamed" && moves[3][6] === "negative crit", JSON.stringify(moves[3]));
+  check("bowgun shot named by class", moves[4][3] === "k6v1 #7 Pellet S Lv1, each pellet" && moves[4][2] === "style 7", JSON.stringify(moves[4]));
+  check("an unreadable line is shown as it is", moves[5].length === 1 && moves[5][0].startsWith("01:00:10Z something new"), JSON.stringify(moves[5]));
+  check("unnamed flags are badges", (await page.$$("#diag-moves-rows .badge.bad")).length === 2);
+  const movesNote = await page.textContent("#diag-moves-note");
+  check("note counts hits and lists the unnamed ids", movesNote.includes("6 hits") && movesNote.includes("2 unnamed ids: GS k0 #9999, LS k0 #207"), movesNote);
+  check("weapon full name on hover", (await page.getAttribute("#diag-moves-rows tr:nth-child(4) td:nth-child(2)", "title")) === "Long Sword");
+  await page.click("#diag-rows tr:nth-child(1) button");
+  await page.waitForFunction(() => /HVDIAG/.test(document.getElementById("diag-view-raw").textContent));
+  check("no moves: table hidden", await page.isHidden("#diag-view-moves") && (await page.$$("#diag-moves-rows tr")).length === 0);
   await page.fill("#diag-user", "3");
   await page.click("#diag-filter");
   await page.waitForTimeout(200);
