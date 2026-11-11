@@ -10,9 +10,13 @@ zip's own sha256 only, so the entries' hashes are computed here, once per releas
                                                     # sha256 in patch-versions.json; pre-release zips by their
                                                     # name Frontier_Patch-v1.21-pre3.zip)
     python3 dev/make-patch-files.py --check         # "patch files OK": every version in patch-versions.json
-                                                    # has an entry, every hash is 64 hex, current matches
+                                                    # has an entry, every hash is 64 hex, current matches,
+                                                    # versions then pre-releases, each newest first
 
-Run it with --backups after every release (release-patch.sh adds the version to patch-versions.json first).
+Run it with --backups after every release (release-patch.sh adds the version to patch-versions.json first) and
+after every pre-release publish (hvmhfz_ops publish-prerelease.sh --site-dir does it, after keeping the stamped zip
+in the backups folder). Pre-releases (1.22-pre2) are in "versions" too, after the releases: testers send most
+reports, and a build missing here answers "the file list of v1.22-pre2 is not published".
 """
 import argparse
 import hashlib
@@ -94,9 +98,15 @@ def problems(doc, versions_doc):
     for p in versions_doc["patches"]:
         if p["version"] not in doc["versions"]:
             out.append("v%s: no entry (run dev/make-patch-files.py --backups DIR)" % p["version"])
+    names = [v for v in doc["versions"] if re.match(r"^\d+\.\d+(-pre\d+)?$", v)]
+    if names != sorted(names, key=lambda v: ("-pre" not in v, [int(x) for x in re.findall(r"\d+", v)]),
+                       reverse=True):
+        out.append("versions are not the releases then the pre-releases, each newest first")
     for v, files in doc["versions"].items():
         if not re.match(r"^\d+\.\d+(-pre\d+)?$", v):
             out.append("version %r is not N.N or N.N-preN" % v)
+        if not files:
+            out.append("v%s: no files" % v)
         for name, sha in files.items():
             if name not in FILES:
                 out.append("v%s: unknown file %s" % (v, name))
