@@ -3,6 +3,17 @@
   "current": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip",
   "patches": [
     {
+      "version": "1.21",
+      "published": "2026-11-11T05:30Z",
+      "sha256": "18defe63759a4c71def3bf0eb444a32ba7e64ef4caefd897102c4cc90739f8de",
+      "size": 58034625,
+      "files": 100,
+      "changes": "Fixes the crash on a part break in Urgent 3rd/4th District (Full Map).",
+      "changelog": "/changelog.html#d-2026-11-11-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.21/Frontier_Patch.zip",
+      "current": true
+    },
+    {
       "version": "1.20",
       "published": "2026-11-09T17:54Z",
       "sha256": "56e506284a2f461846fa5d7dcd762e0cb59adf84d115ab21532cfdf219c2b7cb",
@@ -11,7 +22,7 @@
       "changes": "Game options: choose true raw (weapon attack without the display multiplier) and true element (element and status without the extra 0) on your account page; display only, damage unchanged.",
       "changelog": "/changelog.html#d-2026-11-09-client-patch",
       "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.20/Frontier_Patch.zip",
-      "current": true
+      "current": false
     },
     {
       "version": "1.19",
