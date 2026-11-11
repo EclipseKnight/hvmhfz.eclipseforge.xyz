@@ -4,7 +4,11 @@
    the address (?slot=, ?q=, ?page=, defaults left out) and a reload restores them; ?q= alone still opens the
    catalog searching; a bad ?slot= or ?page= is ignored; with data/items/index.json failing the table shows an
    error row with a Try again button that works once the file answers; the results count is a polite live
-   region; no sideways scrolling and no script errors. Needs Playwright with Chromium:
+   region; with a stubbed equipment answer, melee and ranged rows link to the weapon on the Weapons page
+   (weapons.html?type=<slug>&w=<game id>, from data/weapons/ids.json; the API's id byte-swapped) and an id with
+   no weapon ("Dummy") stays plain text; on the phone the icon and name columns are sticky (the name at the icon
+   column's right edge, still there after a sideways swipe), on the desktop they are static; no sideways
+   scrolling and no script errors. Needs Playwright with Chromium:
 
      NODE_PATH=/root/work/pw-tools/node_modules node dev/check-db-catalog.js
 
@@ -41,8 +45,13 @@ async function main() {
     const context = await browser.newContext({ viewport: { width, height: 800 }, hasTouch: width < 800 });
     await context.addInitScript(() => localStorage.setItem("hvmhfz.consent", JSON.stringify({ choice: "declined", at: new Date().toISOString() })));
     let itemsFail = false;
+    let equipment = null; // a stubbed /api/public/catalog/equipment answer, else the API is blocked
     await context.route("**/*", (r) => {
       const url = r.request().url();
+      if (equipment && /\/api\/public\/catalog\/equipment\?/.test(url)) {
+        return r.fulfill({ status: 200, contentType: "application/json", headers: { "Access-Control-Allow-Origin": "*" },
+          body: JSON.stringify(equipment(new URL(url).searchParams.get("slot"))) });
+      }
       if (!url.startsWith(base)) return r.abort();
       if (itemsFail && /\/data\/items\/index\.json/.test(url)) return r.abort();
       return r.continue();
@@ -117,6 +126,40 @@ async function main() {
     await page.click("#catalog-body .no-results button");
     await page.waitForSelector("#catalog-body a");
     check((await rowsShown()) === 30, tag + ": Try again loads the list");
+
+    // Equipment rows link to the Weapons page. 0100 = game id 1 (Iron Sword, Great Sword), 7D04 = 1149 (a Heavy
+    // Bowgun), 1808 = 2072 (a Bow); FFFF has no weapon.
+    equipment = (slot) => ({ page: 0, size: 30, total: 3, items: slot === "melee"
+      ? [{ id: "0100", name: "Iron Sword", slot: "melee" }, { id: "FFFF", name: "Dummy", slot: "melee" }, { id: "0200", name: "Iron Sword α", slot: "melee" }]
+      : [{ id: "7D04", name: "2nd Type Heavy Bowgun", slot: "ranged" }, { id: "1808", name: "Adret Wreath Bow", slot: "ranged" }, { id: "FFFF", name: "Dummy", slot: "ranged" }] });
+    const links = () => page.$$eval("#catalog-body tr", (t) => t.map((r) => { const a = r.cells[2].querySelector("a"); return a ? a.getAttribute("href") : null; }));
+    await open("?slot=melee");
+    let got = await links();
+    check(got[0] === "/weapons.html?type=great-sword&w=1" && got[1] === null && got[2] === "/weapons.html?type=great-sword&w=2",
+      tag + ": melee rows link to the weapon: " + got.join(" "));
+    await open("?slot=ranged");
+    got = await links();
+    check(got[0] === "/weapons.html?type=heavy-bowgun&w=1149" && got[1] === "/weapons.html?type=bow&w=2072" && got[2] === null,
+      tag + ": ranged rows link to the weapon: " + got.join(" "));
+    equipment = null;
+
+    // Sticky icon and name columns on the phone, static on the desktop.
+    await open("?q=scale");
+    const stick = await page.evaluate(() => {
+      const wrap = document.querySelector("#catalog-body").closest(".table-wrap");
+      const row = document.querySelector("#catalog-body tr");
+      const pos = [0, 2].map((i) => getComputedStyle(row.cells[i]).position);
+      const iconRight = row.cells[0].getBoundingClientRect().right;
+      wrap.style.maxWidth = "200px"; // force a sideways scroll at any width
+      wrap.scrollLeft = 80;
+      const swiped = wrap.scrollLeft;
+      const gap = row.cells[2].getBoundingClientRect().left - row.cells[0].getBoundingClientRect().right;
+      wrap.style.maxWidth = ""; wrap.scrollLeft = 0;
+      return { pos, swiped, gap: Math.round(gap), iconRight };
+    });
+    if (width < 800) check(stick.pos.join() === "sticky,sticky" && stick.swiped > 0 && Math.abs(stick.gap) <= 1,
+      tag + ": icon and name columns not sticky together: " + JSON.stringify(stick));
+    else check(stick.pos.join() === "static,static", tag + ": sticky columns on the desktop: " + stick.pos);
 
     check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), tag + ": the page scrolls sideways");
     check(errors.length === 0, tag + ": script errors: " + errors.join(" | "));

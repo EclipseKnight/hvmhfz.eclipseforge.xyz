@@ -62,7 +62,7 @@
     if (!state.rows.length) return el("p", "empty-state", "No hitzones in this state.");
     var best = bestOf(state.rows);
     var wrap = el("div", "table-wrap");
-    var t = el("table", "data-table hitzone-table mg-heat");
+    var t = el("table", "data-table hitzone-table mg-heat sticky-first");
     var tr = el("tr");
     tr.appendChild(el("th", null, "Part"));
     HEAD.forEach(function (h) { tr.appendChild(el("th", null, h)); });
@@ -335,7 +335,12 @@
     tabs.setAttribute("role", "tablist");
     var body = el("div", "mg-body");
     body.setAttribute("role", "tabpanel");
-    var state = { rank: Math.max(0, (game.ranks || []).length - 1), tab: "hitzones" };
+    var lastRank = Math.max(0, (game.ranks || []).length - 1);
+    var state = { rank: lastRank, tab: "hitzones" };
+    // The rank chip is in the link (?rank=g-rank, from its label; the default, the highest rank, left out),
+    // so a shared link or a reload shows the same rank.
+    var wantRank = typeof URLSearchParams === "function" ? new URLSearchParams(location.search).get("rank") : null;
+    (game.ranks || []).forEach(function (r, i) { if (wantRank && rankSlug(r.label) === wantRank) state.rank = i; });
     var wanted = (location.hash || "").replace("#", "");
     TABS.forEach(function (t) { if (t[0] === wanted) state.tab = wanted; });
 
@@ -354,7 +359,15 @@
     (game.ranks || []).forEach(function (r, i) {
       var b = el("button", "chip", r.label);
       b.type = "button";
-      b.addEventListener("click", function () { state.rank = i; draw(); });
+      b.addEventListener("click", function () {
+        state.rank = i;
+        if (history.replaceState) {
+          var u = new URL(location.href);
+          if (i === lastRank) u.searchParams.delete("rank"); else u.searchParams.set("rank", rankSlug(r.label));
+          history.replaceState(null, "", u.pathname + u.search + u.hash);
+        }
+        draw();
+      });
       rankBox.appendChild(b);
     });
     TABS.forEach(function (t) {
@@ -385,7 +398,12 @@
     return panel;
   }
 
-  var api = { render: render, summary: summary, weakElements: weakElements, weakPoints: weakPoints, heat: heat };
+  /* "Low rank · High rank" -> "low-rank-high-rank": a rank label as it goes in the link. */
+  function rankSlug(label) {
+    return String(label || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+
+  var api = { render: render, rankSlug: rankSlug, summary: summary, weakElements: weakElements, weakPoints: weakPoints, heat: heat };
   if (typeof module === "object" && module.exports) module.exports = api;
   else root.HvMonsterGame = api;
 })(typeof window !== "undefined" ? window : this);

@@ -1,1 +1,1 @@
-{"id":9069,"name":"Diorex Shockstone","drops":[{"slug":"diorex","monster":"Diorekkusu","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[]}
+{"id":9069,"name":"Diorex Shockstone","drops":[{"slug":"diorex","monster":"Diorekkusu","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[[23417,"Diorex Materials","G","main target",1,12.0],[54913,"Diorex Materials","G","main target",1,12.0],[58118,"Continuous Intercept -","G","condition 0x8008",1,1.67]]}

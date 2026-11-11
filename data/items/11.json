@@ -1,1 +1,1 @@
-{"id":11,"name":"Antidote","drops":[{"slug":"conga","monster":"Conga","rank":"Arena","method":"Body Carves (1)","qty":1,"pct":30.0}],"quests":[]}
+{"id":11,"name":"Antidote","drops":[{"slug":"conga","monster":"Conga","rank":"Arena","method":"Body Carves (1)","qty":1,"pct":30.0},{"slug":"espinas","monster":"Espinas","rank":"Arena","method":"Carves","qty":1,"pct":25,"game":true}],"quests":[],"rewards":[]}

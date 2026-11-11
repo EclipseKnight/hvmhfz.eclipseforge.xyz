@@ -6,11 +6,17 @@
      "Clear filters" shows only while something is set and resets the list and the address; ?monster=Rathalos
      still filters, an unknown ?monster= becomes a search; Next scrolls the table into view; the count is
      aria-live; on a phone the filters sit two to a row and the monster icons are 40px (css/styles.css).
+     Sort (?sort=name|id|area, default left out): name order with "？？？？？" names last, lowest id first, a bad
+     ?sort= ignored, Clear filters keeps the sort.
    - quest.html: opened from a filtered list its back link and its "Quests" crumb keep that list's query; opened
      with no referrer they go to plain /quests.html; a failed rewards file says so.
    - monsters.html: search also finds a server name; species, size, sort and q are in the address and survive
      a reload; ?q= still works; with the API aborted no card says "0 on the server".
-   - monster.html: a hash change (#drops, #attacks) switches the tab, a tab click adds no history entry.
+   - monster.html: a hash change (#drops, #attacks) switches the tab, a tab click adds no history entry; the rank
+     chip is in the link (?rank=low-rank picks Low rank, a click writes ?rank=, the highest rank drops it).
+   - sticky first column (class sticky-first, css/styles.css): on the phone the quest list's and the hitzone
+     table's first cells are position: sticky and stay at the table's left edge when it is swiped; on the
+     desktop they are static (no layout change).
    - no page scrolls sideways, no uncaught page error.
    Needs Playwright with Chromium, which the site itself does not use:
 
@@ -64,6 +70,22 @@ async function main() {
     const pageText = (page) => page.textContent("#quest-page");
     const settle = (page) => page.waitForFunction(() => /Page \d+ of/.test((document.getElementById("quest-page") || {}).textContent || ""));
     const query = (page) => page.evaluate(() => location.search);
+    // The first cell of a table's first body row: sticky on the phone and still at the wrap's left edge after
+    // a sideways swipe; static on the desktop.
+    const stickyFirst = async (page, table, tag) => {
+      const r = await page.$eval(table, (t) => {
+        const wrap = t.closest(".table-wrap");
+        const cell = t.tBodies[0].rows[0].cells[0];
+        const pos = getComputedStyle(cell).position;
+        wrap.scrollLeft = 120;
+        const scrolled = wrap.scrollLeft;
+        const gap = cell.getBoundingClientRect().left - wrap.getBoundingClientRect().left;
+        wrap.scrollLeft = 0;
+        return { pos, scrolled, gap };
+      });
+      if (phone) check(r.pos === "sticky" && (r.scrolled === 0 || Math.abs(r.gap) < 3), `${tag}: first column not sticky (${r.pos}, swiped ${r.scrolled}px, ${r.gap}px off)`);
+      else check(r.pos === "static", `${tag}: first column is ${r.pos} on the desktop`);
+    };
 
     // ---- quests.html
     let tag = `${w}px quests`;
@@ -140,6 +162,34 @@ async function main() {
     await page.goto(base + "/quests.html?q=Rathalos", { waitUntil: "load" });
     await settle(page);
     check(await rows(page) > 0 && all > 0, `${tag}: ?q=Rathalos shows no quests`);
+    await stickyFirst(page, ".quest-table", tag);
+
+    // sort
+    const names = () => page.$$eval("#quest-body td.cell-name a", (a) => a.map((e) => e.textContent));
+    const ids = () => page.$$eval("#quest-body td.cell-name .cell-sub", (a) => a.map((e) => Number(e.textContent.match(/#(\d+)/)[1])));
+    await page.goto(base + "/quests.html?sort=name", { waitUntil: "load" });
+    await settle(page);
+    check(await page.inputValue("#quest-sort") === "name", `${tag}: ?sort=name did not set Sort`);
+    const byName = await names();
+    check(byName.length > 1 && byName.every((n, i) => i === 0 || byName[i - 1].localeCompare(n) <= 0) && /[A-Za-z0-9]/.test(byName[0]),
+      `${tag}: ?sort=name is not in name order: ${byName.slice(0, 3)}`);
+    await page.click("#quest-next");
+    await page.goto(base + "/quests.html?sort=name&page=" + Math.ceil(9152 / 40), { waitUntil: "load" });
+    await settle(page);
+    check((await names()).some((n) => !/[A-Za-z0-9]/.test(n)), `${tag}: the "？？？？？" names are not at the end of the name order`);
+    await page.selectOption("#quest-sort", "id");
+    check((await query(page)) === "?sort=id", `${tag}: picking Id wrote ${await query(page)}`);
+    const byId = await ids();
+    check(byId.every((n, i) => i === 0 || byId[i - 1] < n), `${tag}: Id, lowest first is not ascending`);
+    await page.fill("#quest-search", "rath");
+    await page.waitForFunction(() => location.search.includes("q=rath"));
+    await page.click("#quest-clear");
+    check((await query(page)) === "?sort=id" && await page.inputValue("#quest-sort") === "id", `${tag}: Clear filters dropped the sort: ${await query(page)}`);
+    await page.selectOption("#quest-sort", "");
+    check((await query(page)) === "", `${tag}: the default sort stays in the address: ${await query(page)}`);
+    await page.goto(base + "/quests.html?sort=bogus", { waitUntil: "load" });
+    await settle(page);
+    check(await page.inputValue("#quest-sort") === "" && (await ids())[0] === 64554, `${tag}: a bad ?sort= is not ignored`);
     if (phone) {
       const layout = await page.evaluate(() => {
         const sel = [...document.querySelectorAll(".quest-filters select")].map((s) => s.getBoundingClientRect());
@@ -205,6 +255,25 @@ async function main() {
     await page.waitForFunction(() => document.querySelector(".mg-tabs .tab[aria-selected=true]").dataset.tab === "drops");
     check(await page.evaluate(() => !!document.querySelector("#game-data .drop-list")), `${tag}: the Drops tab shows no carve list`);
     await sideways(page, tag);
+    await page.close();
+
+    // the rank chip in the link
+    page = await open("/monster.html?m=rathian&rank=low-rank#hitzones", tag);
+    await page.waitForSelector(".mg-ranks .chip");
+    const pressed = () => page.$eval(".mg-ranks .chip[aria-pressed=true]", (c) => c.textContent);
+    check(await pressed() === "Low rank", `${tag}: ?rank=low-rank picked ${await pressed()}`);
+    await stickyFirst(page, ".hitzone-table", `${tag} hitzones`);
+    await page.click(".mg-ranks .chip:nth-child(2)");
+    check((await query(page)) === "?m=rathian&rank=high-rank" && (await page.evaluate(() => location.hash)) === "#hitzones",
+      `${tag}: a rank click wrote ${await query(page)}${await page.evaluate(() => location.hash)}`);
+    await page.reload({ waitUntil: "load" });
+    await page.waitForSelector(".mg-ranks .chip");
+    check(await pressed() === "High rank", `${tag}: a reload lost the rank (${await pressed()})`);
+    await page.click(".mg-ranks .chip:last-child");
+    check((await query(page)) === "?m=rathian", `${tag}: the highest rank stays in the address: ${await query(page)}`);
+    await page.goto(base + "/monster.html?m=rathian&rank=nonsense", { waitUntil: "load" });
+    await page.waitForSelector(".mg-ranks .chip");
+    check(await page.$eval(".mg-ranks .chip:last-child", (c) => c.getAttribute("aria-pressed")) === "true", `${tag}: a bad ?rank= does not fall back to the highest rank`);
     await page.close();
     await context.close();
   }

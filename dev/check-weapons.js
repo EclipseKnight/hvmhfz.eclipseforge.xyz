@@ -12,13 +12,15 @@
  * 2. Data: data/weapons/index.json and one file per type: the source patch, field lists, a sharpness bar
  *    for every melee weapon, moves with one MV per hit. Move names (js/move-names.js): every move has a
  *    confidence, a name unless unknown, public source keys only; the source links.
+ *    data/weapons/ids.json (the catalog's id -> type lookup) agrees with the type files, both ways.
  *    Icons: every weapon of all 14 types gets its in-game icon from js/game-icons.js (the lookup the catalog uses):
  *    a class that is the weapon's type, an icon file that exists, the weapon's rarity; no row without one.
  * 3. Usage tab (js/weapons-usage.js): HvWeaponsUsage.view() on a stubbed /api/public/weapons/usage answer
  *    (order, shares, band filter, played before tracking began).
  * 4. Page (when Playwright is found): loads, lists Great Swords, an icon on every row of every type's first page
  *    (the same src the catalog page gives for the same ids, with the API answer stubbed), in the detail and the
- *    calculator line, picks one, the calculator shows the
+ *    calculator line, picks one ("Find in the catalog" opens the catalog's section searched by the API's
+ *    byte-swapped hex id; on the phone the list's first column is sticky, on the desktop static), the calculator shows the
  *    numbers HvWeaponsCalc gives for it, the move names (name, badge, id, tap detail, legend; "unnamed" for an
  *    unknown move) in the move list and the calculator, a gunner type hides the form, no script errors, and no sideways
  *    scrolling at 375 px. The Usage tab with the stubbed answer (routed in Chromium): 14 bars, 7/30 days,
@@ -89,6 +91,27 @@ index.types.forEach(function (t) {
     check(d.tech && d.tech.length === 4, t.slug + ": four technique levels");
   }
 });
+
+/* ---------- 2. data: ids.json ---------- */
+// The catalog links a melee or ranged row by this lookup (dev/make-weapons-data.py write_ids): every weapon of
+// every type file is at its id with its type's letter, and nothing else is.
+{
+  const ids = JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons/ids.json"), "utf8"));
+  const want = { melee: {}, ranged: {} };
+  index.types.forEach(function (t) {
+    const kind = t.kind === "melee" ? "melee" : "ranged";
+    const letter = String.fromCharCode(97 + ids.types.indexOf(t.slug));
+    check(ids.types.indexOf(t.slug) >= 0, "ids.json lists the type " + t.slug);
+    JSON.parse(fs.readFileSync(path.join(ROOT, "data/weapons", t.slug + ".json"), "utf8")).weapons.forEach(function (w) { want[kind][w[0]] = letter; });
+  });
+  ["melee", "ranged"].forEach(function (kind) {
+    let wrong = 0;
+    for (let i = 0; i < Math.max(ids[kind].length, Object.keys(want[kind]).length); i++) {
+      if ((want[kind][i] || ".") !== (ids[kind].charAt(i) || ".")) wrong++;
+    }
+    check(wrong === 0, "ids.json " + kind + ": " + wrong + " ids disagree with the type files (run dev/make-weapons-data.py --ids-only)");
+  });
+}
 
 /* ---------- 2a. move names ---------- */
 // Every move has its name data (hvmhfz_re data/move_names.tsv, via dev/make-weapons-data.py): a confidence; a name
@@ -381,6 +404,11 @@ async function page() {
       check(!q2.has("sort") && !q2.has("page") && !q2.has("rarity") && !q2.has("w"), view.name + ": switching type drops sort, page, filters and the weapon: " + pg.url());
       await pg.goto(base + "/weapons.html?type=great-sword&w=1", { waitUntil: "load" });
       await pg.waitForSelector("#wp-body .wp-pick");
+      // Back to the catalog: game id 1 is "0100" there (byte-swapped hex).
+      check(await pg.isVisible("#wp-to-catalog") && await pg.getAttribute("#wp-to-catalog", "href") === "/catalog.html?slot=melee&q=0100",
+        view.name + ": Find in the catalog links " + await pg.getAttribute("#wp-to-catalog", "href"));
+      const pos = await pg.$eval("#wp-body tr td", function (td) { return getComputedStyle(td).position; });
+      check(pos === (view.name === "phone" ? "sticky" : "static"), view.name + ": the list's first column is " + pos);
       // Open in calculator: scrolls to #calc and focuses its first field; a style chip sets the calculator's style.
       await pg.click("#wp-styles .chip:nth-child(3)");
       check(await pg.inputValue("#c-style") === "H", view.name + ": the Heaven chip sets the calculator's style");

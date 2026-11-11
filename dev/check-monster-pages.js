@@ -9,12 +9,19 @@
       Zinogre's attack records with thunder hits (from the game's file); Rathian, Tigrex and Akantor's linked DLL rows with the right counts, certainty and family reach; Cephalos with none; every drop and reward item id is in data/item-ids.json; every
       quest of data/quests.json has its rewards shard entry; quest 1065 pays Ioprey Fang 30% for the main target
       and lists Iodrome with 1,000 HP. HvMonsterGame.summary(Rathian) is weak to dragon.
+      Items (dev/make-item-data.py): data/items/<id>.json "rewards" holds every quest reward of the shards (quests of
+      data/quests.json only), best chance first; Ioprey Fang lists quest 1065, main target, 30%; the index's sources
+      count drops, needs and rewards; a drop row from the game's tables ("game": true) never repeats a monster the
+      community tables list for that item.
    2. Pages (when Playwright is found), desktop 1280 and phone 375: Rathian shows Key stats, "from the game's
       data", the five tabs and rank chips; the hitzone table is heat-coloured with the best cell of each column
       outlined; Status, Drops (item links to /item.html?id=), Attacks (Rathian: 18 lines with certainty badges and the family note; Cephalos: "Not mapped yet"; Zinogre: damage changes with defence) and
       Stats work; community tables sit in a labelled fold and no community hitzone table shows outside it; a
       monster without game data (Musou Zinogre) keeps its community page; quest 1065 shows Rewards and Monster
-      HP linking to the monster page; no sideways scrolling and no script errors. SHOTS=<dir> saves screenshots.
+      HP linking to the monster page; item 392 (Rathian Scale) shows "Rewarded by" with its best 10 quests, Show all
+      lists every one and the rank chips filter it; Claw Fossil (game drop tables only) marks its rows with *; an
+      item with no source says so; the item tables' first column is sticky on the phone and static on the desktop;
+      no sideways scrolling and no script errors. SHOTS=<dir> saves screenshots.
 
      NODE_PATH=/root/work/pw-tools/node_modules [SHOTS=dir] node dev/check-monster-pages.js
 
@@ -104,6 +111,37 @@ const q1065 = shards[1].quests["1065"];
 check(q1065 && q1065.rewards.some(function (gr) { return gr.when === "main target" && gr.items.some(function (it) { return it[0] === 357 && it[2] === 30; }); }),
   "quest 1065 main target pays Ioprey Fang 30%");
 check(q1065 && q1065.monsters[0][0] === 31 && q1065.monsters[0][2] === 1000, "quest 1065 lists Iodrome with 1000 HP");
+
+// Item files: quest rewards and game drop rows.
+const questIds = new Set(quests.map(function (q) { return q.id; }));
+let wantRewards = 0;
+Object.keys(shards).forEach(function (n) {
+  Object.keys(shards[n].quests).forEach(function (id) {
+    if (!questIds.has(Number(id))) return;
+    shards[n].quests[id].rewards.forEach(function (gr) {
+      const seen = new Set();
+      gr.items.forEach(function (it) { if (it[0] && !seen.has(it[0])) { seen.add(it[0]); wantRewards++; } });
+    });
+  });
+});
+const itemIndex = readJson("data/items/index.json").items;
+let gotRewards = 0, badOrder = 0, badQuest = 0, badCount = 0, repeated = 0;
+itemIndex.forEach(function (row) {
+  if (!row[4]) return;
+  const d = readJson("data/items/" + row[0] + ".json");
+  const r = d.rewards || [];
+  gotRewards += r.length;
+  r.forEach(function (x, i) { if (i && r[i - 1][5] < x[5]) badOrder++; if (!questIds.has(x[0])) badQuest++; });
+  if (row[4] !== d.drops.length + d.quests.length + r.length) badCount++;
+  const community = new Set(d.drops.filter(function (x) { return !x.game; }).map(function (x) { return x.slug; }));
+  d.drops.forEach(function (x) { if (x.game && x.slug && community.has(x.slug)) repeated++; });
+});
+check(gotRewards === wantRewards, "item files hold " + gotRewards + " quest reward rows, the shards " + wantRewards);
+check(badOrder === 0 && badQuest === 0, badOrder + " reward rows out of chance order, " + badQuest + " for a quest not in data/quests.json");
+check(badCount === 0, badCount + " index rows whose sources count is not drops + needs + rewards");
+check(repeated === 0, repeated + " game drop rows repeat a monster the community tables list for the item");
+const fang = readJson("data/items/357.json").rewards;
+check(fang.some(function (x) { return x[0] === 1065 && x[3] === "main target" && x[5] === 30; }), "Ioprey Fang lists quest 1065, main target, 30%");
 
 /* ---------- 2. pages ---------- */
 let chromium = null;
@@ -216,6 +254,31 @@ async function pages() {
       check(hp[0] === "/monster.html?m=iodrome" && hp[1] === "1,000", V + ": quest 1065 Iodrome 1,000 HP linked: " + hp);
       await noSideways("quest");
       if (shots) await pg.screenshot({ path: path.join(shots, V + "-quest.png"), fullPage: true });
+
+      // Item page: Rewarded by (best 10, Show all, rank chips), game drop rows, no source, sticky first column.
+      await pg.goto(base + "/item.html?id=392", { waitUntil: "load" });
+      await pg.waitForSelector(".item-rewards tbody tr");
+      const scale = readJson("data/items/392.json").rewards;
+      const rewardRows = function () { return pg.$$eval(".item-rewards tbody tr", function (t) { return t.map(function (r) { return [r.cells[0].querySelector("a").getAttribute("href"), r.cells[1].textContent]; }); }); };
+      let got = await rewardRows();
+      check(got.length === 10 && got[0][0] === "/quest.html?id=" + scale[0][0], V + ": Rathian Scale shows its best 10 rewards first: " + got.length + " " + (got[0] || []));
+      await pg.click(".panel:has(.item-rewards) .item-show-all");
+      got = await rewardRows();
+      check(got.length === scale.length, V + ": Show all lists " + got.length + " of " + scale.length);
+      await pg.click(".panel:has(.item-rewards) .chip:text-is('HR')");
+      got = await rewardRows();
+      check(got.length === scale.filter(function (x) { return x[2] === "HR"; }).length && got.every(function (x) { return x[1] === "HR"; }), V + ": the HR chip keeps only HR rows");
+      const firstPos = await pg.$eval(".item-rewards tbody td", function (td) { return getComputedStyle(td).position; });
+      check(firstPos === (V === "phone" ? "sticky" : "static"), V + ": the item table's first column is " + firstPos);
+      await noSideways("item");
+      if (shots) await pg.screenshot({ path: path.join(shots, V + "-item.png"), fullPage: true });
+      await pg.goto(base + "/item.html?id=10726", { waitUntil: "load" });
+      await pg.waitForSelector(".item-drops tbody tr");
+      check(/game's own drop tables/.test(await pg.textContent("#item-view")) && (await pg.$$(".item-drops .item-src")).length > 0, V + ": Claw Fossil marks its game-table drop rows");
+      const none = itemIndex.find(function (r) { return !r[4]; });
+      await pg.goto(base + "/item.html?id=" + none[0], { waitUntil: "load" });
+      await pg.waitForSelector("#item-view .panel");
+      check(/No monster drop table, quest reward or quest entry/.test(await pg.textContent("#item-view")), V + ": an item with no source says so");
       check(errors.length === 0, V + ": no script errors: " + errors.join(" | "));
       await ctx.close();
     }

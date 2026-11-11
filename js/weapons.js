@@ -324,6 +324,15 @@
     var w = state.weapon;
     $("wp-detail").hidden = false;
     $("wp-to-calc").hidden = !isMelee();
+    // Back to the catalog's melee or ranged section, searched by the id the API uses there: the game id as
+    // 4 hex digits, byte-swapped (6635 = 0x19EB -> "EB19"; js/catalog.js gameId does the reverse).
+    var toCatalog = $("wp-to-catalog");
+    toCatalog.hidden = !w;
+    if (w) {
+      var hex = function (n) { return ("0" + n.toString(16).toUpperCase()).slice(-2); };
+      var wid = field(w, "id");
+      toCatalog.href = "/catalog.html?slot=" + (doc.kind === "melee" ? "melee" : "ranged") + "&q=" + hex(wid & 255) + hex(wid >> 8);
+    }
     $("wp-detail-type").textContent = doc.name;
     var head = $("wp-detail-h");
     head.textContent = w ? field(w, "name") : doc.name + " moves";

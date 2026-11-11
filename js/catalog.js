@@ -43,6 +43,23 @@
     return Icons.equipmentLook(data, piece).key;
   }
 
+  /* Melee and ranged rows link to the weapon on the Weapons page (weapons.html?type=<slug>&w=<id>).
+     data/weapons/ids.json (dev/make-weapons-data.py write_ids) says which type each game id is; an id it
+     doesn't know (the API's "Dummy" rows) stays plain text. */
+  var weaponIds = null;
+  function loadWeaponIds() {
+    if (weaponIds) return Promise.resolve(weaponIds);
+    return fetch("/data/weapons/ids.json").then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; }).then(function (d) { weaponIds = d || {}; return weaponIds; });
+  }
+  function weaponHref(ids, slot, raw) {
+    var id = gameId(raw), kind = slot === "ranged" ? "ranged" : "melee";
+    var letter = id !== null && ids[kind] ? ids[kind].charAt(id) : "";
+    if (!letter || letter === ".") return null;
+    var slug = (ids.types || [])[letter.charCodeAt(0) - 97];
+    return slug ? "/weapons.html?type=" + slug + "&w=" + id : null;
+  }
+
   /* The section, search and page live in the URL (defaults left out): ?slot=melee&q=sword&page=3. */
   var SLOTS = ["items", "melee", "ranged", "heads", "chests", "arms", "waists", "legs"];
 
@@ -179,8 +196,12 @@
       return;
     }
     var slot = state.slot;
-    Promise.all([request(url()), Icons.load()]).then(function (results) {
-      results[0].items.forEach(function (entry) { entry.key = equipmentKey(results[1], slot, entry.id); });
+    var weapons = slot === "melee" || slot === "ranged";
+    Promise.all([request(url()), Icons.load(), weapons ? loadWeaponIds() : null]).then(function (results) {
+      results[0].items.forEach(function (entry) {
+        entry.key = equipmentKey(results[1], slot, entry.id);
+        if (weapons) entry.href = weaponHref(results[2], slot, entry.id);
+      });
       render(results[0]);
     }).catch(showError);
   }

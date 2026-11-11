@@ -1,1 +1,1 @@
-{"id":159,"name":"Female BBQ Spit","drops":[{"slug":"shakalaka","monster":"Shakalaka","rank":"HR","method":"King Body Carves (1)","qty":1,"pct":4.0}],"quests":[]}
+{"id":159,"name":"Female BBQ Spit","drops":[{"slug":"king-shakalaka","monster":"King Shakalaka","rank":"HR","method":"Tail carves","qty":1,"pct":4,"game":true},{"slug":"shakalaka","monster":"Shakalaka","rank":"HR","method":"King Body Carves (1)","qty":1,"pct":4.0}],"quests":[],"rewards":[]}

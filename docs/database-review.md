@@ -89,7 +89,7 @@ Impact H/M/L, effort S/M/L, risk L/M/H. "Built" = in this branch.
 |---|---|---|---|---|---|
 | 1 | Lists keep search, filters, sort and page in the address (Quests, Monsters, Catalog, Weapons); Back from a quest returns to the same list | H | S | L | built |
 | 2 | Quest page loads one piece (`data/quests/pieces/<id/1000>.json`, as the rewards are) instead of 11.4 MB: `dev/make-quest-pieces.py` writes them from `quest-details.json` and `quests.json` (`--check` in `dev/check-catalog-monsters.js`; 8.7 MB more in the repo); a phone visit 3.2 MB → 0.3-0.5 MB gzipped | H | M | M | built (quest-split) |
-| 3 | Item page "Rewarded by" quests (reverse index of `data/quests/rewards/` in `dev/make-item-data.py`) | H | M | L | proposed |
+| 3 | Item page "Rewarded by" quests (reverse index of `data/quests/rewards/` in `dev/make-item-data.py`) | H | M | L | built (extras) |
 | 4 | Tap targets: weapons sort buttons and weapon names, quests monster icons ≥ 40 px on touch | M | S | L | built |
 | 5 | Quests on phones: filters two per row; Clear filters; Previous/Next scroll back to the table top | M | S | L | built |
 | 6 | Weapons: "Open in calculator" from the weapon detail | M | S | L | built |
@@ -99,12 +99,12 @@ Impact H/M/L, effort S/M/L, risk L/M/H. "Built" = in this branch.
 | 10 | Monster page: back/forward and `#drops` style links switch the tab | L | S | L | built |
 | 11 | Site search covers quests and weapons (small name indexes, ~300 KB and ~60 KB) | H | M | L | proposed (with the landing page) |
 | 12 | Database landing page, menu split (Option A) | H | M | M | owner's pick |
-| 13 | Catalog equipment rows link to Weapons | M | M | L | proposed |
+| 13 | Catalog equipment rows link to Weapons | M | M | L | built (extras) |
 | 14 | Item page loads its own small file instead of the 751 KB index | M | M | L | proposed |
 | 15 | Weapons marks weapons and moves the server changed, linking Balance | M | M | L | proposed |
-| 16 | Sticky first column on phones for the Weapons and Quests tables | M | S | M (layout) | proposed |
-| 17 | Monster page rank chip in the link; quest count on the "Quests with X" button | L | S/M | L | proposed |
-| 18 | Quests list sort (name, id, area) | L | S | L | proposed |
+| 16 | Sticky first column on phones for the Weapons and Quests tables | M | S | M (layout) | built (extras; also hitzones, catalog, item) |
+| 17 | Monster page rank chip in the link; quest count on the "Quests with X" button | L | S/M | L | rank chip built (extras); quest count proposed |
+| 18 | Quests list sort (name, id, area) | L | S | L | built (extras) |
 
 ## Built in this branch
 
@@ -114,6 +114,23 @@ Fixes 1 and 4 to 10 above; no page, address or menu moved. Lists write their sta
 style. After the fixes, the 375 px weapons screen has 20 tap targets under 24 px instead of 128.
 Checks: `dev/check-db-lists.js` and `dev/check-db-catalog.js` (new), `dev/check-weapons.js` and
 `dev/check-balance-public.js` (extended). Screenshots after: `shots/after/`.
+
+## Built in database-extras
+
+Fixes 3, 13, 16, 18 and the rank half of 17, none of which depends on the restructure.
+
+- Item page: "Rewarded by" (every quest reward group holding the item: quest, rank, condition, quantity,
+  chance) and "Dropped by" filled in from the game's own drop tables where the community tables don't list
+  the monster (marked *; placeholder "MonNN" monsters left out). Both show the best 10 rows with Show all.
+  Items with a source went from 2,403 to 4,789; `data/items/` grew by about 4.7 MB (85,559 reward rows).
+- Catalog melee and ranged rows link to the weapon (`data/weapons/ids.json`, 22 KB); the weapon detail links
+  back to the catalog by the API's hex id.
+- Sticky first column on phones only (max-width 720px, class `sticky-first`): weapons list, monster
+  hitzones, quests, catalog (icon and name), item tables. Desktop is unchanged.
+- Quests: a Sort box (`?sort=id|name|area`). Monster page: `?rank=` keeps the rank chip.
+
+Checks: `dev/check-db-lists.js`, `dev/check-db-catalog.js`, `dev/check-monster-pages.js`, `dev/check-weapons.js`
+(extended). Screenshots: `/srv/devbot/.bot-logs/database-extras/shots/`.
 
 ## Leave alone
 

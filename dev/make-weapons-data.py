@@ -20,6 +20,8 @@ constant in index.json ("notes") and on the page.
   python3 dev/make-weapons-data.py                       # the defaults below (patch v1.19)
   python3 dev/make-weapons-data.py --zip Frontier_Patch.zip --version 1.21 --re /path/to/hvmhfz_re
 
+  python3 dev/make-weapons-data.py --ids-only            # only data/weapons/ids.json, from the type files
+
 Run it again when a client patch changes dat/mhfdat.bin (weapons.md section 8: balance changes ship
 there), then node dev/check-weapons.js.
 """
@@ -300,6 +302,25 @@ def make_cases(moves_rows, bonus_by):
     return cases
 
 
+def write_ids():
+    """data/weapons/ids.json: which weapon type each equipment id belongs to, so a page that only knows a
+    weapon's id (the catalog's melee and ranged rows) can link to weapons.html?type=<slug>&w=<id> without
+    loading every type file. Melee and ranged ids are two separate number ranges in the game; per kind, the
+    character at position <id> is the type's letter ("a" = types[0], ...) or "." for no weapon."""
+    types = [s for s in SLUGS if (OUT / (s + ".json")).exists()]
+    lookup = {"melee": {}, "ranged": {}}
+    for i, slug in enumerate(types):
+        kind = "ranged" if SLUGS.index(slug) in RANGED else "melee"
+        for w in json.loads((OUT / (slug + ".json")).read_text(encoding="utf-8"))["weapons"]:
+            lookup[kind][w[0]] = chr(ord("a") + i)
+    out = {"_about": "Weapon id -> type, written by dev/make-weapons-data.py (write_ids): per kind, the character "
+                     "at position <id> is the letter of types[] ('a' = 0) or '.' for none.", "types": types}
+    for kind, ids in lookup.items():
+        out[kind] = "".join(ids.get(i, ".") for i in range((max(ids) + 1) if ids else 0))
+    (OUT / "ids.json").write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
+    print("ids.json: %d melee, %d ranged" % (len(lookup["melee"]), len(lookup["ranged"])))
+
+
 def main(argv):
     global WEAPONS, MOVES, SHARP, CEASELESS, FACTORS
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
@@ -307,7 +328,11 @@ def main(argv):
     ap.add_argument("--zip", default=DEFAULT_ZIP, help="client patch zip (Frontier_Patch/dat/mhfdat.bin, mhfpac.bin)")
     ap.add_argument("--version", default=DEFAULT_VERSION, help="that patch's public version (data/patch-versions.json)")
     ap.add_argument("--sdt", default=DEFAULT_SDT, help="the client's dat/mhfsdt.bin (motion values)")
+    ap.add_argument("--ids-only", action="store_true", help="only rewrite data/weapons/ids.json from the type files")
     args = ap.parse_args(argv)
+    if args.ids_only:
+        write_ids()
+        return 0
     re_root = pathlib.Path(args.re)
     unpack = re_root / "build" / "unpack_cli"
     if not unpack.exists():
@@ -400,6 +425,7 @@ def main(argv):
         ],
     }
     (OUT / "index.json").write_text(json.dumps(index, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    write_ids()
     cases = make_cases(moves_rows, bonus_by)
     CASES.write_text(json.dumps({"_about": "Reference cases for dev/check-weapons.js, written by "
                                  "dev/make-weapons-data.py with hvmhfz_re tools/weapons/moves.py "

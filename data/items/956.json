@@ -1,1 +1,1 @@
-{"id":956,"name":"Felyne Fur Ruby","drops":[{"slug":"melynx","monster":"Melynx","rank":"HR","method":"Shiny Drops","qty":1,"pct":5.0}],"quests":[]}
+{"id":956,"name":"Felyne Fur Ruby","drops":[{"slug":"felyne","monster":"Felyne","rank":"HR","method":"Shiny drops","qty":1,"pct":5,"game":true},{"slug":"melynx","monster":"Melynx","rank":"HR","method":"Shiny Drops","qty":1,"pct":5.0}],"quests":[],"rewards":[]}

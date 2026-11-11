@@ -3,7 +3,7 @@
   "use strict";
 
   var PAGE = 40;
-  var state = { all: [], shown: [], page: 0, q: "", rank: "", type: "", area: "", monster: "", links: null };
+  var state = { all: [], shown: [], page: 0, q: "", rank: "", type: "", area: "", monster: "", sort: "", links: null };
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -56,10 +56,25 @@
      entry per keystroke. */
   var FIELDS = ["rank", "type", "area", "monster"];
 
+  /* Sort (?sort=, default left out): data/quests.json order (highest id first), lowest id first, name or
+     area. Not a filter, so "Clear filters" leaves it. */
+  var SORTS = {
+    name: function (a, b) { // names the game left as "？？？？？" last
+      var ua = !/[A-Za-z0-9]/.test(a.name), ub = !/[A-Za-z0-9]/.test(b.name);
+      return (ua - ub) || a.name.localeCompare(b.name) || a.id - b.id;
+    },
+    id: function (a, b) { return a.id - b.id; },
+    area: function (a, b) {
+      if (!a.area !== !b.area) return a.area ? -1 : 1; // quests without an area last
+      return (a.area || "").localeCompare(b.area || "") || a.name.localeCompare(b.name) || a.id - b.id;
+    }
+  };
+
   function sync() {
     var params = new URLSearchParams();
     if (state.q) params.set("q", state.q);
     FIELDS.forEach(function (field) { if (state[field]) params.set(field, state[field]); });
+    if (state.sort) params.set("sort", state.sort);
     if (state.page > 0) params.set("page", String(state.page + 1));
     var text = params.toString();
     if (window.history && history.replaceState) {
@@ -79,6 +94,7 @@
       return (quest.name + " " + quest.nameJp + " " + quest.category + " " + (quest.objective || "") +
         " " + quest.monsters.join(" ") + " " + quest.id).toLowerCase().indexOf(q) >= 0;
     });
+    if (SORTS[state.sort]) state.shown.sort(SORTS[state.sort]);
     var pages = Math.max(1, Math.ceil(state.shown.length / PAGE));
     state.page = keepPage ? Math.min(Math.max(0, keepPage), pages - 1) : 0;
     render();
@@ -207,6 +223,10 @@
         }
       });
       document.getElementById("quest-search").value = state.q;
+      if (SORTS[params.get("sort")]) {
+        state.sort = params.get("sort");
+        document.getElementById("quest-sort").value = state.sort;
+      }
       var monster = params.get("monster") || "";
       if (monsters[monster]) {
         state.monster = monster;
@@ -234,6 +254,10 @@
         state[field] = event.target.value;
         apply();
       });
+    });
+    document.getElementById("quest-sort").addEventListener("change", function (event) {
+      state.sort = SORTS[event.target.value] ? event.target.value : "";
+      apply();
     });
     document.getElementById("quest-prev").addEventListener("click", function () {
       if (state.page > 0) { state.page--; render(); toTable(); }

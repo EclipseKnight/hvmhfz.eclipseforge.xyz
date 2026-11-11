@@ -149,7 +149,10 @@ def items():
         quest_list = item.get("quests") or []
         if quest_list:
             bits.append(f"needed to enter {len(quest_list):,} quest{'s' if len(quest_list) != 1 else ''}")
-        desc = ("; ".join(bits) + ". " if bits else "") + "Every drop chance by rank and the quests that need it."
+        rewarded = len({r[0] for r in item.get("rewards") or []})
+        if rewarded:
+            bits.append(f"a reward of {rewarded:,} quest{'s' if rewarded != 1 else ''}")
+        desc = ("; ".join(bits) + ". " if bits else "") + "Every drop chance by rank, the quests that reward it and the quests that need it."
         yield f"item/{item['id']}.html", page(f"item/{item['id']}.html", item["name"], desc[0].upper() + desc[1:],
                                               f"/item.html?id={item['id']}", "/assets/og/item.png")
 

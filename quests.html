@@ -20,12 +20,12 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=12" />
+    <link rel="stylesheet" href="/css/styles.css?v=13" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
     <script src="/js/monster-links.js" defer></script>
-    <script src="/js/quests.js?v=4" defer></script>
+    <script src="/js/quests.js?v=5" defer></script>
   </head>
 
   <body class="public-page">
@@ -135,12 +135,13 @@
             <label class="field"><span>Type</span><select id="quest-type"><option value="">Any type</option></select></label>
             <label class="field"><span>Area</span><select id="quest-area"><option value="">Any area</option></select></label>
             <label class="field"><span>Monster</span><select id="quest-monster"><option value="">Any monster</option></select></label>
+            <label class="field"><span>Sort</span><select id="quest-sort"><option value="">Id, highest first</option><option value="id">Id, lowest first</option><option value="name">Name</option><option value="area">Area</option></select></label>
           </div>
           <div><button class="btn btn-ghost" type="button" id="quest-clear" hidden>Clear filters</button></div>
         </div>
         <p class="form-alert" id="quest-alert" hidden></p>
         <div class="table-wrap">
-          <table class="data-table quest-table">
+          <table class="data-table quest-table sticky-first">
             <thead>
               <tr>
                 <th>Quest</th>
