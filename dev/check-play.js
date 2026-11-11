@@ -222,7 +222,9 @@ async function main() {
     check(guide + " is noindex", /<meta name="robots" content="noindex"/.test(raw));
     check(guide + " canonical is Play", raw.includes('<link rel="canonical" href="https://hvmhfz.eclipseforge.xyz/play.html" />'));
     check(guide + " meta refresh 0 to the card", raw.includes('<meta http-equiv="refresh" content="0; url=/play.html#' + info.card + '"'));
-    check(guide + " has no guide text left", raw.length < 8000, String(raw.length));
+    // the shared bar and footer (dev/shell/) grow with the site, so only the rest of the page is measured
+    const own = raw.replace(/<header class="site-nav">[\s\S]*?<\/header>|<footer class="site-foot"[\s\S]*?<\/footer>/g, "");
+    check(guide + " has no guide text left", own.length < 8000, String(own.length));
     for (const [oldAnchor, id] of Object.entries(info.map)) {
       check(guide + "#" + oldAnchor + " goes to an id on Play (" + id + ")", playIds.has(id));
       await page.goto(base + "/" + guide + (oldAnchor ? "#" + oldAnchor : ""));

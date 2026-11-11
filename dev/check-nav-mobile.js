@@ -6,7 +6,9 @@
    Escape key close the menu (Escape puts the focus back on the Menu button). The menu holds every
    page of dev/shell/nav.html's groups (Guides, Database, Hunting Road, Community, Server) and the
    account button, which reads "Sign in" without a saved sign-in and "My account" with one. At 1280
-   the bar is not folded. Needs Playwright with Chromium, which the site itself does not use:
+   the bar is not folded. At 320, 360, 375 and 414px, signed in and out, with the status pill reading
+   "Status unknown", "Partial outage" or "12,345 online", the logo, the pill and the Menu button fit the
+   screen. Needs Playwright with Chromium, which the site itself does not use:
 
      NODE_PATH=/root/work/pw-tools/node_modules node dev/check-nav-mobile.js
      SHOTS=dev-shots NODE_PATH=... node dev/check-nav-mobile.js   (also saves a screenshot of each)
@@ -156,6 +158,35 @@ async function main() {
   check(account.text === "My account" && account.href === "/account.html",
     `signed in: the account button reads "${account.text}" and goes to ${account.href}`);
   await context.close();
+
+  // phones: the logo, the status pill (its longest labels) and the Menu button fit the screen, signed in or out
+  const statuses = { unknown: null, outage: { state: "degraded", online: false }, online: { state: "online", online: true, players: 12345 } };
+  for (const w of [320, 360, 375, 414]) for (const signedIn of [false, true]) for (const st of Object.keys(statuses)) {
+    const tag = `${w}px ${signedIn ? "signed in" : "signed out"}, status ${st}`;
+    const ctx = await browser.newContext({ viewport: { width: w, height: 700 }, hasTouch: true });
+    if (signedIn) await ctx.addInitScript((token) => localStorage.setItem("hvmhfz.token", token), fakeToken);
+    await ctx.route("**/*", (r) => {
+      const u = r.request().url();
+      if (u.startsWith(base)) return r.continue();
+      if (u.includes("/api/public/status") && statuses[st]) return r.fulfill({ contentType: "application/json", body: JSON.stringify(statuses[st]) });
+      return r.abort();
+    });
+    const p = await ctx.newPage();
+    await p.goto(base + "/worlds.html", { waitUntil: "load" });
+    await p.waitForFunction(() => document.querySelector(".nav-status").dataset.state !== "loading");
+    const bar = await p.evaluate(() => ({
+      label: document.querySelector(".nav-status-label").textContent,
+      menuRight: document.querySelector(".nav-toggle").getBoundingClientRect().right,
+      barBottom: document.querySelector(".site-nav").getBoundingClientRect().bottom,
+      logo: document.querySelector(".brand-logo").getBoundingClientRect().width,
+      sideways: document.documentElement.scrollWidth - innerWidth,
+    }));
+    check(bar.sideways <= 0, `${tag} ("${bar.label}"): page scrolls ${bar.sideways}px sideways`);
+    check(bar.menuRight <= w, `${tag} ("${bar.label}"): the Menu button ends at ${Math.round(bar.menuRight)}px`);
+    check(bar.barBottom <= 60, `${tag} ("${bar.label}"): the bar is ${Math.round(bar.barBottom)}px tall`);
+    check(bar.logo >= 100, `${tag} ("${bar.label}"): the logo is only ${Math.round(bar.logo)}px wide`);
+    await ctx.close();
+  }
   await browser.close();
   server.close();
 }

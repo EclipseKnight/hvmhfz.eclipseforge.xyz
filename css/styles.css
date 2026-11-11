@@ -1898,6 +1898,16 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
   .nav-status-toggle{padding:7px 9px;letter-spacing:.04em}
   .nav-toggle{padding:9px 11px}
 }
+/* Folded bar: logo, status and Menu always fit the screen width. A long status ("Status unknown", "Partial
+   outage") wraps onto two lines first; only then does the logo get narrower (scaled, not cut). The Menu
+   button never shrinks. */
+@media (max-width:1160px){
+  .site-nav.collapsible .nav-toggle{flex:none}
+  .site-nav.collapsible .nav-status{flex:0 100 auto;min-width:min-content}
+  .site-nav.collapsible .nav-status-toggle{max-width:100%;white-space:normal;line-height:1.1}
+  .site-nav.collapsible .brand{flex:0 1 auto;min-width:0}
+  .site-nav.collapsible .brand-logo{min-width:0;max-width:100%;object-fit:contain;object-position:left center}
+}
 @media (max-width:400px){
   .nav-toggle{font-size:0;gap:0}
   .nav-toggle::before{margin:5px 0}
