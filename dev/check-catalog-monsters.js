@@ -5,7 +5,8 @@
    1. Every name in data/quests.json "monsters" resolves, the way the quest pages resolve it
       (js/monster-links.js), to an index entry whose data file data/monsters/<slug>.json exists; except
       the known gaps below (monsters of the game the guide has no page for yet).
-   2. data/quests.json is what dev/make-quest-monsters.py writes (run it with --check).
+   2. data/quests.json is what dev/make-quest-monsters.py writes (run it with --check), and data/quests/pieces/
+      is what dev/make-quest-pieces.py writes from data/quests.json and data/quest-details.json (--check).
    3. The English objective of every quest (data/quests.json "objective") names the same Dos-/prey/boar/Cephalos
       monsters as its "monsters" list (Iodrome and Gendrome, Ioprey and Genprey were once swapped), and the
       English texts of data/quest-details.json say what their Japanese text says (dev/fix-quest-text-names.py --check), and every objective is the quest
@@ -65,6 +66,9 @@ Object.keys(unresolved).forEach(function (name) {
 // ---- 2. the generator has run ----
 const gen = childProcess.spawnSync("python3", [path.join(ROOT, "dev/make-quest-monsters.py"), "--check"], { encoding: "utf8" });
 if (gen.status !== 0) fail((gen.stdout || gen.stderr || "dev/make-quest-monsters.py --check failed").trim());
+// The quest page's pieces (data/quests/pieces/) are a copy of data/quests.json and data/quest-details.json.
+const pieces = childProcess.spawnSync("python3", [path.join(ROOT, "dev/make-quest-pieces.py"), "--check"], { encoding: "utf8" });
+if (pieces.status !== 0) fail((pieces.stdout || pieces.stderr || "dev/make-quest-pieces.py --check failed").trim());
 
 // ---- 3. English objectives name the monsters of the catalog ----
 // The family whose names the translators swapped; other monsters have several English spellings per Japanese name

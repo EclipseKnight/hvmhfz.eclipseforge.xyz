@@ -88,7 +88,7 @@ Impact H/M/L, effort S/M/L, risk L/M/H. "Built" = in this branch.
 | # | Fix | Impact | Effort | Risk | State |
 |---|---|---|---|---|---|
 | 1 | Lists keep search, filters, sort and page in the address (Quests, Monsters, Catalog, Weapons); Back from a quest returns to the same list | H | S | L | built |
-| 2 | Quest page loads one shard (`data/quests/details/<id/1000>.json`, as the rewards are) instead of 11.4 MB; needs a build script that writes the shards from `quest-details.json` and `quests.json`, plus a check they match (~11 MB more in the repo) | H | M | M | proposed |
+| 2 | Quest page loads one piece (`data/quests/pieces/<id/1000>.json`, as the rewards are) instead of 11.4 MB: `dev/make-quest-pieces.py` writes them from `quest-details.json` and `quests.json` (`--check` in `dev/check-catalog-monsters.js`; 8.7 MB more in the repo); a phone visit 3.2 MB → 0.3-0.5 MB gzipped | H | M | M | built (quest-split) |
 | 3 | Item page "Rewarded by" quests (reverse index of `data/quests/rewards/` in `dev/make-item-data.py`) | H | M | L | proposed |
 | 4 | Tap targets: weapons sort buttons and weapon names, quests monster icons ≥ 40 px on touch | M | S | L | built |
 | 5 | Quests on phones: filters two per row; Clear filters; Previous/Next scroll back to the table top | M | S | L | built |

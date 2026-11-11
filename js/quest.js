@@ -37,10 +37,17 @@
     return panel;
   }
 
-  function fail(message) {
+  // title "Quest not found" for an id the server does not have; a load error gets a Try again button.
+  function fail(message, title, retry) {
     main.textContent = "";
-    var panel = section("Quest not found");
+    var panel = section(title || "Quest not found");
     panel.appendChild(el("p", "note-text", message));
+    if (retry) {
+      var again = el("button", "btn", "Try again");
+      again.type = "button";
+      again.addEventListener("click", retry);
+      panel.appendChild(el("p")).appendChild(again);
+    }
     main.appendChild(panel);
   }
 
@@ -223,13 +230,7 @@
     hpPanel.id = "monster-hp";
     hpPanel.hidden = true;
     main.appendChild(hpPanel);
-    fetch("/data/quests/rewards/" + Math.floor(quest.id / 1000) + ".json")
-      .then(function (r) {
-        if (r.status === 404) return null; // no file for this quest range: no reward data
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .catch(function () { return "failed"; })
+    rewardsShard()
       .then(function (shard) {
         return fetch("/data/monsters/game/index.json").then(function (r) { return r.ok ? r.json() : {}; })
           .catch(function () { return {}; }).then(function (gindex) { showRewards(shard, gindex); });
@@ -323,16 +324,43 @@
     fail("The address needs a quest id, for example /quest.html?id=23250.");
     return;
   }
-  Promise.all([
-    fetch("/data/quests.json", { cache: "no-cache" }).then(function (r) { return r.json(); }),
-    MonsterLinks.load(),
-    fetch("/data/quest-details.json", { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : {}; })
-      .catch(function () { return {}; })
-  ]).then(function (results) {
-    var quest = (results[0].quests || []).filter(function (q) { return q.id === id; })[0];
-    if (!quest) { fail("No quest with id " + id + " on this server."); return; }
-    render(quest, results[2][String(id)], results[1]);
-  }).catch(function (error) {
-    fail("The quest could not be loaded (" + error.message + ").");
-  });
+
+  // The quest's own piece of the data (data/quests/pieces/<id/1000>.json, dev/make-quest-pieces.py) and its rewards
+  // piece, both asked for at once. A missing piece is a quest range the server has no quests in.
+  var rewardsLoad = null;
+  function rewardsShard() {
+    if (!rewardsLoad) {
+      rewardsLoad = fetch("/data/quests/rewards/" + Math.floor(id / 1000) + ".json")
+        .then(function (r) {
+          if (r.status === 404) return null; // no file for this quest range: no reward data
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .catch(function () { rewardsLoad = null; return "failed"; });
+    }
+    return rewardsLoad;
+  }
+
+  function load() {
+    main.textContent = "";
+    main.appendChild(el("p", "skeleton-line w60"));
+    main.appendChild(el("p", "note-text", "Loading the quest…")).setAttribute("role", "status");
+    rewardsShard();
+    Promise.all([
+      fetch("/data/quests/pieces/" + Math.floor(id / 1000) + ".json", { cache: "no-cache" }).then(function (r) {
+        if (r.status === 404) return { quests: {} };
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      }),
+      MonsterLinks.load()
+    ]).then(function (results) {
+      var quest = (results[0].quests || {})[String(id)];
+      if (!quest) { fail("No quest with id " + id + " on this server."); return; }
+      render(quest, quest.details, results[1]);
+    }).catch(function (error) {
+      fail("The quest could not be loaded (" + error.message + "). Check the connection and try again.",
+        "Quest could not be loaded", load);
+    });
+  }
+  load();
 })();
