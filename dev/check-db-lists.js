@@ -103,7 +103,14 @@ async function main() {
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.click("#quest-next");
     check((await query(page)).includes("page=2"), `${tag}: page 2 not in the address: ${await query(page)}`);
-    await page.waitForTimeout(900); // the page may scroll smoothly
+    // the page may scroll smoothly: wait until it has stopped (3 s at most)
+    await page.waitForTimeout(300);
+    for (let i = 0, last = -1; i < 18; i++) {
+      const y = await page.evaluate(() => scrollY);
+      if (y === last) break;
+      last = y;
+      await page.waitForTimeout(150);
+    }
     const top = await page.$eval(".quest-table", (t) => t.getBoundingClientRect().top);
     check(top > -2 && top < 300, `${tag}: after Next the table top is at ${Math.round(top)}px`);
     const firstName = await page.$eval("#quest-body td a", (a) => a.textContent);

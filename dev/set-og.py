@@ -14,7 +14,7 @@ PAGE_CARD = {
     "quest-editor.html": "quest-editor",
     "monsters.html": "monsters", "monster.html": "monsters", "guilds.html": "guilds",
     "events.html": "events", "road-vote.html": "road-vote", "road.html": "road-vote",
-    "road-history.html": "road-vote", "catalog.html": "catalog", "set-builder.html": "set-builder",
+    "road-history.html": "road-vote", "items.html": "items", "catalog.html": "items", "database.html": "database", "set-builder.html": "set-builder",
     "changelog.html": "changelog", "api.html": "api",
     "play.html": "play", "weapons.html": "weapons", "balance.html": "balance", "tournaments.html": "tournaments",
     "sky-corridor.html": "sky-corridor", "road-data.html": "road-data", "road-history.html": "road-history",

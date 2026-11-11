@@ -97,8 +97,8 @@ Impact H/M/L, effort S/M/L, risk L/M/H. "Built" = in this branch.
 | 8 | Catalog: header sort disabled (it sorted one 30-row page only); error row with Try again | M | S | L | built |
 | 9 | Balance: type groups have anchors and link to Weapons; move rows link to their type | M | S | L | built |
 | 10 | Monster page: back/forward and `#drops` style links switch the tab | L | S | L | built |
-| 11 | Site search covers quests and weapons (small name indexes, ~300 KB and ~60 KB) | H | M | L | proposed (with the landing page) |
-| 12 | Database landing page, menu split (Option A) | H | M | M | owner's pick |
+| 11 | Site search covers quests and weapons (small name indexes, `data/search/`: 386 KB and 490 KB, 103 KB and 145 KB gzipped) | H | M | L | built (database-restructure) |
+| 12 | Database landing page, menu split (Option A) | H | M | M | built (database-restructure; owner picked A, 2026-11-11) |
 | 13 | Catalog equipment rows link to Weapons | M | M | L | built (extras) |
 | 14 | Item page loads its own small file instead of the 751 KB index | M | M | L | proposed |
 | 15 | Weapons marks weapons and moves the server changed, linking Balance | M | M | L | proposed |
@@ -131,6 +131,17 @@ Fixes 3, 13, 16, 18 and the rank half of 17, none of which depends on the restru
 
 Checks: `dev/check-db-lists.js`, `dev/check-db-catalog.js`, `dev/check-monster-pages.js`, `dev/check-weapons.js`
 (extended). Screenshots: `/srv/devbot/.bot-logs/database-extras/shots/`.
+
+## Built in database-restructure (option A)
+
+The owner picked option A (2026-11-11 14:21). `/database.html`: one search over monsters, quests, items and
+weapons (grouped, a chip per kind, `?q=&kind=`, keyboard and 44 px touch targets) and the section and tool tiles;
+the Database crumb links it. Catalog renamed Items: the page is `/items.html`, `/catalog.html` forwards with its
+query and anchor (`js/page-moved.js`, noindex, meta refresh without JavaScript). A Tools menu: Set builder, Quest
+builder, Damage calculator (a deep link, `/weapons.html#calc`: the calculator uses the weapon list's pick, so it
+stays on the Weapons page). The header search lists quests and weapons from the same indexes. Checks:
+`dev/check-db-search.js` (new), `dev/check-db-catalog.js`, `dev/check-weapons.js`, `dev/check-nav-mobile.js`,
+`dev/check-site-shell.py`. Screenshots: `/srv/devbot/.bot-logs/database-restructure/`.
 
 ## Leave alone
 

@@ -16,7 +16,8 @@ Hunsterverse account portal, community pages and setup guides for Monster Hunter
 | `/guilds.html` | Guild directory: search, sort by RP, members, newest or name. `?id=` opens a guild with roster and board; `?name=` opens the one guild of that exact name (else the list, searching). |
 | `/hunters.html` | Hunter rankings: search, sort by HR, GR, recent or name. `?id=` opens a hunter profile; `?name=` opens the one hunter of that exact name (else the list, searching), for pages the API gives no character id; `?q=` opens the list searching for a name. |
 | `/leaderboards.html` | Timed hunt boards: top hunters, top guilds (hunts by current members) and most hunted monsters for this week, last week, this month, last month and all time (UTC; weeks start Monday), from `/api/public/leaderboards/hunts`; plus guild RP. `#<board>-<period>` picks one (`#hunters-week`, `#guilds-month`, `#monsters-all`, `#rp`); the old `#hr`, `#gr` and `#guilds` links still land on a board. Tied scores share a rank. |
-| `/catalog.html` | Item and equipment catalog with section chips and search. `?q=` opens it searching (monster drop tables link here). The section, the search and the page stay in the address (`?slot=`, `?q=`, `?page=`); the paged table has no header sort; a failed load shows a Try again row. Melee and ranged rows link to the weapon on `/weapons.html?type=<slug>&w=<id>` (`data/weapons/ids.json`, the API's id byte-swapped; the API's "Dummy" rows stay plain). On phones the icon and name columns stay in place when the table is swiped. `dev/check-db-catalog.js`. |
+| `/database.html` | The Database page: one search over monsters, quests, items and weapons as you type, the results grouped by kind (up to 6 each; a kind chip shows up to 50 of one kind), each to its page, with "Search in Monsters/Quests/Items" to the list; then a tile per section (Monsters, Quests, Items, Weapons, Balance changes) and per tool (Set builder, Damage calculator, Quest builder). `?q=` and `?kind=` stay in the address. Keys: Down from the box into the results, Up/Down between them, Up from the first or Esc back, Enter in the box opens the first hit, `/` focuses the box. It loads only the small indexes (`data/monsters/index.json`, `data/items/index.json`, `data/search/quests.json`, `data/search/weapons.json`; about 420 KB gzipped together, loaded on the first focus), through `js/search.js`'s `HvSearch`, the same engine as the header search. The Database crumb of every Database page links here. `dev/check-db-search.js`. |
+| `/items.html` | Items (called Catalog until 2026-11-11; `/catalog.html` forwards here with its query and #anchor, `js/page-moved.js`, and is noindex): every item and the equipment sections, with section chips and search. `?q=` opens it searching (monster drop tables link here). The section, the search and the page stay in the address (`?slot=`, `?q=`, `?page=`); the paged table has no header sort; a failed load shows a Try again row. Melee and ranged rows link to the weapon on `/weapons.html?type=<slug>&w=<id>` (`data/weapons/ids.json`, the API's id byte-swapped; the API's "Dummy" rows stay plain). On phones the icon and name columns stay in place when the table is swiped. `dev/check-db-catalog.js`. |
 | `/item.html?id=N` | One item (`js/item.js`, data from `dev/make-item-data.py`: `data/items/index.json` and `data/items/<id>.json`): Dropped by (community drop tables, plus the game's own tables `data/monsters/game/` for a monster they don't list, marked *), Rewarded by (the quests whose reward groups hold it, from `data/quests/rewards/`: quest, rank, condition, quantity, chance) and Needed to enter. The two tables show their best 10 rows (by chance) with Show all, rank chips and a filter box. `?name=` (an exact name) still works. `dev/check-monster-pages.js`. |
 | `/weapons.html` | Weapon database and damage calculator, static: pick a weapon type (chips), then a sortable, searchable list (element/status and rarity filters, 100 a page) with attack as shown and true, affinity, element, status, slots and the sharpness bar drawn (gunners: charge levels and arc shot, or recoil and reload). A weapon opens its stats and the move list of its type (MV per hit, element/status, KO, Charge Attack Up bonus; styles E/H/S/X). Each move shows its plain name first, a confidence badge (confirmed, likely, guess; an unknown move shows its id and "unnamed") and its id small (`k0 #165`); a tap opens what it is, its input and its sources (Wycademy, the Japanese MHF-Z wiki linked; the game's data and our record study named only), with a legend of the badges (`js/move-names.js`, shared with the Balance grid and `/balance.html`; data from hvmhfz_re `data/move_names.tsv`). The calculator (blademasters) shows per move no crit, crit and expected damage from the game's formula (hvmhfz_re `docs/weapons.md` sections 4-5: crits do nothing below green sharpness), with Critical Eye, Starving Wolf+2, Ceaseless, Fencing+2, Charge Attack Up, weapon technique, Adrenaline+2/Worry, DS demon mode, LS spirit, hitzones typed in or picked from the game's data per monster, rank, state and part (`data/monsters/game/`; a monster without it uses its page's community table, marked "(community)"). `?type=<slug>&w=<id>` opens a weapon. Data: `data/weapons/` from `dev/make-weapons-data.py`. A Usage tab (`#usage`, `js/weapons-usage.js`) reads `GET /api/public/weapons/usage` (API README "Weapon usage") when first opened: 7 or 30 days, a bar per weapon type with the hunters by current weapon and their share, the hunters who played it, a stacked bar of their styles, a rank band filter (played and styles are not split by band, so they hide), the hunter total and when it was worked out; a 404 says the stats are not published yet, no answer offers Try again. The list's search, element and rarity filters, sort and page stay in the address next to `?type=&w=` (`q=`, `elem=`, `rarity=`, `sort=`, `dir=desc`, `page=`); a weapon's detail has an Open in calculator button and a Find in the catalog link (`/catalog.html?slot=melee|ranged&q=<the API's hex id>`), and the move style chips set the calculator's style. On phones the list's first column stays in place when the table is swiped. On touch screens the sort buttons, weapon names and chips are 40 px tall. |
 | `/quests.html` | Quest catalog from `data/quests.json`: every quest file, search and filters, monster icons linking to their pages. `?q=` opens it searching, `?monster=<guide name>` filtered to one monster. A Sort box: id highest first (the default), id lowest first, name (the game's "？？？？？" names last) or area. The search, the four filters, the sort and the page stay in the address (`?q=`, `rank=`, `type=`, `area=`, `monster=`, `sort=`, `page=`), so a reload, a shared link or the quest page's way back opens the same list; Clear filters resets them; Previous/Next go back to the top of the table. On phones the filters sit two to a row and the quest column stays in place when the table is swiped. `dev/check-db-lists.js`. |
@@ -47,7 +48,9 @@ account.html          signed in account view (tabs: overview, characters with th
 guilds.html           guild directory and detail
 hunters.html          hunter directory and profile
 leaderboards.html     timed hunt leaderboards and guild RP
-catalog.html          item and equipment catalog
+database.html         the Database page: one search over monsters, quests, items and weapons, and the section and tool tiles (js/database.js)
+items.html            items and equipment (js/catalog.js)
+catalog.html          the old address of items.html: forwards to it with its query and #anchor (js/page-moved.js), noindex
 weapons.html          weapon database and damage calculator (data/weapons/, js/weapons.js, js/weapons-calc.js, js/move-names.js), Usage tab (js/weapons-usage.js)
 balance.html          balance changes: the published server-side balance table with reasons and its versions (js/balance-public.js)
 worlds.html           world status, live board and hunt totals
@@ -74,6 +77,7 @@ css/guide-frontier.css Frontier guide layout only (side column, pictures, cards,
 assets/backgrounds/   page background pictures (rules and sizes in its README.md)
 assets/favicon.png    site icon
 js/play.js            Play page: saved ticks, copy buttons, hidden installer and full download slots and opening the "More help" section a link points at
+js/page-moved.js      a page that moved (catalog.html -> items.html): forwards to the new address with its query and #anchor
 js/guide-moved.js     the old Windows and Linux guide pages: forwards an old address and its #anchor to the matching Play card or section
 js/nav.js             site nav: the four menus, and the Menu button on narrow screens
 js/background.js      page background: a random picture from assets/backgrounds/ per page load, dark and blurred
@@ -122,7 +126,9 @@ js/admin-notices.js   admin panel Notices tab: login notices (the live settings 
 js/admin-content.js   admin panel Content tab: the event content editors (/api/admin/content/**), lists and forms built from the API's specs; items searched in data/item-ids.json; its helpers also run under node
 js/admin-patches.js   admin panel Users tab: client patch per character and the current / older / unknown count (GET /api/admin/users, data/patch-versions.json); its helpers also run under node
 js/tournaments.js     Tournaments page: Speedrun Cup standings and the VS Bracket; its helpers also run under node
-js/catalog.js         catalog browsing
+js/catalog.js         the Items page: sections, search, paging
+js/database.js        the Database page's search box and results (window.HvSearch from js/search.js)
+js/search.js          the site search: the header's Search button, Ctrl/Cmd+K or / (monsters, quests, items, weapons from the site's indexes; guilds, hunters, armour and hunt counts from the API), and window.HvSearch for the Database page
 js/weapons.js         weapons page: list, weapon detail with moves, calculator form and monster hitzone presets
 js/weapons-calc.js    the damage formula (one melee hit as the client computes it, in single-precision floats); browser and Node
 js/monster-links.js   a monster's field guide link from the server's id or name or the guide's name (data/monsters/index.json); used by the quest pages, leaderboards, hunters, account and worlds; also runs under node
@@ -137,7 +143,9 @@ dev/check-admin-settings.js checks the admin Settings tab (live settings: sectio
 dev/check-admin-balance.js checks the admin Balance tab (rows with names and current values, add / edit / delete / reorder with the bodies sent, the move and weapon pickers, scale results, the diff, publish in two steps with the fingerprint, roll back, a moderator read only, a missing table, the weapon data missing, 375 px; the grid: a cell edit and the row sent, the reason asked once, Tab and Enter, a range error, reset and the game's value deleting the row, the multiplier line, existing draft rows in their cells, weapons with paging, search and changed only, mode switching, a phone at 375 px with a sticky first column; screenshots in /srv/devbot/.bot-logs/balance-grid/) in headless Chromium on a fake API; it serves data/weapons/ from the weapon-db worktree when this site has none (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-admin-balance.js)
 dev/check-balance-public.js checks the Balance changes page (rows grouped with names, game → new values and factors, reason links, markup as text, history; the empty table; a 404 and no version: not published yet; no answer: Try again; 375 px and desktop; the link from weapons.html and the nav) in headless Chromium on stubbed API answers; screenshots public-*.png (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-balance-public.js)
 dev/check-db-lists.js checks the Quests and Monsters lists keep their state in the address (reload, ?q= and ?monster= links, Clear filters, Previous/Next to the table top), the quest page's way back to the filtered list, no false "0 on the server" without the API, the monster page's tabs following the hash, and the phone layout (filters two to a row, 40 px monster icons) at 375 and 1280 px (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-db-lists.js)
-dev/check-db-catalog.js checks the Catalog keeps its section, search and page in the address, has no header sort on its paged table and shows Try again when the item list fails, at 375 and 1280 px (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-db-catalog.js)
+dev/check-db-search.js checks the Database page and the header search (groups, links, a quest by id, weapons, ?q= and ?kind=, keys, a failed index, no big files, 44 px hits on touch, the Database crumb, the tile counts against the data, make-search-index.py --check) at 375, 768 and 1280 px; SHOTS=<folder> saves the page and the open menu (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-db-search.js)
+dev/make-search-index.py writes data/search/quests.json and data/search/weapons.json, the site search's name indexes, from data/quests.json and data/weapons/<type>.json; run it after either changes (--check: run by dev/check-db-search.js)
+dev/check-db-catalog.js checks the Items page (and that /catalog.html forwards to it) keeps its section, search and page in the address, has no header sort on its paged table and shows Try again when the item list fails, at 375 and 1280 px (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-db-catalog.js)
 dev/check-admin-notices.js checks the admin Notices tab (login notices with the preview and save, Send now with the counter and two clicks, a failed target, schedule and cancel, a missing table, 375 px) in headless Chromium on a fake API (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-admin-notices.js)
 dev/check-admin-content.js checks the admin Content tab (lists, add with the item search, edit, delete, a locked table, event quests disable/enable, gacha rows and items) in headless Chromium on a fake API (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-admin-content.js)
 dev/check-activity.js checks js/activity.js on the made-up boards in dev/activity-fixtures.json
@@ -268,7 +276,7 @@ the next run overwrites it, and `dev/check-site.py` fails while a page differs f
   group and the page, e.g. a guide section's chapter), `item: true` (a detail page: its script puts the item's
   name last) and `crumbs: false` (no breadcrumbs: the home page).
 - Breadcrumbs, every page but home: `Home › group › trail › label` in
-  `<nav class="breadcrumbs" aria-label="Breadcrumb"><ol>`; the group is plain text (a menu, not a page). They
+  `<nav class="breadcrumbs" aria-label="Breadcrumb"><ol>`; the group is plain text (a menu, not a page), except a group with a page of its own (the pages.json entry whose `label` is the group's name: `database.html` for Database), whose crumb links there; that page's own crumbs are Home › Database. They
   sit first in the page's `main`, or where the page already had its breadcrumbs (the Frontier guide pages, beside
   their side column), and replace the old "Hunsterverse · X" kicker line. Detail pages call
   `HvCrumbs.item(name)` (`js/nav.js`): the monster and quest pages replace their stand-in crumb, the hunter
@@ -277,17 +285,18 @@ the next run overwrites it, and `dev/check-site.py` fails while a page differs f
 The script also adds `<script src="/js/search.js" defer></script>` before `</body>` on a page that doesn't
 load it. It keeps everything else on the page (head, main, scripts).
 
-- Nav, same on every page: five menus and the account button. Labels use the game's and the Discord bot's
+- Nav, same on every page: six menus and the account button. Labels use the game's and the Discord bot's
   own words (Worlds as the bot's `/worlds`, Hunting Road and Road).
   - **Guides:** Play, Frontier guide.
-  - **Database:** Monsters, Quests, Catalog, Weapons, Set builder, Quest builder.
+  - **Database:** Search everything (`/database.html`), Monsters, Quests, Items, Weapons, Balance changes.
+  - **Tools:** Set builder, Quest builder, Damage calculator (`/weapons.html#calc`: the calculator stays on the Weapons page; `js/weapons.js` lands on it once the list has filled in).
   - **Hunting Road:** Rotation and vote, Road builder, Past winners, Road data, Roads in game (`guide-roads.html`), Sky Corridor.
   - **Community:** Hunters, Guilds, Leaderboards, Discord.
   - **Server:** Worlds, Events, Changelog, Report a problem.
   - Then the account button (`a.nav-account`): "Sign in" to `/account.html` in the HTML; `js/nav.js` makes it
     "My account" with a saved sign-in that has not expired, and points it at the home page's sign-in form
     (`/#login-form`) without one. `js/search.js` adds the Search button in front. The API page is in the footer.
-- Footer, four columns: Guides, Explore (Monsters, Quests, Catalog, Leaderboards, Hunting Road), Server
+- Footer, four columns: Guides, Explore (Database, Monsters, Quests, Items, Leaderboards, Hunting Road), Server
   (Changelog, Worlds, Report a problem, API) and About (Privacy, Discord, hunstermonter.net).
 
   Each menu is a `div.nav-group` with a `button.nav-group-toggle` and a `div.nav-menu` of links. The page's
@@ -295,9 +304,9 @@ load it. It keeps everything else on the page (head, main, scripts).
   privacy, admin and API mark nothing, and a monster's page marks Monsters. On a wide screen a menu opens on hover, or on click and
   keyboard (`js/nav.js`). Below 1160px the bar folds behind the Menu button and lists every group open.
   Both guides also switch between Windows and Linux at the top.
-- Width: data pages (monsters, monster, catalog, weapons, hunters, guilds, events, worlds, account, set builder) add
+- Width: data pages (database, monsters, monster, items, weapons, hunters, guilds, events, worlds, account, set builder) add
   `wide` to their `main` and use the screen up to `--wrap-wide` (1760px); reading pages (guides, changelog, report)
-  keep `--wrap` (1120px). Below 1340px the nav folds behind the Menu button.
+  keep `--wrap` (1120px). Up to 1160px the nav folds behind the Menu button; from 1161 to 1400px the full bar uses tighter letters and padding (and up to 1280px a smaller logo) to stay on one line.
 - Each page also has the skip link (`<a class="skip-link" href="#content">`), a `main` with `id="content"`,
   the footer `footer.site-foot` (with the Privacy link), `/css/styles.css`, `/js/nav.js`, `/js/background.js`, `/js/consent.js` and `/js/search.js`.
 - The bar is sticky. Below 980px wide `js/nav.js` folds the links behind a Menu button; without JavaScript

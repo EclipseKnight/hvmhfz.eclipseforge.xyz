@@ -31,7 +31,7 @@
     view.textContent = "";
     view.appendChild(el("p", "empty-state", message));
     var back = el("p", "note-text");
-    back.appendChild(el("a", null, "Search the catalog")).href = "/catalog.html";
+    back.appendChild(el("a", null, "Search Items")).href = "/items.html";
     view.appendChild(back);
   }
 
@@ -274,7 +274,7 @@
       view.appendChild(none);
     }
     var more = el("p", "note-text item-more");
-    more.appendChild(el("a", null, "Back to the catalog")).href = "/catalog.html?q=" + encodeURIComponent(name);
+    more.appendChild(el("a", null, "Back to Items")).href = "/items.html?q=" + encodeURIComponent(name);
     view.appendChild(more);
   }
 

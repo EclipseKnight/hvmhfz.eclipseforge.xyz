@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-/* Checks the catalog page (catalog.html, js/catalog.js) in headless Chromium at 375 and 1280 px: the paged
+/* Checks the Items page (items.html, js/catalog.js; called Catalog until 2026-11-11) in headless Chromium at 375 and
+   1280 px: the page is titled Items; the old address /catalog.html (js/page-moved.js) forwards to /items.html with its
+   query and #anchor, and says noindex with a meta refresh to /items.html for a browser without JavaScript; the paged
    table has no sort headers (a sort would only reorder one page); the section, the search and the page live in
    the address (?slot=, ?q=, ?page=, defaults left out) and a reload restores them; ?q= alone still opens the
    catalog searching; a bad ?slot= or ?page= is ignored; with data/items/index.json failing the table shows an
@@ -63,11 +65,22 @@ async function main() {
     const params = () => new URL(page.url()).searchParams;
     const rowsShown = () => page.$$eval("#catalog-body tr", (t) => t.length);
     const open = async (query) => {
-      await page.goto(base + "/catalog.html" + query, { waitUntil: "load" });
+      await page.goto(base + "/items.html" + query, { waitUntil: "load" });
       await page.waitForSelector("#catalog-body a, #catalog-body .no-results, #catalog-body .empty-cell");
     };
 
+    // The old address forwards, query and anchor kept.
+    await page.goto(base + "/catalog.html?slot=melee&q=potion#top", { waitUntil: "load" });
+    await page.waitForURL(/\/items\.html/);
+    check(page.url() === base + "/items.html?slot=melee&q=potion#top", tag + ": /catalog.html forwards to " + page.url());
+    if (width === 1280) {
+      const moved = fs.readFileSync(path.join(root, "catalog.html"), "utf8");
+      check(/<meta name="robots" content="noindex" \/>/.test(moved) && /<meta http-equiv="refresh" content="0; url=\/items\.html" \/>/.test(moved),
+        "catalog.html: noindex and a meta refresh to /items.html");
+    }
+
     await open("");
+    check((await page.title()) === "Items · Hunsterverse" && (await page.textContent("h1")) === "Items", tag + ": the page is called Items");
     check((await rowsShown()) === 30, tag + ": first page lists 30 items");
     check(await page.$$eval(".data-table thead th", (ths) => ths.every((th) => th.getAttribute("role") !== "button" && !th.hasAttribute("aria-sort"))),
       tag + ": the header cells are not sort buttons");
@@ -76,7 +89,7 @@ async function main() {
     await page.waitForTimeout(150);
     check(before === await page.$$eval("#catalog-body tr td:nth-child(2)", (t) => t.map((c) => c.textContent).join()), tag + ": a header click does not reorder the page");
     check((await page.getAttribute("#catalog-results", "aria-live")) === "polite", tag + ": the results count is a polite live region");
-    check(page.url() === base + "/catalog.html", tag + ": no state in the address by default: " + page.url());
+    check(page.url() === base + "/items.html", tag + ": no state in the address by default: " + page.url());
 
     await page.click("#catalog-next");
     check(params().get("page") === "2" && !params().has("slot") && !params().has("q"), tag + ": page 2 writes ?page=2: " + page.url());
@@ -108,7 +121,7 @@ async function main() {
     check(params().get("q") === "potion", tag + ": the default section is left out of the address: " + page.url());
 
     await open("?q=sword");
-    check((await page.inputValue("#catalog-search")) === "sword" && (await rowsShown()) > 0 && await page.$("#catalog-body a") !== null, tag + ": ?q= alone opens the catalog searching");
+    check((await page.inputValue("#catalog-search")) === "sword" && (await rowsShown()) > 0 && await page.$("#catalog-body a") !== null, tag + ": ?q= alone opens the Items page searching");
     await open("?slot=nonsense&page=abc");
     check((await rowsShown()) === 30 && (await page.getAttribute('#catalog-slots .chip[data-slot="items"]', "aria-pressed")) === "true", tag + ": a bad ?slot= and ?page= are ignored");
     await open("?page=99999");
@@ -118,7 +131,7 @@ async function main() {
     check(/Nothing matches/.test(await page.textContent("#catalog-body")), tag + ": a search with no match says so");
 
     itemsFail = true;
-    await page.goto(base + "/catalog.html", { waitUntil: "load" });
+    await page.goto(base + "/items.html", { waitUntil: "load" });
     await page.waitForSelector("#catalog-body .no-results");
     check(/could not be loaded/.test(await page.textContent("#catalog-body")) && (await page.$$("#catalog-body .no-results button")).length === 1,
       tag + ": data/items/index.json failing shows an error row with Try again");
@@ -168,7 +181,7 @@ async function main() {
   await browser.close();
   server.close();
   if (problems.length) { console.log("FAIL\n- " + problems.join("\n- ")); process.exit(1); }
-  console.log("db catalog OK");
+  console.log("db items OK");
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

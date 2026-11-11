@@ -20,12 +20,12 @@
 <meta name="theme-color" content="#150e09" />
 <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-<link rel="stylesheet" href="/css/styles.css?v=13" />
+<link rel="stylesheet" href="/css/styles.css?v=14" />
 <link rel="stylesheet" href="/css/guide-frontier.css" />
 <script src="/js/nav.js" defer></script>
 <script src="/js/background.js" defer></script>
 <script src="/js/consent.js" defer></script>
-<script src="/js/search.js" defer></script>
+<script src="/js/search.js?v=2" defer></script>
 <script src="/js/guide-frontier.js" defer></script>
 </head>
 <body class="guide guide-frontier">
@@ -68,13 +68,20 @@
           <div class="nav-group">
             <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
             <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/database.html">Search everything</a>
               <a class="navlink" href="/monsters.html">Monsters</a>
               <a class="navlink" href="/quests.html">Quests</a>
-              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/items.html">Items</a>
               <a class="navlink" href="/weapons.html">Weapons</a>
               <a class="navlink" href="/balance.html">Balance changes</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-tools">Tools</button>
+            <div class="nav-menu" id="nav-tools">
               <a class="navlink" href="/set-builder.html">Set builder</a>
               <a class="navlink" href="/quest-editor.html">Quest builder</a>
+              <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
             </div>
           </div>
           <div class="nav-group">
@@ -197,7 +204,7 @@
 <li>When you reach G Rank: <a href="/guide-frontier-g-rank-start.html">Starting G Rank</a>, <a href="/guide-frontier-g-rank.html">G Rank</a> and <a href="/guide-frontier-zenith.html">Zenith</a>.</li>
 <li>Events: <a href="/guide-frontier-events.html">Regular Events</a> (Hunter Festival, Diva Defense, Caravan, Raviente) and <a href="/guide-frontier-hunters-road.html">Hunter's Road</a>.</li>
 </ul>
-<p>On our server you can also use the <a href="/monsters.html">monster field guide</a>, the <a href="/catalog.html">item and equipment catalog</a>, the <a href="/quests.html">quest catalog</a> and the <a href="/set-builder.html">armour set builder</a>.</p>
+<p>On our server you can also use the <a href="/monsters.html">monster field guide</a>, the <a href="/items.html">Items page</a>, the <a href="/quests.html">quest catalog</a> and the <a href="/set-builder.html">armour set builder</a>.</p>
 <aside class="box hv-note hv-diff" id="hv-where-to-next"><p><strong class="hv-verdict">Different.</strong> The Hunter Festival, Raviente and the Caravan run here, and since 4 Nov so do Diva Defense, MezFes every day and event campaigns (Conquest is off); the Speedrun Cup and the VS Bracket start on 5 Nov, 15:00 UTC (the new ones are not much played yet). See <a href="/events.html">Events</a> for what is live, <a href="/tournaments.html">Tournaments</a> for the Cup and bracket boards and the <a href="/changelog.html#d-2026-11-04-events">4 Nov changelog</a> for how each works.</p></aside>
 </section>
 
@@ -993,9 +1000,10 @@
           </div>
           <div class="foot-col">
             <h2 class="foot-head">Explore</h2>
+            <a href="/database.html">Database</a>
             <a href="/monsters.html">Monsters</a>
             <a href="/quests.html">Quests</a>
-            <a href="/catalog.html">Catalog</a>
+            <a href="/items.html">Items</a>
             <a href="/leaderboards.html">Leaderboards</a>
             <a href="/road-vote.html">Hunting Road</a>
           </div>
@@ -1018,5 +1026,5 @@
       </div>
     </footer>
     <!-- /site-shell:footer -->
-</body>
+  </body>
 </html>

@@ -8,6 +8,8 @@ The sources, in dev/shell/:
                  page (file name), group (the menu it sits under, or null), label (its short name),
                  title (its <title>, unescaped) and current (the nav link it marks, or null);
                  optional: trail (a list of [label, href] crumbs between the group and the page),
+                 A group's page (label equal to the group: database.html for Database) is its hub: the group's
+                 crumb links there on the group's other pages, and the hub's own crumbs leave it out.
                  item (true: the last crumb is a stand-in the page's script replaces with the item's
                  name, see HvCrumbs in js/nav.js) and crumbs (false: no breadcrumbs, the home page).
 
@@ -34,7 +36,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SHELL = ROOT / "dev" / "shell"
 INDENT = "    "  # the shell sits directly in <body>
-SEARCH = '<script src="/js/search.js" defer></script>'
+SEARCH = '<script src="/js/search.js?v=2" defer></script>'  # bump ?v= on every page when js/search.js changes
 MARKERS = {
     "header": ("<!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->",
                "<!-- /site-shell:header -->"),
@@ -63,6 +65,8 @@ def load(root=ROOT):
         "footer": (shell / "footer.html").read_text(encoding="utf-8"),
         "pages": {entry["page"]: entry for entry in pages},
         "order": [entry["page"] for entry in pages],
+        "hubs": {entry["group"]: entry["page"] for entry in pages
+                 if entry.get("group") and entry.get("label") == entry["group"]},
     }
 
 
@@ -127,14 +131,19 @@ def put(text, name, part, block):
     return text.replace(found[0], wrapped, 1)
 
 
-def crumbs_for(entry):
-    """The breadcrumb trail of a page: Home › group › trail › page, or None for no breadcrumbs."""
+def crumbs_for(entry, hubs=None):
+    """The breadcrumb trail of a page: Home › group › trail › page, or None for no breadcrumbs. hubs: group -> the
+    page of that group whose label is the group's name (database.html for "Database"); its crumb links there, and the
+    hub page itself leaves it out (Home › Database). A group without one is plain text."""
+    hubs = hubs or {}
     if entry.get("crumbs") is False:
         return None
     esc = html.escape
     items = ['<li><a href="/">Home</a></li>']
-    if entry.get("group"):
-        items.append(f'<li>{esc(entry["group"])}</li>')
+    hub = hubs.get(entry.get("group"))
+    if entry.get("group") and hub != entry["page"]:
+        group = esc(entry["group"])
+        items.append(f'<li><a href="/{esc(hub)}">{group}</a></li>' if hub else f'<li>{group}</li>')
     for label, href in entry.get("trail") or []:
         items.append(f'<li><a href="{esc(href)}">{esc(label)}</a></li>')
     item = " data-crumb-item" if entry.get("item") else ""
@@ -142,14 +151,14 @@ def crumbs_for(entry):
     return f'<nav class="breadcrumbs" aria-label="Breadcrumb"><ol>{"".join(items)}</ol></nav>'
 
 
-def put_crumbs(text, name, entry):
+def put_crumbs(text, name, entry, hubs=None):
     start, end = CRUMBS
     text = KICKER.sub("", text)  # the breadcrumbs replace the old "Hunsterverse · X" line
     marked = re.compile(r"^([ \t]*)" + re.escape(start) + r".*?" + re.escape(end) + r"[ \t]*\n", re.S | re.M)
     found = list(marked.finditer(text))
     if len(found) > 1:
         raise ShellError(f"{name}: {len(found)} crumbs markers")
-    nav = crumbs_for(entry)
+    nav = crumbs_for(entry, hubs)
     if found:
         at, pad = found[0], found[0].group(1)
     else:
@@ -185,8 +194,8 @@ def render(text, name, shell):
                          f'pages.json says {entry.get("title")!r}')
     text = put(text, name, "header", header_for(shell["nav"], entry))
     text = put(text, name, "footer", shell["footer"])
-    text = put_crumbs(text, name, entry)
-    if not re.search(r'<script src="/js/search\.js"', text):
+    text = put_crumbs(text, name, entry, shell.get("hubs"))
+    if not re.search(r'<script src="/js/search\.js[?"]', text):
         if text.count("</body>") != 1:
             raise ShellError(f"{name}: no single </body> to add the search script before")
         text = text.replace("</body>", f"{INDENT}{SEARCH}\n  </body>", 1)

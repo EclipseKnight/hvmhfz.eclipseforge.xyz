@@ -25,6 +25,7 @@ NAV = """<a class="skip-link" href="#content">Skip to content</a>
     <div class="nav-group">
       <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-a">A</button>
       <div class="nav-menu" id="nav-a">
+        <a class="navlink" href="/a.html">All of A</a>
         <a class="navlink" href="/one.html">One</a>
       </div>
     </div>
@@ -57,6 +58,7 @@ PAGES = [
      "trail": [["One", "/one.html"]], "item": True},
     {"page": "home.html", "group": None, "label": "Home", "title": "home", "current": None, "crumbs": False},
     {"page": "old.html", "group": "A", "label": "It's old", "title": "old", "current": "/one.html"},
+    {"page": "a.html", "group": "A", "label": "A", "title": "a", "current": "/a.html"},
 ]
 OLD_CRUMBS = '<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li>hand-made</li></ol></nav>\n'
 INLINE = '<main id="content">inline</main>'
@@ -93,9 +95,12 @@ with tempfile.TemporaryDirectory() as tmp:
     expect("sub page marks the One link", 'href="/one.html" aria-current="page">One' in sub)
     expect("sub page marks menu A", "nav-group-toggle is-current" in sub)
     expect("search script added once", sub.count("/js/search.js") == 1)
-    expect("sub page has Home > A > One > its item stand-in",
-           '<ol><li><a href="/">Home</a></li><li>A</li><li><a href="/one.html">One</a></li>'
+    expect("sub page has Home > A (linking its hub, a.html) > One > its item stand-in",
+           '<ol><li><a href="/">Home</a></li><li><a href="/a.html">A</a></li><li><a href="/one.html">One</a></li>'
            '<li aria-current="page" data-crumb-item>Sub</li></ol>' in sub)
+    hub = (root / "a.html").read_text()
+    expect("the hub page has Home > A, no group crumb of its own",
+           '<ol><li><a href="/">Home</a></li><li aria-current="page">A</li></ol>' in hub)
     expect("breadcrumbs open the main, the kicker is gone",
            sub.index('<main id="content">') < sub.index("site-shell:crumbs") < sub.index("breadcrumbs")
            < sub.index("/site-shell:crumbs") < sub.index("<h1>") and "kicker" not in sub)

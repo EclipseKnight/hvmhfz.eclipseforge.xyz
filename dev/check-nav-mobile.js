@@ -4,7 +4,7 @@
    and a guide page. With the menu open every entry can be scrolled into view, is 44px tall at least,
    keeps its label inside its box, and the page does not scroll sideways; a tap on a link and the
    Escape key close the menu (Escape puts the focus back on the Menu button). The menu holds every
-   page of dev/shell/nav.html's groups (Guides, Database, Hunting Road, Community, Server) and the
+   page of dev/shell/nav.html's groups (Guides, Database, Tools, Hunting Road, Community, Server) and the
    account button, which reads "Sign in" without a saved sign-in and "My account" with one. At 1280
    the bar is not folded. At 320, 360, 375 and 414px, signed in and out, with the status pill reading
    "Status unknown", "Partial outage" or "12,345 online", the logo, the pill and the Menu button fit the
@@ -29,7 +29,8 @@ const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascrip
 const shots = process.env.SHOTS;
 // every entry the folded menu must reach (dev/shell/nav.html)
 const expected = ["/play.html", "/guide-frontier.html",
-  "/monsters.html", "/quests.html", "/catalog.html", "/set-builder.html", "/quest-editor.html",
+  "/database.html", "/monsters.html", "/quests.html", "/items.html", "/weapons.html", "/balance.html",
+  "/set-builder.html", "/quest-editor.html", "/weapons.html#calc",
   "/road-vote.html", "/road.html", "/road-history.html", "/road-data.html", "/guide-roads.html",
   "/hunters.html", "/guilds.html", "/leaderboards.html", "https://discord.gg/NQrvRdRwU8",
   "/worlds.html", "/events.html", "/changelog.html", "/report.html"];

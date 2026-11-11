@@ -20,12 +20,12 @@
 <meta name="theme-color" content="#150e09" />
 <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-<link rel="stylesheet" href="/css/styles.css?v=13" />
+<link rel="stylesheet" href="/css/styles.css?v=14" />
 <link rel="stylesheet" href="/css/guide-frontier.css" />
 <script src="/js/nav.js" defer></script>
 <script src="/js/background.js" defer></script>
 <script src="/js/consent.js" defer></script>
-<script src="/js/search.js" defer></script>
+<script src="/js/search.js?v=2" defer></script>
 <script src="/js/guide-frontier.js" defer></script>
 </head>
 <body class="guide guide-frontier">
@@ -68,13 +68,20 @@
           <div class="nav-group">
             <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
             <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/database.html">Search everything</a>
               <a class="navlink" href="/monsters.html">Monsters</a>
               <a class="navlink" href="/quests.html">Quests</a>
-              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/items.html">Items</a>
               <a class="navlink" href="/weapons.html">Weapons</a>
               <a class="navlink" href="/balance.html">Balance changes</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-tools">Tools</button>
+            <div class="nav-menu" id="nav-tools">
               <a class="navlink" href="/set-builder.html">Set builder</a>
               <a class="navlink" href="/quest-editor.html">Quest builder</a>
+              <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
             </div>
           </div>
           <div class="nav-group">
@@ -196,7 +203,7 @@
 </tbody>
 </table></div>
 <p>Area names used in these messages: Jungle, Desert, Swamp, Snowy Mountains, Volcano, Tower, Forest and Hills, Great Forest, Gorge, Highlands, Tidal Island, Flower Field, Polar Sea, White Lake and Painted Falls. If the message does not help, use the other lists named in the guide.</p>
-<aside class="box hv-note hv-diff" id="hv-finding-materials"><p><strong class="hv-verdict">Different.</strong> The hint works the same, with English names (they may differ slightly from the guide's); see the <a href="/catalog.html">item and equipment catalogue</a> and the <a href="/monsters.html">monster field guide</a>. Materials marked as bought with N points come from a store with no entries on our server, and the pointer to the official site's news does not apply.</p></aside>
+<aside class="box hv-note hv-diff" id="hv-finding-materials"><p><strong class="hv-verdict">Different.</strong> The hint works the same, with English names (they may differ slightly from the guide's); see the <a href="/items.html">Items page</a> and the <a href="/monsters.html">monster field guide</a>. Materials marked as bought with N points come from a store with no entries on our server, and the pointer to the official site's news does not apply.</p></aside>
 </section>
 
 <section id="ferias">
@@ -206,7 +213,7 @@
 <p>The database lets you type any English, Japanese or Chinese name. It then gives links, where available, to the relevant sites and shows all three versions of the name. If you read a name from a screenshot with OCR, the database usually still finds it even when some characters are wrong, as long as most are right. If there are clear mistakes, cut the text down to the characters you believe are correct. Partial matches are fine.</p>
 <figure class="hb-fig"><img src="/assets/guide/items/ferias-monster-search.webp" alt="Ferias search by monster name, listing the materials whose names contain that monster, with links to Ferias." width="891" height="288" loading="lazy" decoding="async" /><figcaption>Typing a monster name lists its materials</figcaption></figure>
 <p>You can also type a monster name you recognise. It lists the materials with that monster's name in them. From there you can click through to Ferias for rank requirements, drop percentages and more.</p>
-<aside class="box hv-note hv-diff" id="hv-ferias"><p><strong class="hv-verdict">Different.</strong> Ferias is an outside database that we do not link. For items, equipment and monsters, use our <a href="/catalog.html">item and equipment catalogue</a> and <a href="/monsters.html">monster field guide</a>; item names are in English in our client.</p></aside>
+<aside class="box hv-note hv-diff" id="hv-ferias"><p><strong class="hv-verdict">Different.</strong> Ferias is an outside database that we do not link. For items, equipment and monsters, use our <a href="/items.html">Items page</a> and <a href="/monsters.html">monster field guide</a>; item names are in English in our client.</p></aside>
 </section>
 
 <section id="box-space">
@@ -222,7 +229,7 @@
 
 <section id="basic-items">
 <h2>Basic items</h2>
-<p>These common items matter for basic play. This is not a complete list. The original guide kept full lists, including materials and combinations, in its document, which we do not link; the <a href="/catalog.html">item and equipment catalogue</a> lists what exists on our server. Recipes for most of these are in <a href="#combinations">Combinations</a> below.</p>
+<p>These common items matter for basic play. This is not a complete list. The original guide kept full lists, including materials and combinations, in its document, which we do not link; the <a href="/items.html">Items page</a> lists what exists on our server. Recipes for most of these are in <a href="#combinations">Combinations</a> below.</p>
 <div class="hb-table"><table>
 <thead><tr><th>Group</th><th>Items</th></tr></thead>
 <tbody>
@@ -234,7 +241,7 @@
 <tr><td>Seeds, extracts and plants</td><td>Armor Seed, Power Seed, Power Extract, Pale Extract, Dragon Toadstool, Thunderbug, Flashbug, Sap Plant, Paintberry, Kelbi Horn</td></tr>
 </tbody>
 </table></div>
-<aside class="box hv-note hv-same" id="hv-basic-items"><p><strong class="hv-verdict">Works the same.</strong> Items are game content and work the same. Our <a href="/catalog.html">item and equipment catalogue</a> lists what exists on the server.</p></aside>
+<aside class="box hv-note hv-same" id="hv-basic-items"><p><strong class="hv-verdict">Works the same.</strong> Items are game content and work the same. Our <a href="/items.html">Items page</a> lists what exists on the server.</p></aside>
 </section>
 
 <section id="armour-spheres">
@@ -609,9 +616,10 @@
           </div>
           <div class="foot-col">
             <h2 class="foot-head">Explore</h2>
+            <a href="/database.html">Database</a>
             <a href="/monsters.html">Monsters</a>
             <a href="/quests.html">Quests</a>
-            <a href="/catalog.html">Catalog</a>
+            <a href="/items.html">Items</a>
             <a href="/leaderboards.html">Leaderboards</a>
             <a href="/road-vote.html">Hunting Road</a>
           </div>
@@ -634,5 +642,5 @@
       </div>
     </footer>
     <!-- /site-shell:footer -->
-</body>
+  </body>
 </html>

@@ -20,12 +20,12 @@
 <meta name="theme-color" content="#150e09" />
 <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-<link rel="stylesheet" href="/css/styles.css?v=13" />
+<link rel="stylesheet" href="/css/styles.css?v=14" />
 <link rel="stylesheet" href="/css/guide-frontier.css" />
 <script src="/js/nav.js" defer></script>
 <script src="/js/background.js" defer></script>
 <script src="/js/consent.js" defer></script>
-<script src="/js/search.js" defer></script>
+<script src="/js/search.js?v=2" defer></script>
 <script src="/js/guide-frontier.js" defer></script>
 </head>
 <body class="guide guide-frontier">
@@ -68,13 +68,20 @@
           <div class="nav-group">
             <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
             <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/database.html">Search everything</a>
               <a class="navlink" href="/monsters.html">Monsters</a>
               <a class="navlink" href="/quests.html">Quests</a>
-              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/items.html">Items</a>
               <a class="navlink" href="/weapons.html">Weapons</a>
               <a class="navlink" href="/balance.html">Balance changes</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-tools">Tools</button>
+            <div class="nav-menu" id="nav-tools">
               <a class="navlink" href="/set-builder.html">Set builder</a>
               <a class="navlink" href="/quest-editor.html">Quest builder</a>
+              <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
             </div>
           </div>
           <div class="nav-group">
@@ -134,7 +141,7 @@
 <li><strong>Not built here yet:</strong> the Grand Fish Cup, reward song effects (not tested), guild graduation and guild Tenrouirai missions in the Sky Corridor. The gacha coin shop, the N point shop and the festival point exchange have no server stock.</li>
 <li><strong>The Hunting Road is voted on.</strong> Players build Roads and vote; the winner goes live, and a party can pick any installed Road with <code>!road</code>. See the <a href="/guide-roads.html">Roads guide</a>, <a href="/road-vote.html">the vote</a> and <a href="/road-data.html">Road data</a>. The Road shop is stocked (1,132 items).</li>
 <li><strong>Extra characters are free:</strong> some accounts here have five. The server sets no limit of its own; we have not checked the client's maximum.</li>
-<li><strong>Our own tools</strong> replace the old fan sites the guide pointed to: <a href="/monsters.html">Monsters</a>, <a href="/catalog.html">Catalog</a>, <a href="/quests.html">Quests</a> (every quest on the server, in English), the <a href="/set-builder.html">Set builder</a> and <a href="/worlds.html">who is online</a>.</li>
+<li><strong>Our own tools</strong> replace the old fan sites the guide pointed to: <a href="/monsters.html">Monsters</a>, <a href="/items.html">Items</a>, <a href="/quests.html">Quests</a> (every quest on the server, in English), the <a href="/set-builder.html">Set builder</a> and <a href="/worlds.html">who is online</a>.</li>
 </ul>
 </section>
 
@@ -237,10 +244,10 @@
 <h2><a href="/guide-frontier-items.html">Items and Materials</a></h2>
 <div class="table-wrap"><table class="hv-table">
 <thead><tr><th>Section</th><th>On Hunsterverse</th></tr></thead><tbody>
-<tr class="hv-diff"><td><a href="/guide-frontier-items.html#hv-finding-materials">Finding where a material comes from</a></td><td><span class="hv-pill hv-diff">Different</span> <p>The hint works the same, with English names (they may differ slightly from the guide's); see the <a href="/catalog.html">item and equipment catalogue</a> and the <a href="/monsters.html">monster field guide</a>. Materials marked as bought with N points come from a store with no entries on our server, and the pointer to the official site's news does not apply.</p></td></tr>
-<tr class="hv-diff"><td><a href="/guide-frontier-items.html#hv-ferias">Ferias</a></td><td><span class="hv-pill hv-diff">Different</span> <p>Ferias is an outside database that we do not link. For items, equipment and monsters, use our <a href="/catalog.html">item and equipment catalogue</a> and <a href="/monsters.html">monster field guide</a>; item names are in English in our client.</p></td></tr>
+<tr class="hv-diff"><td><a href="/guide-frontier-items.html#hv-finding-materials">Finding where a material comes from</a></td><td><span class="hv-pill hv-diff">Different</span> <p>The hint works the same, with English names (they may differ slightly from the guide's); see the <a href="/items.html">Items page</a> and the <a href="/monsters.html">monster field guide</a>. Materials marked as bought with N points come from a store with no entries on our server, and the pointer to the official site's news does not apply.</p></td></tr>
+<tr class="hv-diff"><td><a href="/guide-frontier-items.html#hv-ferias">Ferias</a></td><td><span class="hv-pill hv-diff">Different</span> <p>Ferias is an outside database that we do not link. For items, equipment and monsters, use our <a href="/items.html">Items page</a> and <a href="/monsters.html">monster field guide</a>; item names are in English in our client.</p></td></tr>
 <tr class="hv-unknown"><td><a href="/guide-frontier-items.html#hv-box-space">Box space, presets and sorting</a></td><td><span class="hv-pill hv-unknown">Unknown, not checked</span> <p>This section only points to the <a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a> page. How many box pages the client gives here was not checked.</p></td></tr>
-<tr class="hv-same"><td><a href="/guide-frontier-items.html#hv-basic-items">Basic items</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Items are game content and work the same. Our <a href="/catalog.html">item and equipment catalogue</a> lists what exists on the server.</p></td></tr>
+<tr class="hv-same"><td><a href="/guide-frontier-items.html#hv-basic-items">Basic items</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Items are game content and work the same. Our <a href="/items.html">Items page</a> lists what exists on the server.</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-items.html#hv-armour-spheres">Armour spheres</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Armour spheres are game content and work the same.</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-items.html#hv-combinations">Combinations</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Combining works the same as in the final Z client.</p></td></tr>
 <tr class="hv-diff"><td><a href="/guide-frontier-items.html#hv-special-items">Special items</a></td><td><span class="hv-pill hv-diff">Different</span> <p>The items work the same, but course bonus items are not mailed out automatically: every account has the NetCafe courses, yet nothing delivers the drugs (the Guild Cat's daily gift was not checked). Our daily cafe bonus rewards exist, but we did not check what they hold.</p></td></tr>
@@ -275,7 +282,7 @@
 <tr class="hv-diff"><td><a href="/guide-frontier-weapons.html#hv-active-feature">Active Feature</a></td><td><span class="hv-pill hv-diff">Different</span> <p>Every one of the 14 weapon types has the Active Feature every day here, so the daily rotation does not apply. The buff values in the table are the client's.</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-weapons.html#hv-weapon-styles">Weapon styles and motion values</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Styles work the same.</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-weapons.html#hv-hunting-horn-songs">Hunting Horn songs</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Songs work the same.</p></td></tr>
-<tr class="hv-same"><td><a href="/guide-frontier-weapons.html#hv-sigils">Sigils</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Sigils work the same. Names may differ slightly in our client; see the <a href="/catalog.html">item and equipment catalogue</a>. The Morning, Night and day-of-week sigils go by a clock; the guide says Taiwan time, and we did not check which clock our server follows.</p></td></tr>
+<tr class="hv-same"><td><a href="/guide-frontier-weapons.html#hv-sigils">Sigils</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Sigils work the same. Names may differ slightly in our client; see the <a href="/items.html">Items page</a>. The Morning, Night and day-of-week sigils go by a clock; the guide says Taiwan time, and we did not check which clock our server follows.</p></td></tr>
 </tbody></table></div>
 </section>
 <section id="armour">
@@ -286,7 +293,7 @@
 <tr class="hv-diff"><td><a href="/guide-frontier-armour.html#hv-armour-types">Armour types</a></td><td><span class="hv-pill hv-diff">Different</span> <p>Armour stats and effects work the same, but Premium armour (kits, lotteries) needs the Item Mall and the gacha, which are not available here. Diva Defense armour needs that event, which runs since 4 Nov (new, not much played yet; its armour rewards were not checked).</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-armour.html#hv-transmog">Transmog</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Transmog works the same. Billing exteriors cannot be bought and lottery ones need the gacha, so those lists will be short.</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-armour.html#hv-armour-colours">Armour and icon colours</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Colours work the same; we did not test the Purple pet fight, which needs a second player.</p></td></tr>
-<tr class="hv-diff"><td><a href="/guide-frontier-armour.html#hv-decorations">Decorations</a></td><td><span class="hv-pill hv-diff">Different</span> <p>Decoration crafting works the same, but some stores the guide names as sources are thin here: the Hunter Festival points exchange has no entries on our server and the GCP shop only 2, while the Road shop is stocked. Armour and gem names are English and may differ slightly; search the <a href="/catalog.html">item and equipment catalogue</a>.</p></td></tr>
+<tr class="hv-diff"><td><a href="/guide-frontier-armour.html#hv-decorations">Decorations</a></td><td><span class="hv-pill hv-diff">Different</span> <p>Decoration crafting works the same, but some stores the guide names as sources are thin here: the Hunter Festival points exchange has no entries on our server and the GCP shop only 2, while the Road shop is stocked. Armour and gem names are English and may differ slightly; search the <a href="/items.html">Items page</a>.</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-armour.html#hv-set-building">Building sets</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Skills work the same. To find sets for the skills you want, use our <a href="/set-builder.html">armour set builder</a>: pick skills, and it finds sets that fit.</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-armour.html#hv-skills">Skills</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Skills and their priorities work the same. Skill Fruits are bought with Lottery G Coins in a coin shop that has no entries on our server, and no account holds coins, so expect them to be unavailable.</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-armour.html#hv-skill-list">Skill reference</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Skills work the same as in the final Z client. Names may differ slightly in our client.</p></td></tr>
@@ -321,9 +328,9 @@
 <thead><tr><th>Section</th><th>On Hunsterverse</th></tr></thead><tbody>
 <tr class="hv-diff"><td><a href="/guide-frontier-tools.html#hv-armour-set-builder">MHSX2G armour set builder</a></td><td><span class="hv-pill hv-diff">Different</span> <p>MHSX2G is a separate program and its armour names are Japanese, while our client shows English names that may not match. Hunsterverse has a browser-based <a href="/set-builder.html">armour set builder</a>: pick skills and it finds sets. For what the skills do, see <a href="/guide-frontier-armour.html#skills">Armour skills</a>.</p></td></tr>
 <tr class="hv-unknown"><td><a href="/guide-frontier-tools.html#hv-sigil-hunter">Sigil Hunter</a></td><td><span class="hv-pill hv-unknown">Unknown, not checked</span> <p>The tool was made for the Taiwanese client's text and font. Whether it works with our English-patched client was not checked. To learn what each sigil does, see <a href="/guide-frontier-weapons.html#sigils">Sigils</a>.</p></td></tr>
-<tr class="hv-diff"><td><a href="/guide-frontier-tools.html#hv-ferias-loxxol-script">English Ferias and Loxxol script</a></td><td><span class="hv-pill hv-diff">Different</span> <p>The script only translates two outside data sites for the official servers, and we do not link to them. On Hunsterverse, use the <a href="/monsters.html">monster field guide</a> for hitzones and the <a href="/catalog.html">catalog</a> for items and equipment.</p></td></tr>
+<tr class="hv-diff"><td><a href="/guide-frontier-tools.html#hv-ferias-loxxol-script">English Ferias and Loxxol script</a></td><td><span class="hv-pill hv-diff">Different</span> <p>The script only translates two outside data sites for the official servers, and we do not link to them. On Hunsterverse, use the <a href="/monsters.html">monster field guide</a> for hitzones and the <a href="/items.html">Items page</a> for items and equipment.</p></td></tr>
 <tr class="hv-diff"><td><a href="/guide-frontier-tools.html#hv-ocr">OCR tools</a></td><td><span class="hv-pill hv-diff">Different</span> <p>Menu, item, skill and quest names in our client are in English, from the translation patch, so you will need OCR much less than on the Taiwanese client.</p></td></tr>
-<tr class="hv-diff"><td><a href="/guide-frontier-tools.html#hv-dedicated-pages">The guide author&#x27;s other pages</a></td><td><span class="hv-pill hv-diff">Different</span> <p>The author's pages are not part of Hunsterverse and were not checked. Our <a href="/catalog.html">catalog</a> and <a href="/monsters.html">monster field guide</a> cover items, equipment and monsters, and the <a href="/set-builder.html">set builder</a> covers armour sets.</p></td></tr>
+<tr class="hv-diff"><td><a href="/guide-frontier-tools.html#hv-dedicated-pages">The guide author&#x27;s other pages</a></td><td><span class="hv-pill hv-diff">Different</span> <p>The author's pages are not part of Hunsterverse and were not checked. Our <a href="/items.html">Items page</a> and <a href="/monsters.html">monster field guide</a> cover items, equipment and monsters, and the <a href="/set-builder.html">set builder</a> covers armour sets.</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-tools.html#hv-gathering-maps">Area maps</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Maps and gathering points are client data and work the same. Our <a href="/monsters.html">monster field guide</a> also has maps.</p></td></tr>
 <tr class="hv-diff"><td><a href="/guide-frontier-tools.html#hv-armour-quick-reference">Armour quick reference</a></td><td><span class="hv-pill hv-diff">Different</span> <p>Armour buffs and upgrade paths are client data and work the same. Premium Kit armour (the Premium row) came from the Item Mall, which is not available here.</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-tools.html#hv-weapon-quick-reference">Weapon quick reference</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Weapon multipliers and coatings are client data and work the same.</p></td></tr>
@@ -382,7 +389,7 @@
 <tr class="hv-diff"><td><a href="/guide-frontier-g-rank.html#hv-g-pugi-cuffs">G Rank Pugi cuffs</a></td><td><span class="hv-pill hv-diff">Different</span> <p>Cuff crafting and carves work the same, and Guild treasure hunts work and are free to send. Premium G Cuffs need paid tickets, which are not sold here. Conquests are off here (ZZ already unlocks every level without them); where Conquest items for combined cuffs come from now was not checked.</p></td></tr>
 <tr class="hv-diff"><td><a href="/guide-frontier-g-rank.html#hv-g-rank-decorations">G Rank decorations</a></td><td><span class="hv-pill hv-diff">Different</span> <p>Jewels from breaking parts and crafting work the same. The guide says most decorations were sold through the Road, Festival or GCP stores. Here the Road shop is stocked, the GCP shop has only 2 entries and the Hunter Festival points exchange has none. Decorations that need Conquest monsters should now be possible, since the weekly Conquests started on 4 Nov (new, not much played yet, not checked).</p></td></tr>
 <tr class="hv-unknown"><td><a href="/guide-frontier-g-rank.html#hv-exotic-and-finesse">Exotic equipment and G Finesse weapons</a></td><td><span class="hv-pill hv-unknown">Unknown, not checked</span> <p>Exotic and G Finesse gear and its stats are client data and work the same. Caravan Boxes and the weekly event unlocks depend on server events. Caravan scores post at quest end here, but the boxes and the weekly unlocks were not checked.</p></td></tr>
-<tr class="hv-same"><td><a href="/guide-frontier-g-rank.html#hv-special-equipment">Special equipment and the Shiusu set</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Armour Spheres, the reduced-grind pieces and the Shiusu set are client crafting and work the same. Look up materials and skills in the <a href="/catalog.html">Catalog</a>.</p></td></tr>
+<tr class="hv-same"><td><a href="/guide-frontier-g-rank.html#hv-special-equipment">Special equipment and the Shiusu set</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Armour Spheres, the reduced-grind pieces and the Shiusu set are client crafting and work the same. Look up materials and skills on the <a href="/items.html">Items page</a>.</p></td></tr>
 <tr class="hv-diff"><td><a href="/guide-frontier-g-rank.html#hv-conquests">Conquests</a></td><td><span class="hv-pill hv-diff">Different</span> <p>The Conquest event is off here: it ran for a few hours on 4 Nov and was switched off at the evening restart, because ZZ already unlocks every level without it. The Caravan rankings stay on. The Shiten Conquest sigils and the materials were not checked. See <a href="/events.html">Events</a> and the <a href="/changelog.html#d-2026-11-04-events">4 Nov changelog</a>.</p></td></tr>
 <tr class="hv-diff"><td><a href="/guide-frontier-g-rank.html#hv-diva">The Diva</a></td><td><span class="hv-pill hv-diff">Different</span> <p>The Diva story at the Prayer Fountain is in English here. Diva Defense runs since 4 Nov (see <a href="/events.html">Events</a>), and reward songs are now earned from event points and last 1 hour; the buff's effect depends on client data that we did not test in game. The guide says Gems and Fluffy Cakes come from the GCP shop, which has only 2 entries here; which items those are was not checked. Gear that needs Diva Defense should be reachable through its reward lists and the coin shop (week 3, from 16 Nov); new, not much played yet.</p></td></tr>
 <tr class="hv-same"><td><a href="/guide-frontier-g-rank.html#hv-proper-sets">Proper G Rank sets and max rank benefits</a></td><td><span class="hv-pill hv-same">Works the same</span> <p>Skills and sets live in the client, so the advice here holds. Use the <a href="/set-builder.html">set builder</a> to plan a set. The Hunting Points exchange and the Lottery Draw are server shops that were not checked.</p></td></tr>
@@ -478,9 +485,10 @@
           </div>
           <div class="foot-col">
             <h2 class="foot-head">Explore</h2>
+            <a href="/database.html">Database</a>
             <a href="/monsters.html">Monsters</a>
             <a href="/quests.html">Quests</a>
-            <a href="/catalog.html">Catalog</a>
+            <a href="/items.html">Items</a>
             <a href="/leaderboards.html">Leaderboards</a>
             <a href="/road-vote.html">Hunting Road</a>
           </div>
@@ -503,5 +511,5 @@
       </div>
     </footer>
     <!-- /site-shell:footer -->
-</body>
+  </body>
 </html>

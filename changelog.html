@@ -20,7 +20,7 @@
 <meta name="theme-color" content="#150e09" />
 <link rel="icon" href="/assets/favicon.png?v=2" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-<link rel="stylesheet" href="/css/styles.css?v=13" />
+<link rel="stylesheet" href="/css/styles.css?v=14" />
 <script src="/js/nav.js" defer></script>
 <script src="/js/background.js" defer></script>
 <script src="/js/consent.js" defer></script>
@@ -65,13 +65,20 @@
           <div class="nav-group">
             <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
             <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/database.html">Search everything</a>
               <a class="navlink" href="/monsters.html">Monsters</a>
               <a class="navlink" href="/quests.html">Quests</a>
-              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/items.html">Items</a>
               <a class="navlink" href="/weapons.html">Weapons</a>
               <a class="navlink" href="/balance.html">Balance changes</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-tools">Tools</button>
+            <div class="nav-menu" id="nav-tools">
               <a class="navlink" href="/set-builder.html">Set builder</a>
               <a class="navlink" href="/quest-editor.html">Quest builder</a>
+              <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
             </div>
           </div>
           <div class="nav-group">
@@ -116,7 +123,7 @@
 <!-- /site-shell:crumbs -->
 <h1>Server changelog</h1>
 <p class="lead">Every update to Hunsterverse, newest first, by month and day. Each day groups its changes by topic, and each change shows when it went live.</p>
-<p class="meta">Last update listed: 10 November 2026. Page updated 10 November 2026. Found a problem that isn't listed? <a href="/report.html">Report it</a>.</p>
+<p class="meta">Last update listed: 11 November 2026. Page updated 11 November 2026. Found a problem that isn't listed? <a href="/report.html">Report it</a>.</p>
 
 <nav class="toc cl-toc" aria-label="Changelog contents">
 <strong>Contents</strong>
@@ -159,7 +166,13 @@
 <summary>Wednesday 11 November 2026</summary>
 <section class="cl-day" id="d-2026-11-11" aria-labelledby="d-2026-11-11-h">
 <h4 class="cl-day-title visually-hidden" id="d-2026-11-11-h"><a class="cl-anchor" href="#d-2026-11-11">Wednesday 11 November 2026</a></h4>
-<p class="cl-topics"><a href="#d-2026-11-11-client-patch">Client patch</a></p>
+<p class="cl-topics"><a href="#d-2026-11-11-website">Website</a> · <a href="#d-2026-11-11-client-patch">Client patch</a></p>
+<section class="cl-topic" id="d-2026-11-11-website" aria-labelledby="d-2026-11-11-website-h">
+<h5 class="cl-topic-title" id="d-2026-11-11-website-h"><a class="cl-anchor" href="#d-2026-11-11-website">Website</a></h5>
+<ul>
+<li><time class="cl-when" datetime="2026-11-11TXX:XXZ">11 Nov 2026, XX:XX UTC</time> <b>A Database page with one search for everything.</b> <a href="/database.html">Database</a> (in the Database menu as Search everything) searches monsters, quests, items and weapons at once as you type, grouped by kind, with a tile for each section. The header Search (Ctrl+K or /) now finds quests and weapons too. The Catalog is now called <a href="/items.html">Items</a>; old Catalog links still open it. Set builder, Quest builder and the damage calculator moved to a new Tools menu.</li>
+</ul>
+</section>
 <section class="cl-topic" id="d-2026-11-11-client-patch" aria-labelledby="d-2026-11-11-client-patch-h">
 <h5 class="cl-topic-title" id="d-2026-11-11-client-patch-h"><a class="cl-anchor" href="#d-2026-11-11-client-patch">Client patch</a></h5>
 <ul>
@@ -852,9 +865,10 @@
           </div>
           <div class="foot-col">
             <h2 class="foot-head">Explore</h2>
+            <a href="/database.html">Database</a>
             <a href="/monsters.html">Monsters</a>
             <a href="/quests.html">Quests</a>
-            <a href="/catalog.html">Catalog</a>
+            <a href="/items.html">Items</a>
             <a href="/leaderboards.html">Leaderboards</a>
             <a href="/road-vote.html">Hunting Road</a>
           </div>
@@ -880,6 +894,6 @@
 <script src="/js/changelog-times.js" defer></script>
 <script src="/js/changelog-folds.js" defer></script>
 <script src="/js/share.js?v=2" defer></script>
-<script src="/js/search.js" defer></script>
-</body>
+<script src="/js/search.js?v=2" defer></script>
+  </body>
 </html>

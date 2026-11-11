@@ -20,12 +20,12 @@
 <meta name="theme-color" content="#150e09" />
 <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-<link rel="stylesheet" href="/css/styles.css?v=13" />
+<link rel="stylesheet" href="/css/styles.css?v=14" />
 <link rel="stylesheet" href="/css/guide-frontier.css" />
 <script src="/js/nav.js" defer></script>
 <script src="/js/background.js" defer></script>
 <script src="/js/consent.js" defer></script>
-<script src="/js/search.js" defer></script>
+<script src="/js/search.js?v=2" defer></script>
 <script src="/js/guide-frontier.js" defer></script>
 </head>
 <body class="guide guide-frontier">
@@ -68,13 +68,20 @@
           <div class="nav-group">
             <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
             <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/database.html">Search everything</a>
               <a class="navlink" href="/monsters.html">Monsters</a>
               <a class="navlink" href="/quests.html">Quests</a>
-              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/items.html">Items</a>
               <a class="navlink" href="/weapons.html">Weapons</a>
               <a class="navlink" href="/balance.html">Balance changes</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-tools">Tools</button>
+            <div class="nav-menu" id="nav-tools">
               <a class="navlink" href="/set-builder.html">Set builder</a>
               <a class="navlink" href="/quest-editor.html">Quest builder</a>
+              <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
             </div>
           </div>
           <div class="nav-group">
@@ -195,7 +202,7 @@
 <figure class="hb-fig"><img src="/assets/guide/tools/loxxol-monster-list.webp" alt="The top of the Loxxol hitbox monster list page: a title bar and a list of monster names in English letters, such as Akantor, Jebia and Vashimu." width="400" height="198" loading="lazy" decoding="async" /><figcaption>The Loxxol monster hitbox list</figcaption></figure>
 <p>Firefox users need Tampermonkey or an older version of Greasemonkey to use the script. Chrome and other browsers need Tampermonkey. The guide gives the version as 1.201700101. Get Tampermonkey for <a href="https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/">Firefox</a> or <a href="https://chrome.google.com/webstore/detail/tampermonkey/">Chrome</a>. The script file is ferias.user.js. Only install a userscript if you trust its source.</p>
 <p>The hitbox page itself is on Loxxol.</p>
-<aside class="box hv-note hv-diff" id="hv-ferias-loxxol-script"><p><strong class="hv-verdict">Different.</strong> The script only translates two outside data sites for the official servers, and we do not link to them. On Hunsterverse, use the <a href="/monsters.html">monster field guide</a> for hitzones and the <a href="/catalog.html">catalog</a> for items and equipment.</p></aside>
+<aside class="box hv-note hv-diff" id="hv-ferias-loxxol-script"><p><strong class="hv-verdict">Different.</strong> The script only translates two outside data sites for the official servers, and we do not link to them. On Hunsterverse, use the <a href="/monsters.html">monster field guide</a> for hitzones and the <a href="/items.html">Items page</a> for items and equipment.</p></aside>
 </section>
 
 <section id="ocr">
@@ -219,8 +226,8 @@
 <li>Decoration Name Database</li>
 <li>Monster Name Database</li>
 </ul>
-<p>On Hunsterverse, the <a href="/catalog.html">item and equipment catalog</a> and the <a href="/monsters.html">monster field guide</a> cover similar ground.</p>
-<aside class="box hv-note hv-diff" id="hv-dedicated-pages"><p><strong class="hv-verdict">Different.</strong> The author's pages are not part of Hunsterverse and were not checked. Our <a href="/catalog.html">catalog</a> and <a href="/monsters.html">monster field guide</a> cover items, equipment and monsters, and the <a href="/set-builder.html">set builder</a> covers armour sets.</p></aside>
+<p>On Hunsterverse, the <a href="/items.html">Items page</a> and the <a href="/monsters.html">monster field guide</a> cover similar ground.</p>
+<aside class="box hv-note hv-diff" id="hv-dedicated-pages"><p><strong class="hv-verdict">Different.</strong> The author's pages are not part of Hunsterverse and were not checked. Our <a href="/items.html">Items page</a> and <a href="/monsters.html">monster field guide</a> cover items, equipment and monsters, and the <a href="/set-builder.html">set builder</a> covers armour sets.</p></aside>
 </section>
 
 <section id="gathering-maps">
@@ -367,9 +374,10 @@
           </div>
           <div class="foot-col">
             <h2 class="foot-head">Explore</h2>
+            <a href="/database.html">Database</a>
             <a href="/monsters.html">Monsters</a>
             <a href="/quests.html">Quests</a>
-            <a href="/catalog.html">Catalog</a>
+            <a href="/items.html">Items</a>
             <a href="/leaderboards.html">Leaderboards</a>
             <a href="/road-vote.html">Hunting Road</a>
           </div>
@@ -392,5 +400,5 @@
       </div>
     </footer>
     <!-- /site-shell:footer -->
-</body>
+  </body>
 </html>

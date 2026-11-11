@@ -324,14 +324,14 @@
     var w = state.weapon;
     $("wp-detail").hidden = false;
     $("wp-to-calc").hidden = !isMelee();
-    // Back to the catalog's melee or ranged section, searched by the id the API uses there: the game id as
+    // Back to the Items page's melee or ranged section, searched by the id the API uses there: the game id as
     // 4 hex digits, byte-swapped (6635 = 0x19EB -> "EB19"; js/catalog.js gameId does the reverse).
     var toCatalog = $("wp-to-catalog");
     toCatalog.hidden = !w;
     if (w) {
       var hex = function (n) { return ("0" + n.toString(16).toUpperCase()).slice(-2); };
       var wid = field(w, "id");
-      toCatalog.href = "/catalog.html?slot=" + (doc.kind === "melee" ? "melee" : "ranged") + "&q=" + hex(wid & 255) + hex(wid >> 8);
+      toCatalog.href = "/items.html?slot=" + (doc.kind === "melee" ? "melee" : "ranged") + "&q=" + hex(wid & 255) + hex(wid >> 8);
     }
     $("wp-detail-type").textContent = doc.name;
     var head = $("wp-detail-h");
@@ -633,8 +633,33 @@
         w = d.weapons.filter(function (x) { return String(field(x, "id")) === String(weaponId); })[0] || null;
       }
       pick(w, false);
+      // The menu's Damage calculator link (/weapons.html#calc): the list above it fills in only now, so the
+      // browser's own jump to the anchor landed too high; go there again, once, after the page's load event
+      // (the browser may jump to the anchor again then).
+      if (location.hash === "#calc" && !calcShown) {
+        calcShown = true;
+        // Then keep it there for 1.5 s while late layout (icons, fonts) settles, until the reader scrolls.
+        var toCalc = function () {
+          var calc = $("calc"), until = Date.now() + 1500, want, stop = false;
+          var quit = function () { stop = true; };
+          ["wheel", "touchstart", "keydown", "pointerdown"].forEach(function (t) {
+            window.addEventListener(t, quit, { once: true, passive: true });
+          });
+          calc.scrollIntoView({ block: "start", behavior: "instant" });
+          want = calc.getBoundingClientRect().top;
+          (function pin() {
+            if (stop || Date.now() > until) return;
+            if (Math.abs(calc.getBoundingClientRect().top - want) > 2) calc.scrollIntoView({ block: "start", behavior: "instant" });
+            requestAnimationFrame(pin);
+          })();
+        };
+        if (document.readyState === "complete") toCalc();
+        else window.addEventListener("load", function () { setTimeout(toCalc, 0); }, { once: true });
+      }
     });
   }
+
+  var calcShown = false;
 
   function init() {
     ["wp-moves-legend", "calc-legend"].forEach(function (id) { $(id).appendChild(window.HvMoveNames.legend()); });

@@ -55,7 +55,7 @@ class PageParser(HTMLParser):
             if value and value.startswith("/"):
                 self.local_refs.append(value)
         if tag == "script" and attrs.get("src"):
-            self.scripts.append(attrs["src"])
+            self.scripts.append(attrs["src"].split("?")[0])  # cache-busters like ?v=2
         if tag == "link" and attrs.get("rel") == "stylesheet":
             self.stylesheets.append(attrs.get("href"))
         if self._inside("footer", "site-foot"):

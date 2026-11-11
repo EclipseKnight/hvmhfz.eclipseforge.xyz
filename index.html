@@ -20,7 +20,7 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=13" />
+    <link rel="stylesheet" href="/css/styles.css?v=14" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
@@ -66,13 +66,20 @@
           <div class="nav-group">
             <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
             <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/database.html">Search everything</a>
               <a class="navlink" href="/monsters.html">Monsters</a>
               <a class="navlink" href="/quests.html">Quests</a>
-              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/items.html">Items</a>
               <a class="navlink" href="/weapons.html">Weapons</a>
               <a class="navlink" href="/balance.html">Balance changes</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-tools">Tools</button>
+            <div class="nav-menu" id="nav-tools">
               <a class="navlink" href="/set-builder.html">Set builder</a>
               <a class="navlink" href="/quest-editor.html">Quest builder</a>
+              <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
             </div>
           </div>
           <div class="nav-group">
@@ -207,8 +214,8 @@
           <section class="route-row" id="tools" aria-labelledby="tools-title">
             <div class="route-head"><h3 id="tools-title">Tools</h3><p>Look things up and build your own.</p></div>
             <div class="route-tiles">
+              <a class="tile route-tile" href="/database.html"><img src="/assets/guide/items/card.webp" alt="" width="64" height="64" loading="lazy" decoding="async" /><span><strong>Database</strong><span class="tile-meta">Search monsters, quests, items and weapons in one place.</span></span></a>
               <a class="tile route-tile route-tile-icon" href="/monsters.html"><img src="/assets/monsters/icons/tigrex.webp" alt="" width="64" height="64" loading="lazy" decoding="async" /><span><strong>Monsters</strong><span class="tile-meta">Hitzones, HP, stagger limits and carves for all 158 monsters.</span></span></a>
-              <a class="tile route-tile" href="/catalog.html"><img src="/assets/guide/items/card.webp" alt="" width="64" height="64" loading="lazy" decoding="async" /><span><strong>Catalog</strong><span class="tile-meta">Items and equipment, straight from the game data.</span></span></a>
               <a class="tile route-tile" href="/set-builder.html"><img src="/assets/guide/armour/card.webp" alt="" width="64" height="64" loading="lazy" decoding="async" /><span><strong>Set builder</strong><span class="tile-meta">Pick the skills you want and find the armour that reaches them.</span></span></a>
               <a class="tile route-tile" href="/quest-editor.html"><img src="/assets/guide/g-rank/card.webp" alt="" width="64" height="64" loading="lazy" decoding="async" /><span><strong>Quest builder</strong><span class="tile-meta">Build a quest of your own and test it in game. Sign in first.</span></span></a>
               <a class="tile route-tile route-tile-icon" href="/road.html"><img src="/assets/monsters/icons/odibatorasu.webp" alt="" width="64" height="64" loading="lazy" decoding="async" /><span><strong>Road builder</strong><span class="tile-meta">Build a Hunting Road and enter it in the rotation. Sign in first.</span></span></a>
@@ -249,9 +256,10 @@
           </div>
           <div class="foot-col">
             <h2 class="foot-head">Explore</h2>
+            <a href="/database.html">Database</a>
             <a href="/monsters.html">Monsters</a>
             <a href="/quests.html">Quests</a>
-            <a href="/catalog.html">Catalog</a>
+            <a href="/items.html">Items</a>
             <a href="/leaderboards.html">Leaderboards</a>
             <a href="/road-vote.html">Hunting Road</a>
           </div>
@@ -281,6 +289,6 @@
     <script src="/js/signup.js"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <script src="/js/whatsnew.js" defer></script>
-    <script src="/js/search.js" defer></script>
+    <script src="/js/search.js?v=2" defer></script>
   </body>
 </html>

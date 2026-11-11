@@ -2341,3 +2341,61 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .item-src{color:var(--ink-soft)}
 .wp-detail-links{display:flex;flex-wrap:wrap;gap:8px}
 .wp-detail-links [hidden]{display:none}
+
+/* Database page (database.html, js/database.js): one search over monsters, quests, items and weapons, the
+   results grouped by kind (two columns on a wide screen), then the section and tool tiles. */
+.db-find-h{margin:0 0 12px}
+.db-form{margin:0 0 12px}
+.db-search{display:flex}
+.db-search input{width:100%;min-width:0;font-size:1.1rem;padding:12px 14px;min-height:48px}
+.db-kinds{margin:0 0 8px}
+.db-kinds .chip{min-height:40px}
+.db-help{margin:0 0 6px;font:.82rem/1.45 var(--font-ui);color:var(--ink-soft)}
+.db-help kbd{font:700 .78rem var(--font-ui);padding:1px 6px;border:1px solid var(--line);border-radius:3px}
+.db-status{margin:0 0 10px;font:.86rem var(--font-ui);color:var(--ink-soft);min-height:1.2em}
+.db-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 22px}
+.db-results:empty{display:none}
+.db-group{min-width:0}
+.db-group-h{display:flex;align-items:baseline;gap:8px;margin:0 0 6px;font:700 .74rem var(--font-ui);letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold-ink)}
+.db-group-n{font-weight:600;letter-spacing:.04em;color:var(--ink-soft)}
+.db-group-note{margin:0;font:.86rem var(--font-ui);color:var(--ink-soft)}
+.db-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.db-list li{border-bottom:1px solid var(--line)}
+.db-hit{display:flex;justify-content:space-between;align-items:center;gap:6px 14px;min-height:44px;padding:6px 8px;
+  color:var(--ink);text-decoration:none}
+.db-hit:hover,.db-hit:focus-visible{background:rgba(201,162,39,.16);color:var(--ink)}
+.db-hit:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.db-hit-title{font-weight:600;overflow-wrap:anywhere}
+.db-hit-sub{font:.8rem var(--font-ui);color:var(--ink-soft);text-align:right}
+.db-group-foot{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0}
+.db-group-foot .ghost-btn{min-height:40px;display:inline-flex;align-items:center}
+.db-sections{margin:26px 0 0}
+.db-sections h2{margin:0 0 10px;font:700 .74rem var(--font-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.db-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+@media (max-width:900px){
+  .db-results{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:720px){
+  .db-hit{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px}
+  .db-hit-sub{text-align:left}
+  .db-tiles{grid-template-columns:minmax(0,1fr);gap:8px}
+  .db-tiles .route-tile{flex-direction:row;align-items:center;gap:12px;padding:10px 12px}
+  .db-tiles .route-tile img{width:44px;height:44px}
+  /* five chips: two rows rather than the phones' sideways strip, so none is hidden */
+  .db-kinds.chips[role="group"]{flex-wrap:wrap;overflow-x:visible}
+}
+/* the keyboard tip is for keyboards */
+@media (hover:none){.db-help{display:none}}
+/* Full bar just above the fold (1161-1400px): six menus, Search and Sign in. Tighter letters and padding, the
+   "/" hint dropped and, up to 1280px, a smaller logo keep it on one line. */
+@media (min-width:1161px) and (max-width:1400px){
+  .site-nav .navlink{padding:10px 6px;letter-spacing:.07em}
+  .site-nav .nav-cta{margin-left:2px}
+  .nav-search{padding:10px 4px}
+  .nav-search::after{display:none}
+}
+@media (min-width:1161px) and (max-width:1280px){
+  .site-nav .brand-logo{height:34px}
+  .site-nav .navlink{padding:10px 5px;letter-spacing:.05em}
+}

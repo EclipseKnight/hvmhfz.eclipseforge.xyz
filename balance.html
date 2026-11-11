@@ -20,7 +20,7 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=13" />
+    <link rel="stylesheet" href="/css/styles.css?v=14" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
@@ -66,13 +66,20 @@
           <div class="nav-group">
             <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-database">Database</button>
             <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/database.html">Search everything</a>
               <a class="navlink" href="/monsters.html">Monsters</a>
               <a class="navlink" href="/quests.html">Quests</a>
-              <a class="navlink" href="/catalog.html">Catalog</a>
+              <a class="navlink" href="/items.html">Items</a>
               <a class="navlink" href="/weapons.html">Weapons</a>
               <a class="navlink" href="/balance.html" aria-current="page">Balance changes</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-tools">Tools</button>
+            <div class="nav-menu" id="nav-tools">
               <a class="navlink" href="/set-builder.html">Set builder</a>
               <a class="navlink" href="/quest-editor.html">Quest builder</a>
+              <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
             </div>
           </div>
           <div class="nav-group">
@@ -113,7 +120,7 @@
 
     <main id="content" class="wrap page wide balance-page">
       <!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
-      <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Database</li><li aria-current="page">Balance changes</li></ol></nav>
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/database.html">Database</a></li><li aria-current="page">Balance changes</li></ol></nav>
       <!-- /site-shell:crumbs -->
       <header class="page-head">
         <h1>Balance changes</h1>
@@ -157,9 +164,10 @@
           </div>
           <div class="foot-col">
             <h2 class="foot-head">Explore</h2>
+            <a href="/database.html">Database</a>
             <a href="/monsters.html">Monsters</a>
             <a href="/quests.html">Quests</a>
-            <a href="/catalog.html">Catalog</a>
+            <a href="/items.html">Items</a>
             <a href="/leaderboards.html">Leaderboards</a>
             <a href="/road-vote.html">Hunting Road</a>
           </div>
@@ -186,6 +194,6 @@
     <script src="/js/move-names.js?v=1"></script>
     <script src="/js/balance-fields.js?v=1"></script>
     <script src="/js/balance-public.js?v=4"></script>
-    <script src="/js/search.js" defer></script>
+    <script src="/js/search.js?v=2" defer></script>
   </body>
 </html>

@@ -18,9 +18,10 @@
  * 3. Usage tab (js/weapons-usage.js): HvWeaponsUsage.view() on a stubbed /api/public/weapons/usage answer
  *    (order, shares, band filter, played before tracking began).
  * 4. Page (when Playwright is found): loads, lists Great Swords, an icon on every row of every type's first page
- *    (the same src the catalog page gives for the same ids, with the API answer stubbed), in the detail and the
- *    calculator line, picks one ("Find in the catalog" opens the catalog's section searched by the API's
- *    byte-swapped hex id; on the phone the list's first column is sticky, on the desktop static), the calculator shows the
+ *    (the same src the Items page gives for the same ids, with the API answer stubbed), in the detail and the
+ *    calculator line, picks one ("Find in Items" opens the Items page's section searched by the API's
+ *    byte-swapped hex id; the menu's Damage calculator link, /weapons.html#calc, lands on the calculator after the
+ *    list has filled in; on the phone the list's first column is sticky, on the desktop static), the calculator shows the
  *    numbers HvWeaponsCalc gives for it, the move names (name, badge, id, tap detail, legend; "unnamed" for an
  *    unknown move) in the move list and the calculator, a gunner type hides the form, no script errors, and no sideways
  *    scrolling at 375 px. The Usage tab with the stubbed answer (routed in Chromium): 14 bars, 7/30 days,
@@ -298,7 +299,7 @@ async function sameAsCatalog(browser, base) {
       body: JSON.stringify({ total: items.length, page: 0, size: 50, items: items }) });
   });
   const catalogSrc = {};
-  await pg.goto(base + "/catalog.html", { waitUntil: "load" });
+  await pg.goto(base + "/items.html", { waitUntil: "load" });
   for (const slot of ["melee", "ranged"]) {
     await pg.click("#catalog-slots .chip[data-slot='" + slot + "']");
     await pg.waitForFunction(function (s) { return document.querySelector("#catalog-slots .chip[data-slot='" + s + "']").getAttribute("aria-pressed") === "true" && document.querySelectorAll("#catalog-body tr td.mono").length > 0; }, slot);
@@ -332,6 +333,12 @@ async function page() {
       await pg.route(/api\.hvmhfz\.eclipseforge\.xyz/, function (r) { r.abort(); });
       // A saved cookie choice, so the banner does not cover the screenshots.
       await pg.addInitScript(function () { localStorage.setItem("hvmhfz.consent", JSON.stringify({ choice: "declined", at: new Date().toISOString() })); });
+      // The menu's Damage calculator link: the calculator's heading ends up at the top of the screen.
+      await pg.goto(base + "/weapons.html#calc", { waitUntil: "load" });
+      await pg.waitForSelector("#wp-body .wp-pick");
+      await pg.waitForTimeout(1700);
+      const calcTop = await pg.$eval("#calc", function (n) { return n.getBoundingClientRect().top; });
+      check(calcTop >= -2 && calcTop < 160, view.name + ": /weapons.html#calc lands on the calculator (its top at " + Math.round(calcTop) + " px)");
       await pg.goto(base + "/weapons.html?type=great-sword&w=1", { waitUntil: "load" });
       await pg.waitForSelector("#wp-body .wp-pick");
       const rows = await pg.$$eval("#wp-body tr", function (t) { return t.length; });
@@ -404,9 +411,10 @@ async function page() {
       check(!q2.has("sort") && !q2.has("page") && !q2.has("rarity") && !q2.has("w"), view.name + ": switching type drops sort, page, filters and the weapon: " + pg.url());
       await pg.goto(base + "/weapons.html?type=great-sword&w=1", { waitUntil: "load" });
       await pg.waitForSelector("#wp-body .wp-pick");
-      // Back to the catalog: game id 1 is "0100" there (byte-swapped hex).
-      check(await pg.isVisible("#wp-to-catalog") && await pg.getAttribute("#wp-to-catalog", "href") === "/catalog.html?slot=melee&q=0100",
-        view.name + ": Find in the catalog links " + await pg.getAttribute("#wp-to-catalog", "href"));
+      // Back to the Items page: game id 1 is "0100" there (byte-swapped hex).
+      check(await pg.isVisible("#wp-to-catalog") && await pg.getAttribute("#wp-to-catalog", "href") === "/items.html?slot=melee&q=0100"
+        && await pg.textContent("#wp-to-catalog") === "Find in Items",
+        view.name + ": Find in Items links " + await pg.getAttribute("#wp-to-catalog", "href"));
       const pos = await pg.$eval("#wp-body tr td", function (td) { return getComputedStyle(td).position; });
       check(pos === (view.name === "phone" ? "sticky" : "static"), view.name + ": the list's first column is " + pos);
       // Open in calculator: scrolls to #calc and focuses its first field; a style chip sets the calculator's style.
