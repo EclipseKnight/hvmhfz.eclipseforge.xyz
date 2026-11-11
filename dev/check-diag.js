@@ -3,11 +3,14 @@
 
    Account page, Account tab, "Diagnostics" box (js/account-diag.js):
    - the help (game folder, hvdiag.txt, hvcrash files, 256 KB) is there; Upload is off until a file is picked;
-   - an upload POSTs the file as it is to /api/account/diagnostics?name=<file name> with the token, and shows the
-     outcome, one line per finding and the facts; API text goes in as text (no HTML);
-   - a refusal (400) shows the API's message; a file over 256 KB is refused before any request; an API without the
-     endpoint (404) says so;
-   - nothing in the box passes 375px.
+   - the picker takes several files; 3 picked files are listed as queued, then uploaded one after another (never two
+     at once): each POSTs the file as it is to /api/account/diagnostics?name=<file name> with the token and shows
+     its own outcome, one line per finding and the facts; API text goes in as text (no HTML);
+   - 2 files dropped on the box (hover state while dragging) are queued and uploaded the same way;
+   - a wrong file type or a file over 256 KB is listed as an error and never sent; an API refusal (400) on one file
+     shows the API's message and the other files still go; more than 10 files at once are capped with a message;
+     an API without the endpoint (404) says so and keeps the files queued;
+   - nothing in the box passes 375px. Screenshots go to /srv/devbot/.bot-logs/diag-upload-multi/.
    Admin page:
    - the Diagnostics tab lists the reports (GET /api/admin/diagnostics), View shows the answer and the whole file,
      the account filter and Older send user= and before=;
@@ -97,9 +100,16 @@ async function open(browser, base, page_, state, width) {
     if (p === "/api/users/self") return reply(200, { id: 1, username: "boss", roles: ["ROLE_ADMIN"], characters: [] });
     if (p === "/api/account/diagnostics") {
       state.posts.push({ url: req.url(), body: req.postData(), auth: req.headers()["authorization"], type: req.headers()["content-type"] });
-      if (state.mode === "missing") return reply(404, { message: "Not found" });
-      if (state.mode === "refuse") return reply(400, { message: "That is not a diagnostics file: upload hvdiag.txt." });
-      return reply(200, ANSWER);
+      state.parallel = (state.parallel || 0) + 1;
+      state.maxParallel = Math.max(state.maxParallel || 0, state.parallel);
+      const name = decodeURIComponent(url.search.split("name=")[1] || "");
+      const answer = () => {
+        state.parallel--;
+        if (state.mode === "missing") return reply(404, { message: "Not found" });
+        if (state.mode === "refuse" && (!state.failName || state.failName === name)) return reply(400, { message: "That is not a diagnostics file: upload hvdiag.txt." });
+        return reply(200, Object.assign({}, ANSWER, { fileName: name }));
+      };
+      return state.delay ? setTimeout(answer, state.delay) : answer();
     }
     if (p === "/api/admin/diagnostics") { state.gets.push(url.search); return reply(200, LIST); }
     if (p === "/api/admin/diagnostics/7") return reply(200, { id: 7, userId: 3, username: "player", createdAt: LIST[1].createdAt,
@@ -114,56 +124,156 @@ async function open(browser, base, page_, state, width) {
   return { page, errors };
 }
 
+const SHOTS = "/srv/devbot/.bot-logs/diag-upload-multi";
+const txt = (name, body) => ({ name, mimeType: "text/plain", buffer: Buffer.from(body === undefined ? REPORT : body) });
+const rowsOf = (page) => page.$$eval("#diag-list > li", (n) => n.map((x) => ({
+  name: x.querySelector(".diag-file-name").textContent, status: x.querySelector(".diag-file-status").textContent,
+  text: x.textContent })));
+const waitIdle = (page) => page.waitForFunction(() => !document.getElementById("diag-upload").disabled
+  || document.getElementById("diag-upload").textContent === "Upload");
+// Drop files from "Explorer": a real DragEvent with a DataTransfer holding the files.
+async function dropFiles(page, files) {
+  const dt = await page.evaluateHandle((fs) => {
+    const d = new DataTransfer();
+    fs.forEach((f) => d.items.add(new File([f.body], f.name, { type: f.type })));
+    return d;
+  }, files.map((f) => ({ name: f.name, body: f.body === undefined ? REPORT : f.body, type: f.type === undefined ? "text/plain" : f.type })));
+  await page.dispatchEvent("#diag-drop", "dragenter", { dataTransfer: dt });
+  await page.dispatchEvent("#diag-drop", "dragover", { dataTransfer: dt });
+  return dt;
+}
+const dropIt = (page, dt) => page.dispatchEvent("#diag-drop", "drop", { dataTransfer: dt });
+
 async function accountChecks(browser, base) {
+  fs.mkdirSync(SHOTS, { recursive: true });
   const state = { mode: "ok", posts: [], gets: [] };
   const { page, errors } = await open(browser, base, "/account.html#account", state);
   await page.waitForSelector("#diag-panel", { state: "attached" });
   const help = await page.textContent("#diag-panel");
   check("help names the files and the folder", help.includes("hvdiag.txt") && help.includes("hvcrash-")
-    && help.includes("Open file location") && help.includes("256"), help.slice(0, 200));
+    && help.includes("Open file location") && help.includes("256") && help.includes("10 at a time"), help.slice(0, 200));
+  check("picker takes several files", await page.$eval("#diag-file", (n) => n.multiple));
   check("Upload off until a file is picked", await page.isDisabled("#diag-upload"));
-  await page.setInputFiles("#diag-file", { name: "hvcrash-20261110-010203.txt", mimeType: "text/plain", buffer: Buffer.from(REPORT) });
+  check("list hidden until a file is picked", await page.isHidden("#diag-list"));
+
+  // 1. pick 3 files: listed as queued, uploaded one after another, each with its answer
+  await page.setInputFiles("#diag-file", [txt("hvcrash-20261110-010203.txt"), txt("hvcrash-20261110-020304.txt"), txt("hvdiag.txt", "HVDIAG 1\r\n")]);
   check("Upload on after a pick", !(await page.isDisabled("#diag-upload")));
+  let rows = await rowsOf(page);
+  check("3 files queued", rows.length === 3 && rows.every((r) => r.status === "Queued"), JSON.stringify(rows.map((r) => r.status)));
+  check("no request before Upload", state.posts.length === 0);
+  await page.screenshot({ path: SHOTS + "/1-three-queued.png", fullPage: false });
+  state.delay = 150;
   await page.click("#diag-upload");
-  await page.waitForSelector("#diag-answer:not([hidden])");
-  const post = state.posts[0] || {};
-  check("one POST", state.posts.length === 1, String(state.posts.length));
-  check("POST name", (post.url || "").endsWith("/api/account/diagnostics?name=hvcrash-20261110-010203.txt"), post.url);
+  await page.waitForFunction(() => document.querySelectorAll("#diag-list .diag-file-status")[0].textContent === "Uploading…");
+  check("Upload off while uploading", await page.isDisabled("#diag-upload"));
+  await page.waitForFunction(() => Array.from(document.querySelectorAll("#diag-list .diag-file-status")).every((n) => n.textContent === "Answer"));
+  state.delay = 0;
+  check("3 POSTs, in order", state.posts.length === 3 && state.posts.map((p) => decodeURIComponent(p.url.split("name=")[1])).join(",")
+    === "hvcrash-20261110-010203.txt,hvcrash-20261110-020304.txt,hvdiag.txt", state.posts.map((p) => p.url).join(" "));
+  check("never two at once", state.maxParallel === 1, String(state.maxParallel));
+  const post = state.posts[0];
   check("POST body is the file", post.body === REPORT, JSON.stringify(post.body));
   check("POST token", post.auth === "Bearer " + TOKEN);
   check("POST text/plain", (post.type || "").startsWith("text/plain"), post.type);
-  check("outcome shown", (await page.textContent("#diag-outcome")) === ANSWER.outcome);
-  const items = await page.$$eval("#diag-findings li", (n) => n.map((x) => x.textContent));
+  check("3 answers shown", (await page.$$("#diag-list .diag-outcome")).length === 3);
+  check("outcome shown", (await page.textContent("#diag-list .diag-outcome")) === ANSWER.outcome);
+  const items = await page.$$eval("#diag-list > li:first-child .diag-findings li", (n) => n.map((x) => x.textContent));
   check("findings shown", items.length === 3 && items[1].includes("v1.19"), JSON.stringify(items));
-  check("API text is text", items[2].includes("<b>stage") && (await page.$$("#diag-findings b")).length === 0);
-  const facts = await page.$$eval("#diag-facts dt", (n) => n.map((x) => x.textContent));
+  check("API text is text", items[2].includes("<b>stage") && (await page.$$("#diag-list b")).length === 0);
+  const facts = await page.$$eval("#diag-list > li:first-child dt", (n) => n.map((x) => x.textContent));
   check("facts shown", facts.join(",") === "Edition,Patch,Scene", facts.join(","));
+  check("Upload off when nothing is queued", await page.isDisabled("#diag-upload"));
+  await page.screenshot({ path: SHOTS + "/2-three-answers.png", fullPage: true });
 
+  // 2. drop 2 files: hover state, then queued; the finished list starts fresh
+  state.posts.length = 0;
+  let dt = await dropFiles(page, [{ name: "hvcrash-a.txt" }, { name: "hvcrash-b.txt" }]);
+  check("hover state while dragging", await page.$eval("#diag-drop", (n) => n.classList.contains("is-over")));
+  await page.screenshot({ path: SHOTS + "/3-drag-hover.png", fullPage: false });
+  await dropIt(page, dt);
+  check("hover state ends on drop", !(await page.$eval("#diag-drop", (n) => n.classList.contains("is-over"))));
+  rows = await rowsOf(page);
+  check("2 dropped files queued", rows.length === 2 && rows[0].name === "hvcrash-a.txt" && rows.every((r) => r.status === "Queued"), JSON.stringify(rows));
+  check("no request on drop", state.posts.length === 0);
+  await page.click("#diag-upload");
+  await waitIdle(page);
+  await page.waitForFunction(() => Array.from(document.querySelectorAll("#diag-list .diag-file-status")).every((n) => n.textContent === "Answer"));
+  check("2 dropped files uploaded", state.posts.length === 2 && state.posts[1].body === REPORT);
+
+  // 3. drag leaving the box ends the hover state
+  dt = await dropFiles(page, [{ name: "x.txt" }]);
+  await page.dispatchEvent("#diag-drop", "dragleave", { dataTransfer: dt });
+  check("hover state ends on leave", !(await page.$eval("#diag-drop", (n) => n.classList.contains("is-over"))));
+  // a non-file drag (text) is not taken
+  const textDrag = await page.evaluateHandle(() => { const d = new DataTransfer(); d.setData("text/plain", "hi"); return d; });
+  await page.dispatchEvent("#diag-drop", "dragenter", { dataTransfer: textDrag });
+  check("text drag has no hover", !(await page.$eval("#diag-drop", (n) => n.classList.contains("is-over"))));
+
+  // 4. one bad type, one too large, one good: only the good one is sent
+  state.posts.length = 0;
+  await page.setInputFiles("#diag-file", [txt("hvcrash-ok.txt"),
+    { name: "screenshot.png", mimeType: "image/png", buffer: Buffer.from("PNG") },
+    { name: "big.txt", mimeType: "text/plain", buffer: Buffer.alloc(256 * 1024 + 1, 65) }]);
+  rows = await rowsOf(page);
+  check("bad type listed as error", rows.length === 3 && rows[1].status === "Error" && rows[1].text.includes("Not a text file"), JSON.stringify(rows[1]));
+  check("too large listed as error", rows[2].status === "Error" && rows[2].text.includes("Too large"), JSON.stringify(rows[2]));
+  check("errors refused before any request", state.posts.length === 0);
+  await page.click("#diag-upload");
+  await page.waitForFunction(() => document.querySelector("#diag-list .diag-file-status").textContent === "Answer");
+  check("only the good file sent", state.posts.length === 1 && state.posts[0].url.endsWith("name=hvcrash-ok.txt"), state.posts.map((p) => p.url).join(" "));
+  await page.screenshot({ path: SHOTS + "/4-bad-type-and-size.png", fullPage: true });
+
+  // 5. an API error on the 2nd of 3: that one is an error, the 3rd still goes
+  state.posts.length = 0;
+  state.failName = "hvcrash-two.txt";
   state.mode = "refuse";
-  await page.setInputFiles("#diag-file", { name: "notes.txt", mimeType: "text/plain", buffer: Buffer.from("hello") });
+  await page.setInputFiles("#diag-file", [txt("hvcrash-one.txt"), txt("hvcrash-two.txt", "notes"), txt("hvcrash-three.txt")]);
   await page.click("#diag-upload");
-  await page.waitForSelector("#diag-alert:not([hidden])");
-  check("refusal message", (await page.textContent("#diag-alert")).includes("not a diagnostics file"));
-  check("answer hidden after a refusal", await page.isHidden("#diag-answer"));
+  await page.waitForFunction(() => Array.from(document.querySelectorAll("#diag-list .diag-file-status")).every((n) => n.textContent !== "Queued" && n.textContent !== "Uploading…"));
+  rows = await rowsOf(page);
+  check("API error on one file", rows.map((r) => r.status).join(",") === "Answer,Error,Answer", rows.map((r) => r.status).join(","));
+  check("refusal message", rows[1].text.includes("not a diagnostics file"), rows[1].text);
+  check("all 3 were sent", state.posts.length === 3);
+  await page.screenshot({ path: SHOTS + "/5-api-error.png", fullPage: true });
 
-  const before = state.posts.length;
-  await page.setInputFiles("#diag-file", { name: "big.txt", mimeType: "text/plain", buffer: Buffer.alloc(256 * 1024 + 1, 65) });
-  await page.click("#diag-upload");
-  await page.waitForSelector("#diag-alert:not([hidden])");
-  check("too large refused here", (await page.textContent("#diag-alert")).includes("too large") && state.posts.length === before);
+  // 6. more than 10 files: the first 10 are added, with a clear message
+  state.posts.length = 0;
+  state.failName = null;
+  state.mode = "ok";
+  const many = [];
+  for (let i = 1; i <= 12; i++) many.push(txt("hvcrash-" + i + ".txt", REPORT + i));
+  await page.setInputFiles("#diag-file", many);
+  rows = await rowsOf(page);
+  const alert = await page.textContent("#diag-alert");
+  check("cap of 10 files", rows.length === 10, String(rows.length));
+  check("cap message", (await page.isVisible("#diag-alert")) && alert.includes("Only 10 files at a time") && alert.includes("2 left out"), alert);
+  await page.screenshot({ path: SHOTS + "/6-cap.png", fullPage: true });
+  // Clear list empties it
+  await page.click("#diag-clear");
+  check("Clear list empties the list", (await page.$$("#diag-list > li")).length === 0 && await page.isDisabled("#diag-upload") && await page.isHidden("#diag-alert"));
 
+  // 7. the API without the endpoint (404) says so and keeps the file queued; a dropped group over 10 is capped too
   state.mode = "missing";
-  await page.setInputFiles("#diag-file", { name: "hvdiag.txt", mimeType: "text/plain", buffer: Buffer.from("HVDIAG 1\r\n") });
+  await page.setInputFiles("#diag-file", txt("hvdiag.txt", "HVDIAG 1\r\n"));
   await page.click("#diag-upload");
   await page.waitForFunction(() => document.getElementById("diag-alert").textContent.includes("not available"));
+  rows = await rowsOf(page);
+  check("404 keeps the file queued", rows.length === 1 && rows[0].status === "Queued", JSON.stringify(rows));
+  check("Upload on again after a stop", !(await page.isDisabled("#diag-upload")));
+  state.mode = "ok";
+  const dt12 = await dropFiles(page, many.map((f) => ({ name: f.name, body: REPORT + "d" })));
+  await dropIt(page, dt12);
+  rows = await rowsOf(page);
+  check("drop adds to the queue up to 10", rows.length === 10 && (await page.textContent("#diag-alert")).includes("left out"), String(rows.length));
   check("no errors on the account page", errors.length === 0, errors.join(" | "));
   await page.close();
 
   const narrow = await open(browser, base, "/account.html#account", { mode: "ok", posts: [], gets: [] }, 375);
   await narrow.page.waitForSelector("#diag-panel", { state: "attached" });
-  await narrow.page.setInputFiles("#diag-file", { name: "hvcrash-1.txt", mimeType: "text/plain", buffer: Buffer.from(REPORT) });
+  await narrow.page.setInputFiles("#diag-file", [txt("hvcrash-1-with-a-rather-long-name-20261110-010203.txt"), txt("hvcrash-2.txt")]);
   await narrow.page.click("#diag-upload");
-  await narrow.page.waitForSelector("#diag-answer:not([hidden])");
+  await narrow.page.waitForFunction(() => Array.from(document.querySelectorAll("#diag-list .diag-file-status")).every((n) => n.textContent === "Answer"));
   // The page's own header passes 375px by 17px with this fake API on the branch without this box too, so measure the
   // box, as dev/check-account-qol.js does for its card: nothing in it may pass the window.
   const wide = await narrow.page.evaluate(() => {
@@ -172,6 +282,7 @@ async function accountChecks(browser, base) {
       .filter((n) => n.getBoundingClientRect().right > w + 0.5).map((n) => n.tagName + "#" + n.id);
   });
   check("the box stays inside 375px", wide.length === 0, wide.join(","));
+  await narrow.page.locator("#diag-panel").screenshot({ path: SHOTS + "/7-phone-375.png" });
   await narrow.page.close();
 }
 

@@ -1,24 +1,31 @@
-/* "Diagnostics" box on the Account tab. The player picks the game's hvdiag.txt or an hvcrash-<time>.txt (client
-   patch v1.21 and newer write them in the game folder) and uploads it as it is:
-   POST /api/account/diagnostics?name=<file name>, body = the file (text/plain), signed in. The API answers
-   {id, fileName, kind: "diag"|"crash", outcome, findings: [{kind, text}], facts: [[label, value]]} and keeps the file
-   for staff; 400/413/429 come with {message}. Files over 256 KB are refused here first. All API text goes in with
-   textContent. */
+/* "Diagnostics" box on the Account tab. The player picks (or drags in) the game's hvdiag.txt and any
+   hvcrash-<time>.txt files (client patch v1.21 and newer write them in the game folder) and uploads them as they
+   are, one after another: for each file POST /api/account/diagnostics?name=<file name>, body = the file
+   (text/plain), signed in. The API takes one file per request, so the loop is here. It answers
+   {id, fileName, kind: "diag"|"crash", outcome, findings: [{kind, text}], facts: [[label, value]]} and keeps the
+   file for staff; 400/413/429 come with {message}. Up to 10 files per pick or drop, text files only (.txt or
+   text/plain), each up to 256 KB: other files are listed as errors here without a request. Each file shows its
+   status (queued, uploading, answer, error) and its own answer. A 401, 404, 429 or a lost connection stops the
+   run and leaves the files not yet sent queued. All API text goes in with textContent. */
 (function () {
   "use strict";
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
   var MAX_BYTES = 256 * 1024;
+  var MAX_FILES = 10;
 
   var panel = document.getElementById("diag-panel");
   if (!panel) return;
   var input = document.getElementById("diag-file");
+  var drop = document.getElementById("diag-drop");
   var button = document.getElementById("diag-upload");
+  var clearButton = document.getElementById("diag-clear");
   var alertNode = document.getElementById("diag-alert");
-  var answer = document.getElementById("diag-answer");
-  var outcome = document.getElementById("diag-outcome");
-  var findings = document.getElementById("diag-findings");
-  var facts = document.getElementById("diag-facts");
+  var list = document.getElementById("diag-list");
+
+  // items: [{file, status: "queued"|"uploading"|"done"|"error", message, answer, node}]
+  var items = [];
+  var busy = false;
 
   function token() {
     try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; }
@@ -31,64 +38,195 @@
     return node;
   }
 
+  function say(text) {
+    alertNode.textContent = text || "";
+    alertNode.hidden = !text;
+  }
+
+  function queued() {
+    return items.filter(function (it) { return it.status === "queued"; });
+  }
+
+  function refreshControls() {
+    button.disabled = busy || !queued().length;
+    button.textContent = busy ? "Uploading…" : "Upload";
+    clearButton.hidden = !items.length;
+    clearButton.disabled = busy;
+    list.hidden = !items.length;
+  }
+
+  var LABEL = { queued: "Queued", uploading: "Uploading…", done: "Answer", error: "Error" };
+
+  function render(it) {
+    var li = it.node;
+    clear(li);
+    li.className = "diag-file diag-" + it.status;
+    var head = el("div", "diag-file-head");
+    head.appendChild(el("span", "diag-file-name", it.file.name));
+    head.appendChild(el("span", "diag-file-status", LABEL[it.status]));
+    li.appendChild(head);
+    if (it.status === "error") li.appendChild(el("p", "diag-file-msg", it.message));
+    if (it.status === "done") {
+      var a = it.answer;
+      li.appendChild(el("p", "diag-outcome", a.outcome || ""));
+      if ((a.findings || []).length) {
+        var ul = el("ul", "diag-findings");
+        a.findings.forEach(function (f) { ul.appendChild(el("li", null, f.text)); });
+        li.appendChild(ul);
+      }
+      if ((a.facts || []).length) {
+        li.appendChild(el("p", "subhead", "From the report"));
+        var dl = el("dl", "detail-list diag-facts");
+        a.facts.forEach(function (pair) {
+          dl.appendChild(el("dt", null, pair[0]));
+          dl.appendChild(el("dd", null, pair[1]));
+        });
+        li.appendChild(dl);
+      }
+    }
+  }
+
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
 
-  function fail(text) {
-    alertNode.textContent = text;
-    alertNode.hidden = false;
-    answer.hidden = true;
+  function setStatus(it, status, message) {
+    it.status = status;
+    it.message = message || "";
+    render(it);
+    refreshControls();
   }
 
-  function show(a) {
-    alertNode.hidden = true;
-    outcome.textContent = a.outcome || "";
-    clear(findings);
-    (a.findings || []).forEach(function (f) {
-      findings.appendChild(el("li", null, f.text));
-    });
-    findings.hidden = !findings.firstChild;
-    clear(facts);
-    (a.facts || []).forEach(function (pair) {
-      facts.appendChild(el("dt", null, pair[0]));
-      facts.appendChild(el("dd", null, pair[1]));
-    });
-    answer.hidden = false;
+  function isText(file) {
+    return /\.txt$/i.test(file.name) || file.type === "text/plain";
   }
 
-  input.addEventListener("change", function () {
-    button.disabled = !(input.files && input.files.length);
-    alertNode.hidden = true;
-  });
+  function same(a, b) {
+    return a.name === b.name && a.size === b.size && a.lastModified === b.lastModified;
+  }
 
-  button.addEventListener("click", function () {
-    var file = input.files && input.files[0];
-    if (!file) return;
-    if (file.size > MAX_BYTES) {
-      fail("That file is too large (over 256 KB): upload hvdiag.txt or an hvcrash file from the game folder.");
-      return;
+  // Add the picked or dropped files to the list: at most MAX_FILES per pick or drop.
+  function add(fileList) {
+    var files = Array.prototype.slice.call(fileList || []);
+    if (!files.length) return;
+    if (busy) { say("Wait until the upload is finished before adding more files."); return; }
+    // A finished list starts fresh with the next pick.
+    if (!queued().length) { items = []; clear(list); }
+    var notes = [];
+    if (files.length > MAX_FILES) {
+      notes.push("Only " + MAX_FILES + " files at a time: the first " + MAX_FILES + " were added, " +
+        (files.length - MAX_FILES) + " left out. Upload these, then add the rest.");
+      files = files.slice(0, MAX_FILES);
     }
-    if (!token()) {
-      fail("Sign in again to upload.");
-      return;
-    }
-    button.disabled = true;
-    button.textContent = "Uploading…";
-    fetch(API + "/api/account/diagnostics?name=" + encodeURIComponent(file.name), {
+    var room = MAX_FILES - queued().length;
+    var skipped = 0;
+    var dupes = 0;
+    files.forEach(function (file) {
+      if (items.some(function (it) { return same(it.file, file); })) { dupes++; return; }
+      var it = { file: file, status: "queued", message: "", answer: null, node: el("li") };
+      if (!isText(file)) {
+        it.status = "error";
+        it.message = "Not a text file: upload hvdiag.txt or an hvcrash file from the game folder.";
+      } else if (file.size > MAX_BYTES) {
+        it.status = "error";
+        it.message = "Too large (over 256 KB): upload hvdiag.txt or an hvcrash file from the game folder.";
+      } else if (room <= 0) {
+        skipped++;
+        return;
+      } else {
+        room--;
+      }
+      items.push(it);
+      render(it);
+      list.appendChild(it.node);
+    });
+    if (skipped) notes.push(skipped + " file" + (skipped === 1 ? "" : "s") + " left out: at most " + MAX_FILES + " files wait to be uploaded.");
+    if (dupes) notes.push(dupes + " file" + (dupes === 1 ? " was" : "s were") + " already in the list.");
+    say(notes.join(" "));
+    refreshControls();
+  }
+
+  function upload(it) {
+    setStatus(it, "uploading");
+    return fetch(API + "/api/account/diagnostics?name=" + encodeURIComponent(it.file.name), {
       method: "POST",
       headers: { "Authorization": "Bearer " + token(), "Content-Type": "text/plain" },
-      body: file
+      body: it.file
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (body) { return { status: r.status, body: body }; });
     }).then(function (res) {
-      if (res.status === 200) show(res.body);
-      else if (res.status === 401) fail("Your session has ended: sign in again to upload.");
-      else if (res.status === 404) fail("Diagnostics uploads are not available yet. Send the file on Discord instead.");
-      else fail(res.body.message || "The upload failed (" + res.status + "). Try again later.");
+      if (res.status === 200) { it.answer = res.body; setStatus(it, "done"); return true; }
+      if (res.status === 401) { setStatus(it, "queued"); say("Your session has ended: sign in again to upload. The files not sent are still listed."); return false; }
+      if (res.status === 404) { setStatus(it, "queued"); say("Diagnostics uploads are not available yet. Send the files on Discord instead."); return false; }
+      if (res.status === 429) { setStatus(it, "queued"); say(res.body.message || "Too many uploads: wait a little, then press Upload again."); return false; }
+      setStatus(it, "error", res.body.message || "The upload failed (" + res.status + "). Try again later.");
+      return true;
     }).catch(function () {
-      fail("Could not reach the server. Try again later.");
-    }).then(function () {
-      button.textContent = "Upload";
-      button.disabled = !(input.files && input.files.length);
+      setStatus(it, "queued");
+      say("Could not reach the server. Try again later: the files not sent are still listed.");
+      return false;
     });
+  }
+
+  function run() {
+    var next = queued()[0];
+    if (!next) { busy = false; refreshControls(); return; }
+    upload(next).then(function (goOn) {
+      if (goOn) run();
+      else { busy = false; refreshControls(); }
+    });
+  }
+
+  input.addEventListener("change", function () {
+    add(input.files);
+    input.value = "";   // the same file can be picked again later
+  });
+
+  button.addEventListener("click", function () {
+    if (busy || !queued().length) return;
+    if (!token()) { say("Sign in again to upload."); return; }
+    say("");
+    busy = true;
+    refreshControls();
+    run();
+  });
+
+  clearButton.addEventListener("click", function () {
+    if (busy) return;
+    items = [];
+    clear(list);
+    say("");
+    refreshControls();
+  });
+
+  // Drag and drop from the file manager onto the box; the file button above stays as the click and keyboard way.
+  var depth = 0;
+  function hasFiles(e) {
+    var t = e.dataTransfer && e.dataTransfer.types;
+    return !!t && Array.prototype.indexOf.call(t, "Files") !== -1;
+  }
+  drop.addEventListener("dragenter", function (e) {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    depth++;
+    drop.classList.add("is-over");
+  });
+  drop.addEventListener("dragover", function (e) {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+  });
+  drop.addEventListener("dragleave", function () {
+    depth = Math.max(0, depth - 1);
+    if (!depth) drop.classList.remove("is-over");
+  });
+  drop.addEventListener("drop", function (e) {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    depth = 0;
+    drop.classList.remove("is-over");
+    add(e.dataTransfer.files);
+  });
+  // A file dropped beside the box would make the browser open it and leave the page: ignore it.
+  ["dragover", "drop"].forEach(function (name) {
+    window.addEventListener(name, function (e) { if (hasFiles(e)) e.preventDefault(); });
   });
 })();

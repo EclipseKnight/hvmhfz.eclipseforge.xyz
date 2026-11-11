@@ -21,7 +21,7 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=10" />
+    <link rel="stylesheet" href="/css/styles.css?v=11" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/tablesort.js" defer></script>
     <script src="/js/background.js" defer></script>
@@ -528,17 +528,19 @@
           <ol class="diag-steps">
             <li>Open the game folder: right-click the game's shortcut, <em>Open file location</em> (the folder with <code>mhf.exe</code>, <code>mhfo-hd.dll</code> and <code>hvmods.dll</code>).</li>
             <li>Find <code>hvdiag.txt</code>, and any <code>hvcrash-&hellip;.txt</code> file. Crash files are named by the time of the crash (UTC): take the newest.</li>
-            <li>Upload one file at a time below (text files only, up to 256&nbsp;KB).</li>
+            <li>Pick the files below, or drag them from the folder onto the box: up to 10 at a time, text files only, each up to 256&nbsp;KB. They are uploaded one after another.</li>
           </ol>
           <p class="note-text">No <code>hvdiag.txt</code>? The game ran without <code>hvmods.dll</code> (an old patch, or the file is missing): run the launcher to update. The files hold your character's name and id and your PC's Windows version, language and memory; no passwords, no Windows user name or folder path.</p>
-          <div class="field"><label for="diag-file">Report file</label><input id="diag-file" type="file" accept=".txt,text/plain" /></div>
-          <button type="button" class="btn btn-primary btn-small" id="diag-upload" disabled>Upload</button>
+          <div class="field diag-drop" id="diag-drop">
+            <label for="diag-file">Report files</label>
+            <input id="diag-file" type="file" accept=".txt,text/plain" multiple />
+            <p class="note-text diag-drop-hint" id="diag-drop-hint">Drop your files here, or use the button to choose them.</p>
+          </div>
           <p class="form-alert" id="diag-alert" role="alert" hidden></p>
-          <div class="diag-answer" id="diag-answer" aria-live="polite" hidden>
-            <p class="diag-outcome" id="diag-outcome"></p>
-            <ul class="diag-findings" id="diag-findings"></ul>
-            <p class="subhead">From the report</p>
-            <dl class="detail-list" id="diag-facts"></dl>
+          <ul class="diag-files" id="diag-list" aria-live="polite" hidden></ul>
+          <div class="diag-actions">
+            <button type="button" class="btn btn-primary btn-small" id="diag-upload" disabled>Upload</button>
+            <button type="button" class="ghost-btn small" id="diag-clear" hidden>Clear list</button>
           </div>
         </section>
 
@@ -605,7 +607,7 @@
     <script src="/js/road-preference.js?v=1"></script>
     <script src="/js/account-qol.js?v=5"></script>
     <script src="/js/account-patch-channel.js?v=5"></script>
-    <script src="/js/account-diag.js?v=1"></script>
+    <script src="/js/account-diag.js?v=2"></script>
     <script src="/js/quest-submissions.js?v=2"></script>
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>
