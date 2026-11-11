@@ -27,7 +27,7 @@ for _card in sorted((ROOT / "assets" / "og").glob("guide-frontier-*.png")):
             "guide-frontier-activities", "guide-frontier-equipment", "guide-frontier-reference"):
         PAGE_CARD[_card.stem + ".html"] = _card.stem
 
-BASE = "https://hvmhfz.eclipseforge.xyz"
+BASE = "https://frontier.hunsterverse.net"
 seen_desc = {}
 
 for name, slug in PAGE_CARD.items():

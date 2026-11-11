@@ -194,7 +194,7 @@ def check_sitemap():
     problems = []
     sitemap = ROOT / "sitemap.xml"
     for number, line in enumerate(sitemap.read_text(encoding="utf-8").splitlines(), 1):
-        for loc in re.findall(r"<loc>https://hvmhfz\.eclipseforge\.xyz(/[^<]*)</loc>", line):
+        for loc in re.findall(r"<loc>https://frontier\.hunsterverse\.net(/[^<]*)</loc>", line):
             hit = resolve(sitemap, loc)
             if not hit[0].is_file():
                 problems.append(f"sitemap.xml:{number}: {loc} -> missing file")

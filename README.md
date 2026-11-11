@@ -225,7 +225,7 @@ dev/check-share.js    checks the share pages' redirects and the Copy link button
 js/share.js           "Copy link" in the breadcrumbs of the monster, quest, item, weapon, changelog, hunter, guild and leaderboard pages: copies the share page's address (the API's share link for hunters, guilds and boards)
 s/                    share pages (generated, noindex): s/monster/, s/quest/, s/item/, s/weapon/, s/changelog/
 dev/make-hv-summary.py writes the comparison tables of guide-frontier-hunsterverse.html from the guide's notes (--check: one note per section, page up to date)
-CNAME                 hvmhfz.eclipseforge.xyz
+CNAME                 frontier.hunsterverse.net
 ```
 
 Static site, no build step. Push to `main` and GitHub Pages serves it.

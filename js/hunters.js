@@ -458,7 +458,7 @@
 
     ctx.fillStyle = f.label;
     ctx.font = "500 17px " + sans;
-    ctx.fillText("hvmhfz.eclipseforge.xyz/hunters.html?id=" + hunter.id, 60, H - 62);
+    ctx.fillText("frontier.hunsterverse.net/hunters.html?id=" + hunter.id, 60, H - 62);
     ctx.textAlign = "right";
     ctx.fillText("Monster Hunter Frontier Z · Hunsterverse", W - 60, H - 62);
     ctx.textAlign = "left";

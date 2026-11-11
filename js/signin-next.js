@@ -5,7 +5,7 @@
 (function (root) {
   "use strict";
 
-  var SITE = "https://hvmhfz.eclipseforge.xyz";
+  var SITE = "https://frontier.hunsterverse.net";
   var FALLBACK = "/account.html";
 
   /* What the home page says above the form, by the page that sent the visitor (a page and tab first, e.g.

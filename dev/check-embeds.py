@@ -4,7 +4,7 @@
 They read the page's HTML without running scripts, so only the static tags count. For every page in the
 site root and every share page under s/ (dev/make-share-pages.py):
   - a <title>, a meta description, og:title, og:description (each under 300 characters), og:site_name;
-  - og:url: the page's own address on https://hvmhfz.eclipseforge.xyz;
+  - og:url: the page's own address on https://frontier.hunsterverse.net;
   - og:image: a picture on the site that exists, 1200x630 for twitter:card summary_large_image (and
     og:image:width/height saying so), square and at least 144 px for summary;
   - twitter:card and theme-color set;
@@ -36,7 +36,7 @@ from html.parser import HTMLParser
 from PIL import Image
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-BASE = "https://hvmhfz.eclipseforge.xyz"
+BASE = "https://frontier.hunsterverse.net"
 GENERIC = "/assets/og/hunsterverse.png"
 # Pages nobody shares for their content (sign-in, admin, error, legal): the brand card is right for them.
 GENERIC_OK = {"404.html", "account.html", "admin.html", "privacy.html", "bot-terms.html"}

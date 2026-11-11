@@ -149,7 +149,7 @@ def build(slug, title, subtitle, icon=None, extra=None, out=None, small=False):
         draw.text((80, 300 + title_font.size + 26 + sub_font.size + 18), extra, font=extra_font, fill=SOFT)
 
     small = ImageFont.truetype(SANS, 24)
-    draw.text((80, H - 96), "hvmhfz.eclipseforge.xyz", font=small, fill=SOFT)
+    draw.text((80, H - 96), "frontier.hunsterverse.net", font=small, fill=SOFT)
     # right-aligned and measured, so the label never crosses the frame
     label = "MONSTER HUNTER FRONTIER Z"
     label_font = ImageFont.truetype(SANS, 22)

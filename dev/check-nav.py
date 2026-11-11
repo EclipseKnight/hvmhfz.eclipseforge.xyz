@@ -30,7 +30,7 @@ from html.parser import HTMLParser
 from urllib.parse import urlsplit
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SITE = "https://hvmhfz.eclipseforge.xyz"
+SITE = "https://frontier.hunsterverse.net"
 MAX_CLICKS = 2
 TITLE = re.compile(r"^\S(.*\S)? · Hunsterverse$")
 # Pages that are meant to be out of the way.

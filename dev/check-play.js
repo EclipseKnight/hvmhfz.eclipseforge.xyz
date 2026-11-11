@@ -220,7 +220,7 @@ async function main() {
   for (const [guide, info] of Object.entries(moved)) {
     const raw = fs.readFileSync(path.join(root, guide), "utf8");
     check(guide + " is noindex", /<meta name="robots" content="noindex"/.test(raw));
-    check(guide + " canonical is Play", raw.includes('<link rel="canonical" href="https://hvmhfz.eclipseforge.xyz/play.html" />'));
+    check(guide + " canonical is Play", raw.includes('<link rel="canonical" href="https://frontier.hunsterverse.net/play.html" />'));
     check(guide + " meta refresh 0 to the card", raw.includes('<meta http-equiv="refresh" content="0; url=/play.html#' + info.card + '"'));
     // the shared bar and footer (dev/shell/) grow with the site, so only the rest of the page is measured
     const own = raw.replace(/<header class="site-nav">[\s\S]*?<\/header>|<footer class="site-foot"[\s\S]*?<\/footer>/g, "");

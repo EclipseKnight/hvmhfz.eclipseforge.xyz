@@ -37,7 +37,7 @@ make_og = import_module("make-og")
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "s"
-BASE = "https://hvmhfz.eclipseforge.xyz"
+BASE = "https://frontier.hunsterverse.net"
 KINDS = ("monster", "quest", "item", "weapon", "changelog")
 
 
