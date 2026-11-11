@@ -171,12 +171,22 @@
         : cls === 97 ? "Melee weapons" : cls === 98 ? "Ranged weapons" : String(row.weaponClass);
       var key = cls + ":" + styleRank + ":" + (cls === 99 ? row.weaponClass : "") + ":" + style;
       if (!groups[key]) {
-        groups[key] = { key: key, cls: cls, rank: styleRank, type: typeName, style: style, icon: ICONS[cls] || null, rows: [] };
+        var ft = cls >= 0 && cls < CLASS_NAMES.length ? typeByClass(data, cls) : null;
+        groups[key] = { key: key, cls: cls, rank: styleRank, type: typeName, style: style, icon: ICONS[cls] || null,
+          slug: ft ? ft.slug : null, rows: [] };
         list.push(groups[key]);
       }
       groups[key].rows.push(row);
     });
-    return list.sort(function (a, b) { return a.cls - b.cls || a.rank - b.rank; });
+    list.sort(function (a, b) { return a.cls - b.cls || a.rank - b.rank; });
+    // Anchors: the first group of a weapon type is #<slug> (#great-sword), the others #<slug>-<style>.
+    var seen = {};
+    list.forEach(function (g) {
+      if (!g.slug) return;
+      g.id = seen[g.slug] ? g.slug + "-" + g.style.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : g.slug;
+      seen[g.slug] = true;
+    });
+    return list;
   }
 
   /** Text split into plain parts and http(s) links: [{text}, {href, text}]; Discord links read "Discord thread". */
@@ -307,17 +317,25 @@
     }
     var frag = document.createDocumentFragment();
     var move = findMove(data, row.weaponClass, row.entry, row.recordId), MN = window.HvMoveNames;
+    var type = isNone(row.weaponClass) ? null : typeByClass(data, classIndex(row.weaponClass));
     if (move && MN) {   // name, how sure, the id small, what it is on a tap (js/move-names.js, as the weapons page)
-      var type = typeByClass(data, classIndex(row.weaponClass));
-      return MN.fill(el("span", "bal-move"), move, moveRef(row), { slug: type && type.slug });
+      frag.appendChild(MN.fill(el("span", "bal-move"), move, moveRef(row), { slug: type && type.slug }));
+    } else {
+      frag.appendChild(document.createTextNode(text));
+      if (!isNone(row.recordId) && text !== moveRef(row)) frag.appendChild(el("span", "bal-ref", moveRef(row)));
     }
-    frag.appendChild(document.createTextNode(text));
-    if (!isNone(row.recordId) && text !== moveRef(row)) frag.appendChild(el("span", "bal-ref", moveRef(row)));
+    if (type) { // the move's weapon type in the weapons database
+      var open = el("a", "bal-open", "Weapons page");
+      open.href = "/weapons.html?type=" + encodeURIComponent(type.slug);
+      open.title = "Open " + type.name + " in the weapon database";
+      frag.appendChild(open);
+    }
     return frag;
   }
 
   function groupNode(g) {
     var sec = el("section", "bal-group");
+    if (g.id) sec.id = g.id;
     var h = el("h3", "bal-group-h");
     if (g.icon) {
       var img = el("img", "weapon-icon");
@@ -327,7 +345,13 @@
       img.width = img.height = 18;
       h.appendChild(img);
     }
-    h.appendChild(document.createTextNode(g.type));
+    if (g.slug) { // the type's name opens its weapons page
+      var tl = el("a", null, g.type);
+      tl.href = "/weapons.html?type=" + encodeURIComponent(g.slug);
+      h.appendChild(tl);
+    } else {
+      h.appendChild(document.createTextNode(g.type));
+    }
     h.appendChild(el("span", "bal-style", g.style));
     sec.appendChild(h);
     var wrap = el("div", "table-wrap");

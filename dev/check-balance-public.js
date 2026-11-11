@@ -163,7 +163,15 @@ async function rows(browser, base) {
     check(width + ": a move's detail: what it is, input, linked source", await page.$eval(".bal-what details.mv-more", (d) => /Sweeping slash/.test(d.textContent)
       && /Input: Horizontal Slash button/.test(d.querySelector("summary").textContent) && !!d.querySelector('a[href^="https://wycademy"]')));
     check(width + ": the badges' legend", (await page.$$("#bal-legend .mv-conf")).length === 4);
-    check(width + ": weapon links to the weapons page", (await page.$eval(".bal-what > a", (a) => a.getAttribute("href"))) === "/weapons.html?type=great-sword&w=1");
+    check(width + ": weapon links to the weapons page", (await page.$eval(".bal-what > a:not(.bal-open)", (a) => a.getAttribute("href"))) === "/weapons.html?type=great-sword&w=1");
+    const ids = await page.$$eval(".bal-group", (gs) => gs.map((g) => g.id));
+    check(width + ": group ids (first group of a type is its slug)", ids.join(",") === ",great-sword,great-sword-extreme,great-sword-weapon-stats,hammer,long-sword", ids.join(","));
+    const typeLinks = await page.$$eval(".bal-group-h a", (as) => as.map((a) => a.textContent + "=" + a.getAttribute("href")));
+    check(width + ": group headings link to the weapons page", typeLinks.join(",") === "Great Sword=/weapons.html?type=great-sword,Great Sword=/weapons.html?type=great-sword,"
+      + "Great Sword=/weapons.html?type=great-sword,Hammer=/weapons.html?type=hammer,Long Sword=/weapons.html?type=long-sword", typeLinks.join(","));
+    const moveLinks = await page.$$eval(".bal-what a.bal-open", (as) => as.map((a) => a.getAttribute("href")));
+    check(width + ": move rows link to their type", moveLinks.length === 4 && moveLinks.every((h) => /^\/weapons\.html\?type=(great-sword|hammer|long-sword)$/.test(h)), moveLinks.join(","));
+    check(width + ": the 'every move' row has no type link", (await page.$$eval(".bal-group:first-child .bal-open", (x) => x.length)) === 0);
     check(width + ": markup stays text", (await page.$$("#bal-groups b")).length === 0);
     const link = await page.$eval(".bal-reason a", (a) => ({ href: a.href, rel: a.rel, target: a.target }));
     check(width + ": reason link", link.href === THREAD && link.rel.indexOf("noopener") !== -1 && link.target === "_blank", JSON.stringify(link));

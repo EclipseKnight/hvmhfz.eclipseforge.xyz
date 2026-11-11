@@ -224,22 +224,28 @@
     hpPanel.hidden = true;
     main.appendChild(hpPanel);
     fetch("/data/quests/rewards/" + Math.floor(quest.id / 1000) + ".json")
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .catch(function () { return null; })
+      .then(function (r) {
+        if (r.status === 404) return null; // no file for this quest range: no reward data
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .catch(function () { return "failed"; })
       .then(function (shard) {
         return fetch("/data/monsters/game/index.json").then(function (r) { return r.ok ? r.json() : {}; })
           .catch(function () { return {}; }).then(function (gindex) { showRewards(shard, gindex); });
       });
 
     function showRewards(shard, gindex) {
-      var q = shard && shard.quests && shard.quests[String(quest.id)];
+      var failed = shard === "failed";
+      var q = !failed && shard && shard.quests && shard.quests[String(quest.id)];
       rewards.textContent = "";
       var head = el("div", "panel-head");
       head.appendChild(el("h2", null, "Rewards"));
       head.appendChild(el("span", "panel-note", "from the game's data"));
       rewards.appendChild(head);
       if (!q || !q.rewards.length) {
-        rewards.appendChild(el("p", "note-text", q ? "This quest file has no reward groups." : "No reward data for this quest."));
+        rewards.appendChild(el("p", "note-text", failed ? "The rewards could not be loaded. Reload the page to try again."
+          : q ? "This quest file has no reward groups." : "No reward data for this quest."));
       } else {
         q.rewards.forEach(function (g) {
           var box = el("div", "quest-reward-group");
@@ -290,8 +296,16 @@
 
     var back = el("p", "note-text");
     var link = el("a", null, "Back to the quest catalog");
-    link.href = "/quests.html";
+    // From a filtered catalog the way back keeps its search, filters and page (the list writes them to its address).
+    var list = "/quests.html";
+    try {
+      var from = new URL(document.referrer);
+      if (from.origin === location.origin && from.pathname === "/quests.html") list += from.search;
+    } catch (error) { /* no referrer */ }
+    link.href = list;
     back.appendChild(link);
+    var crumb = document.querySelector('nav.breadcrumbs a[href="/quests.html"]');
+    if (crumb) crumb.href = list;
     main.appendChild(back);
   }
 

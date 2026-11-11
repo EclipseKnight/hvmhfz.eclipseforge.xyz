@@ -6,7 +6,8 @@
  * Monster hitzone presets come from the game's data (data/monsters/game/<id>.json), per rank, state and part;
  * monsters without it use their page's community table (data/monsters/<slug>.json).
  *
- * URL: ?type=<slug>&w=<weapon id> opens a type and a weapon.
+ * URL: ?type=<slug>&w=<weapon id> opens a type and a weapon; q, elem, rarity, sort, dir=desc and page (from 2) keep
+ * the list's search, filters, sort and page (defaults left out; syncUrl).
  */
 (function () {
   "use strict";
@@ -207,6 +208,38 @@
     $("wp-page-note").textContent = "Page " + (state.page + 1) + " of " + pages;
     $("wp-prev").disabled = state.page === 0;
     $("wp-next").disabled = state.page >= pages - 1;
+    syncUrl();
+  }
+
+  /* The URL mirrors the open type, weapon and the list's search, filters, sort and page (defaults left out),
+     so a reload or a shared link shows the same list. Replaces the entry; no history is added. */
+  function syncUrl() {
+    if (!doc) return;
+    var u = new URL(location.href), sp = u.searchParams;
+    function put(name, value) { if (value) sp.set(name, value); else sp.delete(name); }
+    sp.set("type", doc.type);
+    put("w", state.weapon ? String(field(state.weapon, "id")) : "");
+    put("q", $("wp-search").value.trim());
+    put("elem", $("wp-elem").value);
+    put("rarity", $("wp-rarity").value);
+    put("sort", state.sort !== "id" || state.dir < 0 ? state.sort : "");
+    put("dir", state.dir < 0 ? "desc" : "");
+    put("page", state.page > 0 ? String(state.page + 1) : "");
+    history.replaceState(null, "", u);
+  }
+
+  /* The list state from the URL (after the type's filters are filled): only values that exist are taken. */
+  function applyUrlState(params) {
+    var q = (params.get("q") || "").trim();
+    if (q) $("wp-search").value = q;
+    ["elem", "rarity"].forEach(function (name) {
+      var sel = $("wp-" + name), v = params.get(name);
+      if (v && Array.prototype.some.call(sel.options, function (o) { return o.value === v; })) sel.value = v;
+    });
+    var col = columns().filter(function (c) { return c.key === params.get("sort") && !c.nosort; })[0];
+    if (col) state.sort = col.key;
+    if (params.get("dir") === "desc") state.dir = -1;
+    if (/^[1-9]\d{0,4}$/.test(params.get("page") || "")) state.page = Number(params.get("page")) - 1;
   }
 
   function fillFilters() {
@@ -271,6 +304,7 @@
       b.setAttribute("aria-pressed", String(state.style === s[0]));
       b.addEventListener("click", function () {
         state.style = s[0];
+        if (s[0] && isMelee()) { $("c-style").value = s[0]; renderCalc(); } // the calculator follows the style picked
         renderStyleChips();
         renderMoves();
       });
@@ -289,6 +323,7 @@
   function renderDetail() {
     var w = state.weapon;
     $("wp-detail").hidden = false;
+    $("wp-to-calc").hidden = !isMelee();
     $("wp-detail-type").textContent = doc.name;
     var head = $("wp-detail-h");
     head.textContent = w ? field(w, "name") : doc.name + " moves";
@@ -552,11 +587,7 @@
       var small = weaponIcon(w, "gi-small");
       if (small) note.insertBefore(small, note.firstChild);
     }
-    var u = new URL(location.href);
-    u.searchParams.set("type", doc.type);
-    if (w) u.searchParams.set("w", field(w, "id")); else u.searchParams.delete("w");
-    history.replaceState(null, "", u);
-    renderList();
+    renderList(); // also writes ?type=&w= and the list state to the URL (syncUrl)
     renderDetail();
     applyPart();
     if (scroll) $("wp-detail").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -574,7 +605,7 @@
     });
   }
 
-  function openType(slug, weaponId) {
+  function openType(slug, weaponId, urlState) {
     var t = index.types.filter(function (x) { return x.slug === slug; })[0] || index.types[0];
     var p = cache[t.slug] ? Promise.resolve(cache[t.slug]) : getJson("/data/weapons/" + t.slug + ".json");
     return p.then(function (d) {
@@ -587,6 +618,7 @@
       fillFilters();
       $("wp-count").textContent = d.weapons.length.toLocaleString("en-US") + " weapons · " + d.moves.length + " attack records";
       setupTypeCalc();
+      if (urlState) applyUrlState(urlState);
       var w = null;
       if (weaponId !== null && weaponId !== undefined) {
         w = d.weapons.filter(function (x) { return String(field(x, "id")) === String(weaponId); })[0] || null;
@@ -606,7 +638,7 @@
       // The icon data first, so the first list already has its icons; without it the placeholder shows.
       return getJson("/data/equipment-icons.json").catch(function () { return null; }).then(function (data) {
         iconData = data;
-        return openType(params.get("type") || "great-sword", params.get("w"));
+        return openType(params.get("type") || "great-sword", params.get("w"), params);
       });
     }).catch(function (e) {
       $("wp-body").innerHTML = "";
@@ -627,6 +659,10 @@
       if (e.target.id === "c-part" || e.target.id === "c-type") applyPart(); else renderCalc();
     });
     $("c-monster").addEventListener("change", pickMonster);
+    $("wp-to-calc").addEventListener("click", function () {
+      $("calc").scrollIntoView({ behavior: "smooth", block: "start" });
+      $("c-attack").focus({ preventScroll: true });
+    });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

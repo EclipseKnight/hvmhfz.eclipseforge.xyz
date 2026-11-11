@@ -6,7 +6,7 @@
   var TOKEN_KEY = "hvmhfz.token";
   var state = { q: "", category: "", size: "", sort: "name" };
   var all = [];
-  var kills = {};      // server wide, by the game's monster id
+  var kills = null;    // server wide (null until the API has answered: no count is better than a false 0), by the game's monster id
   var mine = null;     // the signed-in player's hunts over all characters, by the game's monster id
 
   /* Small monsters (the guide's "Other" group, apart from King Shakalaka) are not in the server's kill
@@ -18,7 +18,7 @@
   /* The server counts hunts by the game's monster id; a guide entry lists its ids (index.json "ids").
      Lolo and Ray Gougarf share one id (they are hunted together), so both show the pair's count. */
   function count(counts, monster) {
-    return (monster.ids || []).reduce(function (sum, id) { return sum + (counts[id] || 0); }, 0);
+    return (monster.ids || []).reduce(function (sum, id) { return sum + ((counts || {})[id] || 0); }, 0);
   }
 
   function signedIn() {
@@ -84,11 +84,11 @@
     var stat = el("div", "tile-stat");
     function line(value, label, extra) {
       var row = el("span", "tile-stat-line" + (extra ? " " + extra : ""));
-      row.appendChild(el("span", "tile-stat-value", num(value || 0)));
+      row.appendChild(el("span", "tile-stat-value", value === null ? "-" : num(value || 0)));
       row.appendChild(el("span", "tile-stat-label", label));
       stat.appendChild(row);
     }
-    line(count(kills, monster), "on the server");
+    line(kills ? count(kills, monster) : null, "on the server");
     if (mine) line(count(mine, monster), "by you", "tile-stat-mine");
     tile.appendChild(stat);
     return tile;
@@ -103,7 +103,7 @@
       if (state.size === "large" && isSmall(m)) return false;
       if (state.size === "small" && !isSmall(m)) return false;
       if (!q) return true;
-      return (m.name + " " + m.category).toLowerCase().indexOf(q) !== -1;
+      return (m.name + " " + m.category + " " + (m.serverNames || []).join(" ")).toLowerCase().indexOf(q) !== -1;
     });
     rows.sort(function (a, b) {
       if (state.sort === "kills" || (state.sort === "mine" && mine)) {
@@ -117,6 +117,21 @@
     rows.forEach(function (m) { box.appendChild(card(m)); });
     document.getElementById("monster-results").textContent = rows.length + (rows.length === 1 ? " monster" : " monsters");
     if (!rows.length) box.appendChild(el("p", "empty-state", "No monster matches that search."));
+    sync();
+  }
+
+  /* The guide's state lives in the address (?q=&species=&size=&sort=, defaults left out), so a reload or a
+     shared link opens the same list. replaceState: no history entry per keystroke. */
+  function sync() {
+    var params = new URLSearchParams();
+    if (state.q.trim()) params.set("q", state.q.trim());
+    if (state.category) params.set("species", state.category);
+    if (state.size) params.set("size", state.size);
+    if (state.sort !== "name") params.set("sort", state.sort);
+    var text = params.toString();
+    if (window.history && history.replaceState) {
+      history.replaceState(null, "", location.pathname + (text ? "?" + text : "") + location.hash);
+    }
   }
 
   function fillCategories() {
@@ -137,6 +152,11 @@
         all = data;
         document.getElementById("monster-total").textContent = data.length;
         fillCategories();
+        var species = new URLSearchParams(window.location.search).get("species") || "";
+        if (all.some(function (m) { return m.category === species; })) {
+          state.category = species;
+          document.getElementById("monster-category").value = species;
+        }
         render();
       })
       .catch(function () {
@@ -146,6 +166,7 @@
     fetch(API + "/api/public/monsters?limit=300")
       .then(function (r) { return r.json(); })
       .then(function (list) {
+        kills = kills || {};
         list.forEach(function (m) { kills[m.id] = (kills[m.id] || 0) + Number(m.kills || 0); });
         render();
       })
@@ -180,7 +201,14 @@
         document.getElementById("monster-sort-mine").hidden = false;
         render();
       })
-      .catch(function () { /* optional */ });
+      .catch(function () { dropMineSort(); /* optional */ });
+  }
+
+  function dropMineSort() {
+    if (state.sort !== "mine") return;
+    state.sort = "name";
+    document.getElementById("monster-sort").value = "name";
+    render();
   }
 
   document.getElementById("monster-search").addEventListener("input", function (event) {
@@ -201,8 +229,18 @@
   });
 
   // ?q= opens the guide searching (links from pages that know only a name, e.g. a monster without a page).
-  state.q = (new URLSearchParams(window.location.search).get("q") || "").trim();
+  var params = new URLSearchParams(window.location.search);
+  state.q = (params.get("q") || "").trim();
   document.getElementById("monster-search").value = state.q;
+  if (params.get("size") === "large" || params.get("size") === "small") {
+    state.size = params.get("size");
+    document.getElementById("monster-size").value = state.size;
+  }
+  // "Your hunts" only exists signed in (and once the hunts have loaded: dropMineSort if they do not).
+  if (params.get("sort") === "kills" || (params.get("sort") === "mine" && signedIn())) {
+    state.sort = params.get("sort");
+    document.getElementById("monster-sort").value = state.sort;
+  }
 
   load();
 })();

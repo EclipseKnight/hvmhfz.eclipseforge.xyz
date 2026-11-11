@@ -374,6 +374,14 @@
     panel.appendChild(body);
     host.appendChild(panel);
     draw();
+    // Back/forward or a pasted #drops link switches the tab (a tab click only replaces the hash: no event).
+    window.addEventListener("hashchange", function () {
+      var tab = (location.hash || "").replace("#", "");
+      if (!TABS.some(function (t) { return t[0] === tab; }) || tab === state.tab) return;
+      state.tab = tab;
+      draw();
+      if (panel.scrollIntoView) panel.scrollIntoView({ block: "start" });
+    });
     return panel;
   }
 

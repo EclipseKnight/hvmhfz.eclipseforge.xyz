@@ -351,6 +351,42 @@ async function page() {
       await pg.click("#wp-head th:nth-child(4) .wp-sort");
       const top = await pg.$$eval("#wp-body tr", function (t) { return t.slice(0, 3).map(function (r) { return Number(r.children[3].textContent); }); });
       check(top[0] >= top[1] && top[1] >= top[2], view.name + ": sort by true attack, highest first: " + top);
+      // The list's state is in the address next to type and w (defaults left out), and a reload restores it.
+      const q1 = new URL(pg.url()).searchParams;
+      check(q1.get("type") === "great-sword" && q1.get("w") === "1" && q1.get("sort") === "attack" && q1.get("dir") === "desc" && !q1.has("q") && !q1.has("page"),
+        view.name + ": URL after sorting by true attack: " + pg.url());
+      await pg.click("#wp-next");
+      await pg.selectOption("#wp-rarity", { index: 2 });
+      const rar = await pg.inputValue("#wp-rarity");
+      check(new URL(pg.url()).searchParams.get("rarity") === rar && !new URL(pg.url()).searchParams.has("page"), view.name + ": a filter writes rarity and goes back to page 1: " + pg.url());
+      await pg.selectOption("#wp-rarity", "");
+      await pg.click("#wp-next");
+      await pg.fill("#wp-search", "sword");
+      check(new URL(pg.url()).searchParams.get("q") === "sword", view.name + ": search writes q: " + pg.url());
+      await pg.fill("#wp-search", "");
+      await pg.click("#wp-next");
+      check(new URL(pg.url()).searchParams.get("page") === "2", view.name + ": page 2 writes page=2: " + pg.url());
+      const keep = pg.url();
+      await pg.reload({ waitUntil: "load" });
+      await pg.waitForSelector("#wp-body .wp-pick");
+      check(/^Page 2 of/.test(await pg.textContent("#wp-page-note")) && await pg.getAttribute("#wp-head th:nth-child(4)", "aria-sort") === "descending"
+        && await pg.textContent("#wp-detail-h") === "Iron Sword" && pg.url() === keep, view.name + ": reload restores page 2, the sort and the weapon: " + pg.url());
+      await pg.goto(base + "/weapons.html?type=great-sword&q=iron&rarity=1&sort=nonsense&page=999&elem=zzz", { waitUntil: "load" });
+      await pg.waitForSelector("#wp-body tr");
+      check(await pg.inputValue("#wp-search") === "iron" && await pg.inputValue("#wp-elem") === "" && /^Page 1 of/.test(await pg.textContent("#wp-page-note")) || await pg.isHidden("#wp-pager"),
+        view.name + ": bad sort, element and page values are ignored");
+      await pg.click("#wp-types .chip:nth-child(3)");
+      await pg.waitForFunction(function () { return /type=hammer/.test(location.search); });
+      const q2 = new URL(pg.url()).searchParams;
+      check(!q2.has("sort") && !q2.has("page") && !q2.has("rarity") && !q2.has("w"), view.name + ": switching type drops sort, page, filters and the weapon: " + pg.url());
+      await pg.goto(base + "/weapons.html?type=great-sword&w=1", { waitUntil: "load" });
+      await pg.waitForSelector("#wp-body .wp-pick");
+      // Open in calculator: scrolls to #calc and focuses its first field; a style chip sets the calculator's style.
+      await pg.click("#wp-styles .chip:nth-child(3)");
+      check(await pg.inputValue("#c-style") === "H", view.name + ": the Heaven chip sets the calculator's style");
+      await pg.click("#wp-to-calc");
+      await pg.waitForFunction(function () { var r = document.getElementById("calc").getBoundingClientRect(); return r.top < innerHeight * 0.5 && r.bottom > 0; });
+      check(await pg.evaluate(function () { return document.activeElement && document.activeElement.id; }) === "c-attack", view.name + ": Open in calculator focuses the first field");
       // Red sharpness: no crits.
       await pg.selectOption("#c-sharp", "0");
       await pg.fill("#c-affinity", "100");
@@ -406,6 +442,21 @@ async function page() {
       check(await pg.isHidden("#calc-form"), view.name + ": gunner type hides the calculator form");
       check(errors.length === 0, view.name + ": no script errors: " + errors.join(" | "));
       await ctx.close();
+
+      // Tap targets: on a touch screen the sort buttons and weapon names are at least 40 px tall; on a mouse the table stays compact.
+      {
+        const touch = view.name === "phone";
+        const tctx = await browser.newContext({ viewport: { width: view.width, height: view.height }, hasTouch: touch, isMobile: touch });
+        await tctx.addInitScript(function () { localStorage.setItem("hvmhfz.consent", JSON.stringify({ choice: "declined", at: new Date().toISOString() })); });
+        const tp = await tctx.newPage();
+        await tp.route(/api\.hvmhfz\.eclipseforge\.xyz/, function (r) { r.abort(); });
+        await tp.goto(base + "/weapons.html?type=great-sword", { waitUntil: "load" });
+        await tp.waitForSelector("#wp-body .wp-pick");
+        const hs = await tp.$$eval(".wp-sort, .wp-pick", function (bs) { return bs.slice(0, 12).map(function (b) { return b.getBoundingClientRect().height; }); });
+        if (touch) check(hs.every(function (h) { return h >= 39.5; }), view.name + ": touch tap targets >= 40 px: " + hs.map(Math.round));
+        else check(hs.every(function (h) { return h < 36; }), view.name + ": the desktop table stays compact: " + hs.map(Math.round));
+        await tctx.close();
+      }
 
       if (view.name === "desktop") await sameAsCatalog(browser, base);
 

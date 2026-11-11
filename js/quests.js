@@ -51,7 +51,24 @@
     select.options[0].textContent = label;
   }
 
-  function apply() {
+  /* The list's state lives in the address (?q=&rank=&type=&area=&monster=&page=, defaults left out) so a
+     reload, a shared link or the quest page's back link opens the same list. replaceState: no history
+     entry per keystroke. */
+  var FIELDS = ["rank", "type", "area", "monster"];
+
+  function sync() {
+    var params = new URLSearchParams();
+    if (state.q) params.set("q", state.q);
+    FIELDS.forEach(function (field) { if (state[field]) params.set(field, state[field]); });
+    if (state.page > 0) params.set("page", String(state.page + 1));
+    var text = params.toString();
+    if (window.history && history.replaceState) {
+      history.replaceState(null, "", location.pathname + (text ? "?" + text : "") + location.hash);
+    }
+    document.getElementById("quest-clear").hidden = !(state.q || FIELDS.some(function (field) { return state[field]; }));
+  }
+
+  function apply(keepPage) {
     var q = state.q.toLowerCase();
     state.shown = state.all.filter(function (quest) {
       if (state.rank && quest.rank !== state.rank) return false;
@@ -62,7 +79,8 @@
       return (quest.name + " " + quest.nameJp + " " + quest.category + " " + (quest.objective || "") +
         " " + quest.monsters.join(" ") + " " + quest.id).toLowerCase().indexOf(q) >= 0;
     });
-    state.page = 0;
+    var pages = Math.max(1, Math.ceil(state.shown.length / PAGE));
+    state.page = keepPage ? Math.min(Math.max(0, keepPage), pages - 1) : 0;
     render();
   }
 
@@ -122,6 +140,22 @@
       " · " + state.shown.length.toLocaleString() + " quests";
     document.getElementById("quest-prev").disabled = state.page === 0;
     document.getElementById("quest-next").disabled = state.page >= pages - 1;
+    sync();
+  }
+
+  function clearFilters() {
+    state.q = "";
+    FIELDS.forEach(function (field) {
+      state[field] = "";
+      document.getElementById("quest-" + field).value = "";
+    });
+    document.getElementById("quest-search").value = "";
+    apply();
+  }
+
+  function toTable() {
+    var top = document.querySelector(".quest-table");
+    if (top && top.scrollIntoView) top.scrollIntoView({ block: "start" });
   }
 
   function fail(message) {
@@ -162,9 +196,16 @@
       fill(document.getElementById("quest-monster"), Object.keys(monsters).sort(), "Any monster");
 
       // ?q= opens the catalog searching (the quest page's category link), ?monster= filtered to one
-      // monster (a monster page's quest link).
+      // monster (a monster page's quest link); rank, type, area and page come back from the list's own address.
       var params = new URLSearchParams(window.location.search);
       state.q = (params.get("q") || "").trim();
+      [["rank", ranks], ["type", types], ["area", areas]].forEach(function (f) {
+        var value = params.get(f[0]) || "";
+        if (f[1][value]) {
+          state[f[0]] = value;
+          document.getElementById("quest-" + f[0]).value = value;
+        }
+      });
       document.getElementById("quest-search").value = state.q;
       var monster = params.get("monster") || "";
       if (monsters[monster]) {
@@ -175,7 +216,7 @@
         document.getElementById("quest-search").value = monster;
       }
       wire();
-      apply();
+      apply(parseInt(params.get("page"), 10) - 1 || 0);
     }).catch(function (error) {
       fail("The quest catalog could not load (" + error.message + ").");
     });
@@ -195,11 +236,12 @@
       });
     });
     document.getElementById("quest-prev").addEventListener("click", function () {
-      if (state.page > 0) { state.page--; render(); }
+      if (state.page > 0) { state.page--; render(); toTable(); }
     });
     document.getElementById("quest-next").addEventListener("click", function () {
-      if ((state.page + 1) * PAGE < state.shown.length) { state.page++; render(); }
+      if ((state.page + 1) * PAGE < state.shown.length) { state.page++; render(); toTable(); }
     });
+    document.getElementById("quest-clear").addEventListener("click", clearFilters);
   }
 
   if (document.getElementById("quest-body")) start();

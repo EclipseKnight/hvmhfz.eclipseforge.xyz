@@ -43,6 +43,34 @@
     return Icons.equipmentLook(data, piece).key;
   }
 
+  /* The section, search and page live in the URL (defaults left out): ?slot=melee&q=sword&page=3. */
+  var SLOTS = ["items", "melee", "ranged", "heads", "chests", "arms", "waists", "legs"];
+
+  function saveState() {
+    var u = new URL(window.location.href);
+    if (state.slot !== "items") u.searchParams.set("slot", state.slot); else u.searchParams.delete("slot");
+    if (state.q) u.searchParams.set("q", state.q); else u.searchParams.delete("q");
+    if (state.page > 0) u.searchParams.set("page", String(state.page + 1)); else u.searchParams.delete("page");
+    history.replaceState(null, "", u);
+  }
+
+  /* A failed load: one row in the table with a Try again button, not only a note in the toolbar. */
+  function showError() {
+    var body = document.getElementById("catalog-body");
+    clear(body);
+    var tr = el("tr", "no-results");
+    var td = el("td", "empty-cell", "The catalog could not be loaded. ");
+    td.colSpan = 4;
+    var retry = el("button", "ghost-btn small", "Try again");
+    retry.type = "button";
+    retry.addEventListener("click", function () { load(); });
+    td.appendChild(retry);
+    tr.appendChild(td);
+    body.appendChild(tr);
+    document.getElementById("catalog-results").textContent = "";
+    document.getElementById("catalog-pager").hidden = true;
+  }
+
   function url() {
     if (state.slot === "items") {
       return "/api/public/catalog/items?q=" + encodeURIComponent(state.q) + "&page=" + state.page + "&size=" + state.size;
@@ -54,6 +82,9 @@
   function render(data) {
     var body = document.getElementById("catalog-body");
     clear(body);
+    // A page past the end (an old link, a shorter list) goes to the last page.
+    var lastPage = Math.max(0, Math.ceil(data.total / data.size) - 1);
+    if (state.page > lastPage && data.items.length === 0 && data.total > 0) { state.page = lastPage; saveState(); load(); return; }
 
     if (!data.items.length) {
       var empty = el("tr");
@@ -144,18 +175,14 @@
 
   function load() {
     if (state.slot === "items") {
-      loadItems().then(renderItems).catch(function () {
-        document.getElementById("catalog-results").textContent = "Could not load the catalog";
-      });
+      loadItems().then(renderItems).catch(showError);
       return;
     }
     var slot = state.slot;
     Promise.all([request(url()), Icons.load()]).then(function (results) {
       results[0].items.forEach(function (entry) { entry.key = equipmentKey(results[1], slot, entry.id); });
       render(results[0]);
-    }).catch(function () {
-      document.getElementById("catalog-results").textContent = "Could not load the catalog";
-    });
+    }).catch(showError);
   }
 
   function debounce(fn, wait) {
@@ -175,6 +202,7 @@
         other.setAttribute("aria-pressed", other === chip ? "true" : "false");
       });
       document.getElementById("catalog-src-head").hidden = state.slot !== "items";
+      saveState();
       load();
     });
   });
@@ -182,20 +210,29 @@
   document.getElementById("catalog-search").addEventListener("input", debounce(function (event) {
     state.q = event.target.value.trim();
     state.page = 0;
+    saveState();
     load();
   }, 250));
 
   document.getElementById("catalog-prev").addEventListener("click", function () {
-    if (state.page > 0) { state.page -= 1; load(); }
+    if (state.page > 0) { state.page -= 1; saveState(); load(); }
   });
   document.getElementById("catalog-next").addEventListener("click", function () {
     state.page += 1;
+    saveState();
     load();
   });
 
   // ?q= opens the catalog searching for an item (a monster page's drop tables and the site search link here).
-  state.q = (new URLSearchParams(window.location.search).get("q") || "").trim();
+  var params = new URLSearchParams(window.location.search);
+  state.q = (params.get("q") || "").trim();
+  if (SLOTS.indexOf(params.get("slot")) >= 0) state.slot = params.get("slot");
+  if (/^[1-9]\d{0,5}$/.test(params.get("page") || "")) state.page = Number(params.get("page")) - 1;
   document.getElementById("catalog-search").value = state.q;
+  document.querySelectorAll("#catalog-slots .chip").forEach(function (chip) {
+    chip.setAttribute("aria-pressed", chip.dataset.slot === state.slot ? "true" : "false");
+  });
+  document.getElementById("catalog-src-head").hidden = state.slot !== "items";
 
   load();
 })();
