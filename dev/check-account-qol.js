@@ -19,8 +19,9 @@
      PUT /api/account/qol/viewer with exactly the six keys and the chosen values, redraws from the answer and says
      so; a 400 message is shown; the part is hidden without "viewer" (an older API) and without the iframeViewer
      feature;
-   - under the "damageNumbers" switch: "Other players' hits", "Size" and "Show move id" (with its help text), under
-     "damageMeter": "Corner" and "Size", showing the GET values; each change sends PUT /api/account/qol/damage-numbers
+   - under the "damageNumbers" switch: "Other players' hits", "Size", "Multi-hit numbers" (Spread / Combine, with its
+     help text) and "Show move id" (with its help text), under "damageMeter": "Corner", "Size" and "Show monster
+     health" (with its help text), showing the GET values; each change sends PUT /api/account/qol/damage-numbers
      or /damage-meter with only that key, redraws and says so; a 400 message is shown and the control goes back; they
      are greyed out with the switch while locked, and missing when the answer has no "damageNumbers"/"damageMeter";
    - features the API marks preReleaseOnly are listed in their own section "Being tested: pre-release only" (slot name, "These
@@ -70,9 +71,11 @@ let sendViewer = true;
 // "off": an API without the pre-release fields; "locked": on Stable, "open": on a slot that has them; "moved": stable has reached 1.21
 let preMode = "off";
 let listViewer = true;
-let numbersState = { othersHits: true, size: "large", showMoveId: false };
-let meterState = { corner: "bottomLeft", size: "small" };
+let numbersState = { othersHits: true, size: "large", showMoveId: false, multiHit: "spread" };
+let meterState = { corner: "bottomLeft", size: "small", showHealth: false };
 let sendOverlays = true;
+const MULTI_HIT_HELP = "Spread shows every hit as its own number; Combine adds up rapid hits on one spot.";
+const HEALTH_HELP = "Shows a health bar with the number for each monster. Off in Speedrun Cup and VS quests.";
 const MOVE_ID_HELP = "Shows which move hit (its attack record id, weapon and style) next to each of your damage numbers, and writes every hit to hvmods.log in the game folder so you can send us the list. For testing move names.";
 let keysState = { retireKey: "Ctrl+R", retireOnDeath: "off", retireCarts: 1, skipWaitKey: null, talkKeys: [null, null, null, null, null] };
 function state(flags) {
@@ -355,6 +358,18 @@ async function run(browser, base) {
   check("damage numbers 400 message shown", /Could not save the damage numbers options: Option "size"/.test(await alertText()), await alertText());
   check("the control goes back to the stored value", (await page.inputValue("#qol-dn-size")) === "large" && (await page.isEnabled("#qol-dn-size")) && overlayPuts.length === 4);
   refuseOverlay = false;
+  // Multi-hit numbers (damage numbers) and Show monster health (damage meter).
+  check("multi-hit select with its help, at the GET value", dnText.includes("Multi-hit numbers") && dnText.includes(MULTI_HIT_HELP)
+    && JSON.stringify(await optionsOf("qol-dn-multiHit")) === JSON.stringify([["spread", "Spread"], ["combine", "Combine"]])
+    && (await page.inputValue("#qol-dn-multiHit")) === "spread", JSON.stringify(await optionsOf("qol-dn-multiHit")));
+  const dmText = (await page.textContent("#qol-dm-options")).replace(/\s+/g, " ");
+  check("Show monster health with its help, off from GET", dmText.includes("Show monster health") && dmText.includes(HEALTH_HELP) && !(await page.isChecked("#qol-dm-showHealth")), dmText);
+  await page.selectOption("#qol-dn-multiHit", "combine");
+  await page.waitForFunction(() => document.getElementById("qol-dn-multiHit").value === "combine" && !document.getElementById("qol-dn-multiHit").disabled, null, { timeout: 5000 }).catch(() => {});
+  await page.click("#qol-dm-showHealth");
+  await page.waitForFunction(() => /Damage meter options saved/.test(document.getElementById("qol-note").textContent) && document.getElementById("qol-dm-showHealth").checked, null, { timeout: 5000 }).catch(() => {});
+  check("multi-hit and monster health send one key each", JSON.stringify(overlayPuts.slice(4)) === JSON.stringify([["damage-numbers", { multiHit: "combine" }], ["damage-meter", { showHealth: true }]]), JSON.stringify(overlayPuts));
+  check("multi-hit and monster health redrawn from the answer", (await page.inputValue("#qol-dn-multiHit")) === "combine" && (await page.isChecked("#qol-dm-showHealth")));
 
   // ---- Pre-release-only features ----
   const lockedText = "Switch to the pre-release (mods) to try these";
@@ -383,8 +398,8 @@ async function run(browser, base) {
   check("on Stable: key groups show the message", (await page.$$eval("#qol-keys .qol-locked", (n) => n.map((x) => x.textContent))).join("|") === [lockedText, lockedText, lockedText].join("|"));
   check("on Stable: viewer options and Save disabled with the message", (await enabledIn("#qol-viewer input, #qol-viewer select, #qol-viewer button")).every((e) => !e)
     && (await page.textContent("#qol-viewer")).includes(lockedText));
-  const overlayEnabled = await enabledIn("#qol-dn-options input, #qol-dn-options select, #qol-dm-options select");
-  check("on Stable: damage numbers and meter options greyed out", overlayEnabled.length === 5 && overlayEnabled.every((e) => !e), JSON.stringify(overlayEnabled));
+  const overlayEnabled = await enabledIn("#qol-dn-options input, #qol-dn-options select, #qol-dm-options input, #qol-dm-options select");
+  check("on Stable: damage numbers and meter options greyed out", overlayEnabled.length === 7 && overlayEnabled.every((e) => !e), JSON.stringify(overlayEnabled));
   const before = puts.length;
   await page.check("#qol-trueRaw");
   await page.waitForFunction(() => /True raw attack is on/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});

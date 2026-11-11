@@ -6,8 +6,9 @@
    When the feature list has "iframeViewer" and the answer has "viewer", a Viewer options part shows four checkboxes
    (iframe bar, iframe count, hitstop bar, hit indicator), a position and a size; "Save viewer options" sends all six
    keys with PUT /api/account/qol/viewer.
-   Under the "damageNumbers" switch (when the answer has "damageNumbers"): "Other players' hits", "Size" and "Show move
-   id"; under the "damageMeter" switch (when the answer has "damageMeter"): "Corner" and "Size". Each change saves at
+   Under the "damageNumbers" switch (when the answer has "damageNumbers"): "Other players' hits", "Size", "Multi-hit
+   numbers" (Spread / Combine) and "Show move id"; under the "damageMeter" switch (when the answer has "damageMeter"):
+   "Corner", "Size" and "Show monster health". Each change saves at
    once with only that key: PUT /api/account/qol/damage-numbers or /damage-meter. Greyed out with the switch.
    A feature the API marks "preReleaseOnly" (its minPatch is above the current stable patch; it moves up by itself when
    a stable release reaches it) is listed in its own section, "Being tested: pre-release only", with the slot name and
@@ -88,11 +89,13 @@
     damageNumbers: { key: "damageNumbers", path: "damage-numbers", prefix: "qol-dn-", name: "Damage numbers", fields: [
       { id: "othersHits", type: "check", label: "Other players' hits", hint: "Also shows the other hunters' hits, in grey." },
       { id: "size", type: "select", label: "Size", options: OVERLAY_SIZES, fallback: "normal" },
+      { id: "multiHit", type: "select", label: "Multi-hit numbers", options: [["spread", "Spread"], ["combine", "Combine"]], fallback: "spread", hint: "Spread shows every hit as its own number; Combine adds up rapid hits on one spot." },
       { id: "showMoveId", type: "check", label: "Show move id", hint: "Shows which move hit (its attack record id, weapon and style) next to each of your damage numbers, and writes every hit to hvmods.log in the game folder so you can send us the list. For testing move names." }
     ] },
     damageMeter: { key: "damageMeter", path: "damage-meter", prefix: "qol-dm-", name: "Damage meter", fields: [
       { id: "corner", type: "select", label: "Corner", options: [["topRight", "Top right"], ["topLeft", "Top left"], ["bottomRight", "Bottom right"], ["bottomLeft", "Bottom left"]], fallback: "topRight" },
-      { id: "size", type: "select", label: "Size", options: OVERLAY_SIZES, fallback: "normal" }
+      { id: "size", type: "select", label: "Size", options: OVERLAY_SIZES, fallback: "normal" },
+      { id: "showHealth", type: "check", label: "Show monster health", hint: "Shows a health bar with the number for each monster. Off in Speedrun Cup and VS quests." }
     ] }
   };
 
