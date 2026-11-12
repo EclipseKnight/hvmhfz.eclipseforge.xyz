@@ -21,7 +21,7 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=16" />
+    <link rel="stylesheet" href="/css/styles.css?v=17" />
     <link rel="stylesheet" href="/css/admin-flags.css?v=2" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/tablesort.js" defer></script>
@@ -598,17 +598,18 @@
         <p class="form-alert" id="users-alert" hidden></p>
         <p class="admin-desc" id="users-patches" hidden></p>
         <div class="admin-search">
-          <input id="user-search" type="search" autocomplete="off" placeholder="Search an account or character name" aria-label="Search an account or character name" />
+          <input id="user-search" type="search" autocomplete="off" placeholder="Search account, character, Discord name or id" aria-label="Search account, character, Discord name or id" />
           <select id="user-match" aria-label="Search in">
-            <option value="all">Accounts and characters</option>
+            <option value="all">Everything</option>
             <option value="account">Account names only</option>
             <option value="character">Character names only</option>
+            <option value="discord">Discord name or id</option>
           </select>
         </div>
         <div class="table-wrap">
-          <table class="data-table admin-table">
-            <thead><tr><th>#</th><th>Account</th><th>Roles</th><th data-nosort>Characters</th><th>Last login</th><th data-nosort>Discord</th><th>Chat</th><th>Admin</th><th>Moderator</th><th>Helper</th><th>Tester</th><th>Playtester</th><th>Patch channel</th></tr></thead>
-            <tbody id="user-rows"><tr><td colspan="13" class="empty-cell">Loading</td></tr></tbody>
+          <table class="data-table admin-table users-table" data-nosort>
+            <thead><tr><th>#</th><th>Account</th><th>Discord</th><th>Roles</th><th>Characters</th><th>Last login</th><th>Status</th><th><span class="visually-hidden">Manage</span></th></tr></thead>
+            <tbody id="user-rows"><tr><td colspan="8" class="empty-cell">Loading</td></tr></tbody>
           </table>
         </div>
         <div class="admin-pager">
@@ -616,7 +617,7 @@
           <span class="panel-note" id="users-page"></span>
           <button type="button" class="ghost-btn small" id="users-next">Next</button>
         </div>
-        <p class="note-text">Roles apply at the account's next request. Nobody can remove their own admin role, and the last admin cannot be removed. Search is case-insensitive and finds an account by its name or by any of its characters (matching characters are highlighted); account names themselves are case-sensitive. Each character links to its hunter page; deleted and never-played slots are listed but not linked. <b>Link</b> sets an account's Discord user id by hand, the same link <code>/link</code> makes (the Hunter role follows within 30 minutes); <b>Unlink</b> takes two clicks. Chat toggles are the in-game <code>op</code> (chat commands) and <code>timer</code> (quest timer) flags. <b>Patch channel</b> says which client patch the Mezeporta launcher gives the account: <code>stable</code> or <code>pre: &lt;slot&gt;</code> (only playtester, tester, moderator and admin accounts can have a pre-release; players join the playtest on their account page, and the <b>Playtester</b> button here gives or takes the role by hand); pick Stable or a slot and press Set, and the player can switch it too on the account page. A slot that is not out gives stable.</p>
+        <p class="note-text"><b>Manage</b> (or a click on the row) opens one account: tick its roles and press Save, link or unlink its Discord account, set the chat flags and the patch channel, see all its characters and recent logins. Roles apply at the account's next request. Nobody can remove their own admin role, and the last admin cannot be removed. Search is case-insensitive: it finds an account by its name, by any of its characters or by its Discord name, username or id (matches are highlighted). Account names are case-sensitive.</p>
       </section>
       <!-- Recent logins of one account: js/admin-diag.js (GET /api/admin/users/{id}/logins) -->
       <section class="panel" id="logins-panel" hidden>
@@ -1040,7 +1041,7 @@
     <script src="/js/admin-flags.js?v=4"></script>
     <script src="/js/admin-permissions.js?v=1"></script>
     <script src="/js/hr.js?v=1"></script>
-    <script src="/js/admin.js?v=11"></script>
+    <script src="/js/admin.js?v=12"></script>
     <script src="/js/search.js?v=3" defer></script>
   </body>
 </html>

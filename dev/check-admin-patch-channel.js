@@ -3,14 +3,14 @@
    in headless Chromium against a fake API (GET /api/admin/users rows with "patchChannel", GET /api/admin/patch-slots,
    POST /api/admin/patch-channel):
 
-   - the Playtester column follows Tester and the patch channel column follows it; a "pre:mods" row shows a "pre: mods" badge, a "stable" row says stable;
-   - each row has a select (Stable + each published slot + the user's own slot when it is not out) and a Set button;
-     Set posts {"username", "channel"}, then the list is read again and the row changed;
+   - the Status column shows a "pre: mods" badge for a slot and a dash for stable; the Playtester role is a checkbox in the Manage drawer;
+   - each drawer has a Patch channel section with a select (Stable + each published slot + the user's own slot when it is not out)
+     and a Set button; Set posts {"username", "channel"}, then the list is read again and the row changed;
    - the panel lists each slot (version, published, release id, notes, users) and "On a slot that is not out
      (they get stable)" with slot and users; "Could not load the pre-releases from the game server." when
      slotsAvailable is false; hidden when the API has no such endpoint;
-   - a refusal (400 + message) shows the API's message and leaves the row alone;
-   - an API without the field shows "-" and no select;
+   - a refusal (400 + message) shows the API's message in the drawer and leaves the row alone;
+   - an API without the field has no Patch channel section;
    - no page errors.
 
      NODE_PATH=/root/work/pw-tools/node_modules node dev/check-admin-patch-channel.js
@@ -95,20 +95,29 @@ async function open(browser, base, state) {
     return reply(404, { message: "not in this check" });
   });
   await page.goto(base + "/admin.html#users");
-  await page.waitForSelector("#user-rows tr td.cell-name", { timeout: 5000 });
+  await page.waitForSelector("#user-rows tr.user-row", { timeout: 5000 });
   return { page, errors };
 }
 
-const rowOf = (page, name) => page.$$eval("#user-rows tr", (rows, n) => {
-  const r = rows.find((x) => x.querySelector(".cell-name") && x.querySelector(".cell-name").textContent.startsWith(n));
-  const cells = r.querySelectorAll("td");
-  const last = cells[cells.length - 1];
-  return { cells: cells.length, text: last.textContent.replace(/\s+/g, " ").trim(),
-    badge: last.querySelector(".role-pre") ? last.querySelector(".role-pre").textContent : null,
-    button: last.querySelector("button") ? last.querySelector("button").textContent : null,
-    options: last.querySelector("select") ? Array.from(last.querySelector("select").options).map((o) => o.value + "=" + o.textContent) : null,
-    selected: last.querySelector("select") ? last.querySelector("select").value : null };
-}, name);
+// Opens the Manage drawer of an account (closing another one) and reads its patch channel section.
+const manageOf = async (page, name) => {
+  await page.keyboard.press("Escape");
+  await page.click('#user-rows tr.user-row:has(.cell-name > span:first-child:text-is("' + name + '")) .user-manage');
+};
+const patchOf = async (page, name) => {
+  await manageOf(page, name);
+  return page.$$eval("#user-rows .user-drawer .user-patch", (boxes) => {
+    const last = boxes[0];
+    if (!last) return null;
+    return { text: last.textContent.replace(/\s+/g, " ").trim(),
+      badge: last.querySelector(".role-pre") ? last.querySelector(".role-pre").textContent : null,
+      button: last.querySelector("button") ? last.querySelector("button").textContent : null,
+      options: last.querySelector("select") ? Array.from(last.querySelector("select").options).map((o) => o.value + "=" + o.textContent) : null,
+      selected: last.querySelector("select") ? last.querySelector("select").value : null };
+  });
+};
+const statusOf = (page, name) => page.$eval('#user-rows tr.user-row:has(.cell-name > span:first-child:text-is("' + name + '")) .status-cell', (c) => c.textContent.trim());
+const note = (page) => page.$eval("#user-rows .user-note", (n) => n.hidden ? "" : n.textContent).catch(() => "");
 
 (async () => {
   await new Promise((r) => server.listen(0, "127.0.0.1", r));
@@ -117,21 +126,26 @@ const rowOf = (page, name) => page.$$eval("#user-rows tr", (rows, n) => {
   try {
     const state = { channels: { boss: "pre:mods", tester: "stable", player: "pre:ghost" }, posts: [], reads: 0, refuse: false };
     const { page, errors } = await open(browser, base, state);
-    const head = await page.$$eval("#user-rows", (b) => Array.from(b[0].closest("table").querySelectorAll("thead th")).map((t) => t.textContent));
-    check("columns: Helper, Tester, Playtester, then Patch channel", head.length === 13 && head[9] === "Helper" && head[10] === "Tester" && head[11] === "Playtester" && head[12] === "Patch channel", head.join(","));
-    let boss = await rowOf(page, "boss"), tester = await rowOf(page, "tester"), player = await rowOf(page, "player");
+    const head = await page.$$eval("#user-rows", (b) => Array.from(b[0].closest("table").querySelectorAll("thead th")).map((t) => t.textContent.trim()));
+    check("columns end with Status and Manage", head.length === 8 && head[6] === "Status" && head[7] === "Manage", head.join(","));
+    check("status cells: pre badge for a slot, dash for stable", (await statusOf(page, "boss")) === "pre: mods" && (await statusOf(page, "tester")) === "-" && (await statusOf(page, "player")) === "pre: ghost");
+    const boss = await patchOf(page, "boss");
     const std = ["stable=Stable", "pre:mods=mods (v1.21-pre2)", "pre:balance=balance (v1.21-pre1)"];
-    check("pre row: badge, select, button", boss.cells === 13 && boss.badge === "pre: mods" && boss.button === "Set" && boss.selected === "pre:mods"
+    check("pre row: badge, select, button", boss && boss.badge === "pre: mods" && boss.button === "Set" && boss.selected === "pre:mods"
       && JSON.stringify(boss.options) === JSON.stringify(std), JSON.stringify(boss));
-    check("stable row: text, select, button", tester.badge === null && tester.text.includes("stable") && tester.button === "Set"
+    const tester = await patchOf(page, "tester");
+    check("stable row: text, select, button", tester && tester.badge === null && tester.text.includes("stable") && tester.button === "Set"
       && tester.selected === "stable" && JSON.stringify(tester.options) === JSON.stringify(std), JSON.stringify(tester));
-    // The Playtester role shows as a badge and has its own button (the others offer "Make playtester").
-    const pt = await page.$$eval("#user-rows tr", (rows) => rows.map((r) => ({ name: r.querySelector(".cell-name") && r.querySelector(".cell-name").textContent,
-      badges: Array.from(r.querySelectorAll(".role-cell .role-badge")).map((x) => x.textContent + (x.classList.contains("role-playtester") ? "*" : "")),
-      button: Array.from(r.querySelectorAll("td button")).map((x) => x.textContent).filter((t) => /playtester/.test(t))[0] || null })));
-    const ptRow = (n) => pt.find((x) => x.name && x.name.startsWith(n));
-    check("playtester badge and Remove button", ptRow("player").badges.includes("PLAYTESTER*") && ptRow("player").button === "Remove playtester", J(pt));
-    check("others offer Make playtester", ptRow("boss").button === "Make playtester" && !ptRow("boss").badges.some((x) => /PLAYTESTER/.test(x)), J(pt));
+    // The Playtester role is a checkbox in the drawer and a badge in the row.
+    const pt = async (name) => {
+      await manageOf(page, name);
+      return { badge: await page.$$eval('#user-rows tr.user-row:has(.cell-name > span:first-child:text-is("' + name + '")) .role-badge.role-playtester', (b) => b.length),
+        box: await page.$eval('#user-rows .user-drawer input[value="ROLE_PLAYTESTER"]', (i) => i.checked && !i.disabled), hint: (await page.textContent("#user-rows .user-drawer .role-checks")).includes("may choose a pre-release client patch") };
+    };
+    const ptPlayer = await pt("player"), ptBoss = await pt("boss");
+    check("playtester badge, ticked box and hint", ptPlayer.badge === 1 && ptPlayer.box && ptPlayer.hint, J(ptPlayer));
+    check("others: no badge, box not ticked", ptBoss.badge === 0 && ptBoss.box === false, J(ptBoss));
+    const player = await patchOf(page, "player");
     check("unpublished slot offered for its user", player.badge === "pre: ghost" && player.selected === "pre:ghost"
       && JSON.stringify(player.options) === JSON.stringify(std.concat(["pre:ghost=ghost (not out)"])), JSON.stringify(player));
 
@@ -147,44 +161,45 @@ const rowOf = (page, name) => page.$$eval("#user-rows tr", (rows, n) => {
 
     // Set a user to a slot, then back to stable.
     const reads = state.reads;
-    await page.selectOption("#user-rows tr:nth-child(2) td:last-child select", "pre:balance");
-    await page.click("#user-rows tr:nth-child(2) td:last-child button");
-    await page.waitForFunction(() => /is on the pre:balance channel/.test(document.getElementById("users-alert").textContent), null, { timeout: 5000 }).catch(() => {});
+    await manageOf(page, "tester");
+    await page.selectOption("#user-rows .user-drawer .user-patch select", "pre:balance");
+    await page.click("#user-rows .user-drawer .user-patch button");
+    await page.waitForFunction(() => /is on the pre:balance channel/.test((document.querySelector("#user-rows .user-note") || {}).textContent || ""), null, { timeout: 5000 }).catch(() => {});
     check("POST body", J(state.posts) === J([{ username: "tester", channel: "pre:balance" }]), J(state.posts));
-    check("message shown", /tester is on the pre:balance channel\./.test(await page.textContent("#users-alert")), await page.textContent("#users-alert"));
-    await page.waitForFunction(() => /pre: balance/.test(document.querySelector("#user-rows tr:nth-child(2) td:last-child").textContent), null, { timeout: 5000 }).catch(() => {});
-    tester = await rowOf(page, "tester");
-    check("list read again, row now on balance", state.reads > reads && tester.badge === "pre: balance" && tester.selected === "pre:balance", J(tester));
+    check("message shown in the drawer", /tester is on the pre:balance channel\./.test(await note(page)), await note(page));
+    await page.waitForFunction(() => /pre: balance/.test((document.querySelector("#user-rows .user-drawer .user-patch") || {}).textContent || ""), null, { timeout: 5000 }).catch(() => {});
+    const t2 = await patchOf(page, "tester");
+    check("list read again, row now on balance", state.reads > reads && t2.badge === "pre: balance" && t2.selected === "pre:balance" && (await statusOf(page, "tester")) === "pre: balance", J(t2));
     check("panel updated", (await page.textContent("#patch-slots-body")).includes("On it: tester"));
 
-    await page.selectOption("#user-rows tr:nth-child(1) td:last-child select", "stable");
-    await page.click("#user-rows tr:nth-child(1) td:last-child button");
-    await page.waitForFunction(() => !/pre: mods/.test(document.querySelector("#user-rows tr:nth-child(1) td:last-child").textContent), null, { timeout: 5000 }).catch(() => {});
+    await manageOf(page, "boss");
+    await page.selectOption("#user-rows .user-drawer .user-patch select", "stable");
+    await page.click("#user-rows .user-drawer .user-patch button");
+    await page.waitForFunction(() => !/pre: mods/.test(document.querySelector("#user-rows tr.user-row .status-cell").textContent), null, { timeout: 5000 }).catch(() => {});
     check("POST stable", J(state.posts[1]) === J({ username: "boss", channel: "stable" }), J(state.posts));
-    check("row back to stable", (await rowOf(page, "boss")).badge === null);
+    check("row back to stable", (await statusOf(page, "boss")) === "-");
 
     state.refuse = true;
-    await page.selectOption("#user-rows tr:nth-child(3) td:last-child select", "pre:mods");
-    await page.click("#user-rows tr:nth-child(3) td:last-child button");
-    await page.waitForFunction(() => /cannot use/.test(document.getElementById("users-alert").textContent), null, { timeout: 5000 }).catch(() => {});
-    check("refusal message shown", (await page.textContent("#users-alert")) === "That account cannot use the pre-release patch.", await page.textContent("#users-alert"));
-    player = await rowOf(page, "player");
-    check("refused row unchanged, button usable", player.badge === "pre: ghost"
-      && !(await page.isDisabled("#user-rows tr:nth-child(3) td:last-child button")), JSON.stringify(player));
+    await manageOf(page, "player");
+    await page.selectOption("#user-rows .user-drawer .user-patch select", "pre:mods");
+    await page.click("#user-rows .user-drawer .user-patch button");
+    await page.waitForFunction(() => /cannot use/.test((document.querySelector("#user-rows .user-note") || {}).textContent || ""), null, { timeout: 5000 }).catch(() => {});
+    check("refusal message shown", (await note(page)) === "That account cannot use the pre-release patch.", await note(page));
+    check("refused row unchanged, button usable", (await statusOf(page, "player")) === "pre: ghost" && !(await page.isDisabled("#user-rows .user-drawer .user-patch button")));
     check("no page errors", !errors.length, errors.join("; "));
     await page.close();
 
     // An API without the field.
     const old = await open(browser, base, { channels: {}, posts: [], reads: 0, noSlots: true });
-    const o = await rowOf(old.page, "tester");
-    check("old API: dash and no button", o.cells === 13 && o.text === "-" && o.button === null && o.options === null, JSON.stringify(o));
+    const o = await patchOf(old.page, "tester");
+    check("old API: no patch channel section, no select", o === null && (await old.page.$$("#user-rows select")).length === 0 && (await statusOf(old.page, "tester")) === "-", JSON.stringify(o));
     check("old API: no slots panel", !(await old.page.isVisible("#patch-slots-panel")));
     check("old API: no page errors", !old.errors.length, old.errors.join("; "));
 
-    // The slot list cannot be read: the panel says so, rows still get Stable.
+    // The slot list cannot be read: the panel says so, the select still has Stable.
     const down = await open(browser, base, { channels: { boss: "stable", tester: "stable", player: "stable" }, posts: [], reads: 0, slotsDown: true });
     check("slots down: panel message", (await down.page.textContent("#patch-slots-body")) === "Could not load the pre-releases from the game server.");
-    const d = await rowOf(down.page, "tester");
+    const d = await patchOf(down.page, "tester");
     check("slots down: select has Stable only", J(d.options) === J(["stable=Stable"]), J(d));
     check("slots down: no page errors", !down.errors.length, down.errors.join("; "));
   } catch (e) { failures.push("crashed: " + e.message); }

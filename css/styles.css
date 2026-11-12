@@ -1298,6 +1298,53 @@ a.char-chip:hover{border-color:#8a6a24;background:rgba(183,138,51,.18)}
 .ghost-btn.is-on{border-color:#8a6a24;color:#6d5318;background:rgba(183,138,51,.16);box-shadow:inset 0 0 0 1px rgba(138,106,36,.35)}
 .admin-table .ghost-btn.small{padding:6px 10px}
 
+/* Admin: Users tab (js/admin.js): one row per account, the drawer under it opens with Manage */
+.users-table .user-row{cursor:pointer}
+.users-table .user-row:hover td{background:rgba(183,138,51,.07)}
+.users-table .user-row.is-open td{background:rgba(183,138,51,.12)}
+.users-table .discord-cell{min-width:150px}
+.discord-line{display:flex;flex-direction:column;gap:1px;line-height:1.25}
+.discord-name{font-weight:600;overflow-wrap:anywhere}
+.discord-user{font-size:.76rem;color:var(--ink-soft);overflow-wrap:anywhere}
+.discord-line .discord-id{overflow-wrap:anywhere}
+.discord-name.is-match,.discord-user.is-match,.discord-id.is-match{background:rgba(183,138,51,.28);box-shadow:0 0 0 2px rgba(138,106,36,.55);border-radius:2px}
+.copy-id{margin-top:4px;padding:2px 8px;font-size:.74rem}
+.admin-table .ghost-btn.copy-id{padding:2px 8px}
+.users-table .char-cell{min-width:200px}
+.char-count{font-weight:700;margin-right:6px}
+.users-table .char-cell .char-chips{display:inline-flex;vertical-align:middle}
+.char-rest{display:block;margin-top:3px}
+.status-cell{white-space:normal}
+.status-cell .role-badge{margin:0 4px 4px 0}
+.role-badge.role-flag{border-color:#5f7a4c;color:#3f5530;background:rgba(95,122,76,.12)}
+.users-table .manage-cell{white-space:nowrap;text-align:right}
+.users-table .user-drawer > td{padding:0;background:rgba(183,138,51,.07);border-bottom:2px solid var(--frame)}
+.user-drawer-body{position:sticky;left:0;box-sizing:border-box;width:min(100%,calc(100vw - 56px));padding:12px 14px 14px}
+.user-drawer-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.user-drawer-title{margin:0;font:700 1rem var(--font-ui);color:var(--ink)}
+.user-note{margin:0 0 10px;padding:7px 10px;border:1px solid #5f7a4c;border-radius:3px;background:rgba(95,122,76,.12);color:#3f5530;font-size:.88rem}
+.user-note.is-bad{border-color:#8a4a3a;background:rgba(138,74,58,.12);color:#6d2f22}
+.user-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px 22px;align-items:start}
+.user-sec-title{margin:0 0 6px;font:700 .78rem var(--font-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+.user-sec .admin-desc{margin:6px 0 0}
+.role-checks{display:flex;flex-direction:column;gap:6px}
+.role-check{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.9rem}
+.role-check input{margin-top:3px}
+.role-check input:disabled{cursor:not-allowed}
+.role-check-text{display:flex;flex-direction:column}
+.role-hint{font-size:.76rem;color:var(--ink-soft)}
+.role-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}
+.role-actions .role-warn{margin:0}
+.users-table .user-patch{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.users-table .user-patch .patch-channel-select{max-width:11em;margin:0}
+.users-table .discord-form input{max-width:100%}
+@media (max-width:720px){
+  .user-grid{grid-template-columns:1fr}
+  /* on a phone the row keeps who, Discord, roles and Manage; the rest is in the drawer */
+  .users-table thead th:nth-child(n+5):nth-child(-n+7),.users-table .user-row > :nth-child(n+5):nth-child(-n+7){display:none}
+  .users-table .ghost-btn.copy-id{min-height:28px}
+}
+
 /* Admin: Servers tab */
 .ops-services{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:14px}
 .ops-card{border:1px solid var(--frame);border-radius:8px;padding:12px 14px;background:rgba(183,138,51,.06)}

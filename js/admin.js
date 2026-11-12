@@ -59,6 +59,7 @@
           if (!response.ok) {
             var error = new Error((data && data.message) || "HTTP " + response.status);
             error.server = true;
+            error.status = response.status;
             throw error;
           }
           return data;
@@ -875,7 +876,7 @@
 
   /* ---------- users ---------- */
 
-  var users = { page: 0, size: 25, query: "", match: "all" };
+  var users = { page: 0, size: 25, query: "", match: "all", open: null, notice: null, roles: null, byId: {} };
 
   function usersAlert(text) {
     var box = $("users-alert");
@@ -900,50 +901,23 @@
     return el("span", "role-badge" + extra, role.replace("ROLE_", ""));
   }
 
-  function roleButton(user, role, label) {
-    var has = user.roles.indexOf(role) !== -1;
-    var button = el("button", "ghost-btn small" + (has ? " is-on" : ""), (has ? "Remove " : "Make ") + label);
-    button.type = "button";
-    if (has && role === "ROLE_ADMIN" && currentName && user.username === currentName) {
-      button.disabled = true;
-      button.title = "You can't remove your own admin role.";
-    }
-    button.addEventListener("click", function () {
-      button.disabled = true;
-      request("/api/admin/roles", {
-        method: "POST",
-        body: JSON.stringify({ username: user.username, role: role, grant: !has })
-      }).then(function (data) {
-        usersAlert((data && data.message) || "Saved.");
-        return loadUsers();
-      }).catch(function (error) {
-        button.disabled = false;
-        usersFail(error);
-      });
-    });
-    return button;
-  }
-
   // Patch channel: which client patch the Mezeporta launcher gives the account (POST /api/admin/patch-channel).
   // The API says "stable" or "pre:<slot>" ("pre" from an older API means the default slot, mods). A select offers
   // Stable, each published slot and, when the account sits on a slot that is not out, that slot too.
-  // An API without the field shows "-" and no button.
+  // An API without the field gets no patch channel section.
   function patchSlotOf(channel) {
     if (channel === "pre") return "mods";
     var m = /^pre:([a-z0-9][a-z0-9-]*)$/.exec(String(channel || ""));
     return m ? m[1] : null;
   }
 
-  function patchChannelCell(user) {
-    var cell = el("td", "patch-channel-cell");
+  function patchChannelBlock(user) {
     var slot = patchSlotOf(user.patchChannel);
-    if (user.patchChannel !== "stable" && slot === null) {
-      cell.textContent = "-";
-      return cell;
-    }
+    if (user.patchChannel !== "stable" && slot === null) return null;
     var current = slot === null ? "stable" : "pre:" + slot;
-    cell.appendChild(slot !== null ? el("span", "role-badge role-pre", "pre: " + slot) : el("span", "admin-desc", "stable"));
-    if (!can("patches", "act")) return cell;
+    var box = el("div", "user-patch");
+    box.appendChild(slot !== null ? el("span", "role-badge role-pre", "pre: " + slot) : el("span", "admin-desc", "stable"));
+    if (!can("patches", "act")) return box;
     var select = el("select", "patch-channel-select");
     select.setAttribute("aria-label", "Patch channel of " + user.username);
     var published = (users.slots || []).map(function (s) { return s.slot; });
@@ -958,7 +932,7 @@
     });
     if (slot !== null && published.indexOf(slot) === -1) option(current, slot + " (not out)");
     select.value = current;
-    cell.appendChild(select);
+    box.appendChild(select);
     var button = el("button", "ghost-btn small", "Set");
     button.type = "button";
     button.addEventListener("click", function () {
@@ -967,15 +941,15 @@
         method: "POST",
         body: JSON.stringify({ username: user.username, channel: select.value })
       }).then(function (data) {
-        usersAlert((data && data.message) || "Saved.");
+        note(user, (data && data.message) || "Saved.");
         return loadUsers();
       }).catch(function (error) {
         button.disabled = false;
-        usersFail(error);
+        actionFail(user, error);
       });
     });
-    cell.appendChild(button);
-    return cell;
+    box.appendChild(button);
+    return box;
   }
 
   // "Pre-release slots" panel (GET /api/admin/patch-slots): each published slot with its version, publish time,
@@ -1043,11 +1017,11 @@
       body[field] = !on;
       request("/api/admin/users/" + user.id + "/flags", { method: "POST", body: JSON.stringify(body) })
         .then(function (data) {
-          usersAlert((data && data.message) || "Saved.");
+          note(user, (data && data.message) || "Saved.");
           return loadUsers();
         }).catch(function (error) {
           button.disabled = false;
-          usersFail(error);
+          actionFail(user, error);
         });
     });
     return button;
@@ -1083,41 +1057,200 @@
     return chip;
   }
 
-  function userCharacters(user, tracking) {
-    var cell = el("td", "char-cell");
-    var list = user.characterList || [];
-    if (!list.length) {
-      cell.appendChild(el("span", "admin-desc", "none"));
-      return cell;
-    }
-    var shown = list.slice(0, 4);
-    var wrap = el("div", "char-chips");
-    shown.forEach(function (c) { wrap.appendChild(userCharacter(c, users.query, tracking)); });
-    cell.appendChild(wrap);
-    if (list.length > shown.length) {
-      var more = el("details", "char-more");
-      more.appendChild(el("summary", null, "+" + (list.length - shown.length) + " more"));
-      var rest = el("div", "char-chips");
-      list.slice(4).forEach(function (c) { rest.appendChild(userCharacter(c, users.query, tracking)); });
-      more.appendChild(rest);
-      cell.appendChild(more);
-    }
-    return cell;
+  // ---- the drawer under a row (Manage) ----
+  // Roles come from GET /api/admin/roles/available (the fixed list below when the API has none) and are saved
+  // with one PUT /api/admin/roles/users/{id}; an older API answers 404/405 and the old POST /api/admin/roles
+  // is sent once per changed role instead.
+  var FALLBACK_ROLES = [
+    { role: "ROLE_USER", editable: false }, { role: "ROLE_HELPER", editable: true }, { role: "ROLE_MODERATOR", editable: true },
+    { role: "ROLE_ADMIN", editable: true }, { role: "ROLE_TESTER", editable: true }, { role: "ROLE_PLAYTESTER", editable: true }
+  ];
+  var STAFF_ROLES = { ROLE_ADMIN: "admin", ROLE_MODERATOR: "moderator", ROLE_HELPER: "helper" };
+  var ROLE_HINTS = {
+    ROLE_USER: "Every account has this role.",
+    ROLE_ADMIN: "Full access, including roles. Nobody can remove their own admin role.",
+    ROLE_MODERATOR: "Staff: access follows the Permissions tab.",
+    ROLE_HELPER: "Helper: staff with the narrowest default access (see the Permissions tab).",
+    ROLE_TESTER: "Custom quest and road tester: can load and try custom content before it is published.",
+    ROLE_PLAYTESTER: "Playtester: may choose a pre-release client patch (players also join on their account page)."
+  };
+
+  // Role changes are for admins only (the API keeps them admin only, whatever the Permissions tab says, so nobody
+  // can raise their own role); other staff see the roles read only.
+  function canEditRoles() { return !window.hvStaff || window.hvStaff.admin; }
+
+  function loadRoleList() {
+    if (!canEditRoles()) return Promise.resolve(null);
+    if (users.roles) return Promise.resolve(users.roles);
+    return request("/api/admin/roles/available").then(function (data) {
+      var list = data && Array.isArray(data.roles) ? data.roles.filter(function (r) { return r && typeof r.role === "string"; }) : [];
+      return list.length ? list : FALLBACK_ROLES;
+    }).catch(function () { return FALLBACK_ROLES; }).then(function (list) {
+      users.roles = list;
+      return list;
+    });
   }
 
-  // Discord cell: the linked id, a Link/Change editor, and a two-click Unlink.
-  function userDiscord(user) {
-    var cell = el("td", "discord-cell");
+  // The message line of the open drawer; it survives the list reload that follows an action.
+  function note(user, text, bad) {
+    users.notice = text ? { id: user.id, text: text, bad: !!bad } : null;
+    paintNote();
+  }
+
+  function paintNote() {
+    var box = document.querySelector("#user-rows .user-note");
+    if (!box) return;
+    var n = users.notice && users.notice.id === users.open ? users.notice : null;
+    box.textContent = n ? n.text : "";
+    box.hidden = !n;
+    box.classList.toggle("is-bad", !!(n && n.bad));
+  }
+
+  function actionFail(user, error) {
+    if (error.message === "signin" || error.message === "forbidden") usersFail(error);
+    else note(user, error.message || "That did not work.", true);
+  }
+
+  function section(title) {
+    var box = el("div", "user-sec");
+    box.appendChild(el("h4", "user-sec-title", title));
+    return box;
+  }
+
+  function roleLabel(role) {
+    var s = role.replace("ROLE_", "").toLowerCase();
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  function rolesSection(user) {
+    var sec = section("Roles");
+    if (!canEditRoles()) {
+      var view = el("div", "role-cell");
+      if (!user.roles.length) view.appendChild(el("span", "role-badge", "none"));
+      else user.roles.forEach(function (role) { view.appendChild(roleBadge(role)); });
+      sec.appendChild(view);
+      sec.appendChild(el("p", "admin-desc", "Only admins change roles."));
+      return sec;
+    }
+    var list = (users.roles || FALLBACK_ROLES).slice();
+    var listed = list.map(function (r) { return r.role; });
+    user.roles.forEach(function (role) { if (listed.indexOf(role) === -1) list.push({ role: role, editable: false }); });
+    var self = !!(currentName && user.username === currentName);
+    var boxes = [];
+    var grid = el("div", "role-checks");
+    list.forEach(function (item) {
+      var had = user.roles.indexOf(item.role) !== -1;
+      var label = el("label", "role-check");
+      var input = el("input");
+      input.type = "checkbox";
+      input.value = item.role;
+      input.checked = had || item.role === "ROLE_USER";
+      var hint = ROLE_HINTS[item.role] || (item.editable ? "" : "Not changed here.");
+      if (!item.editable) {
+        input.disabled = true;
+        hint = item.role === "ROLE_USER" ? "Every account." : hint;
+      } else if (item.role === "ROLE_ADMIN" && had && self) {
+        input.disabled = true;
+        label.title = "You can't remove your own admin role.";
+      }
+      label.appendChild(input);
+      var text = el("span", "role-check-text");
+      text.appendChild(el("b", "", roleLabel(item.role)));
+      if (hint) text.appendChild(el("span", "role-hint", hint));
+      label.appendChild(text);
+      if (!label.title && hint) label.title = hint;
+      grid.appendChild(label);
+      boxes.push({ role: item.role, editable: !!item.editable, had: had, input: input });
+    });
+    sec.appendChild(grid);
+
+    var actions = el("div", "role-actions");
+    var save = el("button", "btn btn-primary btn-small", "Save");
+    save.type = "button";
+    save.disabled = true;
+    var reset = el("button", "ghost-btn small", "Reset");
+    reset.type = "button";
+    var warn = el("span", "admin-desc role-warn");
+    actions.appendChild(save);
+    actions.appendChild(reset);
+    actions.appendChild(warn);
+    sec.appendChild(actions);
+
+    var armed = null;
+    function changed() { return boxes.some(function (b) { return b.editable && !b.input.disabled && b.input.checked !== b.had; }); }
+    function removedStaff() {
+      return boxes.filter(function (b) { return b.had && !b.input.checked && STAFF_ROLES[b.role]; }).map(function (b) { return STAFF_ROLES[b.role]; });
+    }
+    function disarm() {
+      if (armed) clearTimeout(armed);
+      armed = null;
+      save.textContent = "Save";
+      save.classList.remove("is-armed");
+      warn.textContent = "";
+    }
+    function syncSave() { disarm(); save.disabled = !changed(); }
+    boxes.forEach(function (b) { b.input.addEventListener("change", syncSave); });
+    reset.addEventListener("click", function () {
+      boxes.forEach(function (b) { if (!b.input.disabled) b.input.checked = b.had; });
+      syncSave();
+    });
+
+    function legacy() {
+      var chain = Promise.resolve();
+      boxes.forEach(function (b) {
+        if (!b.editable || b.input.disabled || b.input.checked === b.had) return;
+        chain = chain.then(function () {
+          return request("/api/admin/roles", { method: "POST", body: JSON.stringify({ username: user.username, role: b.role, grant: b.input.checked }) });
+        });
+      });
+      return chain.then(function () { return { message: "Roles saved." }; }, function (error) {
+        return loadUsers().then(function () { throw error; }, function () { throw error; });
+      });
+    }
+
+    save.addEventListener("click", function () {
+      if (save.disabled) return;
+      var gone = removedStaff();
+      if (gone.length && !armed) {
+        save.textContent = "Confirm save";
+        save.classList.add("is-armed");
+        warn.textContent = "Confirm: remove " + gone.join(", ") + " from " + user.username;
+        armed = setTimeout(disarm, 5000);
+        return;
+      }
+      if (armed) clearTimeout(armed);
+      armed = null;
+      save.disabled = true;
+      reset.disabled = true;
+      var wanted = boxes.filter(function (b) { return b.editable && b.input.checked; }).map(function (b) { return b.role; });
+      request("/api/admin/roles/users/" + user.id, { method: "PUT", body: JSON.stringify({ roles: wanted }) })
+        .catch(function (error) {
+          if (error.status === 404 || error.status === 405) return legacy();
+          throw error;
+        }).then(function (data) {
+          note(user, (data && data.message) || "Roles saved.");
+          return loadUsers();
+        }).catch(function (error) {
+          actionFail(user, error);
+          var live = document.querySelector("#user-rows .user-drawer .role-actions .btn");
+          if (live) {
+            live.disabled = false;
+            var rs = live.parentNode.querySelector(".ghost-btn");
+            if (rs) rs.disabled = false;
+          }
+        });
+    });
+    return sec;
+  }
+
+  function discordSection(user) {
+    var sec = section("Discord");
     var view = el("div", "discord-view");
     if (user.discordId) {
-      view.appendChild(el("span", "role-badge role-linked", "Linked"));
+      if (user.discordName || user.discordUsername) view.appendChild(el("span", "discord-name", user.discordName || "@" + user.discordUsername));
       view.appendChild(el("code", "discord-id", user.discordId));
     } else {
       view.appendChild(el("span", "admin-desc", "not linked"));
-    }
-    if (!can("users", "act")) {
-      cell.appendChild(view);
-      return cell;
     }
     var edit = el("button", "ghost-btn small", user.discordId ? "Change" : "Link");
     edit.type = "button";
@@ -1168,30 +1301,242 @@
       event.preventDefault();
       var value = input.value.trim();
       if (value && !/^\d{17,20}$/.test(value)) {
-        usersAlert("A Discord user id is 17 to 20 digits (Developer Mode on, right-click the user, Copy User ID).");
+        note(user, "A Discord user id is 17 to 20 digits (Developer Mode on, right-click the user, Copy User ID).", true);
         return;
       }
       save.disabled = true;
       saveDiscord(user, value, save);
     });
-    cell.appendChild(view);
-    cell.appendChild(form);
-    return cell;
+    sec.appendChild(view);
+    sec.appendChild(form);
+    sec.appendChild(el("p", "admin-desc", "Link sets the Discord user id by hand, the same link /link makes; the Hunter role follows within 30 minutes."));
+    return sec;
   }
 
   function saveDiscord(user, value, button) {
     request("/api/admin/users/" + user.id + "/discord", { method: "POST", body: JSON.stringify({ discordId: value }) })
       .then(function (data) {
-        usersAlert((data && data.message) || "Saved.");
+        note(user, (data && data.message) || "Saved.");
         return loadUsers();
       }).catch(function (error) {
         button.disabled = false;
-        usersFail(error);
+        actionFail(user, error);
       });
+  }
+
+  function buildDrawer(user) {
+    var tr = el("tr", "user-drawer");
+    var td = el("td");
+    td.colSpan = USER_COLS;
+    var body = el("div", "user-drawer-body");
+    var head = el("div", "user-drawer-head");
+    head.appendChild(el("h3", "user-drawer-title", "Manage " + user.username));
+    var close = el("button", "ghost-btn small", "Close");
+    close.type = "button";
+    close.addEventListener("click", function () { closeDrawer(true); });
+    head.appendChild(close);
+    body.appendChild(head);
+    var msg = el("p", "user-note");
+    msg.setAttribute("role", "status");
+    msg.hidden = true;
+    body.appendChild(msg);
+    var grid = el("div", "user-grid");
+    grid.appendChild(rolesSection(user));
+    if (can("users", "act")) grid.appendChild(discordSection(user));
+    var chat = section("Chat");
+    var flags = el("div", "admin-flags");
+    flags.appendChild(chatToggle(user, "op"));
+    flags.appendChild(chatToggle(user, "timer"));
+    chat.appendChild(flags);
+    chat.appendChild(el("p", "admin-desc", "op: in-game chat commands. timer: quest timer."));
+    grid.appendChild(chat);
+    var patch = patchChannelBlock(user);
+    if (patch) {
+      var ps = section("Patch channel");
+      ps.appendChild(patch);
+      ps.appendChild(el("p", "admin-desc", "Which client patch the launcher gives this account. A slot that is not out gives stable."));
+      grid.appendChild(ps);
+    }
+    var chars = section("Characters (" + (user.characterList || []).length + ")");
+    if ((user.characterList || []).length) {
+      var chips = el("div", "char-chips");
+      user.characterList.forEach(function (c) { chips.appendChild(userCharacter(c, users.query, users.patchTracking)); });
+      chars.appendChild(chips);
+    } else chars.appendChild(el("span", "admin-desc", "none"));
+    grid.appendChild(chars);
+    if (window.AdminDiag && can("diagnostics", "view")) {
+      var lg = section("Logins");
+      var logins = el("button", "ghost-btn small", "Logins");
+      logins.type = "button";
+      logins.title = "Recent logins of this account (land, patch, refusals, how each ended)";
+      logins.addEventListener("click", function () { window.AdminDiag.showLogins(user); });
+      lg.appendChild(logins);
+      grid.appendChild(lg);
+    }
+    body.appendChild(grid);
+    td.appendChild(body);
+    tr.appendChild(td);
+    return tr;
+  }
+
+  function userRowOf(id) { return document.querySelector('#user-rows tr.user-row[data-id="' + id + '"]'); }
+
+  function closeDrawer(focus) {
+    var drawer = document.querySelector("#user-rows .user-drawer");
+    if (drawer) drawer.parentNode.removeChild(drawer);
+    var row = document.querySelector("#user-rows .user-row.is-open");
+    if (row) {
+      row.classList.remove("is-open");
+      var btn = row.querySelector(".user-manage");
+      if (btn) {
+        btn.setAttribute("aria-expanded", "false");
+        if (focus) btn.focus();
+      }
+    }
+    users.open = null;
+  }
+
+  function openDrawer(id) {
+    closeDrawer(false);
+    var user = users.byId && users.byId[id];
+    var row = userRowOf(id);
+    if (!user || !row) return;
+    if (users.notice && users.notice.id !== id) users.notice = null;
+    row.classList.add("is-open");
+    row.querySelector(".user-manage").setAttribute("aria-expanded", "true");
+    row.parentNode.insertBefore(buildDrawer(user), row.nextSibling);
+    users.open = id;
+    paintNote();
+  }
+
+  // ---- the rows ----
+
+  function userCharacters(user) {
+    var cell = el("td", "char-cell");
+    var list = user.characterList || [];
+    var count = Math.max(Number(user.characters) || 0, list.length);
+    if (!count) {
+      cell.appendChild(el("span", "admin-desc", "none"));
+      return cell;
+    }
+    var q = (users.query || "").toLowerCase();
+    var hits = function (c) { return !!q && (c.name || "").toLowerCase().indexOf(q) !== -1; };
+    // Matching characters first, so a match is never hidden behind "more".
+    var ordered = list.filter(hits).concat(list.filter(function (c) { return !hits(c); }));
+    var shown = ordered.slice(0, 3);
+    cell.appendChild(el("span", "char-count", String(count)));
+    var wrap = el("div", "char-chips");
+    shown.forEach(function (c) { wrap.appendChild(userCharacter(c, users.query, users.patchTracking)); });
+    cell.appendChild(wrap);
+    if (count > shown.length) cell.appendChild(el("span", "admin-desc char-rest", "+" + (count - shown.length) + " more in Manage"));
+    return cell;
+  }
+
+  function copyText(text, button) {
+    var done = function (ok) {
+      button.textContent = ok ? "Copied" : "Press Ctrl+C";
+      setTimeout(function () { button.textContent = "Copy id"; }, 1500);
+    };
+    var fallback = function () {
+      var box = document.createElement("textarea");
+      box.value = text;
+      box.setAttribute("readonly", "");
+      box.style.position = "fixed";
+      box.style.opacity = "0";
+      document.body.appendChild(box);
+      box.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (error) { ok = false; }
+      document.body.removeChild(box);
+      done(ok);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+    else fallback();
+  }
+
+  // Discord cell: the name with @username smaller, the id in the title and behind "Copy id"; the id itself shows
+  // when the API gave no name (older API, or not fetched yet).
+  function userDiscordCell(user) {
+    var cell = el("td", "discord-cell");
+    if (!user.discordId) {
+      cell.appendChild(el("span", "admin-desc", "not linked"));
+      return cell;
+    }
+    var q = (users.query || "").toLowerCase();
+    var wide = users.match === "all" || users.match === "discord";
+    var hit = function (t) { return !!(q && wide && t && String(t).toLowerCase().indexOf(q) !== -1); };
+    var box = el("div", "discord-line");
+    box.title = "Discord id " + user.discordId;
+    var name = user.discordName, uname = user.discordUsername;
+    var idEl = el("code", "discord-id", user.discordId);
+    if (name || uname) {
+      var main = el("span", "discord-name" + (hit(name || "@" + uname) || (!name && hit(uname)) ? " is-match" : ""), name || "@" + uname);
+      box.appendChild(main);
+      if (name && uname && uname !== name) box.appendChild(el("span", "discord-user" + (hit(uname) ? " is-match" : ""), "@" + uname));
+      if (hit(user.discordId)) {
+        idEl.className += " is-match";
+        box.appendChild(idEl);
+      }
+    } else {
+      if (hit(user.discordId)) idEl.className += " is-match";
+      box.appendChild(idEl);
+    }
+    cell.appendChild(box);
+    var copy = el("button", "ghost-btn small copy-id", "Copy id");
+    copy.type = "button";
+    copy.addEventListener("click", function () { copyText(user.discordId, copy); });
+    cell.appendChild(copy);
+    return cell;
+  }
+
+  function userStatusCell(user) {
+    var cell = el("td", "status-cell");
+    var slot = patchSlotOf(user.patchChannel);
+    if (slot !== null) cell.appendChild(el("span", "role-badge role-pre", "pre: " + slot));
+    if (user.op) cell.appendChild(el("span", "role-badge role-flag", "op"));
+    if (user.timer) cell.appendChild(el("span", "role-badge role-flag", "timer"));
+    if (!cell.firstChild) cell.appendChild(el("span", "admin-desc", "-"));
+    return cell;
+  }
+
+  var USER_COLS = 8;
+
+  function userRow(user) {
+    var row = el("tr", "user-row");
+    row.dataset.id = String(user.id);
+    row.appendChild(el("td", "rank", String(user.id)));
+    var name = el("td", "cell-name");
+    name.appendChild(el("span", null, user.username));
+    if (currentName && user.username === currentName) name.appendChild(el("span", "admin-desc", "you"));
+    row.appendChild(name);
+    row.appendChild(userDiscordCell(user));
+    var rolesCell = el("td");
+    var roles = el("div", "role-cell");
+    if (!user.roles.length) roles.appendChild(el("span", "role-badge", "none"));
+    else user.roles.forEach(function (role) { roles.appendChild(roleBadge(role)); });
+    rolesCell.appendChild(roles);
+    row.appendChild(rolesCell);
+    row.appendChild(userCharacters(user));
+    row.appendChild(timeCell(user.lastLogin, stamp(user.lastLogin), { time: false }));
+    row.appendChild(userStatusCell(user));
+    var manage = el("td", "manage-cell");
+    var button = el("button", "ghost-btn small user-manage", "Manage");
+    button.type = "button";
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-label", "Manage " + user.username);
+    button.addEventListener("click", function () {
+      if (users.open === user.id) closeDrawer(false);
+      else openDrawer(user.id);
+    });
+    manage.appendChild(button);
+    row.appendChild(manage);
+    return row;
   }
 
   function renderUsers(data) {
     var body = $("user-rows");
+    var keep = users.open;
+    users.open = null;
     clear(body);
     $("users-summary").textContent = num(data.summary.accounts) + " accounts · " + data.summary.admins + " admins · "
       + data.summary.moderators + " moderators · " + num(data.summary.linked) + " Discord links";
@@ -1200,74 +1545,24 @@
       + " · page " + (data.page + 1) + " of " + Math.max(1, Math.ceil(data.total / data.size));
     $("users-prev").disabled = data.page <= 0;
     $("users-next").disabled = (data.page + 1) * data.size >= data.total;
+    users.patchTracking = data.patchTracking;
+    users.byId = {};
     if (!data.users.length) {
       var empty = el("tr");
       var cell = el("td", "empty-cell", users.match === "character" ? "No character matches that search."
-        : "No account or character matches that search.");
-      cell.colSpan = 13;
+        : users.match === "account" ? "No account matches that search."
+        : users.match === "discord" ? "No Discord name or id matches that search."
+        : "No account, character or Discord name or id matches that search.");
+      cell.colSpan = USER_COLS;
       empty.appendChild(cell);
       body.appendChild(empty);
       return;
     }
     data.users.forEach(function (user) {
-      var row = el("tr");
-      row.appendChild(el("td", "rank", String(user.id)));
-      var name = el("td", "cell-name");
-      name.appendChild(el("span", null, user.username));
-      if (currentName && user.username === currentName) name.appendChild(el("span", "admin-desc", "you"));
-      if (window.AdminDiag && can("diagnostics", "view")) {
-        // Recent logins of this account (js/admin-diag.js, Erupe's login_history)
-        var logins = el("button", "ghost-btn small", "Logins");
-        logins.type = "button";
-        logins.title = "Recent logins of this account (land, patch, refusals, how each ended)";
-        logins.addEventListener("click", function () { window.AdminDiag.showLogins(user); });
-        name.appendChild(logins);
-      }
-      row.appendChild(name);
-      var roles = el("td", "role-cell");
-      if (!user.roles.length) roles.appendChild(el("span", "role-badge", "none"));
-      else user.roles.forEach(function (role) { roles.appendChild(roleBadge(role)); });
-      row.appendChild(roles);
-      row.appendChild(userCharacters(user, data.patchTracking));
-      row.appendChild(timeCell(user.lastLogin, stamp(user.lastLogin), { time: false }));
-      row.appendChild(userDiscord(user));
-      var chat = el("td", "admin-flags");
-      chat.appendChild(chatToggle(user, "op"));
-      chat.appendChild(chatToggle(user, "timer"));
-      row.appendChild(chat);
-      // Role buttons are for admins only (the API keeps /api/admin/roles admin only, whatever the Permissions tab
-      // says, so nobody can raise their own role); otherwise the cells stay empty (the Roles column shows the badges).
-      var canRoles = !window.hvStaff || window.hvStaff.admin;
-      var adminCell = el("td");
-      if (canRoles) adminCell.appendChild(roleButton(user, "ROLE_ADMIN", "admin"));
-      row.appendChild(adminCell);
-      var modCell = el("td");
-      if (canRoles) modCell.appendChild(roleButton(user, "ROLE_MODERATOR", "moderator"));
-      row.appendChild(modCell);
-      var helperCell = el("td");
-      if (canRoles) {
-        var helperBtn = roleButton(user, "ROLE_HELPER", "helper");
-        helperBtn.title = "Helper: staff with the narrowest default access (see the Permissions tab).";
-        helperCell.appendChild(helperBtn);
-      }
-      row.appendChild(helperCell);
-      var testerCell = el("td");
-      if (canRoles) {
-        var testerBtn = roleButton(user, "ROLE_TESTER", "tester");
-        testerBtn.title = "Custom quest and road tester: can load and try custom content before it is published.";
-        testerCell.appendChild(testerBtn);
-      }
-      row.appendChild(testerCell);
-      var playtesterCell = el("td");
-      if (canRoles) {
-        var playtesterBtn = roleButton(user, "ROLE_PLAYTESTER", "playtester");
-        playtesterBtn.title = "Playtester: may choose a pre-release client patch (players also join on their account page).";
-        playtesterCell.appendChild(playtesterBtn);
-      }
-      row.appendChild(playtesterCell);
-      row.appendChild(patchChannelCell(user));
-      body.appendChild(row);
+      users.byId[user.id] = user;
+      body.appendChild(userRow(user));
     });
+    if (keep !== null && users.byId[keep]) openDrawer(keep);
   }
 
   // The client patch summary line (current / older / unknown), from the API's counts and the site's version file.
@@ -1282,9 +1577,10 @@
   }
 
   function loadUsers() {
-    // The pre-release slots first (the select in each row needs them); an older API answers 404: no slots, no panel.
+    // The pre-release slots first (the select in the drawer needs them); an older API answers 404: no slots, no panel.
     var slotsRead = can("patches", "view") ? request("/api/admin/patch-slots").catch(function () { return null; }) : Promise.resolve(null);
-    return slotsRead.then(function (slotData) {
+    return Promise.all([slotsRead, loadRoleList()]).then(function (got) {
+      var slotData = got[0];
       users.slots = slotData && slotData.slotsAvailable !== false ? (slotData.slots || []) : [];
       renderPatchSlots(slotData);
       return request("/api/admin/users?query=" + encodeURIComponent(users.query) + "&match=" + users.match
@@ -1324,6 +1620,17 @@
         users.page = 0;
         loadUsers().catch(usersFail);
       }, 250);
+    });
+    // Manage: a click on the row (not on a link or control inside it) opens the drawer; Esc closes it.
+    $("user-rows").addEventListener("click", function (event) {
+      var row = event.target.closest("tr.user-row");
+      if (!row || event.target.closest("a, button, input, select, textarea, summary, label")) return;
+      var id = Number(row.dataset.id);
+      if (users.open === id) closeDrawer(false);
+      else openDrawer(id);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && users.open !== null) closeDrawer(true);
     });
   }
 

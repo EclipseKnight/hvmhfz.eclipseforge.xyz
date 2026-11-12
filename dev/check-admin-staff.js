@@ -7,7 +7,7 @@
      Permissions tab is for admins only;
    - the Flags buttons by permission (helper: view + the notes form; moderator: Approve, notes, no Cheat / Undo / bulk
      Cheat / rules / Scan now, even when the queue says canWrite; admin: all);
-   - the Users tab: the Helper role button and its badge (POST body), no role buttons without "users act";
+   - the Users tab: the Manage drawer with the Helper checkbox and its badge (the old POST body as the fallback), no role checkboxes without "users act";
    - an old API (no /mine): every tab but Permissions, as before;
    - the Permissions editor: one row per action, ROLE_ADMIN fixed, a tick PUTs at once (Saving, Saved, a dot marking
      a change from the default), a refusal shown and the tick put back, Reset to defaults (two clicks), tableReady
@@ -226,6 +226,7 @@ const settle = (page) => page.waitForFunction(() => document.querySelector('.tab
 const shownTabs = (page) => page.$$eval(".tabs .tab", (t) => t.filter((n) => !n.hidden && n.getBoundingClientRect().width > 0).map((n) => n.id.replace("tab-", "")));
 const activeTab = (page) => page.$$eval('.tab[aria-selected="true"]', (t) => t.map((n) => n.id.replace("tab-", "")).join(","));
 const cardOf = (id) => '#fl-list .fl-card[data-id="' + id + '"]';
+const J_ = JSON.stringify;
 const btnLabels = (page, sel) => page.$$eval(sel, (b) => b.filter((x) => !x.hidden && x.getBoundingClientRect().width > 0).map((x) => x.textContent));
 
 /* ---- the pure helpers ---- */
@@ -332,19 +333,24 @@ async function run() {
   r = await open(browser, base + "/admin.html#users", api);
   page = r.page;
   await page.waitForSelector("#user-rows tr td.rank");
-  check("users: a Helper column with a Make/Remove helper button", (await page.$$eval("#panel-users thead th", (h) => h.map((x) => x.textContent)))
-    .indexOf("Helper") !== -1 && (await btnLabels(page, "#user-rows button")).indexOf("Remove helper") !== -1);
+  check("users: one Manage button per row, no role buttons", J_(await btnLabels(page, "#user-rows tr.user-row button")) === '["Manage"]');
   check("users: role-helper badge", (await page.$$("#user-rows .role-badge.role-helper")).length === 1 && /HELPER/.test(await text(page, "#user-rows .role-badge.role-helper")));
-  await page.click('#user-rows button:text("Remove helper")');
-  await page.waitForFunction(() => document.querySelector("#users-alert") && !document.getElementById("users-alert").hidden);
+  await page.click("#user-rows .user-manage");
+  check("users: a Helper checkbox, ticked", await page.$eval('#user-rows .user-drawer input[value="ROLE_HELPER"]', (i) => i.checked && !i.disabled));
+  await page.uncheck('#user-rows .user-drawer input[value="ROLE_HELPER"]');
+  await page.click("#user-rows .user-drawer .role-actions .btn"); // removing a staff role: armed first
+  await page.click("#user-rows .user-drawer .role-actions .btn");
+  await page.waitForFunction(() => document.querySelector("#user-rows .user-note") && !document.querySelector("#user-rows .user-note").hidden);
+  // The fake API has no PUT /api/admin/roles/users/{id}: the old POST /api/admin/roles is the fallback.
   check("users: the POST body", JSON.stringify(last(api, "POST", "/api/admin/roles").body) === '{"username":"aldric2","role":"ROLE_HELPER","grant":false}', JSON.stringify(last(api, "POST", "/api/admin/roles").body));
   await page.close();
   api = newApi("moderator"); // users view, no users act, patches view
   r = await open(browser, base + "/admin.html#users", api);
   page = r.page;
   await page.waitForSelector("#user-rows tr td.rank");
-  check("users (moderator): no role, Discord or patch buttons; flags toggles disabled", (await btnLabels(page, "#user-rows button")).filter((b) => b !== "Logins").length === 2
-    && (await page.$$eval("#user-rows .admin-flags button", (b) => b.every((x) => x.disabled))) && (await page.$$("#patch-slots-panel:not([hidden])")).length === 1);
+  await page.click("#user-rows .user-manage");
+  check("users (moderator): no role, Discord or patch buttons; flags toggles disabled", J_(await btnLabels(page, "#user-rows .user-drawer button")) === '["Close","op","timer","Logins"]'
+    && (await page.$$eval("#user-rows .admin-flags button", (b) => b.every((x) => x.disabled))) && (await page.$$("#user-rows .user-drawer .role-check")).length === 0 && (await page.$$("#patch-slots-panel:not([hidden])")).length === 1);
   check("users (moderator): no page errors", r.errors.length === 0, r.errors.join("; "));
   await page.close();
   api = newApi("moderator");

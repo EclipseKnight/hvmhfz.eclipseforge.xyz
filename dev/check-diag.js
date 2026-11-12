@@ -28,7 +28,7 @@
      name from /data/weapons (a "(guess)" mark for guesses; bowgun shots by class, k6v1 for the HBG), MV with the
      hit's own MV, damage, crit; ids without a name (missing, or "unknown" in the data) flagged "unnamed" and listed in
      the note; a line it cannot read is shown as it is; a report without moves hides the table;
-   - the Users tab's Logins button shows the account's recent logins (GET /api/admin/users/{id}/logins): land,
+   - the Users tab's Logins button (in the Manage drawer) shows the account's recent logins (GET /api/admin/users/{id}/logins): land,
      patch, options, refusal, how it ended; "does not record logins yet" when tracking is false; the
      "This account's diagnostics" button opens the tab filtered to that account;
    - no page errors.
@@ -495,8 +495,10 @@ async function adminChecks(browser, base) {
   await page.waitForFunction(() => document.querySelectorAll("#diag-rows tr").length === 2);
 
   await page.evaluate(() => { window.location.hash = "users"; });
-  await page.waitForSelector("#user-rows button:has-text('Logins')");
-  await page.click("#user-rows button:has-text('Logins')");
+  await page.waitForSelector("#user-rows .user-manage");
+  await page.click("#user-rows .user-manage"); // the Logins button is in the Manage drawer
+  await page.waitForSelector("#user-rows .user-drawer button:has-text('Logins')");
+  await page.click("#user-rows .user-drawer button:has-text('Logins')");
   await page.waitForSelector("#logins-rows tr:nth-child(2)");
   const logins = await page.$$eval("#logins-rows tr", (n) => n.map((x) => x.textContent));
   check("logins newest first", logins[0].includes("Test land") && logins[0].includes("v1.21-pre3")
@@ -511,8 +513,10 @@ async function adminChecks(browser, base) {
   await page.close();
 
   const off = await open(browser, base, "/admin.html#users", { mode: "ok", posts: [], gets: [], tracking: false });
-  await off.page.waitForSelector("#user-rows button:has-text('Logins')");
-  await off.page.click("#user-rows button:has-text('Logins')");
+  await off.page.waitForSelector("#user-rows .user-manage");
+  await off.page.click("#user-rows .user-manage");
+  await off.page.waitForSelector("#user-rows .user-drawer button:has-text('Logins')");
+  await off.page.click("#user-rows .user-drawer button:has-text('Logins')");
   await off.page.waitForFunction(() => document.getElementById("logins-rows").textContent.includes("does not record logins yet"));
   await off.page.close();
 }
