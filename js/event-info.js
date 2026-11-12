@@ -69,11 +69,11 @@
     },
 
     campaigns: {
-      what: "Starter and weekly item packs from the Event Campaigns screen in town. Free, nothing to hunt for.",
+      what: "Starter and weekly item packs, claimed at the event tent in town. Free, nothing to hunt for.",
       steps: [
-        "In town, open the Event Campaigns screen.",
+        "In town, go to the event tent and open Event Campaigns there.",
         "Choose a pack. The screen shows its items.",
-        "Receive it. The items go into your item box."
+        "Claim it. The items go into your item box."
       ],
       gets: [
         "New & Returning Hunter Pack, once per character: Mega Potion x10, Max Potion x3, Ancient Potion x2, Mega Nutrients x5, Mega Demondrug x5, Mega Armorskin x5, Energy Drink x5, Lifepowder x5, Goushu Ticket x3, Guild Point Tkt x3, Sigil Mat Ticket x2, Tower Medal x3.",
