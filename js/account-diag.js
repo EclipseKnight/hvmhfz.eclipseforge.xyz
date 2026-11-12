@@ -1,10 +1,11 @@
-/* "Diagnostics" box on the Account tab. The player picks (or drags in) the game's hvdiag.txt and any
-   hvcrash-<time>.txt files (client patch v1.21 and newer write them in the game folder) and uploads them as they
+/* "Diagnostics" box on the Account tab. The player picks (or drags in) the game's hvdiag.txt, any
+   hvcrash-<time>.txt files and hvmods.log (client patch v1.21 and newer write them in the game folder) and uploads them as they
    are, one after another: for each file POST /api/account/diagnostics?name=<file name>, body = the file
    (text/plain), signed in. The API takes one file per request, so the loop is here. It answers
-   {id, fileName, kind: "diag"|"crash", outcome, findings: [{kind, text}], facts: [[label, value]]} and keeps the
-   file for staff; 400/413/429 come with {message}. Up to 10 files per pick or drop, text files only (.txt or
-   text/plain), each up to 256 KB: other files are listed as errors here without a request. Each file shows its
+   {id, fileName, kind: "diag"|"crash"|"log", outcome, findings: [{kind, text}], facts: [[label, value]]} and keeps the
+   file for staff; 400/413/429 come with {message}. Up to 10 files per pick or drop, text or log files only (.txt,
+   .log or text/plain): a .txt up to 256 KB, a .log up to 2 MB (the API keeps the newest 256 KB of a long log); other
+   files are listed as errors here without a request. Each file shows its
    status (queued, uploading, answer, error) and its own answer. A 401, 404, 429 or a lost connection stops the
    run and leaves the files not yet sent queued. All API text goes in with textContent. */
 (function () {
@@ -12,6 +13,7 @@
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
   var MAX_BYTES = 256 * 1024;
+  var MAX_LOG_BYTES = 2 * 1024 * 1024;
   var MAX_FILES = 10;
 
   var panel = document.getElementById("diag-panel");
@@ -95,8 +97,13 @@
     refreshControls();
   }
 
+  function isLog(file) {
+    return /\.log$/i.test(file.name);
+  }
+
+  // The browser gives a .log file no type, so the name decides: .txt and .log are taken, and text/plain.
   function isText(file) {
-    return /\.txt$/i.test(file.name) || file.type === "text/plain";
+    return /\.(txt|log)$/i.test(file.name) || file.type === "text/plain";
   }
 
   function same(a, b) {
@@ -124,10 +131,12 @@
       var it = { file: file, status: "queued", message: "", answer: null, node: el("li") };
       if (!isText(file)) {
         it.status = "error";
-        it.message = "Not a text file: upload hvdiag.txt or an hvcrash file from the game folder.";
-      } else if (file.size > MAX_BYTES) {
+        it.message = "Not a text or log file: upload hvdiag.txt, an hvcrash file or hvmods.log from the game folder.";
+      } else if (isLog(file) ? file.size > MAX_LOG_BYTES : file.size > MAX_BYTES) {
         it.status = "error";
-        it.message = "Too large (over 256 KB): upload hvdiag.txt or an hvcrash file from the game folder.";
+        it.message = isLog(file)
+          ? "Too large (over 2 MB): upload the newest part of the log."
+          : "Too large (over 256 KB): upload hvdiag.txt, an hvcrash file or hvmods.log from the game folder.";
       } else if (room <= 0) {
         skipped++;
         return;

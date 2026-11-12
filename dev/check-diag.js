@@ -8,7 +8,9 @@
      its own outcome, one line per finding and the facts (with the one-line "Move hits" summary when the report has
      move hits); API text goes in as text (no HTML);
    - 2 files dropped on the box (hover state while dragging) are queued and uploaded the same way;
-   - a wrong file type or a file over 256 KB is listed as an error and never sent; an API refusal (400) on one file
+   - a wrong file type or a file over 256 KB is listed as an error and never sent; a .log file (hvmods.log, which the
+     browser gives no type) is accepted and sent as it is, also a 300 KB one (the API keeps its newest 256 KB), a .log
+     over 2 MB or a .png is listed as an error; an API refusal (400) on one file
      shows the API's message and the other files still go; more than 10 files at once are capped with a message;
      an API without the endpoint (404) says so and keeps the files queued;
    - nothing in the box passes 375px. Screenshots go to /srv/devbot/.bot-logs/diag-upload-multi/.
@@ -169,8 +171,10 @@ async function accountChecks(browser, base) {
   await page.waitForSelector("#diag-panel", { state: "attached" });
   const help = await page.textContent("#diag-panel");
   check("help names the files and the folder", help.includes("hvdiag.txt") && help.includes("hvcrash-")
-    && help.includes("Open file location") && help.includes("256") && help.includes("10 at a time"), help.slice(0, 200));
+    && help.includes("hvmods.log") && help.includes("Open file location") && help.includes("256") && help.includes("10 at a time"), help.slice(0, 200));
   check("picker takes several files", await page.$eval("#diag-file", (n) => n.multiple));
+  check("picker offers .txt and .log", (await page.getAttribute("#diag-file", "accept")).split(",").includes(".log")
+    && (await page.getAttribute("#diag-file", "accept")).split(",").includes(".txt"));
   check("Upload off until a file is picked", await page.isDisabled("#diag-upload"));
   check("list hidden until a file is picked", await page.isHidden("#diag-list"));
 
@@ -236,13 +240,34 @@ async function accountChecks(browser, base) {
     { name: "screenshot.png", mimeType: "image/png", buffer: Buffer.from("PNG") },
     { name: "big.txt", mimeType: "text/plain", buffer: Buffer.alloc(256 * 1024 + 1, 65) }]);
   rows = await rowsOf(page);
-  check("bad type listed as error", rows.length === 3 && rows[1].status === "Error" && rows[1].text.includes("Not a text file"), JSON.stringify(rows[1]));
+  check("bad type listed as error", rows.length === 3 && rows[1].status === "Error" && rows[1].text.includes("Not a text or log file"), JSON.stringify(rows[1]));
   check("too large listed as error", rows[2].status === "Error" && rows[2].text.includes("Too large"), JSON.stringify(rows[2]));
   check("errors refused before any request", state.posts.length === 0);
   await page.click("#diag-upload");
   await page.waitForFunction(() => document.querySelector("#diag-list .diag-file-status").textContent === "Answer");
   check("only the good file sent", state.posts.length === 1 && state.posts[0].url.endsWith("name=hvcrash-ok.txt"), state.posts.map((p) => p.url).join(" "));
   await page.screenshot({ path: SHOTS + "/4-bad-type-and-size.png", fullPage: true });
+
+  // 4b. hvmods.log: no browser type, still taken (also uppercase and over 256 KB); a log over 2 MB and a .png are errors
+  state.posts.length = 0;
+  const LOGTEXT = "hvmods 11: HD (Direct3D 9), base 0x10000000, flags 0x00000200\r\nmodule test started\r\n";
+  await page.setInputFiles("#diag-file", [
+    { name: "hvmods.log", mimeType: "", buffer: Buffer.from(LOGTEXT) },
+    { name: "OLD.LOG", mimeType: "", buffer: Buffer.alloc(300 * 1024, 65) },
+    { name: "huge.log", mimeType: "", buffer: Buffer.alloc(2 * 1024 * 1024 + 1, 65) },
+    { name: "hvmods.png", mimeType: "image/png", buffer: Buffer.from("PNG") }]);
+  rows = await rowsOf(page);
+  check("log files queued", rows[0].status === "Queued" && rows[1].status === "Queued", JSON.stringify(rows.map((r) => r.status)));
+  check("log over 2 MB is an error", rows[2].status === "Error" && rows[2].text.includes("over 2 MB"), JSON.stringify(rows[2]));
+  check("png is an error naming the log", rows[3].status === "Error" && rows[3].text.includes("Not a text or log file")
+    && rows[3].text.includes("hvmods.log"), JSON.stringify(rows[3]));
+  await page.click("#diag-upload");
+  await page.waitForFunction(() => document.querySelector("#diag-list .diag-file-status").textContent === "Answer"
+    && document.querySelectorAll("#diag-list .diag-file-status")[1].textContent === "Answer");
+  check("both logs sent as they are", state.posts.length === 2 && state.posts[0].body === LOGTEXT
+    && state.posts[0].url.endsWith("name=hvmods.log") && state.posts[1].url.endsWith("name=OLD.LOG")
+    && state.posts[1].body.length === 300 * 1024 && (state.posts[0].type || "").startsWith("text/plain"),
+    state.posts.map((p) => p.url + " " + (p.body || "").length).join(" "));
 
   // 5. an API error on the 2nd of 3: that one is an error, the 3rd still goes
   state.posts.length = 0;
