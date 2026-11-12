@@ -1,7 +1,13 @@
 /* Admin: the Flags tab. The server flags odd accounts (a lot of GCP or other points, a save that cannot be real);
    an admin reviews each flag here and marks it approved (the account is fine) or cheat (the currency is set down;
    an Undo puts it back). The API is /api/admin/flags/** (the flag queue is sorted by severity by the API).
-   Admins write, moderators read: the buttons are not drawn when the API says canWrite is false.
+   Who may do what comes from window.hvStaff (js/admin.js, GET /api/admin/permissions/mine): Approve, Cheat, Undo, the
+   bulk buttons, the rules table and Scan now each need their own flags permission (approve, cheat, undo, act), the
+   notes form needs "notes". Without hvStaff (an older API) the queue's canWrite is used for all of them: admins
+   write, moderators read.
+   A flag's detail also loads the Character panel (GET /api/admin/flags/subject/{userId}?character={characterId}):
+   the character, its account, currencies against their caps, quests, every flag with its history, imports, logins,
+   other characters, past admin actions and staff notes (POST /api/admin/flags/notes). Never an IP address.
    The badge on the tab button (open count, critical count in red) comes from GET /api/admin/flags/summary and is
    loaded when the admin page opens (window.hvFlagsBadge, called by js/admin.js).
    Markup from the API (names, notes, reasons) stays text (textContent). Errors show the API's message as it is. */
@@ -90,7 +96,26 @@
       + num(s.flagged) + " flagged, " + num(s.newFlags) + " new.";
   }
 
-  var helpers = { utc: utc, num: num, currencyName: currencyName, parseValue: parseValue, numbersText: numbersText, whoText: whoText,
+  /* HR shown the game's way: "HR100 (HR4)". Swap for the shared helper when the hr-display work lands. */
+  function hrLabel(hr) {
+    var n = Number(hr);
+    if (hr === null || hr === undefined || hr === "" || !isFinite(n)) return "HR unknown";
+    if (n < 1) return "HR" + n;
+    var rank = n >= 999 ? 7 : n >= 998 ? 6 : n >= 299 ? 5 : n >= 99 ? 4 : n >= 50 ? 3 : n >= 30 ? 2 : 1;
+    return "HR" + n + " (HR" + rank + ")";
+  }
+
+  /** "GR50 · HR999 (HR7)"; the GR part only when gr > 0. */
+  function levelLabel(hr, gr) { return (gr > 0 ? "GR" + gr + " \u00b7 " : "") + hrLabel(hr); }
+
+  /** 45000 seconds -> "12 h 30 m"; null -> "not known". */
+  function playtimeText(seconds) {
+    if (seconds === null || seconds === undefined || !isFinite(Number(seconds))) return "not known";
+    var m = Math.floor(Number(seconds) / 60);
+    return Math.floor(m / 60) + " h " + (m % 60) + " m";
+  }
+
+  var helpers = { hrLabel: hrLabel, levelLabel: levelLabel, playtimeText: playtimeText, utc: utc, num: num, currencyName: currencyName, parseValue: parseValue, numbersText: numbersText, whoText: whoText,
     cheatTarget: cheatTarget, changeLine: changeLine, bulkBody: bulkBody, badgeOf: badgeOf, lastScanText: lastScanText };
   if (typeof module !== "undefined" && module.exports) module.exports = helpers;
   if (typeof document === "undefined") return;
@@ -100,8 +125,12 @@
   var started = false;
   var state = {
     status: "open", rule: "", flags: [], counts: {}, lastScan: null, canWrite: true, rules: [],
-    selected: {}, detail: null, confirm: null, busy: false
+    selected: {}, detail: null, confirm: null, busy: false,
+    subject: null   // the Character panel: {userId, characterId, loading, error, data}
   };
+
+  // One flags permission (view, approve, cheat, undo, notes, act). Without hvStaff the queue's canWrite decides.
+  function can(action) { return window.hvStaff ? window.hvStaff.can("flags", action) : state.canWrite; }
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -233,8 +262,10 @@
     $("fl-note").textContent = (c.open || 0) + " open" + (c.critical ? ", " + c.critical + " critical" : "");
     $("fl-counts").textContent = "Open " + (c.open || 0) + " (critical " + (c.critical || 0) + "), approved " + (c.approved || 0) + ", cheat " + (c.cheat || 0) + ".";
     $("fl-scanline").textContent = lastScanText(state.lastScan);
-    $("fl-scan").hidden = !state.canWrite;
-    $("fl-bulkbar").hidden = !state.canWrite;
+    $("fl-scan").hidden = !can("act");
+    $("fl-bulkbar").hidden = !can("approve") && !can("cheat");
+    $("fl-bulk-approve").hidden = !can("approve");
+    $("fl-bulk-cheat").hidden = !can("cheat");
     Array.prototype.forEach.call($("fl-status").children, function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-status") === state.status ? "true" : "false"); });
     renderList();
     renderBulk();
@@ -311,17 +342,19 @@
       d.addEventListener("click", function (e) { e.stopPropagation(); openDetail(f.id); });
       act.appendChild(d);
     }
-    if (state.canWrite && f.status !== "cheat") {
-      if (f.status === "open") {
+    if (f.status !== "cheat") {
+      if (f.status === "open" && can("approve")) {
         var a = el("button", "ghost-btn small", "Approve");
         a.type = "button";
         a.addEventListener("click", function (e) { e.stopPropagation(); askSingle("approve", f); });
         act.appendChild(a);
       }
-      var c = el("button", "btn btn-primary btn-small", "Cheat");
-      c.type = "button";
-      c.addEventListener("click", function (e) { e.stopPropagation(); askSingle("cheat", f); });
-      act.appendChild(c);
+      if (can("cheat")) {
+        var c = el("button", "btn btn-primary btn-small", "Cheat");
+        c.type = "button";
+        c.addEventListener("click", function (e) { e.stopPropagation(); askSingle("cheat", f); });
+        act.appendChild(c);
+      }
     }
     card.appendChild(act);
     if (o.details) card.addEventListener("click", function () { openDetail(f.id); });
@@ -335,7 +368,7 @@
       box.appendChild(el("p", "empty-cell", "No " + (state.status === "all" ? "" : STATUSES[state.status].toLowerCase() + " ") + "flags" + (state.rule ? " for this rule" : "") + "."));
       return;
     }
-    state.flags.forEach(function (f) { box.appendChild(flagCard(f, { selectable: state.canWrite, details: true })); });
+    state.flags.forEach(function (f) { box.appendChild(flagCard(f, { selectable: can("approve") || can("cheat"), details: true })); });
   }
 
   /* --- bulk bar --- */
@@ -493,6 +526,7 @@
   function openDetail(id, quiet) {
     return request("/api/admin/flags/" + id).then(function (d) {
       state.detail = d;
+      loadSubject(d.flag.userId, d.flag.characterId);
       renderDetail();
       if (!quiet) $("fl-detail").scrollIntoView({ block: "start" });
     }).catch(function (e) { if (quiet) state.detail = null; fail(e); renderDetailGone(); });
@@ -508,6 +542,11 @@
     var f = d.flag;
     $("fl-detail-title").textContent = "Flag #" + f.id + ": " + whoText(f);
     box.appendChild(flagCard(f, { selectable: false, details: false }));
+
+    var subject = el("div", "fl-subject");
+    subject.id = "fl-subject";
+    box.appendChild(subject);
+    renderSubject();
 
     box.appendChild(el("h4", "subhead", "History"));
     var wrap = el("div", "table-wrap"), table = el("table", "data-table admin-table fl-history");
@@ -534,7 +573,7 @@
       var n = el("td", null, (h.note || "") + (h.undoneAt ? (h.note ? " " : "") + "(undone by " + (h.undoneBy || "?") + " " + utc(h.undoneAt) + ")" : ""));
       tr.appendChild(n);
       var a = el("td");
-      if (state.canWrite && h.undoable) {
+      if (can("undo") && h.undoable) {
         var b = el("button", "ghost-btn small", "Undo");
         b.type = "button";
         b.addEventListener("click", function () { askUndo(h, f); });
@@ -562,6 +601,334 @@
     box.appendChild(ul);
   }
 
+  /* --- the Character panel --- */
+
+  function plain(v) { return v === null || v === undefined || v === "" ? "not known" : String(v); }
+
+  function ago(iso) { return iso ? utc(iso) || "not known" : "not known"; }
+
+  function loadSubject(userId, characterId) {
+    var target = { userId: userId, characterId: characterId === undefined ? null : characterId, loading: true, error: null, data: null };
+    state.subject = target;
+    var path = "/api/admin/flags/subject/" + encodeURIComponent(userId)
+      + (target.characterId !== null ? "?character=" + encodeURIComponent(target.characterId) : "");
+    request(path).then(function (d) {
+      if (state.subject !== target) return;
+      target.loading = false;
+      target.data = d && typeof d === "object" ? d : null;
+      if (!target.data) target.error = "The answer was empty.";
+      renderSubject();
+    }).catch(function (e) {
+      if (state.subject !== target) return;
+      target.loading = false;
+      target.error = e.message;
+      renderSubject();
+    });
+  }
+
+  // A definition list from [label, value] pairs; a value may be a text or a node.
+  function dl(pairs) {
+    var list = el("dl", "fl-dl");
+    pairs.forEach(function (p) {
+      list.appendChild(el("dt", null, p[0]));
+      var dd = el("dd");
+      if (p[1] && p[1].nodeType) dd.appendChild(p[1]); else dd.textContent = p[1];
+      list.appendChild(dd);
+    });
+    return list;
+  }
+
+  function block(title, open, count) {
+    var d = el("details", "fl-block");
+    d.open = !!open;
+    d.appendChild(el("summary", null, title + (count !== undefined && count !== null ? " (" + count + ")" : "")));
+    return d;
+  }
+
+  function miniTable(headers, rows) {
+    var wrap = el("div", "table-wrap"), table = el("table", "data-table admin-table");
+    table.setAttribute("data-nosort", "");
+    var head = el("thead"), hr = el("tr");
+    headers.forEach(function (t) { hr.appendChild(el("th", null, t)); });
+    head.appendChild(hr);
+    table.appendChild(head);
+    var tb = el("tbody");
+    rows.forEach(function (cells) {
+      var tr = el("tr");
+      cells.forEach(function (c) { tr.appendChild(el("td", null, c === null || c === undefined ? "" : String(c))); });
+      tb.appendChild(tr);
+    });
+    table.appendChild(tb);
+    wrap.appendChild(table);
+    return wrap;
+  }
+
+  function unavailable(what) { return el("p", "note-text", what + ": not available."); }
+
+  function link(href, text, newTab) {
+    var a = el("a", "fl-link", text);
+    a.href = href;
+    if (newTab) { a.target = "_blank"; a.rel = "noopener"; }
+    return a;
+  }
+
+  function currencyRow(c) {
+    var row = el("div", "fl-cur");
+    var top = el("div", "fl-cur-top");
+    top.appendChild(el("strong", null, c.label || c.key));
+    var cap = c.cap === null || c.cap === undefined ? "no cap" : num(c.cap);
+    top.appendChild(el("span", "fl-cur-val", num(c.value) + " / " + cap));
+    row.appendChild(top);
+    if (typeof c.cap === "number" && c.cap > 0 && typeof c.value === "number") {
+      var bar = el("div", "fl-bar");
+      var fill = el("span", "fl-bar-fill");
+      fill.style.width = Math.max(0, Math.min(100, c.value / c.cap * 100)) + "%";
+      if (typeof c.flagThreshold === "number" && c.flagThreshold <= c.value) fill.classList.add("is-over");
+      bar.appendChild(fill);
+      if (typeof c.flagThreshold === "number" && c.flagThreshold <= c.cap) {
+        var mark = el("span", "fl-bar-mark");
+        mark.style.left = Math.max(0, Math.min(100, c.flagThreshold / c.cap * 100)) + "%";
+        mark.title = "flag threshold " + num(c.flagThreshold);
+        bar.appendChild(mark);
+      }
+      row.appendChild(bar);
+    }
+    var info = [];
+    if (c.flagThreshold !== null && c.flagThreshold !== undefined) info.push("flagged above " + num(c.flagThreshold));
+    if (c.earnable) info.push(String(c.earnable));
+    if (info.length) row.appendChild(el("div", "fl-cur-note", info.join(". ")));
+    return row;
+  }
+
+  function subjectFlag(item) {
+    var f = item && item.flag;
+    if (!f) return null;
+    var wrap = el("div", "fl-sflag sev-" + f.severity);
+    var top = el("div", "fl-top");
+    top.appendChild(chip(SEVERITIES[f.severity] || f.severity, "fl-sev sev-" + f.severity));
+    top.appendChild(chip(STATUSES[f.status] || f.status, "fl-status st-" + f.status));
+    top.appendChild(el("strong", null, f.ruleLabel));
+    top.appendChild(el("span", "fl-id", whoText(f) + " #" + f.id));
+    wrap.appendChild(top);
+    wrap.appendChild(el("div", "fl-nums", numbersText(f) + " · first seen " + utc(f.firstSeen) + ", last seen " + utc(f.lastSeen)));
+    var hist = item.history || [];
+    if (hist.length) {
+      var ul = el("ul", "fl-hist");
+      hist.forEach(function (h) {
+        ul.appendChild(el("li", null, utc(h.at) + " " + (ACTIONS[h.action] || h.action) + (h.actor ? " by " + h.actor : "")
+          + (h.oldValue !== null && h.oldValue !== undefined ? ", " + num(h.oldValue) + " -> " + num(h.newValue) : "")
+          + (h.note ? " (" + h.note + ")" : "") + (h.undoneAt ? " [undone by " + (h.undoneBy || "?") + "]" : "")));
+      });
+      wrap.appendChild(ul);
+    }
+    return wrap;
+  }
+
+  function renderNotes(box, d) {
+    clear(box);
+    var ch = d.character;
+    var notes = Array.isArray(d.notes) ? d.notes : null;
+    if (!notes) box.appendChild(unavailable("Staff notes"));
+    else if (!notes.length) box.appendChild(el("p", "note-text", "No notes yet."));
+    else {
+      var ul = el("ul", "fl-notes");
+      notes.forEach(function (n) {
+        var li = el("li");
+        li.appendChild(el("span", "fl-note-meta", ago(n.at) + " · " + plain(n.author) + (n.characterId === null || n.characterId === undefined ? " · account note" : "")));
+        li.appendChild(el("div", "fl-note-text", n.note));
+        ul.appendChild(li);
+      });
+      box.appendChild(ul);
+    }
+    if (!can("notes")) return;
+    var form = el("form", "fl-note-form");
+    var label = el("label", null, "Add note");
+    label.setAttribute("for", "fl-subject-note");
+    var area = el("textarea");
+    area.id = "fl-subject-note";
+    area.rows = 2;
+    area.maxLength = 1000;
+    var msg = el("p", "form-alert");
+    msg.hidden = true;
+    var add = el("button", "ghost-btn small", "Add note");
+    add.type = "submit";
+    form.appendChild(label);
+    form.appendChild(area);
+    form.appendChild(msg);
+    form.appendChild(add);
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var text = area.value.trim();
+      if (!text) { msg.textContent = "Write the note first."; msg.hidden = false; return; }
+      add.disabled = true;
+      msg.hidden = true;
+      var body = { userId: state.subject.userId, characterId: ch && ch.id !== undefined ? ch.id : null, note: text };
+      request("/api/admin/flags/notes", { method: "POST", body: JSON.stringify(body) }).then(function (note) {
+        if (!Array.isArray(d.notes)) d.notes = [];
+        d.notes.unshift(note);
+        renderNotes(box, d);
+      }).catch(function (err) {
+        add.disabled = false;
+        msg.textContent = err.message;
+        msg.hidden = false;
+      });
+    });
+    box.appendChild(form);
+  }
+
+  function buildSubject(box, target) {
+    var d = target.data, ch = d.character, ac = d.account;
+    var head = el("div", "fl-subject-head");
+    head.appendChild(el("h4", "subhead", "Character"));
+    var links = el("span", "fl-links");
+    if (ch && ch.id !== null && ch.id !== undefined && !ch.deleted) links.appendChild(link("/hunters.html?id=" + encodeURIComponent(ch.id), "Hunter profile", true));
+    if (ac && ac.username) links.appendChild(link("#users?q=" + encodeURIComponent(ac.username), "Admin Users tab"));
+    head.appendChild(links);
+    box.appendChild(head);
+    var flagTarget = state.detail && state.detail.flag;
+    if (flagTarget && (flagTarget.characterId === undefined ? null : flagTarget.characterId) !== target.characterId) {
+      var back = el("button", "ghost-btn small", "Back to this flag's character");
+      back.type = "button";
+      back.addEventListener("click", function () { loadSubject(flagTarget.userId, flagTarget.characterId); renderSubject(); });
+      box.appendChild(back);
+    }
+
+    var two = el("div", "fl-two");
+    if (ch) {
+      var w = ch.mainWeapon;
+      two.appendChild(dl([
+        ["Name", plain(ch.name) + (ch.deleted ? " (deleted)" : "")],
+        ["Character id", plain(ch.id)],
+        ["Level", levelLabel(ch.hr, ch.gr)],
+        ["Main weapon", w ? plain(w.name || w.weaponType) + (w.quests !== null && w.quests !== undefined ? " · " + num(w.quests) + " quests" : "") + (w.basis ? " (" + w.basis + ")" : "") : "not known"],
+        ["Playtime", playtimeText(ch.playtimeSeconds)],
+        ["Created", ago(ch.createdAt)],
+        ["Last login", ago(ch.lastLogin)],
+        ["Guild", ch.guild ? plain(ch.guild.name) + " (#" + plain(ch.guild.id) + ")" : "no guild"],
+        ["Client version", ch.clientPatch !== null && ch.clientPatch !== undefined || ch.clientPatchName
+          ? plain(ch.clientPatchName || ch.clientPatch) + (ch.clientPatchSeenAt ? ", seen " + ago(ch.clientPatchSeenAt) : "") : "not known"]
+      ]));
+    } else {
+      two.appendChild(el("p", "note-text", "Account flag: no character. The character section is not available."));
+    }
+    if (ac) {
+      var discord = ac.discord ? plain(ac.discord.name) + " (" + plain(ac.discord.id) + ")" : "not linked";
+      two.appendChild(dl([
+        ["Account", plain(ac.username) + " #" + plain(ac.id)],
+        ["Created", ago(ac.createdAt)],
+        ["Last login", ago(ac.lastLogin)],
+        ["Account age", ac.ageDays === null || ac.ageDays === undefined ? "not known" : num(ac.ageDays) + " days"],
+        ["Roles", (ac.roles || []).map(function (r) { return String(r).replace("ROLE_", ""); }).join(", ") || "none"],
+        ["Discord", discord],
+        ["Patch channel", plain(ac.patchChannel)]
+      ]));
+    } else {
+      two.appendChild(unavailable("Account"));
+    }
+    box.appendChild(two);
+
+    box.appendChild(el("h5", "fl-sub", "Currencies"));
+    if (!Array.isArray(d.currencies)) box.appendChild(unavailable("Currencies"));
+    else if (!d.currencies.length) box.appendChild(el("p", "note-text", "No currencies to show."));
+    else d.currencies.forEach(function (c) { box.appendChild(currencyRow(c)); });
+
+    box.appendChild(el("h5", "fl-sub", "Quests"));
+    var q = d.quests;
+    if (!q) box.appendChild(unavailable("Quest history"));
+    else {
+      box.appendChild(dl([["Total", num(q.total)], ["Last 7 days", num(q.last7Days)], ["Last 30 days", num(q.last30Days)], ["Last quest", ago(q.lastQuestAt)]]));
+      if ((q.top || []).length) {
+        var top = block("Most played quests", false, q.top.length);
+        top.appendChild(miniTable(["Quest", "Times"], q.top.map(function (t) { return [t.name, num(t.count)]; })));
+        box.appendChild(top);
+      }
+    }
+
+    box.appendChild(el("h5", "fl-sub", "Flags of this character and account"));
+    var shown = Array.isArray(d.flags) ? d.flags.map(subjectFlag).filter(Boolean) : null;
+    if (!shown) box.appendChild(unavailable("Flags"));
+    else if (!shown.length) box.appendChild(el("p", "note-text", "No flags."));
+    else shown.forEach(function (n) { box.appendChild(n); });
+
+    var imports = Array.isArray(d.imports) ? d.imports : null;
+    if (!imports) { box.appendChild(el("h5", "fl-sub", "Imports")); box.appendChild(unavailable("Imports")); }
+    else {
+      var ib = block("Imports", false, imports.length);
+      ib.appendChild(imports.length ? miniTable(["When", "From", "By", "Scan", "Undone"], imports.map(function (i) {
+        return [ago(i.at), i.source, i.by, i.scan, i.undone ? "yes" : "no"];
+      })) : el("p", "note-text", "No imports."));
+      box.appendChild(ib);
+    }
+
+    var lg = d.logins;
+    if (!lg) { box.appendChild(el("h5", "fl-sub", "Logins")); box.appendChild(unavailable("Logins")); }
+    else {
+      var recent = Array.isArray(lg.recent) ? lg.recent : [];
+      var lb = block("Recent logins", false, lg.tracking === false ? "tracking off" : recent.length);
+      if (lg.tracking === false) lb.appendChild(el("p", "note-text", "Login tracking is off."));
+      else lb.appendChild(recent.length ? miniTable(["When", "World", "Character"], recent.map(function (r) { return [ago(r.at), r.world, r.character]; })) : el("p", "note-text", "No logins recorded."));
+      box.appendChild(lb);
+      var ip = lg.sharedIp, line;
+      if (!ip || ip.available === false) line = "IP data not available.";
+      else if (!ip.accounts) line = "Shares an IP with no other account.";
+      else line = "Shares an IP with " + ip.accounts + " other account" + (ip.accounts === 1 ? "" : "s") + ((ip.names || []).length ? ": " + ip.names.join(", ") : "") + ".";
+      box.appendChild(el("p", "fl-shared", line));
+    }
+
+    box.appendChild(el("h5", "fl-sub", "Other characters of the account"));
+    var others = d.otherCharacters;
+    if (!Array.isArray(others)) box.appendChild(unavailable("Other characters"));
+    else if (!others.length) box.appendChild(el("p", "note-text", "None."));
+    else {
+      var ul = el("ul", "fl-others");
+      others.forEach(function (o) {
+        var li = el("li"), b = el("button", "ghost-btn small");
+        b.type = "button";
+        b.textContent = plain(o.name) + " · " + levelLabel(o.hr, o.gr) + (o.lastLogin ? " · last " + ago(o.lastLogin) : "") + (o.deleted ? " (deleted)" : "");
+        b.addEventListener("click", function () { loadSubject(target.userId, o.id); renderSubject(); });
+        li.appendChild(b);
+        ul.appendChild(li);
+      });
+      box.appendChild(ul);
+    }
+
+    var actions = Array.isArray(d.adminActions) ? d.adminActions : null;
+    if (!actions) { box.appendChild(el("h5", "fl-sub", "Past admin actions")); box.appendChild(unavailable("Admin actions")); }
+    else {
+      var ab = block("Past admin actions", false, actions.length);
+      ab.appendChild(actions.length ? miniTable(["When", "Who", "Action", "Target", "Result"], actions.map(function (a) {
+        return [ago(a.at), a.actor, a.action, a.target, a.result];
+      })) : el("p", "note-text", "None."));
+      box.appendChild(ab);
+    }
+
+    box.appendChild(el("h5", "fl-sub", "Staff notes"));
+    var notesBox = el("div", "fl-notes-box");
+    notesBox.id = "fl-subject-notes";
+    box.appendChild(notesBox);
+    renderNotes(notesBox, d);
+  }
+
+  function renderSubject() {
+    var box = $("fl-subject"), t = state.subject;
+    if (!box) return;
+    clear(box);
+    if (!t) return;
+    if (t.loading) { box.appendChild(el("h4", "subhead", "Character")); box.appendChild(el("p", "note-text", "Loading the character...")); return; }
+    if (t.error || !t.data) {
+      box.appendChild(el("h4", "subhead", "Character"));
+      box.appendChild(el("p", "note-text", "The character panel is not available: " + (t.error || "no answer") + "."));
+      return;
+    }
+    try {
+      buildSubject(box, t);
+    } catch (e) {
+      clear(box);
+      box.appendChild(el("h4", "subhead", "Character"));
+      box.appendChild(el("p", "note-text", "The character panel could not be shown."));
+    }
+  }
+
   /* --- rules --- */
 
   function renderRules() {
@@ -585,7 +952,7 @@
       if (r.calibration) name.appendChild(el("div", "fl-rule-desc fl-rule-cal", "Live check: " + r.calibration));
       tr.appendChild(name);
       tr.appendChild(el("td", null, currencyName(r.currency) + ", " + (r.direction === "below" ? "below" : "above")));
-      if (state.canWrite) {
+      if (can("act")) {
         var en = el("input");
         en.type = "checkbox";
         en.checked = !!r.enabled;

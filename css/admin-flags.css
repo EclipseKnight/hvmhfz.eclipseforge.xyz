@@ -1,4 +1,10 @@
-/* Admin panel, Flags tab (js/admin-flags.js). Loaded by admin.html only. */
+/* Admin panel, Flags tab (js/admin-flags.js), its Character panel, the Permissions tab (js/admin-permissions.js) and the
+   small admin-only rules for hidden tabs and the helper role badge. Loaded by admin.html only. */
+
+/* a tab the account may not open (js/admin.js) */
+.tab[hidden]{display:none}
+.role-badge.role-helper{border-color:#8a6f3a;color:#5e4a1c;background:rgba(138,111,58,.14)}
+
 
 /* the counts on the tab button: open (brass) and critical (red) */
 .fl-badge{display:inline-block;min-width:1.6em;margin-left:6px;padding:2px 6px;border-radius:9px;background:rgba(232,200,119,.2);
@@ -74,3 +80,54 @@
   .fl-filters .field{flex:1 1 100%}
 }
 .fl-rules > summary .panel-note{color:var(--ink-soft);letter-spacing:.06em;text-transform:none;font-weight:400;margin-left:8px}
+
+/* the Character panel of a flag's detail */
+.fl-subject{margin:14px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:3px;background:rgba(255,250,236,.45)}
+.fl-subject-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 14px}
+.fl-subject .subhead{margin-top:0}
+.fl-sub{margin:14px 0 6px;font:700 .68rem var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.fl-links{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.84rem}
+.fl-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px;margin-top:8px}
+.fl-dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 12px;margin:0;font-size:.86rem}
+.fl-dl dt{color:var(--ink-soft)}
+.fl-dl dd{margin:0;overflow-wrap:anywhere}
+.fl-cur{margin:0 0 10px}
+.fl-cur-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 12px;font-size:.88rem}
+.fl-cur-val{font-variant-numeric:tabular-nums}
+.fl-bar{position:relative;height:8px;margin:4px 0;border-radius:4px;background:rgba(0,0,0,.12)}
+.fl-bar-fill{display:block;height:100%;border-radius:4px;background:var(--teal)}
+.fl-bar-fill.is-over{background:var(--wax)}
+.fl-bar-mark{position:absolute;top:-3px;width:2px;height:14px;background:var(--ink)}
+.fl-cur-note{font-size:.78rem;color:var(--ink-soft);overflow-wrap:anywhere}
+.fl-sflag{margin:0 0 8px;padding:6px 10px;border-left:4px solid var(--line);background:rgba(255,250,236,.5)}
+.fl-sflag.sev-critical{border-left-color:var(--wax)}
+.fl-sflag.sev-high{border-left-color:var(--gold)}
+.fl-sflag.sev-medium{border-left-color:var(--blue)}
+.fl-hist{margin:4px 0 0;padding-left:18px;font-size:.8rem;color:var(--ink-soft);overflow-wrap:anywhere}
+.fl-block{margin:8px 0}
+.fl-block > summary{cursor:pointer;font-size:.86rem;font-weight:600;margin-bottom:6px}
+.fl-shared{margin:8px 0 0;font-size:.86rem}
+.fl-notes{list-style:none;margin:0 0 10px;padding:0}
+.fl-notes li{margin:0 0 8px;padding:6px 10px;border-left:4px solid var(--gold);background:rgba(255,250,236,.5)}
+.fl-note-meta{font-size:.76rem;color:var(--ink-soft)}
+.fl-note-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.88rem}
+.fl-note-form label{display:block;margin:0 0 4px;font-size:.84rem;color:var(--ink-soft)}
+.fl-note-form textarea{display:block;width:100%;box-sizing:border-box;margin:0 0 6px;font:inherit}
+
+/* the Permissions tab */
+.perm-table{min-width:480px}
+.perm-role{text-align:center;vertical-align:bottom}
+.perm-role .ghost-btn{margin-top:4px;white-space:normal}
+.perm-always{font-size:.74rem;font-weight:400;color:var(--ink-soft);text-transform:none;letter-spacing:0}
+.perm-group th{text-align:left;background:rgba(183,138,51,.14);color:var(--gold-ink)}
+.perm-action{overflow-wrap:anywhere}
+.perm-cell{text-align:center;white-space:nowrap}
+.perm-box{display:inline-flex;align-items:center;gap:4px;min-width:32px;min-height:32px;justify-content:center}
+.perm-box input{width:18px;height:18px}
+.perm-dot{color:var(--gold);font-size:.7rem;line-height:1}
+.perm-msg{display:block;font-size:.72rem;color:var(--ink-soft)}
+.perm-msg.is-bad{color:var(--wax);white-space:normal}
+
+@media (max-width:720px){
+  .fl-two{grid-template-columns:minmax(0,1fr)}
+}

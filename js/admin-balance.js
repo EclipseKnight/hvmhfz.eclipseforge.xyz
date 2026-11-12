@@ -1033,7 +1033,13 @@
     if (started) { load(); return; }
     started = true;
     wire();
-    // Moderators look only. If the roles cannot be read the buttons stay and the API's 403 explains.
+    // Staff look only unless the account has "balance act" (window.hvStaff, js/admin.js). Without hvStaff (an older API):
+    // moderators look only; if the roles cannot be read the buttons stay and the API's 403 explains.
+    if (window.hvStaff) {
+      state.canWrite = window.hvStaff.can("balance", "act");
+      load();
+      return;
+    }
     request("/api/account").then(function (a) {
       if (a && a.roles && a.roles.indexOf("ROLE_ADMIN") === -1) state.canWrite = false;
     }).catch(function () { /* keep the buttons */ }).then(load);

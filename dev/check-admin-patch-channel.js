@@ -118,10 +118,10 @@ const rowOf = (page, name) => page.$$eval("#user-rows tr", (rows, n) => {
     const state = { channels: { boss: "pre:mods", tester: "stable", player: "pre:ghost" }, posts: [], reads: 0, refuse: false };
     const { page, errors } = await open(browser, base, state);
     const head = await page.$$eval("#user-rows", (b) => Array.from(b[0].closest("table").querySelectorAll("thead th")).map((t) => t.textContent));
-    check("columns: Tester, Playtester, then Patch channel", head.length === 12 && head[9] === "Tester" && head[10] === "Playtester" && head[11] === "Patch channel", head.join(","));
+    check("columns: Helper, Tester, Playtester, then Patch channel", head.length === 13 && head[9] === "Helper" && head[10] === "Tester" && head[11] === "Playtester" && head[12] === "Patch channel", head.join(","));
     let boss = await rowOf(page, "boss"), tester = await rowOf(page, "tester"), player = await rowOf(page, "player");
     const std = ["stable=Stable", "pre:mods=mods (v1.21-pre2)", "pre:balance=balance (v1.21-pre1)"];
-    check("pre row: badge, select, button", boss.cells === 12 && boss.badge === "pre: mods" && boss.button === "Set" && boss.selected === "pre:mods"
+    check("pre row: badge, select, button", boss.cells === 13 && boss.badge === "pre: mods" && boss.button === "Set" && boss.selected === "pre:mods"
       && JSON.stringify(boss.options) === JSON.stringify(std), JSON.stringify(boss));
     check("stable row: text, select, button", tester.badge === null && tester.text.includes("stable") && tester.button === "Set"
       && tester.selected === "stable" && JSON.stringify(tester.options) === JSON.stringify(std), JSON.stringify(tester));
@@ -177,7 +177,7 @@ const rowOf = (page, name) => page.$$eval("#user-rows tr", (rows, n) => {
     // An API without the field.
     const old = await open(browser, base, { channels: {}, posts: [], reads: 0, noSlots: true });
     const o = await rowOf(old.page, "tester");
-    check("old API: dash and no button", o.cells === 12 && o.text === "-" && o.button === null && o.options === null, JSON.stringify(o));
+    check("old API: dash and no button", o.cells === 13 && o.text === "-" && o.button === null && o.options === null, JSON.stringify(o));
     check("old API: no slots panel", !(await old.page.isVisible("#patch-slots-panel")));
     check("old API: no page errors", !old.errors.length, old.errors.join("; "));
 

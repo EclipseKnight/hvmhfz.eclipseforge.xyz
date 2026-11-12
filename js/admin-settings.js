@@ -372,6 +372,17 @@
       refreshImpact(false);
     }
     $("set-note-text").value = "";
+    applyReadOnly();
+  }
+
+  // Without "settings act" (window.hvStaff, js/admin.js) the tab only shows: no inputs, no review or save, no Revert.
+  function readOnly() { return !!(window.hvStaff && !window.hvStaff.can("settings", "act")); }
+
+  function applyReadOnly() {
+    var ro = readOnly();
+    Array.prototype.forEach.call($("set-form-wrap").querySelectorAll(".field.admin-wide, .admin-actions"), function (n) { n.hidden = ro; });
+    if (!ro) return;
+    Array.prototype.forEach.call($("set-form").querySelectorAll("input, select, textarea, button"), function (n) { n.disabled = true; });
   }
 
   /* --- the patch gate's Latest version: follows the latest release, or by hand --- */
@@ -753,7 +764,7 @@
         (lines.length ? lines : ["no change"]).forEach(function (l) { what.appendChild(el("div", null, l)); });
         tr.appendChild(what);
         var act = el("td");
-        if (h.after !== null) {
+        if (h.after !== null && !readOnly()) {
           var b = el("button", "ghost-btn small", "Revert");
           b.type = "button";
           b.title = h.before === null ? "Back to config.json for every key (this change created the section)" : "Put back the value before this change";
