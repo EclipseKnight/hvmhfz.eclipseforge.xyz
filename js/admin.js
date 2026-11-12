@@ -21,6 +21,10 @@
 
   function $(id) { return document.getElementById(id); }
 
+  // What this account may do, from /api/admin/permissions/mine (window.hvStaff, set in start()). With no answer
+  // (an older API) everything is allowed here and the API's 403 decides, as before.
+  function can(tool, action) { return !window.hvStaff || window.hvStaff.can(tool, action); }
+
   function token() {
     try {
       var value = localStorage.getItem(TOKEN_KEY) || "";
@@ -114,7 +118,7 @@
       row.appendChild(claims);
       row.appendChild(el("td", null, ends(gift)));
       var action = el("td");
-      if (!gift.ended) {
+      if (!gift.ended && can("gifts", "act")) {
         var end = el("button", "ghost-btn small", "End now");
         end.type = "button";
         end.addEventListener("click", function () { askEnd(gift, end); });
@@ -729,7 +733,7 @@
 
   /* ---------- tabs ---------- */
 
-  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", notices: "panel-notices", content: "panel-content", balance: "panel-balance", flags: "panel-flags", road: "panel-road", quests: "panel-quests", users: "panel-users", diagnostics: "panel-diagnostics", server: "panel-server", audit: "panel-audit" };
+  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", notices: "panel-notices", content: "panel-content", balance: "panel-balance", flags: "panel-flags", road: "panel-road", quests: "panel-quests", users: "panel-users", diagnostics: "panel-diagnostics", server: "panel-server", audit: "panel-audit", permissions: "panel-permissions" };
   var roadStarted = false;
   var usersWired = false;
   var serverWired = false;
@@ -738,8 +742,46 @@
   var ops = { service: "erupe", errors: false };
   var currentName = "";
 
+  // A tab shows when the account may view its tool (the tab keys are the tool keys); Permissions is for admins.
+  function tabAllowed(key) {
+    if (!window.hvStaff) return key !== "permissions";
+    return key === "permissions" ? window.hvStaff.admin : window.hvStaff.can(key, "view");
+  }
+
+  function firstAllowedTab() {
+    var tabs = document.querySelectorAll(".tabs .tab");
+    for (var i = 0; i < tabs.length; i++) {
+      var key = tabs[i].id.replace("tab-", "");
+      if (TAB_PANELS[key] && tabAllowed(key)) return key;
+    }
+    return null;
+  }
+
+  // The hash is "#users" or "#users?q=<name>" (the Flags character panel links to the second form).
+  function hashName() { return window.location.hash.replace("#", "").split("?")[0]; }
+
+  function hashParam(name) {
+    var query = window.location.hash.split("?")[1] || "";
+    var found = null;
+    query.split("&").forEach(function (pair) {
+      var parts = pair.split("=");
+      if (parts[0] === name && parts.length > 1) { try { found = decodeURIComponent(parts[1].replace(/\+/g, " ")); } catch (e) { found = parts[1]; } }
+    });
+    return found;
+  }
+
+  function hideTabs() {
+    Object.keys(TAB_PANELS).forEach(function (key) {
+      var tab = $("tab-" + key);
+      var panel = $(TAB_PANELS[key]);
+      if (tab) tab.hidden = !tabAllowed(key);
+      if (panel && !tabAllowed(key)) panel.hidden = true;
+    });
+  }
+
   function activateTab(name) {
-    if (!TAB_PANELS[name]) name = "gifts";
+    if (!TAB_PANELS[name] || !tabAllowed(name)) name = firstAllowedTab();
+    if (!name) return;
     Object.keys(TAB_PANELS).forEach(function (key) {
       var panel = $(TAB_PANELS[key]);
       if (panel) panel.hidden = key !== name;
@@ -774,10 +816,19 @@
     if (name === "diagnostics") {
       if (window.startAdminDiag) window.startAdminDiag();
     }
+    if (name === "permissions") {
+      if (window.startAdminPermissions) window.startAdminPermissions();
+    }
     if (name === "users") {
       if (!usersWired) {
         usersWired = true;
         wireUsers();
+      }
+      var wanted = hashParam("q");
+      if (wanted !== null && wanted !== users.query) {
+        users.query = wanted;
+        users.page = 0;
+        $("user-search").value = wanted;
       }
       loadUsers().catch(usersFail);
     }
@@ -806,7 +857,7 @@
       window.location.hash = tab.getAttribute("href").slice(1);
     });
     window.addEventListener("hashchange", function () {
-      activateTab(window.location.hash.replace("#", ""));
+      activateTab(hashName());
     });
   }
 
@@ -832,7 +883,7 @@
   }
 
   function roleBadge(role) {
-    var extra = role === "ROLE_ADMIN" ? " role-admin" : role === "ROLE_MODERATOR" ? " role-mod" : role === "ROLE_TESTER" ? " role-tester" : role === "ROLE_PLAYTESTER" ? " role-playtester" : "";
+    var extra = role === "ROLE_ADMIN" ? " role-admin" : role === "ROLE_MODERATOR" ? " role-mod" : role === "ROLE_HELPER" ? " role-helper" : role === "ROLE_TESTER" ? " role-tester" : role === "ROLE_PLAYTESTER" ? " role-playtester" : "";
     return el("span", "role-badge" + extra, role.replace("ROLE_", ""));
   }
 
@@ -879,6 +930,7 @@
     }
     var current = slot === null ? "stable" : "pre:" + slot;
     cell.appendChild(slot !== null ? el("span", "role-badge role-pre", "pre: " + slot) : el("span", "admin-desc", "stable"));
+    if (!can("patches", "act")) return cell;
     var select = el("select", "patch-channel-select");
     select.setAttribute("aria-label", "Patch channel of " + user.username);
     var published = (users.slots || []).map(function (s) { return s.slot; });
@@ -971,6 +1023,7 @@
     button.type = "button";
     button.setAttribute("aria-pressed", on ? "true" : "false");
     button.title = field + " is " + (on ? "on" : "off") + " for " + user.username;
+    if (!can("users", "act")) { button.disabled = true; return button; }
     button.addEventListener("click", function () {
       button.disabled = true;
       var body = {};
@@ -1048,6 +1101,10 @@
       view.appendChild(el("code", "discord-id", user.discordId));
     } else {
       view.appendChild(el("span", "admin-desc", "not linked"));
+    }
+    if (!can("users", "act")) {
+      cell.appendChild(view);
+      return cell;
     }
     var edit = el("button", "ghost-btn small", user.discordId ? "Change" : "Link");
     edit.type = "button";
@@ -1134,7 +1191,7 @@
       var empty = el("tr");
       var cell = el("td", "empty-cell", users.match === "character" ? "No character matches that search."
         : "No account or character matches that search.");
-      cell.colSpan = 12;
+      cell.colSpan = 13;
       empty.appendChild(cell);
       body.appendChild(empty);
       return;
@@ -1145,7 +1202,7 @@
       var name = el("td", "cell-name");
       name.appendChild(el("span", null, user.username));
       if (currentName && user.username === currentName) name.appendChild(el("span", "admin-desc", "you"));
-      if (window.AdminDiag) {
+      if (window.AdminDiag && can("diagnostics", "view")) {
         // Recent logins of this account (js/admin-diag.js, Erupe's login_history)
         var logins = el("button", "ghost-btn small", "Logins");
         logins.type = "button";
@@ -1165,21 +1222,35 @@
       chat.appendChild(chatToggle(user, "op"));
       chat.appendChild(chatToggle(user, "timer"));
       row.appendChild(chat);
+      // Role buttons are for admins only (the API keeps /api/admin/roles admin only, whatever the Permissions tab
+      // says, so nobody can raise their own role); otherwise the cells stay empty (the Roles column shows the badges).
+      var canRoles = !window.hvStaff || window.hvStaff.admin;
       var adminCell = el("td");
-      adminCell.appendChild(roleButton(user, "ROLE_ADMIN", "admin"));
+      if (canRoles) adminCell.appendChild(roleButton(user, "ROLE_ADMIN", "admin"));
       row.appendChild(adminCell);
       var modCell = el("td");
-      modCell.appendChild(roleButton(user, "ROLE_MODERATOR", "moderator"));
+      if (canRoles) modCell.appendChild(roleButton(user, "ROLE_MODERATOR", "moderator"));
       row.appendChild(modCell);
+      var helperCell = el("td");
+      if (canRoles) {
+        var helperBtn = roleButton(user, "ROLE_HELPER", "helper");
+        helperBtn.title = "Helper: staff with the narrowest default access (see the Permissions tab).";
+        helperCell.appendChild(helperBtn);
+      }
+      row.appendChild(helperCell);
       var testerCell = el("td");
-      var testerBtn = roleButton(user, "ROLE_TESTER", "tester");
-      testerBtn.title = "Custom quest and road tester: can load and try custom content before it is published.";
-      testerCell.appendChild(testerBtn);
+      if (canRoles) {
+        var testerBtn = roleButton(user, "ROLE_TESTER", "tester");
+        testerBtn.title = "Custom quest and road tester: can load and try custom content before it is published.";
+        testerCell.appendChild(testerBtn);
+      }
       row.appendChild(testerCell);
       var playtesterCell = el("td");
-      var playtesterBtn = roleButton(user, "ROLE_PLAYTESTER", "playtester");
-      playtesterBtn.title = "Playtester: may choose a pre-release client patch (players also join on their account page).";
-      playtesterCell.appendChild(playtesterBtn);
+      if (canRoles) {
+        var playtesterBtn = roleButton(user, "ROLE_PLAYTESTER", "playtester");
+        playtesterBtn.title = "Playtester: may choose a pre-release client patch (players also join on their account page).";
+        playtesterCell.appendChild(playtesterBtn);
+      }
       row.appendChild(playtesterCell);
       row.appendChild(patchChannelCell(user));
       body.appendChild(row);
@@ -1199,7 +1270,7 @@
 
   function loadUsers() {
     // The pre-release slots first (the select in each row needs them); an older API answers 404: no slots, no panel.
-    var slotsRead = request("/api/admin/patch-slots").catch(function () { return null; });
+    var slotsRead = can("patches", "view") ? request("/api/admin/patch-slots").catch(function () { return null; }) : Promise.resolve(null);
     return slotsRead.then(function (slotData) {
       users.slots = slotData && slotData.slotsAvailable !== false ? (slotData.slots || []) : [];
       renderPatchSlots(slotData);
@@ -1327,7 +1398,7 @@
           serverAlert(error.message || "The restart failed.");
         });
     });
-    actions.appendChild(restart);
+    if (can("server", "act")) actions.appendChild(restart);
     card.appendChild(actions);
     return card;
   }
@@ -1541,26 +1612,68 @@
     });
   }
 
+  // window.hvStaff (for the tab modules): can(tool, action), admin, roles, staff. Tools are the tab keys plus "patches".
+  function setStaff(mine) {
+    var tools = mine.tools || {};
+    var admin = !!mine.admin;
+    window.hvStaff = {
+      admin: admin,
+      staff: !!mine.staff || admin,
+      roles: mine.roles || [],
+      can: function (tool, action) {
+        if (admin) return true;
+        var list = tools[tool];
+        return !!list && list.indexOf(action) !== -1;
+      }
+    };
+  }
+
+  // Asks what the account may do. Old API (404, or an answer without "tools"): no hvStaff, today's behaviour.
+  function loadStaff() {
+    return request("/api/admin/permissions/mine").then(function (mine) {
+      if (mine && typeof mine.tools === "object" && mine.tools !== null) setStaff(mine);
+    }).catch(function (error) {
+      if (error.message === "signin") throw error;
+    });
+  }
+
+  function begin() {
+    if (window.hvStaff && !window.hvStaff.staff) {
+      hideTabs();
+      document.querySelector(".tabs").hidden = true;
+      alertBox("This account is not an admin.");
+      return;
+    }
+    hideTabs();
+    if (window.hvStaff && !firstAllowedTab()) {
+      document.querySelector(".tabs").hidden = true;
+      alertBox("This account has no admin tools yet. Ask an admin for access.");
+      return;
+    }
+    activateTab(hashName() || firstAllowedTab());
+    if (window.hvFlagsBadge && can("flags", "view")) window.hvFlagsBadge();
+    request("/api/users/self")
+      .then(function (self) { currentName = (self && self.username) || ""; })
+      .catch(function () { /* the list still works; only the "you" mark is missing */ });
+    if (!can("gifts", "view")) return;
+    request("/api/admin/distributions/options")
+      .then(function (data) {
+        options = data;
+        $("new-gift").hidden = !can("gifts", "act");
+        $("gift-list-panel").hidden = false;
+        wireForm();
+        return loadList();
+      })
+      .catch(showError);
+  }
+
   function start() {
     if (!token()) {
       alertBox("Sign in on the home page with an admin account first.");
       return;
     }
     wireTabs();
-    activateTab(window.location.hash.replace("#", "") || "gifts");
-    if (window.hvFlagsBadge) window.hvFlagsBadge();
-    request("/api/users/self")
-      .then(function (self) { currentName = (self && self.username) || ""; })
-      .catch(function () { /* the list still works; only the "you" mark is missing */ });
-    request("/api/admin/distributions/options")
-      .then(function (data) {
-        options = data;
-        $("new-gift").hidden = false;
-        $("gift-list-panel").hidden = false;
-        wireForm();
-        return loadList();
-      })
-      .catch(showError);
+    loadStaff().then(begin).catch(showError);
   }
 
   start();

@@ -22,7 +22,7 @@
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
     <link rel="stylesheet" href="/css/styles.css?v=15" />
-    <link rel="stylesheet" href="/css/admin-flags.css?v=1" />
+    <link rel="stylesheet" href="/css/admin-flags.css?v=2" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/tablesort.js" defer></script>
     <script src="/js/background.js" defer></script>
@@ -127,7 +127,7 @@
       <!-- /site-shell:crumbs -->
       <header class="page-head">
         <h1>Admin</h1>
-        <p class="page-sub">Gifts (distributions), the event calendar, the live game settings, the event content, the weapon balance, the flagged accounts, the Hunting Road rotation and the accounts of the server. A new gift shows in the game's gift list at once. Only admin accounts can use this page; the server checks every request.</p>
+        <p class="page-sub">Gifts (distributions), the event calendar, the live game settings, the event content, the weapon balance, the flagged accounts, the Hunting Road rotation and the accounts of the server. A new gift shows in the game's gift list at once. Staff only, each with the tabs an admin allowed; the server checks every request.</p>
 
       <nav class="tabs" role="tablist" aria-label="Admin sections">
         <a class="tab" id="tab-gifts" role="tab" aria-controls="panel-gifts" aria-selected="true" href="#gifts">Gifts</a>
@@ -143,6 +143,7 @@
         <a class="tab" id="tab-diagnostics" role="tab" aria-controls="panel-diagnostics" aria-selected="false" href="#diagnostics">Diagnostics</a>
         <a class="tab" id="tab-server" role="tab" aria-controls="panel-server" aria-selected="false" href="#server">Server</a>
         <a class="tab" id="tab-audit" role="tab" aria-controls="panel-audit" aria-selected="false" href="#audit">Audit</a>
+        <a class="tab" id="tab-permissions" role="tab" aria-controls="panel-permissions" aria-selected="false" href="#permissions" hidden>Permissions</a>
       </nav>
       </header>
 
@@ -377,7 +378,7 @@
         <div class="panel-head"><h2>Live settings</h2><span class="panel-note" id="set-note"></span></div>
         <p class="form-alert" id="set-alert" hidden></p>
         <p class="road-ok" id="set-ok" hidden></p>
-        <p class="note-text">The game server reads these every minute and applies them without a restart; each section says when players see a change. A field on <b>config default</b> uses the game server's config.json value. Every save shows its changes first, is checked as the game server checks it, and is kept in the history below (with Revert) and in the Audit tab. Moderators can look; only admins can save. All times on this tab are <b>UTC</b>.</p>
+        <p class="note-text">The game server reads these every minute and applies them without a restart; each section says when players see a change. A field on <b>config default</b> uses the game server's config.json value. Every save shows its changes first, is checked as the game server checks it, and is kept in the history below (with Revert) and in the Audit tab. Who may save is set in the Permissions tab (by default only admins). All times on this tab are <b>UTC</b>.</p>
         <div id="set-status"></div>
         <div class="ops-log-head">
           <h3 class="subhead">Sections</h3>
@@ -606,8 +607,8 @@
         </div>
         <div class="table-wrap">
           <table class="data-table admin-table">
-            <thead><tr><th>#</th><th>Account</th><th>Roles</th><th data-nosort>Characters</th><th>Last login</th><th data-nosort>Discord</th><th>Chat</th><th>Admin</th><th>Moderator</th><th>Tester</th><th>Playtester</th><th>Patch channel</th></tr></thead>
-            <tbody id="user-rows"><tr><td colspan="12" class="empty-cell">Loading</td></tr></tbody>
+            <thead><tr><th>#</th><th>Account</th><th>Roles</th><th data-nosort>Characters</th><th>Last login</th><th data-nosort>Discord</th><th>Chat</th><th>Admin</th><th>Moderator</th><th>Helper</th><th>Tester</th><th>Playtester</th><th>Patch channel</th></tr></thead>
+            <tbody id="user-rows"><tr><td colspan="13" class="empty-cell">Loading</td></tr></tbody>
           </table>
         </div>
         <div class="admin-pager">
@@ -673,7 +674,7 @@
         <p class="form-alert" id="bal-notable" hidden>The balance tables are not there yet: the API's db/balance.sql must run first.</p>
         <p class="form-alert" id="bal-nodata" hidden>The weapon names are missing (data/weapons/ is not on this site yet), so moves and weapons are typed by number: weapon type, style, entry and record id.</p>
         <div id="bal-main" hidden>
-          <p class="note-text">Every value the game uses for a move, a melee weapon or a ranged weapon can be changed here. Rows are the <b>draft</b>: nothing reaches players until it is published. Rows apply in order, wide rows (any) first. Publishing sends the table to every player online at once and to each player at login; a player in a quest gets it at the next town visit. It needs the client patch with server balance and the game server's balance support, neither live yet. Moderators can look; only admins can change.</p>
+          <p class="note-text">Every value the game uses for a move, a melee weapon or a ranged weapon can be changed here. Rows are the <b>draft</b>: nothing reaches players until it is published. Rows apply in order, wide rows (any) first. Publishing sends the table to every player online at once and to each player at login; a player in a quest gets it at the next town visit. It needs the client patch with server balance and the game server's balance support, neither live yet. Who may change it is set in the Permissions tab (by default only admins).</p>
           <div id="bal-status" class="note-text"></div>
 
           <!-- The grid: js/admin-balance-grid.js -->
@@ -823,7 +824,7 @@
         <p class="road-ok" id="fl-ok" hidden></p>
         <p class="form-alert" id="fl-notable" hidden>The flags tables are not installed yet.</p>
         <div id="fl-main" hidden>
-          <p class="note-text">Accounts the server found odd: a lot of GCP or other points, or a save that cannot be real. Look at each flag and mark it <b>Approved</b> (the account is fine) or <b>Cheat</b> (the currency is set down; Undo in the flag's history puts it back). Moderators can look; only admins can change.</p>
+          <p class="note-text">Accounts the server found odd: a lot of GCP or other points, or a save that cannot be real. Look at each flag and mark it <b>Approved</b> (the account is fine) or <b>Cheat</b> (the currency is set down; Undo in the flag's history puts it back). Who may approve, cheat, undo or add notes is set in the Permissions tab (by default helpers add notes, moderators also approve, admins do everything).</p>
           <p class="note-text" id="fl-counts"></p>
           <div class="fl-filters">
             <div class="chips" id="fl-status" role="group" aria-label="Status">
@@ -952,6 +953,23 @@
         <p class="note-text">Who did what: restarts, role and chat-flag changes, gifts, event calendar and content changes, Hunting Road changes and session cleanups. Actions are stored in the database and grouped by server run, newest run first; open a run to see its actions. The filters work on what was loaded. Times are shown in your local time.</p>
       </section>
       </div>
+
+      <!-- Who may do what: js/admin-permissions.js (GET/PUT /api/admin/permissions, POST .../reset); admins only -->
+      <div class="tab-panel" id="panel-permissions" hidden>
+      <section class="panel" id="permissions-panel">
+        <div class="panel-head"><h2>Permissions</h2><span class="panel-note" id="perm-note"></span></div>
+        <p class="form-alert" id="perm-alert" hidden></p>
+        <p class="road-ok" id="perm-ok" hidden></p>
+        <p class="form-alert" id="perm-notable" hidden>Run db/staff-tools.sql on the database to change permissions; these are the defaults.</p>
+        <div class="table-wrap perm-wrap">
+          <table class="data-table admin-table perm-table" id="perm-table" data-nosort>
+            <thead id="perm-head"></thead>
+            <tbody id="perm-body"><tr><td class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+        <p class="note-text">One column per role. A tick is saved at once. A dot marks a cell that differs from the default. Admins always have everything. <b>Reset to defaults</b> puts one role's column back.</p>
+      </section>
+      </div>
     </main>
 
     <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
@@ -995,19 +1013,20 @@
 
     <script src="/js/admin-quests.js?v=4"></script>
     <script src="/js/admin-events.js"></script>
-    <script src="/js/admin-settings.js"></script>
+    <script src="/js/admin-settings.js?v=2"></script>
     <script src="/js/admin-notices.js"></script>
     <script src="/js/admin-content.js"></script>
     <script src="/js/admin-patches.js?v=3"></script>
     <script src="/js/admin-diag.js?v=2"></script>
     <script src="/js/balance-fields.js?v=1"></script>
-    <script src="/js/admin-balance.js?v=3"></script>
+    <script src="/js/admin-balance.js?v=4"></script>
     <script src="/js/game-icons.js?v=2"></script>
     <script src="/js/move-names.js?v=2"></script>
     <script src="/js/admin-balance-grid.js?v=5"></script>
-    <script src="/js/admin-flags.js?v=2"></script>
+    <script src="/js/admin-flags.js?v=3"></script>
+    <script src="/js/admin-permissions.js?v=1"></script>
     <script src="/js/hr.js?v=1"></script>
-    <script src="/js/admin.js?v=9"></script>
+    <script src="/js/admin.js?v=10"></script>
     <script src="/js/search.js?v=3" defer></script>
   </body>
 </html>
