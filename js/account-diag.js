@@ -1,8 +1,13 @@
 /* "Diagnostics" box on the Diagnostics tab of the account page. The player picks (or drags in) the game's hvdiag.txt, any
    hvcrash-<time>.txt files and hvmods.log (client patch v1.21 and newer write them in the game folder) and uploads them as they
-   are, one after another: for each file POST /api/account/diagnostics?name=<file name>, body = the file
-   (text/plain), signed in. The API takes one file per request, so the loop is here. It answers
-   {id, fileName, kind: "diag"|"crash"|"log", outcome, findings: [{kind, text}], facts: [[label, value]]} and keeps the
+   are, one after another, **as soon as they are picked or dropped** (a player once picked files and never pressed
+   Upload): for each file POST /api/account/diagnostics?name=<file name>&note=<text>&area=<area>, body = the file
+   (text/plain), signed in. The API takes one file per request, so the loop is here. The "What went wrong?" note
+   (optional, 1000 characters) and the Area select are read when the upload starts and go with every file of that
+   batch; the Upload button shows only for files left queued (a stop, or not signed in), as "N files ready: Upload",
+   and leaving the page with files waiting or uploading asks first. It answers
+   {id, fileName, kind: "diag"|"crash"|"log", outcome, findings: [{kind, text}], facts: [[label, value]], note, area}
+   (the last two as kept; shown back under the file's answer) and keeps the
    file for staff; 400/413/429 come with {message}. Up to 10 files per pick or drop, text or log files only (.txt,
    .log or text/plain): a .txt up to 256 KB, a .log up to 2 MB (the API keeps the newest 256 KB of a long log); other
    files are listed as errors here without a request. Each file shows its
@@ -15,6 +20,12 @@
   var MAX_BYTES = 256 * 1024;
   var MAX_LOG_BYTES = 2 * 1024 * 1024;
   var MAX_FILES = 10;
+  var MAX_NOTE = 1000;
+  // The note goes in the URL; the API server refuses request lines over 8 KB, so the encoded note is kept under this
+  // (a note of Japanese text is 9 bytes a character once encoded).
+  var MAX_NOTE_ENCODED = 6000;
+  var AREAS = { "crash": "Crash", "mods": "Mods/overlays", "quest": "Quest", "sky-road": "Sky Corridor/Road",
+    "controls": "Controls", "other": "Other" };
 
   var panel = document.getElementById("diag-panel");
   if (!panel) return;
@@ -22,12 +33,17 @@
   var drop = document.getElementById("diag-drop");
   var button = document.getElementById("diag-upload");
   var clearButton = document.getElementById("diag-clear");
+  var noteField = document.getElementById("diag-note");
+  var noteCount = document.getElementById("diag-note-count");
+  var areaField = document.getElementById("diag-area");
   var alertNode = document.getElementById("diag-alert");
   var list = document.getElementById("diag-list");
 
   // items: [{file, status: "queued"|"uploading"|"done"|"error", message, answer, node}]
   var items = [];
   var busy = false;
+  // The note and area of the upload that is running (read when it starts).
+  var batch = { note: "", area: "" };
 
   function token() {
     try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; }
@@ -49,9 +65,26 @@
     return items.filter(function (it) { return it.status === "queued"; });
   }
 
+  // The note as it goes out: trimmed, at most MAX_NOTE characters and MAX_NOTE_ENCODED once percent-encoded.
+  // Returns {text, cut}: cut is true when the encoded limit made it shorter than the box.
+  function noteText() {
+    var cps = Array.from((noteField ? noteField.value : "").trim());
+    var cut = false;
+    if (cps.join("").length > MAX_NOTE) { cps = Array.from(cps.join("").slice(0, MAX_NOTE)); cut = true; }
+    while (cps.length && encodeURIComponent(cps.join("")).length > MAX_NOTE_ENCODED) { cps.length = Math.max(0, cps.length - 10); cut = true; }
+    return { text: cps.join("").trim(), cut: cut };
+  }
+
+  function refreshCount() {
+    if (noteField) noteCount.textContent = noteField.value.length + " / " + MAX_NOTE;
+  }
+
   function refreshControls() {
-    button.disabled = busy || !queued().length;
-    button.textContent = busy ? "Uploading…" : "Upload";
+    var waiting = queued().length;
+    // The Upload button is the way on only when files are left queued (an upload stopped, or not signed in).
+    button.hidden = !busy && !waiting;
+    button.disabled = busy || !waiting;
+    button.textContent = busy ? "Uploading…" : waiting + (waiting === 1 ? " file" : " files") + " ready: Upload";
     clearButton.hidden = !items.length;
     clearButton.disabled = busy;
     list.hidden = !items.length;
@@ -71,6 +104,10 @@
     if (it.status === "done") {
       var a = it.answer;
       li.appendChild(el("p", "diag-outcome", a.outcome || ""));
+      if (a.note || a.area) {
+        li.appendChild(el("p", "diag-note-echo", "Your note" + (a.area ? " (" + (AREAS[a.area] || a.area) + ")" : "") +
+          (a.note ? ": " + a.note : ": none")));
+      }
       if ((a.findings || []).length) {
         var ul = el("ul", "diag-findings");
         a.findings.forEach(function (f) { ul.appendChild(el("li", null, f.text)); });
@@ -114,7 +151,7 @@
   function add(fileList) {
     var files = Array.prototype.slice.call(fileList || []);
     if (!files.length) return;
-    if (busy) { say("Wait until the upload is finished before adding more files."); return; }
+    if (busy) { say("Wait until the upload is finished, then add more files."); return; }
     // A finished list starts fresh with the next pick.
     if (!queued().length) { items = []; clear(list); }
     var notes = [];
@@ -151,11 +188,14 @@
     if (dupes) notes.push(dupes + " file" + (dupes === 1 ? " was" : "s were") + " already in the list.");
     say(notes.join(" "));
     refreshControls();
+    start();   // no button to press: whatever is queued goes now
   }
 
   function upload(it) {
     setStatus(it, "uploading");
-    return fetch(API + "/api/account/diagnostics?name=" + encodeURIComponent(it.file.name), {
+    var query = "?name=" + encodeURIComponent(it.file.name) + (batch.note ? "&note=" + encodeURIComponent(batch.note) : "") +
+      (batch.area ? "&area=" + encodeURIComponent(batch.area) : "");
+    return fetch(API + "/api/account/diagnostics" + query, {
       method: "POST",
       headers: { "Authorization": "Bearer " + token(), "Content-Type": "text/plain" },
       body: it.file
@@ -163,7 +203,7 @@
       return r.json().catch(function () { return {}; }).then(function (body) { return { status: r.status, body: body }; });
     }).then(function (res) {
       if (res.status === 200) { it.answer = res.body; setStatus(it, "done"); return true; }
-      if (res.status === 401) { setStatus(it, "queued"); say("Your session has ended: sign in again to upload. The files not sent are still listed."); return false; }
+      if (res.status === 401) { setStatus(it, "queued"); say("Your session has ended: sign in again to upload. The files not sent are still listed (press Upload after signing in)."); return false; }
       if (res.status === 404) { setStatus(it, "queued"); say("Diagnostics uploads are not available yet. Send the files on Discord instead."); return false; }
       if (res.status === 429) { setStatus(it, "queued"); say(res.body.message || "Too many uploads: wait a little, then press Upload again."); return false; }
       setStatus(it, "error", res.body.message || "The upload failed (" + res.status + "). Try again later.");
@@ -189,13 +229,31 @@
     input.value = "";   // the same file can be picked again later
   });
 
-  button.addEventListener("click", function () {
+  // Starts uploading what is queued, with the note and area in the boxes right now (also when the note is empty).
+  function start() {
     if (busy || !queued().length) return;
-    if (!token()) { say("Sign in again to upload."); return; }
-    say("");
+    if (!token()) { say("Sign in again to upload. Your files stay listed: press Upload after signing in."); return; }
+    var n = noteText();
+    batch = { note: n.text, area: areaField ? areaField.value : "" };
+    if (!AREAS[batch.area]) batch.area = "";
+    if (n.cut) say((alertNode.textContent ? alertNode.textContent + " " : "") + "Your note was shortened to fit the upload.");
     busy = true;
     refreshControls();
     run();
+  }
+
+  button.addEventListener("click", function () { say(""); start(); });
+
+  if (noteField) {
+    noteField.addEventListener("input", refreshCount);
+    refreshCount();
+  }
+
+  // Files waiting or on their way are lost when the page closes: ask first.
+  window.addEventListener("beforeunload", function (e) {
+    if (!busy && !queued().length) return;
+    e.preventDefault();
+    e.returnValue = "";
   });
 
   clearButton.addEventListener("click", function () {

@@ -556,18 +556,36 @@
           <ol class="diag-steps">
             <li>Open the game folder: right-click the game's shortcut, <em>Open file location</em> (the folder with <code>mhf.exe</code>, <code>mhfo-hd.dll</code> and <code>hvmods.dll</code>).</li>
             <li>Find <code>hvdiag.txt</code>, and any <code>hvcrash-&hellip;.txt</code> file. Crash files are named by the time of the crash (UTC): take the newest. <code>hvmods.log</code> (the mods' log, there when a mod is on) can go with them.</li>
-            <li>Pick the files below, or drag them from the folder onto the box: up to 10 at a time, text or log files (<code>.txt</code>, <code>.log</code>), each up to 256&nbsp;KB (a log may be up to 2&nbsp;MB: its newest 256&nbsp;KB are read). They are uploaded one after another.</li>
+            <li>Pick the files below, or drag them from the folder onto the box: up to 10 at a time, text or log files (<code>.txt</code>, <code>.log</code>), each up to 256&nbsp;KB (a log may be up to 2&nbsp;MB: its newest 256&nbsp;KB are read). They are uploaded right away, one after another, with your note and area.</li>
           </ol>
           <p class="note-text">No <code>hvdiag.txt</code>? The game ran without <code>hvmods.dll</code> (an old patch, or the file is missing): run the launcher to update. The files hold your character's name and id and your PC's Windows version, language and memory; no passwords, no Windows user name or folder path.</p>
+          <div class="field diag-note-field">
+            <label for="diag-note">What went wrong? <span class="diag-optional">(optional, but it helps staff a lot)</span></label>
+            <p class="note-text diag-note-hint" id="diag-note-hint"><b>Add a note first.</b> Your files are uploaded as soon as you pick or drop them, with the note and area as they are at that moment.</p>
+            <textarea id="diag-note" rows="3" maxlength="1000" placeholder="e.g. the game crashed when I broke a part in the 3rd District"></textarea>
+            <p class="note-text diag-note-count" id="diag-note-count">0 / 1000</p>
+          </div>
+          <div class="field diag-area-field">
+            <label for="diag-area">Area</label>
+            <select id="diag-area">
+              <option value="">Not chosen</option>
+              <option value="crash">Crash</option>
+              <option value="mods">Mods/overlays</option>
+              <option value="quest">Quest</option>
+              <option value="sky-road">Sky Corridor/Road</option>
+              <option value="controls">Controls</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
           <div class="field diag-drop" id="diag-drop">
             <label for="diag-file">Report files</label>
             <input id="diag-file" type="file" accept=".txt,.log,text/plain" multiple />
-            <p class="note-text diag-drop-hint" id="diag-drop-hint">Drop your files here, or use the button to choose them.</p>
+            <p class="note-text diag-drop-hint" id="diag-drop-hint">Drop your files here, or use the button to choose them: they are uploaded at once.</p>
           </div>
           <p class="form-alert" id="diag-alert" role="alert" hidden></p>
           <ul class="diag-files" id="diag-list" aria-live="polite" hidden></ul>
           <div class="diag-actions">
-            <button type="button" class="btn btn-primary btn-small" id="diag-upload" disabled>Upload</button>
+            <button type="button" class="btn btn-primary" id="diag-upload" hidden>Upload</button>
             <button type="button" class="ghost-btn small" id="diag-clear" hidden>Clear list</button>
           </div>
         </section>
@@ -641,7 +659,7 @@
     <script src="/js/subtabs.js?v=1"></script>
     <script src="/js/account-qol.js?v=10"></script>
     <script src="/js/account-patch-channel.js?v=6"></script>
-    <script src="/js/account-diag.js?v=4"></script>
+    <script src="/js/account-diag.js?v=5"></script>
     <script src="/js/quest-submissions.js?v=2"></script>
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>

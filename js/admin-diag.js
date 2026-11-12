@@ -1,6 +1,7 @@
 /* Admin: the Diagnostics tab and the Users tab's "Recent logins", both read only, with the admin's token.
-   - Diagnostics: GET /api/admin/diagnostics?user=&before=&limit= lists the uploaded reports newest first
-     ({id, userId, username, createdAt, kind, fileName, outcome, patchName, problems}); GET /api/admin/diagnostics/{id}
+   - Diagnostics: GET /api/admin/diagnostics?user=&area=&before=&limit= lists the uploaded reports newest first
+     ({id, userId, username, createdAt, kind, fileName, outcome, patchName, problems, note, area}: the player's own
+     "What went wrong?" note, cut to 80 characters in the list, and the area they picked; filter by area); GET /api/admin/diagnostics/{id}
      gives one with its answer ({outcome, findings: [{kind, text}], facts: [[label, value]], summary}) and the file
      ({text}) and its [moves] lines ({moves}: the last 200 own hits while "Show move id" is on, hvmhfz_re part 109),
      shown as a table (time, weapon, style, move id with its name from /data/weapons, MV, damage, crit); an id the
@@ -65,12 +66,25 @@
 
   /* ---------- Diagnostics tab ---------- */
 
-  var diag = { started: false, user: "", before: null, last: null };
+  var diag = { started: false, user: "", area: "", before: null, last: null };
+
+  // The areas the account page offers (API values), as the player saw them.
+  var AREAS = { "crash": "Crash", "mods": "Mods/overlays", "quest": "Quest", "sky-road": "Sky Corridor/Road",
+    "controls": "Controls", "other": "Other" };
+  var NOTE_CUT = 80;
+
+  function areaName(area) { return area ? (AREAS[area] || area) : ""; }
+
+  // One line of the note for the list: line breaks as spaces, cut at NOTE_CUT; the whole note is the tooltip.
+  function shortNote(note) {
+    var one = String(note || "").replace(/\s+/g, " ").trim();
+    return one.length > NOTE_CUT ? one.slice(0, NOTE_CUT).trimEnd() + "…" : one;
+  }
 
   function renderReports(list) {
     var body = $("diag-rows");
     if (!list.length) {
-      emptyRow(body, 8, diag.before ? "No older reports." : "No reports yet.");
+      emptyRow(body, 10, diag.before ? "No older reports." : "No reports yet.");
       $("diag-older").disabled = true;
       return;
     }
@@ -81,6 +95,10 @@
       row.appendChild(el("td", null, utc(r.createdAt)));
       row.appendChild(el("td", "cell-name", (r.username || "?") + " (#" + r.userId + ")"));
       row.appendChild(el("td", null, r.fileName));
+      row.appendChild(el("td", null, areaName(r.area)));
+      var noteCell = el("td", "diag-note-cell", shortNote(r.note));
+      if (r.note) noteCell.title = r.note;
+      row.appendChild(noteCell);
       row.appendChild(el("td", null, r.patchName || ""));
       row.appendChild(el("td", null, r.outcome || ""));
       row.appendChild(el("td", null, (r.problems || []).join(", ")));
@@ -99,9 +117,10 @@
   function loadReports() {
     say($("diag-admin-alert"), "");
     var q = "?limit=" + PAGE + (diag.user ? "&user=" + encodeURIComponent(diag.user) : "")
+      + (diag.area ? "&area=" + encodeURIComponent(diag.area) : "")
       + (diag.before ? "&before=" + diag.before : "");
     return request("/api/admin/diagnostics" + q).then(renderReports).catch(function (e) {
-      emptyRow($("diag-rows"), 8, "");
+      emptyRow($("diag-rows"), 10, "");
       say($("diag-admin-alert"), e.message === "not found" ? "The API has no diagnostics yet." : e.message);
     });
   }
@@ -111,6 +130,9 @@
       var a = d.answer || {};
       $("diag-view-title").textContent = "#" + d.id + " · " + d.fileName + " · " + (d.username || "?") + " (#"
         + d.userId + ") · " + utc(d.createdAt) + " UTC";
+      $("diag-view-note-box").hidden = !d.note && !d.area;
+      $("diag-view-area").textContent = d.area ? "· area: " + areaName(d.area) : "";
+      $("diag-view-note").textContent = d.note || "(no note)";
       $("diag-view-outcome").textContent = a.outcome || "";
       var findings = $("diag-view-findings");
       clear(findings);
@@ -230,6 +252,7 @@
   function wireDiag() {
     $("diag-filter").addEventListener("click", function () {
       diag.user = $("diag-user").value.trim();
+      diag.area = $("diag-area").value;
       diag.before = null;
       loadReports();
     });
@@ -304,8 +327,10 @@
     $("logins-diag").addEventListener("click", function () {
       if (!loginsUser) return;
       diag.user = String(loginsUser.id);
+      diag.area = "";
       diag.before = null;
       $("diag-user").value = diag.user;
+      $("diag-area").value = "";
       window.location.hash = "diagnostics";
     });
   }

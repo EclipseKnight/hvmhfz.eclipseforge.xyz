@@ -2147,6 +2147,13 @@ button.slot{padding:0;font:inherit;color:inherit;width:100%;min-width:0}
 .diag-file-status { font-size: 0.8rem; opacity: 0.8; }
 .diag-file-msg { margin: 0.3rem 0 0; color: var(--wax); overflow-wrap: anywhere; }
 .diag-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; }
+.diag-actions .btn-primary { font-size: 1rem; padding: 0.7rem 1.4rem; box-shadow: 0 0 0 3px rgba(183,138,51,.35); }
+.diag-optional { font-weight: 400; letter-spacing: 0; text-transform: none; opacity: 0.8; }
+.diag-note-hint { margin: 0 0 0.5rem; padding: 0.4rem 0.6rem; border-left: 4px solid var(--gold); background: rgba(183,138,51,.12); }
+.diag-note-count { margin: 0.2rem 0 0; font-size: 0.8rem; text-align: right; }
+.diag-area-field select { max-width: 18rem; }
+.diag-note-text, .diag-note-echo { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0.3rem 0 0; }
+.diag-note-cell { max-width: 22rem; overflow-wrap: anywhere; }
 .diag-raw { max-height: 28rem; overflow: auto; white-space: pre; font-size: 0.8rem; padding: 0.6rem; border: 1px solid var(--line, #ccc); border-radius: 6px; }
 .qol-pre .qol-keys{margin-top:12px}
 .qol-item.is-locked,.qol-keys-group .qol-locked{opacity:.75}

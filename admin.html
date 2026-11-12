@@ -899,16 +899,25 @@
       <!-- Diagnostics uploads: js/admin-diag.js (GET /api/admin/diagnostics[/{id}]) -->
       <div class="tab-panel" id="panel-diagnostics" hidden>
       <section class="panel" id="diag-list-panel">
-        <div class="panel-head"><h2>Diagnostics reports</h2><span class="panel-note">players' hvdiag.txt and crash files, kept 90 days</span></div>
+        <div class="panel-head"><h2>Diagnostics reports</h2><span class="panel-note">players' hvdiag.txt, crash files and logs with their note, kept 90 days</span></div>
         <p class="form-alert" id="diag-admin-alert" hidden></p>
         <div class="admin-search">
           <input id="diag-user" type="number" min="1" placeholder="Account # (empty: all)" aria-label="Account number" />
+          <select id="diag-area" aria-label="Area">
+            <option value="">All areas</option>
+            <option value="crash">Crash</option>
+            <option value="mods">Mods/overlays</option>
+            <option value="quest">Quest</option>
+            <option value="sky-road">Sky Corridor/Road</option>
+            <option value="controls">Controls</option>
+            <option value="other">Other</option>
+          </select>
           <button type="button" class="ghost-btn small" id="diag-filter">Show</button>
         </div>
         <div class="table-wrap">
           <table class="data-table admin-table" data-nosort>
-            <thead><tr><th>#</th><th>Uploaded (UTC)</th><th>Account</th><th>File</th><th>Patch</th><th>Outcome</th><th>Problems</th><th></th></tr></thead>
-            <tbody id="diag-rows"><tr><td colspan="8" class="empty-cell">Loading</td></tr></tbody>
+            <thead><tr><th>#</th><th>Uploaded (UTC)</th><th>Account</th><th>File</th><th>Area</th><th>Player's note</th><th>Patch</th><th>Outcome</th><th>Problems</th><th></th></tr></thead>
+            <tbody id="diag-rows"><tr><td colspan="10" class="empty-cell">Loading</td></tr></tbody>
           </table>
         </div>
         <div class="admin-pager">
@@ -919,6 +928,10 @@
       </section>
       <section class="panel" id="diag-view-panel" hidden>
         <div class="panel-head"><h2>Report <span id="diag-view-title"></span></h2><button type="button" class="ghost-btn small" id="diag-view-close">Close</button></div>
+        <div id="diag-view-note-box" hidden>
+          <p class="subhead">The player's note <span class="panel-note" id="diag-view-area"></span></p>
+          <p class="diag-note-text" id="diag-view-note"></p>
+        </div>
         <p class="diag-outcome" id="diag-view-outcome"></p>
         <ul class="diag-findings" id="diag-view-findings"></ul>
         <dl class="detail-list diag-facts" id="diag-view-facts"></dl>
@@ -1017,7 +1030,7 @@
     <script src="/js/admin-notices.js"></script>
     <script src="/js/admin-content.js"></script>
     <script src="/js/admin-patches.js?v=3"></script>
-    <script src="/js/admin-diag.js?v=2"></script>
+    <script src="/js/admin-diag.js?v=3"></script>
     <script src="/js/balance-fields.js?v=1"></script>
     <script src="/js/admin-balance.js?v=4"></script>
     <script src="/js/game-icons.js?v=2"></script>
