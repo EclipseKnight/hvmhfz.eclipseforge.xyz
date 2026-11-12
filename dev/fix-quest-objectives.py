@@ -22,7 +22,8 @@ What it does, for every quest in data/quest-objectives.json:
   text, else built (verb, count, the field guide's monster name from data/monsters/index.json or the item's name from
   data/item-ids.json); "name" families are then the spelling dev/fix-quest-text-names.py writes;
 - quest-details.json subAJp / subAEn / subBJp / subBEn: the sub-objectives' Japanese text (the original) and the
-  served file's English text, left out when the quest has none (なし);
+  served file's English text with its monster names repaired (dev/fix-quest-text-names.py,
+  dev/fix-quest-monster-names.py), left out when the quest has none (なし);
 - prints every text it changed, and the ones it could not write (a human finishes those).
 
 Run:    python3 dev/fix-quest-objectives.py            (rewrite the two data files)
@@ -51,6 +52,7 @@ def load(name):
 
 mqm = load("make-quest-monsters")
 fixnames = load("fix-quest-text-names")
+monsternames = load("fix-quest-monster-names")
 
 VERB_JP = {1: "狩猟", 257: "捕獲", 513: "討伐"}
 VERB_EN = {"狩猟": "Hunt", "捕獲": "Capture", "討伐": "Slay", "撃退": "Repel", "納品": "Deliver"}
@@ -227,6 +229,7 @@ def run(write):
                 put(d, key + "Jp", jp if has else None, qid, "details %sJp" % key)
                 if has and en and en != "None":
                     en, _ = fixnames.fix(jp, en, fixnames.FAMILY, names)
+                    en = monsternames.repair(jp, en, int(qid), key, " ".join(o["jp"][:3]))
                     put(d, key + "En", en, qid, "details %sEn" % key)
                 else:
                     put(d, key + "En", None, qid, "details %sEn" % key)

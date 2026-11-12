@@ -10,7 +10,7 @@ data/quests.json in that range:
   only when there is no "descriptionEn" (the page shows descriptionEn first, so the other text is never seen).
 The two big files stay the source (the list page, share pages, item data and the checks read them); the pieces are a
 copy of them, so run this after any change to either file (make-quest-monsters.py, fix-quest-objectives.py,
-fix-quest-text-names.py):  python3 dev/make-quest-pieces.py
+fix-quest-text-names.py, fix-quest-monster-names.py):  python3 dev/make-quest-pieces.py
 (--check: change nothing, exit 1 when data/quests/pieces/ is not what it would write; run by dev/check-catalog-monsters.js)
 """
 import json
