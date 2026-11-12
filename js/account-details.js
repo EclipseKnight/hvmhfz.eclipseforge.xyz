@@ -839,6 +839,8 @@
     });
     var tabLink = $("tab-characters");
     if (tabLink) tabLink.addEventListener("click", function () { setTimeout(openWhenShown, 0); });
+    // a tab opened by keyboard, the "Jump to" select or Back/Forward (js/subtabs.js)
+    document.addEventListener("hv:subtab", function () { setTimeout(openWhenShown, 0); });
   }
 
   function start() {

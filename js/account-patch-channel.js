@@ -1,4 +1,4 @@
-/* "Client patch" box on the Account tab. GET /api/account/patch-channel gives
+/* "Client patch" box on the Client patch tab (loads when the tab first opens, js/subtabs.js). GET /api/account/patch-channel gives
    {channel, slot, eligible, confirmationRequired, slotsAvailable, slots: [{slot, version, notes, published}],
    characters: [{name, clientPatch, clientPatchName, clientPatchSeenAt}], currentPatch}. The box shows to every
    signed-in account once the GET answers (it stays hidden when the call fails or the answer has no slots: an older API):
@@ -25,6 +25,7 @@
   var panel = document.getElementById("patch-channel-panel");
   if (!panel) return;
   var note = document.getElementById("patch-channel-note");
+  var offNode = document.getElementById("patch-channel-off");
   var alertNode = document.getElementById("patch-channel-alert");
   var charsNode = document.getElementById("patch-chars");
   var slotsNode = document.getElementById("patch-slots");
@@ -254,6 +255,7 @@
     switchNode.hidden = !(data.slots.length || data.slot);
     if (!switchNode.hidden) renderSwitch(data);
     panel.hidden = false;
+    if (offNode) offNode.hidden = true;
   }
 
   // refresh: a repeat of the GET (poll, focus, visible again): it leaves a confirmation or a save in progress alone and
@@ -277,7 +279,9 @@
       }
       changed(channel);
     }).catch(function () {
-      if (!refresh) panel.hidden = true; /* older API or not signed in: the box stays hidden */
+      if (refresh) return;
+      panel.hidden = true; /* older API or not signed in: the box stays hidden, the tab says so */
+      if (offNode) offNode.hidden = false;
     });
   }
 
@@ -297,9 +301,16 @@
     start();
   }
 
-  document.addEventListener("visibilitychange", wake);
-  window.addEventListener("focus", function () { if (!document.hidden) wake(); });
+  // Nothing runs until the Client patch tab first opens (js/subtabs.js); then the box polls as before.
+  var opened = false;
+  document.addEventListener("visibilitychange", function () { if (opened) wake(); });
+  window.addEventListener("focus", function () { if (opened && !document.hidden) wake(); });
 
-  load(false);
-  start();
+  function begin() {
+    opened = true;
+    load(false);
+    start();
+  }
+  if (window.HvSubtabs) window.HvSubtabs.whenOpen(panel, begin);
+  else begin();
 })();

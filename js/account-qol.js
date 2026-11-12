@@ -1,4 +1,4 @@
-/* "Game options" card on the Account tab: one switch per display-only client feature from
+/* "Game options" card on the Game options tab (loads when the tab first opens, js/subtabs.js): one switch per display-only client feature from
    GET /api/account/qol (the list comes from the API, nothing is hard-coded here). A toggle saves at once with
    PUT /api/account/qol {id: true|false}. The game reads the choice at the next login.
    When the answer has "keys", a Keys part lets the player pick the keys the mods use (retire key and what to do on a
@@ -360,9 +360,16 @@
     if (hint) parent.appendChild(el("p", "note-text", hint));
   }
 
+  // The Keys and Viewer options parts are folds (<details>): a redraw keeps their <summary>.
+  function clearFold(box) {
+    var summary = box.querySelector("summary");
+    box.innerHTML = "";
+    if (summary) box.appendChild(summary);
+  }
+
   function renderKeys(k) {
     capturing = null;
-    keysBox.innerHTML = "";
+    clearFold(keysBox);
     if (!k) { keysBox.hidden = true; return; }
     var talk = [];
     for (var i = 0; i < 5; i++) talk.push(parse((k.talkKeys || [])[i]));
@@ -374,7 +381,7 @@
       talk: talk
     };
     keysBox.hidden = false;
-    keysBox.appendChild(el("h3", "", "Keys"));
+    if (!keysBox.querySelector("summary")) keysBox.appendChild(el("h3", "", "Keys"));
 
     var lock1 = lockOf("quickRetire"), lock2 = lockOf("skipCompleteWait"), lock3 = lockOf("quickTalk");
     var g1 = el("div", "qol-keys-group");
@@ -472,13 +479,13 @@
   }
 
   function renderViewer(data) {
-    viewerBox.innerHTML = "";
+    clearFold(viewerBox);
     var has = (data.features || []).some(function (f) { return f.id === "iframeViewer"; });
     var v = data.viewer;
     if (!has || !v || typeof v !== "object") { viewerBox.hidden = true; return; }
     viewerBox.hidden = false;
     var viewerLock = lockOf("iframeViewer");
-    viewerBox.appendChild(el("h3", "", "Viewer options"));
+    if (!viewerBox.querySelector("summary")) viewerBox.appendChild(el("h3", "", "Viewer options"));
     viewerBox.appendChild(el("p", "note-text", "What the iframe viewer draws, where and how big. They apply while the Iframe viewer switch is on."));
     var boxes = {};
     var checks = el("div", "qol-viewer-checks");
@@ -657,6 +664,8 @@
         renderKeys(data.keys);
         renderViewer(data);
         place();
+        // A playtester on a pre-release patch sees its options open; everyone else gets the fold closed.
+        if (!refresh && String(data.channel || "").indexOf("pre:") === 0) preBox.open = true;
       })
       .catch(function () {
         if (refresh) return;
@@ -671,5 +680,6 @@
 
   document.addEventListener("hvmhfz:patch-channel", function () { load(true); });
 
-  load(false);
+  if (window.HvSubtabs) window.HvSubtabs.whenOpen(list, function () { load(false); });
+  else load(false);
 })();

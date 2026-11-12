@@ -1,4 +1,4 @@
-/* "Diagnostics" box on the Account tab. The player picks (or drags in) the game's hvdiag.txt, any
+/* "Diagnostics" box on the Diagnostics tab of the account page. The player picks (or drags in) the game's hvdiag.txt, any
    hvcrash-<time>.txt files and hvmods.log (client patch v1.21 and newer write them in the game folder) and uploads them as they
    are, one after another: for each file POST /api/account/diagnostics?name=<file name>, body = the file
    (text/plain), signed in. The API takes one file per request, so the loop is here. It answers

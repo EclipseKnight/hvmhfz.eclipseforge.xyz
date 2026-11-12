@@ -2,7 +2,8 @@
 /* Checks the "Game options" card on the account page (js/account-qol.js) in headless Chromium against a fake API
    with the shape of GET/PUT /api/account/qol:
 
-   - the card is on the Account tab and renders one switch per feature the API lists (true raw and true element as
+   - the card is on the Game options tab (the Keys, Viewer options and pre-release parts are
+     closed folds; the pre-release one opens by itself on a pre-release channel) and renders one switch per feature the API lists (true raw and true element as
      the API has them, and a made-up third feature that proves the list is not hard-coded), off by default, with its description, "Needs client patch v<minPatch> or
      newer", and "Shows information the game normally hides" only where revealsHiddenInfo is true;
    - the card says changes take effect at the next login;
@@ -212,11 +213,15 @@ async function run(browser, base) {
     if (p.startsWith("/api/public/")) return reply(200, []);
     return reply(200, p.endsWith("/distributions") ? { global: [], targeted: [] } : []);
   });
-  await page.goto(base + "/account.html#account");
+  await page.goto(base + "/account.html#game-options");
   await page.waitForSelector("#qol-list input", { timeout: 5000 }).catch(() => {});
+  check("Keys, Viewer options and pre-release parts are closed folds", await page.$$eval("#qol-panel details.fold", (n) => n.length === 3 && n.every((d) => !d.open)));
+  // the checks below use the folded parts: open them as a player would
+  const openFolds = () => page.$$eval("#qol-panel details.fold", (n) => n.forEach((d) => { d.open = true; }));
+  await openFolds();
 
   check("card heading", (await page.textContent("#qol-panel h2")) === "Game options");
-  check("card is visible on the Account tab", await page.isVisible("#qol-panel"));
+  check("card is visible on the Game options tab", await page.isVisible("#qol-panel"));
   check("in-game hint at the top of the card, before the next-login note", await page.evaluate(() => {
     const p = document.querySelector("#qol-panel p.note-text");
     return !!p && p.textContent.trim() === "You can also change these in game: Ctrl+F10, or hold View + Start on a controller." && p === document.querySelector("#qol-panel .panel-head").nextElementSibling;
@@ -241,7 +246,7 @@ async function run(browser, base) {
   check("switch stays on, the other off", (await page.isChecked("#qol-trueRaw")) && !(await page.isChecked("#qol-monsterBar")));
 
   // Reload: the stored state comes back.
-  await page.reload();
+  await page.reload(); await openFolds();
   await page.waitForSelector("#qol-list input", { timeout: 5000 });
   check("state survives a reload", await page.isChecked("#qol-trueRaw"));
 
@@ -501,6 +506,9 @@ async function run(browser, base) {
   preMode = "locked";
   flags = 0;
   await page.reload();
+  await page.waitForSelector("#qol-pre:not([hidden])", { timeout: 5000 }).catch(() => {});
+  check("on Stable: the pre-release fold stays closed", await page.$eval("#qol-pre", (d) => !d.open));
+  await openFolds();
   await page.waitForSelector("#qol-pre-list input", { timeout: 5000 });
   await page.waitForSelector("#qol-viewer:not([hidden])", { timeout: 5000 });
   await preCheck("on Stable");
@@ -509,11 +517,11 @@ async function run(browser, base) {
   check("on Stable: the controller select is greyed out at the end of the section", await page.$eval("#qol-controller", (s) => s.disabled
     && s.closest(".qol-item") === document.getElementById("qol-pre-list").lastElementChild));
   controllerButtons = "xbox";   // stored Xbox while locked: the select stays open for the way back
-  await page.reload();
+  await page.reload(); await openFolds();
   await page.waitForSelector("#qol-controller", { timeout: 5000 });
   check("on Stable: on Xbox the controller select stays usable", await page.$eval("#qol-controller", (s) => !s.disabled && s.value === "xbox"));
   controllerButtons = "playstation";
-  await page.reload();
+  await page.reload(); await openFolds();
   await page.waitForSelector("#qol-viewer:not([hidden])", { timeout: 5000 });
   check("on Stable: each greyed switch says what to do", rowsText.length === 9 && rowsText.every((t) => t.includes(lockedText)), JSON.stringify(rowsText));
   check("on Stable: stable switches carry no such message", !(await page.textContent("#qol-list")).includes("Switch to the pre-release"));
@@ -545,6 +553,10 @@ async function run(browser, base) {
   await page.click("#qol-keys-save");
   await page.waitForFunction(() => /Keys saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
   check("on a slot: Save keys sends", keyPuts.length === kp + 1);
+  await page.reload();
+  await page.waitForSelector("#qol-pre:not([hidden])", { timeout: 5000 }).catch(() => {});
+  check("on a slot: the pre-release fold opens by itself", await page.$eval("#qol-pre", (d) => d.open));
+  await openFolds();
 
   // Back to Stable: values stay, greyed out again.
   preMode = "locked";
@@ -554,7 +566,7 @@ async function run(browser, base) {
 
   // A stable release reaches 1.21: the features move up into the normal list, no section.
   preMode = "moved";
-  await page.reload();
+  await page.reload(); await openFolds();
   await page.waitForSelector("#qol-list input", { timeout: 5000 });
   await page.waitForSelector("#qol-viewer:not([hidden])", { timeout: 5000 });
   check("once stable has them: no pre-release section", !(await page.isVisible("#qol-pre")));
@@ -576,7 +588,7 @@ async function run(browser, base) {
   // An older API (no "viewer" in the answer): the part is hidden, the switch stays.
   sendViewer = false;
   sendOverlays = false;
-  await page.reload();
+  await page.reload(); await openFolds();
   await page.waitForSelector("#qol-list input", { timeout: 5000 });
   await page.waitForSelector("#qol-keys:not([hidden])", { timeout: 5000 }).catch(() => {});
   check("viewer part hidden without viewer", !(await page.isVisible("#qol-viewer")) && !(await page.$("#qol-viewer-save")));
@@ -587,14 +599,14 @@ async function run(browser, base) {
   sendOverlays = true;
   // An API without weakSpotStar: no star checkbox, the other damage numbers options stay.
   sendStar = false;
-  await page.reload();
+  await page.reload(); await openFolds();
   await page.waitForSelector("#qol-dn-options", { timeout: 5000 });
   check("no weak-spot star checkbox without weakSpotStar, the other options stay", !(await page.$("#qol-dn-weakSpotStar")) && !!(await page.$("#qol-dn-showMoveId")) && !!(await page.$("#qol-dn-multiHit")));
   sendStar = true;
   // Viewer in the answer but the list has no iframeViewer: hidden too.
   sendViewer = true;
   listViewer = false;
-  await page.reload();
+  await page.reload(); await openFolds();
   await page.waitForSelector("#qol-list input", { timeout: 5000 });
   await page.waitForSelector("#qol-keys:not([hidden])", { timeout: 5000 }).catch(() => {});
   check("viewer part hidden without the iframeViewer feature", !(await page.isVisible("#qol-viewer")) && !(await page.$("#qol-iframeViewer")));

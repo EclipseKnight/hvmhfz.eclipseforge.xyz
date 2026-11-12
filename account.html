@@ -21,7 +21,7 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=15" />
+    <link rel="stylesheet" href="/css/styles.css?v=16" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/tablesort.js" defer></script>
     <script src="/js/background.js" defer></script>
@@ -137,7 +137,12 @@
       <!-- Reminders before a testing quest expires: js/quest-submissions.js -->
       <div class="form-alert quest-reminders" id="quest-reminders" role="status" hidden></div>
 
-      <nav class="tabs" role="tablist" aria-label="Account sections">
+      <!-- Sub-tabs: js/subtabs.js (deep links, Back/Forward, keyboard, last tab remembered, "Jump to" on phones).
+           Old and short links: #storage and #details open Characters, #qol/#options/#settings Game options, #patch Client patch,
+           #diag Diagnostics; any id inside a tab (#diag-panel, #game-options-keys) opens its tab and scrolls to it. -->
+      <div class="subtabs-bar">
+      <nav class="tabs" role="tablist" aria-label="Account sections" data-subtabs="account"
+           data-subtabs-aliases='{"storage": "characters", "details": "characters", "qol": "game-options", "options": "game-options", "settings": "game-options", "patch": "client-patch", "patch-channel": "client-patch", "diag": "diagnostics", "discord": "discord-panel", "game-options-keys": "qol-keys", "game-options-viewer": "qol-viewer", "game-options-pre": "qol-pre"}'>
         <a class="tab" id="tab-overview" role="tab" aria-controls="panel-overview" aria-selected="true" href="#overview">Overview</a>
         <a class="tab" id="tab-characters" role="tab" aria-controls="panel-characters" aria-selected="false" href="#characters">Characters <span class="tab-count" id="count-characters"></span></a>
         <a class="tab" id="tab-hunts" role="tab" aria-controls="panel-hunts" aria-selected="false" href="#hunts">Hunts</a>
@@ -145,8 +150,12 @@
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests</a>
         <a class="tab" id="tab-backups" role="tab" aria-controls="panel-backups" aria-selected="false" href="#backups">Backups</a>
         <a class="tab" id="tab-transfer" role="tab" aria-controls="panel-transfer" aria-selected="false" href="#transfer">Transfer</a>
+        <a class="tab" id="tab-game-options" role="tab" aria-controls="panel-game-options" aria-selected="false" href="#game-options">Game options</a>
+        <a class="tab" id="tab-client-patch" role="tab" aria-controls="panel-client-patch" aria-selected="false" href="#client-patch">Client patch</a>
+        <a class="tab" id="tab-diagnostics" role="tab" aria-controls="panel-diagnostics" aria-selected="false" href="#diagnostics">Diagnostics</a>
         <a class="tab" id="tab-account" role="tab" aria-controls="panel-account" aria-selected="false" href="#account">Account</a>
       </nav>
+      </div>
 
       <!-- Overview -->
       <section class="tab-panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
@@ -472,7 +481,8 @@
       </section>
 
       <!-- Account -->
-      <section class="tab-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" hidden>
+      <!-- Game options -->
+      <section class="tab-panel" id="panel-game-options" role="tabpanel" aria-labelledby="tab-game-options" hidden>
         <section class="panel" id="road-pref-panel">
           <div class="panel-head"><h2>Road you play</h2><span class="panel-note">applies to rooms you open</span></div>
           <p class="note-text">Erupe pins this Road when you open a quest room. A room can still change it in game with <code>!road</code>, and that choice lasts for that room only.</p>
@@ -491,16 +501,23 @@
           <p class="note-text">Changes take effect at your next login to the game.</p>
           <p class="form-alert" id="qol-alert" hidden></p>
           <div id="qol-list" class="qol-list" aria-live="polite"><span class="skeleton-line w60"></span></div>
-          <div id="qol-keys" class="qol-keys" hidden></div>
-          <div id="qol-viewer" class="qol-keys" hidden></div>
-          <div id="qol-pre" class="qol-keys qol-pre" hidden>
-            <h3>Being tested: pre-release only</h3>
+          <!-- Rarely used groups fold (closed until opened or linked: #game-options-keys, -viewer, -pre). js/account-qol.js
+               fills each fold after its <summary>. -->
+          <details id="qol-keys" class="qol-keys fold" hidden><summary><h3>Keys</h3><span class="fold-hint">quick retire, skip the wait, remote talk</span></summary></details>
+          <details id="qol-viewer" class="qol-keys fold" hidden><summary><h3>Viewer options</h3><span class="fold-hint">what the iframe viewer shows</span></summary></details>
+          <details id="qol-pre" class="qol-keys qol-pre fold" hidden>
+            <summary><h3>Being tested: pre-release only</h3><span class="fold-hint">options for the pre-release patches</span></summary>
             <p class="note-text" id="qol-pre-note"></p>
             <div id="qol-pre-list" class="qol-list"></div>
-          </div>
+          </details>
           <p class="note-text" id="qol-note" aria-live="polite"></p>
         </section>
 
+      </section>
+
+      <!-- Client patch -->
+      <section class="tab-panel" id="panel-client-patch" role="tabpanel" aria-labelledby="tab-client-patch" hidden>
+        <p class="note-text" id="patch-channel-off" hidden>Your client patch choice could not be loaded right now. Try again in a moment.</p>
         <section class="panel" id="patch-channel-panel" hidden>
           <div class="panel-head"><h2>Client patch</h2></div>
           <p class="form-alert" id="patch-channel-alert" hidden></p>
@@ -529,7 +546,10 @@
           </div>
         </section>
 
-        <!-- Diagnostics upload: js/account-diag.js (POST /api/account/diagnostics) -->
+      </section>
+
+      <!-- Diagnostics upload: js/account-diag.js (POST /api/account/diagnostics) -->
+      <section class="tab-panel" id="panel-diagnostics" role="tabpanel" aria-labelledby="tab-diagnostics" hidden>
         <section class="panel" id="diag-panel">
           <div class="panel-head"><h2>Diagnostics</h2></div>
           <p class="note-text">The game crashed, loaded Mezeporta instead of a map, or lost the connection? The game writes a report of what happened. Upload it here for a plain answer; staff see it too.</p>
@@ -552,6 +572,10 @@
           </div>
         </section>
 
+      </section>
+
+      <!-- Account -->
+      <section class="tab-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" hidden>
         <section class="panel">
           <div class="panel-head"><h2>Account</h2></div>
           <dl class="detail-list" id="account-details">
@@ -614,17 +638,18 @@
     <script src="/js/monster-links.js"></script>
     <script src="/js/questlog.js?v=2"></script>
     <script src="/js/road-preference.js?v=1"></script>
-    <script src="/js/account-qol.js?v=9"></script>
-    <script src="/js/account-patch-channel.js?v=5"></script>
-    <script src="/js/account-diag.js?v=3"></script>
+    <script src="/js/subtabs.js?v=1"></script>
+    <script src="/js/account-qol.js?v=10"></script>
+    <script src="/js/account-patch-channel.js?v=6"></script>
+    <script src="/js/account-diag.js?v=4"></script>
     <script src="/js/quest-submissions.js?v=2"></script>
     <script src="/js/road-rewards.js?v=1"></script>
     <script src="/js/signin-next.js"></script>
     <script src="/js/link-command.js?v=1"></script>
     <script src="/js/game-icons.js?v=2"></script>
     <script src="/js/hr.js?v=1"></script>
-    <script src="/js/account.js?v=10"></script>
-    <script src="/js/account-details.js?v=3"></script>
+    <script src="/js/account.js?v=11"></script>
+    <script src="/js/account-details.js?v=4"></script>
     <script src="/js/backup-file.js?v=2"></script>
     <script src="/js/account-backup.js?v=3"></script>
     <script src="/js/account-transfer.js?v=2"></script>

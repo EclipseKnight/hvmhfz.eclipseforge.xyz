@@ -4,10 +4,8 @@
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
-  var TABS = ["overview", "characters", "hunts", "guild", "quests", "backups", "transfer", "account"];
   /* The Storage and Details tabs became the character view on the Characters tab (9 Nov 2026); old links
-     to them land there (js/account-details.js opens the matching section). */
-  var TAB_ALIASES = { storage: "characters", details: "characters" };
+     to them land there (alias in account.html; js/account-details.js opens the matching section). */
 
   var state = {
     account: null,
@@ -111,38 +109,9 @@
     node.hidden = false;
   }
 
-  /* ---------- tabs ---------- */
-
-  function activateTab(name) {
-    var target = TAB_ALIASES[name] || (TABS.indexOf(name) === -1 ? "overview" : name);
-    TABS.forEach(function (tab) {
-      var panel = document.getElementById("panel-" + tab);
-      var link = document.getElementById("tab-" + tab);
-      var active = tab === target;
-      if (panel) panel.hidden = !active;
-      if (link) link.setAttribute("aria-selected", active ? "true" : "false");
-    });
-  }
-
-  function wireTabs() {
-    TABS.forEach(function (tab) {
-      var link = document.getElementById("tab-" + tab);
-      if (!link) return;
-      link.addEventListener("click", function (event) {
-        event.preventDefault();
-        if (window.location.hash !== "#" + tab) {
-          window.history.pushState(null, "", "#" + tab);
-        }
-        activateTab(tab);
-      });
-    });
-    window.addEventListener("hashchange", function () {
-      activateTab(window.location.hash.replace("#", ""));
-    });
-    window.addEventListener("popstate", function () {
-      activateTab(window.location.hash.replace("#", ""));
-    });
-  }
+  /* ---------- tabs ----------
+     js/subtabs.js runs the tab bar (deep links, Back/Forward, keyboard, the old #storage/#details/#qol/#patch/#diag
+     links: data-subtabs-aliases in account.html). */
 
   /* ---------- rendering ---------- */
 
@@ -722,9 +691,6 @@
       window.HvNext.toSignin();
       return;
     }
-
-    wireTabs();
-    activateTab(window.location.hash.replace("#", "") || "overview");
 
     document.getElementById("signout").addEventListener("click", signOut);
     var second = document.getElementById("signout-2");

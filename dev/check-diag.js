@@ -167,7 +167,7 @@ const dropIt = (page, dt) => page.dispatchEvent("#diag-drop", "drop", { dataTran
 async function accountChecks(browser, base) {
   fs.mkdirSync(SHOTS, { recursive: true });
   const state = { mode: "ok", posts: [], gets: [] };
-  const { page, errors } = await open(browser, base, "/account.html#account", state);
+  const { page, errors } = await open(browser, base, "/account.html#diagnostics", state);
   await page.waitForSelector("#diag-panel", { state: "attached" });
   const help = await page.textContent("#diag-panel");
   check("help names the files and the folder", help.includes("hvdiag.txt") && help.includes("hvcrash-")
@@ -314,7 +314,7 @@ async function accountChecks(browser, base) {
   check("no errors on the account page", errors.length === 0, errors.join(" | "));
   await page.close();
 
-  const narrow = await open(browser, base, "/account.html#account", { mode: "ok", posts: [], gets: [] }, 375);
+  const narrow = await open(browser, base, "/account.html#diagnostics", { mode: "ok", posts: [], gets: [] }, 375);
   await narrow.page.waitForSelector("#diag-panel", { state: "attached" });
   await narrow.page.setInputFiles("#diag-file", [txt("hvcrash-1-with-a-rather-long-name-20261110-010203.txt"), txt("hvcrash-2.txt")]);
   await narrow.page.click("#diag-upload");

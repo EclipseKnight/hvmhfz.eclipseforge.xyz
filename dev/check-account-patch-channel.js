@@ -2,7 +2,8 @@
 /* Checks the "Client patch" box on the account page (js/account-patch-channel.js) in headless Chromium against a
    fake API with the shape of GET/PUT /api/account/patch-channel (several slots, characters, notes):
 
-   - the box is hidden when the endpoint is missing (404) or fails (500);
+   - the box is on the Client patch tab and loads when that tab opens; it is hidden when the endpoint is missing (404) or
+     fails (500), and the tab says it could not be loaded;
    - a plain user sees the characters (version, "pre-release", when seen; "not seen yet"), the published slots with
      their notes, and the one choice (Stable + one button per slot, Stable marked, the Test-land warning); there is
      no "Join the playtest" switch any more;
@@ -108,8 +109,8 @@ async function open(browser, base, mode, state, width, clock) {
     if (p.startsWith("/api/public/")) return reply(200, []);
     return reply(200, p.endsWith("/distributions") ? { global: [], targeted: [] } : []);
   });
-  await page.goto(base + "/account.html#account");
-  await page.waitForSelector("#qol-list", { timeout: 5000 });
+  await page.goto(base + "/account.html#client-patch");
+  await page.waitForSelector("#panel-client-patch", { timeout: 5000 });
   await page.waitForTimeout(600);
   return { page, errors };
 }
@@ -123,6 +124,7 @@ async function run(browser, base) {
   for (const mode of ["missing", "broken", "old"]) {
     const { page, errors } = await open(browser, base, mode, { channel: "stable", puts: [], slots: SLOTS });
     check("box hidden for " + mode, !(await page.isVisible("#patch-channel-panel")));
+    check("the Client patch tab says it could not load (" + mode + ")", await page.isVisible("#patch-channel-off"));
     check("no page errors for " + mode, !errors.length, errors.join("; "));
     await page.close();
   }
@@ -130,7 +132,7 @@ async function run(browser, base) {
   // A plain user: information only, no switch.
   {
     const { page, errors } = await open(browser, base, "user", { channel: "stable", puts: [], slots: SLOTS });
-    check("box shown for a plain user", await page.isVisible("#patch-channel-panel"));
+    check("box shown for a plain user", await page.isVisible("#patch-channel-panel") && !(await page.isVisible("#patch-channel-off")));
     check("heading", (await page.textContent("#patch-channel-panel h2")) === "Client patch");
     const chars = await page.$$eval("#patch-chars li", (n) => n.map((x) => x.textContent));
     check("character: pre-release build", chars[0] === "Hunter: v1.21-pre2, pre-release, 9 Nov, 22:00 UTC", J(chars));
@@ -275,13 +277,13 @@ async function run(browser, base) {
     await page.evaluate(() => { window.__sameDocument = 1; });
     const SWITCHED = "Your account was switched back to Stable (you joined a normal land on a pre-release patch).";
     check("starts on the pre-release, no notice", J(await marked(page)) === J(["pre:mods"]) && !(await page.isVisible("#patch-switched-notice")));
-    const g0 = st.gets, q0 = st.qolGets;
+    const g0 = st.gets, q0 = st.qolGets || 0; // Game options loads only when its tab opens: none yet on Client patch
     await page.clock.runFor(19000);
     check("no refresh before 20 seconds", st.gets === g0, st.gets + " vs " + g0);
     await page.clock.runFor(1500);
     await page.waitForTimeout(300);
     check("refresh after 20 seconds", st.gets === g0 + 1, st.gets + " vs " + g0);
-    check("same channel: no notice, Game options not reloaded", !(await page.isVisible("#patch-switched-notice")) && st.qolGets === q0, st.qolGets + " vs " + q0);
+    check("same channel: no notice, Game options not reloaded", !(await page.isVisible("#patch-switched-notice")) && (st.qolGets || 0) === q0, st.qolGets + " vs " + q0);
 
     // The game server puts the account back on Stable (the role goes with it).
     st.channel = "stable"; st.role = false;
@@ -301,7 +303,7 @@ async function run(browser, base) {
 
     // A choice made here shows no notice and tells the card.
     st.channel = "stable"; st.role = true;
-    const q1 = st.qolGets;
+    const q1 = st.qolGets || 0;
     await page.click('[data-channel="pre:mods"]');
     await page.click("#patch-confirm-ok"); // the page still knows the role is gone
     await page.waitForFunction(() => /Pre-release mods on/.test(document.getElementById("patch-channel-note").textContent), null, { timeout: 5000 }).catch(() => {});
