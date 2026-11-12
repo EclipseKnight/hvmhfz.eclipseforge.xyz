@@ -161,8 +161,12 @@
 
     document.getElementById("count-characters").textContent = account.characters ? "(" + account.characters + ")" : "";
 
-    // Admins get a link to the admin panel (the API checks the role again on every admin request).
-    if ((account.roles || []).indexOf("ROLE_ADMIN") >= 0 && !document.getElementById("admin-link")) {
+    // Staff (admins, moderators, helpers) get a link to the admin panel; it shows only the
+    // tabs their permissions allow, and the API checks again on every admin request.
+    var staff = (account.roles || []).some(function (r) {
+      return r === "ROLE_ADMIN" || r === "ROLE_MODERATOR" || r === "ROLE_HELPER";
+    });
+    if (staff && !document.getElementById("admin-link")) {
       var link = el("a", "ghost-btn", "Admin panel");
       link.id = "admin-link";
       link.href = "/admin.html";
