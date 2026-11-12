@@ -25,6 +25,11 @@
      help text), showing the GET values; each change sends PUT /api/account/qol/damage-numbers
      or /damage-meter with only that key, redraws and says so; a 400 message is shown and the control goes back; they
      are greyed out with the switch while locked, and missing when the answer has no "damageNumbers"/"damageMeter";
+   - "Weak-spot star" under Damage numbers: a checkbox with its help ("A small gold star above the number when you hit
+     a weak spot (45 or more)."), checked from GET (on by default), a change sends PUT .../damage-numbers with only
+     {weakSpotStar}; no checkbox when the answer has no "weakSpotStar" (an older API);
+   - the line "You can also change these in game: Ctrl+F10, or hold View + Start on a controller." is the first line
+     of the card, above the next-login note;
    - "Show sharpness hits left" (the answer's "sharpness": no flags bit) is its own switch line right under Damage
      numbers, with the API's name and description, "Needs client patch v1.21" and the hidden-info mark; a toggle sends
      PUT /api/account/qol/sharpness {hitsLeft} and says so; a refused save puts it back; greyed out with the message
@@ -80,7 +85,9 @@ let sendViewer = true;
 // "off": an API without the pre-release fields; "locked": on Stable, "open": on a slot that has them; "moved": stable has reached 1.21
 let preMode = "off";
 let listViewer = true;
-let numbersState = { othersHits: true, size: "large", showMoveId: false, multiHit: "spread" };
+let numbersState = { othersHits: true, size: "large", showMoveId: false, multiHit: "spread", weakSpotStar: true };
+let sendStar = true;   // false: an API without "weakSpotStar"
+const STAR_HELP = "A small gold star above the number when you hit a weak spot (45 or more).";
 let meterState = { corner: "bottomLeft", size: "small", showHealth: false, statusBuildUp: false, effectiveHp: false, dpsGraph: false, timeToKill: false };
 let sharpnessOn = false;
 let controllerButtons = "playstation";
@@ -122,7 +129,7 @@ function state(flags) {
   }
   if (sendViewer) out.viewer = viewerState;
   if (sendOverlays) {
-    out.damageNumbers = numbersState;
+    out.damageNumbers = sendStar ? numbersState : Object.fromEntries(Object.entries(numbersState).filter(([k]) => k !== "weakSpotStar"));
     out.damageMeter = meterState;
     const pre = preMode !== "off" && preMode !== "moved";
     out.sharpness = { hitsLeft: sharpnessOn, name: "Show sharpness hits left", description: SHARPNESS_DESC, revealsHiddenInfo: true, minPatch: "1.21",
@@ -210,6 +217,10 @@ async function run(browser, base) {
 
   check("card heading", (await page.textContent("#qol-panel h2")) === "Game options");
   check("card is visible on the Account tab", await page.isVisible("#qol-panel"));
+  check("in-game hint at the top of the card, before the next-login note", await page.evaluate(() => {
+    const p = document.querySelector("#qol-panel p.note-text");
+    return !!p && p.textContent.trim() === "You can also change these in game: Ctrl+F10, or hold View + Start on a controller." && p === document.querySelector("#qol-panel .panel-head").nextElementSibling;
+  }));
   check("next-login note", /Changes take effect at your next login to the game\./.test(await page.textContent("#qol-panel")));
   const boxes = await page.$$eval("#qol-list input[role=switch]", (n) => n.map((b) => [b.id, b.checked]));
   check("one switch per listed feature, all off", JSON.stringify(boxes) === JSON.stringify([["qol-trueRaw", false], ["qol-trueElement", false], ["qol-monsterBar", false], ["qol-iframeViewer", false], ["qol-damageNumbers", false], ["qol-sharpnessHitsLeft", false], ["qol-damageMeter", false]]), JSON.stringify(boxes));
@@ -413,6 +424,17 @@ async function run(browser, base) {
   await page.waitForFunction(() => /Damage meter options saved/.test(document.getElementById("qol-note").textContent) && document.getElementById("qol-dm-showHealth").checked, null, { timeout: 5000 }).catch(() => {});
   check("multi-hit and monster health send one key each", JSON.stringify(overlayPuts.slice(4)) === JSON.stringify([["damage-numbers", { multiHit: "combine" }], ["damage-meter", { showHealth: true }]]), JSON.stringify(overlayPuts));
   check("multi-hit and monster health redrawn from the answer", (await page.inputValue("#qol-dn-multiHit")) === "combine" && (await page.isChecked("#qol-dm-showHealth")));
+  // Weak-spot star: a checkbox under Damage numbers, on by default, its own key.
+  const starText = (await page.textContent("#qol-dn-options")).replace(/\s+/g, " ");
+  check("weak-spot star label and help, checked from GET", starText.includes("Weak-spot star") && starText.includes(STAR_HELP) && (await page.isChecked("#qol-dn-weakSpotStar")), starText);
+  const starN = overlayPuts.length;
+  await page.click("#qol-dn-weakSpotStar");
+  await page.waitForFunction(() => /Damage numbers options saved/.test(document.getElementById("qol-note").textContent) && !document.getElementById("qol-dn-weakSpotStar").checked, null, { timeout: 5000 }).catch(() => {});
+  check("weak-spot star sends only its key", overlayPuts.length === starN + 1 && JSON.stringify(overlayPuts[starN]) === JSON.stringify(["damage-numbers", { weakSpotStar: false }]), JSON.stringify(overlayPuts.slice(starN)));
+  check("weak-spot star redrawn off, the other options kept", !(await page.isChecked("#qol-dn-weakSpotStar")) && (await page.isEnabled("#qol-dn-weakSpotStar")) && (await page.inputValue("#qol-dn-multiHit")) === "combine" && (await page.inputValue("#qol-dn-size")) === "large");
+  await page.click("#qol-dn-weakSpotStar");
+  await page.waitForFunction(() => document.getElementById("qol-dn-weakSpotStar").checked && !document.getElementById("qol-dn-weakSpotStar").disabled, null, { timeout: 5000 }).catch(() => {});
+  check("weak-spot star back on sends true", JSON.stringify(overlayPuts[starN + 1]) === JSON.stringify(["damage-numbers", { weakSpotStar: true }]), JSON.stringify(overlayPuts.slice(starN)));
   // Overlay v2 (part 110): four more meter options, each its own key.
   for (const [id, label, help] of METER_MORE) {
     const text = (await page.textContent("#qol-dm-options")).replace(/\s+/g, " ");
@@ -500,7 +522,7 @@ async function run(browser, base) {
   check("on Stable: viewer options and Save disabled with the message", (await enabledIn("#qol-viewer input, #qol-viewer select, #qol-viewer button")).every((e) => !e)
     && (await page.textContent("#qol-viewer")).includes(lockedText));
   const overlayEnabled = await enabledIn("#qol-dn-options input, #qol-dn-options select, #qol-dm-options input, #qol-dm-options select");
-  check("on Stable: damage numbers and meter options greyed out", overlayEnabled.length === 11 && overlayEnabled.every((e) => !e), JSON.stringify(overlayEnabled));
+  check("on Stable: damage numbers and meter options greyed out", overlayEnabled.length === 12 && overlayEnabled.every((e) => !e), JSON.stringify(overlayEnabled));
   const before = puts.length;
   await page.check("#qol-trueRaw");
   await page.waitForFunction(() => /True raw attack is on/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
@@ -563,6 +585,12 @@ async function run(browser, base) {
   check("no sharpness line without sharpness", !(await page.$("#qol-sharpnessHitsLeft")));
   check("no controller line without controller", !(await page.$("#qol-controller")));
   sendOverlays = true;
+  // An API without weakSpotStar: no star checkbox, the other damage numbers options stay.
+  sendStar = false;
+  await page.reload();
+  await page.waitForSelector("#qol-dn-options", { timeout: 5000 });
+  check("no weak-spot star checkbox without weakSpotStar, the other options stay", !(await page.$("#qol-dn-weakSpotStar")) && !!(await page.$("#qol-dn-showMoveId")) && !!(await page.$("#qol-dn-multiHit")));
+  sendStar = true;
   // Viewer in the answer but the list has no iframeViewer: hidden too.
   sendViewer = true;
   listViewer = false;
