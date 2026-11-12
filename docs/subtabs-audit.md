@@ -115,9 +115,9 @@ Sections: Basics and Getting Started 63/77; Welcome to Frontier 1,112/669; Where
 
 ### guide-frontier-house.html - 79.8 screens at 375, 50.6 at 1280
 
-Sections: House and AI Companions 63/77; House 1,172/700; Gook Farm 7,165/4,350; Pugi Farm (My Tore) 10,362/6,290; Airou Plaza 5,558/3,191; SR Challenge Room 500/382; AI Companions 755/483; Halks 2,502/1,433; Felyne Partnyaas 11,383/7,127; Fostas and Rastas 2,325/1,577; Partners 21,626/13,938.
+Sections: House and AI Companions 63/77; House 1,172/700; Gu-ku Farm 7,165/4,350; Pugi Farm (My Tore) 10,362/6,290; Airou Plaza 5,558/3,191; SR Challenge Room 500/382; AI Companions 755/483; Halks 2,502/1,433; Felyne Partnyaas 11,383/7,127; Fostas and Rastas 2,325/1,577; Partners 21,626/13,938.
 
-**Proposal:** Sticky "On this page". Two tabs: "House" (House, Gook Farm, Pugi Farm, Airou Plaza, SR Challenge Room) and "Companions" (AI Companions, Halks, Felyne Partnyaas, Fostas and Rastas, Partners). Partners (21,626 px) folds in `<details>`. Above the tabs: title, lead.
+**Proposal:** Sticky "On this page". Two tabs: "House" (House, Gu-ku Farm, Pugi Farm, Airou Plaza, SR Challenge Room) and "Companions" (AI Companions, Halks, Felyne Partnyaas, Fostas and Rastas, Partners). Partners (21,626 px) folds in `<details>`. Above the tabs: title, lead.
 
 ### guide-frontier-hunsterverse.html - 63.7 screens at 375, 26.3 at 1280
 

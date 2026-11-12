@@ -173,6 +173,7 @@ dev/check-site.py     checks that every page is in sync with dev/shell/, has the
 dev/check-nav.py      checks every page is in pages.json, at most 2 clicks from home, has breadcrumbs, search, one <h1> and a "Page · Hunsterverse" title, the sitemap (every indexable page, monsters by current slug), and runs check-links.py (--self-test: on a made-up site)
 dev/check-site-shell.py checks dev/site-shell.py on a small made-up site
 dev/check-changelog.py checks changelog.html: month > day > topic, a release time on every change, the contents; and that every bullet of the page before the regrouping (git 8e02a4c) is still there (--self-test: on made-up pages)
+dev/check-guku-name.py  fails when any tracked text file or file name spells the house pet with the old slur, in any case (the pet is Gu-ku, identifiers guku; owner, 2026-11-12); images are not read
 dev/check-links.py    checks every local link, picture and anchor, the query parameters detail links use (the target page must read them; monster and quest ids must exist), links built in js/*.js, files scripts name, and sitemap.xml (python3 dev/check-links.py)
 dev/make-quest-monsters.py writes each quest's monsters in data/quests.json from its Japanese objective, in the field guide's names
 data/quest-objectives.json  what the quest files say each quest's objectives are: main, sub-objective A and B (type, target, count) from the served files, and string 1-4 in Japanese from the original pack; written by dev/make-quest-objectives.py (reads `hunsterverse` over ssh, read only; see the file)
