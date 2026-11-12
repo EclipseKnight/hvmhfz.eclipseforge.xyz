@@ -11,6 +11,7 @@
   function shortDate(value) {
     var t = value ? Date.parse(value) : NaN;
     if (isNaN(t)) return "";
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(t, { year: "auto" });
     return new Intl.DateTimeFormat(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(t));
   }
 

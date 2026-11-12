@@ -139,7 +139,7 @@
 
 <div class="box note">
 <p><b>Released updates</b> are on the server, grouped by day and topic. <b>Coming next</b> is finished and tested, but not on the server yet. It goes live at a future server restart.</p>
-<p>Each change shows when it went live, in UTC (and in your own time zone when your browser runs JavaScript). A change with only a date has no recorded time.</p>
+<p>Each change shows when it went live, in your own time zone (UTC without JavaScript, or when you pick UTC under Times at the bottom of the page; hover a time for UTC). A change with only a date has no recorded time.</p>
 <p>Where a fix says "the game waited forever", the game was waiting for an answer the server never sent, or the server answered in a form the game couldn't read. You saw a stuck "communicating" screen, or a list full of junk.</p>
 <p>Most fixes come from checking exactly what the game expects from the server, so we don't have to guess. Only fixes we are sure of go live.</p>
 </div>
@@ -892,7 +892,8 @@
       </div>
     </footer>
     <!-- /site-shell:footer -->
-<script src="/js/changelog-times.js" defer></script>
+<script src="/js/time.js?v=1" defer></script>
+<script src="/js/changelog-times.js?v=2" defer></script>
 <script src="/js/changelog-folds.js" defer></script>
 <script src="/js/share.js?v=2" defer></script>
 <script src="/js/search.js?v=3" defer></script>

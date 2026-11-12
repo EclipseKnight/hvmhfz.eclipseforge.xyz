@@ -65,7 +65,16 @@
   function when(iso) {
     if (!iso) return "-";
     var d = new Date(iso);
+    if (window.HvTime && !isNaN(d)) return HvTime.text(d, { time: false });
     return isNaN(d) ? "-" : d.toLocaleDateString();
+  }
+
+  // The date as an element of that tag (a <time> with the UTC time on hover); plain text when empty.
+  function whenEl(tag, cls, iso) {
+    if (!window.HvTime || !iso || isNaN(new Date(iso))) return el(tag, cls, when(iso));
+    var n = HvTime.node(iso, { time: false }, tag);
+    if (cls) n.className = cls;
+    return n;
   }
 
   function button(text, primary, onClick) {
@@ -107,7 +116,7 @@
   function expiryCell(row) {
     var td = el("td", "cell-sub");
     if (row.status === "testing" && row.expiresAt) {
-      td.appendChild(el("span", row.remindedAt ? "badge bad" : null, when(row.expiresAt)));
+      td.appendChild(whenEl("span", row.remindedAt ? "badge bad" : null, row.expiresAt));
       td.appendChild(document.createTextNode(" "));
       td.appendChild(button("Keep testing", false, function () { return keepQuest(row.id); }));
     } else if (row.status === "expired" && row.canResubmit) {
@@ -127,9 +136,12 @@
     if (!submissions.length) emptyRow(list, 5, "No submissions yet.");
     submissions.forEach(function (row) {
       var tr = el("tr");
-      [row.title, row.status, row.note || "-", when(row.submittedAt)].forEach(function (value, i) {
+      [row.title, row.status, row.note || "-"].forEach(function (value, i) {
         tr.appendChild(el("td", i === 1 ? "cell-sub muted" : null, value));
       });
+      var submittedCell = el("td");
+      submittedCell.appendChild(whenEl("time", null, row.submittedAt));
+      tr.appendChild(submittedCell);
       tr.appendChild(expiryCell(row));
       list.appendChild(tr);
     });
@@ -154,7 +166,9 @@
       link.href = "/quest-editor.html?draft=" + row.id;
       name.appendChild(link);
       tr.appendChild(name);
-      tr.appendChild(el("td", null, when(row.lastActivity || row.updatedAt)));
+      var activityCell = el("td");
+      activityCell.appendChild(whenEl("time", null, row.lastActivity || row.updatedAt));
+      tr.appendChild(activityCell);
       draftList.appendChild(tr);
     });
   }

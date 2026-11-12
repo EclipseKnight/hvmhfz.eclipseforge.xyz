@@ -43,10 +43,14 @@
   var MO = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   function pad(n) { return (n < 10 ? "0" : "") + n; }
 
-  /** "Mon 23 Nov 2026 03:00" in UTC; "-" for nothing. */
+  /** The " UTC" a sentence puts after utc() only without HvTime (with it the time carries its own zone name). */
+  function Z() { return typeof window !== "undefined" && window.HvTime ? "" : " UTC"; }
+
+  /** "Mon 23 Nov 2026, 03:00 CET" in the viewer's zone (HvTime; "Mon 23 Nov 2026 03:00" in UTC without it); "-" for nothing. */
   function utc(iso) {
     var t = ms(iso);
     if (t === null) return "-";
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(t, { weekday: true }) || "-";
     var d = new Date(t);
     return WD[d.getUTCDay()] + " " + d.getUTCDate() + " " + MO[d.getUTCMonth()] + " " + d.getUTCFullYear() + " "
       + pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes());
@@ -594,7 +598,7 @@
         shade.style.left = pct(gap.from) + "%";
         shade.style.width = (pct(gap.to) - pct(gap.from)) + "%";
         shade.title = "No " + LANE_NAMES[lane].toLowerCase() + (gap.running.length ? " (" + gap.running.join(", ") + " still on)" : "")
-          + ": " + utc(iso(gap.from)) + " to " + utc(iso(gap.to)) + " UTC";
+          + ": " + utc(iso(gap.from)) + " to " + utc(iso(gap.to)) + Z();
         row.appendChild(shade);
       });
       g.bars.filter(function (b) { return b.lane === lane; }).forEach(function (b) {
@@ -609,7 +613,7 @@
         core.style.width = (b.core + b.tail > 0 ? b.core / (b.core + b.tail) * 100 : 100) + "%";
         bar.appendChild(core);
         var label = b.name + " #" + b.id + " (" + (STATUS[b.status] || b.status) + ", " + LANE_NAMES[lane].toLowerCase() + (b.transition ? ", transition" : "") + "): " + utc(run.startsAt)
-          + " to " + utc(run.endsAt) + " UTC";
+          + " to " + utc(run.endsAt) + Z();
         if (run.editable) {
           bar.classList.add("is-movable");
           bar.appendChild(el("span", "cal-h cal-h-start"));
@@ -638,7 +642,7 @@
     strip.addEventListener("pointermove", function (e) {
       if (drag.active) return;
       var t = timeAt(e.clientX);
-      $("cal-at").textContent = utc(iso(snap(t))) + " UTC: " + names(runningAt(view.pieces, t)) + ".";
+      $("cal-at").textContent = utc(iso(snap(t))) + Z() + ": " + names(runningAt(view.pieces, t)) + ".";
     });
     renderNowAndGaps(cov);
   }
@@ -658,7 +662,7 @@
       var li = el("li", "is-empty");
       var open = gap.to >= view.to ? " (the end of the view; nothing is planned after)" : "";
       li.appendChild(el("span", "cal-gap-key", "No " + LANE_NAMES[gap.lane].toLowerCase()));
-      li.appendChild(document.createTextNode(" " + utc(iso(gap.from)) + " to " + utc(iso(gap.to)) + " UTC, "
+      li.appendChild(document.createTextNode(" " + utc(iso(gap.from)) + " to " + utc(iso(gap.to)) + Z() + ", "
         + howLong(gap.from, gap.to) + open + (gap.running.length ? ". Still on: " + gap.running.join(", ") + "." : ".")));
       var fill = el("button", "ghost-btn small", "Fill this gap");
       fill.type = "button";
@@ -684,7 +688,7 @@
       $("cal-s-cycles").value = String(Math.max(1, Math.floor((gap.to - start) / (s.cycle_days * DAY))));
     }
     showLane();
-    $("cal-gap-hint").textContent = "Filling " + utc(iso(start)) + " to " + utc(iso(gap.to)) + " UTC ("
+    $("cal-gap-hint").textContent = "Filling " + utc(iso(start)) + " to " + utc(iso(gap.to)) + Z() + " ("
       + howLong(start, gap.to) + "). Pick the event; the check below says where it ends and what it overlaps.";
     $("cal-gap-hint").hidden = false;
     syncEnd();
@@ -728,7 +732,7 @@
     bar.classList.toggle("is-bad", rules.problems.length > 0);
     bar.classList.toggle("is-soft", !rules.problems.length && bad.length > 0);
     var tip = document.querySelector("#cal-strip .cal-tip");
-    tip.textContent = "Start " + utc(d.startsAt) + " · core to " + utc(d.coreEndsAt) + " · end " + utc(d.endsAt) + " UTC"
+    tip.textContent = "Start " + utc(d.startsAt) + " · core to " + utc(d.coreEndsAt) + " · end " + utc(d.endsAt) + Z()
       + (bad.length ? " · " + bad[0] + (bad.length > 1 ? " (+" + (bad.length - 1) + ")" : "") : " · the checks pass");
     tip.classList.add("is-on");
     var w = tip.parentNode.clientWidth;
@@ -878,7 +882,7 @@
       .then(function (r) {
         state.change = null;
         $("cal-change").hidden = true;
-        say("cal-ok", "Run #" + r.id + " saved: from " + utc(r.startsAt) + " UTC to " + utc(r.endsAt) + " UTC. The game server reads it within a minute.");
+        say("cal-ok", "Run #" + r.id + " saved: from " + utc(r.startsAt) + Z() + " to " + utc(r.endsAt) + Z() + ". The game server reads it within a minute.");
         return load();
       })
       .catch(function (e) {
@@ -1148,7 +1152,7 @@
     request("/api/admin/events/calendar/check" + q, { method: "POST", body: JSON.stringify(body(v)) }).then(function (c) {
       if (seq !== state.checkSeq) return;
       if (c.endsAt && document.activeElement !== $("cal-end")) $("cal-end").value = toInput(c.endsAt);
-      $("cal-computed").textContent = c.endsAt ? "Core to " + utc(c.coreEndsAt) + " UTC, ends " + utc(c.endsAt) + " UTC"
+      $("cal-computed").textContent = c.endsAt ? "Core to " + utc(c.coreEndsAt) + Z() + ", ends " + utc(c.endsAt) + Z()
         + (c.settings && c.settings.first_cycle !== undefined ? ", cycles from " + c.settings.first_cycle : "") + "." : "";
       list("cal-problems", c.problems, c.problems && c.problems.length ? [] : ["The checks pass."].concat(c.warnings || []));
     }).catch(function (e) {
@@ -1204,7 +1208,7 @@
     $("cal-save").disabled = true;
     request(path, { method: id ? "PUT" : "POST", body: JSON.stringify(body(v)) }).then(function (r) {
       say("cal-ok", (id ? "Run #" + id + " saved" : NAMES[r.event] + " #" + r.id + " added") + ": from " + utc(r.startsAt)
-        + " UTC to " + utc(r.endsAt) + " UTC. The game server reads it within a minute.");
+        + Z() + " to " + utc(r.endsAt) + Z() + ". The game server reads it within a minute.");
       resetForm();
       return load();
     }).catch(function (e) {
@@ -1225,7 +1229,7 @@
   function showGenerated(l, res) {
     var bad = [], ok = [];
     (res.runs || []).forEach(function (r) {
-      var line = r.name + ": " + utc(r.startsAt) + " to " + utc(r.endsAt) + " UTC"
+      var line = r.name + ": " + utc(r.startsAt) + " to " + utc(r.endsAt) + Z()
         + (r.settings && r.settings.first_cycle !== undefined ? ", cycle " + r.settings.first_cycle : "");
       if (r.exists) ok.push(line + " (already there, skipped)");
       else if (r.problems && r.problems.length) bad.push(line + ": " + r.problems.join(" "));

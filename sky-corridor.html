@@ -167,7 +167,7 @@
           <button type="button" class="chip" data-period="all" aria-pressed="true">All time</button>
           <button type="button" class="chip" data-period="week" aria-pressed="false">This week</button>
         </div>
-        <p class="note-text" id="sky-week-rule" hidden>This week lists the hunters who cleared a tower quest since Monday 00:00 UTC. Their numbers are still their all-time totals: the server keeps one running total per hunter, not each run, so it can't tell how much of it was climbed this week.</p>
+        <p class="note-text" id="sky-week-rule" hidden>This week lists the hunters who cleared a tower quest since Monday 00:00 UTC<span id="sky-week-local"></span>. Their numbers are still their all-time totals: the server keeps one running total per hunter, not each run, so it can't tell how much of it was climbed this week.</p>
         <div id="sky-board"><p class="note-text">Loading</p></div>
         <p class="note-text">Tied hunters are ordered by the other number, then by who got there first.</p>
       </section>
@@ -248,8 +248,9 @@
     </footer>
     <!-- /site-shell:footer -->
 
-    <script src="/js/sky.js"></script>
-    <script src="/js/sky-corridor.js"></script>
+    <script src="/js/time.js?v=1"></script>
+    <script src="/js/sky.js?v=2"></script>
+    <script src="/js/sky-corridor.js?v=2"></script>
     <script src="/js/search.js?v=3" defer></script>
   </body>
 </html>

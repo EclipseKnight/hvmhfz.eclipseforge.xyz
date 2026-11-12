@@ -82,7 +82,28 @@
     if (!value) return "Never";
     var date = new Date(value);
     if (isNaN(date.getTime())) return "Unknown";
+    if (window.HvTime) return HvTime.text(date);
     return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(date);
+  }
+
+  // A date as a <time> (viewer zone, UTC on hover) for a table cell or value; plain text when it is
+  // missing or invalid, or when js/time.js is not loaded. cls: optional class name.
+  function whenNode(value, cls) {
+    if (!window.HvTime || !value || isNaN(new Date(value).getTime())) return el("time", cls, formatDate(value));
+    var node = HvTime.node(value);
+    if (cls) node.className = cls;
+    return node;
+  }
+
+  // A cell/value element whose content is text or a node.
+  function cellOf(tag, cls, value) {
+    var node = el(tag, cls);
+    if (value && value.nodeType) node.appendChild(value); else if (value !== undefined && value !== null) node.textContent = value;
+    return node;
+  }
+
+  function when(value) {
+    return window.HvTime && value && !isNaN(new Date(value).getTime()) ? HvTime.node(value) : formatDate(value);
   }
 
   function relative(value) {
@@ -121,7 +142,8 @@
     card.classList.remove("skeleton");
     card.className = "stat-card" + (tone ? " " + tone : "");
     card.querySelector(".stat-label").textContent = label;
-    card.querySelector(".stat-value").textContent = value;
+    var out = card.querySelector(".stat-value");
+    if (value && value.nodeType) { clear(out); out.appendChild(value); } else out.textContent = value;
   }
 
   function renderAccount(account) {
@@ -132,7 +154,7 @@
 
     stat("stat-discord", "Discord", account.discordLinked ? "Linked" : "Not linked", account.discordLinked ? "good" : "muted");
     stat("stat-characters", "Characters", String(account.characters));
-    stat("stat-lastlogin", "Last login", formatDate(account.lastLogin));
+    stat("stat-lastlogin", "Last login", when(account.lastLogin));
     stat("stat-roles", "Roles", (account.roles || []).map(function (role) {
       return role.replace(/^ROLE_/, "");
     }).join(", ") || "None");
@@ -153,11 +175,11 @@
     [["Username", account.username],
      ["Discord", account.discordLinked ? "Linked" : "Not linked"],
      ["Roles", (account.roles || []).map(function (r) { return r.replace(/^ROLE_/, ""); }).join(", ") || "None"],
-     ["Last login", formatDate(account.lastLogin)],
+     ["Last login", when(account.lastLogin)],
      ["Characters", String(account.characters)]
     ].forEach(function (row) {
       details.appendChild(el("dt", null, row[0]));
-      details.appendChild(el("dd", null, row[1]));
+      details.appendChild(cellOf("dd", null, row[1]));
     });
   }
 
@@ -246,9 +268,9 @@
 
     [hrText(character.hr), number(character.gr), character.weaponType || "Unknown",
      character.female ? "Female" : "Male", number(character.gcp), number(character.kouryouPoints),
-     number(character.dailyQuests), character.guildName || "-", formatDate(character.lastLogin)]
+     number(character.dailyQuests), character.guildName || "-", when(character.lastLogin)]
       .forEach(function (value, i) {
-        var cell = el("td", null, value);
+        var cell = cellOf("td", null, value);
         if (i === 0) cell.dataset.sort = String(character.hr || 0); // the header sorts by the stored number
         row.appendChild(cell);
       });
@@ -312,12 +334,12 @@
        ["Tower RP", number(guild.towerRp)],
        ["Room RP", number(guild.roomRp)],
        ["Leader", guild.leaderName || "unknown"],
-       ["Created", formatDate(guild.createdAt)],
-       ["Room expires", guild.roomExpiry ? formatDate(guild.roomExpiry) : "none"]
+       ["Created", when(guild.createdAt)],
+       ["Room expires", guild.roomExpiry ? when(guild.roomExpiry) : "none"]
       ].forEach(function (row) {
         var item = el("div", "guild-stat");
         item.appendChild(el("dt", null, row[0]));
-        item.appendChild(el("dd", null, row[1]));
+        item.appendChild(cellOf("dd", null, row[1]));
         stats.appendChild(item);
       });
       card.appendChild(stats);
@@ -337,9 +359,9 @@
         var row = el("tr");
         row.dataset.search = [member.name, member.rank].filter(Boolean).join(" ").toLowerCase();
         [member.name || "Unknown", member.rank || "Member", member.recruiter ? "Yes" : "-",
-         formatDate(member.joinedAt), number(member.rpToday), number(member.rpYesterday),
-         formatDate(member.lastLogin)].forEach(function (value) {
-          row.appendChild(el("td", null, value));
+         when(member.joinedAt), number(member.rpToday), number(member.rpYesterday),
+         when(member.lastLogin)].forEach(function (value) {
+          row.appendChild(cellOf("td", null, value));
         });
         tbody.appendChild(row);
       });
@@ -382,7 +404,7 @@
     events.slice(0, 6).forEach(function (event) {
       var item = el("li");
       item.appendChild(el("span", "activity-text", event.text));
-      item.appendChild(el("time", "activity-when", formatDate(event.when)));
+      item.appendChild(whenNode(event.when, "activity-when"));
       list.appendChild(item);
     });
   }
@@ -468,7 +490,7 @@
       data.recent.forEach(function (kill) {
         var item = el("li");
         item.appendChild(el("span", "activity-text", kill.monster + (kill.quantity > 1 ? " x" + kill.quantity : "")));
-        item.appendChild(el("time", "activity-when", formatDate(kill.at)));
+        item.appendChild(whenNode(kill.at, "activity-when"));
         recent.appendChild(item);
       });
     }

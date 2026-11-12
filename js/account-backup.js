@@ -110,8 +110,15 @@
   function when(value) {
     if (!value) return "Never";
     var d = new Date(value);
+    if (window.HvTime && !isNaN(d.getTime())) return HvTime.text(d);
     return isNaN(d.getTime()) ? "-" :
       new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(d);
+  }
+
+  // The same as a <time> for a table cell (UTC on hover); plain text when empty or without js/time.js.
+  function whenNode(value) {
+    if (!window.HvTime || !value || isNaN(new Date(value).getTime())) return when(value);
+    return HvTime.node(value);
   }
 
   /* A refused request in plain words: the API's reasons (README "Character import") made friendlier. */
@@ -224,8 +231,9 @@
     characters.forEach(function (c) {
       var tr = el("tr");
       tr.dataset.character = String(c.id);
-      [c.name || "(no name)", String(c.id), hrText(c.hr), grouped(c.gr), when(c.lastLogin)].forEach(function (v, i) {
-        var td = el("td", i === 1 ? "num muted" : (i === 2 || i === 3 ? "num" : null), v);
+      [c.name || "(no name)", String(c.id), hrText(c.hr), grouped(c.gr), whenNode(c.lastLogin)].forEach(function (v, i) {
+        var td = el("td", i === 1 ? "num muted" : (i === 2 || i === 3 ? "num" : null));
+        if (v && v.nodeType) td.appendChild(v); else td.textContent = v;
         if (i === 2) td.dataset.sort = String(c.hr || 0); // the header sorts by the stored number
         tr.appendChild(td);
       });
@@ -536,12 +544,16 @@
       tr.dataset.importId = String(row.id);
       var parts = (row.parts || []).map(function (p) { return typeof p === "string" ? p : p.part; });
       var skills = { restore: "restored", clear: "cleared", keep: "kept" }[row.skillsPolicy] || row.skillsPolicy || "-";
-      [when(row.at), (row.characterName || "?") + " (id " + row.characterId + ")",
+      [whenNode(row.at), (row.characterName || "?") + " (id " + row.characterId + ")",
        (SOURCES[row.source] || row.source || "-").replace(/\.$/, ""),
        parts.length + (parts.length === 1 ? " part" : " parts") + ", Road skill levels " + skills,
        ({ web: "website", "web-new": "website, as a new character" }[row.endpoint] || "Discord") +
          (row.undoneAt ? (row.endpoint === "web-new" ? ", removed by an admin " : ", undone by an admin ") + when(row.undoneAt) : "")]
-        .forEach(function (v) { tr.appendChild(el("td", null, v)); });
+        .forEach(function (v) {
+          var td = el("td");
+          if (v && v.nodeType) td.appendChild(v); else td.textContent = v;
+          tr.appendChild(td);
+        });
       history.appendChild(tr);
     });
   }

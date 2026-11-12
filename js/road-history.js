@@ -17,7 +17,17 @@
     if (!value) return "";
     var date = new Date(value);
     if (isNaN(date.getTime())) return "Unknown";
+    if (window.HvTime) return HvTime.text(date);
     return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(date);
+  }
+
+  // The same as a <time> element of that tag (UTC time on hover); plain text when empty/invalid or
+  // without js/time.js.
+  function whenEl(tag, className, value) {
+    var node = window.HvTime && value && !isNaN(new Date(value).getTime()) ? HvTime.node(value, {}, tag) : null;
+    if (!node) return el(tag, className, formatDate(value));
+    if (className) node.className = className;
+    return node;
   }
 
   function messageRow(body, text) {
@@ -48,8 +58,8 @@
       // a base Road, or a Road drawn when nobody entered, was not voted in
       var drawn = item.number <= 0 ? "base Road" : item.fallback ? "drawn" : null;
       row.appendChild(el("td", "num", drawn || (item.votes === null || item.votes === undefined ? "-" : String(item.votes))));
-      row.appendChild(el("td", null, formatDate(item.liveFrom) || "-"));
-      row.appendChild(el("td", null, item.liveUntil ? formatDate(item.liveUntil) : "Live now"));
+      row.appendChild(item.liveFrom ? whenEl("td", null, item.liveFrom) : el("td", null, "-"));
+      row.appendChild(item.liveUntil ? whenEl("td", null, item.liveUntil) : el("td", null, "Live now"));
       body.appendChild(row);
     });
   }

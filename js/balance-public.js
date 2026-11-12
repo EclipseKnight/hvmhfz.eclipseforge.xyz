@@ -212,6 +212,7 @@
   function when(at) {
     var t = typeof at === "number" ? (at < 1e11 ? at * 1000 : at) : Date.parse(at || "");
     if (isNaN(t)) return "";
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(t);
     var d = new Date(t);
     var pad = function (n) { return (n < 10 ? "0" : "") + n; };
     return d.getUTCDate() + " " + MONTHS[d.getUTCMonth()] + " " + d.getUTCFullYear() + ", " + pad(d.getUTCHours()) + ":" +
@@ -419,7 +420,9 @@
 
   function render(answer) {
     $("bal-version").textContent = "Version " + answer.version;
-    $("bal-date").textContent = when(answer.publishedAt);
+    var at = answer.publishedAt;
+    if (window.HvTime && at) HvTime.set($("bal-date"), typeof at === "number" && at < 1e11 ? at * 1000 : at);
+    else $("bal-date").textContent = when(at);
     var note = $("bal-note");
     clear(note);
     if (!isNone(answer.note)) note.appendChild(reasonNode(answer.note));

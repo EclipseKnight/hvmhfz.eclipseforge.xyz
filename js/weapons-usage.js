@@ -86,6 +86,7 @@
 
   function when(iso) {
     var d = new Date(iso);
+    if (window.HvTime && !isNaN(d)) return HvTime.text(d);
     return isNaN(d) ? "" : d.toLocaleString(undefined, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
   }
 

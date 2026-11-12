@@ -250,7 +250,7 @@ async function settingsPage(browser, base) {
   const tabs = await page.$$eval("#set-sections .set-tab", (ns) => ns.map((n) => n.textContent));
   check("sections with states", JSON.stringify(tabs) === JSON.stringify(["MezFesapplied", "Sky Corridorrefused", "Guildconfig", "Login noticesconfig", "Patch gateconfig"]), JSON.stringify(tabs));
   const status = await text(page, "#set-status");
-  check("game server report", /hunsterverse: runs version 7, .*read the table Fri 20 Nov 2026 11:59 UTC; refused: sky_corridor\./.test(status), status);
+  check("game server report", /hunsterverse: runs version 7, .*read the table Fri 20 Nov 2026, 11:59 UTC; refused: sky_corridor\./.test(status), status);
   const ro = await page.$$eval("#set-restart li", (ns) => ns.map((n) => n.textContent));
   check("restart only", JSON.stringify(ro) === JSON.stringify(["API.Messages: 2", "EventCalendar.Enabled: on", "LiveSettings.Enabled: on"]), JSON.stringify(ro));
   await page.waitForSelector("#set-history tr td", { timeout: 5000 });

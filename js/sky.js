@@ -33,11 +33,12 @@
     return Math.max(0, Math.min(100, Math.floor((current || 0) * 100 / goal)));
   }
 
-  // "3 Nov 2026, 14:05 UTC"; "-" for none.
+  // "3 Nov 2026, 15:05 CET" in the visitor's time zone (js/time.js; "3 Nov 2026, 14:05 UTC" without it); "-" for none.
   function when(time) {
     if (!time) return "-";
     var d = new Date(time);
     if (isNaN(d.getTime())) return "-";
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(d);
     return d.toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit",
       minute: "2-digit", hour12: false, timeZone: "UTC" }) + " UTC";
   }

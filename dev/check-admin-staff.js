@@ -365,8 +365,8 @@ async function run() {
   check("panel: asked with the character", /\/api\/admin\/flags\/subject\/52\?character=1002$/.test(last(api, "GET", "/subject/").path), last(api, "GET", "/subject/").path);
   t = await text(page, "#fl-subject");
   const need = [["name as text", "Tobias <b>Reed</b>"], ["character id", "1002"], ["account", "aldric2 #52"], ["level", "GR50 · HR100 (HR4)"], ["weapon", "Long Sword · 412 quests (most quests cleared)"],
-    ["playtime", "12 h 30 m"], ["created", "2026-10-01 10:00 UTC"], ["last login", "2026-11-11 08:30 UTC"], ["account age", "52 days"], ["guild", "Brass Lanterns (#77)"],
-    ["discord", "tobias#0001 (123456789012345678)"], ["patch channel", "stable"], ["client", "v1.19, seen 2026-11-11 08:30 UTC"],
+    ["playtime", "12 h 30 m"], ["created", "1 Oct 2026, 10:00 UTC"], ["last login", "11 Nov 2026, 08:30 UTC"], ["account age", "52 days"], ["guild", "Brass Lanterns (#77)"],
+    ["discord", "tobias#0001 (123456789012345678)"], ["patch channel", "stable"], ["client", "v1.19, seen 11 Nov 2026, 08:30 UTC"],
     ["currency value / cap", "450,000 / 9,999,999"], ["threshold", "flagged above 200,000"], ["earnable", "Play pays about 20,000 an hour"], ["second currency", "800 / 1,200,000"],
     ["quests", "1,500"], ["quests 7 days", "40"], ["flag", "GCP far over what play earns"], ["account flag", "Frontier points far over income"], ["flag history", "Flagged by scan"],
     ["import", "old server save"], ["login", "Mezeporta"], ["shared IP", "Shares an IP with 2 other accounts: sibling_a, sibling_b."], ["other character", "Other Hunter · HR30 (HR2)"],

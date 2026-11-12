@@ -107,7 +107,10 @@
         ["Points", function (e) {
           return e.points === null || e.points === undefined ? "-" : num(e.points);
         }, "num"],
-        ["Reached", function (e) { return e.reachedAt ? when(e.reachedAt) : "Saved best"; }],
+        ["Reached", function (e) {
+          if (!e.reachedAt) return "Saved best";
+          return window.HvTime ? HvTime.node(e.reachedAt, { year: "auto" }) : when(e.reachedAt);
+        }],
         ["Floors climbed", function (e) {
           // before tracking began only each hunter's best was saved: no floor count to show
           return e.floorsClimbed > 0 ? num(e.floorsClimbed) : "-";
@@ -177,7 +180,9 @@
     var left = Math.max(0, new Date(data.resetsAt).getTime() - Date.now());
     var days = Math.floor(left / 86400000);
     var hours = Math.floor((left % 86400000) / 3600000);
-    return text + "now, resets in " + (days ? days + "d " : "") + hours + "h";
+    // The reset is 00:00 UTC; say when that is for the visitor (js/time.js).
+    var at = window.HvTime ? ": " + HvTime.boundary(data.resetsAt, "UTC", 0, { weekday: true }) : "";
+    return text + "now, resets in " + (days ? days + "d " : "") + hours + "h" + at;
   }
 
   function message(board, text) {
@@ -252,6 +257,12 @@
   }
 
   // "Ice Road by Bravo · 27 Oct to now" and, when tracking began inside the rotation, from when.
+  // "Weeks start Monday 00:00 UTC" on the page: add when that is for the visitor.
+  (function () {
+    var span = document.getElementById("week-start-local");
+    if (span && window.HvTime && HvTime.mode() !== "utc") span.textContent = " (" + HvTime.text(Date.UTC(2026, 10, 16), { date: "weekday" }) + ")";
+  })();
+
   function roadNote(data) {
     var r = data.rotation;
     var bits = [];
@@ -266,13 +277,20 @@
     }
     var from = r.from ? date(r.from) : null;
     var to = r.to ? date(new Date(r.to).getTime() - 1) : "now";
-    if (from) bits.push(from + " to " + to + " (UTC)");
+    // With js/time.js: the rotation's start and end as moments in the visitor's time zone.
+    if (window.HvTime) {
+      var opts = { year: withYear ? true : "auto" };
+      from = r.from ? HvTime.text(r.from, opts) : null;
+      to = r.to ? HvTime.text(r.to, opts) : "now";
+      if (from) bits.push(from + " to " + to);
+      else if (r.to) bits.push("until " + to);
+    } else if (from) bits.push(from + " to " + to + " (UTC)");
     else if (r.to) bits.push("until " + to + " (UTC)");
     var endedBeforeTracking = r.to && data.trackingSince && new Date(r.to) <= new Date(data.trackingSince);
     if (endedBeforeTracking) {
       bits.push("ran before floors were tracked");
     } else if (data.trackingSince && (!r.from || new Date(data.trackingSince) > new Date(r.from))) {
-      bits.push("clears tracked since " + day(data.trackingSince));
+      bits.push("clears tracked since " + (window.HvTime ? HvTime.text(data.trackingSince, { year: "auto" }) : day(data.trackingSince)));
     }
     if (data.hunters) bits.push(num(data.hunters) + (data.hunters === 1 ? " hunter" : " hunters"));
     if (data.savedBests) {

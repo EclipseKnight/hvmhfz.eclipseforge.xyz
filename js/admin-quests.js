@@ -96,6 +96,7 @@
 
   function when(iso) {
     var d = new Date(iso);
+    if (!isNaN(d) && window.HvTime) return HvTime.text(d) || "-";
     return isNaN(d) ? "-" : d.toLocaleString();
   }
 
@@ -114,7 +115,9 @@
     tr.appendChild(name);
     tr.appendChild(el("td", null, item.account || "-"));
     tr.appendChild(el("td", "num", kb(item.size)));
-    tr.appendChild(el("td", null, when(item.submittedAt)));
+    var sub = el("td", null, when(item.submittedAt));
+    if (window.HvTime && !isNaN(new Date(item.submittedAt))) { sub.textContent = ""; sub.appendChild(HvTime.node(item.submittedAt)); }
+    tr.appendChild(sub);
     var st = el("td");
     st.appendChild(el("span", "badge " + (item.status === "approved" ? "good" : ""), item.status));
     if (item.status === "testing" && item.expiresAt) {
@@ -173,7 +176,9 @@
     } else if (item.status === "retired") {
       actions.appendChild(el("span", "muted", item.retiredAt ? "retired " + when(item.retiredAt) : "retired"));
     } else {
-      actions.appendChild(el("span", "muted", item.reviewedAt ? when(item.reviewedAt) : "-"));
+      var rev = el("span", "muted", item.reviewedAt ? when(item.reviewedAt) : "-");
+      if (item.reviewedAt && window.HvTime && !isNaN(new Date(item.reviewedAt))) HvTime.set(rev, item.reviewedAt);
+      actions.appendChild(rev);
     }
     tr.appendChild(actions);
     return tr;

@@ -52,6 +52,7 @@
 
   function when(iso) {
     var d = new Date(iso);
+    if (window.HvTime && !isNaN(d)) return HvTime.text(d);
     return isNaN(d) ? "" : d.toLocaleString();
   }
 

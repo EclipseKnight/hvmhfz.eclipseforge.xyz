@@ -2697,6 +2697,7 @@
 
   function when(iso) {
     var date = new Date(iso);
+    if (window.HvTime && !isNaN(date)) return HvTime.text(date, { time: false });
     return isNaN(date) ? "–" : date.toLocaleDateString();
   }
 
@@ -2733,7 +2734,10 @@
       name.appendChild(link);
       tr.appendChild(name);
       tr.appendChild(el("td", "num", String(row.revision)));
-      tr.appendChild(el("td", null, when(row.updatedAt)));
+      var updatedCell = el("td");
+      if (window.HvTime && !isNaN(new Date(row.updatedAt))) updatedCell.appendChild(HvTime.node(row.updatedAt, { time: false }));
+      else updatedCell.textContent = when(row.updatedAt);
+      tr.appendChild(updatedCell);
       draftsBody.appendChild(tr);
     });
   }

@@ -164,7 +164,7 @@ async function roadPage(browser, base) {
   await r.page.waitForFunction(() => !document.getElementById("vote-cycle").hidden, null, { timeout: 5000 }).catch(() => {});
   check("road signed out: rotation head", (await r.page.textContent("#vote-cycle-head")) === "Rotation 4");
   check("road signed out: phase in words", (await r.page.textContent("#vote-cycle-text")) === "Submissions are open.", await r.page.textContent("#vote-cycle-text"));
-  const local = await r.page.evaluate(() => new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date("2026-11-13T00:00:00Z")));
+  const local = await r.page.evaluate(() => window.HvTime.text("2026-11-13T00:00:00Z"));
   const dates = await r.page.textContent("#vote-cycle-dates");
   check("road signed out: dates in local time", dates.includes(local) && /Voting closes/.test(dates), dates);
   check("road signed out: next rotation", /Next up, rotation 3: Voting is open\./.test(await r.page.textContent("#vote-next-text"))

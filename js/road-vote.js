@@ -67,7 +67,17 @@
     if (!value) return "-";
     var date = new Date(value);
     if (isNaN(date.getTime())) return "Unknown";
+    if (window.HvTime) return HvTime.text(date);
     return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(date);
+  }
+
+  // The same as a <time> element of that tag (UTC time on hover); plain text when empty/invalid or
+  // without js/time.js.
+  function whenEl(tag, className, value) {
+    var node = window.HvTime && value && !isNaN(new Date(value).getTime()) ? HvTime.node(value, {}, tag) : null;
+    if (!node) return el(tag, className, formatDate(value));
+    if (className) node.className = className;
+    return node;
   }
 
   function alertBox(text) {
@@ -114,7 +124,7 @@
      ["Voting closes", shown.voteCloses], ["Winner goes live", shown.liveFrom || shown.voteCloses]].forEach(function (row) {
       var box = el("div");
       box.appendChild(el("dt", null, row[0]));
-      box.appendChild(el("dd", null, formatDate(row[1])));
+      box.appendChild(whenEl("dd", null, row[1]));
       phase.appendChild(box);
     });
     var limits = shown.limits || (latest && latest.limits) || {};
@@ -213,7 +223,7 @@
       if (!row[1]) return;
       var box = el("div");
       box.appendChild(el("dt", null, row[0]));
-      box.appendChild(el("dd", null, formatDate(row[1])));
+      box.appendChild(whenEl("dd", null, row[1]));
       dl.appendChild(box);
     });
   }
@@ -272,12 +282,12 @@
         if (live.author) text += ", by " + live.author;
         $("vote-phase-text").textContent = text + ".";
         var phase = $("vote-phase");
-        var rows = [["Live since", formatDate(live.firstLiveAt)]];
+        var rows = [["Live since", whenEl("dd", null, live.firstLiveAt)]];
         if (live.cycle > 0) rows.push(["Rotation", String(live.cycle)]);
         rows.forEach(function (row) {
           var box = el("div");
           box.appendChild(el("dt", null, row[0]));
-          box.appendChild(el("dd", null, row[1]));
+          box.appendChild(row[1] && row[1].nodeType ? row[1] : el("dd", null, row[1]));
           phase.appendChild(box);
         });
       })

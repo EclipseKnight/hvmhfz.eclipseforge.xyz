@@ -25,6 +25,7 @@
   function utc(iso) {
     var t = iso ? Date.parse(iso) : NaN;
     if (isNaN(t)) return "-";
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(t, { weekday: true }) || "-";
     var d = new Date(t);
     return WD[d.getUTCDay()] + " " + d.getUTCDate() + " " + MO[d.getUTCMonth()] + " " + d.getUTCFullYear() + " "
       + pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes()) + " UTC";
@@ -226,6 +227,14 @@
     if (cls) n.className = cls;
     if (text !== undefined && text !== null) n.textContent = text;
     return n;
+  }
+
+  /** A table cell holding a time: a <time> in the viewer's zone, UTC on hover. */
+  function tcell(iso) {
+    var td = el("td", null, "");
+    if (typeof window !== "undefined" && window.HvTime && utc(iso) !== "-") td.appendChild(HvTime.node(iso, { weekday: true }));
+    else td.textContent = utc(iso);
+    return td;
   }
 
   function $(id) { return document.getElementById(id); }
@@ -757,7 +766,7 @@
       rows.forEach(function (h, i) {
         var tr = el("tr");
         tr.appendChild(el("td", null, "#" + h.id + " v" + h.version));
-        tr.appendChild(el("td", null, utc(h.updatedAt)));
+        tr.appendChild(tcell(h.updatedAt));
         tr.appendChild(el("td", null, h.updatedBy + (h.note ? " (" + h.note + ")" : "")));
         var what = el("td");
         var lines = historyChanges(view.spec, h.before, h.after);

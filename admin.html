@@ -234,7 +234,7 @@
         <p class="form-alert" id="cal-alert" hidden></p>
         <p class="road-ok" id="cal-ok" hidden></p>
         <ul class="road-problems" id="cal-warnings" hidden></ul>
-        <p class="note-text">One main and one side event at a time. Main event: Hunter Festival or Diva Defense, runs start on a Monday 03:00 UTC. Side event: Speedrun Cup or VS Bracket, runs start on a Thursday 15:00 UTC. A lighter bar is a run's tail (festival rewards, Diva week 3), which may run beside the next event of its lane. The game server reads the calendar every minute and writes each run's status and phases back; until it has, a run says "waiting for the game server". All times on this tab are <b>UTC</b>.</p>
+        <p class="note-text">One main and one side event at a time. Main event: Hunter Festival or Diva Defense, runs start on a Monday 03:00 UTC. Side event: Speedrun Cup or VS Bracket, runs start on a Thursday 15:00 UTC. A lighter bar is a run's tail (festival rewards, Diva week 3), which may run beside the next event of its lane. The game server reads the calendar every minute and writes each run's status and phases back; until it has, a run says "waiting for the game server". Times in texts are shown in your time zone (hover for UTC); the calendar strip and the time boxes are <b>UTC</b>.</p>
         <p class="cal-running" id="cal-running"></p>
         <p class="cal-legend"><span class="lg is-empty"></span> a gap: no main event, or no side event</p>
         <div class="cal-wrap"><div class="cal-strip" id="cal-strip" aria-label="Calendar of the next 12 weeks"></div></div>
@@ -378,7 +378,7 @@
         <div class="panel-head"><h2>Live settings</h2><span class="panel-note" id="set-note"></span></div>
         <p class="form-alert" id="set-alert" hidden></p>
         <p class="road-ok" id="set-ok" hidden></p>
-        <p class="note-text">The game server reads these every minute and applies them without a restart; each section says when players see a change. A field on <b>config default</b> uses the game server's config.json value. Every save shows its changes first, is checked as the game server checks it, and is kept in the history below (with Revert) and in the Audit tab. Who may save is set in the Permissions tab (by default only admins). All times on this tab are <b>UTC</b>.</p>
+        <p class="note-text">The game server reads these every minute and applies them without a restart; each section says when players see a change. A field on <b>config default</b> uses the game server's config.json value. Every save shows its changes first, is checked as the game server checks it, and is kept in the history below (with Revert) and in the Audit tab. Who may save is set in the Permissions tab (by default only admins). Times are shown in your time zone (hover for UTC).</p>
         <div id="set-status"></div>
         <div class="ops-log-head">
           <h3 class="subhead">Sections</h3>
@@ -432,7 +432,7 @@
         <p class="form-alert" id="not-alert" hidden></p>
         <p class="road-ok" id="not-ok" hidden></p>
         <ul class="road-problems" id="not-problems" hidden></ul>
-        <p class="note-text">In game, a notice is one chat line to every player on every channel: at most 240 bytes, no emoji or accented letters (the game can't show them). On Discord it is a post by the bot in #mhfrontier, with mentions off. Every send is in the Audit tab. Admins only. All times on this tab are <b>UTC</b>.</p>
+        <p class="note-text">In game, a notice is one chat line to every player on every channel: at most 240 bytes, no emoji or accented letters (the game can't show them). On Discord it is a post by the bot in #mhfrontier, with mentions off. Every send is in the Audit tab. Admins only. Times are shown in your time zone (hover for UTC); the send-at box is <b>UTC</b>.</p>
 
         <h3 class="subhead">Send now</h3>
         <form id="not-send-form" class="admin-form" novalidate>
@@ -502,7 +502,7 @@
       <section class="panel" id="content-panel">
         <div class="panel-head"><h2>Event content</h2><span class="panel-note" id="content-note"></span></div>
         <p class="form-alert" id="content-alert" hidden></p>
-        <p class="note-text">The rows the game server reads for each event: festival trials and prizes, Diva rewards and coin shop, Cup and VS quests and prizes, campaigns, Sky Corridor rewards, event quests, gachas and shops. The API checks every change (limits, item ids against the site's item list) and refuses with reasons; a table is locked while players' claims or a running week point at its rows. Every change is in the Audit tab. Times are <b>UTC</b>.</p>
+        <p class="note-text">The rows the game server reads for each event: festival trials and prizes, Diva rewards and coin shop, Cup and VS quests and prizes, campaigns, Sky Corridor rewards, event quests, gachas and shops. The API checks every change (limits, item ids against the site's item list) and refuses with reasons; a table is locked while players' claims or a running week point at its rows. Every change is in the Audit tab. Times are shown in your time zone (hover for UTC); the time boxes are <b>UTC</b>.</p>
         <div class="chips" id="content-groups" role="group" aria-label="Event"></div>
         <div class="chips" id="content-tables" role="group" aria-label="Table"></div>
         <p class="content-trail" id="content-trail" hidden></p>
@@ -624,7 +624,7 @@
         <p class="form-alert" id="logins-alert" hidden></p>
         <div class="table-wrap">
           <table class="data-table admin-table" data-nosort>
-            <thead><tr><th>Login (UTC)</th><th>Logout</th><th>Character</th><th>Land</th><th>Patch</th><th>Game options sent</th><th>Refused</th><th>How it ended</th></tr></thead>
+            <thead><tr><th>Login</th><th>Logout</th><th>Character</th><th>Land</th><th>Patch</th><th>Game options sent</th><th>Refused</th><th>How it ended</th></tr></thead>
             <tbody id="logins-rows"></tbody>
           </table>
         </div>
@@ -916,7 +916,7 @@
         </div>
         <div class="table-wrap">
           <table class="data-table admin-table" data-nosort>
-            <thead><tr><th>#</th><th>Uploaded (UTC)</th><th>Account</th><th>File</th><th>Area</th><th>Player's note</th><th>Patch</th><th>Outcome</th><th>Problems</th><th></th></tr></thead>
+            <thead><tr><th>#</th><th>Uploaded</th><th>Account</th><th>File</th><th>Area</th><th>Player's note</th><th>Patch</th><th>Outcome</th><th>Problems</th><th></th></tr></thead>
             <tbody id="diag-rows"><tr><td colspan="10" class="empty-cell">Loading</td></tr></tbody>
           </table>
         </div>
@@ -1024,22 +1024,23 @@
     </footer>
     <!-- /site-shell:footer -->
 
-    <script src="/js/admin-quests.js?v=4"></script>
-    <script src="/js/admin-events.js"></script>
-    <script src="/js/admin-settings.js?v=2"></script>
-    <script src="/js/admin-notices.js"></script>
-    <script src="/js/admin-content.js"></script>
+    <script src="/js/time.js?v=1"></script>
+    <script src="/js/admin-quests.js?v=5"></script>
+    <script src="/js/admin-events.js?v=2"></script>
+    <script src="/js/admin-settings.js?v=3"></script>
+    <script src="/js/admin-notices.js?v=2"></script>
+    <script src="/js/admin-content.js?v=2"></script>
     <script src="/js/admin-patches.js?v=3"></script>
-    <script src="/js/admin-diag.js?v=3"></script>
+    <script src="/js/admin-diag.js?v=4"></script>
     <script src="/js/balance-fields.js?v=1"></script>
-    <script src="/js/admin-balance.js?v=4"></script>
+    <script src="/js/admin-balance.js?v=5"></script>
     <script src="/js/game-icons.js?v=2"></script>
     <script src="/js/move-names.js?v=2"></script>
     <script src="/js/admin-balance-grid.js?v=5"></script>
-    <script src="/js/admin-flags.js?v=3"></script>
+    <script src="/js/admin-flags.js?v=4"></script>
     <script src="/js/admin-permissions.js?v=1"></script>
     <script src="/js/hr.js?v=1"></script>
-    <script src="/js/admin.js?v=10"></script>
+    <script src="/js/admin.js?v=11"></script>
     <script src="/js/search.js?v=3" defer></script>
   </body>
 </html>

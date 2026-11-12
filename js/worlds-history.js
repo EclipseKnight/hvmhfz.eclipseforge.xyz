@@ -49,15 +49,25 @@
     if (diff < 3600) return Math.round(diff / 60) + " min ago";
     if (diff < 86400) return Math.round(diff / 3600) + " h ago";
     if (diff < 86400 * 30) return Math.round(diff / 86400) + " days ago";
+    if (window.HvTime) return HvTime.text(iso, { time: false });
     return new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
   }
 
   function stamp(iso, bucket) {
     var d = new Date(iso);
+    if (window.HvTime) {
+      if (bucket < 86400) return HvTime.text(d, { date: "weekday", zone: false });
+      return HvTime.text(d, { time: false, year: bucket >= 604800 });
+    }
     if (bucket < 86400) {
       return d.toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" });
     }
     return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: bucket >= 604800 ? "numeric" : undefined });
+  }
+
+  // "Nov 2026" in the viewer's zone (the date text without its day).
+  function monthYear(iso) {
+    return HvTime.text(iso, { time: false }).replace(/^\d+ /, "");
   }
 
   // A whole-number tick step that gives at most about five gridlines.
@@ -117,7 +127,7 @@
         "text-anchor": t === 0 ? "start" : t === ticks ? "end" : "middle" });
       var span = to - from;
       tx.textContent = span > 300 * 86400000
-        ? new Date(at).toLocaleDateString(undefined, { month: "short", year: "numeric" })
+        ? (window.HvTime ? monthYear(at) : new Date(at).toLocaleDateString(undefined, { month: "short", year: "numeric" }))
         : stamp(at, span > 3 * 86400000 ? 86400 : 3600);
       chart.appendChild(tx);
     }
@@ -231,8 +241,8 @@
     });
 
     var BARS_NOTE = "Bars: hunters with a kill, the number of different characters that killed at least one monster in that hour, day or week (from the kill log, which goes back further than the online counts). Someone playing two characters counts twice; time in town without a kill does not count.";
-    var since = d.trackingSince ? new Date(d.trackingSince).toLocaleString(undefined,
-      { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : null;
+    var since = d.trackingSince ? (window.HvTime ? HvTime.text(d.trackingSince) : new Date(d.trackingSince).toLocaleString(undefined,
+      { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })) : null;
     var note = since
       ? "Online counts are sampled every minute since " + since + ". " + BARS_NOTE
       : "Online counts start with the first sample, within a minute of this update. " + BARS_NOTE;
@@ -279,7 +289,7 @@
 
       var seen = el("td", null, p.online ? "Now" : ago(p.lastSeen));
       seen.setAttribute("data-sort", p.lastSeen || "");
-      if (p.lastSeen) seen.title = new Date(p.lastSeen).toLocaleString();
+      if (p.lastSeen) seen.title = window.HvTime ? HvTime.text(p.lastSeen) + " (" + HvTime.utc(p.lastSeen) + ")" : new Date(p.lastSeen).toLocaleString();
       row.appendChild(seen);
 
       var status = el("td");
@@ -317,7 +327,7 @@
         renderSummary();
         drawChart();
         renderPlayers();
-        $("history-updated").textContent = "updated " + new Date().toLocaleTimeString();
+        $("history-updated").textContent = "updated " + (window.HvTime ? HvTime.text(Date.now(), { date: false }) : new Date().toLocaleTimeString());
       })
       .catch(function () {
         $("history-chart").classList.remove("is-loading");

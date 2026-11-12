@@ -87,7 +87,8 @@
           var live = mine && (cur.phase === "open" || cur.phase === "upcoming");
           cupBox.appendChild(el("p", "cup-enter-head", live ? "This week's cup quest" : "Speedrun Cup quest"));
           if (live) {
-            var closes = cur.openEndsAt ? new Intl.DateTimeFormat(undefined, { day: "numeric", month: "short",
+            var closes = cur.openEndsAt && window.HvTime ? HvTime.text(cur.openEndsAt, { weekday: true, year: "auto" })
+              : cur.openEndsAt ? new Intl.DateTimeFormat(undefined, { day: "numeric", month: "short",
               hour: "2-digit", minute: "2-digit" }).format(new Date(cur.openEndsAt)) : "";
             var kind = mine.kind === "solo" ? "the solo quest, one board per weapon class"
               : "the guild quest, up to " + (mine.maxPlayers || 4) + " hunters, one board for the group";

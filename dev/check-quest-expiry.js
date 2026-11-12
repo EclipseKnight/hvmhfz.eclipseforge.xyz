@@ -40,7 +40,10 @@ const TOKEN = jwt(4102444800); // 2100
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Methods": "*" };
 const failures = [];
 const check = (label, ok, detail) => { if (!ok) failures.push(label + (detail ? ": " + detail : "")); };
-const day = (iso) => new Date(iso).toLocaleDateString("en-US"); // the browser below runs en-US
+// The page's dates (js/time.js) in the browser's zone, UTC here: "15 Nov 2026"; with the time "15 Nov 2026, 10:00 UTC".
+const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const day = (iso) => { const d = new Date(iso); return d.getUTCDate() + " " + MON[d.getUTCMonth()] + " " + d.getUTCFullYear(); };
+const dayTime = (iso) => day(iso) + ", " + new Date(iso).toISOString().slice(11, 16) + " UTC";
 
 function freshApi(old) {
   const sub = (id, title, status, extra) => Object.assign({ id, title, status, note: null, submittedAt: "2026-11-01T10:00:00Z",
@@ -190,7 +193,7 @@ async function admin(browser, base) {
   check("Expired filter", await page.isVisible("#quests-filter .chip[data-status='expired']"));
   check("Retired filter", await page.isVisible("#quests-filter .chip[data-status='retired']"));
   await page.waitForFunction(() => /Rathalos/.test(document.getElementById("quests-body").textContent), null, { timeout: 5000 }).catch(() => {});
-  check("testing row shows its expiry", (await text(page, "#quests-body")).includes("expires " + new Date("2026-11-15T10:00:00Z").toLocaleString("en-US")),
+  check("testing row shows its expiry", (await text(page, "#quests-body")).includes("expires " + dayTime("2026-11-15T10:00:00Z")),
     await text(page, "#quests-body"));
   check("admin shows the event quest slots", (await text(page, "#quests-slots")) === "511 of 512 event quest slots used.", await text(page, "#quests-slots"));
   api.slots = { used: 512, cap: 512, free: 0 };

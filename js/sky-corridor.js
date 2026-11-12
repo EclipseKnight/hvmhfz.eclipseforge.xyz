@@ -124,6 +124,8 @@
     press("sky-district-chips", "data-district", state.district);
     press("sky-period-chips", "data-period", state.period);
     byId("sky-week-rule").hidden = state.period !== "week";
+    var since = byId("sky-week-local");
+    if (since && window.HvTime && HvTime.mode() !== "utc") since.textContent = " (" + HvTime.text(Date.UTC(2026, 10, 16), { date: "weekday" }) + ")";
     byId("sky-board-title").textContent = BOARDS[state.board]
       + (state.district === "all" ? ", all districts" : ", " + S.districtName(state.district))
       + (state.period === "week" ? ", this week" : ", all time");

@@ -246,7 +246,8 @@
     }
     renderParties(parties(board));
     var at = board && board.generatedAt ? new Date(board.generatedAt) : new Date();
-    document.getElementById("live-updated").textContent = "updated " + (isNaN(at) ? new Date() : at).toLocaleTimeString();
+    var shownAt = isNaN(at) ? new Date() : at;
+    document.getElementById("live-updated").textContent = "updated " + (window.HvTime ? HvTime.text(shownAt, { date: false }) : shownAt.toLocaleTimeString());
   }
 
   /** The Parties block under the list: one part per world with a party, hidden when there are none. */

@@ -17,7 +17,21 @@
   function date(value) {
     if (!value) return "Unknown";
     var d = new Date(value);
+    if (window.HvTime && !isNaN(d.getTime())) return HvTime.text(d, { time: false });
     return isNaN(d.getTime()) ? "Unknown" : new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
+  }
+
+  // The date as a <time> for a table cell or value (UTC time on hover); the plain text otherwise.
+  function dateValue(value) {
+    if (!window.HvTime || !value || isNaN(new Date(value).getTime())) return date(value);
+    return HvTime.node(value, { time: false });
+  }
+
+  // A cell/value element whose content is text or a node.
+  function cellOf(tag, className, value) {
+    var node = el(tag, className);
+    if (value && value.nodeType) node.appendChild(value); else node.textContent = value;
+    return node;
   }
 
   function num(value) {
@@ -60,8 +74,8 @@
       row.appendChild(nameCell);
 
       [hrText(hunter.hr), num(hunter.gr), hunter.weapon || "Unknown",
-       hunter.guildName || "-", date(hunter.lastLogin)].forEach(function (value, i) {
-        var cell = el("td", null, value);
+       hunter.guildName || "-", dateValue(hunter.lastLogin)].forEach(function (value, i) {
+        var cell = cellOf("td", null, value);
         if (i === 0) cell.dataset.sort = String(hunter.hr || 0); // the header sorts by the stored number
         row.appendChild(cell);
       });
@@ -753,12 +767,12 @@
     var stats = el("div", "guild-stats");
     [["Hunter rank", hrText(hunter.hr)], ["G rank", num(hunter.gr)], ["Play time", playtime(hunter.playtimeSeconds)],
      ["Titles", num(hunter.titles)], ["Hunts logged", num(hunter.totalKills)],
-     ["Last seen", date(hunter.lastLogin)],
-     ["Guild joined", hunter.guildJoined ? date(hunter.guildJoined) : "-"]]
+     ["Last seen", dateValue(hunter.lastLogin)],
+     ["Guild joined", hunter.guildJoined ? dateValue(hunter.guildJoined) : "-"]]
       .forEach(function (row) {
         var item = el("div", "guild-stat");
         item.appendChild(el("dt", null, row[0]));
-        item.appendChild(el("dd", null, row[1]));
+        item.appendChild(cellOf("dd", null, row[1]));
         stats.appendChild(item);
       });
     panel.appendChild(stats);

@@ -24,6 +24,7 @@
   function when(iso) {
     if (!iso) return "-";
     var at = new Date(iso);
+    if (window.HvTime && !isNaN(at)) return HvTime.text(at);
     return isNaN(at) ? "-" : at.toLocaleString();
   }
 
@@ -127,7 +128,10 @@
         row.appendChild(el("td", "num", duration(quest.durationSeconds)));
         row.appendChild(el("td", "num", quest.clearSeconds === null || quest.clearSeconds === undefined
           ? "-" : duration(quest.clearSeconds)));
-        row.appendChild(el("td", null, when(quest.endedAt)));
+        var endedCell = el("td");
+        if (window.HvTime && quest.endedAt && !isNaN(new Date(quest.endedAt))) endedCell.appendChild(HvTime.node(quest.endedAt));
+        else endedCell.textContent = when(quest.endedAt);
+        row.appendChild(endedCell);
         tbody.appendChild(row);
       });
       var pages = Math.max(1, Math.ceil(state.total / SIZE));

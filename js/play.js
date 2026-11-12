@@ -142,7 +142,12 @@
     var head = el("p", "play-patch-now");
     head.appendChild(el("span", "play-patch-label", "Current patch"));
     head.appendChild(el("strong", "play-patch-version", "v" + now.version));
-    head.appendChild(el("span", "play-patch-meta", patchDate(now.published) + " UTC · " + patchSize(now.size)));
+    // With js/time.js the release time is in the visitor's time zone, UTC on hover.
+    var nowTime = /T/.test(now.published || "") && window.HvTime ? HvTime.node(now.published) : null;
+    var meta = el("span", "play-patch-meta", nowTime ? "" : patchDate(now.published) + (/T/.test(now.published || "") ? " UTC" : ""));
+    if (nowTime) meta.appendChild(nowTime);
+    meta.appendChild(document.createTextNode(" · " + patchSize(now.size)));
+    head.appendChild(meta);
     box.appendChild(head);
     box.appendChild(patchChanges(now));
     var sha = el("p", "play-patch-sha");
@@ -163,7 +168,7 @@
       tr.setAttribute("data-version", p.version);
       var cells = [
         ["Version", el("strong", null, "v" + p.version)],
-        ["Released (UTC)", el("time", null, patchDate(p.published))],
+        ["Released", el("time", null, patchDate(p.published))],
         ["What changed", patchChanges(p)],
         ["Size", el("span", null, patchSize(p.size))],
         ["SHA-256", (function () {
@@ -180,7 +185,10 @@
         var td = el("td");
         td.setAttribute("data-label", c[0]);
         if (c[0] === "Size") td.className = "num";
-        if (c[0] === "Released (UTC)") c[1].setAttribute("datetime", p.published);
+        if (c[0] === "Released") {
+          c[1].setAttribute("datetime", p.published);
+          if (window.HvTime && /T/.test(p.published || "")) HvTime.set(c[1], p.published);
+        }
         td.appendChild(c[1]);
         tr.appendChild(td);
       });

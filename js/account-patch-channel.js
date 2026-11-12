@@ -85,10 +85,11 @@
     return m[3] === undefined ? base : base * 100 + Number(m[3]);
   }
 
-  // "9 Nov, 22:00 UTC"
+  // "9 Nov, 22:00 CET" (viewer zone; "9 Nov, 22:00 UTC" without js/time.js)
   function when(iso) {
     var d = new Date(iso);
     if (isNaN(d.getTime())) return "";
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(d, { year: false });
     return d.toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
       hour12: false, timeZone: "UTC" }) + " UTC";
   }

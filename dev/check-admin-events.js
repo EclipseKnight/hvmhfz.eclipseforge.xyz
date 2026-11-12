@@ -323,7 +323,7 @@ async function adminPage(browser, base) {
   check("strip: now line", (await page.$$("#cal-strip .cal-now")).length === 1);
   check("warnings", (await text(page, "#cal-warnings")).indexOf("No main event from Mon 16 Nov") !== -1);
   check("rows say the lane", (await page.$$eval("#cal-rows tr", (rs) => rs.map((r) => r.children[2].textContent))).join() === "Main event (transition),Side event,Main event,Side event");
-  check("7 days", (await text(page, "#cal-soon")) === "Mon 16 Nov 2026 03:00: Diva Defense #2 core ends (the next event may start)",
+  check("7 days", (await text(page, "#cal-soon")) === "Mon 16 Nov 2026, 03:00 UTC: Diva Defense #2 core ends (the next event may start)",
     await text(page, "#cal-soon"));
   const rows = await page.$$eval("#cal-rows tr", (rs) => rs.map((r) => r.textContent));
   check("rows", rows.length === 4, rows.length);
@@ -337,7 +337,7 @@ async function adminPage(browser, base) {
   // A run's phases, from Erupe.
   await page.click("#cal-strip .cal-speedrun_cup");
   const detail = await text(page, "#cal-detail");
-  check("detail: Erupe's phases", detail.indexOf("cycle: Thu 5 Nov 2026 15:00 to Thu 12 Nov 2026 15:00 (cycle 0") !== -1, detail);
+  check("detail: Erupe's phases", detail.indexOf("cycle: Thu 5 Nov 2026, 15:00 UTC to Thu 12 Nov 2026, 15:00 UTC (cycle 0") !== -1, detail);
   await page.click("#cal-strip .cal-festa");
   check("detail: lane in words", (await text(page, "#cal-detail")).indexOf("Main event. Starts") !== -1, await text(page, "#cal-detail"));
   check("detail: waiting", (await text(page, "#cal-detail")).indexOf("Waiting for the game server") !== -1);
@@ -352,7 +352,7 @@ async function adminPage(browser, base) {
   await page.fill("#cal-note-text", "extra Diva");
   await page.waitForFunction(() => document.getElementById("cal-problems").textContent.indexOf("The checks pass.") !== -1, null, { timeout: 3000 })
     .catch(() => check("live check passes", false));
-  check("computed ends", (await text(page, "#cal-computed")).indexOf("ends Mon 5 Apr 2027 03:00 UTC") !== -1, await text(page, "#cal-computed"));
+  check("computed ends", (await text(page, "#cal-computed")).indexOf("ends Mon 5 Apr 2027, 03:00 UTC") !== -1, await text(page, "#cal-computed"));
   await page.click("#cal-save");
   await page.waitForFunction(() => !document.getElementById("cal-ok").hidden, null, { timeout: 3000 }).catch(() => {});
   const created = last(api, "POST", "/api/admin/events/calendar");
@@ -493,20 +493,20 @@ async function dragPage(browser, base) {
     && (await page.$$eval("#cal-strip .cal-lane", (ls) => ls.map((l) => l.querySelectorAll(".cal-gap").length))).join() === "1,2");
   const gaps = await page.$$eval("#cal-gaps li", (ls) => ls.map((l) => l.textContent));
   check("gap list: both kinds, by time", gaps.length === 3
-    && /^No side event Thu 19 Nov 2026 15:00 to Thu 24 Dec 2026 15:00 UTC, 35 d\.Fill this gap$/.test(gaps[0])
-    && /^No main event Mon 21 Dec 2026 03:00 to Mon 1 Feb 2027 03:00 UTC, .*nothing is planned after.*Still on: Hunter Festival\.Fill this gap$/.test(gaps[1])
-    && /^No side event Thu 7 Jan 2027 15:00 to Mon 1 Feb 2027 03:00 UTC, .*nothing is planned after.*Fill this gap$/.test(gaps[2]), gaps.join(" | "));
+    && /^No side event Thu 19 Nov 2026, 15:00 UTC to Thu 24 Dec 2026, 15:00 UTC, 35 d\.Fill this gap$/.test(gaps[0])
+    && /^No main event Mon 21 Dec 2026, 03:00 UTC to Mon 1 Feb 2027, 03:00 UTC, .*nothing is planned after.*Still on: Hunter Festival\.Fill this gap$/.test(gaps[1])
+    && /^No side event Thu 7 Jan 2027, 15:00 UTC to Mon 1 Feb 2027, 03:00 UTC, .*nothing is planned after.*Fill this gap$/.test(gaps[2]), gaps.join(" | "));
   check("strip: a transition run says so on its bar", await text(page, '#cal-strip .cal-bar[data-id="2"] .cal-core') === "Diva Defense (transition)"
     && await text(page, '#cal-strip .cal-bar[data-id="5"] .cal-core') === "Hunter Festival", await text(page, '#cal-strip .cal-bar[data-id="2"] .cal-core'));
   const g = await geometry(page);
   await page.mouse.move(xOf(g, "2026-11-20T00:00:00Z"), (await (await page.$("#cal-strip .cal-festa")).boundingBox()).y + 10);
-  check("pointing says what runs then, per lane", await text(page, "#cal-at") === "Fri 20 Nov 2026 00:00 UTC: Main event: Hunter Festival #5, Diva Defense #2 (tail, transition); Side event: no side event (a gap).", await text(page, "#cal-at"));
+  check("pointing says what runs then, per lane", await text(page, "#cal-at") === "Fri 20 Nov 2026, 00:00 UTC: Main event: Hunter Festival #5, Diva Defense #2 (tail, transition); Side event: no side event (a gap).", await text(page, "#cal-at"));
 
   // Fill this gap: the form starts at the gap (an hour ahead at least), on the lane's boundary (no "any time").
   await page.click("#cal-gaps li:nth-child(2) button");
   check("fill main gap: start, event, lane note, boundary kept", (await page.inputValue("#cal-start")) === "2026-12-21T03:00" && (await page.inputValue("#cal-event")) === "festa"
     && /^Main event/.test(await text(page, "#cal-lane-note")) && !(await page.isChecked("#cal-anytime")), await page.inputValue("#cal-start"));
-  check("fill: hint", /^Filling Mon 21 Dec 2026 03:00 to Mon 1 Feb 2027 03:00 UTC \(42 d\)/.test(await text(page, "#cal-gap-hint")), await text(page, "#cal-gap-hint"));
+  check("fill: hint", /^Filling Mon 21 Dec 2026, 03:00 UTC to Mon 1 Feb 2027, 03:00 UTC \(42 d\)/.test(await text(page, "#cal-gap-hint")), await text(page, "#cal-gap-hint"));
   check("fill: Ends from the settings", (await page.inputValue("#cal-end")) === "2027-01-18T03:00", await page.inputValue("#cal-end"));
   await page.waitForFunction(() => document.getElementById("cal-problems").textContent.indexOf("The checks pass.") !== -1, null, { timeout: 3000 })
     .catch(() => check("fill: checked", false));
@@ -558,13 +558,13 @@ async function dragPage(browser, base) {
   const startX = fb.x + 60;
   await dragBy(page, "#cal-strip .cal-festa", startX, startX + (xOf(g, "2026-11-23T02:00:00Z") - xOf(g, "2026-11-17T15:00:00Z")));
   const tip = await text(page, "#cal-strip .cal-tip");
-  check("drag: the live tip (the start snaps to Monday 03:00; the hand-set core end moves off it)", await page.isVisible("#cal-strip .cal-tip") && tip.indexOf("Start Mon 23 Nov 2026 03:00") !== -1
+  check("drag: the live tip (the start snaps to Monday 03:00; the hand-set core end moves off it)", await page.isVisible("#cal-strip .cal-tip") && tip.indexOf("Start Mon 23 Nov 2026, 03:00 UTC") !== -1
     && tip.indexOf("The core end is not on a Monday 03:00 UTC") !== -1, tip);
   check("drag: the bar says it is off the boundary (soft, not a refusal)", await page.$eval("#cal-strip .cal-festa", (n) => n.classList.contains("is-soft") && !n.classList.contains("is-bad")));
   await page.mouse.up();
   await page.waitForSelector("#cal-change:not([hidden])", { timeout: 3000 }).catch(() => check("drop: the change shows", false));
   const rows = await page.$$eval("#cal-change-rows tr", (rs) => rs.map((r) => r.textContent));
-  check("drop: before and after", rows[0] === "StartsTue 17 Nov 2026 15:00Mon 23 Nov 2026 03:00" && rows[1] === "Core endsMon 21 Dec 2026 03:00Sat 26 Dec 2026 15:00"
+  check("drop: before and after", rows[0] === "StartsTue 17 Nov 2026, 15:00 UTCMon 23 Nov 2026, 03:00 UTC" && rows[1] === "Core endsMon 21 Dec 2026, 03:00 UTCSat 26 Dec 2026, 15:00 UTC"
     && rows.length === 7, rows.join(" | "));
   check("drop: no detail opened", await page.isHidden("#cal-detail"));
   await page.waitForFunction(() => document.getElementById("cal-change-problems").textContent.indexOf("API's checks pass") !== -1, null, { timeout: 3000 })
@@ -585,7 +585,7 @@ async function dragPage(browser, base) {
   const vx = vb0.x + 40;
   await dragBy(page, "#cal-strip .cal-vs_bracket", vx, vx + (xOf(g, "2026-11-12T14:00:00Z") - xOf(g, "2026-12-24T15:00:00Z")));
   const vtip = await text(page, "#cal-strip .cal-tip");
-  check("drag a side run: snaps to Thursday 15:00 and the overlap with the Cup's core is refused", vtip.indexOf("Start Thu 12 Nov 2026 15:00") !== -1
+  check("drag a side run: snaps to Thursday 15:00 and the overlap with the Cup's core is refused", vtip.indexOf("Start Thu 12 Nov 2026, 15:00 UTC") !== -1
     && vtip.indexOf("overlaps the Speedrun Cup run #3's core") !== -1 && vtip.indexOf("one side event at a time") !== -1
     && await page.$eval("#cal-strip .cal-vs_bracket", (n) => n.classList.contains("is-bad")), vtip);
   await page.mouse.up();
@@ -597,7 +597,7 @@ async function dragPage(browser, base) {
   const vb1 = await (await page.$("#cal-strip .cal-vs_bracket")).boundingBox();
   await page.keyboard.down("Shift");
   await dragBy(page, "#cal-strip .cal-vs_bracket", vb1.x + 40, vb1.x + 40 + (xOf(g, "2026-12-10T05:00:00Z") - xOf(g, "2026-12-24T15:00:00Z")));
-  check("Shift snaps a side run to 15:00", (await text(page, "#cal-strip .cal-tip")).indexOf("Start Thu 10 Dec 2026 15:00") !== -1 || (await text(page, "#cal-strip .cal-tip")).indexOf("Start Wed 9 Dec 2026 15:00") !== -1, await text(page, "#cal-strip .cal-tip"));
+  check("Shift snaps a side run to 15:00", (await text(page, "#cal-strip .cal-tip")).indexOf("Start Thu 10 Dec 2026, 15:00 UTC") !== -1 || (await text(page, "#cal-strip .cal-tip")).indexOf("Start Wed 9 Dec 2026, 15:00 UTC") !== -1, await text(page, "#cal-strip .cal-tip"));
   await page.keyboard.up("Shift");
   await page.mouse.up();
   await page.waitForSelector("#cal-change:not([hidden])", { timeout: 3000 }).catch(() => {});
@@ -611,7 +611,7 @@ async function dragPage(browser, base) {
   await page.mouse.up();
   await page.waitForSelector("#cal-change:not([hidden])", { timeout: 3000 }).catch(() => check("resize: the change shows", false));
   const vrows = await page.$$eval("#cal-change-rows tr", (rs) => rs.map((r) => r.textContent));
-  check("resize: cycles 1 to 2", vrows.indexOf("Cycles12") !== -1 && vrows.indexOf("EndsThu 7 Jan 2027 15:00Thu 21 Jan 2027 15:00") !== -1, vrows.join(" | "));
+  check("resize: cycles 1 to 2", vrows.indexOf("Cycles12") !== -1 && vrows.indexOf("EndsThu 7 Jan 2027, 15:00 UTCThu 21 Jan 2027, 15:00 UTC") !== -1, vrows.join(" | "));
   const puts = api.calls.filter((c) => c.method === "PUT").length;
   await page.click("#cal-change-cancel");
   check("cancel: nothing saved, bar back", api.calls.filter((c) => c.method === "PUT").length === puts && await page.isHidden("#cal-change")
@@ -624,7 +624,7 @@ async function dragPage(browser, base) {
   await page.keyboard.press("Shift+ArrowRight");
   await page.keyboard.press("ArrowUp");
   const krows = await page.$$eval("#cal-change-rows tr", (rs) => rs.map((r) => r.textContent));
-  check("keys: +1 h, +1 day, a cycle longer", krows[0] === "StartsThu 24 Dec 2026 15:00Fri 25 Dec 2026 16:00" && krows.indexOf("Cycles12") !== -1, krows.join(" | "));
+  check("keys: +1 h, +1 day, a cycle longer", krows[0] === "StartsThu 24 Dec 2026, 15:00 UTCFri 25 Dec 2026, 16:00 UTC" && krows.indexOf("Cycles12") !== -1, krows.join(" | "));
   await page.keyboard.press("Escape");
   check("keys: Escape cancels", await page.isHidden("#cal-change"));
   check("drag: no page errors", errors.length === 0, errors.join("; "));

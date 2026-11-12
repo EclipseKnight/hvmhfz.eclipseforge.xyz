@@ -82,6 +82,7 @@
     if (!value) return "-";
     var date = new Date(value);
     if (isNaN(date.getTime())) return "Unknown";
+    if (window.HvTime) return HvTime.text(date);
     return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(date);
   }
 

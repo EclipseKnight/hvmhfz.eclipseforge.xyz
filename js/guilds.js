@@ -19,7 +19,21 @@
   function date(value) {
     if (!value) return "Unknown";
     var d = new Date(value);
+    if (window.HvTime && !isNaN(d.getTime())) return HvTime.text(d, { time: false });
     return isNaN(d.getTime()) ? "Unknown" : new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
+  }
+
+  // The date as a <time> for a table cell or value (UTC time on hover); the plain text otherwise.
+  function dateValue(value) {
+    if (!window.HvTime || !value || isNaN(new Date(value).getTime())) return date(value);
+    return HvTime.node(value, { time: false });
+  }
+
+  // A cell/value element whose content is text or a node.
+  function cellOf(tag, className, value) {
+    var node = el(tag, className);
+    if (value && value.nodeType) node.appendChild(value); else node.textContent = value;
+    return node;
   }
 
   function num(value) {
@@ -114,11 +128,11 @@
     var stats = el("div", "guild-stats");
     [["Guild RP", num(guild.rankRp)], ["Event RP", num(guild.eventRp)],
      ["Tower RP", num(guild.towerRp)], ["Room RP", num(guild.roomRp)],
-     ["Founded", date(guild.createdAt)], ["Room expires", guild.roomExpiry ? date(guild.roomExpiry) : "None"]]
+     ["Founded", dateValue(guild.createdAt)], ["Room expires", guild.roomExpiry ? dateValue(guild.roomExpiry) : "None"]]
       .forEach(function (row) {
         var item = el("div", "guild-stat");
         item.appendChild(el("dt", null, row[0]));
-        item.appendChild(el("dd", null, row[1]));
+        item.appendChild(cellOf("dd", null, row[1]));
         stats.appendChild(item);
       });
     statsPanel.appendChild(stats);
@@ -149,8 +163,8 @@
       nameCell.appendChild(link);
       if (member.recruiter) nameCell.appendChild(el("span", "badge", "Recruiter"));
       row.appendChild(nameCell);
-      [member.rank || "Member", date(member.joinedAt), num(member.rpToday), num(member.rpYesterday),
-       date(member.lastLogin)].forEach(function (value) { row.appendChild(el("td", null, value)); });
+      [member.rank || "Member", dateValue(member.joinedAt), num(member.rpToday), num(member.rpYesterday),
+       dateValue(member.lastLogin)].forEach(function (value) { row.appendChild(cellOf("td", null, value)); });
       tbody.appendChild(row);
     });
     table.appendChild(tbody);

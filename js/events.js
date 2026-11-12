@@ -21,7 +21,9 @@
   function date(value) {
     if (!value) return "Unknown";
     var d = new Date(value);
-    return isNaN(d.getTime()) ? "Unknown" : new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
+    if (isNaN(d.getTime())) return "Unknown";
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(d, { time: false });
+    return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(d);
   }
 
   function titleCase(value) {
@@ -65,7 +67,9 @@
   var CUP_START = Date.UTC(2026, 10, 5, 15, 0);          // Speedrun Cup and VS Bracket: Fri 6 Nov 00:00 JST
   var NEXT_FESTIVAL = Date.UTC(2026, 10, 17, 15, 0);
 
+  // In the visitor's time zone (js/time.js): "6 Nov, 01:00 CET".
   function shortDate(ms) {
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(ms, { year: "auto" });
     return new Intl.DateTimeFormat(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(ms));
   }
 
@@ -93,7 +97,9 @@
 
   var TOURNAMENTS = "/tournaments.html";
 
-  var MEZFES = { key: "mezfes", name: "MezFes", badge: "Live", text: "Open every day. Tickets refill each Monday, 00:00 JST." };
+  var MEZFES = { key: "mezfes", name: "MezFes", badge: "Live", text: "Open every day. Tickets refill each Monday, 00:00 JST" +
+    (typeof window !== "undefined" && window.HvTime ? " (" + HvTime.boundary(Date.UTC(2026, 10, 8, 15, 0), "JST", 9,
+      { date: "weekday" }).replace(/ \(.*\)$/, "") + ")" : "") + "." };
 
   // Cards for what has no schedule from the game server: always there, whatever the API says.
   function alwaysCards() {
@@ -238,6 +244,7 @@
   /* ---- the event calendar (/api/public/events/calendar): one featured event at a time ---- */
 
   function longDate(ms) {
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(ms, { weekday: true, year: "auto" });
     return new Intl.DateTimeFormat(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(ms));
   }
 

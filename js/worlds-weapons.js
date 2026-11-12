@@ -53,7 +53,7 @@
     document.getElementById("weapon-note").textContent = data.since
       ? "Most played: " + (main ? main.weapon + " (" + hours(main.seconds) + ", " + main.hunters + (main.hunters === 1 ? " hunter" : " hunters") + ")" : "none yet")
         + ". " + hours(data.seconds) + " by " + data.hunters + (data.hunters === 1 ? " hunter" : " hunters")
-        + ", tracked since " + new Date(data.since).toLocaleString(undefined, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
+        + ", tracked since " + (window.HvTime ? HvTime.text(data.since) : new Date(data.since).toLocaleString(undefined, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }))
         + ". Each minute online counts for the weapon the hunter last saved with."
       : "Weapon hours start with the next minute anyone is online.";
   }

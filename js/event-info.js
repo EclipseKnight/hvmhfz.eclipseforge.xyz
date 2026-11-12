@@ -10,9 +10,15 @@
      links  [text, href] pairs: guide section, Tournaments, changelog
 
    Keys: diva, mezfes, campaigns, speedrun_cup, vs_bracket, festival, raviente, caravan_rankings, sky_corridor,
-   road_vote, event_quests. Times are UTC; the game's own resets are on Japan time (JST = UTC+9). */
+   road_vote, event_quests. Times are UTC; the game's own resets are on Japan time (JST = UTC+9). Fixed moments
+   go through at() so the page shows them in the visitor's time too. */
 (function () {
   "use strict";
+
+  // A moment fixed in UTC or JST, in the visitor's own time and the fixed one: "Sun 16:00 your time (Mon
+  // 00:00 JST)" (js/time.js); the old UTC wording without it.
+  var T = typeof window !== "undefined" && window.HvTime;
+  function at(iso, label, offset, opts, old) { return T ? T.boundary(iso, label, offset, opts) : old; }
 
   var CHANGELOG = ["Changelog, 4 Nov events", "/changelog.html#d-2026-11-04-events"];
   var GUIDE = "/guide-frontier-events.html";
@@ -33,7 +39,8 @@
         "Ranking rewards (Mega Dash Juice, Demondrug, Mega Demondrug, Might Pill, Armorskin): every guild with points gets at least one.",
         "Diva coins buy items in the coin shop: 12 items at 1 to 3 coins each."
       ],
-      when: "A 3-week cycle that repeats by itself, from Mon 2 Nov: week 1 (personal points) until 9 Nov, week 2 (guild week) until 16 Nov, week 3 (rewards and coin shop) after that. The next cycle starts 23 Nov. Weeks turn over at 03:00 UTC (12:00 JST).",
+      when: "A 3-week cycle that repeats by itself, from Mon 2 Nov: week 1 (personal points) until 9 Nov, week 2 (guild week) until 16 Nov, week 3 (rewards and coin shop) after that. The next cycle starts 23 Nov. Weeks turn over each " +
+        at("2026-11-02T03:00Z", "JST", 9, { date: "weekday" }, "Monday at 03:00 UTC (12:00 JST)") + ".",
       tips: [
         "You claim up to 32 rewards at a time: claim again if you have more.",
         "The guild map is a simple row of 10 cells, one per 10 steps of progress.",
@@ -53,7 +60,7 @@
         "5 solo tickets and 1 group ticket each week.",
         "The minigame prizes and exchange items of the festival, as in the original game."
       ],
-      when: "Every day. Tickets refill each Monday at 00:00 JST (Sunday 15:00 UTC).",
+      when: "Every day. Tickets refill each week at " + at("2026-11-08T15:00Z", "JST", 9, { date: "weekday" }, "Monday 00:00 JST (Sunday 15:00 UTC)") + ".",
       tips: [
         "If you are online at the Monday refill, log in again to get the new week's tickets.",
         "New and not tested in the game yet: tell us on Discord if something misbehaves."
@@ -72,7 +79,7 @@
         "New & Returning Hunter Pack, once per character: Mega Potion x10, Max Potion x3, Ancient Potion x2, Mega Nutrients x5, Mega Demondrug x5, Mega Armorskin x5, Energy Drink x5, Lifepowder x5, Goushu Ticket x3, Guild Point Tkt x3, Sigil Mat Ticket x2, Tower Medal x3.",
         "Weekly Supply Drop, every Monday: Mega Potion x5, Max Potion x1, Energy Drink x3, Mega Demondrug x2, Mega Armorskin x2, Lifepowder x2, Goushu Ticket x1, Guild Point Tkt x1, Tower Medal x1."
       ],
-      when: "Always open. The Weekly Supply Drop can be received again every Monday from 00:00 JST (Sunday 15:00 UTC).",
+      when: "Always open. The Weekly Supply Drop can be received again each week from " + at("2026-11-08T15:00Z", "JST", 9, { date: "weekday" }, "Monday 00:00 JST (Sunday 15:00 UTC)") + ".",
       tips: [
         "Leave room in your item box: the pack takes 12 slots, the weekly drop 9.",
         "Each character can receive the pack once, so a new character gets its own.",
@@ -93,7 +100,8 @@
         "Everyone with a time: Speedrun Cup prize with White Half-Tkt x3, Cuff Base White x2 and a Competition Ticket x1.",
         "Top 10: 2 more Competition Tickets. First place: a Champion Tkt."
       ],
-      when: "Every week. The first cup opens Thu 5 Nov at 15:00 UTC (Fri 6 Nov, 00:00 JST). Clears count for 6 days, until Wednesday 15:00 UTC; the tally takes about an hour, then the results stay up until the next cup. The quest changes each week: Espinas, then Breeding Hypnocatrice, and so on.",
+      when: "Every week. The first cup opened " + at("2026-11-05T15:00Z", "JST", 9, { weekday: true }, "Thu 5 Nov at 15:00 UTC (Fri 6 Nov, 00:00 JST)") +
+        ". Clears count for 6 days, until " + at("2026-11-11T15:00Z", "JST", 9, { date: "weekday" }, "Wednesday 15:00 UTC") + "; the tally takes about an hour, then the results stay up until the next cup. The quest changes each week: Espinas, then Breeding Hypnocatrice, and so on.",
       tips: [
         "One clear of either quest is enough for the prize.",
         "Your solo time goes in the list of the weapon type you saved with before the quest.",
@@ -115,7 +123,8 @@
         "Quarter-finals or better: Cuff Base White x2. Semi-finals or better: 2 more Competition Tickets.",
         "The two finalists get a Champion Tkt, and the champion a second one."
       ],
-      when: "A bracket every 14 days. Sign-up opens Thu 5 Nov at 15:00 UTC (Fri 6 Nov, 00:00 JST) and closes Sunday 8 Nov at 15:00 UTC, when the draw is made. Each round then lasts 2 days. With fewer than two hunters there is no bracket that time.",
+      when: "A bracket every 14 days. Sign-up opened " + at("2026-11-05T15:00Z", "JST", 9, { weekday: true }, "Thu 5 Nov at 15:00 UTC (Fri 6 Nov, 00:00 JST)") +
+        " and closed " + at("2026-11-08T15:00Z", "JST", 9, { weekday: true }, "Sunday 8 Nov at 15:00 UTC") + ", when the draw is made. Each round then lasts 2 days. With fewer than two hunters there is no bracket that time.",
       tips: [
         "If neither of you clears, the one who signed up first goes on. If only one of you clears, that hunter goes on. A hunter with no clear gets no prize, even after a walkover.",
         "A round's quest can be the same as the week's Cup quest: one clear then counts for both."
@@ -135,7 +144,7 @@
         "Prizes in tiers by Souls: see the Festa prizes table on this page.",
         "A final reward, once per festival."
       ],
-      when: "A festival is about 8 weeks: 14 days of sign-up and trial vote, 21 days of Souls, 2.5 hours of judging, then 21 days of prizes. Festivals now follow each other back to back: the next one starts on 17 Nov at 15:00 UTC, and each later one at the first midnight JST after the last one's prizes end.",
+      when: "A festival is about 8 weeks: 14 days of sign-up and trial vote, 21 days of Souls, 2.5 hours of judging, then 21 days of prizes. Festivals now follow each other back to back: the next one starts " + at("2026-11-17T15:00Z", "JST", 9, { weekday: true }, "17 Nov at 15:00 UTC") + ", and each later one at the first midnight JST after the last one's prizes end.",
       tips: [
         "Soul Gems (20, 40 or 80 Souls) and a Diva Song add extra Souls to a quest.",
         "From 17 Nov the festival uses a curated list of easier prizes.",

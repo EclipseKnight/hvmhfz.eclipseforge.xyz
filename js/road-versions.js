@@ -16,7 +16,14 @@
   function when(iso) {
     if (!iso) return "-";
     var d = new Date(iso);
+    if (window.HvTime && !isNaN(d)) return HvTime.text(d, { time: false });
     return isNaN(d) ? "-" : d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  }
+
+  // The date as a <time> for a cell (UTC time on hover); plain text when empty or without js/time.js.
+  function whenNode(iso) {
+    if (!window.HvTime || !iso || isNaN(new Date(iso))) return null;
+    return HvTime.node(iso, { time: false });
   }
 
   fetch(API + "/api/public/road/versions", { cache: "no-store" })
@@ -27,8 +34,18 @@
         var tr = el("tr");
         tr.appendChild(el("td", "cell-name", v.name || "Road"));
         tr.appendChild(el("td", "num", v.cycle === null || v.cycle === undefined ? "-" : String(v.cycle)));
-        tr.appendChild(el("td", null, when(v.firstLiveAt)));
-        var frozen = el("td", null, v.retiredAt ? when(v.retiredAt) : "-");
+        var liveCell = el("td");
+        var liveAt = whenNode(v.firstLiveAt);
+        if (liveAt) liveCell.appendChild(liveAt); else liveCell.textContent = when(v.firstLiveAt);
+        tr.appendChild(liveCell);
+        var frozen = el("td");
+        var frozenAt = v.retiredAt ? whenNode(v.retiredAt) : null;
+        if (frozenAt) {
+          frozenAt.title += " (when this Road's original board was frozen)";
+          frozen.appendChild(frozenAt);
+        } else {
+          frozen.textContent = v.retiredAt ? when(v.retiredAt) : "-";
+        }
         if (v.retiredAt) frozen.title = "when this Road's original board was frozen";
         tr.appendChild(frozen);
         var status = el("td");

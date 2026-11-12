@@ -163,6 +163,12 @@
     });
   }
 
+  // The last login as a <time> in the viewer's zone (the old local text without js/time.js).
+  function lastLoginValue(value) {
+    if (window.HvTime && !isNaN(new Date(value).getTime())) return HvTime.node(value);
+    return new Date(value).toLocaleString();
+  }
+
   function el(tag, className, text) {
     var node = document.createElement(tag);
     if (className) node.className = className;
@@ -278,7 +284,7 @@
     var lastLogin = pick(s.lastLogin, listed.lastLogin);
     var rows = [["Name", (d && d.name) || (st && st.name) || listed.name || "-"],
       ["Sex", pick(s.female, listed.female) ? "Female" : "Male"],
-      ["Last login", lastLogin ? new Date(lastLogin).toLocaleString() : "-"],
+      ["Last login", lastLogin ? lastLoginValue(lastLogin) : "-"],
       ["Guild", guild],
       ["GCP", number(pick(s.gcp, listed.gcp))],
       ["Road points", number(pick(s.kouryouPoints, listed.kouryouPoints))]];
@@ -290,7 +296,9 @@
     }
     rows.forEach(function (pair) {
       dl.appendChild(el("dt", null, pair[0]));
-      dl.appendChild(el("dd", null, pair[1]));
+      var dd = el("dd");
+      if (pair[1] && pair[1].nodeType) dd.appendChild(pair[1]); else dd.textContent = pair[1];
+      dl.appendChild(dd);
     });
     section.appendChild(dl);
     if (!d) section.appendChild(el("p", "note-text", detailsMissingText()));

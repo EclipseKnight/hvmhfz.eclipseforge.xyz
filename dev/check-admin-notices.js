@@ -215,7 +215,7 @@ async function main() {
     check("failed target said", (await page.textContent("#not-alert")).includes("discord: FAILED"));
 
     // Scheduled: lists, markup stays text, schedule, cancel.
-    check("planned listed", (await page.textContent("#not-planned")).includes("Fri 20 Nov 2026 15:00 UTC"));
+    check("planned listed", (await page.textContent("#not-planned")).includes("Fri 20 Nov 2026, 15:00 UTC"));
     check("markup stays text", await page.locator("#not-planned b").count() === 0
       && (await page.textContent("#not-planned")).includes("<b>bold?</b>"));
     check("recent statuses", (await page.textContent("#not-recent")).includes("missed"));

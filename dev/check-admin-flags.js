@@ -276,14 +276,14 @@ async function run() {
   t = await text(page, cardOf(1));
   check("card 1: name, ids, account, rule, numbers, why, source", /Critical/.test(t) && /Mira Oakheart/.test(t) && /char #1001/.test(t) && /account aldric1 #51/.test(t)
     && /GCP far over what play earns/.test(t) && /value 999,999,999, threshold above 200,000, cap 9,999,999, now 999,999,999/.test(t)
-    && /999,999,999 GCP is over the cap of 9,999,999\. Guild contribution points/.test(t) && /source: daily scan/.test(t) && /first seen 2026-11-09 03:00 UTC/.test(t) && /last seen 2026-11-11 03:00 UTC/.test(t) && /Open/.test(t), t);
+    && /999,999,999 GCP is over the cap of 9,999,999\. Guild contribution points/.test(t) && /source: daily scan/.test(t) && /first seen 9 Nov 2026, 03:00 UTC/.test(t) && /last seen 11 Nov 2026, 03:00 UTC/.test(t) && /Open/.test(t), t);
   check("card 1: online marker, card 2: none", (await page.$$(cardOf(1) + " .fl-online")).length === 1 && (await page.$$(cardOf(2) + " .fl-online")).length === 0);
   check("card 3: markup in a name stays text", (await text(page, cardOf(3))).indexOf("<b>Wren</b> Ashdown") !== -1 && (await page.$$(cardOf(3) + " b")).length === 0);
   t = await text(page, cardOf(3));
   check("card 3: import-blocked zenny, no currency, no 'now'", /Zenny over the game's cap/.test(t) && /source: import \(blocked\) #7/.test(t) && !/now /.test(t) && /Zenny 12,500,000 is over the game's cap/.test(t), t);
   check("card 4: an account rule", /\(account rule\)/.test(await text(page, cardOf(4))) && !/char #/.test(await text(page, cardOf(4))) && /Frontier points far over income/.test(await text(page, cardOf(4))));
   check("card 7: an item stack rule", /Item stack over 999/.test(await text(page, cardOf(7))) && /3,200 of one item/.test(await text(page, cardOf(7))));
-  check("scan line and counts", /Last scan: 2026-11-11 03:00 UTC \(daily\), 1,840 characters checked, 7 flagged, 2 new/.test(await text(page, "#fl-scanline"))
+  check("scan line and counts", /Last scan: 11 Nov 2026, 03:00 UTC \(daily\), 1,840 characters checked, 7 flagged, 2 new/.test(await text(page, "#fl-scanline"))
     && /Open 5 \(critical 2\), approved 1, cheat 1/.test(await text(page, "#fl-counts")));
   check("admin: actions, checkboxes, scan button", (await page.$$("#fl-list .fl-check")).length === 5 && (await visible(page, "#fl-scan")) && (await visible(page, "#fl-bulkbar")));
   await shot(page, "flags-desktop.png");
@@ -292,7 +292,7 @@ async function run() {
   await page.click('#fl-status [data-status="approved"]');
   await page.waitForFunction(() => document.querySelectorAll("#fl-list .fl-card").length === 1);
   t = await text(page, cardOf(5));
-  check("approved filter: reviewer, note as text", /reviewed by boss 2026-11-10 12:00 UTC/.test(t) && t.indexOf("Saved up on purpose <i>ok</i>") !== -1 && /status=approved/.test(last(api, "GET", "/api/admin/flags?").path));
+  check("approved filter: reviewer, note as text", /reviewed by boss 10 Nov 2026, 12:00 UTC/.test(t) && t.indexOf("Saved up on purpose <i>ok</i>") !== -1 && /status=approved/.test(last(api, "GET", "/api/admin/flags?").path));
   check("approved flag: Cheat offered, Approve not", (await page.$$(cardOf(5) + " .fl-actions button")).length === 3 - 1 - 0 - 0 && !/Approve/.test(await text(page, cardOf(5) + " .fl-actions")));
   await page.click('#fl-status [data-status="all"]');
   await page.waitForFunction(() => document.querySelectorAll("#fl-list .fl-card").length === 7);
@@ -313,7 +313,7 @@ async function run() {
   await page.waitForSelector("#fl-detail:not([hidden]) .fl-history");
   check("detail asked", !!last(api, "GET", "/api/admin/flags/2"));
   t = await text(page, "#fl-detail");
-  check("detail: history and other flags", /Flag #2: Tobias Reed/.test(t) && /2026-11-09 03:00 UTC/.test(t) && /Flagged/.test(t) && /Other flags of this account/.test(t) && /#9 Tobias Reed: Frontier points far over income \(Open\)/.test(t), t);
+  check("detail: history and other flags", /Flag #2: Tobias Reed/.test(t) && /9 Nov 2026, 03:00 UTC/.test(t) && /Flagged/.test(t) && /Other flags of this account/.test(t) && /#9 Tobias Reed: Frontier points far over income \(Open\)/.test(t), t);
   check("detail: no Undo on a history entry that is not undoable", (await page.$$("#fl-detail .fl-history button")).length === 0);
   await shot(page, "flags-detail.png");
   await page.click("#fl-detail-close");

@@ -295,6 +295,7 @@
   function utc(iso) {
     var t = iso ? Date.parse(iso) : NaN;
     if (isNaN(t)) return "";
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(t) || "";
     return new Date(t).toISOString().slice(0, 16).replace("T", " ") + " UTC";
   }
 
@@ -322,6 +323,14 @@
     if (cls) n.className = cls;
     if (text !== undefined && text !== null) n.textContent = text;
     return n;
+  }
+
+  /** A table cell holding a time: a <time> in the viewer's zone, UTC on hover. */
+  function tcell(iso) {
+    var td = el("td", null, "");
+    if (typeof window !== "undefined" && window.HvTime && utc(iso)) td.appendChild(HvTime.node(iso));
+    else td.textContent = utc(iso);
+    return td;
   }
 
   function $(id) { return document.getElementById(id); }
@@ -974,7 +983,7 @@
     state.versions.forEach(function (v, i) {
       var tr = el("tr");
       tr.appendChild(el("td", null, "v" + v.version + (i === 0 ? " (latest)" : "")));
-      tr.appendChild(el("td", null, utc(v.publishedAt)));
+      tr.appendChild(tcell(v.publishedAt));
       tr.appendChild(el("td", null, v.publishedBy));
       tr.appendChild(el("td", null, String(v.rowCount)));
       tr.appendChild(el("td", null, (v.note || "") + (v.rollbackOf ? " (roll back to v" + v.rollbackOf + ")" : "")));

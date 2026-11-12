@@ -4,7 +4,7 @@
    columns, limits and notes (GET /api/admin/content), so this page builds its lists and forms from them and
    holds no rule of its own; the API checks every change and answers with reasons, shown under the form.
    Item names come from the site's own item list (/data/item-ids.json), the list the API checks ids against.
-   Times are UTC. */
+   Times are shown in the viewer's zone (HvTime); the time boxes are read as UTC. */
 (function () {
   "use strict";
 
@@ -15,10 +15,11 @@
 
   function pad(n) { return (n < 10 ? "0" : "") + n; }
 
-  /** "2026-11-23 03:00" in UTC; "" for nothing. */
+  /** "23 Nov 2026, 03:00 UTC" in the viewer's zone (HvTime; "2026-11-23 03:00" in UTC without it); "" for nothing. */
   function utc(iso) {
     var t = iso ? Date.parse(iso) : NaN;
     if (isNaN(t)) return "";
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(t) || "";
     var d = new Date(t);
     return d.getUTCFullYear() + "-" + pad(d.getUTCMonth() + 1) + "-" + pad(d.getUTCDate()) + " "
       + pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes());
@@ -77,7 +78,7 @@
     return starts.sort(byName).concat(has.sort(byName)).slice(0, limit || 8);
   }
 
-  /** A row's value as the list shows it: names next to their numbers, yes/no, UTC times. */
+  /** A row's value as the list shows it: names next to their numbers, yes/no, times in the viewer's zone. */
   function cell(field, row) {
     var v = row[field.name];
     if (v === null || v === undefined) return field.nullable ? "-" : "";
@@ -118,6 +119,14 @@
     if (cls) n.className = cls;
     if (text !== undefined && text !== null) n.textContent = text;
     return n;
+  }
+
+  /** A table cell holding a time: a <time> in the viewer's zone, UTC on hover. */
+  function tcell(iso) {
+    var td = el("td", null, "");
+    if (typeof window !== "undefined" && window.HvTime && utc(iso)) td.appendChild(HvTime.node(iso));
+    else td.textContent = utc(iso);
+    return td;
   }
 
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
@@ -326,7 +335,7 @@
     state.rows.forEach(function (r) {
       var row = el("tr", r._disabled ? "is-disabled" : null);
       row.appendChild(el("td", null, String(r[t.id])));
-      columns().forEach(function (f) { if (f.name !== t.id || t.idGiven) row.appendChild(el("td", null, cell(f, r))); });
+      columns().forEach(function (f) { if (f.name !== t.id || t.idGiven) row.appendChild(f.type === "time" && r[f.name] && utc(r[f.name]) ? tcell(r[f.name]) : el("td", null, cell(f, r))); });
       if (t.key === "gacha-entries") row.appendChild(el("td", null, r.entry_type === 100 ? share[r.id] + " %" : ""));
       if (t.key === "gachas") {
         var p = r._problems || [];

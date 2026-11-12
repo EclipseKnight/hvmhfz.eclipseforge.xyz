@@ -49,7 +49,7 @@
     });
 
     document.getElementById("worlds-online").textContent = online.toLocaleString() + (online === 1 ? " hunter online" : " hunters online");
-    document.getElementById("worlds-updated").textContent = "updated " + new Date().toLocaleTimeString();
+    document.getElementById("worlds-updated").textContent = "updated " + (window.HvTime ? HvTime.text(Date.now(), { date: false }) : new Date().toLocaleTimeString());
   }
 
   function renderMonsters(monsters) {

@@ -7,6 +7,7 @@
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
   var TOKEN_KEY = "hvmhfz.token";
+  var HAS_TIME = typeof window !== "undefined" && !!window.HvTime; // times show in the viewer's zone (js/time.js)
   var options = null;      // gift lists and item types, from the API
   var chosen = [];         // characters picked for the gift: {id, name}
 
@@ -15,6 +16,16 @@
     if (className) node.className = className;
     if (text !== undefined && text !== null) node.textContent = text;
     return node;
+  }
+
+  /** A table cell holding a time: a <time> in the viewer's zone with the UTC time on hover; the old text when there is no time. */
+  function timeCell(iso, text, opts, prefix) {
+    var td = el("td", null, "");
+    if (HAS_TIME && iso && !isNaN(new Date(iso).getTime())) {
+      if (prefix) td.appendChild(document.createTextNode(prefix));
+      td.appendChild(HvTime.node(iso, opts));
+    } else td.textContent = text;
+    return td;
   }
 
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
@@ -87,7 +98,7 @@
 
   function ends(gift) {
     if (!gift.deadline) return gift.ended ? "Ended" : "No end";
-    var date = new Date(gift.deadline).toLocaleString();
+    var date = HAS_TIME ? HvTime.text(gift.deadline) : new Date(gift.deadline).toLocaleString();
     return (gift.ended ? "Ended " : "") + date;
   }
 
@@ -116,7 +127,7 @@
       var claims = el("td", "num", num(gift.accepted));
       claims.title = num(gift.claimants) + " characters, up to " + gift.timesAcceptable + " each";
       row.appendChild(claims);
-      row.appendChild(el("td", null, ends(gift)));
+      row.appendChild(timeCell(gift.deadline, ends(gift), null, gift.ended ? "Ended " : ""));
       var action = el("td");
       if (!gift.ended && can("gifts", "act")) {
         var end = el("button", "ghost-btn small", "End now");
@@ -333,7 +344,7 @@
     }).join(", ");
     return "Create \"" + gift.eventName + "\" in the " + options.lists[gift.type] + " list for " + whom +
       ", claimable " + gift.timesAcceptable + (gift.timesAcceptable === 1 ? " time" : " times") + " each, " +
-      (gift.deadline ? "until " + new Date(gift.deadline).toLocaleString() : "with no end") + ". Items: " + items +
+      (gift.deadline ? "until " + (HAS_TIME ? HvTime.text(gift.deadline) : new Date(gift.deadline).toLocaleString()) : "with no end") + ". Items: " + items +
       ". It shows in the game at once.";
   }
 
@@ -481,6 +492,7 @@
   function when(value) {
     if (!value) return "-";
     var date = new Date(value);
+    if (HAS_TIME && !isNaN(date.getTime())) return HvTime.text(date) || "Unknown";
     return isNaN(date.getTime()) ? "Unknown" : date.toLocaleString();
   }
 
@@ -879,6 +891,7 @@
 
   function stamp(value) {
     if (!value) return "never";
+    if (HAS_TIME) return HvTime.text(value, { time: false }) || "never";
     return new Date(value).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
   }
 
@@ -1216,7 +1229,7 @@
       else user.roles.forEach(function (role) { roles.appendChild(roleBadge(role)); });
       row.appendChild(roles);
       row.appendChild(userCharacters(user, data.patchTracking));
-      row.appendChild(el("td", null, stamp(user.lastLogin)));
+      row.appendChild(timeCell(user.lastLogin, stamp(user.lastLogin), { time: false }));
       row.appendChild(userDiscord(user));
       var chat = el("td", "admin-flags");
       chat.appendChild(chatToggle(user, "op"));
@@ -1333,6 +1346,7 @@
 
   function since(iso) {
     if (!iso) return "";
+    if (HAS_TIME) return HvTime.text(iso, { year: "auto" }) || "";
     return new Date(iso).toLocaleString(undefined, {
       day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC"
     }) + " UTC";
@@ -1444,7 +1458,7 @@
     }
     list.forEach(function (entry) {
       var row = el("tr");
-      row.appendChild(el("td", null, since(entry.at)));
+      row.appendChild(timeCell(entry.at, since(entry.at), { year: "auto" }));
       row.appendChild(el("td", null, entry.account || "-"));
       row.appendChild(el("td", null, entry.action || "-"));
       row.appendChild(el("td", null, entry.target || "-"));
@@ -1500,7 +1514,7 @@
     var body = el("tbody");
     entries.forEach(function (entry) {
       var row = el("tr");
-      var when = el("td", null, entry.at ? new Date(entry.at).toLocaleString() : "-");
+      var when = timeCell(entry.at, entry.at ? new Date(entry.at).toLocaleString() : "-");
       when.setAttribute("data-sort", entry.at || "");
       row.appendChild(when);
       row.appendChild(el("td", null, entry.account || "-"));
@@ -1532,7 +1546,9 @@
       if (index === 0) details.open = true;
       var summary = el("summary");
       var at = item.run.startedAt ? new Date(item.run.startedAt) : null;
-      summary.appendChild(el("span", "audit-run-time", at && !isNaN(at) ? at.toLocaleString() : "Unknown run"));
+      var runTime = el("span", "audit-run-time", at && !isNaN(at) ? at.toLocaleString() : "Unknown run");
+      if (HAS_TIME && at && !isNaN(at)) HvTime.set(runTime, item.run.startedAt);
+      summary.appendChild(runTime);
       summary.appendChild(el("span", "audit-run-count",
         item.entries.length + (item.entries.length === 1 ? " action" : " actions") +
         (item.entries.length !== item.run.actions ? " of " + item.run.actions : "")));

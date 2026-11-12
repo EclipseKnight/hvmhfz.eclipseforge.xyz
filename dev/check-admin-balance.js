@@ -267,7 +267,7 @@ async function balancePage(browser, base) {
   await page.waitForSelector("#bal-rows tr td:nth-child(2)", { timeout: 8000 });
   check("tab selected", (await page.getAttribute("#tab-balance", "aria-selected")) === "true" && !(await page.$eval("#panel-balance", (n) => n.hidden)));
   const status = await text(page, "#bal-status");
-  check("status line", /Published: v2, 4 rows, by boss, 2026-11-10 15:00 UTC \(first pass\)/.test(status) && /Draft: 4 of at most 4096 rows/.test(status), status);
+  check("status line", /Published: v2, 4 rows, by boss, 10 Nov 2026, 15:00 UTC \(first pass\)/.test(status) && /Draft: 4 of at most 4096 rows/.test(status), status);
   const cells = await page.$$eval("#bal-rows tr", (trs) => trs.map((t) => Array.from(t.children).map((c) => c.textContent)));
   check("rows count", cells.length === 4, String(cells.length));
   check("row 1: names, current, change", cells[0][1] === "Great Sword, Storm, Upswing charge Lv1 (k0 #165)" && cells[0][2] === "mv" && cells[0][3] === "92" && cells[0][4] === "set 100", JSON.stringify(cells[0]));

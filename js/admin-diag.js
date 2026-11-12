@@ -26,6 +26,14 @@
     return node;
   }
 
+  /** A table cell holding a time: a <time> in the viewer's zone, UTC on hover. */
+  function tcell(iso) {
+    var td = el("td", null, "");
+    if (typeof window !== "undefined" && window.HvTime && utc(iso)) td.appendChild(HvTime.node(iso));
+    else td.textContent = utc(iso);
+    return td;
+  }
+
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
 
   function token() {
@@ -42,11 +50,12 @@
     });
   }
 
-  /** "2026-11-10 01:02" (UTC); "" for nothing. */
+  /** "10 Nov 2026, 01:02 CET" in the viewer's zone (HvTime; "2026-11-10 01:02" in UTC without it); "" for nothing. */
   function utc(iso) {
     if (!iso) return "";
     var d = new Date(iso);
     if (isNaN(d.getTime())) return "";
+    if (typeof window !== "undefined" && window.HvTime) return HvTime.text(d) || "";
     return d.toISOString().slice(0, 16).replace("T", " ");
   }
 
@@ -92,7 +101,7 @@
     list.forEach(function (r) {
       var row = el("tr");
       row.appendChild(el("td", "rank", String(r.id)));
-      row.appendChild(el("td", null, utc(r.createdAt)));
+      row.appendChild(tcell(r.createdAt));
       row.appendChild(el("td", "cell-name", (r.username || "?") + " (#" + r.userId + ")"));
       row.appendChild(el("td", null, r.fileName));
       row.appendChild(el("td", null, areaName(r.area)));
@@ -129,7 +138,7 @@
     request("/api/admin/diagnostics/" + id).then(function (d) {
       var a = d.answer || {};
       $("diag-view-title").textContent = "#" + d.id + " · " + d.fileName + " · " + (d.username || "?") + " (#"
-        + d.userId + ") · " + utc(d.createdAt) + " UTC";
+        + d.userId + ") · " + utc(d.createdAt) + (window.HvTime ? "" : " UTC");
       $("diag-view-note-box").hidden = !d.note && !d.area;
       $("diag-view-area").textContent = d.area ? "· area: " + areaName(d.area) : "";
       $("diag-view-note").textContent = d.note || "(no note)";
@@ -304,8 +313,8 @@
       clear(body);
       data.logins.forEach(function (l) {
         var row = el("tr");
-        row.appendChild(el("td", null, utc(l.loginAt)));
-        row.appendChild(el("td", null, l.logoutAt ? utc(l.logoutAt) : "-"));
+        row.appendChild(tcell(l.loginAt));
+        row.appendChild(l.logoutAt ? tcell(l.logoutAt) : el("td", null, "-"));
         row.appendChild(el("td", "cell-name", (l.charName || "?") + " (" + l.charId + ")"));
         row.appendChild(el("td", null, l.land));
         row.appendChild(el("td", null, l.clientPatchName));

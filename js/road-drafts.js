@@ -39,6 +39,7 @@
 
   function when(iso) {
     var d = new Date(iso);
+    if (window.HvTime && !isNaN(d)) return HvTime.text(d);
     return isNaN(d) ? "" : d.toLocaleString();
   }
 
@@ -52,7 +53,8 @@
     tr.appendChild(name);
     var edited = document.createElement("td");
     edited.className = "muted";
-    edited.textContent = when(draft.updatedAt);
+    if (window.HvTime && !isNaN(new Date(draft.updatedAt))) edited.appendChild(HvTime.node(draft.updatedAt));
+    else edited.textContent = when(draft.updatedAt);
     tr.appendChild(edited);
     var actions = document.createElement("td");
     var del = document.createElement("button");
@@ -134,7 +136,7 @@
     }).then(sent).then(function (d) {
       lastSent = blob;
       if (window.roadDraftSaved && d.id) window.roadDraftSaved(d.id);
-      say("Saved " + new Date().toLocaleTimeString(), false);
+      say("Saved " + (window.HvTime ? HvTime.text(Date.now(), { date: false }) : new Date().toLocaleTimeString()), false);
       load();
     }).catch(function (error) {
       say(error.refused ? "Autosave refused: " + error.message : "Autosave is waiting for a connection.", true);
