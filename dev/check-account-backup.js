@@ -171,8 +171,12 @@ async function flows(browser, base, shots) {
   await page.waitForSelector("#backup-live:not([hidden])", { timeout: 5000 }).catch(() => {});
   check("live: panel shown, soon hidden", (await visible(page, "#backup-live")) && !(await visible(page, "#backup-soon")));
   const rows = await page.$$eval("#backup-characters tr", (trs) => trs.map((tr) => [...tr.cells].slice(0, 4).map((td) => td.textContent)));
-  check("live: character list", JSON.stringify(rows[0]) === JSON.stringify(["Aldra", "10", "999", "120"]) && rows.length === 5,
+  check("live: character list", JSON.stringify(rows[0]) === JSON.stringify(["Aldra", "10", "HR999 (HR7)", "120"]) && rows.length === 5 &&
+    rows[2][2] === "HR300 (HR5)" && rows[3][2] === "HR1 (HR1)" && rows[4][2] === "0",
     JSON.stringify(rows));
+  const sortKeys = await page.$$eval("#backup-characters tr", (trs) => trs.map((tr) => tr.cells[2].dataset.sort));
+  check("live: HR column sorts by the stored number", JSON.stringify(sortKeys) === JSON.stringify(["999", "7", "300", "1", "0"]),
+    JSON.stringify(sortKeys));
   check("live: empty history", /No imports on this account yet/.test(await text(page, "#import-history")));
 
   // download

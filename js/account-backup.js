@@ -87,6 +87,9 @@
 
   function grouped(n) { return n === null || n === undefined ? "-" : Number(n).toLocaleString(); }
 
+  // Stored HR as the game shows it: "HR100 (HR4)" (js/hr.js); the plain number when hr.js is missing.
+  function hrText(n) { return window.HvHr && HvHr.label(n) || grouped(n); }
+
   /* Play time as the game shows it: "1,307 h 40 min". */
   function playtime(seconds) {
     if (seconds === null || seconds === undefined) return "-";
@@ -221,8 +224,10 @@
     characters.forEach(function (c) {
       var tr = el("tr");
       tr.dataset.character = String(c.id);
-      [c.name || "(no name)", String(c.id), grouped(c.hr), grouped(c.gr), when(c.lastLogin)].forEach(function (v, i) {
-        tr.appendChild(el("td", i === 1 ? "num muted" : (i === 2 || i === 3 ? "num" : null), v));
+      [c.name || "(no name)", String(c.id), hrText(c.hr), grouped(c.gr), when(c.lastLogin)].forEach(function (v, i) {
+        var td = el("td", i === 1 ? "num muted" : (i === 2 || i === 3 ? "num" : null), v);
+        if (i === 2) td.dataset.sort = String(c.hr || 0); // the header sorts by the stored number
+        tr.appendChild(td);
       });
       var cell = el("td");
       var button = el("button", "btn btn-small backup-download", "Download backup");
@@ -233,7 +238,7 @@
       listBody.appendChild(tr);
 
       var option = el("option", null, (c.name || "(no name)") + " · id " + c.id +
-        (c.hr ? " · HR " + c.hr : "") + (c.gr ? " · GR " + c.gr : ""));
+        (c.hr ? " · " + hrText(c.hr) : "") + (c.gr ? " · GR " + c.gr : ""));
       option.value = String(c.id);
       target.appendChild(option);
     });
@@ -444,7 +449,7 @@
       facts.appendChild(fhead);
       var fbody = el("tbody");
       [["Hunter", before.name, after.name], ["Zenny", grouped(before.zenny), grouped(after.zenny)],
-       ["HR", grouped(before.hr), grouped(after.hr)], ["GR points", grouped(before.grp), grouped(after.grp)],
+       ["HR", hrText(before.hr), hrText(after.hr)], ["GR points", grouped(before.grp), grouped(after.grp)],
        ["Road points", grouped(before.roadSp), grouped(after.roadSp)],
        ["Equipped Road skills", grouped(before.equippedRoadSkills), grouped(after.equippedRoadSkills)]]
         .concat(after.playtimeSeconds === undefined ? [] : [   // an API from before 2026-11-04 doesn't send these

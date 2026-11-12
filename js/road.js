@@ -753,7 +753,7 @@
     var select = $("road-character");
     clear(select);
     characters.forEach(function (character) {
-      var option = new Option(character.name + (character.hr ? " (HR " + character.hr + ")" : ""), String(character.id));
+      var option = new Option(character.name + (character.hr ? " (" + (window.HvHr && HvHr.label(character.hr) || "HR " + character.hr) + ")" : ""), String(character.id));
       if (selectedName && character.name === selectedName) option.selected = true;
       select.appendChild(option);
     });

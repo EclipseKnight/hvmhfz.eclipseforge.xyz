@@ -199,7 +199,7 @@
     first.value = "";
     characterSelect.appendChild(first);
     characters.forEach(function (c) {
-      var option = el("option", null, (c.name || "(no name)") + " · id " + c.id + (c.hr ? " · HR " + c.hr : "") +
+      var option = el("option", null, (c.name || "(no name)") + " · id " + c.id + (c.hr ? " · " + (window.HvHr && HvHr.label(c.hr) || "HR " + c.hr) : "") +
         (c.gr ? " · GR " + c.gr : ""));
       option.value = String(c.id);
       characterSelect.appendChild(option);

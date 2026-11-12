@@ -100,6 +100,11 @@
     return value === null || value === undefined ? "-" : String(value);
   }
 
+  // Stored HR as the game shows it: "HR100 (HR4)" (js/hr.js); the plain number when hr.js is missing.
+  function hrText(value) {
+    return window.HvHr && HvHr.label(value) || number(value);
+  }
+
   function showError(message) {
     var node = document.getElementById("account-error");
     node.textContent = message;
@@ -270,10 +275,14 @@
     nameCell.appendChild(details);
     row.appendChild(nameCell);
 
-    [number(character.hr), number(character.gr), character.weaponType || "Unknown",
+    [hrText(character.hr), number(character.gr), character.weaponType || "Unknown",
      character.female ? "Female" : "Male", number(character.gcp), number(character.kouryouPoints),
      number(character.dailyQuests), character.guildName || "-", formatDate(character.lastLogin)]
-      .forEach(function (value) { row.appendChild(el("td", null, value)); });
+      .forEach(function (value, i) {
+        var cell = el("td", null, value);
+        if (i === 0) cell.dataset.sort = String(character.hr || 0); // the header sorts by the stored number
+        row.appendChild(cell);
+      });
 
     return row;
   }
@@ -519,7 +528,7 @@
       characters.forEach(function (character) {
         var option = document.createElement("option");
         option.value = character.id;
-        option.textContent = character.name + (character.hr ? " · HR " + character.hr : "");
+        option.textContent = character.name + (character.hr ? " · " + hrText(character.hr) : "");
         select.appendChild(option);
       });
     });

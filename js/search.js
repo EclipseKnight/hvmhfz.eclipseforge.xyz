@@ -218,7 +218,7 @@
         return { title: g.name, sub: g.members + " members", href: "/guilds.html?id=" + g.id };
       }));
       addGroup("Hunters", (data.hunters || []).map(function (h) {
-        return { title: h.name, sub: "HR " + h.hr + " · GR " + h.gr + " · " + h.weapon, href: "/hunters.html?id=" + h.id };
+        return { title: h.name, sub: (window.HvHr && HvHr.label(h.hr) || "HR " + h.hr) + " · GR " + h.gr + " · " + h.weapon, href: "/hunters.html?id=" + h.id };
       }));
       // Items and weapons come from the site's own indexes (above); the API's hits only add armour.
       addGroup("Equipment", (data.items || []).filter(function (i) {
@@ -247,6 +247,16 @@
     items[active].scrollIntoView({ block: "nearest" });
   }
 
+  function withHr(needed) {
+    if (!needed || window.HvHr) return Promise.resolve();
+    return new Promise(function (done) {
+      var script = document.createElement("script");
+      script.src = "/js/hr.js?v=1";
+      script.onload = script.onerror = function () { done(); };
+      document.head.appendChild(script);
+    });
+  }
+
   function run(q) {
     ensureDom();
     var query = q.trim(), mine = ++seq;
@@ -262,7 +272,11 @@
       controller = new AbortController();
       fetch(API + "/api/public/search?q=" + encodeURIComponent(query), { signal: controller.signal })
         .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (data) { if (data && mine === seq) renderResults(data, query); })
+        .then(function (data) {
+          if (!data) return;
+          // The hunter rows show HR the game's way (/js/hr.js, loaded here: search.js is on every page).
+          return withHr(data.hunters && data.hunters.length).then(function () { if (mine === seq) renderResults(data, query); });
+        })
         .catch(function () { /* aborted or no answer: the site's own results stay */ });
     });
   }

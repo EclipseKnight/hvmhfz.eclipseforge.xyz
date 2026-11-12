@@ -129,6 +129,7 @@ js/admin-content.js   admin panel Content tab: the event content editors (/api/a
 js/admin-patches.js   admin panel Users tab: client patch per character and the current / older / unknown count (GET /api/admin/users, data/patch-versions.json); its helpers also run under node
 js/tournaments.js     Tournaments page: Speedrun Cup standings and the VS Bracket; its helpers also run under node
 js/catalog.js         the Items page: sections, search, paging
+js/hr.js              stored HR -> the game's rank 1-7 and the label "HR100 (HR4)" (1-29 HR1, 30-49 HR2, 50-98 HR3, 99-298 HR4, 299-997 HR5, 998 HR6, 999 HR7); hunter list and card, account, admin, Road picker, worlds and the search show it; sorting stays by the stored number; `dev/check-hr.js`
 js/database.js        the Database page's search box and results (window.HvSearch from js/search.js)
 js/search.js          the site search: the header's Search button, Ctrl/Cmd+K or / (monsters, quests, items, weapons from the site's indexes; guilds, hunters, armour and hunt counts from the API), and window.HvSearch for the Database page
 js/weapons.js         weapons page: list, weapon detail with moves, calculator form and monster hitzone presets

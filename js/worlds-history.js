@@ -262,7 +262,7 @@
       var link = el("a", null, p.name);
       link.href = "/hunters.html?id=" + p.characterId;
       nameCell.appendChild(link);
-      nameCell.appendChild(el("span", "cell-sub", "HR " + p.hr + (p.gr ? " · GR " + p.gr : "")));
+      nameCell.appendChild(el("span", "cell-sub", (window.HvHr && HvHr.label(p.hr) || "HR " + p.hr) + (p.gr ? " · GR " + p.gr : "")));
       row.appendChild(nameCell);
 
       var play = el("td", "num", duration(p.playtimeSeconds));

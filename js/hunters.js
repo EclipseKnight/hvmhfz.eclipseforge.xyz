@@ -24,6 +24,11 @@
     return value === null || value === undefined ? "-" : Number(value).toLocaleString();
   }
 
+  // Stored HR as the game shows it: "HR100 (HR4)" (js/hr.js); the plain number when hr.js is missing.
+  function hrText(value) {
+    return window.HvHr && HvHr.label(value) || num(value);
+  }
+
   function request(path) {
     return fetch(API + path, { cache: "no-store" }).then(function (response) {
       if (!response.ok) throw new Error("HTTP " + response.status);
@@ -54,9 +59,11 @@
       if (hunter.female) nameCell.appendChild(el("span", "badge", "F"));
       row.appendChild(nameCell);
 
-      [num(hunter.hr), num(hunter.gr), hunter.weapon || "Unknown",
-       hunter.guildName || "-", date(hunter.lastLogin)].forEach(function (value) {
-        row.appendChild(el("td", null, value));
+      [hrText(hunter.hr), num(hunter.gr), hunter.weapon || "Unknown",
+       hunter.guildName || "-", date(hunter.lastLogin)].forEach(function (value, i) {
+        var cell = el("td", null, value);
+        if (i === 0) cell.dataset.sort = String(hunter.hr || 0); // the header sorts by the stored number
+        row.appendChild(cell);
       });
       body.appendChild(row);
     });
@@ -350,7 +357,7 @@
 
     var main = mainWeapon(hunter);
     var stats = [
-      ["HUNTER RANK", num(hunter.hr)],
+      ["HUNTER RANK", hrText(hunter.hr)],
       ["G RANK", num(hunter.gr)],
       ["PLAY TIME", playtime(hunter.playtimeSeconds)],
       ["HUNTS LOGGED", num(hunter.totalKills)],
@@ -744,7 +751,7 @@
     var panel = el("section", "panel");
     panel.appendChild(el("div", "panel-head")).appendChild(el("h2", null, "Record"));
     var stats = el("div", "guild-stats");
-    [["Hunter rank", num(hunter.hr)], ["G rank", num(hunter.gr)], ["Play time", playtime(hunter.playtimeSeconds)],
+    [["Hunter rank", hrText(hunter.hr)], ["G rank", num(hunter.gr)], ["Play time", playtime(hunter.playtimeSeconds)],
      ["Titles", num(hunter.titles)], ["Hunts logged", num(hunter.totalKills)],
      ["Last seen", date(hunter.lastLogin)],
      ["Guild joined", hunter.guildJoined ? date(hunter.guildJoined) : "-"]]

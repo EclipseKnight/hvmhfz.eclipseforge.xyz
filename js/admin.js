@@ -390,7 +390,7 @@
             clear(list);
             (page.items || []).forEach(function (h) {
               var li = el("li");
-              var pick = el("button", null, h.name + " · HR " + h.hr + " GR " + h.gr + " · #" + h.id);
+              var pick = el("button", null, h.name + " · " + (window.HvHr && HvHr.label(h.hr) || "HR " + h.hr) + " GR " + h.gr + " · #" + h.id);
               pick.type = "button";
               pick.addEventListener("click", function () {
                 addCharacter({ id: h.id, name: h.name });
@@ -993,7 +993,7 @@
   function userCharacter(character, query, tracking) {
     var label = character.name || ("Character " + character.id);
     var bits = [];
-    if (character.hr) bits.push("HR " + character.hr);
+    if (character.hr) bits.push(window.HvHr && HvHr.label(character.hr) || "HR " + character.hr);
     if (character.gr) bits.push("GR " + character.gr);
     if (character.weapon) bits.push(character.weapon);
     var patch = window.AdminPatches ? window.AdminPatches.chipLabel(character, tracking, users.patchCurrent) : "";

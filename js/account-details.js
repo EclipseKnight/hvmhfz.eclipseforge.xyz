@@ -31,6 +31,11 @@
     return value === null || value === undefined ? "-" : Number(value).toLocaleString("en-GB");
   }
 
+  // Stored HR as the game shows it: "HR100 (HR4)" (js/hr.js); the plain number when hr.js is missing.
+  function hrText(value) {
+    return typeof window !== "undefined" && window.HvHr && window.HvHr.label(value) || number(value);
+  }
+
   /* A piece's name, or what it is and its id when the name tables don't know it. */
   function pieceName(piece) {
     if (!piece) return "Empty";
@@ -252,7 +257,7 @@
     var listed = state.characters.filter(function (c) { return String(c.id) === String(state.id); })[0] || {};
     var pick = function (a, b) { return a !== undefined && a !== null ? a : b; };
     var grid = el("div", "stat-grid");
-    var cards = [["HR", number(pick(s.hr, listed.hr))], ["GR", number(pick(s.gr, listed.gr))],
+    var cards = [["HR", hrText(pick(s.hr, listed.hr))], ["GR", number(pick(s.gr, listed.gr))],
       ["Weapon", s.weaponType || listed.weaponType || "-"]];
     if (d) cards.push(["Playtime", playtime(s.playtimeSeconds)]);
     cards.push(["Zenny", number(pick(s.zenny, st && st.zenny))], ["G zenny", number(pick(s.gzenny, st && st.gzenny))],
@@ -845,7 +850,7 @@
         var account = results[1];
         clear(select);
         state.characters.forEach(function (c) {
-          var option = el("option", null, (c.name || "Unnamed") + " (HR " + number(c.hr) + ")");
+          var option = el("option", null, (c.name || "Unnamed") + " (" + (c.hr ? hrText(c.hr) : "HR 0") + ")");
           option.value = c.id;
           select.appendChild(option);
         });
