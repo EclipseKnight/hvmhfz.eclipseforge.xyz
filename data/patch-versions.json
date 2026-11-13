@@ -3,6 +3,17 @@
   "current": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip",
   "patches": [
     {
+      "version": "1.25",
+      "published": "2026-11-13T20:19Z",
+      "sha256": "a07be78ab7e7bc8e15ea4d5f9a49110c90e248fa468483e4b7990d01c7d55918",
+      "size": 61833213,
+      "files": 105,
+      "changes": "Fixes a crash after visiting the Rasta bar (16 hunter NPCs overflowed a list; the YoRHa Member may not appear for now); chat bubbles get an optional Rasta style.",
+      "changelog": "/changelog.html#d-2026-11-13-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.25/Frontier_Patch.zip",
+      "current": true
+    },
+    {
       "version": "1.24",
       "published": "2026-11-13T17:39Z",
       "sha256": "9c64aad6ee95588875d5af78c15acd7bf2849444e91efa67db87411f12b29218",
@@ -11,7 +22,7 @@
       "changes": "Chat bubbles over hunters' heads (RuneScape style); the damage meter follows the monster you fight; the Road counter is H.Road/Sky Corridor and opens on Hunting Road / Tower; the daily task board; live crash and usage reports (on by default, turn off in Game options, Data tab).",
       "changelog": "/changelog.html#d-2026-11-13-client-patch",
       "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.24/Frontier_Patch.zip",
-      "current": true
+      "current": false
     },
     {
       "version": "1.23",
