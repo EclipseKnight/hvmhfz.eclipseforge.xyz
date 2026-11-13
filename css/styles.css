@@ -1799,8 +1799,8 @@ main.sheet > .breadcrumbs [aria-current]{color:var(--ink)}
 .wizard-choice select{max-width:100%}
 .wizard-step .backup-preview:empty{display:none}
 
-/* ---------- play page: three checklists (play.html, js/play.js) ---------- */
-.play-paths{margin:0 0 30px;grid-template-columns:repeat(3,minmax(0,1fr))}
+/* ---------- play page: four checklists (play.html, js/play.js) ---------- */
+.play-paths{margin:0 0 30px;grid-template-columns:repeat(4,minmax(0,1fr))}
 .play-card{scroll-margin-top:84px}
 .play-steps{list-style:none;counter-reset:play-step;margin:0;padding:0}
 .play-steps > li{counter-increment:play-step;position:relative;margin:0;padding:14px 0 14px 46px;border-top:1px solid rgba(189,166,122,.45)}

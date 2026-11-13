@@ -4,23 +4,23 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Play on Hunsterverse · Hunsterverse</title>
-    <meta name="description" content="Start playing Monster Hunter Frontier Z on Hunsterverse: a checklist for Windows, one for Linux and Steam Deck, and one for bringing a character from another server." />
+    <meta name="description" content="Start playing Monster Hunter Frontier Z on Hunsterverse: a checklist for Windows, one for Linux and Steam Deck, one for Android, and one for bringing a character from another server." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Hunsterverse" />
     <meta property="og:title" content="Play on Hunsterverse · Hunsterverse" />
-    <meta property="og:description" content="Start playing Monster Hunter Frontier Z on Hunsterverse: a checklist for Windows, one for Linux and Steam Deck, and one for bringing a character from another server." />
+    <meta property="og:description" content="Start playing Monster Hunter Frontier Z on Hunsterverse: a checklist for Windows, one for Linux and Steam Deck, one for Android, and one for bringing a character from another server." />
     <meta property="og:url" content="https://frontier.hunsterverse.net/play.html" />
     <meta property="og:image" content="https://frontier.hunsterverse.net/assets/og/play.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Play on Hunsterverse · Hunsterverse" />
-    <meta name="twitter:description" content="Start playing Monster Hunter Frontier Z on Hunsterverse: a checklist for Windows, one for Linux and Steam Deck, and one for bringing a character from another server." />
+    <meta name="twitter:description" content="Start playing Monster Hunter Frontier Z on Hunsterverse: a checklist for Windows, one for Linux and Steam Deck, one for Android, and one for bringing a character from another server." />
     <meta name="twitter:image" content="https://frontier.hunsterverse.net/assets/og/play.png" />
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=18" />
+    <link rel="stylesheet" href="/css/styles.css?v=19" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
@@ -133,6 +133,7 @@
       <nav class="route-tiles play-paths" aria-label="Your path">
         <a class="tile route-tile" href="#windows"><span><strong>New on Windows</strong><span class="tile-meta">Client, patch, launcher, server and your first login.</span></span></a>
         <a class="tile route-tile" href="#linux"><span><strong>Linux / Steam Deck</strong><span class="tile-meta">With Wine. Steam Deck is not tested yet.</span></span></a>
+        <a class="tile route-tile" href="#android"><span><strong>Android</strong><span class="tile-meta">With Winlator. Not tested by us yet.</span></span></a>
         <a class="tile route-tile" href="#transfer"><span><strong>Bringing a character</strong><span class="tile-meta">From another server: get your file, then import it.</span></span></a>
       </nav>
 
@@ -468,6 +469,128 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
         <p class="play-reset"><button type="button" class="ghost-btn small" hidden data-reset>Clear the ticks of this card</button></p>
       </section>
 
+      <section class="panel play-card" id="android" data-card="android" aria-labelledby="android-title">
+        <div class="panel-head">
+          <h2 id="android-title">Android</h2>
+          <span class="panel-note play-progress" data-progress aria-live="polite"></span>
+        </div>
+        <p class="note-text"><strong>Not tested by us yet:</strong> nobody on the team has played Hunsterverse on a phone, and we found no published reports of Monster Hunter Frontier Z in Winlator. These steps follow how Winlator and our launcher work, and the settings are the usual starting points for DirectX 9 games. If you try it, tell us in the <a href="https://discord.gg/NQrvRdRwU8" rel="noopener">Discord</a> what worked and on which phone.</p>
+
+        <ol class="play-steps">
+          <li data-step="and-device">
+            <label><input type="checkbox" /> <span class="play-step-title">Check your phone or tablet</span></label>
+            <p>A 64-bit Android device. Snapdragon (Adreno graphics) runs Windows games best in Winlator; Mali and Exynos graphics work less often. You need about 14 GB free: 5.7 GB for the download and 6 GB for the game, which you keep. Our guess for memory is 6 GB or more, 8 GB to be comfortable. Use Wi-Fi.</p>
+          </li>
+          <li data-step="and-account">
+            <label><input type="checkbox" /> <span class="play-step-title">Make your account on this site</span></label>
+            <p>On Android you log in with a small start file instead of the launcher window, so make the account here first. The username is case-sensitive: <code>Hunter</code> and <code>hunter</code> are different accounts.</p>
+            <a class="btn btn-secondary btn-small" href="/#signup">Create an account</a>
+          </li>
+          <li data-step="and-winlator">
+            <label><input type="checkbox" /> <span class="play-step-title">Install Winlator</span></label>
+            <p>Winlator runs Windows programs on Android (Wine with Box64). It is not on the Play Store: download the newest <code>Winlator_&lt;version&gt;.apk</code> from its GitHub releases page (11.2 in November 2026), allow your browser to install apps, open it and wait while it finishes setting up. Other sites calling themselves Winlator are not the project's own.</p>
+            <a class="btn btn-secondary btn-small" href="https://github.com/brunodev85/winlator/releases" rel="noopener">Winlator (GitHub)</a>
+          </li>
+          <li data-step="and-client">
+            <label><input type="checkbox" /> <span class="play-step-title">Download our full client to the phone</span></label>
+            <p>The whole game in 4 zip parts, about 5.7 GB, already patched and with the Mezeporta launcher in it. Download every <code>Hunsterverse-MHFZ-&lt;number&gt;.zip</code>: each part holds different files. Leave them in your <code>Download</code> folder.</p>
+            <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/tag/client-full" rel="noopener">Full client (GitHub)</a>
+          </li>
+          <li data-step="and-extract">
+            <label><input type="checkbox" /> <span class="play-step-title">Extract every part into <code>Download</code></span></label>
+            <p>Use a file manager that opens zip files (ZArchiver, for example) and extract each part into the <code>Download</code> folder itself, not into a new folder per part. Each part holds a folder <code>MHFZ</code>, so together they fill <code>Download/MHFZ</code>; no file is in two parts. Check that <code>MHFZ</code> holds <code>dat</code>, <code>mhf.ini</code>, <code>mhfo-hd.dll</code> and <code>Mezeporta.exe</code>, then delete the zips.</p>
+          </li>
+          <li data-step="and-start-file">
+            <label><input type="checkbox" /> <span class="play-step-title">Put our start file in the <code>MHFZ</code> folder</span></label>
+            <p>Download it, then move it from <code>Download</code> into <code>Download/MHFZ</code> (it also works from <code>Download</code>). It asks for your username, password and character every time, saves nothing, and starts the game through the launcher's command-line login, which needs no launcher window. What is inside: <a href="#android-start">The start file</a>.</p>
+            <a class="btn btn-secondary btn-small" href="/assets/play/Play-Hunsterverse.bat" download>Play-Hunsterverse.bat</a>
+          </li>
+          <li data-step="and-container">
+            <label><input type="checkbox" /> <span class="play-step-title">Create a Winlator container</span></label>
+            <p>In Winlator, Containers, add one. Starting values: <a href="#android-settings">Recommended settings</a>. By default Winlator shows your <code>Download</code> folder as drive <code>D:</code> (Container Settings, Drives), so the game is at <code>D:\MHFZ</code>.</p>
+          </li>
+          <li data-step="and-run">
+            <label><input type="checkbox" /> <span class="play-step-title">Start the container and run <code>Play-Hunsterverse.bat</code></span></label>
+            <p>On the Windows desktop Winlator shows, open the file manager, go to <code>D:\MHFZ</code> and open <code>Play-Hunsterverse.bat</code>. Tap the black window and use the on-screen keyboard (in Winlator's side menu) to type your username, password and character number; the first character is the default, so press Enter. A new account gets a fresh character to create in game. The black window stays open behind the game; it shows what went wrong if the game does not start.</p>
+          </li>
+          <li data-step="and-controls">
+            <label><input type="checkbox" /> <span class="play-step-title">Set up your controls</span></label>
+            <p>Touch works as the mouse. For hunting, use the on-screen gamepad or a Bluetooth controller: <a href="#android-controls">Controls</a>.</p>
+          </li>
+        </ol>
+
+        <div class="play-more">
+          <h3 class="play-more-head">More help</h3>
+
+          <details class="play-help" id="android-settings">
+            <summary>Recommended Winlator settings</summary>
+            <p>Starting points, not settings anyone has confirmed for this game. Change one thing at a time and keep what works.</p>
+            <div class="table-wrap">
+              <table class="data-table play-help-table">
+                <thead><tr><th>Setting</th><th>Start with</th></tr></thead>
+                <tbody>
+                  <tr><td>Screen Size</td><td><code>1280x720</code>. Lower (<code>960x540</code>) if the game is slow.</td></tr>
+                  <tr><td>Graphics Driver</td><td>Snapdragon (Adreno): <b>Turnip</b>, the newest Winlator offers. Mali, Exynos and others: <b>Vortek</b>, or VirGL if Vortek fails.</td></tr>
+                  <tr><td>DX Wrapper</td><td><b>DXVK</b>. If the screen stays black or the picture is broken (more likely on Mali), try <b>WineD3D</b>.</td></tr>
+                  <tr><td>Box64 Preset (Advanced tab)</td><td><b>Performance</b>. If the game crashes, <b>Stability</b>.</td></tr>
+                  <tr><td>Audio Driver</td><td>The default (ALSA). Crackling sound: raise the latency, or try PulseAudio.</td></tr>
+                  <tr><td>Win Components, Environment Variables</td><td>Leave the defaults. The game needs DirectX 9 (with D3DX), DirectInput and DirectSound, which Wine provides; the launcher needs no Visual C++ package.</td></tr>
+                  <tr><td>Drives</td><td>Keep <code>D:</code> on <code>Download</code>.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p><b>Game resolution.</b> The client is set to 1920x1080. To match the container, edit <code>Download/MHFZ/mhf.ini</code> with any text editor: in <code>[SCREEN]</code> set <code>WINDOW_RESOLUTION_W</code> and <code>FULLSCREEN_RESOLUTION_W</code> to <code>1280</code>, and the two <code>_H</code> lines to <code>720</code>. Keep a copy of the file first.</p>
+            <p><b>HD or SD graphics.</b> The start file uses HD (DirectX 9). The older SD graphics are lighter: open <code>Play-Hunsterverse.bat</code> in a text editor and change <code>set GFX=-HD</code> to <code>set GFX=</code>. SD uses DirectX 8, so if it shows a black screen with DXVK, try WineD3D.</p>
+            <p><b>Switching apps.</b> Android may stop Winlator in the background and drop you from the server. Winlator 11.2 has an option to run as a foreground service; turn it on if you get disconnected.</p>
+            <p><b>GameHub, Mobox and other Winlator-like apps</b> use the same Wine, so the start file should work there too. Not tested.</p>
+          </details>
+
+          <details class="play-help" id="android-controls">
+            <summary>Controls: touch, on-screen gamepad, Bluetooth controller</summary>
+            <p><b>Touch</b> moves and clicks the mouse, which is enough for the menus. Winlator's side menu (the Back button or a swipe from the left edge) has the on-screen <b>Keyboard</b> for chat and the login, and <b>Input Controls</b>.</p>
+            <p><b>On-screen gamepad:</b> in Input Controls, pick a profile with a virtual gamepad (or make your own from a copy), and keep a way to move the mouse for the menus.</p>
+            <p><b>Bluetooth controller:</b> pair it in Android's settings first, then start the container. The game reads controllers through DirectInput, so in Winlator's controller settings choose <b>DirectInput</b> (or both, where the option exists); if the game does not see the controller, try <b>XInput</b>. Then set the buttons in game, in the options. Like the rest of this card, not tested by us with this game.</p>
+          </details>
+
+          <details class="play-help" id="android-start">
+            <summary>The start file, and logging in without it</summary>
+            <p>The launcher's normal window needs Microsoft Edge WebView2, which is unreliable under Wine, so the start file uses the launcher's command-line mode instead. It finds <code>Mezeporta.exe</code>, asks for your username, password and character number, and runs:</p>
+<pre><code>Mezeporta.exe -v ZZ -s 129.213.54.221 -t -p1 53312 -p2 53310 -u "&lt;username&gt;" -pw "&lt;password&gt;" -c &lt;number - 1&gt; -fs none -HD</code></pre>
+            <p><code>-t</code> logs in through the sign server on port <code>53312</code> (the SignV1 mode of the other checklists: it plays the same, without the news and banners), <code>-c 0</code> is your first character, <code>-HD</code> the HD graphics. Nothing is written to the file: the password is typed in each time and shows on screen while you type, so nobody else should watch. You can also type the line above yourself in a command prompt opened in <code>D:\MHFZ</code>.</p>
+            <p>The command-line mode does not update the game. When we release a new client patch, update by hand: <a href="#android-update">Update the patch</a>.</p>
+          </details>
+
+          <details class="play-help" id="android-update">
+            <summary>Update the patch</summary>
+            <p>The full client comes with the patch of the day it was built. Each new patch is in the <a href="/changelog.html">changelog</a> and in <a href="#patches">Client patch versions</a>. To update, download <code>Frontier_Patch.zip</code> (<span data-patch-size>58.1 MB</span>) on the phone and extract it with your file manager. It holds a folder <code>Frontier_Patch</code>: copy everything inside it into <code>Download/MHFZ</code> and replace the files. Your characters are on the server, so nothing is lost.</p>
+            <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a>
+          </details>
+
+          <details class="play-help" id="android-trouble">
+            <summary>Troubleshooting</summary>
+            <div class="table-wrap">
+              <table class="data-table play-help-table">
+                <thead><tr><th>Symptom</th><th>Cause and fix</th></tr></thead>
+                <tbody>
+                  <tr><td><code>Mezeporta.exe was not found</code></td><td>The start file is not in <code>MHFZ</code> or in the folder that holds it. Move it to <code>Download/MHFZ</code>. Still not found: an extracted part went into its own folder; extract every part into <code>Download</code> itself.</td></tr>
+                  <tr><td><code>Sign server auth error</code> or the login is refused</td><td>The username and password must be exactly as registered (case-sensitive), and the account must exist: <a href="/#signup">make it on this site</a>. "Failed to connect": check the internet and the <a href="/worlds.html">server status</a>.</td></tr>
+                  <tr><td><code>character slot … out of range</code></td><td>You typed a character number you do not have. Press Enter for the first one.</td></tr>
+                  <tr><td>The black window closes at once</td><td>Open a command prompt in <code>D:\MHFZ</code> and run <code>Play-Hunsterverse.bat</code> from there to read the message.</td></tr>
+                  <tr><td>Black screen, broken picture, or the game closes at start</td><td>Change one setting at a time: DX Wrapper DXVK to WineD3D (or back), Box64 Preset Stability, another Graphics Driver version, SD graphics (<code>set GFX=</code>). See <a href="#android-settings">Recommended settings</a>.</td></tr>
+                  <tr><td>Slow, or the phone gets hot</td><td>Screen Size <code>960x540</code> with the same in <code>mhf.ini</code>, SD graphics, Box64 Preset Performance, and close other apps.</td></tr>
+                  <tr><td>Disconnected after switching apps</td><td>Turn on Winlator's foreground service option, and do not leave Winlator during a quest.</td></tr>
+                  <tr><td>Menus in Japanese, or a message in game asks you to update</td><td>Your patch is missing or out of date: <a href="#android-update">Update the patch</a>.</td></tr>
+                  <tr><td>Some text shows as boxes</td><td>Japanese text without a Japanese font in the container. The menus are English and stay readable; we have no tested fix yet. See <a href="#language">English and Japanese text</a>.</td></tr>
+                  <tr><td>You opened <code>Mezeporta.exe</code> and its window is blank or does not appear</td><td>Expected: that window needs Microsoft Edge WebView2. Use the start file.</td></tr>
+                  <tr><td>Controller not detected</td><td>Pair it before starting the container, then switch Winlator's controller mode between DirectInput and XInput: <a href="#android-controls">Controls</a>.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+        <p class="play-reset"><button type="button" class="ghost-btn small" hidden data-reset>Clear the ticks of this card</button></p>
+      </section>
+
       <section class="panel play-card" id="transfer" data-card="transfer" aria-labelledby="transfer-title">
         <div class="panel-head">
           <h2 id="transfer-title">Bringing a character from another server</h2>
@@ -499,7 +622,7 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
           </li>
           <li data-step="tr-setup">
             <label><input type="checkbox" /> <span class="play-step-title">Install the game and log in</span></label>
-            <p>Follow the <a href="#windows">Windows</a> or <a href="#linux">Linux</a> checklist, log in with the same account and pick your character in the list.</p>
+            <p>Follow the <a href="#windows">Windows</a>, <a href="#linux">Linux</a> or <a href="#android">Android</a> checklist, log in with the same account and pick your character in the list.</p>
           </li>
           <li data-step="tr-discord">
             <label><input type="checkbox" /> <span class="play-step-title">Or import with Discord</span></label>
@@ -523,7 +646,7 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
           <details class="play-help" id="language">
             <summary>English and Japanese text</summary>
             <p>MHF-Z is a Japanese game. Our client patch (the step "Apply our client patch") already puts the English menus, the Diva storyline and a town's dialogue in place: if your menus are English, you are done. The text lives in the game's data files in <code>dat</code>; the Mezeporta launcher never loads <code>mhl.dll</code> (it belonged to the old Capcom launcher), so replacing that file changes nothing.</p>
-            <p><b>Your game is in Japanese?</b> The patch step was skipped or something put the original files back. Apply the patch again (Windows: <a href="#windows-patch">script</a>; Linux: <a href="#linux-patch">commands</a>): it keeps your first backup in <code>original-files</code>.</p>
+            <p><b>Your game is in Japanese?</b> The patch step was skipped or something put the original files back. Apply the patch again (Windows: <a href="#windows-patch">script</a>; Linux: <a href="#linux-patch">commands</a>; Android: <a href="#android-update">unzip it</a>): it keeps your first backup in <code>original-files</code>.</p>
             <p><b>Coverage is partial.</b> Item names, NPC dialogue and event text often stay Japanese. That is the translation, not a broken install.</p>
             <p><b>Japanese text shows as boxes?</b> On Windows add the Japanese language pack: Settings, Time and language, Language and region, Add a language, Japanese. On Linux install your distribution's CJK fonts (<code>noto-fonts-cjk</code> on Arch, <code>fonts-noto-cjk</code> on Debian and Ubuntu, <code>google-noto-sans-cjk-fonts</code> on Fedora), enable <code>ja_JP.UTF-8</code> in <code>/etc/locale.gen</code> and run <code>sudo locale-gen</code>, then start the launcher with <code>LANG=ja_JP.UTF-8</code>.</p>
             <p><b>Two warnings from old client guides.</b> Do not apply the hosts-file trick that circulates with the client pack: it points Capcom's hostnames at 127.0.0.1 for self-hosted servers and breaks Hunsterverse. Locale Emulator is only needed if the game refuses to start without a Japanese locale, and Mezeporta starts the game itself: try without it first (Windows only).</p>

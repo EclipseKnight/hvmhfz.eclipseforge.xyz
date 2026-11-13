@@ -1,10 +1,11 @@
 #!/usr/bin/env node
-/* Checks play.html and js/play.js in headless Chromium (no API needed): three cards with a numbered checklist
+/* Checks play.html and js/play.js in headless Chromium (no API needed): four cards with a numbered checklist
    each; ticks are kept in localStorage (hvmhfz.play) and come back after a reload; the progress count and
    the "clear the ticks" button; the copy buttons put the server settings on the clipboard; the installer and
    full download slots are hidden until their flag and URL are set (the test serves js/play.js with them
    switched on); the home page's main button and the "New here" tiles go to /play.html (cards by anchor); the "More help"
-   sections (troubleshooting, patch, Linux per distribution, language, Discord commands) and the way a link or address
+   sections (troubleshooting, patch, Linux per distribution, Android settings and start file, language, Discord commands)
+   and the way a link or address
    opens one; the client patch versions (#patches, from data/patch-versions.json); the old Windows and Linux guides are only
    redirect pages that send each old #anchor to Play. Needs Playwright:
 
@@ -54,17 +55,21 @@ async function main() {
   check("title", (await page.title()) === "Play on Hunsterverse · Hunsterverse");
   check("one h1", (await page.locator("h1").count()) === 1);
 
-  // three cards, each a numbered list of steps with a checkbox
+  // four cards, each a numbered list of steps with a checkbox
   const cards = await page.locator("[data-card]").evaluateAll((els) => els.map((el) => ({
     id: el.id, steps: el.querySelectorAll("ol.play-steps > li[data-step]").length,
     boxes: el.querySelectorAll("ol.play-steps > li[data-step] input[type=checkbox]").length })));
-  check("three cards", cards.map((c) => c.id).join() === "windows,linux,transfer", JSON.stringify(cards));
+  check("four cards", cards.map((c) => c.id).join() === "windows,linux,android,transfer", JSON.stringify(cards));
+  check("a path tile per card", (await page.locator(".play-paths a").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).join() === "#windows,#linux,#android,#transfer");
   cards.forEach((c) => check(c.id + " has steps with a checkbox each", c.steps >= 5 && c.steps === c.boxes, JSON.stringify(c)));
   const ids = await page.locator("[data-step]").evaluateAll((els) => els.map((el) => el.getAttribute("data-step")));
   check("step ids are unique", new Set(ids).size === ids.length);
 
   // Steam Deck is marked as not tested
   check("Steam Deck not tested note", /Steam Deck is not tested yet/.test(await page.locator("#linux .note-text").first().innerText()));
+  // Android is marked as not tested by us, and its tile says so too
+  check("Android not tested note", /Not tested by us yet/.test(await page.locator("#android .note-text").first().innerText()));
+  check("Android tile says not tested", /Not tested by us yet/.test(await page.locator('.play-paths a[href="#android"]').innerText()));
 
   // ticks: progress, saved, back after a reload
   const win = page.locator("#windows");
@@ -117,7 +122,8 @@ async function main() {
   check("transfer wizard link", (await page.locator('#transfer a[href="/account.html#transfer"]').count()) === 1);
 
   // "More help": the sections kept from the old guides, closed until asked for, opened by an address or a link
-  const helpIds = ["windows-patch", "windows-trouble", "linux-packages", "linux-patch", "linux-prefix", "linux-wrapper", "linux-trouble", "language", "discord"];
+  const helpIds = ["windows-patch", "windows-trouble", "linux-packages", "linux-patch", "linux-prefix", "linux-wrapper", "linux-trouble",
+    "android-settings", "android-controls", "android-start", "android-update", "android-trouble", "language", "discord"];
   for (const id of helpIds) {
     check("help section " + id + " is a closed <details>", await page.locator("details#" + id).evaluate((el) => el.open === false).catch(() => false));
   }
@@ -129,6 +135,22 @@ async function main() {
   check("Linux prefix and wrapper have their commands", /mezeporta-setup-arch\.sh/.test(await page.locator("#linux-prefix").textContent()) && /GDK_BACKEND=x11/.test(await page.locator("#linux-wrapper").textContent()));
   const lt = await page.locator("#linux-trouble").textContent();
   check("Linux troubleshooting rows", ["Error 71", "Patcher failed to manage files", "Patcher failed to connect", "Login fails"].every((t) => lt.includes(t)));
+  // Android: Winlator from its own GitHub, our full client, the start file (a download), settings per GPU, update by hand
+  check("Android links Winlator's GitHub releases", (await page.locator('#android a[href="https://github.com/brunodev85/winlator/releases"]').count()) === 1);
+  check("Android links the full client", (await page.locator('#android a[href$="/releases/tag/client-full"]').count()) === 1);
+  check("Android start file is a download", (await page.locator('#android a[href="/assets/play/Play-Hunsterverse.bat"][download]').count()) === 1);
+  const as = await page.locator("#android-settings").textContent();
+  check("Android settings per GPU", ["Turnip", "Vortek", "DXVK", "WineD3D", "Box64", "mhf.ini"].every((t) => as.includes(t)));
+  check("Android start file section has the command", /-t -p1 53312 -p2 53310/.test(await page.locator("#android-start").textContent()));
+  check("Android update has the patch download", (await page.locator('#android-update a[href$="/releases/download/client_patch/Frontier_Patch.zip"]').count()) === 1);
+  const at = await page.locator("#android-trouble").textContent();
+  check("Android troubleshooting rows", ["Mezeporta.exe was not found", "Sign server auth error", "out of range", "WebView2", "Controller not detected"].every((t) => at.includes(t)));
+  // the start file: Windows line ends, our server in SignV1 mode, the first character by default, no password kept in it
+  const bat = fs.readFileSync(path.join(root, "assets", "play", "Play-Hunsterverse.bat"), "utf8");
+  check("start file has Windows line ends", !/[^\r]\n/.test(bat) && bat.endsWith("\r\n"));
+  check("start file logs in to our server in SignV1 mode", /Mezeporta\.exe -v ZZ -s 129\.213\.54\.221 -t -p1 53312 -p2 53310 -u "%HV_USER%" -pw "%HV_PASS%" -c %HV_INDEX% -fs none %GFX%/.test(bat));
+  check("start file asks for the password and keeps none", /set \/p HV_PASS=/.test(bat) && /set HV_PASS=\r\n/.test(bat) && !/-pw [^"]/.test(bat));
+  check("start file defaults to the first character", /set HV_SLOT=1\r\n/.test(bat) && /set \/a HV_INDEX=HV_SLOT-1/.test(bat));
   check("language section says Japanese text", /Japanese text shows as boxes/.test(await page.locator("#language").textContent()));
   const dc = await page.locator("#discord").textContent();
   check("Discord section commands", ["/link", "/backup", "/import", "/password"].every((c) => dc.includes(c)));
@@ -142,6 +164,8 @@ async function main() {
   check("only that section opened", !(await page.locator("#linux-wrapper").evaluate((el) => el.open)));
   await page.goto(base + "/play.html#windows-server");
   check("step anchors exist", (await page.locator("li#windows-server, li#linux-server, li#windows-launcher, li#linux-launcher").count()) === 4);
+  await page.goto(base + "/play.html#android-trouble");
+  check("an address opens the Android troubleshooting", await page.locator("#android-trouble").evaluate((el) => el.open));
   // every in-page link of Play points at an id of the page
   const dead = await page.evaluate(() => [...document.querySelectorAll('a[href^="#"]')].map((a) => a.getAttribute("href").slice(1)).filter((id) => id && !document.getElementById(id)));
   check("every in-page link has its target", dead.length === 0, dead.join(" "));
@@ -168,7 +192,7 @@ async function main() {
   check("troubleshooting note", /always installs the current patch/.test(await page.locator("#patches").innerText()));
   check("load note hidden once loaded", await page.locator("[data-patch-status]").isHidden());
   const sizes = await page.locator("[data-patch-size]").allTextContents();
-  check("patch size in the steps follows the current patch", sizes.length === 3 && sizes.every((t) => t === mb), sizes.join());
+  check("patch size in the steps follows the current patch", sizes.length === 4 && sizes.every((t) => t === mb), sizes.join());
   await page.locator('[data-patch-rows] tr[data-version="' + older[0].version + '"] button[data-copy-sha]').click();
   check("copy puts the full sha256 on the clipboard", (await page.evaluate(() => navigator.clipboard.readText())) === older[0].sha256);
   check("patch links from the help sections", (await page.locator('#windows-patch a[href="#patches"], #linux-patch a[href="#patches"]').count()) === 2);
