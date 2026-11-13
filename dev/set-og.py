@@ -18,7 +18,7 @@ PAGE_CARD = {
     "changelog.html": "changelog", "api.html": "api",
     "play.html": "play", "weapons.html": "weapons", "balance.html": "balance", "tournaments.html": "tournaments",
     "sky-corridor.html": "sky-corridor", "road-data.html": "road-data", "road-history.html": "road-history",
-    "road.html": "road", "report.html": "report", "guide-roads.html": "guide-roads",
+    "road.html": "road", "report.html": "report", "diagnostics-data.html": "diagnostics-data", "guide-roads.html": "guide-roads",
     "guide-frontier.html": "guide-frontier",
 }
 # Every Frontier guide chapter with a card of its own (dev/make-og.py); the moved chapters keep the guide's.
