@@ -24,7 +24,12 @@
    section when every feature they belong to is pre-release only. A feature with a "lockedMessage" (the account is on
    Stable, or on a slot without it) is greyed out: its switch, key pickers or viewer options are disabled and the
    message ("Switch to the pre-release (<slot>) to try these") is shown. The card reloads when the Client patch box
-   fires "hvmhfz:patch-channel" (the channel changed, by the player or by the game server). */
+   fires "hvmhfz:patch-channel" (the channel changed, by the player or by the game server).
+   When the answer has "chatBubbles" (users.qol_extra), three more sections follow the list, none locked by pre-release rules:
+   "Chat bubbles" (a switch with six options under it; PUT /api/account/qol/chat), "Game options panel" (the key that opens
+   the in-game panel, and the View + Start switch; PUT .../panel) and "Crash and usage data" (one switch, with a note while
+   "telemetry.chosen" is false; PUT .../telemetry {send}). Each change saves at once and the sections redraw from the answer.
+   An answer without "chatBubbles" (an older API) hides all three. */
 (function () {
   "use strict";
   var API = "https://api.hvmhfz.eclipseforge.xyz";
@@ -35,10 +40,11 @@
   var alertNode = document.getElementById("qol-alert");
   var keysBox = document.getElementById("qol-keys");
   var viewerBox = document.getElementById("qol-viewer");
+  var extraBox = document.getElementById("qol-extra");
   var preBox = document.getElementById("qol-pre");
   var preNote = document.getElementById("qol-pre-note");
   var preList = document.getElementById("qol-pre-list");
-  if (!list) return;
+  if (!list || !extraBox) return;
   var byId = {};   // the features of the last answer, by id
   var lastData = null;   // the last answer, for the options under the damage switches
 
@@ -130,6 +136,16 @@
     ] }
   };
 
+  // The options under the "Chat bubbles" switch (users.qol_extra); numbers are sent as numbers.
+  var CHAT = { key: "chatBubbles", path: "chat", prefix: "qol-cb-", name: "Chat bubbles", fields: [
+    { id: "types", type: "select", label: "Chat types", options: [["localParty", "Local and party"], ["localOnly", "Local only"], ["allButWhispers", "All but whispers"]], fallback: "localParty", hint: "Which chat shows in bubbles. Never whispers." },
+    { id: "size", type: "select", label: "Bubble size", options: [["normal", "Normal"], ["small", "Small"], ["large", "Large"], ["huge", "Huge"]], fallback: "normal" },
+    { id: "seconds", type: "select", num: true, label: "Bubble time", options: [[6, "6 s"], [4, "4 s"], [10, "10 s"], [15, "15 s"]], fallback: 6 },
+    { id: "ownLines", type: "check", label: "Your own lines", hint: "A bubble over your own hunter too." },
+    { id: "linesPerHunter", type: "select", num: true, label: "Lines per hunter", options: [[3, "3"], [1, "1"], [2, "2"], [4, "4"]], fallback: 3 },
+    { id: "style", type: "select", label: "Chat style", options: [["outlined", "Outlined text"], ["boxes", "Boxes"], ["rasta", "Rasta"]], fallback: "outlined", hint: "Outlined text over the head, each line in a box, or Rasta style." }
+  ] };
+
   function subOptions(f, sub, values) {
     var box = el("div", "qol-sub");
     box.id = sub.prefix + "options";
@@ -155,7 +171,7 @@
       input.disabled = lock;
       input.addEventListener("change", function () {
         var body = {};
-        body[o.id] = o.type === "check" ? input.checked : input.value;
+        body[o.id] = o.type === "check" ? input.checked : o.num ? Number(input.value) : input.value;
         saveSub(sub, input, body);
       });
     });
@@ -223,6 +239,7 @@
       if (co.preReleaseOnly && co.preReleaseSlot && slots.indexOf(co.preReleaseSlot) < 0) slots.push(co.preReleaseSlot);
     }
     if (!features.length) list.appendChild(el("p", "note-text", "No options are available yet."));
+    renderExtra(data);
     preNote.textContent = (slots.length ? (slots.length > 1 ? "Slots: " : "Slot: ") + slots.join(", ") + ". " : "")
       + "These work only on a pre-release patch on the Test land.";
     place();
@@ -251,6 +268,75 @@
     }
     preBox.hidden = !(preList.firstChild || (keysBox.parentNode === preBox && !keysBox.hidden)
       || (viewerBox.parentNode === preBox && !viewerBox.hidden));
+  }
+
+  /* ---- Chat bubbles, game options panel, crash and usage data (users.qol_extra) ---- */
+  function extraSwitch(parent, id, name, help, checked, onChange) {
+    var row = el("div", "qol-item");
+    var label = el("label", "qol-label");
+    var box = el("input");
+    box.type = "checkbox";
+    box.setAttribute("role", "switch");
+    box.id = id;
+    box.checked = checked;
+    label.htmlFor = id;
+    label.appendChild(box);
+    label.appendChild(el("span", "qol-name", name));
+    row.appendChild(label);
+    if (help) row.appendChild(el("p", "note-text qol-desc", help));
+    box.addEventListener("change", function () { onChange(box); });
+    parent.appendChild(row);
+    return row;
+  }
+
+  function extraPart(title) {
+    var part = el("div", "qol-keys");
+    part.appendChild(el("h3", "", title));
+    extraBox.appendChild(part);
+    return part;
+  }
+
+  function renderExtra(data) {
+    extraBox.innerHTML = "";
+    var chat = data.chatBubbles;
+    if (!chat || typeof chat !== "object") { extraBox.hidden = true; return; }   // an older API
+    extraBox.hidden = false;
+    var takes = "Takes effect at your next login; changes made in the game are saved here.";
+
+    if (data.extraStored === false) extraBox.appendChild(el("p", "note-text qol-extra-note", "Until you change these here or in the game, each PC keeps its own choice."));
+    var part = extraPart("Chat bubbles");
+    var row = extraSwitch(part, "qol-cb-on", "Chat bubbles", "Chat lines over the hunters' heads, in town and in quests.", chat.on !== false, function (box) {
+      saveSub(CHAT, box, { on: box.checked });
+    });
+    row.appendChild(subOptions({}, CHAT, chat));
+    part.appendChild(el("p", "note-text", takes));
+
+    var panel = data.panel && typeof data.panel === "object" ? data.panel : {};
+    part = extraPart("Game options panel");
+    var panelSub = { path: "panel", name: "Game options panel" };
+    var openKey = parse(panel.openKey);
+    var keyRow = el("div", "qol-item");
+    picker(keyRow, "Open the panel", function () { return openKey; }, function (k) {
+      openKey = k;
+      saveSub(panelSub, keyRow.querySelector(".qol-key-btn"), { openKey: fmt(k) || null });
+    }, "The in-game panel, opened with Ctrl+F10 unless you pick another key. Default sets it back.", false, { none: "Ctrl+F10", clear: "Default" });
+    part.appendChild(keyRow);
+    extraSwitch(part, "qol-panel-combo", "Open with View + Start", "Hold a controller's View/Select and Start for a second.", panel.controllerCombo !== false, function (box) {
+      saveSub(panelSub, box, { controllerCombo: box.checked });
+    });
+    part.appendChild(el("p", "note-text", takes));
+
+    var tel = data.telemetry && typeof data.telemetry === "object" ? data.telemetry : {};
+    part = extraPart("Crash and usage data");
+    row = extraSwitch(part, "qol-telemetry", "Send crash and usage data", "On by default. Sends crash reports and a short health report every few minutes so we can fix bugs; local logs are always written. ", tel.send !== false, function (box) {
+      saveSub({ path: "telemetry", name: "Crash and usage data" }, box, { send: box.checked });
+    });
+    var help = row.querySelector(".qol-desc");
+    var more = el("a", "", "What is sent");
+    more.href = "/diagnostics-data.html";
+    help.appendChild(more);
+    if (tel.chosen === false) row.appendChild(el("p", "note-text qol-telemetry-note", "Not chosen yet: on, and the game asks once."));
+    part.appendChild(el("p", "note-text", takes));
   }
 
   /* ---- Keys ---- */
@@ -303,7 +389,7 @@
   function stopCapture() {
     if (!capturing) return;
     capturing.btn.classList.remove("capturing");
-    capturing.btn.textContent = fmt(capturing.get()) || "None";
+    capturing.btn.textContent = fmt(capturing.get()) || capturing.none;
     capturing = null;
   }
 
@@ -327,21 +413,23 @@
   }
   document.addEventListener("keydown", onCaptureKey, true);
 
-  function picker(parent, label, get, set, hint, locked) {
+  // opts: {none: text of an empty key, clear: text of the clear button}
+  function picker(parent, label, get, set, hint, locked, opts) {
+    var none = opts && opts.none || "None";
     var row = el("div", "qol-key-row");
     var id = "qol-key-" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     row.appendChild(el("span", "qol-key-name", label));
-    var btn = el("button", "btn btn-secondary btn-small qol-key-btn", fmt(get()) || "None");
+    var btn = el("button", "btn btn-secondary btn-small qol-key-btn", fmt(get()) || none);
     btn.type = "button";
     btn.id = id;
-    var clear = el("button", "btn btn-secondary btn-small qol-key-clear", "Clear");
+    var clear = el("button", "btn btn-secondary btn-small qol-key-clear", opts && opts.clear || "Clear");
     clear.type = "button";
     clear.id = id + "-clear";
     btn.addEventListener("click", function () {
       var was = capturing;
       stopCapture();
       if (was && was.btn === btn) return;
-      capturing = { btn: btn, get: get, set: function (k) { set(k); btn.textContent = fmt(k) || "None"; } };
+      capturing = { btn: btn, get: get, none: none, set: function (k) { set(k); btn.textContent = fmt(k) || none; } };
       btn.classList.add("capturing");
       btn.textContent = "Press a key…";
       say("");
@@ -350,7 +438,7 @@
     clear.addEventListener("click", function () {
       stopCapture();
       set(null);
-      btn.textContent = "None";
+      btn.textContent = none;
       say("");
     });
     if (locked) { btn.disabled = true; clear.disabled = true; }
@@ -652,7 +740,7 @@
   function load(refresh) {
     if (!token()) {
       say("Sign in to change your game options.");
-      list.innerHTML = ""; preList.innerHTML = ""; preBox.hidden = true; keysBox.hidden = true; viewerBox.hidden = true;
+      list.innerHTML = ""; preList.innerHTML = ""; preBox.hidden = true; keysBox.hidden = true; viewerBox.hidden = true; extraBox.hidden = true;
       return;
     }
     fetch(API + "/api/account/qol", { headers: { Authorization: "Bearer " + token() }, cache: "no-store" })
@@ -674,6 +762,7 @@
         preBox.hidden = true;
         keysBox.hidden = true;
         viewerBox.hidden = true;
+        extraBox.hidden = true;
         say("Your game options could not be loaded right now.", true);
       });
   }
