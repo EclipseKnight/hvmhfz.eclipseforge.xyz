@@ -1,5 +1,5 @@
 /* Sky Corridor page: the town's Duremudira progress per district, the hunter boards (floors, Duremudira kills or tower clears,
-   per district, all time or this week), the guild missions and the present box, from
+   per district, all time or this week; #district-N opens a district's board), the guild missions and the present box, from
    /api/public/sky/* (js/sky.js). While the API has no Sky Corridor endpoints yet (404) or its
    database has no Sky Corridor tables (tracking: false) the page says the stats are coming soon. */
 (function () {
@@ -82,8 +82,23 @@
       bars.appendChild(S.bar("Floors", d.floorsPercent || 0,
         num(d.floors) + " / " + num(goals.floors) + (d.floorsGoalReached ? " · done" : ""), d.floorsGoalReached));
       card.appendChild(bars);
-      card.appendChild(el("p", "note-text", num(d.players) + (d.players === 1 ? " hunter" : " hunters")
+      // party runs (a party of four is one run) and tower clears (once per hunter) of this district
+      var counts = [num(d.players) + (d.players === 1 ? " hunter" : " hunters")];
+      if (tracked && d.runs !== undefined) counts.push(num(d.runs) + (d.runs === 1 ? " party run" : " party runs"));
+      if (tracked) counts.push(num(d.clears) + (d.clears === 1 ? " tower clear" : " tower clears"));
+      card.appendChild(el("p", "note-text", counts.join(" · ")
         + " · last clear " + (d.lastActivity ? S.when(d.lastActivity) : "none yet")));
+      var boardLink = S.link(S.districtName(d.district) + " board", "#district-" + d.district);
+      boardLink.addEventListener("click", function (event) {
+        event.preventDefault();
+        history.replaceState(null, "", "#district-" + d.district);
+        state.district = String(d.district);
+        showBoard();
+        byId("leaderboard").scrollIntoView();
+      });
+      var boardLine = el("p", "note-text");
+      boardLine.appendChild(boardLink);
+      card.appendChild(boardLine);
       list.appendChild(card);
     });
   }
@@ -215,8 +230,11 @@
     if (!data.tracking) { soon(); return; }
     var holder = byId("sky-rewards");
     clear(holder);
+    // floors, then clears, then each district's Early Reward (kind district, threshold = the district)
+    var ORDER = { floors: 0, clears: 1, district: 2 };
     var list = (data.rewards || []).slice().sort(function (a, b) {
-      return a.kind === b.kind ? a.threshold - b.threshold : (a.kind === "floors" ? -1 : 1);
+      var ka = a.kind in ORDER ? ORDER[a.kind] : 3, kb = b.kind in ORDER ? ORDER[b.kind] : 3;
+      return ka !== kb ? ka - kb : a.threshold - b.threshold || a.id - b.id;
     });
     holder.appendChild(S.table(
       [["Milestone"], ["Reward"], ["Hunters there", "num"], ["Received", "num"]],
@@ -234,6 +252,20 @@
     });
   }
 
+  // #district-N (the district cards' and the hunter profile's links): that district's board.
+  function districtFromHash() {
+    var m = /^#district-([1-4])$/.exec(location.hash);
+    if (!m) return false;
+    state.district = m[1];
+    return true;
+  }
+  window.addEventListener("hashchange", function () {
+    if (!districtFromHash()) return;
+    showBoard();
+    byId("leaderboard").scrollIntoView();
+  });
+  var startDistrict = districtFromHash();
+
   chipGroup("sky-board-chips", "data-board", "board");
   chipGroup("sky-district-chips", "data-district", "district");
   chipGroup("sky-period-chips", "data-period", "period");
@@ -246,6 +278,7 @@
 
   load("/api/public/sky/overview", overview, "sky-districts");
   showBoard();
+  if (startDistrict) byId("leaderboard").scrollIntoView();
   load("/api/public/sky/guilds?limit=" + TOP, guilds, "sky-guilds");
   load("/api/public/sky/rewards", rewards, "sky-rewards");
 })();

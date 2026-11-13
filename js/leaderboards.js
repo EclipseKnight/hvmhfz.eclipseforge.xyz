@@ -1,7 +1,8 @@
 /* Leaderboards: timed hunt boards (top hunters, top guilds, most hunted monsters) for this week, last
    week, this month, last month and all time, plus guild RP. The hunt boards come from one API call per
    period (/api/public/leaderboards/hunts); guild RP from the guild list sorted by RP; the Hunting Road
-   clear board from /api/public/road/leaderboard, one board per rotation and per Road (open or solo).
+   clear board from /api/public/road/leaderboard, one board per rotation and per Road (open or solo); the Sky
+   Corridor board: tower points, or Duremudira kills, floors or tower clears for all districts or one.
    This page only picks the board, numbers the rows and shows them. */
 (function () {
   "use strict";
@@ -144,6 +145,35 @@
     }
   };
 
+  // The Sky Corridor board: tower points (#tower), or a hunter board of /api/public/sky/leaderboard for all
+  // districts or one: #tower-kills-all, #tower-floors-3, #tower-clears-1 (all time).
+  var SKY_BOARDS = { points: "Tower points", kills: "Duremudira kills", floors: "Floors climbed", clears: "Tower clears" };
+  var SKY_DISTRICTS = { all: "all districts", 1: "District 1", 2: "District 2", 3: "District 3", 4: "District 4" };
+
+  function skyBoard(kind, district) {
+    if (kind === "points") return BOARDS.tower;
+    var here = district === "all" ? "" : " in " + SKY_DISTRICTS[district];
+    return {
+      title: "Sky Corridor",
+      sky: true,
+      note: kind === "kills" ? "the hunter's own Duremudira kills, all time"
+        : kind === "floors" ? "floors climbed in tower quests, all time" : "cleared tower quests, all time",
+      path: "/api/public/sky/leaderboard?board=" + kind + "&district=" + district + "&period=all&limit=" + TOP,
+      empty: kind === "kills" ? "Nobody has killed Duremudira" + here + " yet."
+        : "Nobody has cleared a tower quest" + here + " yet.",
+      rows: function (data) { return data.tracking ? (data.entries || []) : []; },
+      // the API breaks ties (the other numbers, then who got there first): keep its order and ranks
+      score: function (e) { return [e.rank]; },
+      columns: [
+        ["Hunter", towerHunterLink],
+        ["Guild", function (e) { return e.guildName || "-"; }],
+        ["Duremudira kills", function (e) { return num(e.kills); }, "num"],
+        ["Tower clears", function (e) { return num(e.clears); }, "num"],
+        ["Floors", function (e) { return num(e.floors); }, "num"]
+      ]
+    };
+  }
+
   function el(tag, className, text) {
     var node = document.createElement(tag);
     if (className) node.className = className;
@@ -243,7 +273,8 @@
     });
   }
 
-  // The address keeps the board and period: #hunters-week, #guilds-month, #monsters-all, #rp, #tower; for the
+  // The address keeps the board and period: #hunters-week, #guilds-month, #monsters-all, #rp, #tower (Sky Corridor
+  // hunter boards: #tower-kills-all, #tower-floors-3, see skyBoard); for the
   // Road, the Road and the rotation: #road (open, current), #road-solo, #road-open-2, #road-open-original.
   // Older links (#hr and #gr from the removed rank boards, #guilds from the guild page) still work.
   var LEGACY = { hr: "hunters-week", gr: "hunters-week", guilds: "rp" };
@@ -254,7 +285,9 @@
       board: BOARDS[parts[0]] ? parts[0] : "hunters",
       period: PERIODS[parts[1]] ? parts[1] : "week",
       mode: MODES[parts[1]] ? parts[1] : "open",
-      rotation: /^(\d+|original)$/.test(parts[2] || "") ? parts[2] : "current"
+      rotation: /^(\d+|original)$/.test(parts[2] || "") ? parts[2] : "current",
+      sky: SKY_BOARDS[parts[1]] ? parts[1] : "points",
+      district: /^[1-4]$/.test(parts[2] || "") ? parts[2] : "all"
     };
   }
 
@@ -324,20 +357,27 @@
 
   function show(hash) {
     var choice = parse(hash);
-    var board = BOARDS[choice.board];
+    var isSky = choice.board === "tower";
+    var board = isSky ? skyBoard(choice.sky, choice.district) : BOARDS[choice.board];
     var key = board.road
       ? ["road", choice.mode, choice.rotation].join("-")
+      : isSky ? ["tower", choice.sky, choice.district].join("-")
       : choice.board + "-" + choice.period;
     current = key;
 
     press("board-chips", "data-board", choice.board);
     press("period-chips", "data-period", choice.period);
     press("mode-chips", "data-mode", choice.mode);
+    press("sky-board-chips", "data-sky", choice.sky);
+    press("sky-district-chips", "data-district", choice.district);
+    document.getElementById("sky-board-chips").hidden = !isSky;
+    document.getElementById("sky-district-chips").hidden = !board.sky;
     document.getElementById("period-chips").hidden = !board.timed;
     document.getElementById("road-controls").hidden = !board.road;
     document.getElementById("road-rule").hidden = !board.road;
     document.getElementById("board-title").textContent =
-      board.title + (board.timed ? ", " + PERIODS[choice.period] : "") + (board.road ? ", " + MODES[choice.mode] : "");
+      board.title + (board.timed ? ", " + PERIODS[choice.period] : "") + (board.road ? ", " + MODES[choice.mode] : "")
+      + (board.sky ? ", " + SKY_BOARDS[choice.sky] + ", " + SKY_DISTRICTS[choice.district] : "");
     document.getElementById("board-note").textContent = board.note || "";
 
     var head = document.getElementById("board-head");
@@ -458,6 +498,17 @@
     if (!chip) return;
     roadSide = chip.getAttribute("data-board");
     show(window.location.hash.slice(1));
+  });
+  function goSky(kind, district) {
+    window.location.hash = kind === "points" ? "tower" : "tower-" + kind + "-" + district;
+  }
+  document.getElementById("sky-board-chips").addEventListener("click", function (event) {
+    var chip = event.target.closest(".chip");
+    if (chip) goSky(chip.getAttribute("data-sky"), parse(window.location.hash.slice(1)).district);
+  });
+  document.getElementById("sky-district-chips").addEventListener("click", function (event) {
+    var chip = event.target.closest(".chip");
+    if (chip) goSky(parse(window.location.hash.slice(1)).sky, chip.getAttribute("data-district"));
   });
   window.addEventListener("hashchange", function () { show(window.location.hash.slice(1)); });
 

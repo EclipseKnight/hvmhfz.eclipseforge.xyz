@@ -45,8 +45,10 @@
 
   function districtName(n) { return "District " + n; }
 
-  // A reward's milestone in words: "1 floor", "25 tower clears".
+  // A reward's milestone in words: "1 floor", "25 tower clears", "First Duremudira kill in District 3" (kind
+  // district: the in-game "Early Reward" tab, one per district, threshold = the district).
   function milestone(kind, threshold) {
+    if (kind === "district") return "First Duremudira kill in " + districtName(threshold);
     if (kind === "clears") return num(threshold) + (threshold === 1 ? " tower clear" : " tower clears");
     return num(threshold) + (threshold === 1 ? " floor" : " floors");
   }
@@ -154,6 +156,15 @@
     return head;
   }
 
+  // "#1 kills · #2 clears · #3 floors" on one district's boards; "-" without progress there.
+  function districtRank(d, kills) {
+    var bits = [];
+    if (kills && d.killsRank) bits.push("#" + num(d.killsRank) + " kills");
+    if (d.clearsRank) bits.push("#" + num(d.clearsRank) + " clears");
+    if (d.floorsRank) bits.push("#" + num(d.floorsRank) + " floors");
+    return bits.length ? bits.join(" · ") : "-";
+  }
+
   // The hunter profile's Sky Corridor tab.
   function hunterPanel(h) {
     var box = el("div", "sky-hunter");
@@ -175,21 +186,27 @@
     grid.appendChild(statCard("Last clear", when(h.lastAt)));
     summary.appendChild(grid);
     var districtKills = hasKills && (h.districts || []).every(function (d) { return d.kills !== undefined && d.kills !== null; });
+    // an older API has no per-district ranks: leave the column out
+    var districtRanks = (h.districts || []).some(function (d) { return "floorsRank" in d; });
     var districtHeads = [["District"]];
     if (districtKills) districtHeads.push(["Duremudira kills", "num"]);
-    districtHeads.push(["Tower clears", "num"], ["Floors", "num"], ["Last clear"]);
+    districtHeads.push(["Tower clears", "num"], ["Floors", "num"]);
+    if (districtRanks) districtHeads.push(["Rank in the district"]);
+    districtHeads.push(["Last clear"]);
     summary.appendChild(table(districtHeads,
       (h.districts || []).map(function (d) {
-        var row = [districtName(d.district)];
+        var row = [link(districtName(d.district), "/sky-corridor.html#district-" + d.district)];
         if (districtKills) row.push(num(d.kills));
-        return row.concat([num(d.clears), num(d.floors), when(d.lastAt)]);
+        row.push(num(d.clears), num(d.floors));
+        if (districtRanks) row.push(districtRank(d, districtKills));
+        return row.concat([when(d.lastAt)]);
       }), "No district progress yet."));
-    summary.appendChild(el("p", "note-text", "Ranks are on the all-district, all-time boards. "
-      + "A cleared tower quest counts only for hunters in a guild: the game reports it only for them."));
+    summary.appendChild(el("p", "note-text", "The ranks above are on the all-district, all-time boards; each district's rank is on "
+      + "that district's all-time boards. A cleared tower quest counts only for hunters in a guild: the game reports it only for them."));
     box.appendChild(summary);
 
     var rewards = el("section", "panel");
-    rewards.appendChild(panelHead("Present box", "rewards for floors and tower clears"));
+    rewards.appendChild(panelHead("Present box", "rewards for floors, tower clears and each district's first Duremudira kill"));
     rewards.appendChild(table([["Milestone"], ["Reward"], ["Reached"], ["Received"]],
       (h.rewards || []).map(function (r) {
         return [milestone(r.kind, r.threshold), (r.itemName || "Item " + r.itemId) + " x" + num(r.quantity),
@@ -227,6 +244,7 @@
     when: when,
     milestone: milestone,
     districtName: districtName,
+    districtRank: districtRank,
     hunterHasData: hunterHasData,
     request: request,
     el: el,
