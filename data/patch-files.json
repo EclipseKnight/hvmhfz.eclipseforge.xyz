@@ -1,6 +1,6 @@
 {
  "_about": "sha256 of the key game files in each client patch zip, by version (pre-releases as 1.21-pre3). A file a version's zip does not ship is not listed. Read by the API's Diagnostics upload to compare a player's files (hvdiag.txt [files]) with the release. Written by dev/make-patch-files.py --backups DIR.",
- "current": "1.23",
+ "current": "1.24",
  "files": [
   "mhf.exe",
   "mhfo-hd.dll",
@@ -11,6 +11,15 @@
   "hvmods.dll"
  ],
  "versions": {
+  "1.24": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "80fa32b490db2eddbc78c51b9281510f10f19b8edef2c1ec4b3b382cc0a08aaf",
+   "mhfo.dll": "ddd9c028e00c5974d04f32f9a85af91ab0553417c55ad621a126c3ebd68bdde5",
+   "dat/mhfdat.bin": "8151f0a07c2e5fcf44d436205cdb0633912a368a854ae323477326847dbf20f6",
+   "dat/mhfpac.bin": "bf09a5d8a38216f42154c8beb0df6fa22e4baecce018e3db5579659e7d0b93dd",
+   "dat/mhfinf.bin": "b9be5f5f1ac4af5f67524355a23459b8d33c1ed921ad0ea03211bd776a4a1b72",
+   "hvmods.dll": "94be9043146bdef0939dff44a8526821f5490cd9adbb186f23627603c238f7b4"
+  },
   "1.23": {
    "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
    "mhfo-hd.dll": "18de76bdb70604f2a176369d6822b1b76293301f89e90eb6905837466027a4f8",
@@ -198,6 +207,15 @@
    "mhfo-hd.dll": "01f980a4b892ca0dbebad8eb54b224d080b32253bb8e793e23cd060089003d25",
    "mhfo.dll": "a21322ca5864d6a4c8599fd4522fdbcc8997225c05d82d958d9aeba2678adfc7",
    "dat/mhfdat.bin": "f7940508b0434003d9fd1357d1b5487594866d0c548d0fbeb8a747f43b9fdfaf"
+  },
+  "1.24-pre4": {
+   "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
+   "mhfo-hd.dll": "11d090dc5ab316aeead97823e2f672b363511d40f06be4601ea21772f7dcdcec",
+   "mhfo.dll": "e762c3dcd7bf8a7ba78431ac93d3bd0271eebb547a2d1a9f3fe869ed599e8498",
+   "dat/mhfdat.bin": "3696de31d6b155eb447fc0f5c660adb739924d7d4ec6bada137d0bc97e19333b",
+   "dat/mhfpac.bin": "a446bafc5f906e24b97edfba013ebc6aaa2eb0e9bac785878c81fdddb7270a7b",
+   "dat/mhfinf.bin": "d4d7d20316fb098df21266aa8e7737b289108599436fd2debb09da9f2175557a",
+   "hvmods.dll": "8739c852315091df1b8fa3dcc436b9d2e951309860321222b0084bae9fd4b390"
   },
   "1.24-pre3": {
    "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",

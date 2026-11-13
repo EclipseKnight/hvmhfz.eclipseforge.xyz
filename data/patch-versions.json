@@ -3,6 +3,17 @@
   "current": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip",
   "patches": [
     {
+      "version": "1.24",
+      "published": "2026-11-13T17:39Z",
+      "sha256": "9c64aad6ee95588875d5af78c15acd7bf2849444e91efa67db87411f12b29218",
+      "size": 61832065,
+      "files": 105,
+      "changes": "Chat bubbles over hunters' heads (RuneScape style); the damage meter follows the monster you fight; the Road counter is H.Road/Sky Corridor and opens on Hunting Road / Tower; the daily task board; live crash and usage reports (on by default, turn off in Game options, Data tab).",
+      "changelog": "/changelog.html#d-2026-11-13-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.24/Frontier_Patch.zip",
+      "current": true
+    },
+    {
       "version": "1.23",
       "published": "2026-11-13T05:51Z",
       "sha256": "4444770bc593d38978782459a7d6a94e3e94d30b9b5b33be573173c3231075fd",
@@ -11,7 +22,7 @@
       "changes": "Fixes the crash at the smithy and Tower Felyne; Sky Corridor 3rd/4th District bosses all Zenith; Hunting Road counter has a Tower menu again.",
       "changelog": "/changelog.html#d-2026-11-13-client-patch",
       "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.23/Frontier_Patch.zip",
-      "current": true
+      "current": false
     },
     {
       "version": "1.22",
