@@ -952,7 +952,7 @@
 
       <!-- Live telemetry: js/admin-telemetry.js (GET /api/admin/telemetry[/summary|/{id}]) -->
       <section class="panel" id="tel-summary-panel">
-        <div class="panel-head"><h2>Live telemetry</h2><span class="panel-note">sent by the game when the player said Yes; last 7 days</span></div>
+        <div class="panel-head"><h2>Live telemetry</h2><span class="panel-note">sent by the game unless the player turned it off; last 7 days</span></div>
         <p class="form-alert" id="tel-alert" hidden></p>
         <p class="note-text" id="tel-summary-line"></p>
         <div class="table-wrap">
@@ -994,7 +994,7 @@
           <button type="button" class="ghost-btn small" id="tel-newest">Newest</button>
           <button type="button" class="ghost-btn small" id="tel-older">Older</button>
         </div>
-        <p class="note-text">Kept 30 days, sent only by players who said Yes in the game (Ctrl+F10, Game options, Data), no character names, staff only. The explanation of a crash is the API's twin of <code>tools/diag/explain_crash.py</code> (research repo), which explains a crash file in more depth.</p>
+        <p class="note-text">Kept 30 days, sent by every game with the patch unless the player turned it off (Ctrl+F10, Game options, Data), no character names, staff only. The explanation of a crash is the API's twin of <code>tools/diag/explain_crash.py</code> (research repo), which explains a crash file in more depth.</p>
       </section>
       <section class="panel" id="tel-view-panel" hidden>
         <div class="panel-head"><h2>Telemetry report <span id="tel-view-title"></span></h2><button type="button" class="ghost-btn small" id="tel-view-close">Close</button></div>
