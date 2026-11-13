@@ -109,7 +109,8 @@ def build(detail, names):
 
 
 def merge_items(items_dir, per_item, names):
-    """Puts the source keys into data/items/<id>.json and the counts into index.json."""
+    """Puts the source keys into data/items/<id>.json and the counts into index.json. An item file left with no
+    drops, quests, rewards or source keys is deleted (dev/make-item-data.py writes none for such an item)."""
     index_path = items_dir / "index.json"
     index = json.loads(index_path.read_text(encoding="utf-8"))
     counts = {}
@@ -120,6 +121,9 @@ def merge_items(items_dir, per_item, names):
         old = {k: d.pop(k) for k in SOURCE_KEYS if k in d}
         new = per_item.get(d["id"], {})
         d.update({k: new[k] for k in SOURCE_KEYS if k in new})
+        if not (d["drops"] or d["quests"] or d["rewards"] or new):
+            path.unlink()  # its last source is gone: no file, as dev/make-item-data.py would write it
+            continue
         counts[d["id"]] = sum(len(d.get(k) or []) for k in ("drops", "quests", "rewards", "where", "gather"))
         if old != {k: new[k] for k in SOURCE_KEYS if k in new}:
             path.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

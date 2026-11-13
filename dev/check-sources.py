@@ -3,7 +3,8 @@
 
   python3 dev/check-sources.py     "sources OK"
 
-1. Tests make-source-data.py's build() on a small made-up hvmhfz_re detail file.
+1. Tests make-source-data.py's build() on a small made-up hvmhfz_re detail file, and merge_items() on a few
+   made-up item files (an item whose last source is gone loses its file).
 2. Checks the data: every source in data/sources/index.json has its page file with the same id, group and item
    count, and every file is listed; every item a source page or an item's "where" names (and every material) is
    in data/items/index.json, so each /item.html?id= link resolves; every "where" names a listed source (each
@@ -15,6 +16,7 @@ import importlib.util
 import json
 import pathlib
 import sys
+import tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -57,6 +59,24 @@ def test_build(mod):
          "monster rows go to the item with the monster's name")
     want(per_item[3] == {"unlisted": [0, 2]}, "item 3 only unlisted")
     want(pages["gathering"]["rows"] == [{"item": 1, "quests": 1}], "gathering page")
+
+    # merge_items: an item whose last source is gone loses its file; one with drops keeps it without "where"
+    with tempfile.TemporaryDirectory() as tmp:
+        d = pathlib.Path(tmp)
+        empty = {"drops": [], "quests": [], "rewards": []}
+        files = {5: dict(empty, id=5, name="Jewel", where=[["road-shop-4", {"price": 1}]]),
+                 6: dict(empty, id=6, name="Bone", drops=[{"monster": 1}], where=[["road-shop-4", {"price": 1}]]),
+                 1: dict(empty, id=1, name="Gem")}
+        for iid, f in files.items():
+            (d / f"{iid}.json").write_text(json.dumps(f), encoding="utf-8")
+        (d / "index.json").write_text(json.dumps({"items": [[i, "", "", "", 1] for i in (1, 2, 3, 5, 6)]}),
+                                      encoding="utf-8")
+        mod.merge_items(d, per_item, {1: "Gem", 2: "Potion", 3: "Herb", 5: "Jewel", 6: "Bone"})
+        counts = {r[0]: r[4] for r in json.loads((d / "index.json").read_text(encoding="utf-8"))["items"]}
+        want(not (d / "5.json").exists() and counts[5] == 0, "an item with no source left loses its file")
+        six = json.loads((d / "6.json").read_text(encoding="utf-8"))
+        want("where" not in six and counts[6] == 1, "an item with drops keeps its file, without the old where")
+        want((d / "2.json").exists() and counts[1] == 2, "items with sources get or keep their file")
     return problems
 
 
