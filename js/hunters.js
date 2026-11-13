@@ -769,6 +769,8 @@
      ["Titles", num(hunter.titles)], ["Hunts logged", num(hunter.totalKills)],
      ["Last seen", dateValue(hunter.lastLogin)],
      ["Guild joined", hunter.guildJoined ? dateValue(hunter.guildJoined) : "-"]]
+      .concat(hunter.towerRank === null || hunter.towerRank === undefined ? [] : [["Tower Rank", num(hunter.towerRank)]])
+      .concat(hunter.towerPoints === null || hunter.towerPoints === undefined ? [] : [["Tower Points", num(hunter.towerPoints)]])
       .forEach(function (row) {
         var item = el("div", "guild-stat");
         item.appendChild(el("dt", null, row[0]));

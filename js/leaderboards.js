@@ -36,6 +36,12 @@
     }) + " UTC";
   }
 
+  function towerHunterLink(entry) {
+    var link = el("a", null, entry.name || "Unknown");
+    link.href = "/hunters.html?id=" + entry.charId;
+    return link;
+  }
+
   var MODES = { open: "Open Road", solo: "Solo Road" };
 
   function guildLink(guild) {
@@ -92,6 +98,20 @@
         ["RP", function (g) { return num(g.rankRp); }, "num"],
         ["Members", function (g) { return num(g.members); }, "num"],
         ["Leader", function (g) { return g.leader || "Unknown"; }]
+      ]
+    },
+    tower: {
+      title: "Sky Corridor",
+      note: "tower points from cleared tower quests",
+      path: "/api/public/sky/tower-points?limit=" + TOP,
+      empty: "No tower points yet. They count from cleared tower quests once the server turns them on.",
+      rows: function (data) { return data.tracking ? (data.entries || []) : []; },
+      score: function (e) { return [e.towerPoints]; },
+      columns: [
+        ["Hunter", towerHunterLink],
+        ["Guild", function (e) { return e.guildName || "-"; }],
+        ["Tower Rank", function (e) { return num(e.towerRank); }, "num"],
+        ["Tower Points", function (e) { return num(e.towerPoints); }, "num"]
       ]
     },
     road: {
@@ -223,7 +243,7 @@
     });
   }
 
-  // The address keeps the board and period: #hunters-week, #guilds-month, #monsters-all, #rp; for the
+  // The address keeps the board and period: #hunters-week, #guilds-month, #monsters-all, #rp, #tower; for the
   // Road, the Road and the rotation: #road (open, current), #road-solo, #road-open-2, #road-open-original.
   // Older links (#hr and #gr from the removed rank boards, #guilds from the guild page) still work.
   var LEGACY = { hr: "hunters-week", gr: "hunters-week", guilds: "rp" };
