@@ -18,6 +18,7 @@ The pages' "Copy link" button (js/share.js) copies these addresses.
     s/weapon/<type>.html      every weapon type; ?w=<id> is passed on, so /s/weapon/lance.html?w=812
                               previews as the Lance list and opens weapon 812 (one page per weapon would be
                               16,000 files)
+    s/skill/<tree id>.html    every skill tree of data/skills/index.json (dev/make-skill-data.py)
     s/changelog/<date>.html   every day on changelog.html; a #d-<date>-<topic> anchor is passed on
 
 X reads the og: tags when the twitter: ones are missing, so only twitter:card is repeated.
@@ -39,7 +40,7 @@ make_og = import_module("make-og")
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "s"
 BASE = "https://frontier.hunsterverse.net"
-KINDS = ("monster", "quest", "item", "weapon", "changelog")
+KINDS = ("monster", "quest", "item", "weapon", "skill", "changelog")
 
 
 def clip(text, limit=200):
@@ -188,6 +189,16 @@ def weapons():
                                                   f"/assets/og/weapon/{kind['slug']}.png", keep_query="w")
 
 
+def skills():
+    index = json.loads((ROOT / "data" / "skills" / "index.json").read_text())
+    for t in index["trees"]:
+        levels = ", ".join(("%+d" % l[0]) + " " + l[2] for l in t[3] if abs(l[0]) < 1000)
+        gives = [f"{t[4]:,} armour pieces players can get"] + [f"{n:,} {w}" for n, w in
+                                                               ((t[6], "decorations"), (t[7], "Road gems")) if n]
+        desc = f"{t[2]} skill. {levels}. Given by " + ", ".join(gives) + "; what each level does, from the game's data."
+        yield f"skill/{t[0]}.html", page(f"skill/{t[0]}.html", t[1], desc, f"/skill.html?id={t[0]}", "/assets/og/item.png")
+
+
 def changelog_days():
     text = (ROOT / "changelog.html").read_text()
     starts = [(m.start(), m.group(1)) for m in re.finditer(r'<section class="cl-day" id="d-(\d{4}-\d\d-\d\d)"', text)]
@@ -209,6 +220,7 @@ def build():
     files.update(quests(monsters.cards))
     files.update(items())
     files.update(weapons())
+    files.update(skills())
     files.update(changelog_days())
     return files
 

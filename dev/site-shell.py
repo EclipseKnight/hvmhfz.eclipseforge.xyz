@@ -36,7 +36,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SHELL = ROOT / "dev" / "shell"
 INDENT = "    "  # the shell sits directly in <body>
-SEARCH = '<script src="/js/search.js?v=4" defer></script>'  # bump ?v= on every page when js/search.js changes
+SEARCH = '<script src="/js/search.js?v=5" defer></script>'  # bump ?v= on every page when js/search.js changes
 MARKERS = {
     "header": ("<!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->",
                "<!-- /site-shell:header -->"),

@@ -1,4 +1,4 @@
-/* "Copy link" on the pages people link to one thing of: a monster, quest, item, weapon type, changelog day,
+/* "Copy link" on the pages people link to one thing of: a monster, quest, item, skill, weapon type, changelog day,
    hunter, guild or leaderboard. It copies the address of that thing's share page, not this
    page's own address: Discord and X read a page without running its scripts, so /monster.html?m=akantor
    previews as "Monster", while /s/monster/akantor.html previews as Akantor with its picture and opens this
@@ -62,6 +62,7 @@
     }
     if (page === "quest.html" && digits(params.get("id"))) return Promise.resolve({ file: "/s/quest/" + params.get("id") + ".html", query: "" });
     if (page === "item.html" && digits(params.get("id"))) return Promise.resolve({ file: "/s/item/" + params.get("id") + ".html", query: "" });
+    if (page === "skill.html" && digits(params.get("id"))) return Promise.resolve({ file: "/s/skill/" + params.get("id") + ".html", query: "" });
     if (page === "weapons.html") {
       // read now, not at load: the weapon page changes its address as weapons are opened
       var now = new URLSearchParams(location.search);

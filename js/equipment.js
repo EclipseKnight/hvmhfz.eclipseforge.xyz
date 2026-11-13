@@ -60,6 +60,7 @@
       sub.appendChild(el("a", null, "Stats and moves on the Weapons page")).href = "/weapons.html?type=" + type + "&w=" + id;
     }
     info.appendChild(sub);
+    if (window.HvSkillLinks) info.appendChild(window.HvSkillLinks.piece(slot, id)); // "Skills: ..." (js/skill-links.js)
     head.appendChild(info);
     view.appendChild(head);
 

@@ -631,6 +631,7 @@
     sub.appendChild(document.createTextNode("Item id " + id + " (hex " + id.toString(16).toUpperCase().padStart(4, "0") + ")"));
     if (aka) sub.appendChild(document.createTextNode(" · the server's item list calls it " + aka));
     info.appendChild(sub);
+    if (window.HvSkillLinks) info.appendChild(window.HvSkillLinks.item(id)); // "Skills: ..." (js/skill-links.js)
     head.appendChild(info);
     view.appendChild(head);
 

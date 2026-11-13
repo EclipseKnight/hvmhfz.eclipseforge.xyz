@@ -42,6 +42,8 @@
   {"page": "index.html", "group": null, "label": "Home", "title": "Play Monster Hunter Frontier Z · Hunsterverse", "current": null, "crumbs": false},
   {"page": "items.html", "group": "Database", "label": "Items", "title": "Items · Hunsterverse", "current": "/items.html"},
   {"page": "sources.html", "group": "Database", "label": "Sources", "title": "Sources · Hunsterverse", "current": "/sources.html"},
+  {"page": "skills.html", "group": "Database", "label": "Skills", "title": "Skills · Hunsterverse", "current": "/skills.html"},
+  {"page": "skill.html", "group": "Database", "label": "Skill", "title": "Skill · Hunsterverse", "current": "/skills.html", "trail": [["Skills", "/skills.html"]], "item": true},
   {"page": "source.html", "group": "Database", "label": "Source", "title": "Source · Hunsterverse", "current": "/sources.html", "trail": [["Sources", "/sources.html"]], "item": true},
   {"page": "leaderboards.html", "group": "Community", "label": "Leaderboards", "title": "Leaderboards · Hunsterverse", "current": "/leaderboards.html"},
   {"page": "monster.html", "group": "Database", "label": "Monster", "title": "Monster · Hunsterverse", "current": "/monsters.html", "trail": [["Monsters", "/monsters.html"]], "item": true},

@@ -3,10 +3,10 @@
    counts. The same engine is window.HvSearch, which the Database page's search box (js/database.js) uses:
      HvSearch.load(kind)            -> Promise of true (loaded) or false (could not be loaded)
      HvSearch.find(kind, q, limit)  -> {total, rows: [{title, sub, href}], more: list page href or null}
-   kinds in HvSearch.KINDS: monsters, quests, items, weapons, sources. A query matches a row when every word of it is in
+   kinds in HvSearch.KINDS: monsters, quests, items, weapons, sources, skills. A query matches a row when every word of it is in
    the row's name (or other name, monsters, category); rows whose name starts with the query come first.
    Indexes: data/monsters/index.json, data/items/index.json, data/search/quests.json and data/search/weapons.json
-   (dev/make-search-index.py), data/sources/index.json (dev/make-source-data.py). */
+   (dev/make-search-index.py), data/sources/index.json (dev/make-source-data.py), data/skills/index.json (dev/make-skill-data.py). */
 (function () {
   "use strict";
 
@@ -87,9 +87,27 @@
         });
       },
       more: function (q) { return "/sources.html?q=" + encodeURIComponent(q); }
+    },
+    skills: {
+      label: "Skills", url: "/data/skills/index.json", min: 2,
+      rows: function (data) {
+        var out = (data.trees || []).map(function (t) {
+          var levels = t[3].map(function (l) { return l[2]; });
+          return { name: t[1], extra: levels.join(" "), title: t[1], sub: t[2] + " · " + levels.slice(0, 3).join(", "),
+                   href: "/skill.html?id=" + t[0] };
+        });
+        (data.road || []).forEach(function (r) {
+          out.push({ name: r[1], extra: "road skill", title: r[1], sub: "Road skill · " + r[4], href: "/skill.html?road=" + r[0] });
+        });
+        (data.sigils || []).forEach(function (r) {
+          out.push({ name: r[1], extra: "tower sigil " + r[3], title: r[1], sub: "Tower sigil · " + r[3], href: "/skill.html?sigil=" + r[0] });
+        });
+        return out;
+      },
+      more: function (q) { return "/skills.html?q=" + encodeURIComponent(q); }
     }
   };
-  var ORDER = ["monsters", "quests", "items", "weapons", "sources"];
+  var ORDER = ["monsters", "quests", "items", "weapons", "sources", "skills"];
   var cache = {};
   var monsterIds = {}; // the server's monster id -> its page, from the monster index
 

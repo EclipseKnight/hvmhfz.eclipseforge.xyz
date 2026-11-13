@@ -2559,3 +2559,12 @@ main.sheet table.fields code{overflow-wrap:anywhere;white-space:normal}
 .eq-line-here{font-weight:700}
 .eq-into{margin:0}
 #wp-materials .mat-ways{margin-top:4px}
+
+/* ---------- skills (skills.html, skill.html, the Skills line of item and equipment pages) ---------- */
+.skill-line{margin-top:6px}
+.skill-line strong{font-weight:600}
+.skills-table .skills-levels{min-width:16rem;font-size:.86rem}
+.skill-item{display:inline-flex;align-items:center;gap:6px}
+.skill-item img{flex:none}
+.check-label{display:inline-flex;align-items:center;gap:6px;padding-bottom:10px;font:.86rem var(--font-ui);cursor:pointer}
+.skill-road-levels{margin:0 0 12px 1.4em}

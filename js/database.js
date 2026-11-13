@@ -1,4 +1,4 @@
-/* The Database page (database.html): one search box over monsters, quests, items, weapons and sources, with the results
+/* The Database page (database.html): one search box over monsters, quests, items, weapons, sources and skills, with the results
    grouped by kind as you type, and the section tiles. The search itself is window.HvSearch (js/search.js), over
    the site's small indexes; nothing here loads data/quests.json or the weapon type files.
    URL: ?q=<query> and ?kind=monsters|quests|items|weapons (one kind, up to 50 results) are kept with replaceState.

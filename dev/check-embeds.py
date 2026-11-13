@@ -10,7 +10,7 @@ site root and every share page under s/ (dev/make-share-pages.py):
   - twitter:card and theme-color set;
   - a public page has a picture of its own, not the plain brand card (GENERIC_OK lists the exceptions);
   - a share page sends people to a page and a thing that exist (monster, quest, item, weapon type,
-    changelog day), and s/ is what dev/make-share-pages.py writes now.
+    skill, changelog day), and s/ is what dev/make-share-pages.py writes now.
 Hunters, guilds and leaderboards are API data: their pages here keep the page's card, and their share links
 are served by the API (https://api.hvmhfz.eclipseforge.xyz/share/hunter/<id>, /share/guild/<id>,
 /share/leaderboard/<board>[/<option>]; the API README's "Share links", tested by its ShareEndpointTests),
@@ -154,6 +154,8 @@ def share_target_exists(kind, key, target):
         return target == f"/item.html?id={key}" and (ROOT / "data" / "items" / f"{key}.json").is_file()
     if kind == "weapon":
         return target == f"/weapons.html?type={key}" and (ROOT / "data" / "weapons" / f"{key}.json").is_file()
+    if kind == "skill":
+        return target == f"/skill.html?id={key}" and (ROOT / "data" / "skills" / f"{key}.json").is_file()
     if kind == "changelog":
         return target == f"/changelog.html#d-{key}" and f'id="d-{key}"' in share_target_exists.changelog
     return False
