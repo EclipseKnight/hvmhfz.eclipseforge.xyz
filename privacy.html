@@ -124,7 +124,7 @@
 <!-- /site-shell:crumbs -->
 <h1>Privacy and cookies</h1>
 <p class="lead">What this website and the Hunsterverse server keep about you, why, for how long, and what you can ask us to do with it.</p>
-<p class="meta">Last changed 12 November 2026.</p>
+<p class="meta">Last changed 13 November 2026.</p>
 
 <div class="toc">
 <strong>Contents</strong>
@@ -133,6 +133,7 @@
 <li><a href="#data">What we keep and why</a></li>
 <li><a href="#cookies">Cookies and browser storage</a></li>
 <li><a href="#bot">Prontier Discord bot</a></li>
+<li><a href="#game-data">Crash reports and usage data from the game</a></li>
 <li><a href="#others">Other services on the site</a></li>
 <li><a href="#public">What other players can see</a></li>
 <li><a href="#rights">Your rights</a></li>
@@ -156,6 +157,7 @@
 <tr><td><b>Hunting Road entries:</b> the Road you build, its name and description, and the character you credit as author</td><td>To run the Road vote, and to list past winners</td><td>Entries stay with their rotation; winners stay on the <a href="/road-history.html">past winners</a> list</td></tr>
 <tr><td><b>Hunting Road votes:</b> which entries your account voted for</td><td>To count votes once per account and let you take a vote back</td><td>Kept with the rotation. Only vote counts are public</td></tr>
 <tr><td><b>Reports</b> (<a href="/report.html">report page</a>): what you write, files you attach, and, when you are signed in, your account and linked Discord name</td><td>To find and fix problems</td><td>On our task board while it is useful; ask us to remove yours</td></tr>
+<tr><td><b>Crash reports and usage data from the game</b>, only if you say Yes in the game (<a href="#game-data">details below</a>)</td><td>To find and fix bugs in the patch, the mods and the server</td><td>30 days</td></tr>
 <tr><td><b>Server logs:</b> IP address and time of requests, for example sign-ins</td><td>To keep the servers running and to stop abuse (rate limits)</td><td>Only as long as needed for that</td></tr>
 </tbody>
 </table>
@@ -191,6 +193,21 @@
 </table>
 <p>The bot does not store your messages, does not relay chat between Discord and the game, and does not keep a list of members or their roles. When it checks a role it asks Discord at that moment. <code>/whois</code> answers in the channel with a member's Discord name, game user name, user ID, Discord ID, and character names and IDs, so anyone in the channel can read it (never passwords, saves or IP addresses). Staff who run the servers can see the API's database and the bot's log. To ask us to delete or correct anything, or to unlink your account, run <code>/unlink</code> or message a staff member on <a href="https://discord.gg/NQrvRdRwU8">Discord</a> (see <a href="#rights">Your rights</a>). Messages and files Discord holds (replies, the backup direct message) are under <a href="https://discord.com/privacy">Discord's privacy policy</a>; delete them in Discord.</p>
 
+<h2 id="game-data">Crash reports and usage data from the game</h2>
+<p>We aren't stealing your data, we just need to know what your client is doing in order to identify issues. The first time you start the game with the new patch, it asks once whether to send crash reports and usage data to Hunsterverse, to help fix bugs in the patch, the mods and the server. <b>Nothing is sent unless you say Yes.</b> You can change your answer any time in the game (Ctrl+F10, Game options, Data tab); switching it off stops sending at once.</p>
+<p><b>What is sent:</b></p>
+<ul>
+<li>a random session number, made new each time the game starts;</li>
+<li>your character id (not its name);</li>
+<li>the patch and mod versions, and which mods are on;</li>
+<li>the frame rate;</li>
+<li>where you are in the game (stage and quest id);</li>
+<li>errors and known problems the game noticed;</li>
+<li>after a crash, the crash report the game writes on your PC (where in the game's code it crashed, the last things that happened in the game, your Windows version, language setting and memory, and the names of the files in the game folder), without your character name.</li>
+</ul>
+<p><b>What is never sent:</b> chat, passwords, your character name, your Windows user name or folders, and other players' data. We do not keep your IP address with it.</p>
+<p>It is kept for 30 days, and only staff can see it. Either way, the game still writes its own local files (<code>hvdiag.txt</code>, <code>hvmods.log</code> and crash files) on your PC, and you can still upload them yourself on the <a href="/account.html#diagnostics">Account page</a>.</p>
+
 <h2 id="others">Other services on the site</h2>
 <ul>
 <li><b>GitHub Pages</b> hosts this website. Like any web host, GitHub sees your IP address when you load a page (<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>).</li>
@@ -216,6 +233,9 @@
 
 <h2 id="changes">Changes to this page</h2>
 <p>When this page changes, the date at the top changes too. Bigger changes are announced on Discord.</p>
+<ul>
+<li><b>13 November 2026:</b> added <a href="#game-data">Crash reports and usage data from the game</a> (optional, off unless you say Yes in the game).</li>
+</ul>
 </main>
     <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
     <footer class="site-foot">

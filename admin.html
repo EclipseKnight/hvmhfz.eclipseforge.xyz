@@ -949,6 +949,66 @@
         <p class="subhead">The file</p>
         <pre class="diag-raw" id="diag-view-raw"></pre>
       </section>
+
+      <!-- Live telemetry: js/admin-telemetry.js (GET /api/admin/telemetry[/summary|/{id}]) -->
+      <section class="panel" id="tel-summary-panel">
+        <div class="panel-head"><h2>Live telemetry</h2><span class="panel-note">sent by the game when the player said Yes; last 7 days</span></div>
+        <p class="form-alert" id="tel-alert" hidden></p>
+        <p class="note-text" id="tel-summary-line"></p>
+        <div class="table-wrap">
+          <table class="data-table admin-table" data-nosort>
+            <thead><tr><th>Crash address</th><th class="num">Crashes</th><th>Last seen</th><th>Patches</th></tr></thead>
+            <tbody id="tel-crash-rows"><tr><td colspan="4" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table admin-table" data-nosort>
+            <thead><tr><th>Patch</th><th class="num">Reports</th><th class="num">Sessions</th><th class="num">Average fps</th><th class="num">Average drawn</th></tr></thead>
+            <tbody id="tel-patch-rows"><tr><td colspan="5" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel" id="tel-list-panel">
+        <div class="panel-head"><h2>Telemetry reports</h2></div>
+        <div class="admin-search">
+          <select id="tel-kind" aria-label="Kind">
+            <option value="">All kinds</option>
+            <option value="crash">Crash</option>
+            <option value="health">Health</option>
+          </select>
+          <input id="tel-patch" type="number" min="0" placeholder="Patch (e.g. 124)" aria-label="Patch number" />
+          <input id="tel-character" type="number" min="1" placeholder="Character id" aria-label="Character id" />
+          <input id="tel-crashat" type="text" maxlength="64" autocomplete="off" placeholder="Crash address (prefix)" aria-label="Crash address" />
+          <input id="tel-session" type="text" maxlength="16" autocomplete="off" placeholder="Session" aria-label="Session" />
+          <input id="tel-user" type="number" min="1" placeholder="Account #" aria-label="Account number" />
+          <button type="button" class="ghost-btn small" id="tel-filter">Show</button>
+          <button type="button" class="ghost-btn small" id="tel-clear">Clear</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table admin-table" data-nosort>
+            <thead><tr><th>#</th><th>Received</th><th>Kind</th><th>Character</th><th>Patch</th><th>hvmods</th><th>Crash address, problems, errors</th><th class="num">fps</th><th></th></tr></thead>
+            <tbody id="tel-rows"><tr><td colspan="9" class="empty-cell">Loading</td></tr></tbody>
+          </table>
+        </div>
+        <div class="admin-pager">
+          <button type="button" class="ghost-btn small" id="tel-newest">Newest</button>
+          <button type="button" class="ghost-btn small" id="tel-older">Older</button>
+        </div>
+        <p class="note-text">Kept 30 days, sent only by players who said Yes in the game (Ctrl+F10, Game options, Data), no character names, staff only. The explanation of a crash is the API's twin of <code>tools/diag/explain_crash.py</code> (research repo), which explains a crash file in more depth.</p>
+      </section>
+      <section class="panel" id="tel-view-panel" hidden>
+        <div class="panel-head"><h2>Telemetry report <span id="tel-view-title"></span></h2><button type="button" class="ghost-btn small" id="tel-view-close">Close</button></div>
+        <div class="admin-search">
+          <button type="button" class="ghost-btn small" id="tel-same-crash" hidden>Same crash address</button>
+          <button type="button" class="ghost-btn small" id="tel-this-char" hidden>This character</button>
+        </div>
+        <p class="diag-outcome" id="tel-view-outcome"></p>
+        <ul class="diag-findings" id="tel-view-findings"></ul>
+        <dl class="detail-list diag-facts" id="tel-view-answer-facts"></dl>
+        <dl class="detail-list diag-facts" id="tel-view-fields"></dl>
+        <p class="subhead">The report</p>
+        <pre class="diag-raw" id="tel-view-raw"></pre>
+      </section>
       </div>
 
       <div class="tab-panel" id="panel-audit" hidden>
@@ -1034,6 +1094,7 @@
     <script src="/js/admin-content.js?v=2"></script>
     <script src="/js/admin-patches.js?v=3"></script>
     <script src="/js/admin-diag.js?v=4"></script>
+    <script src="/js/admin-telemetry.js?v=1"></script>
     <script src="/js/balance-fields.js?v=1"></script>
     <script src="/js/admin-balance.js?v=5"></script>
     <script src="/js/game-icons.js?v=2"></script>
