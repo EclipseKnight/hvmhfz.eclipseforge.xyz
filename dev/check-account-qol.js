@@ -47,7 +47,7 @@
      reload when the Client patch box fires "hvmhfz:patch-channel"; once preReleaseOnly is false (a stable release
      reached the feature) the section is gone and the features are in the normal list;
    - the three account-option sections after the list (users.qol_extra): "Chat bubbles" (switch, help, and under it Chat
-     types, Bubble size, Bubble time, Your own lines, Lines per hunter, Chat style with their defaults and help), "Game
+     types, Text size, Bubble time, Your own lines, Lines per hunter, Chat style with their defaults and help), "Game
      options panel" (key picker "Open the panel" showing Ctrl+F10 with a Default button, and "Open with View + Start")
      and "Crash and usage data" (switch with help and the "What is sent" link, "Not chosen yet" note); each control sends
      PUT /api/account/qol/chat, /panel or /telemetry with only its key (numbers as numbers), the sections redraw from
@@ -421,7 +421,8 @@ async function run(browser, base) {
   check("damage numbers options under its switch", await page.evaluate(() => !!document.querySelector(".qol-item #qol-damageNumbers") && document.getElementById("qol-damageNumbers").closest(".qol-item").contains(document.getElementById("qol-dn-options"))));
   check("damage numbers labels and the move id help", dnText.includes("Other players' hits") && dnText.includes("Size") && dnText.includes("Show move id") && dnText.includes(MOVE_ID_HELP), dnText);
   check("damage numbers show the GET values", (await page.isChecked("#qol-dn-othersHits")) && !(await page.isChecked("#qol-dn-showMoveId")) && (await page.inputValue("#qol-dn-size")) === "large");
-  check("damage numbers size options", JSON.stringify(await optionsOf("qol-dn-size")) === JSON.stringify([["small", "Small"], ["normal", "Normal"], ["large", "Large"], ["huge", "Huge"]]), JSON.stringify(await optionsOf("qol-dn-size")));
+  check("damage numbers size options", JSON.stringify(await optionsOf("qol-dn-size")) === JSON.stringify([["extraSmall", "Extra small"], ["small", "Small"], ["normal", "Normal"], ["large", "Large"], ["huge", "Huge"]]), JSON.stringify(await optionsOf("qol-dn-size")));
+  check("damage meter has no Extra small", JSON.stringify(await optionsOf("qol-dm-size")) === JSON.stringify([["small", "Small"], ["normal", "Normal"], ["large", "Large"], ["huge", "Huge"]]), JSON.stringify(await optionsOf("qol-dm-size")));
   check("damage meter options under its switch", await page.evaluate(() => document.getElementById("qol-damageMeter").closest(".qol-item").contains(document.getElementById("qol-dm-options"))));
   check("damage meter labels", /Corner/.test(await page.textContent("#qol-dm-options")) && /Size/.test(await page.textContent("#qol-dm-options")));
   check("damage meter corner options", JSON.stringify(await optionsOf("qol-dm-corner")) === JSON.stringify([["topRight", "Top right"], ["topLeft", "Top left"], ["bottomRight", "Bottom right"], ["bottomLeft", "Bottom left"]]), JSON.stringify(await optionsOf("qol-dm-corner")));
@@ -466,6 +467,12 @@ async function run(browser, base) {
   await page.click("#qol-dn-weakSpotStar");
   await page.waitForFunction(() => document.getElementById("qol-dn-weakSpotStar").checked && !document.getElementById("qol-dn-weakSpotStar").disabled, null, { timeout: 5000 }).catch(() => {});
   check("weak-spot star back on sends true", JSON.stringify(overlayPuts[starN + 1]) === JSON.stringify(["damage-numbers", { weakSpotStar: true }]), JSON.stringify(overlayPuts.slice(starN)));
+  // Extra small (hvmhfz_re part 170): one more size value, sent as such (the API stores Small plus qol_extra bit 26).
+  const xsN = overlayPuts.length;
+  await page.selectOption("#qol-dn-size", "extraSmall");
+  await page.waitForFunction(() => document.getElementById("qol-dn-size").value === "extraSmall" && !document.getElementById("qol-dn-size").disabled, null, { timeout: 5000 }).catch(() => {});
+  check("Extra small sends size extraSmall and is shown", overlayPuts.length === xsN + 1 && JSON.stringify(overlayPuts[xsN]) === JSON.stringify(["damage-numbers", { size: "extraSmall" }]) && (await page.inputValue("#qol-dn-size")) === "extraSmall", JSON.stringify(overlayPuts.slice(xsN)));
+  check("Extra small's help", (await page.textContent("#qol-dn-options")).includes("Extra small needs the newest game patch; an older one shows Small."));
   // Overlay v2 (part 110): four more meter options, each its own key.
   for (const [id, label, help] of METER_MORE) {
     const text = (await page.textContent("#qol-dm-options")).replace(/\s+/g, " ");
@@ -603,6 +610,11 @@ async function run(browser, base) {
   // The account options (users.qol_extra): chat bubbles, game options panel, crash and usage data.
   const xtext = () => page.textContent("#qol-extra").then((t) => t.replace(/\s+/g, " "));
   const lastExtra = () => JSON.stringify(extraPuts[extraPuts.length - 1]);
+  // the PUT lands after the control changes: wait (up to 5 s) for the wanted one, then answer the last
+  const extraPut = async (want) => {
+    for (let i = 0; i < 100 && lastExtra() !== want; i++) await page.waitForTimeout(50);
+    return lastExtra();
+  };
   const extraSaved = () => page.waitForFunction(() => /options saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
   const sectionTitles = await page.$$eval("#qol-extra h3", (n) => n.map((h) => h.textContent));
   check("three sections in order", JSON.stringify(sectionTitles) === JSON.stringify(["Chat bubbles", "Game options panel", "Crash and usage data"]), JSON.stringify(sectionTitles));
@@ -610,11 +622,11 @@ async function run(browser, base) {
   check("chat bubbles switch with help, on by default", (await page.isChecked("#qol-cb-on")) && xt.includes("Chat lines over the hunters' heads, in town and in quests."), xt);
   const chatSel = (id) => page.$$eval("#" + id + " option", (n) => n.map((o) => o.textContent)).then(JSON.stringify);
   check("chat selects list their options, default first", (await chatSel("qol-cb-types")) === JSON.stringify(["Local and party", "Local only", "All but whispers"])
-    && (await chatSel("qol-cb-size")) === JSON.stringify(["Normal", "Small", "Large", "Huge"]) && (await chatSel("qol-cb-seconds")) === JSON.stringify(["6 s", "4 s", "10 s", "15 s"])
+    && (await chatSel("qol-cb-size")) === JSON.stringify(["Medium", "Small", "Large", "Extra large"]) && (await chatSel("qol-cb-seconds")) === JSON.stringify(["6 s", "4 s", "10 s", "15 s"])
     && (await chatSel("qol-cb-linesPerHunter")) === JSON.stringify(["3", "1", "2", "4"]) && (await chatSel("qol-cb-style")) === JSON.stringify(["Outlined text", "Boxes", "Rasta"]));
   check("chat defaults shown", (await page.inputValue("#qol-cb-types")) === "localParty" && (await page.inputValue("#qol-cb-size")) === "normal" && (await page.inputValue("#qol-cb-seconds")) === "6"
     && (await page.isChecked("#qol-cb-ownLines")) && (await page.inputValue("#qol-cb-linesPerHunter")) === "3" && (await page.inputValue("#qol-cb-style")) === "outlined");
-  check("chat labels and help", ["Chat types", "Bubble size", "Bubble time", "Your own lines", "Lines per hunter", "Chat style", "Which chat shows in bubbles. Never whispers.", "A bubble over your own hunter too.",
+  check("chat labels and help", ["Chat types", "Text size", "Size of the bubbles' text; the bubble follows it.", "Bubble time", "Your own lines", "Lines per hunter", "Chat style", "Which chat shows in bubbles. Never whispers.", "A bubble over your own hunter too.",
     "Outlined text over the head, each line in a box, or Rasta style."].every((t) => xt.includes(t)), xt);
   check("chat options sit inside the chat switch's item (indented under it)", await page.evaluate(() => !!document.querySelector("#qol-cb-on").closest(".qol-item").querySelector("#qol-cb-options #qol-cb-style")));
   check("panel part: key Ctrl+F10 with Default, combo on with help", (await btnText("qol-key-open-the-panel")) === "Ctrl+F10" && (await btnText("qol-key-open-the-panel-clear")) === "Default" && (await page.isChecked("#qol-panel-combo"))
@@ -626,26 +638,26 @@ async function run(browser, base) {
   check("no hidden-info mark and no lock on the new sections", !xt.includes("normally hides") && (await page.$$eval("#qol-extra input, #qol-extra select, #qol-extra button", (n) => n.every((i) => !i.disabled))));
 
   await page.click("#qol-cb-on"); await extraSaved();
-  check("chat switch PUT", lastExtra() === JSON.stringify(["chat", { on: false }]), lastExtra());
+  check("chat switch PUT", (await extraPut(JSON.stringify(["chat", { on: false }]))) === JSON.stringify(["chat", { on: false }]), lastExtra());
   check("chat saved message and redraw from the answer", /Chat bubbles options saved/.test(await page.textContent("#qol-note")) && !(await page.isChecked("#qol-cb-on")), await page.textContent("#qol-note"));
   check("stored note gone after a save (extraStored true)", !(await xtext()).includes("each PC keeps its own choice"));
   await page.selectOption("#qol-cb-types", "allButWhispers"); await page.waitForFunction(() => document.getElementById("qol-cb-types").value === "allButWhispers");
-  check("chat types PUT", lastExtra() === JSON.stringify(["chat", { types: "allButWhispers" }]), lastExtra());
+  check("chat types PUT", (await extraPut(JSON.stringify(["chat", { types: "allButWhispers" }]))) === JSON.stringify(["chat", { types: "allButWhispers" }]), lastExtra());
   await page.selectOption("#qol-cb-size", "huge");
   await page.waitForFunction(() => document.getElementById("qol-cb-size").value === "huge");
-  check("bubble size PUT", lastExtra() === JSON.stringify(["chat", { size: "huge" }]), lastExtra());
+  check("text size PUT", (await extraPut(JSON.stringify(["chat", { size: "huge" }]))) === JSON.stringify(["chat", { size: "huge" }]), lastExtra());
   await page.selectOption("#qol-cb-seconds", "15");
   await page.waitForFunction(() => document.getElementById("qol-cb-seconds").value === "15");
-  check("bubble time PUT as a number", lastExtra() === JSON.stringify(["chat", { seconds: 15 }]), lastExtra());
+  check("bubble time PUT as a number", (await extraPut(JSON.stringify(["chat", { seconds: 15 }]))) === JSON.stringify(["chat", { seconds: 15 }]), lastExtra());
   await page.click("#qol-cb-ownLines");
   await page.waitForFunction(() => !document.getElementById("qol-cb-ownLines").checked && !document.getElementById("qol-cb-ownLines").disabled);
-  check("own lines PUT", lastExtra() === JSON.stringify(["chat", { ownLines: false }]), lastExtra());
+  check("own lines PUT", (await extraPut(JSON.stringify(["chat", { ownLines: false }]))) === JSON.stringify(["chat", { ownLines: false }]), lastExtra());
   await page.selectOption("#qol-cb-linesPerHunter", "4");
   await page.waitForFunction(() => document.getElementById("qol-cb-linesPerHunter").value === "4");
-  check("lines per hunter PUT as a number", lastExtra() === JSON.stringify(["chat", { linesPerHunter: 4 }]), lastExtra());
+  check("lines per hunter PUT as a number", (await extraPut(JSON.stringify(["chat", { linesPerHunter: 4 }]))) === JSON.stringify(["chat", { linesPerHunter: 4 }]), lastExtra());
   await page.selectOption("#qol-cb-style", "rasta");
   await page.waitForFunction(() => document.getElementById("qol-cb-style").value === "rasta");
-  check("chat style PUT", lastExtra() === JSON.stringify(["chat", { style: "rasta" }]), lastExtra());
+  check("chat style PUT", (await extraPut(JSON.stringify(["chat", { style: "rasta" }]))) === JSON.stringify(["chat", { style: "rasta" }]), lastExtra());
   check("every chat option shows the saved value", (await page.inputValue("#qol-cb-types")) === "allButWhispers" && (await page.inputValue("#qol-cb-size")) === "huge" && (await page.inputValue("#qol-cb-seconds")) === "15"
     && !(await page.isChecked("#qol-cb-ownLines")) && (await page.inputValue("#qol-cb-linesPerHunter")) === "4" && (await page.inputValue("#qol-cb-style")) === "rasta");
 
@@ -653,23 +665,24 @@ async function run(browser, base) {
   await page.click("#qol-key-open-the-panel");
   await page.keyboard.press("Control+Shift+F9");
   await page.waitForFunction(() => document.getElementById("qol-key-open-the-panel").textContent === "Ctrl+Shift+F9");
-  check("panel key PUT", lastExtra() === JSON.stringify(["panel", { openKey: "Ctrl+Shift+F9" }]), lastExtra());
+  check("panel key PUT", (await extraPut(JSON.stringify(["panel", { openKey: "Ctrl+Shift+F9" }]))) === JSON.stringify(["panel", { openKey: "Ctrl+Shift+F9" }]), lastExtra());
+  await page.waitForFunction(() => /Game options panel options saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
   check("panel key saved message", /Game options panel options saved/.test(await page.textContent("#qol-note")), await page.textContent("#qol-note"));
   await page.click("#qol-key-open-the-panel-clear");
   await page.waitForFunction(() => document.getElementById("qol-key-open-the-panel").textContent === "Ctrl+F10");
-  check("Default sends openKey null and shows Ctrl+F10 again", lastExtra() === JSON.stringify(["panel", { openKey: null }]), lastExtra());
+  check("Default sends openKey null and shows Ctrl+F10 again", (await extraPut(JSON.stringify(["panel", { openKey: null }]))) === JSON.stringify(["panel", { openKey: null }]), lastExtra());
   await page.click("#qol-panel-combo");
   await page.waitForFunction(() => !document.getElementById("qol-panel-combo").checked && !document.getElementById("qol-panel-combo").disabled);
-  check("controller combo PUT", lastExtra() === JSON.stringify(["panel", { controllerCombo: false }]), lastExtra());
+  check("controller combo PUT", (await extraPut(JSON.stringify(["panel", { controllerCombo: false }]))) === JSON.stringify(["panel", { controllerCombo: false }]), lastExtra());
 
   // Telemetry.
   await page.click("#qol-telemetry");
   await page.waitForFunction(() => !document.getElementById("qol-telemetry").checked && !document.getElementById("qol-telemetry").disabled);
-  check("telemetry PUT {send:false}", lastExtra() === JSON.stringify(["telemetry", { send: false }]), lastExtra());
+  check("telemetry PUT {send:false}", (await extraPut(JSON.stringify(["telemetry", { send: false }]))) === JSON.stringify(["telemetry", { send: false }]), lastExtra());
   check("not-chosen note gone once chosen", !(await xtext()).includes("Not chosen yet"));
   await page.click("#qol-telemetry");
   await page.waitForFunction(() => document.getElementById("qol-telemetry").checked && !document.getElementById("qol-telemetry").disabled);
-  check("telemetry PUT {send:true}", lastExtra() === JSON.stringify(["telemetry", { send: true }]), lastExtra());
+  check("telemetry PUT {send:true}", (await extraPut(JSON.stringify(["telemetry", { send: true }]))) === JSON.stringify(["telemetry", { send: true }]), lastExtra());
 
   // A refused save shows the API's message and puts the control back.
   refuseExtra = true;

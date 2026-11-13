@@ -117,10 +117,12 @@
 
   /* ---- Options under the damage numbers and damage meter switches ---- */
   var OVERLAY_SIZES = [["small", "Small"], ["normal", "Normal"], ["large", "Large"], ["huge", "Huge"]];
+  // The damage numbers also have Extra small (stored as Small plus users.qol_extra bit 26; hvmods.dll 28).
+  var NUMBER_SIZES = [["extraSmall", "Extra small"]].concat(OVERLAY_SIZES);
   var SUB_OPTIONS = {
     damageNumbers: { key: "damageNumbers", path: "damage-numbers", prefix: "qol-dn-", name: "Damage numbers", fields: [
       { id: "othersHits", type: "check", label: "Other players' hits", hint: "Also shows the other hunters' hits, in grey." },
-      { id: "size", type: "select", label: "Size", options: OVERLAY_SIZES, fallback: "normal" },
+      { id: "size", type: "select", label: "Size", options: NUMBER_SIZES, fallback: "normal", hint: "Extra small needs the newest game patch; an older one shows Small." },
       { id: "multiHit", type: "select", label: "Multi-hit numbers", options: [["spread", "Spread"], ["combine", "Combine"]], fallback: "spread", hint: "Spread shows every hit as its own number; Combine adds up rapid hits on one spot." },
       { id: "weakSpotStar", type: "check", label: "Weak-spot star", optional: true, hint: "A small gold star above the number when you hit a weak spot (45 or more)." },
       { id: "showMoveId", type: "check", label: "Show move id", hint: "Shows which move hit (its attack record id, weapon and style) next to each of your damage numbers, and writes every hit to hvmods.log in the game folder so you can send us the list. For testing move names." }
@@ -139,7 +141,7 @@
   // The options under the "Chat bubbles" switch (users.qol_extra); numbers are sent as numbers.
   var CHAT = { key: "chatBubbles", path: "chat", prefix: "qol-cb-", name: "Chat bubbles", fields: [
     { id: "types", type: "select", label: "Chat types", options: [["localParty", "Local and party"], ["localOnly", "Local only"], ["allButWhispers", "All but whispers"]], fallback: "localParty", hint: "Which chat shows in bubbles. Never whispers." },
-    { id: "size", type: "select", label: "Bubble size", options: [["normal", "Normal"], ["small", "Small"], ["large", "Large"], ["huge", "Huge"]], fallback: "normal" },
+    { id: "size", type: "select", label: "Text size", options: [["normal", "Medium"], ["small", "Small"], ["large", "Large"], ["huge", "Extra large"]], fallback: "normal", hint: "Size of the bubbles' text; the bubble follows it." },
     { id: "seconds", type: "select", num: true, label: "Bubble time", options: [[6, "6 s"], [4, "4 s"], [10, "10 s"], [15, "15 s"]], fallback: 6 },
     { id: "ownLines", type: "check", label: "Your own lines", hint: "A bubble over your own hunter too." },
     { id: "linesPerHunter", type: "select", num: true, label: "Lines per hunter", options: [[3, "3"], [1, "1"], [2, "2"], [4, "4"]], fallback: 3 },
