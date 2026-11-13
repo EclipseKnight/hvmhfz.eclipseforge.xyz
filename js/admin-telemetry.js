@@ -79,6 +79,11 @@
     return v === null || v === undefined ? [] : Array.isArray(v) ? v.map(String) : String(v).split("\n").filter(Boolean);
   }
 
+  // The list sends the error count as a number; a report's detail sends the lines.
+  function errorCount(v) {
+    return typeof v === "number" ? v : lines(v).length;
+  }
+
   function character(r) {
     var who = r.charId ? "char " + r.charId : "not logged in";
     return r.username ? r.username + " (#" + r.userId + ") · " + who : who;
@@ -158,7 +163,7 @@
       row.appendChild(el("td", null, (r.edition ? r.edition + " " : "") + (r.patch === null || r.patch === undefined ? "" : r.patch)));
       row.appendChild(el("td", null, r.hvmods === null || r.hvmods === undefined ? "" : String(r.hvmods)));
       var what = r.kind === "crash" ? [r.crashAt, r.crashException].filter(Boolean).join(" ")
-        : lines(r.problems).concat(lines(r.errors).length ? [lines(r.errors).length + " errors"] : []).join(", ");
+        : lines(r.problems).concat(errorCount(r.errors) ? [errorCount(r.errors) + (errorCount(r.errors) === 1 ? " error" : " errors")] : []).join(", ");
       var cell = el("td", "diag-note-cell", what.length > 100 ? what.slice(0, 100) + "…" : what);
       if (what) cell.title = what;
       row.appendChild(cell);
