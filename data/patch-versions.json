@@ -3,6 +3,17 @@
   "current": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip",
   "patches": [
     {
+      "version": "1.23",
+      "published": "2026-11-13T05:51Z",
+      "sha256": "4444770bc593d38978782459a7d6a94e3e94d30b9b5b33be573173c3231075fd",
+      "size": 61814577,
+      "files": 105,
+      "changes": "Fixes the crash at the smithy and Tower Felyne; Sky Corridor 3rd/4th District bosses all Zenith; Hunting Road counter has a Tower menu again.",
+      "changelog": "/changelog.html#d-2026-11-13-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.23/Frontier_Patch.zip",
+      "current": true
+    },
+    {
       "version": "1.22",
       "published": "2026-11-13T01:55Z",
       "sha256": "ba4ba3d30936caff3537374101500d4f8f2e6c39fc8f504b1da53d0fd2e4f4f4",
@@ -11,7 +22,7 @@
       "changes": "Sky Corridor 3rd/4th District bosses, tower gems and skills, G10 special floor; QoL mods and overlays; most of the remaining Japanese text in English.",
       "changelog": "/changelog.html#d-2026-11-13-client-patch",
       "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.22/Frontier_Patch.zip",
-      "current": true
+      "current": false
     },
     {
       "version": "1.21",
