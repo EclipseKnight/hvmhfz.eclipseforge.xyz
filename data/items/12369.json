@@ -1,1 +1,1 @@
-{"id":12369,"name":"Barioth Claw+","drops":[{"slug":"barioth","monster":"Barioth","rank":"Elite","method":"Part Break:??","qty":1,"pct":72.0}],"quests":[],"rewards":[]}
+{"id":12369,"name":"Barioth Claw+","drops":[{"slug":"barioth","monster":"Barioth","rank":"Elite","method":"Part Break:??","qty":1,"pct":72.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["break"],"monster":151,"note":"1 quests","when":"HR100+","name":"Barioth"}]]}

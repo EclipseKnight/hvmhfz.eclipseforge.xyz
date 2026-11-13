@@ -1,1 +1,1 @@
-{"id":140,"name":"Sleep Coating","drops":[],"quests":[],"rewards":[[26179,"Archer's","HR","main target",10,10.0],[60327,"Archer's Preparation","HR","main target",10,10.0]]}
+{"id":140,"name":"Sleep Coating","drops":[],"quests":[],"rewards":[[26179,"Archer's","HR","main target",10,10.0],[60327,"Archer's Preparation","HR","main target",10,10.0]],"where":[["combining",{"mats":[[136,1],[187,1]],"qty":2}],["combining",{"mats":[[136,1],[236,1]],"qty":1}],["combining",{"mats":[[136,1],[243,1]],"qty":256}]],"offered":[26179],"unlisted":[1,0]}

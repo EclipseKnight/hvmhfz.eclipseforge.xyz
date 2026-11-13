@@ -56,6 +56,8 @@ PAGES = {
     "events": ("Events", "What is running on the server right now"),
     "road-vote": ("Hunting Road", "Vote for the next rotation"),
     "items": ("Items", "Every item and piece of equipment, and where it comes from"),
+    "sources": ("Sources", "Shops, gacha, events, the Sky Corridor and crafting: every item each gives"),
+    "source": ("Source", "Every item one shop, gacha, event or recipe table gives"),
     "database": ("Database", "Monsters, quests, items and weapons in one search"),
     "set-builder": ("Set builder", "Plan an armour set and its skills"),
     "changelog": ("Changelog", "Every server and site update, dated"),

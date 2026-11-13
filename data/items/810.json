@@ -1,1 +1,1 @@
-{"id":810,"name":"Cold 1 Deco","drops":[],"quests":[],"rewards":[[63240,"Festival Memories [Orb]","LR","main target",1,10.0]]}
+{"id":810,"name":"Cold 1 Deco","drops":[],"quests":[],"rewards":[[63240,"Festival Memories [Orb]","LR","main target",1,10.0]],"where":[["road-shop-4",{"builtin":true,"limit":1,"price":100,"qty":1}],["smithy-decorations",{"mats":[[794,1],[192,1]],"note":"list 0x44","qty":1}]],"unlisted":[1,0]}

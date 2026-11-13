@@ -1,1 +1,1 @@
-{"id":54,"name":"Chilled Meat+","drops":[{"slug":"cephalos","monster":"Cephalos","rank":"Arena","method":"Body Carves (1)","qty":1,"pct":15.0}],"quests":[],"rewards":[]}
+{"id":54,"name":"Chilled Meat+","drops":[{"slug":"cephalos","monster":"Cephalos","rank":"Arena","method":"Body Carves (1)","qty":1,"pct":15.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["carve","shiny drop"],"monster":34,"note":"6 quests","when":"practice","name":"Cephalos"}]]}

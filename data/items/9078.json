@@ -1,1 +1,1 @@
-{"id":9078,"name":"S.Rath Bloodstone","drops":[{"slug":"silver-rathalos","monster":"Silver Rathalos","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[]}
+{"id":9078,"name":"S.Rath Bloodstone","drops":[{"slug":"silver-rathalos","monster":"Silver Rathalos","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["carve"],"monster":41,"note":"3 quests","when":"G","name":"Silver Rathalos"}],["road-shop-6",{"builtin":true,"gate":"gate 6","limit":10,"price":4000,"qty":1}]]}

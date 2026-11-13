@@ -1,1 +1,1 @@
-{"id":913,"name":"Earplugs Deco","drops":[],"quests":[],"rewards":[[60435,"Jeweler's Whim","HR","main target",1,2.0]]}
+{"id":913,"name":"Earplugs Deco","drops":[],"quests":[],"rewards":[[60435,"Jeweler's Whim","HR","main target",1,2.0]],"where":[["road-shop-4",{"builtin":true,"limit":1,"price":100,"qty":1}],["smithy-decorations",{"mats":[[797,1],[600,1],[573,3]],"note":"list 0x44","qty":1}]],"unlisted":[1,0]}

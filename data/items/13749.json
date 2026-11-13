@@ -1,1 +1,1 @@
-{"id":13749,"name":"Khezu Z Top Head","drops":[{"slug":"khezu","monster":"Khezu","rank":"Zenith★4","method":"Part Break:Head[Zenith]","qty":1,"pct":100.0}],"quests":[],"rewards":[]}
+{"id":13749,"name":"Khezu Z Top Head","drops":[{"slug":"khezu","monster":"Khezu","rank":"Zenith★4","method":"Part Break:Head[Zenith]","qty":1,"pct":100.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["Zenith break"],"monster":15,"note":"10 quests","when":"Zenith","name":"Khezu"}]]}

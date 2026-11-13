@@ -1,8 +1,10 @@
 /* Item page: /item.html?id=<the game's item id>. Everything comes from static files made by
    dev/make-item-data.py: data/items/index.json (name, icon, the server's other name, how many sources) and,
    for an item with sources, data/items/<id>.json (monster drops, quests that reward it and quests that need it
-   to enter). Monster
-   icons come from data/monsters/index.json. ?name= (an exact item name) is accepted too, for old links. */
+   to enter, and from dev/make-source-data.py "where", "gather", "offered" and "unlisted": every way to get it,
+   shown first under "Where to get it", each source linked to its page /source.html?id=, named from
+   data/sources/index.json). Monster icons and the game's monster ids come from data/monsters/index.json.
+   ?name= (an exact item name) is accepted too, for old links. */
 (function () {
   "use strict";
 
@@ -133,6 +135,180 @@
 
   function cell(text, cls) { return el("td", cls || null, text); }
 
+  function num(n) { return Number(n).toLocaleString("en-US"); }
+
+  /* "Where to get it": every source of the item (data/items/<id>.json "where", "gather", "offered", "unlisted"),
+     grouped as data/sources/index.json's groups, each line linked to its source page. */
+  var WHERE_TOP = 8;
+  var GROUP_NAMES = { shop: "Shops", gacha: "Gacha", event: "Events and gifts", sky: "Sky Corridor", craft: "Crafting",
+                      exchange: "Exchanges and other rewards", monster: "Monsters", quest: "Quests" };
+  var GROUP_ORDER = ["shop", "gacha", "event", "sky", "craft", "exchange", "monster", "quest"];
+
+  /* The plain-text details of one source row: quantity, price, chance, limits and conditions. */
+  function rowFacts(r, cur) {
+    var parts = [];
+    var c = r.cur || cur || "";
+    if (r.price !== undefined) parts.push((r.qty > 1 ? "x" + r.qty + " for " : "") + num(r.price) + (c ? " " + c : ""));
+    else if (r.qty > 1) parts.push("x" + r.qty);
+    if (r.chance !== undefined) parts.push(pct(r.chance) + (r.mats || r.note && /gems/.test(r.note) ? " chance" : " a draw"));
+    if (r.when) parts.push(r.when);
+    if (r.gate) parts.push(r.gate);
+    if (r.limit) parts.push("limit " + r.limit);
+    if (r.builtin) parts.push("the game's own row");
+    if (r.note) parts.push(r.note);
+    return parts;
+  }
+
+  function itemLink(id, itemRows, qty) {
+    var row = itemRows[id];
+    var a = el("a", "src-mat");
+    a.href = "/item.html?id=" + id;
+    if (row && row[2]) {
+      var img = el("img");
+      img.src = "/assets/icons/1x/" + row[2] + ".png";
+      img.alt = "";
+      img.loading = "lazy";
+      a.appendChild(img);
+    }
+    a.appendChild(el("span", null, (row ? row[1] : "Item " + id) + (qty ? " x" + qty : "")));
+    return a;
+  }
+
+  function whereLine(entry, sources, itemRows, monsterPages) {
+    var sid = entry[0], r = entry[1], li = el("li", "where-line");
+    var head = el("span", "where-src");
+    if (sid === "monster") {
+      var page = monsterPages[r.monster];
+      var m = el(page ? "a" : "span", null, r.name);
+      if (page) m.href = page;
+      head.appendChild(m);
+      li.appendChild(head);
+      li.appendChild(el("span", "where-facts", [r.when, (r.methods || []).join(", "), r.note].filter(Boolean).join(" · ")));
+      return li;
+    }
+    var s = sources[sid] || { name: sid, cur: "" };
+    var a = el("a", null, s.name);
+    a.href = "/source.html?id=" + encodeURIComponent(sid);
+    head.appendChild(a);
+    li.appendChild(head);
+    var facts = rowFacts(r, s.cur);
+    if (facts.length) li.appendChild(el("span", "where-facts", facts.join(" · ")));
+    if ((r.mats && r.mats.length) || (r.pieces && r.pieces.length)) {
+      var from = el("span", "where-mats");
+      from.appendChild(document.createTextNode("from "));
+      (r.mats || []).forEach(function (m, i) {
+        if (i) from.appendChild(document.createTextNode(", "));
+        from.appendChild(itemLink(m[0], itemRows, m[1]));
+      });
+      (r.pieces || []).forEach(function (p, i) {
+        if (i || (r.mats && r.mats.length)) from.appendChild(document.createTextNode(", "));
+        from.appendChild(el("span", "where-piece", (p[2] || "piece " + p[1]) + " (" + p[0] + ")"));
+      });
+      li.appendChild(from);
+    }
+    return li;
+  }
+
+  function questLinks(ids, box) {
+    box.textContent = "Loading the quest names...";
+    json("/data/search/quests.json").then(function (data) {
+      var names = {};
+      (data.quests || []).forEach(function (q) { names[q[0]] = q[1]; });
+      box.textContent = "";
+      var list = el("ul", "item-quests where-quests");
+      ids.forEach(function (id) {
+        var li = el("li");
+        if (names[id]) li.appendChild(el("a", null, names[id])).href = "/quest.html?id=" + id;
+        else li.appendChild(el("span", null, "Quest " + id + " (no page yet)"));
+        li.appendChild(el("span", "item-quest-count", "#" + id));
+        list.appendChild(li);
+      });
+      box.appendChild(list);
+    }).catch(function () { box.textContent = "The quest names could not be loaded."; });
+  }
+
+  function wherePanel(detail, sources, itemRows, monsterPages) {
+    var where = (detail && detail.where) || [];
+    var offered = (detail && detail.offered) || [];
+    var gather = (detail && detail.gather) || [];
+    var unlisted = (detail && detail.unlisted) || [0, 0];
+    var groups = {};
+    where.forEach(function (e) {
+      var g = e[0] === "monster" ? "monster" : (sources[e[0]] || {}).group || "exchange";
+      (groups[g] = groups[g] || []).push(e);
+    });
+    var ways = where.length + (offered.length ? 1 : 0) + (gather.length ? 1 : 0);
+    var panel = section("Where to get it", ways ? ways + (ways === 1 ? " way" : " ways") : "");
+    panel.id = "where";
+    panel.classList.add("where-panel");
+    if (!ways) {
+      panel.appendChild(el("p", "empty-state", "No known source: no shop, quest, monster, event, gacha, craft or exchange on Hunsterverse gives this item right now."));
+      if (unlisted[0] || unlisted[1]) {
+        panel.appendChild(el("p", "note-text", "It is in " + num(unlisted[0] + unlisted[1]) + " quest files that no quest list offers, so players can't get it from them."));
+      }
+      return panel;
+    }
+    GROUP_ORDER.forEach(function (g) {
+      var rows = groups[g];
+      if (g === "quest") {
+        if (!offered.length && !gather.length) return;
+        rows = [];
+      } else if (!rows) return;
+      var block = el("div", "where-group");
+      block.appendChild(el("h3", null, GROUP_NAMES[g] || g));
+      var list = el("ul", "where-list");
+      if (g === "quest") {
+        if (offered.length) {
+          var li = el("li", "where-line");
+          var a = el("a", null, "Quest rewards");
+          a.href = "/source.html?id=quest-rewards";
+          li.appendChild(el("span", "where-src")).appendChild(a);
+          var facts = el("span", "where-facts", num(offered.length) + (offered.length === 1 ? " quest" : " quests") + " players can start · ");
+          var jump = el("a", null, "see Rewarded by");
+          jump.href = "#rewards";
+          facts.appendChild(jump);
+          li.appendChild(facts);
+          list.appendChild(li);
+        }
+        if (gather.length) {
+          var gl = el("li", "where-line");
+          var ga = el("a", null, "Gathering in quests");
+          ga.href = "/source.html?id=gathering";
+          gl.appendChild(el("span", "where-src")).appendChild(ga);
+          gl.appendChild(el("span", "where-facts", num(gather.length) + (gather.length === 1 ? " quest" : " quests") + " players can start"));
+          var fold = el("details", "where-fold");
+          fold.appendChild(el("summary", null, "Show the quests"));
+          var box = el("div");
+          fold.appendChild(box);
+          fold.addEventListener("toggle", function () { if (fold.open && !box.firstChild) questLinks(gather, box); });
+          gl.appendChild(fold);
+          list.appendChild(gl);
+        }
+      } else {
+        rows.forEach(function (e, i) {
+          var line = whereLine(e, sources, itemRows, monsterPages);
+          if (i >= WHERE_TOP) line.hidden = true;
+          list.appendChild(line);
+        });
+      }
+      block.appendChild(list);
+      if (rows.length > WHERE_TOP) {
+        var more = el("button", "ghost-btn small", "Show all " + rows.length);
+        more.type = "button";
+        more.addEventListener("click", function () {
+          Array.prototype.forEach.call(list.children, function (c) { c.hidden = false; });
+          more.remove();
+        });
+        block.appendChild(more);
+      }
+      panel.appendChild(block);
+    });
+    if (unlisted[0] || unlisted[1]) {
+      panel.appendChild(el("p", "note-text", "Also in " + num(unlisted[0] + unlisted[1]) + " quest files that no quest list offers (not counted)."));
+    }
+    return panel;
+  }
+
   function dropsPanel(drops, monsterIcons) {
     var monsters = {};
     drops.forEach(function (d) { monsters[d.slug || d.monster] = true; });
@@ -188,7 +364,9 @@
 
   /* Quests whose reward groups hold the item (data/items/<id>.json "rewards": [quest id, name, rank, when,
      qty, pct], best chance first; dev/make-item-data.py from data/quests/rewards/). */
-  function rewardsPanel(rewards) {
+  function rewardsPanel(rewards, offered) {
+    var open = {};
+    (offered || []).forEach(function (q) { open[q] = true; });
     var quests = {};
     rewards.forEach(function (r) { quests[r[0]] = true; });
     var count = Object.keys(quests).length;
@@ -206,6 +384,7 @@
         var q = el("td", "item-quest");
         q.appendChild(el("a", null, r[1])).href = "/quest.html?id=" + r[0];
         q.appendChild(el("span", "item-quest-id", " #" + r[0]));
+        if (offered && !open[r[0]]) q.appendChild(el("span", "badge src-unlisted", "not offered"));
         tr.appendChild(q);
         tr.appendChild(cell(r[2] || "-"));
         tr.appendChild(cell(rewardWhen(r[3])));
@@ -214,7 +393,9 @@
         return tr;
       }
     });
-    panel.appendChild(el("p", "note-text", "Chance of the item on one draw of that reward group. Sub-target and extra condition names are the game's group order; the quest page says more."));
+    panel.appendChild(el("p", "note-text", "Chance of the item on one draw of that reward group. Sub-target and extra condition names are the game's group order; the quest page says more." +
+      (offered ? " \"Not offered\": no quest list on Hunsterverse offers that quest file right now." : "")));
+    panel.id = "rewards";
     return panel;
   }
 
@@ -232,7 +413,7 @@
     return panel;
   }
 
-  function render(row, detail, monsterIcons) {
+  function render(row, detail, monsterIcons, sources, itemRows, monsterPages) {
     var id = row[0], name = row[1], icon = row[2], aka = row[3];
     document.title = name + " · Hunsterverse";
     if (window.HvCrumbs) window.HvCrumbs.item(name);
@@ -264,15 +445,15 @@
     var drops = (detail && detail.drops) || [];
     var quests = (detail && detail.quests) || [];
     var rewards = (detail && detail.rewards) || [];
-    if (drops.length) view.appendChild(dropsPanel(drops, monsterIcons));
-    if (rewards.length) view.appendChild(rewardsPanel(rewards));
-    if (quests.length) view.appendChild(questsPanel(quests));
-    if (!drops.length && !quests.length && !rewards.length) {
+    if (sources) view.appendChild(wherePanel(detail, sources, itemRows, monsterPages));
+    else {
       var none = section("Where to get it");
-      none.appendChild(el("p", "empty-state", "No monster drop table, quest reward or quest entry on this site names this item yet."));
-      none.appendChild(el("p", "note-text", "It may come from gathering, the shops or events, which are not mapped to items here yet."));
+      none.appendChild(el("p", "empty-state", "The list of sources could not be loaded."));
       view.appendChild(none);
     }
+    if (drops.length) view.appendChild(dropsPanel(drops, monsterIcons));
+    if (rewards.length) view.appendChild(rewardsPanel(rewards, detail && detail.offered));
+    if (quests.length) view.appendChild(questsPanel(quests));
     var more = el("p", "note-text item-more");
     more.appendChild(el("a", null, "Back to Items")).href = "/items.html?q=" + encodeURIComponent(name);
     view.appendChild(more);
@@ -288,7 +469,8 @@
 
   Promise.all([
     json("/data/items/index.json"),
-    json("/data/monsters/index.json").catch(function () { return []; })
+    json("/data/monsters/index.json").catch(function () { return []; }),
+    json("/data/sources/index.json").catch(function () { return null; })
   ]).then(function (res) {
     var rows = res[0].items || [];
     var row = rows.filter(function (r) {
@@ -298,9 +480,17 @@
       fail(wantId !== null ? "There is no item " + wantId + "." : "No item is called that.");
       return;
     }
-    var monsterIcons = {};
-    (Array.isArray(res[1]) ? res[1] : res[1].monsters || []).forEach(function (m) { if (m.icon) monsterIcons[m.slug] = m.icon; });
+    var monsterIcons = {}, monsterPages = {}, itemRows = {}, sources = null;
+    (Array.isArray(res[1]) ? res[1] : res[1].monsters || []).forEach(function (m) {
+      if (m.icon) monsterIcons[m.slug] = m.icon;
+      (m.ids || []).forEach(function (id) { if (!monsterPages[id]) monsterPages[id] = "/monster.html?m=" + encodeURIComponent(m.slug); });
+    });
+    rows.forEach(function (r) { itemRows[r[0]] = r; });
+    if (res[2]) {
+      sources = {};
+      (res[2].sources || []).forEach(function (s) { sources[s[0]] = { name: s[1], group: s[2], cur: s[3] }; });
+    }
     var detail = row[4] ? json("/data/items/" + row[0] + ".json").catch(function () { return null; }) : Promise.resolve(null);
-    return detail.then(function (d) { render(row, d, monsterIcons); });
+    return detail.then(function (d) { render(row, d, monsterIcons, sources, itemRows, monsterPages); });
   }).catch(function () { fail("The item list could not be loaded."); });
 })();

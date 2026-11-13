@@ -1,1 +1,1 @@
-{"id":13730,"name":"Espinas Z Horn","drops":[{"slug":"espinas","monster":"Espinas","rank":"Zenith★1","method":"Part Break:Horn","qty":1,"pct":100.0}],"quests":[],"rewards":[]}
+{"id":13730,"name":"Espinas Z Horn","drops":[{"slug":"espinas","monster":"Espinas","rank":"Zenith★1","method":"Part Break:Horn","qty":1,"pct":100.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["Zenith break"],"monster":80,"note":"16 quests","when":"Zenith","name":"Espinas"}]]}

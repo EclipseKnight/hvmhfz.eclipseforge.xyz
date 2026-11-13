@@ -1,1 +1,1 @@
-{"id":47,"name":"Rare Steak","drops":[{"slug":"apceros","monster":"Apceros","rank":"Arena","method":"Body Carves (2)","qty":1,"pct":30.0}],"quests":[],"rewards":[]}
+{"id":47,"name":"Rare Steak","drops":[{"slug":"apceros","monster":"Apceros","rank":"Arena","method":"Body Carves (2)","qty":1,"pct":30.0}],"quests":[],"rewards":[],"where":[["combining",{"mats":[[262,1],[344,1]],"qty":1}],["monster",{"methods":["carve","shiny drop"],"monster":25,"note":"7 quests","when":"practice","name":"Apceros"}]]}

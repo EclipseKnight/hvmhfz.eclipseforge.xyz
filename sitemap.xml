@@ -10,6 +10,7 @@
   <url><loc>https://frontier.hunsterverse.net/road-history.html</loc><priority>0.6</priority></url>
   <url><loc>https://frontier.hunsterverse.net/road-data.html</loc><priority>0.6</priority></url>
   <url><loc>https://frontier.hunsterverse.net/items.html</loc><priority>0.8</priority></url>
+  <url><loc>https://frontier.hunsterverse.net/sources.html</loc><priority>0.7</priority></url>
   <url><loc>https://frontier.hunsterverse.net/set-builder.html</loc><priority>0.7</priority></url>
   <url><loc>https://frontier.hunsterverse.net/weapons.html</loc><priority>0.7</priority></url>
   <url><loc>https://frontier.hunsterverse.net/balance.html</loc><priority>0.6</priority></url>

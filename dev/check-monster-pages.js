@@ -11,7 +11,7 @@
       and lists Iodrome with 1,000 HP. HvMonsterGame.summary(Rathian) is weak to dragon.
       Items (dev/make-item-data.py): data/items/<id>.json "rewards" holds every quest reward of the shards (quests of
       data/quests.json only), best chance first; Ioprey Fang lists quest 1065, main target, 30%; the index's sources
-      count drops, needs and rewards; a drop row from the game's tables ("game": true) never repeats a monster the
+      count drops, needs, rewards and dev/make-source-data.py's "where" and "gather"; a drop row from the game's tables ("game": true) never repeats a monster the
       community tables list for that item.
    2. Pages (when Playwright is found), desktop 1280 and phone 375: Rathian shows Key stats, "from the game's
       data", the five tabs and rank chips; the hitzone table is heat-coloured with the best cell of each column
@@ -132,13 +132,13 @@ itemIndex.forEach(function (row) {
   const r = d.rewards || [];
   gotRewards += r.length;
   r.forEach(function (x, i) { if (i && r[i - 1][5] < x[5]) badOrder++; if (!questIds.has(x[0])) badQuest++; });
-  if (row[4] !== d.drops.length + d.quests.length + r.length) badCount++;
+  if (row[4] !== d.drops.length + d.quests.length + r.length + (d.where || []).length + (d.gather || []).length) badCount++;
   const community = new Set(d.drops.filter(function (x) { return !x.game; }).map(function (x) { return x.slug; }));
   d.drops.forEach(function (x) { if (x.game && x.slug && community.has(x.slug)) repeated++; });
 });
 check(gotRewards === wantRewards, "item files hold " + gotRewards + " quest reward rows, the shards " + wantRewards);
 check(badOrder === 0 && badQuest === 0, badOrder + " reward rows out of chance order, " + badQuest + " for a quest not in data/quests.json");
-check(badCount === 0, badCount + " index rows whose sources count is not drops + needs + rewards");
+check(badCount === 0, badCount + " index rows whose sources count is not drops + needs + rewards + where + gather");
 check(repeated === 0, repeated + " game drop rows repeat a monster the community tables list for the item");
 const fang = readJson("data/items/357.json").rewards;
 check(fang.some(function (x) { return x[0] === 1065 && x[3] === "main target" && x[5] === 30; }), "Ioprey Fang lists quest 1065, main target, 30%");
@@ -278,7 +278,7 @@ async function pages() {
       const none = itemIndex.find(function (r) { return !r[4]; });
       await pg.goto(base + "/item.html?id=" + none[0], { waitUntil: "load" });
       await pg.waitForSelector("#item-view .panel");
-      check(/No monster drop table, quest reward or quest entry/.test(await pg.textContent("#item-view")), V + ": an item with no source says so");
+      check(/No known source/.test(await pg.textContent("#item-view")), V + ": an item with no source says so");
       check(errors.length === 0, V + ": no script errors: " + errors.join(" | "));
       await ctx.close();
     }

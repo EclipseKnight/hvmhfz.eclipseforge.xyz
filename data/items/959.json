@@ -1,1 +1,1 @@
-{"id":959,"name":"Giaprey Hide+","drops":[{"slug":"giaprey","monster":"Giaprey","rank":"HR","method":"Body Carves (1)","qty":1,"pct":52.0}],"quests":[],"rewards":[]}
+{"id":959,"name":"Giaprey Hide+","drops":[{"slug":"giaprey","monster":"Giaprey","rank":"HR","method":"Body Carves (1)","qty":1,"pct":52.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["carve","shiny drop"],"monster":35,"note":"101 quests","when":"HR","name":"Giaprey"}]]}

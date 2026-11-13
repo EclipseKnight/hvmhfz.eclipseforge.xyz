@@ -1,1 +1,1 @@
-{"id":9610,"name":"Red Alluring Hide","drops":[{"slug":"red-khezu","monster":"Red Khezu","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[]}
+{"id":9610,"name":"Red Alluring Hide","drops":[{"slug":"red-khezu","monster":"Red Khezu","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["carve"],"monster":45,"note":"1 quests","when":"G","name":"Red Khezu"}],["road-shop-6",{"builtin":true,"gate":"gate 6","limit":10,"price":4000,"qty":1}]]}

@@ -1,1 +1,1 @@
-{"id":13931,"name":"Blangonga Z Top Arm","drops":[{"slug":"blangonga","monster":"Blangonga","rank":"Zenith★4","method":"Part Break:Arm[Zenith]","qty":1,"pct":100.0}],"quests":[],"rewards":[]}
+{"id":13931,"name":"Blangonga Z Top Arm","drops":[{"slug":"blangonga","monster":"Blangonga","rank":"Zenith★4","method":"Part Break:Arm[Zenith]","qty":1,"pct":100.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["Zenith break"],"monster":51,"note":"9 quests","when":"Zenith","name":"Blangonga"}]]}

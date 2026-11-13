@@ -1,1 +1,1 @@
-{"id":848,"name":"Cooking Deco","drops":[],"quests":[],"rewards":[[60528,"Jeweler's Whim [Anniversary]","HR","main target",1,9.0]]}
+{"id":848,"name":"Cooking Deco","drops":[],"quests":[],"rewards":[[60528,"Jeweler's Whim [Anniversary]","HR","main target",1,9.0]],"where":[["road-shop-4",{"builtin":true,"limit":1,"price":100,"qty":1}],["smithy-decorations",{"mats":[[794,1],[48,1],[50,1],[47,1]],"note":"list 0x44","qty":1}]],"unlisted":[1,0]}

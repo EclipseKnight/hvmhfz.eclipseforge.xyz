@@ -1,1 +1,1 @@
-{"id":696,"name":"Competition Ticket","drops":[],"quests":[],"rewards":[[25001,"Slay Your Opponent's Monster!","LR","every clear",1,1.0]]}
+{"id":696,"name":"Competition Ticket","drops":[],"quests":[],"rewards":[[25001,"Slay Your Opponent's Monster!","LR","every clear",1,1.0]],"where":[["speedrun-cup",{"qty":1,"when":"every entrant"}],["speedrun-cup",{"qty":2,"when":"rank 10 or better"}],["vs-bracket",{"qty":1,"when":"every entrant"}],["vs-bracket",{"qty":2,"when":"place 4 or better"}]],"offered":[25001]}

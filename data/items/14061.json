@@ -1,1 +1,1 @@
-{"id":14061,"name":"Keoaru Large Claw","drops":[{"slug":"keoaruboru","monster":"Keoaruboru","rank":"GR","method":"Part Break:??","qty":1,"pct":80.0}],"quests":[],"rewards":[]}
+{"id":14061,"name":"Keoaru Large Claw","drops":[{"slug":"keoaruboru","monster":"Keoaruboru","rank":"GR","method":"Part Break:??","qty":1,"pct":80.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["break"],"monster":160,"note":"1 quests","when":"G","name":"Keoaruboru"}]],"unlisted":[1,0]}

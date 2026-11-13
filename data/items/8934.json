@@ -1,1 +1,1 @@
-{"id":8934,"name":"Gorgeous Koi","drops":[{"slug":"uruki","monster":"Uruki","rank":"GR","method":"Shiny Drops","qty":1,"pct":23.0}],"quests":[],"rewards":[[54481,"Final Weapon Tuning Mission","G","main target",1,6.0]]}
+{"id":8934,"name":"Gorgeous Koi","drops":[{"slug":"uruki","monster":"Uruki","rank":"GR","method":"Shiny Drops","qty":1,"pct":23.0}],"quests":[],"rewards":[[54481,"Final Weapon Tuning Mission","G","main target",1,6.0]],"where":[["monster",{"methods":["shiny drop"],"monster":124,"note":"6 quests","when":"G","name":"Uruki"}]],"unlisted":[1,0]}

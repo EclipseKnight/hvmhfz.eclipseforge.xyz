@@ -17,14 +17,17 @@ Sources (all in this repo except the optional server names):
 
 Writes:
   - data/items/index.json   {"items": [[id, name, icon, aka, sources], ...]} sorted by id; icon/aka "" when none,
-                            sources = how many drop rows, quest needs and quest rewards mention it;
+                            sources = how many drop rows, quest needs, quest rewards, other sources ("where") and
+                            gathering quests mention it;
   - data/items/<id>.json    one file per item with sources: {"id", "name", "drops": [...], "quests": [...],
                             "rewards": [...]}, drops as {"slug", "monster", "rank", "method", "qty", "pct"}
                             (plus "game": true for a row from the game's drop tables; "slug" null when the
                             monster has no page), quests as {"id", "name", "count"}, rewards as
                             [quest id, quest name, rank, when, qty, pct] sorted by chance, best first: one row per
                             quest and reward group, pct the chance summed over the group's lines for this item
-                            and qty a number or "min-max" when those lines give different amounts.
+                            and qty a number or "min-max" when those lines give different amounts. The keys
+                            "where", "gather", "offered" and "unlisted" come from dev/make-source-data.py and are
+                            kept as they are (run that after this when the sources change).
 
 Usage: python3 dev/make-item-data.py            fetches the server names (about 125 requests, throttled)
        python3 dev/make-item-data.py --offline  keeps the `aka` names already in data/items/index.json
@@ -40,6 +43,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 OUT = DATA / "items"
 API = "https://api.hvmhfz.eclipseforge.xyz/api/public/catalog/items"
+SOURCE_KEYS = ("where", "gather", "offered", "unlisted")  # written by dev/make-source-data.py
 
 
 def load(path):
@@ -142,18 +146,25 @@ def main():
                         low if low == high else f"{low}-{high}", round(sum(g[1] for g in got), 2)])
 
     OUT.mkdir(exist_ok=True)
+    kept = {}  # dev/make-source-data.py's keys (where to get it), kept as they are
     for old in OUT.glob("*.json"):
         if old.name != "index.json":
+            prev = json.loads(old.read_text(encoding="utf-8"))
+            keep = {k: prev[k] for k in SOURCE_KEYS if k in prev}
+            if keep:
+                kept[prev["id"]] = keep
             old.unlink()
     rows = []
     for iid in sorted(names):
         d = sorted(drops.get(iid, []), key=lambda x: (x["monster"], x["rank"], x["method"]))
         q = sorted(quests.get(iid, []), key=lambda x: x["id"])
         r = sorted(rewards.get(iid, []), key=lambda x: (-x[5], x[0], x[3]))
-        rows.append([iid, names[iid], icons.get(iid, ""), aka.get(iid, ""), len(d) + len(q) + len(r)])
-        if d or q or r:
+        keep = kept.get(iid, {})
+        rows.append([iid, names[iid], icons.get(iid, ""), aka.get(iid, ""),
+                     len(d) + len(q) + len(r) + len(keep.get("where", [])) + len(keep.get("gather", []))])
+        if d or q or r or keep:
             (OUT / f"{iid}.json").write_text(json.dumps(
-                {"id": iid, "name": names[iid], "drops": d, "quests": q, "rewards": r},
+                dict({"id": iid, "name": names[iid], "drops": d, "quests": q, "rewards": r}, **keep),
                 ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (OUT / "index.json").write_text(json.dumps({"items": rows}, ensure_ascii=False, separators=(",", ":")),
                                     encoding="utf-8")

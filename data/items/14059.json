@@ -1,1 +1,1 @@
-{"id":14059,"name":"Keoaru Super Tail","drops":[{"slug":"keoaruboru","monster":"Keoaruboru","rank":"GR","method":"Tail Carve (1)","qty":1,"pct":80.0}],"quests":[],"rewards":[]}
+{"id":14059,"name":"Keoaru Super Tail","drops":[{"slug":"keoaruboru","monster":"Keoaruboru","rank":"GR","method":"Tail Carve (1)","qty":1,"pct":80.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["tail carve"],"monster":160,"note":"1 quests","when":"G","name":"Keoaruboru"}]],"unlisted":[1,0]}

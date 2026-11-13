@@ -1,1 +1,1 @@
-{"id":9599,"name":"W.Espi Dense Shell","drops":[{"slug":"white-espinas","monster":"White Espinas","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[]}
+{"id":9599,"name":"W.Espi Dense Shell","drops":[{"slug":"white-espinas","monster":"White Espinas","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["carve"],"monster":90,"note":"4 quests","when":"G","name":"White Espinas"}],["road-shop-6",{"builtin":true,"gate":"gate 6","limit":10,"price":4000,"qty":1}]]}

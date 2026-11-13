@@ -1,1 +1,1 @@
-{"id":8161,"name":"Baru Poison Bag","drops":[{"slug":"baruragaru","monster":"Baruragaru","rank":"GR","method":"Part Break:Sucking Ioprey","qty":1,"pct":100.0}],"quests":[],"rewards":[]}
+{"id":8161,"name":"Baru Poison Bag","drops":[{"slug":"baruragaru","monster":"Baruragaru","rank":"GR","method":"Part Break:Sucking Ioprey","qty":1,"pct":100.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["break"],"monster":121,"note":"16 quests","when":"G","name":"Baruragaru"}]]}

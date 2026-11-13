@@ -13,14 +13,15 @@ The pages' "Copy link" button (js/share.js) copies these addresses.
 
     s/monster/<slug>.html     every monster of data/monsters/index.json (its own card)
     s/quest/<id>.html         every quest of data/quests.json (the card of its first monster, else quest.png)
-    s/item/<id>.html          every item with sources (data/items/<id>.json; the others have no item data)
+    s/item/<id>.html          every item with sources (data/items/<id>.json, including dev/make-source-data.py's
+                              "where" and "gather"; the others have no item data)
     s/weapon/<type>.html      every weapon type; ?w=<id> is passed on, so /s/weapon/lance.html?w=812
                               previews as the Lance list and opens weapon 812 (one page per weapon would be
                               16,000 files)
     s/changelog/<date>.html   every day on changelog.html; a #d-<date>-<topic> anchor is passed on
 
 X reads the og: tags when the twitter: ones are missing, so only twitter:card is repeated.
-About 11,800 files of about 1.5 KB (mostly quests and items). They are noindex: search engines keep the
+About 20,100 files of about 1.5 KB (mostly quests and items). They are noindex: search engines keep the
 real pages (sitemap.xml). dev/check-embeds.py checks them.
 """
 import html
@@ -130,6 +131,16 @@ def quests(cards):
         yield f"quest/{qid}.html", page(f"quest/{qid}.html", name, " · ".join(parts) + ".", f"/quest.html?id={qid}", image)
 
 
+def source_names():
+    path = ROOT / "data" / "sources" / "index.json"
+    if not path.exists():
+        return {}
+    return {r[0]: r[1] for r in json.loads(path.read_text())["sources"]}
+
+
+SOURCE_NAMES = source_names()
+
+
 def items():
     for path in sorted((ROOT / "data" / "items").glob("*.json"), key=lambda p: p.stem):
         if not path.stem.isdigit():
@@ -149,6 +160,16 @@ def items():
         quest_list = item.get("quests") or []
         if quest_list:
             bits.append(f"needed to enter {len(quest_list):,} quest{'s' if len(quest_list) != 1 else ''}")
+        sids = []
+        for sid, _row in item.get("where") or []:
+            if sid != "monster" and sid not in sids:
+                sids.append(sid)
+        if sids:  # dev/make-source-data.py: shops, gacha, events, crafting...
+            more = len(sids) - 1
+            bits.insert(0, f"from {SOURCE_NAMES.get(sids[0], sids[0])}" +
+                        (f" and {more} more source{'s' if more != 1 else ''}" if more > 0 else ""))
+        if item.get("gather"):
+            bits.append(f"gathered in {len(item['gather']):,} quest{'s' if len(item['gather']) != 1 else ''}")
         rewarded = len({r[0] for r in item.get("rewards") or []})
         if rewarded:
             bits.append(f"a reward of {rewarded:,} quest{'s' if rewarded != 1 else ''}")

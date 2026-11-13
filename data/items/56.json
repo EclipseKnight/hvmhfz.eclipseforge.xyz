@@ -1,1 +1,1 @@
-{"id":56,"name":"Antidote Meat+","drops":[{"slug":"conga","monster":"Conga","rank":"Arena","method":"Body Carves (1)","qty":1,"pct":50.0}],"quests":[],"rewards":[]}
+{"id":56,"name":"Antidote Meat+","drops":[{"slug":"conga","monster":"Conga","rank":"Arena","method":"Body Carves (1)","qty":1,"pct":50.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["carve","shiny drop"],"monster":62,"note":"6 quests","when":"practice","name":"Conga"}]]}

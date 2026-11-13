@@ -1,1 +1,1 @@
-{"id":14261,"name":"Giaorugu Z Tail","drops":[{"slug":"giaorugu","monster":"Giaorugu","rank":"Zenith★1","method":"Part Break:Tail","qty":1,"pct":100.0}],"quests":[],"rewards":[]}
+{"id":14261,"name":"Giaorugu Z Tail","drops":[{"slug":"giaorugu","monster":"Giaorugu","rank":"Zenith★1","method":"Part Break:Tail","qty":1,"pct":100.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["Zenith break"],"monster":112,"note":"10 quests","when":"Zenith","name":"Giaorugu"}]]}

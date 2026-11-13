@@ -1,1 +1,1 @@
-{"id":9113,"name":"Small Flowers","drops":[{"slug":"uruki","monster":"Uruki","rank":"Elite","method":"Body Carves (1)","qty":1,"pct":20.0}],"quests":[],"rewards":[]}
+{"id":9113,"name":"Small Flowers","drops":[{"slug":"uruki","monster":"Uruki","rank":"Elite","method":"Body Carves (1)","qty":1,"pct":20.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["shiny drop"],"monster":124,"note":"2 quests","when":"LR","name":"Uruki"}],["monster",{"methods":["shiny drop"],"monster":124,"note":"8 quests","when":"HR100+","name":"Uruki"}]]}

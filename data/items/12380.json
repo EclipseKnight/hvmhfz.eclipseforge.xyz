@@ -1,1 +1,1 @@
-{"id":12380,"name":"W.Hypnoc Tru Bezoar","drops":[{"slug":"silver-hypnocatrice","monster":"Silver Hypnocatrice","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[]}
+{"id":12380,"name":"W.Hypnoc Tru Bezoar","drops":[{"slug":"silver-hypnocatrice","monster":"Silver Hypnocatrice","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[],"where":[["road-shop-6",{"builtin":true,"gate":"gate 6","limit":10,"price":4000,"qty":1}]]}

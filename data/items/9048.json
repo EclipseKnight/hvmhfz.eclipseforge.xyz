@@ -1,1 +1,1 @@
-{"id":9048,"name":"Foro Nectar","drops":[{"slug":"forokururu","monster":"Forokururu","rank":"Elite","method":"Shiny Drops","qty":1,"pct":100.0}],"quests":[],"rewards":[]}
+{"id":9048,"name":"Foro Nectar","drops":[{"slug":"forokururu","monster":"Forokururu","rank":"Elite","method":"Shiny Drops","qty":1,"pct":100.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["shiny drop"],"monster":125,"note":"3 quests","when":"HR100+","name":"Forokururu"}]]}

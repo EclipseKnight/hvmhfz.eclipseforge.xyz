@@ -1,1 +1,1 @@
-{"id":14724,"name":"Amatsu Storm Tail","drops":[{"slug":"amatsu","monster":"Amatsu","rank":"GR","method":"Tail Carve (1)","qty":1,"pct":75.0}],"quests":[],"rewards":[]}
+{"id":14724,"name":"Amatsu Storm Tail","drops":[{"slug":"amatsu","monster":"Amatsu","rank":"GR","method":"Tail Carve (1)","qty":1,"pct":75.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["tail carve"],"monster":165,"note":"1 quests","when":"G","name":"Amatsu"}]]}

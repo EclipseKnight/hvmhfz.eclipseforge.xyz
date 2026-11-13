@@ -1,1 +1,1 @@
-{"id":8159,"name":"Baru Blood Bag","drops":[{"slug":"baruragaru","monster":"Baruragaru","rank":"GR","method":"Part Break:Sucking Velociprey","qty":1,"pct":100.0}],"quests":[],"rewards":[]}
+{"id":8159,"name":"Baru Blood Bag","drops":[{"slug":"baruragaru","monster":"Baruragaru","rank":"GR","method":"Part Break:Sucking Velociprey","qty":1,"pct":100.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["break"],"monster":121,"note":"16 quests","when":"G","name":"Baruragaru"}]]}

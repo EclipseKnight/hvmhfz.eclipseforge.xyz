@@ -1,1 +1,1 @@
-{"id":15394,"name":"Boga Z Top Arm","drops":[{"slug":"bogabadorumu","monster":"Bogabadorumu","rank":"Zenith★4","method":"Part Break:Both Arms","qty":1,"pct":100.0}],"quests":[],"rewards":[]}
+{"id":15394,"name":"Boga Z Top Arm","drops":[{"slug":"bogabadorumu","monster":"Bogabadorumu","rank":"Zenith★4","method":"Part Break:Both Arms","qty":1,"pct":100.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["Zenith break"],"monster":170,"note":"6 quests","when":"Zenith","name":"Bogabadorumu"}]]}

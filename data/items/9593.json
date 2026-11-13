@@ -1,1 +1,1 @@
-{"id":9593,"name":"P.Gyp Lightcrystal","drops":[{"slug":"purple-gypceros","monster":"Purple Gypceros","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[]}
+{"id":9593,"name":"P.Gyp Lightcrystal","drops":[{"slug":"purple-gypceros","monster":"Purple Gypceros","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["carve"],"monster":39,"note":"1 quests","when":"G","name":"Purple Gypceros"}],["road-shop-6",{"builtin":true,"gate":"gate 6","limit":10,"price":4000,"qty":1}]]}

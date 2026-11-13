@@ -1,1 +1,1 @@
-{"id":1490,"name":"Stone G","drops":[{"slug":"espinas","monster":"Espinas","rank":"Arena","method":"Shiny drops","qty":1,"pct":10,"game":true}],"quests":[],"rewards":[]}
+{"id":1490,"name":"Stone G","drops":[{"slug":"espinas","monster":"Espinas","rank":"Arena","method":"Shiny drops","qty":1,"pct":10,"game":true}],"quests":[],"rewards":[],"where":[["monster",{"methods":["shiny drop"],"monster":80,"note":"2 quests","when":"practice","name":"Espinas"}]]}

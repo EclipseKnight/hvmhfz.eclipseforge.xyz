@@ -1,1 +1,1 @@
-{"id":15475,"name":"Gravios Z Top Body","drops":[{"slug":"gravios","monster":"Gravios","rank":"Zenith★4","method":"Part Break:Belly","qty":1,"pct":100.0}],"quests":[],"rewards":[]}
+{"id":15475,"name":"Gravios Z Top Body","drops":[{"slug":"gravios","monster":"Gravios","rank":"Zenith★4","method":"Part Break:Belly","qty":1,"pct":100.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["Zenith break"],"monster":17,"note":"5 quests","when":"Zenith","name":"Gravios"}]]}

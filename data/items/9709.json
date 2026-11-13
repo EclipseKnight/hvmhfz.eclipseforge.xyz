@@ -1,1 +1,1 @@
-{"id":9709,"name":"Cat Eye Ore [Red]","drops":[],"quests":[],"rewards":[[55221,"Photo Contest! G Strike Cuff SA6","G","main target",1,5.0],[55292,"Photo Contest! G Flash Cuff SA","G","main target",1,5.0]]}
+{"id":9709,"name":"Cat Eye Ore [Red]","drops":[],"quests":[],"rewards":[[55221,"Photo Contest! G Strike Cuff SA6","G","main target",1,5.0],[55292,"Photo Contest! G Flash Cuff SA","G","main target",1,5.0]],"where":[["diva-coin-shop",{"limit":99,"price":2,"qty":1}],["diva-list-2",{"qty":1,"when":"step 48"}],["guild-treasure-2",{}]],"unlisted":[2,0]}

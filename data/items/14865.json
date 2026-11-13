@@ -1,1 +1,1 @@
-{"id":14865,"name":"Torid Z Wing","drops":[{"slug":"toridcless","monster":"Toridcless","rank":"Zenith★1","method":"Part Break:Wing","qty":1,"pct":100.0}],"quests":[],"rewards":[]}
+{"id":14865,"name":"Torid Z Wing","drops":[{"slug":"toridcless","monster":"Toridcless","rank":"Zenith★1","method":"Part Break:Wing","qty":1,"pct":100.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["Zenith break"],"monster":141,"note":"10 quests","when":"Zenith","name":"Toridcless"}]]}

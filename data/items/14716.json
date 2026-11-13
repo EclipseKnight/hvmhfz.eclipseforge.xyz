@@ -1,1 +1,1 @@
-{"id":14716,"name":"Amatsu Tail","drops":[{"slug":"amatsu","monster":"Amatsu","rank":"Elite","method":"Tail Carve (1)","qty":1,"pct":75.0}],"quests":[],"rewards":[]}
+{"id":14716,"name":"Amatsu Tail","drops":[{"slug":"amatsu","monster":"Amatsu","rank":"Elite","method":"Tail Carve (1)","qty":1,"pct":75.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["tail carve"],"monster":165,"note":"1 quests","when":"HR100+","name":"Amatsu"}]]}

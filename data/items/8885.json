@@ -1,1 +1,1 @@
-{"id":8885,"name":"Dora Murder Scale","drops":[{"slug":"doragyurosu","monster":"Doragyurosu","rank":"GR","method":"Shiny drops","qty":1,"pct":15,"game":true}],"quests":[],"rewards":[]}
+{"id":8885,"name":"Dora Murder Scale","drops":[{"slug":"doragyurosu","monster":"Doragyurosu","rank":"GR","method":"Shiny drops","qty":1,"pct":15,"game":true}],"quests":[],"rewards":[],"where":[["monster",{"methods":["shiny drop"],"monster":95,"note":"6 quests","when":"G","name":"Doragyurosu"}]]}

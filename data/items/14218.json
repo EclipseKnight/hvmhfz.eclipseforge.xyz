@@ -1,1 +1,1 @@
-{"id":14218,"name":"S.Magala Horn","drops":[{"slug":"shagaru-magala","monster":"Shagaru Magala","rank":"HR · Arena · Elite","method":"Break (part flag 1)","qty":1,"pct":100,"game":true}],"quests":[],"rewards":[]}
+{"id":14218,"name":"S.Magala Horn","drops":[{"slug":"shagaru-magala","monster":"Shagaru Magala","rank":"HR · Arena · Elite","method":"Break (part flag 1)","qty":1,"pct":100,"game":true}],"quests":[],"rewards":[],"where":[["monster",{"methods":["break"],"monster":164,"note":"2 quests","when":"HR100+","name":"Shagaru Magala"}]]}

@@ -3,10 +3,10 @@
    counts. The same engine is window.HvSearch, which the Database page's search box (js/database.js) uses:
      HvSearch.load(kind)            -> Promise of true (loaded) or false (could not be loaded)
      HvSearch.find(kind, q, limit)  -> {total, rows: [{title, sub, href}], more: list page href or null}
-   kinds in HvSearch.KINDS: monsters, quests, items, weapons. A query matches a row when every word of it is in
+   kinds in HvSearch.KINDS: monsters, quests, items, weapons, sources. A query matches a row when every word of it is in
    the row's name (or other name, monsters, category); rows whose name starts with the query come first.
    Indexes: data/monsters/index.json, data/items/index.json, data/search/quests.json and data/search/weapons.json
-   (dev/make-search-index.py). */
+   (dev/make-search-index.py), data/sources/index.json (dev/make-source-data.py). */
 (function () {
   "use strict";
 
@@ -74,9 +74,22 @@
         });
       },
       more: null
+    },
+    sources: {
+      label: "Sources", url: "/data/sources/index.json", min: 2,
+      rows: function (data) {
+        var groups = {};
+        (data.groups || []).forEach(function (g) { groups[g[0]] = g[1]; });
+        return (data.sources || []).map(function (s) {
+          return { name: s[1], extra: (groups[s[2]] || "") + " " + (s[3] || ""), title: s[1],
+                   sub: (groups[s[2]] || "Source") + " · " + s[4] + (s[4] === 1 ? " item" : " items"),
+                   href: "/source.html?id=" + encodeURIComponent(s[0]) };
+        });
+      },
+      more: function (q) { return "/sources.html?q=" + encodeURIComponent(q); }
     }
   };
-  var ORDER = ["monsters", "quests", "items", "weapons"];
+  var ORDER = ["monsters", "quests", "items", "weapons", "sources"];
   var cache = {};
   var monsterIds = {}; // the server's monster id -> its page, from the monster index
 

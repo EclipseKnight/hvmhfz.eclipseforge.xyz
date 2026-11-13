@@ -1,1 +1,1 @@
-{"id":8119,"name":"C.Drome Shiny Scl","drops":[{"slug":"cephadrome","monster":"Cephadrome","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[]}
+{"id":8119,"name":"C.Drome Shiny Scl","drops":[{"slug":"cephadrome","monster":"Cephadrome","rank":"GR","method":"Body Carves (3)","qty":1,"pct":1.0}],"quests":[],"rewards":[],"where":[["monster",{"methods":["carve"],"monster":8,"note":"2 quests","when":"G","name":"Cephadrome"}],["road-shop-6",{"builtin":true,"gate":"gate 6","limit":10,"price":4000,"qty":1}]]}
