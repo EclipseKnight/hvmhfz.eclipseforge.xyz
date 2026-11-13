@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>What the game's live diagnostics sends · Hunsterverse</title>
+<meta name="description" content="Everything the game&#x27;s live crash and usage reporting sends to Hunsterverse: when, every field, examples, what is never sent, who sees it, how long it is kept and how to turn it off." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Hunsterverse" />
+<meta property="og:title" content="What the game's live diagnostics sends · Hunsterverse" />
+<meta property="og:description" content="Everything the game&#x27;s live crash and usage reporting sends to Hunsterverse: when, every field, examples, what is never sent, who sees it, how long it is kept and how to turn it off." />
+<meta property="og:url" content="https://frontier.hunsterverse.net/diagnostics-data.html" />
+<meta property="og:image" content="https://frontier.hunsterverse.net/assets/og/hunsterverse.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="What the game's live diagnostics sends · Hunsterverse" />
+<meta name="twitter:description" content="Everything the game&#x27;s live crash and usage reporting sends to Hunsterverse: when, every field, examples, what is never sent, who sees it, how long it is kept and how to turn it off." />
+<meta name="twitter:image" content="https://frontier.hunsterverse.net/assets/og/hunsterverse.png" />
+<meta name="theme-color" content="#150e09" />
+<link rel="icon" href="/assets/favicon.png?v=2" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
+<link rel="stylesheet" href="/css/styles.css?v=19" />
+<script src="/js/nav.js" defer></script>
+<script src="/js/background.js" defer></script>
+<script src="/js/consent.js" defer></script>
+</head>
+<body class="guide privacy diagnostics-data">
+    <!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <div class="nav-status" data-state="loading">
+          <button type="button" class="nav-status-toggle" aria-expanded="false" aria-controls="nav-status-panel">
+            <span class="nav-status-dot" aria-hidden="true"></span><span class="nav-status-label">Server</span>
+          </button>
+          <div class="nav-status-panel" id="nav-status-panel" role="region" aria-label="Server status and how to connect" hidden>
+            <p class="nav-status-head"><span class="nav-status-dot" aria-hidden="true"></span><strong class="nav-status-title">Checking the server</strong></p>
+            <p class="nav-status-sub">Hunters online and which ports answer, checked every minute.</p>
+            <ul class="nav-status-ports"></ul>
+            <h3 class="nav-status-h">Connect in the launcher</h3>
+            <table class="nav-status-connect">
+              <tbody>
+                <tr><th scope="row">Host</th><td><code data-connect="host">129.213.54.221</code></td><td><button type="button" class="nav-copy" data-nav-copy="host">Copy</button></td></tr>
+                <tr><th scope="row">Launcher port</th><td><code data-connect="launcherPort">8080</code></td><td><button type="button" class="nav-copy" data-nav-copy="launcherPort">Copy</button></td></tr>
+                <tr><th scope="row">Game port</th><td><code data-connect="gamePort">53310</code></td><td><button type="button" class="nav-copy" data-nav-copy="gamePort">Copy</button></td></tr>
+                <tr><th scope="row">Server mode</th><td><code data-connect="mode">API</code></td><td></td></tr>
+                <tr><th scope="row">Version</th><td><code data-connect="version">ZZ</code></td><td></td></tr>
+              </tbody>
+            </table>
+            <p class="nav-status-note">API mode will not log in? Use launcher port <code data-connect="signPort">53312</code> with mode <code data-connect="fallbackMode">SignV1</code>.</p>
+            <p class="nav-status-links"><a href="/play.html">Setup guide</a><a href="/worlds.html">Worlds</a><a href="https://discord.gg/NQrvRdRwU8">Discord</a></p>
+          </div>
+        </div>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/play.html">Play</a>
+              <a class="navlink" href="/guide-frontier.html">Frontier guide</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/database.html">Search everything</a>
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/items.html">Items</a>
+              <a class="navlink" href="/sources.html">Sources</a>
+              <a class="navlink" href="/weapons.html">Weapons</a>
+              <a class="navlink" href="/balance.html">Balance changes</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-tools">Tools</button>
+            <div class="nav-menu" id="nav-tools">
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+              <a class="navlink" href="/quest-editor.html">Quest builder</a>
+              <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-road">Hunting Road</button>
+            <div class="nav-menu" id="nav-road">
+              <a class="navlink" href="/road-vote.html">Rotation and vote</a>
+              <a class="navlink" href="/road.html">Road builder</a>
+              <a class="navlink" href="/road-history.html">Past winners</a>
+              <a class="navlink" href="/road-data.html">Road data</a>
+              <a class="navlink" href="/guide-roads.html">Roads in game</a>
+              <a class="navlink" href="/sky-corridor.html">Sky Corridor</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="https://discord.gg/NQrvRdRwU8">Discord</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/tournaments.html">Tournaments</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/report.html">Report a problem</a>
+              <a class="navlink" href="/diagnostics-data.html" aria-current="page">Live diagnostics data</a>
+            </div>
+          </div>
+          <a class="navlink nav-cta nav-account" href="/account.html">Sign in</a>
+        </nav>
+      </div>
+    </header>
+    <!-- /site-shell:header -->
+
+<main id="content" class="sheet">
+<!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
+<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Server</li><li aria-current="page">Live diagnostics data</li></ol></nav>
+<!-- /site-shell:crumbs -->
+<h1>What the game's live diagnostics sends</h1>
+<p class="lead">Everything the game's crash and usage reporting does, in plain words: when it sends, every field, what is never sent, who can see it, how long it is kept, and how to turn it off.</p>
+<p class="meta">Last changed 13 November 2026. The short version is in <a href="/privacy.html#game-data">Privacy</a>.</p>
+
+<div class="toc">
+<strong>Contents</strong>
+<ol>
+<li><a href="#summary">In short</a></li>
+<li><a href="#when">When it sends</a></li>
+<li><a href="#fields">Every field</a></li>
+<li><a href="#example">Two example reports</a></li>
+<li><a href="#never">What is never sent</a></li>
+<li><a href="#where">Where it goes</a></li>
+<li><a href="#who">Who can see it</a></li>
+<li><a href="#kept">How long it is kept</a></li>
+<li><a href="#use">What we use it for</a></li>
+<li><a href="#local">Files on your PC</a></li>
+<li><a href="#off">How to turn it off</a></li>
+<li><a href="#yours">See and delete your own reports</a></li>
+<li><a href="#changes">Changes to this page</a></li>
+</ol>
+</div>
+
+<h2 id="summary">In short</h2>
+<p>With the new client patch (hvmods.dll 24 or later), the game sends two kinds of report to Hunsterverse: a small <b>health report</b> every few minutes (frame rate, where you are, errors the game noticed) and, after a crash, a <b>crash report</b>. We use them to find and fix bugs in the patch, the mods and the server.</p>
+<p><b>It is on by default, and you can turn it off</b> at any time (see <a href="#off">How to turn it off</a>). Every line a report can hold is listed in <a href="#fields">Every field</a>. A test on our side fails when the game sends a line this page does not list.</p>
+<p>In the owner's words: "We aren't stealing your data, we just need to know what your client is doing in order to identify issues."</p>
+
+<h2 id="when">When it sends</h2>
+<ul>
+<li><b>Health report:</b> the first one a minute after you log in (5 minutes after the game starts if you never log in), then every 5 minutes. A new error sends one sooner, but at most once a minute. A health report is about 1 KB.</li>
+<li><b>Crash report:</b> when the game crashes, it writes the crash file <code>hvsend-crash.txt</code> on your PC. It is sent at the next start of the game, because a game that is crashing cannot be trusted to send. The file is emptied once the server has taken it. A crash report is up to 64 KB.</li>
+<li><b>Offline:</b> up to 4 health reports and the waiting crash report are kept. When that queue is full, the newest report is dropped, and the next report says how many were dropped (the <code>dropped:</code> line).</li>
+<li><b>No answer, or the server is busy:</b> the report is tried again after 1 minute, then after twice as long each time, up to 15 minutes.</li>
+<li><b>Refused:</b> a report the server refuses is dropped, not tried again.</li>
+<li><b>Switched off by the server:</b> the server can answer 410, which switches sending off until you start the game again.</li>
+<li><b>Does it slow the game?</b> No. It sends on a background thread of its own, at low priority.</li>
+</ul>
+
+<h2 id="fields">Every field</h2>
+<p>A health report holds the lines in the first two tables. A crash report holds the first table and then the crash file the game wrote on your PC, which holds the lines in the third table. The server also keeps the time it received the report.</p>
+<!-- telemetry-fields:begin -->
+<!-- generated by hvmhfz_re tools/diag/telemetry_fields.py --html from docs/telemetry-fields.tsv -->
+<h3 id="fields-both">Both reports start with</h3>
+<table class="fields"><thead><tr><th>Line</th><th>What it is</th></tr></thead><tbody>
+<tr data-field="both.HVTELEM"><td><code>HVTELEM 1</code></td><td>The first line, "HVTELEM 1": the report format and its version.</td></tr>
+<tr data-field="both.kind"><td><code>kind:</code></td><td>"health" (the regular report) or "crash".</td></tr>
+<tr data-field="both.session"><td><code>session:</code></td><td>A random number made new at every game start (from the clock and a tick count). It is not tied to your PC and changes every time.</td></tr>
+<tr data-field="both.seq"><td><code>seq:</code></td><td>The report's number in this game session: 0, 1, 2 ...</td></tr>
+<tr data-field="both.time"><td><code>time:</code></td><td>Your PC's clock (UTC) when the report was made; for a crash, when the crash happened.</td></tr>
+<tr data-field="both.edition"><td><code>edition:</code></td><td>HD or SD: which game client you run.</td></tr>
+<tr data-field="both.patch"><td><code>patch:</code></td><td>The Hunsterverse client patch version (v1.24 = 124, v1.24-pre3 = 12403, 0 = an old patch without a version).</td></tr>
+<tr data-field="both.hvmods"><td><code>hvmods:</code></td><td>The version of hvmods.dll (our mods and diagnostics).</td></tr>
+<tr data-field="both.character"><td><code>character:</code></td><td>The id number of the character you logged in with (0 before you log in). Never the name.</td></tr>
+<tr data-field="both.running"><td><code>running:</code></td><td>Seconds since the game started (since hvmods.dll loaded).</td></tr>
+</tbody></table>
+<h3 id="fields-health">Health report</h3>
+<table class="fields"><thead><tr><th>Line</th><th>What it is</th></tr></thead><tbody>
+<tr data-field="health.fps"><td><code>fps:</code></td><td>Game steps per second over the last 5 seconds (the game's logic runs at about 30).</td></tr>
+<tr data-field="health.drawn"><td><code>drawn:</code></td><td>Pictures drawn per second over the last 5 seconds (lower than fps when the PC cannot keep up).</td></tr>
+<tr data-field="health.frames"><td><code>frames:</code></td><td>Game steps since the game started.</td></tr>
+<tr data-field="health.flags"><td><code>flags:</code></td><td>The mod switches the server sent (a number).</td></tr>
+<tr data-field="health.mods"><td><code>mods:</code></td><td>The same switches as names (for example "damage numbers, damage meter").</td></tr>
+<tr data-field="health.scene"><td><code>scene:</code></td><td>none, town or quest.</td></tr>
+<tr data-field="health.stage"><td><code>stage:</code></td><td>The id number of the area you are in (0 when none).</td></tr>
+<tr data-field="health.quest"><td><code>quest:</code></td><td>The id number of the quest you are on (0 when none).</td></tr>
+<tr data-field="health.connection"><td><code>connection:</code></td><td>"open", or "closed" and the code the game gave when the connection to the server closed.</td></tr>
+<tr data-field="health.requests"><td><code>requests:</code></td><td>Since the last report: how many requests the game sent to the game server, how many failed and how many got no answer in 30 seconds. Counts only, never their contents.</td></tr>
+<tr data-field="health.dropped"><td><code>dropped:</code></td><td>Reports thrown away while your PC was offline (the queue was full).</td></tr>
+<tr data-field="health.problems.lines"><td><code>[problems] lines</code></td><td>Known problems seen this session, one per line, for example a map file the game refused (with the file's name inside the game folder, never a full path).</td></tr>
+<tr data-field="health.errors.lines"><td><code>[errors] lines</code></td><td>Errors since the last report (at most 16), one per line: the time, stage, quest and what failed: a game file refused, a map that fell back to Mezeporta, a server request that failed or got no answer, a disconnect.</td></tr>
+</tbody></table>
+<h3 id="fields-crash">Crash report</h3>
+<table class="fields"><thead><tr><th>Line</th><th>What it is</th></tr></thead><tbody>
+<tr data-field="crash.report.HVCRASH"><td><code>HVCRASH 1</code></td><td>The crash file's first line, "HVCRASH 1": its format and version.</td></tr>
+<tr data-field="crash.report.time"><td><code>time:</code></td><td>When the crash happened (your PC's clock, UTC).</td></tr>
+<tr data-field="crash.report.exception"><td><code>exception:</code></td><td>The Windows error code and its name (for example "0xc0000005 access violation (read of 0x00000010)").</td></tr>
+<tr data-field="crash.report.at"><td><code>at:</code></td><td>Where in the game's code it crashed: the module's file name and an offset (for example "mhfo-hd.dll+0x0089f165").</td></tr>
+<tr data-field="crash.report.hvmods-running"><td><code>hvmods running:</code></td><td>Which of our mods was running at that moment, if any.</td></tr>
+<tr data-field="crash.report.registers"><td><code>registers:</code></td><td>The processor's registers at the crash (ten numbers, needed to read the crash).</td></tr>
+<tr data-field="crash.report.frames"><td><code>frames:</code></td><td>Up to 16 code addresses of the calls that led to the crash (module file name + offset).</td></tr>
+<tr data-field="crash.report.stack"><td><code>stack:</code></td><td>Up to 24 code addresses found on the game's stack (module file name + offset).</td></tr>
+<tr data-field="crash.report.client-sections"><td><code>client sections:</code></td><td>The game DLL's section names, addresses and sizes (to see whether it is our patched DLL).</td></tr>
+<tr data-field="crash.client.edition"><td><code>[client] edition:</code></td><td>HD (mhfo-hd.dll) or SD (mhfo.dll).</td></tr>
+<tr data-field="crash.client.patch"><td><code>[client] patch:</code></td><td>The client patch version, as text and as a number.</td></tr>
+<tr data-field="crash.client.hvmods"><td><code>[client] hvmods:</code></td><td>The version of hvmods.dll.</td></tr>
+<tr data-field="crash.client.client-base"><td><code>[client] client base:</code></td><td>The address the game DLL was loaded at.</td></tr>
+<tr data-field="crash.environment.game-exe"><td><code>[environment] game exe:</code></td><td>The game program's file name (for example mhf.exe).</td></tr>
+<tr data-field="crash.environment.launcher"><td><code>[environment] launcher:</code></td><td>The file name of the program that started the game (for example Mezeporta.exe), or that it has ended.</td></tr>
+<tr data-field="crash.environment.game-folder-modules"><td><code>[environment] game folder modules:</code></td><td>The file names of the DLLs loaded from the game folder (for example mhf.exe, mhfo-hd.dll, hvmods.dll, d3d9.dll). File names only, never the folder.</td></tr>
+<tr data-field="crash.files.lines"><td><code>[files] lines</code></td><td>The game's own files (mhfo-hd.dll, mhfo.dll, dat/mhfdat.bin, dat/mhfpac.bin, dat/mhfinf.bin, hvmods.dll and the game program): size and SHA-256 checksum, to see whether the patch installed fully. Never their contents.</td></tr>
+<tr data-field="crash.server.flags"><td><code>[server] flags:</code></td><td>The mod switches the server sent, their names, and when they arrived.</td></tr>
+<tr data-field="crash.server.keys"><td><code>[server] keys:</code></td><td>The key-binding settings the server sent for our mods (numbers).</td></tr>
+<tr data-field="crash.server.last-login"><td><code>[server] last login:</code></td><td>When you last logged in this session.</td></tr>
+<tr data-field="crash.mods.started"><td><code>[mods] started:</code></td><td>Which of our mods started.</td></tr>
+<tr data-field="crash.mods.refused"><td><code>[mods] refused:</code></td><td>Which of our mods refused to start.</td></tr>
+<tr data-field="crash.mods.meter"><td><code>[mods] meter:</code></td><td>The damage meter's state (in a quest or not, how many monsters and hits, where it was drawn on screen), when the meter is on.</td></tr>
+<tr data-field="crash.mods.move-hits"><td><code>[mods] move hits:</code></td><td>How many hits had their move recorded, only when you switched on "Show move id" for damage numbers.</td></tr>
+<tr data-field="crash.state.scene"><td><code>[state] scene:</code></td><td>Title screen, town or quest (with the game's state number), whether a menu was open, and whether you were disconnected.</td></tr>
+<tr data-field="crash.state.stage"><td><code>[state] stage:</code></td><td>The area and map number you were in.</td></tr>
+<tr data-field="crash.state.weapon"><td><code>[state] weapon:</code></td><td>The weapon type you had (for example long sword).</td></tr>
+<tr data-field="crash.state.quest"><td><code>[state] quest:</code></td><td>The quest's id, its file, class, the time left and carts left, and how long ago it started.</td></tr>
+<tr data-field="crash.state.character"><td><code>[state] character:</code></td><td>Your character's id, HR and GR points. The name is removed before sending.</td></tr>
+<tr data-field="crash.state.connection"><td><code>[state] connection:</code></td><td>Which of the game's server connections was in use and whether it was open or closed (with the code).</td></tr>
+<tr data-field="crash.problems.lines"><td><code>[problems] lines</code></td><td>Known problems seen this session (as in the health report).</td></tr>
+<tr data-field="crash.events.lines"><td><code>[events] lines</code></td><td>The last 50 things that happened, each with a time: logging in, area and quest changes, a menu opening, the connection closing, the mod switches arriving, server requests that failed or got no answer, game files refused, what our mods did. Messages from the server's own "Erupe" account read "server: (not sent)". Chat is never recorded.</td></tr>
+<tr data-field="crash.requests.lines"><td><code>[requests] lines</code></td><td>The last 30 requests the game sent to the game server: the time, the request type number, an internal handle number, and whether it was answered, failed (error code) or was still waiting. Never their contents.</td></tr>
+<tr data-field="crash.moves.lines"><td><code>[moves] lines</code></td><td>The last 200 moves you hit with (weapon, move id, damage), only when you switched on "Show move id" for damage numbers.</td></tr>
+<tr data-field="crash.system.windows"><td><code>[system] windows:</code></td><td>The Windows version number (and the Wine version on Linux or Mac).</td></tr>
+<tr data-field="crash.system.locale"><td><code>[system] locale:</code></td><td>Your Windows language setting and code page as numbers (for example 0x00000409, code page 1252), to explain text shown wrong.</td></tr>
+<tr data-field="crash.system.memory"><td><code>[system] memory:</code></td><td>Total and free memory on the PC and how much the game used.</td></tr>
+<tr data-field="crash.system.game-running"><td><code>[system] game running:</code></td><td>How long the game had been running.</td></tr>
+<tr data-field="crash.system.hvmods-running"><td><code>[system] hvmods running:</code></td><td>How long hvmods.dll had been running and since when.</td></tr>
+<tr data-field="crash.system.fps"><td><code>[system] fps:</code></td><td>Game steps and pictures drawn per second in the last 5 seconds, and steps since the start.</td></tr>
+</tbody></table>
+<!-- telemetry-fields:end -->
+<p>The crash part is the crash file the game wrote on your PC (<code>hvcrash-&lt;time&gt;.txt</code>) with two changes: the character line has no name, and messages from the server's own "Erupe" account read <code>server: (not sent)</code>.</p>
+
+<h2 id="example">Two example reports</h2>
+<p>These are made up: the shape is real, the values are not anyone's. A real crash report is longer (up to 64 KB).</p>
+<h3>A health report</h3>
+<pre data-example="health">HVTELEM 1
+kind: health
+session: 1a2b3c4d5e6f7081
+seq: 3
+time: 2026-11-13 12:00:00Z
+edition: HD
+patch: 124
+hvmods: 24
+character: 4321
+running: 3723
+fps: 30.0
+drawn: 29.8
+frames: 111690
+flags: 0x00008240
+mods: damage numbers, damage meter
+scene: quest
+stage: 394
+quest: 21751
+connection: open
+requests: 120 sent, 1 failed, 0 no reply
+dropped: 0
+[problems]
+quest-file-failed file=21751d0 error=0x01
+[errors]
+11:58:12Z stage 394 quest 21751: request 0x01c failed: error 0x01 (quest file 21751d0)
+</pre>
+<h3>A crash report</h3>
+<pre data-example="crash">HVTELEM 1
+kind: crash
+session: 9f8e7d6c5b4a3921
+seq: 0
+time: 2026-11-13 11:40:05Z
+edition: HD
+patch: 124
+hvmods: 24
+character: 4321
+running: 2405
+[report]
+HVCRASH 1
+time: 2026-11-13 11:40:05Z
+exception: 0xc0000005 access violation (read of 0x00000010)
+at: mhfo-hd.dll+0x0089f165
+hvmods running: none (the game's own code)
+registers: eax=00000000 ebx=1e77dccc ecx=00000010 edx=00000001 esi=0a3f1200 edi=00000000 ebp=0019fa40 esp=0019fa10 eip=1089f165 eflags=00010246
+frames:
+  mhfo-hd.dll+0x00a8ba10
+  mhfo-hd.dll+0x00a8c2f4
+stack:
+  [esp+0x0004] mhfo-hd.dll+0x014ecee4
+  [esp+0x0010] mhf.exe+0x00012a30
+client sections: .text 0x00001000+0x015d12a8 .rdata 0x015d3000+0x0031a000 .data 0x018ed000+0x0d2f1000 .hvqol 0x0f2e4000+0x00000c40
+[client]
+edition: HD (mhfo-hd.dll)
+patch: v1.24 (124)
+hvmods: 24
+client base: 0x10000000
+[environment]
+game exe: mhf.exe
+launcher: started by Mezeporta.exe
+game folder modules: mhf.exe, mhfo-hd.dll, hvmods.dll, d3d9.dll
+[files]
+mhf.exe: 1630208 bytes, sha256 3f1c0d9a5b7e2c4d6f8a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3d4e5f6
+mhfo-hd.dll: 29667328 bytes, sha256 0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f9
+mhfo.dll: missing
+dat/mhfdat.bin: 4870144 bytes, sha256 b5c6d7e8f90a1b2c3d4e5f60718293a40a1b2c3d4e5f60718293a4b5c6d7e8f9
+dat/mhfpac.bin: 2316288 bytes, sha256 c6d7e8f90a1b2c3d4e5f60718293a4b50a1b2c3d4e5f60718293a4b5c6d7e8f9
+dat/mhfinf.bin: 3407872 bytes, sha256 d7e8f90a1b2c3d4e5f60718293a4b5c60a1b2c3d4e5f60718293a4b5c6d7e8f9
+hvmods.dll: 412160 bytes, sha256 e8f90a1b2c3d4e5f60718293a4b5c6d70a1b2c3d4e5f60718293a4b5c6d7e8f9
+[server]
+flags: 0x00008240 (damage numbers, damage meter), received 2026-11-13 11:00:12Z
+keys: 1003=0x0152 1004=- 1005=- 1006=0x4000 1007=- 1008=- 1009=-
+last login: 2026-11-13 11:00:10Z
+[mods]
+started: damage, meter
+refused: none
+meter: in a quest, 1 monster, 3 hits; drawn 812 frames, the last at 14,504 468x166 on 1280x720, 2 px dots, alpha 255
+[state]
+scene: quest (player state 2)
+stage: 394, map 75
+weapon: long sword (7)
+quest: 21751 (file 21751d0), class 3, time left 60000 of 90000 (30 per second: 0:33:20 of 0:50:00), carts left 3, started 0:12:00 ago
+character: id 4321, HR 999, GR points 1234
+connection: lobby terminal 0, open
+[problems]
+[events]
+11:00:10Z in town: character 4321, stage 200
+11:00:12Z QoL flags 0x00008240 (from the server)
+11:27:58Z stage 200 -&gt; 394 (map 75)
+11:28:01Z quest running: quest 21751 (file 21751d0)
+11:30:00Z server: (not sent)
+11:39:50Z mod: meter: top right, normal
+[requests]
+11:39:58Z op 0x01c handle 0x00010002 ok 0x00 in 40 ms
+[system]
+windows: 10.0.19045
+locale: 0x00000409, code page 1252
+memory: PC 16384 MB, free 8192 MB; game address space used 1500 of 4096 MB; game working set 900 MB (peak 950 MB), committed 1200 MB
+game running: 0 h 40 min 10 s
+hvmods running: 0:40:05, since 2026-11-13 11:00:00Z
+fps: 30.0 (last 5 s), drawn 30.0, frames 72150
+</pre>
+
+<h2 id="never">What is never sent</h2>
+<ul>
+<li><b>Chat.</b> Players' chat and the Discord relay's chat are never even recorded by the game. The server's own "Erupe" lines are replaced by <code>server: (not sent)</code>.</li>
+<li><b>Passwords.</b></li>
+<li><b>Your character name.</b> It is removed from the crash report's character line. Only the character's id number is sent.</li>
+<li><b>Your Windows user name</b>, and <b>any folder path</b>. Only file names are sent. As a second safety net, the server also replaces anything that looks like <code>C:\Users\&lt;name&gt;</code> with <code>&lt;user folder&gt;</code> before it stores the report.</li>
+<li><b>Other players' data.</b></li>
+<li><b>The contents of requests or files.</b> Only counts, types, sizes and checksums are sent.</li>
+<li><b><code>hvmods.log</code></b>, <b>screenshots</b> and <b>keystrokes</b>.</li>
+<li><b>Your IP address</b> is not stored with the report. Our web server sees it while it receives the report, like any website, and does not keep it with the report.</li>
+</ul>
+
+<h2 id="where">Where it goes</h2>
+<p>Only to our own API, <code>https://api.hvmhfz.eclipseforge.xyz/api/public/telemetry</code>, over HTTPS (encrypted). There is no third party, and no advertising or analytics service. No sign-in is sent with it: on our side, the character id in the report links it to your account.</p>
+
+<h2 id="who">Who can see it</h2>
+<p>Hunsterverse staff with the Diagnostics permission: admins, moderators and helpers (helpers have Diagnostics by default; an admin can change staff permissions). And you, for your own characters, on the Account page (<a href="#yours">see below</a>). It is never shown publicly.</p>
+
+<h2 id="kept">How long it is kept</h2>
+<p>30 days, then it is deleted automatically (a daily job). You can delete your own reports earlier on the <a href="/account.html#live-reports">Account page</a>.</p>
+
+<h2 id="use">What we use it for</h2>
+<ul>
+<li>Find crashes, and which patch they come from.</li>
+<li>Spot broken installs (the file checksums show a patch that did not install fully).</li>
+<li>Map files that fail to load.</li>
+<li>Server requests that fail or get no answer, and disconnects.</li>
+<li>Frame rate per patch.</li>
+</ul>
+<p>Then we fix the patch, the mods and the server. We do not use it for bans, advertising or selling anything, and it is never shared outside staff.</p>
+
+<h2 id="local">Files on your PC</h2>
+<p>The game always writes these files, whatever the setting. They never leave your PC unless you upload them yourself. They are in the game folder (the folder with <code>mhf.exe</code>).</p>
+<table>
+<thead><tr><th>File</th><th>What it is</th></tr></thead>
+<tbody>
+<tr><td><code>hvdiag.txt</code></td><td>The game's own report. Rewritten while the game runs: at the start, a few seconds after something worth knowing, every minute when anything changed, and at exit. It has your character name.</td></tr>
+<tr><td><code>hvmods.log</code></td><td>What the mods did.</td></tr>
+<tr><td><code>hvcrash-YYYYMMDD-HHMMSS.txt</code></td><td>One per crash. The time in the name is UTC.</td></tr>
+<tr><td><code>hvsend-crash.txt</code></td><td>A crash waiting to be sent. Empty when there is none.</td></tr>
+<tr><td><code>hvmods-telemetry.dat</code></td><td>Your choice: on or off.</td></tr>
+</tbody>
+</table>
+<p>You can upload these files yourself on the <a href="/account.html#diagnostics">Account page</a> (Diagnostics) to get a plain answer about what went wrong.</p>
+
+<h2 id="off">How to turn it off</h2>
+<ul>
+<li>The first time you are in town with the patch, the game shows a one-time notice, "Crash and usage data", with two buttons: <b>OK</b> and <b>Turn off</b>. Esc counts as OK.</li>
+<li>At any time in the game: Ctrl+F10, <b>Game options</b>, the tab <b>Data</b>, "Send crash and usage data": On or Off.</li>
+</ul>
+<p>When it is off, sending stops at once, anything waiting is dropped before the next send, and a crash waiting to be sent is deleted. Nothing is built while it is off. The local files above are still written.</p>
+<p>Your choice is kept on your PC, in <code>hvmods-telemetry.dat</code>, so the notice shows only once. Deleting that file brings the notice back.</p>
+<p>Turning it off does not delete what was already sent. Delete that on the Account page.</p>
+
+<h2 id="yours">See and delete your own reports</h2>
+<p>Sign in, open the <a href="/account.html#live-reports">Account page, "Live reports from your game"</a>. It lists every report of your characters and shows the full text of each one exactly as we stored it. The button "Delete my reports" deletes them all.</p>
+
+<h2 id="changes">Changes to this page</h2>
+<p>When this page changes, the date at the top changes too.</p>
+<ul>
+<li><b>13 November 2026:</b> page added.</li>
+</ul>
+</main>
+    <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <div class="foot-col">
+            <h2 class="foot-head">Guides</h2>
+            <a href="/play.html">Play</a>
+            <a href="/guide-frontier.html">Frontier guide</a>
+            <a href="/guide-roads.html">Roads in game</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Explore</h2>
+            <a href="/database.html">Database</a>
+            <a href="/monsters.html">Monsters</a>
+            <a href="/quests.html">Quests</a>
+            <a href="/items.html">Items</a>
+            <a href="/leaderboards.html">Leaderboards</a>
+            <a href="/road-vote.html">Hunting Road</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Server</h2>
+            <a href="/changelog.html">Changelog</a>
+            <a href="/worlds.html">Worlds</a>
+            <a href="/report.html">Report a problem</a>
+            <a href="/api.html">API</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">About</h2>
+            <a href="/privacy.html">Privacy</a>
+            <a href="/diagnostics-data.html">Live diagnostics data</a>
+                <a href="/bot-terms.html">Bot terms</a>
+            <a href="https://discord.gg/NQrvRdRwU8">Discord</a>
+            <a href="https://hunstermonter.net">hunstermonter.net</a>
+          </div>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+    <!-- /site-shell:footer -->
+<script src="/js/search.js?v=4" defer></script>
+  </body>
+</html>

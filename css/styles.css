@@ -2524,3 +2524,25 @@ tr.mv-unused{opacity:.65}
   .source-item a{white-space:normal}
   .sources-table td:nth-child(4){min-width:180px}
 }
+/* Diagnostics data page (diagnostics-data.html): the field tables wrap on a phone, no sideways scroll */
+main.sheet table.fields{table-layout:fixed}
+main.sheet table.fields th:first-child,main.sheet table.fields td:first-child{width:30%}
+main.sheet table.fields td{overflow-wrap:anywhere;word-break:break-word}
+main.sheet table.fields code{overflow-wrap:anywhere;white-space:normal}
+@media (max-width:640px){
+  main.sheet table.fields{display:table;overflow-x:visible;font-size:.85rem}
+  main.sheet table.fields th,main.sheet table.fields td{padding:8px 6px}
+  main.sheet table.fields th:first-child,main.sheet table.fields td:first-child{width:36%}
+}
+/* Account page, Diagnostics tab: "Live reports from your game" (js/account-telemetry.js) */
+.live-reports-list{margin:0.8rem 0 0;padding:0;list-style:none}
+.live-report{border:1px solid var(--line);border-left-width:4px;border-radius:4px;padding:0.5rem 0.7rem;margin:0 0 0.5rem}
+.live-report.is-crash{border-left-color:var(--wax)}
+.live-report-head{display:flex;flex-wrap:wrap;gap:0.2rem 0.8rem;align-items:baseline;justify-content:space-between}
+.live-report-kind{font-weight:600}
+.live-report-meta{margin:0.2rem 0 0;overflow-wrap:anywhere}
+.live-report-summary{margin:0.2rem 0 0;overflow-wrap:anywhere}
+.live-report-detail{margin-top:0.5rem}
+.live-report-detail .diag-raw{max-width:100%}
+.live-reports-actions{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.6rem;align-items:center}
+.live-reports-confirm{margin-top:0.6rem;padding:0.5rem 0.7rem;border:1px solid var(--wax);border-radius:4px}
