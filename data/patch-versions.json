@@ -3,6 +3,17 @@
   "current": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip",
   "patches": [
     {
+      "version": "1.22",
+      "published": "2026-11-13T01:55Z",
+      "sha256": "ba4ba3d30936caff3537374101500d4f8f2e6c39fc8f504b1da53d0fd2e4f4f4",
+      "size": 61814649,
+      "files": 105,
+      "changes": "Sky Corridor 3rd/4th District bosses, tower gems and skills, G10 special floor; QoL mods and overlays; most of the remaining Japanese text in English.",
+      "changelog": "/changelog.html#d-2026-11-13-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.22/Frontier_Patch.zip",
+      "current": true
+    },
+    {
       "version": "1.21",
       "published": "2026-11-11T05:30Z",
       "sha256": "18defe63759a4c71def3bf0eb444a32ba7e64ef4caefd897102c4cc90739f8de",
@@ -11,7 +22,7 @@
       "changes": "Fixes the crash on a part break in Urgent 3rd/4th District (Full Map).",
       "changelog": "/changelog.html#d-2026-11-11-client-patch",
       "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.21/Frontier_Patch.zip",
-      "current": true
+      "current": false
     },
     {
       "version": "1.20",
