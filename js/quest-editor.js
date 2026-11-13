@@ -170,7 +170,7 @@
   var submitBtn = document.getElementById("editor-submit");
   var buttons = [saveBtn, downloadBtn, submitBtn];
 
-  var state = { model: null, listing: copyListing(null), draftId: null, revision: 0, busy: false, mapMessage: "",
+  var state = { model: null, listing: copyListing(null), draftId: null, revision: 0, submission: null, busy: false, mapMessage: "",
     supplyShown: {}, serverMaps: null, mapsNote: "", spots: {}, bounds: {}, exactSpawns: [] };
 
   /** The draft's listing as the API answers it, the defaults for what it leaves out. */
@@ -2600,9 +2600,13 @@
     return !!first;
   }
 
+  // The draft's latest submission (API README "Custom quest versions and delete"): submitting again while it is in
+  // testing updates that quest and bumps its version (v1, v2 ...), so the note says which version the game has.
   function setDraftNote() {
+    var sub = state.submission;
     draftNote.textContent = state.draftId
       ? "draft " + state.draftId + ", revision " + state.revision
+        + (sub ? " · " + sub.status + " v" + sub.version : "")
       : "not saved yet";
   }
 
@@ -2661,8 +2665,17 @@
     return saveDraft().then(function (id) {
       return api("/api/account/quest-drafts/" + id + "/submit", { method: "POST" }).then(body);
     }).then(function (result) {
-      say("Submitted. Quest " + result.sandboxQuestId + " is in your quest counter as a testing quest;"
-        + " only this account can load it until an admin publishes it.", false);
+      var version = typeof result.version === "number" ? " v" + result.version : "";
+      if (typeof result.version === "number") {
+        state.submission = { id: result.submissionId, status: "testing", version: result.version };
+        setDraftNote();
+        refreshDrafts();
+      }
+      say(result.updated
+        ? "Updated to" + version + ". Quest " + result.sandboxQuestId + " in your quest counter is now this version"
+          + " (same testing slot); reopen the quest list in game to load it."
+        : "Submitted" + (version ? " as" + version : "") + ". Quest " + result.sandboxQuestId + " is in your quest"
+          + " counter as a testing quest; only this account can load it until an admin publishes it.", false);
     });
   }
 
@@ -2732,6 +2745,9 @@
         name.appendChild(el("span", "panel-note", "open · "));
       }
       name.appendChild(link);
+      if (row.submission) {
+        name.appendChild(el("span", "panel-note", " · " + row.submission.status + " v" + row.submission.version));
+      }
       tr.appendChild(name);
       tr.appendChild(el("td", "num", String(row.revision)));
       var updatedCell = el("td");
@@ -2793,6 +2809,7 @@
     : api("/api/account/quest-drafts/" + draftParam).then(body).then(function (draft) {
         state.draftId = draft.id;
         state.revision = draft.revision;
+        state.submission = draft.submission || null;
         state.listing = copyListing(draft.listing);
         return draft.model;
       });

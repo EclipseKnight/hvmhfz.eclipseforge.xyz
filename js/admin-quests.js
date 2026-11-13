@@ -110,7 +110,8 @@
     var listed = typeof item.questType === "number";
     if (listed) {
       name.appendChild(el("span", "cell-sub muted", counterName(item.questType) + " counter"
-        + (item.mark ? " \u00b7 " + markName(item.mark) : "")));
+        + (item.mark ? " \u00b7 " + markName(item.mark) : "")
+        + (typeof item.version === "number" ? " \u00b7 v" + item.version : "")));
     }
     tr.appendChild(name);
     tr.appendChild(el("td", null, item.account || "-"));
@@ -175,6 +176,9 @@
       actions.appendChild(retire);
     } else if (item.status === "retired") {
       actions.appendChild(el("span", "muted", item.retiredAt ? "retired " + when(item.retiredAt) : "retired"));
+    } else if (item.status === "deleted") {
+      // The author deleted it from testing (API README "Custom quest versions and delete"); row and file are kept.
+      actions.appendChild(el("span", "muted", item.deletedAt ? "deleted by author " + when(item.deletedAt) : "deleted by author"));
     } else {
       var rev = el("span", "muted", item.reviewedAt ? when(item.reviewedAt) : "-");
       if (item.reviewedAt && window.HvTime && !isNaN(new Date(item.reviewedAt))) HvTime.set(rev, item.reviewedAt);

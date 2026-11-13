@@ -5,7 +5,12 @@
    submit, a resubmit, "Keep testing", or starting it in game). The API sends expiresAt and remindedAt once
    the 3-day reminder went out; the reminder shows at the top of the page (#quest-reminders) whichever tab is
    open. An expired quest can be resubmitted at any time (canResubmit). Drafts never expire.
-   An API without these fields simply shows "-" and no buttons. */
+   An API without these fields simply shows "-" and no buttons.
+
+   Versions and delete (API README "Custom quest versions and delete"): submitting a builder draft again while it is
+   in testing updates that quest and bumps its version, shown as "v2" beside the title (and beside the draft). Delete
+   takes one of the player's own testing (or pending) quests out of testing and out of the game's list, after a
+   confirm; the draft stays. Both need the API's version field: an older API shows neither. */
 (function () {
   "use strict";
   var API = "https://api.hvmhfz.eclipseforge.xyz";
@@ -104,6 +109,16 @@
     }).catch(function (error) { say(note, error.message, true); throw error; });
   }
 
+  function deleteQuest(row) {
+    var name = "“" + row.title + "” (v" + row.version + ")";
+    if (!window.confirm("Delete " + name + " from testing? It leaves your in-game quest list now and frees its"
+      + " testing slot. Your draft in the quest builder is kept.")) return Promise.resolve();
+    return call("/api/account/quest-submissions/" + row.id, "DELETE").then(function () {
+      say(note, "Deleted " + name + ". Its draft, if it has one, is still in the quest builder.", false);
+      return Promise.all([load(), loadDrafts()]);
+    }).catch(function (error) { say(note, error.message, true); throw error; });
+  }
+
   function resubmit(id) {
     return call("/api/account/quest-submissions/" + id + "/resubmit", "POST").then(function () {
       say(note, "Back in testing for 14 days. Find it in game under Event.", false);
@@ -127,6 +142,10 @@
     } else {
       td.appendChild(el("span", "muted", "-"));
     }
+    if ((row.status === "testing" || row.status === "pending") && typeof row.version === "number") {
+      td.appendChild(document.createTextNode(" "));
+      td.appendChild(button("Delete", false, function () { return deleteQuest(row); }));
+    }
     return td;
   }
 
@@ -136,9 +155,11 @@
     if (!submissions.length) emptyRow(list, 5, "No submissions yet.");
     submissions.forEach(function (row) {
       var tr = el("tr");
-      [row.title, row.status, row.note || "-"].forEach(function (value, i) {
-        tr.appendChild(el("td", i === 1 ? "cell-sub muted" : null, value));
-      });
+      var name = el("td", null, row.title);
+      if (typeof row.version === "number") name.appendChild(el("span", "muted", " v" + row.version));
+      tr.appendChild(name);
+      tr.appendChild(el("td", "cell-sub muted", row.status));
+      tr.appendChild(el("td", null, row.note || "-"));
       var submittedCell = el("td");
       submittedCell.appendChild(whenEl("time", null, row.submittedAt));
       tr.appendChild(submittedCell);
@@ -165,6 +186,9 @@
       var link = el("a", null, row.title || "Untitled quest");
       link.href = "/quest-editor.html?draft=" + row.id;
       name.appendChild(link);
+      if (row.submission) {
+        name.appendChild(el("span", "muted", " · " + row.submission.status + " v" + row.submission.version));
+      }
       tr.appendChild(name);
       var activityCell = el("td");
       activityCell.appendChild(whenEl("time", null, row.lastActivity || row.updatedAt));
