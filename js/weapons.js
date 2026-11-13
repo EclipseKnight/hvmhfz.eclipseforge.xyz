@@ -403,8 +403,31 @@
         stat(dl, "Reload stat", field(w, "reload"));
       }
     }
+    renderMaterials(w);
     renderStyleChips();
     renderMoves();
+  }
+
+  /* The weapon's materials: every way to make it and the step before it (js/equipment-materials.js,
+     data/equipment/ from dev/make-use-data.py), the whole line on /equipment.html. */
+  function renderMaterials(w) {
+    var box = $("wp-materials");
+    box.textContent = "";
+    if (!w || !window.HvMaterials) return;
+    var slot = doc.kind === "melee" ? "melee" : "ranged", wid = field(w, "id");
+    box.dataset.wid = slot + wid;
+    window.HvMaterials.load(slot, wid).then(function (data) {
+      if (box.dataset.wid !== slot + wid) return; // another weapon was opened meanwhile
+      box.appendChild(el("h3", "wp-sub", "Materials"));
+      box.appendChild(window.HvMaterials.list(data, slot, wid));
+      var more = el("p", "wp-help");
+      var a = el("a", null, "Upgrade line and what it upgrades into");
+      a.href = "/equipment.html?slot=" + slot + "&id=" + wid;
+      more.appendChild(a);
+      box.appendChild(more);
+    }).catch(function () {
+      if (box.dataset.wid === slot + wid) box.appendChild(el("p", "wp-help", "The materials could not be loaded."));
+    });
   }
 
   /* ---------- calculator ---------- */

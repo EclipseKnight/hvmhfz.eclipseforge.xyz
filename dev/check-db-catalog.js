@@ -8,7 +8,8 @@
    error row with a Try again button that works once the file answers; the results count is a polite live
    region; with a stubbed equipment answer, melee and ranged rows link to the weapon on the Weapons page
    (weapons.html?type=<slug>&w=<game id>, from data/weapons/ids.json; the API's id byte-swapped) and an id with
-   no weapon ("Dummy") stays plain text; on the phone the icon and name columns are sticky (the name at the icon
+   no weapon ("Dummy") stays plain text; armour rows link to equipment.html?slot=&id= when
+   data/equipment/<slot>/names.json names the piece; on the phone the icon and name columns are sticky (the name at the icon
    column's right edge, still there after a sideways swipe), on the desktop they are static; no sideways
    scrolling and no script errors. Needs Playwright with Chromium:
 
@@ -154,6 +155,12 @@ async function main() {
     got = await links();
     check(got[0] === "/weapons.html?type=heavy-bowgun&w=1149" && got[1] === "/weapons.html?type=bow&w=2072" && got[2] === null,
       tag + ": ranged rows link to the weapon: " + got.join(" "));
+    // Armour rows link to the equipment page when a recipe names the piece (data/equipment/head/names.json):
+    // 0100 = head 1 (Leather Helm); FFFF has none.
+    equipment = () => ({ page: 0, size: 30, total: 2, items: [{ id: "0100", name: "Leather Helm", slot: "head" }, { id: "FFFF", name: "Dummy", slot: "head" }] });
+    await open("?slot=heads");
+    got = await links();
+    check(got[0] === "/equipment.html?slot=head&id=1" && got[1] === null, tag + ": armour rows link to the equipment page: " + got.join(" "));
     equipment = null;
 
     // Sticky icon and name columns on the phone, static on the desktop.

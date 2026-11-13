@@ -7,6 +7,7 @@
   {"page": "catalog.html", "group": "Database", "label": "Catalog (moved)", "title": "Catalog moved · Hunsterverse", "current": "/items.html", "trail": [["Items", "/items.html"]]},
   {"page": "database.html", "group": "Database", "label": "Database", "title": "Database · Hunsterverse", "current": "/database.html"},
   {"page": "item.html", "group": "Database", "label": "Item", "title": "Item · Hunsterverse", "current": "/items.html", "trail": [["Items", "/items.html"]], "item": true},
+  {"page": "equipment.html", "group": "Database", "label": "Equipment", "title": "Equipment · Hunsterverse", "current": "/items.html", "trail": [["Items", "/items.html"]], "item": true},
   {"page": "changelog.html", "group": "Server", "label": "Changelog", "title": "Changelog · Hunsterverse", "current": "/changelog.html"},
   {"page": "diagnostics-data.html", "group": "Server", "label": "Live diagnostics data", "title": "What the game's live diagnostics sends · Hunsterverse", "current": "/diagnostics-data.html"},
   {"page": "events.html", "group": "Server", "label": "Events", "title": "Events · Hunsterverse", "current": "/events.html"},

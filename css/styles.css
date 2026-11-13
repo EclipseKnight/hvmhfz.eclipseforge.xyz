@@ -2546,3 +2546,16 @@ main.sheet table.fields code{overflow-wrap:anywhere;white-space:normal}
 .live-report-detail .diag-raw{max-width:100%}
 .live-reports-actions{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.6rem;align-items:center}
 .live-reports-confirm{margin-top:0.6rem;padding:0.5rem 0.7rem;border:1px solid var(--wax);border-radius:4px}
+/* Used for (item page, js/item.js) and the equipment materials (equipment.html, the Weapons page's detail:
+   js/equipment.js, js/equipment-materials.js) */
+.use-filter{display:block;width:100%;max-width:340px;margin:0 0 6px;min-height:40px}
+.mat-ways{display:grid;gap:12px}
+.mat-way{padding:8px 0;border-bottom:1px solid rgba(125,93,51,.3)}
+.mat-way-head{margin:0 0 6px;font-weight:600}
+.mat-way-head .where-facts{font-weight:400}
+.mat-list{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px}
+.eq-line{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-wrap:wrap;gap:4px 0}
+.eq-line li:not(:last-child)::after{content:"\203A";margin:0 8px;color:var(--ink-soft)}
+.eq-line-here{font-weight:700}
+.eq-into{margin:0}
+#wp-materials .mat-ways{margin-top:4px}

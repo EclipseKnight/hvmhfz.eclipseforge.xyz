@@ -3,7 +3,8 @@
    for an item with sources, data/items/<id>.json (monster drops, quests that reward it and quests that need it
    to enter, and from dev/make-source-data.py "where", "gather", "offered" and "unlisted": every way to get it,
    shown first under "Where to get it", each source linked to its page /source.html?id=, named from
-   data/sources/index.json). Monster icons and the game's monster ids come from data/monsters/index.json.
+   data/sources/index.json), then "Used for" (data/uses/<id>.json from dev/make-use-data.py: recipes, weapons
+   and armour, decorations, the Tower, exchanges and quests that take it). Monster icons and the game's monster ids come from data/monsters/index.json.
    ?name= (an exact item name) is accepted too, for old links. */
 (function () {
   "use strict";
@@ -309,6 +310,196 @@
     return panel;
   }
 
+  /* "Used for": every recipe, piece of equipment, Tower upgrade, exchange and quest that takes the item
+     (data/uses/<id>.json, dev/make-use-data.py). Equipment rows are [slot, id, qty, kind], named from
+     data/equipment/<slot>/names.json ([name, rarity, parent id] by id) and linked to /equipment.html. */
+  var USE_GROUPS = [["craft", "Crafting"], ["weapon", "Weapons"], ["armour", "Armour"], ["deco", "Decorations"],
+                    ["tower", "Tower"], ["exchange", "Exchanges"], ["quest", "Quests"]];
+  var USE_SYS = { combining: ["Item combining", "combining"], combiner: ["Combiner", "combiner"],
+                  deco: ["Smithy decoration", "smithy-decorations"], cuff: ["Skill cuff workshop", "cuff-workshop"],
+                  tower: ["Tower smithy", "tower-smithy"], "tower-gem": ["Tower Decos", "tower-gems"],
+                  "gem-mixer": ["Gem mixer", "gem-mixer"], "tower-up": ["Tower weapon upgrade", null],
+                  series: ["Series Quests exchange", "series-exchange"] };
+  var SLOT_NAMES = { head: "Head", chest: "Chest", arms: "Arms", waist: "Waist", legs: "Legs", melee: "Melee", ranged: "Ranged" };
+  var USE_TOP = 8, USE_PAGE = 200;
+
+  function eqName(names, slot, id) {
+    var e = names[slot] && names[slot][id];
+    return e ? e[0] : SLOT_NAMES[slot] + " " + id;
+  }
+
+  function eqLink(names, slot, id) {
+    var a = el("a", null, eqName(names, slot, id));
+    a.href = "/equipment.html?slot=" + slot + "&id=" + id;
+    return a;
+  }
+
+  /* One "Used for" line and its filter text. */
+  function useLine(r, ctx) {
+    var li = el("li", "where-line"), head = el("span", "where-src"), facts = [], text;
+    li.appendChild(head);
+    if (Array.isArray(r)) { // [slot, id, qty, kind]
+      var slot = r[0], id = r[1], e = ctx.names[slot] && ctx.names[slot][id];
+      head.appendChild(eqLink(ctx.names, slot, id));
+      var type = slot === "melee" || slot === "ranged" ? ctx.weaponType(slot, id) : SLOT_NAMES[slot];
+      facts.push("x" + num(r[2]));
+      if (r[3] === "t") facts.push("transmog unlock");
+      else if (r[3] === "u") facts.push(e && e[2] ? "upgrade from " + eqName(ctx.names, slot, e[2]) : "upgrade");
+      else facts.push("to make it");
+      if (type) facts.push(type);
+      if (e && e[1]) facts.push("rarity " + e[1]);
+      text = eqName(ctx.names, slot, id) + " " + facts.join(" ");
+    } else if (r.g === "quest") {
+      var q = el("a", null, r.name);
+      q.href = "/quest.html?id=" + r.quest;
+      head.appendChild(q);
+      facts.push("deliver x" + num(r.qty), r.obj + " objective");
+      text = r.name + " " + r.quest;
+    } else if (r.s === "tower-up") {
+      head.appendChild(eqLink(ctx.names, r.eq[0], r.eq[1]));
+      facts.push(r.stat + " to its maximum (" + r.levels + (r.levels === 1 ? " level" : " levels") + ")", "x" + num(r.qty) + " in all");
+      text = eqName(ctx.names, r.eq[0], r.eq[1]) + " " + r.stat;
+    } else if (r.s === "gem-mixer") {
+      head.appendChild(el("span", null, "Any " + r.any + "+ Tower gems"));
+      facts.push("a random gem, " + r.made.length + (r.made.length === 1 ? " possible result" : " possible results"));
+      text = "gem mixer";
+    } else {
+      head.appendChild(itemLink(r.item, ctx.itemRows, r.n > 1 ? r.n : 0));
+      facts.push("x" + num(r.qty));
+      if (r.price !== undefined) facts.push(num(r.price) + (r.cur ? " " + r.cur : ""));
+      if (r.note) facts.push(r.note);
+      text = (ctx.itemRows[r.item] ? ctx.itemRows[r.item][1] : "") + " " + (r.note || "");
+    }
+    var sys = r.s && USE_SYS[r.s];
+    var factsEl = el("span", "where-facts");
+    if (sys) {
+      var src = sys[1] && ctx.sources && ctx.sources[sys[1]];
+      var s = el(src ? "a" : "span", null, sys[0]);
+      if (src) s.href = "/source.html?id=" + encodeURIComponent(sys[1]);
+      factsEl.appendChild(s);
+      factsEl.appendChild(document.createTextNode(" · "));
+      text += " " + sys[0];
+    }
+    factsEl.appendChild(document.createTextNode(facts.join(" · ")));
+    li.appendChild(factsEl);
+    if (!Array.isArray(r) && r.with && r.with.length) { // (arrays have a .with method)
+      var w = el("span", "where-mats");
+      w.appendChild(document.createTextNode("with "));
+      r.with.forEach(function (m, i) {
+        if (i) w.appendChild(document.createTextNode(", "));
+        w.appendChild(itemLink(m[0], ctx.itemRows, m[1]));
+        text += " " + (ctx.itemRows[m[0]] ? ctx.itemRows[m[0]][1] : "");
+      });
+      li.appendChild(w);
+    }
+    return { li: li, text: text.toLowerCase() };
+  }
+
+  function useGroup(title, rows, ctx) {
+    var block = el("div", "where-group");
+    block.appendChild(el("h3", null, title + " · " + num(rows.length)));
+    var state = { q: "", limit: USE_TOP }, lines = rows.map(function (r) { return { r: r, line: null }; });
+    var list = el("ul", "where-list");
+    var more = el("button", "ghost-btn small");
+    more.type = "button";
+    if (rows.length > USE_TOP) {
+      var input = el("input", "use-filter");
+      input.type = "search";
+      input.placeholder = "Filter " + num(rows.length) + " " + title.toLowerCase();
+      input.setAttribute("aria-label", "Filter " + title.toLowerCase());
+      input.addEventListener("input", function () { state.q = input.value.trim().toLowerCase(); state.limit = USE_PAGE; drawUses(); });
+      block.appendChild(input);
+    }
+    block.appendChild(list);
+    block.appendChild(more);
+    more.addEventListener("click", function () { state.limit = state.limit < USE_PAGE ? USE_PAGE : state.limit + USE_PAGE; drawUses(); });
+    function drawUses() {
+      list.textContent = "";
+      var shown = 0, matched = 0;
+      lines.forEach(function (x) {
+        if (state.q) {
+          if (!x.line) x.line = useLine(x.r, ctx);
+          if (x.line.text.indexOf(state.q) === -1) return;
+        }
+        matched++;
+        if (shown >= state.limit) return;
+        if (!x.line) x.line = useLine(x.r, ctx);
+        list.appendChild(x.line.li);
+        shown++;
+      });
+      if (!matched) list.appendChild(el("li", "where-line note-text", "Nothing matches."));
+      more.hidden = matched <= shown;
+      more.textContent = state.limit < USE_PAGE && !state.q ? "Show all " + num(matched)
+        : "Show " + num(Math.min(USE_PAGE, matched - shown)) + " more of " + num(matched - shown);
+    }
+    drawUses();
+    return block;
+  }
+
+  function usesPanel(uses, needs, ctx) {
+    var rows = (uses && uses.rows) || [];
+    var groups = {};
+    rows.forEach(function (r) {
+      var g = Array.isArray(r) ? (r[0] === "melee" || r[0] === "ranged" ? "weapon" : "armour") : r.g;
+      (groups[g] = groups[g] || []).push(r);
+    });
+    var total = rows.length + (needs.length ? 1 : 0);
+    var panel = section("Used for", total ? num(rows.length + needs.length) + (rows.length + needs.length === 1 ? " use" : " uses") : "");
+    panel.id = "uses";
+    panel.classList.add("where-panel");
+    if (!total) {
+      panel.appendChild(el("p", "empty-state", "No known use: no recipe, piece of equipment, Tower upgrade, exchange or quest takes this item."));
+      return panel;
+    }
+    USE_GROUPS.forEach(function (g) {
+      var list = groups[g[0]] || [];
+      if (g[0] === "quest" && needs.length) {
+        list = list.concat([{ g: "quest", needs: needs.length }]);
+      }
+      if (!list.length) return;
+      if (g[0] === "quest" && needs.length) {
+        var deliver = list.filter(function (r) { return !r.needs; });
+        var block = deliver.length ? useGroup(g[1], deliver, ctx) : el("div", "where-group");
+        if (!deliver.length) block.appendChild(el("h3", null, g[1]));
+        var li = el("li", "where-line");
+        var a = el("a", null, "Needed to enter");
+        a.href = "#needs";
+        li.appendChild(el("span", "where-src")).appendChild(a);
+        li.appendChild(el("span", "where-facts", num(needs.length) + (needs.length === 1 ? " quest takes it" : " quests take it") + " from your box when you accept them"));
+        var ul = block.querySelector(".where-list") || block.appendChild(el("ul", "where-list"));
+        ul.insertBefore(li, ul.firstChild);
+        panel.appendChild(block);
+        return;
+      }
+      panel.appendChild(useGroup(g[1], list, ctx));
+    });
+    return panel;
+  }
+
+  /* The names files of the equipment slots the rows name, and the weapon types (data/weapons/ids.json). */
+  function useContext(uses, itemRows, sources) {
+    var slots = {}, weapons = false;
+    ((uses && uses.rows) || []).forEach(function (r) {
+      var s = Array.isArray(r) ? r[0] : r.eq && r.eq[0];
+      if (s) { slots[s] = true; if (s === "melee" || s === "ranged") weapons = true; }
+    });
+    var names = {}, ids = null;
+    var jobs = Object.keys(slots).map(function (s) {
+      return json("/data/equipment/" + s + "/names.json").then(function (d) { names[s] = d.names; }).catch(function () {});
+    });
+    if (weapons) jobs.push(json("/data/weapons/ids.json").then(function (d) { ids = d; }).catch(function () {}));
+    return Promise.all(jobs).then(function () {
+      return {
+        names: names, itemRows: itemRows, sources: sources,
+        weaponType: function (slot, id) {
+          var ch = ids && ids[slot] && ids[slot].charAt(id);
+          if (!ch || ch === ".") return SLOT_NAMES[slot];
+          return ids.types[ch.charCodeAt(0) - 97].replace(/-/g, " ").replace(/^./, function (c) { return c.toUpperCase(); });
+        }
+      };
+    });
+  }
+
   function dropsPanel(drops, monsterIcons) {
     var monsters = {};
     drops.forEach(function (d) { monsters[d.slug || d.monster] = true; });
@@ -401,6 +592,7 @@
 
   function questsPanel(quests) {
     var panel = section("Needed to enter", quests.length + (quests.length === 1 ? " quest" : " quests"));
+    panel.id = "needs";
     panel.appendChild(el("p", "note-text", "These quests take the item from your box when you accept them."));
     var list = el("ul", "item-quests");
     quests.forEach(function (q) {
@@ -413,7 +605,7 @@
     return panel;
   }
 
-  function render(row, detail, monsterIcons, sources, itemRows, monsterPages) {
+  function render(row, detail, monsterIcons, sources, itemRows, monsterPages, uses) {
     var id = row[0], name = row[1], icon = row[2], aka = row[3];
     document.title = name + " · Hunsterverse";
     if (window.HvCrumbs) window.HvCrumbs.item(name);
@@ -451,6 +643,7 @@
       none.appendChild(el("p", "empty-state", "The list of sources could not be loaded."));
       view.appendChild(none);
     }
+    if (uses) view.appendChild(usesPanel(uses.data, quests, uses.ctx));
     if (drops.length) view.appendChild(dropsPanel(drops, monsterIcons));
     if (rewards.length) view.appendChild(rewardsPanel(rewards, detail && detail.offered));
     if (quests.length) view.appendChild(questsPanel(quests));
@@ -491,6 +684,12 @@
       (res[2].sources || []).forEach(function (s) { sources[s[0]] = { name: s[1], group: s[2], cur: s[3] }; });
     }
     var detail = row[4] ? json("/data/items/" + row[0] + ".json").catch(function () { return null; }) : Promise.resolve(null);
-    return detail.then(function (d) { render(row, d, monsterIcons, sources, itemRows, monsterPages); });
+    // data/uses/<id>.json exists only for an item with a use: a 404 is "no known use"
+    var uses = fetch("/data/uses/" + row[0] + ".json").then(function (r) {
+      return r.status === 404 ? { rows: [] } : r.ok ? r.json() : null;
+    }).catch(function () { return null; }).then(function (u) {
+      return u ? useContext(u, itemRows, sources).then(function (ctx) { return { data: u, ctx: ctx }; }) : null;
+    });
+    return Promise.all([detail, uses]).then(function (res) { render(row, res[0], monsterIcons, sources, itemRows, monsterPages, res[1]); });
   }).catch(function () { fail("The item list could not be loaded."); });
 })();

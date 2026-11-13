@@ -60,6 +60,21 @@
     return slug ? "/weapons.html?type=" + slug + "&w=" + id : null;
   }
 
+  /* Armour rows link to /equipment.html?slot=&id= (materials and upgrade line) when a smithy recipe names
+     the piece: data/equipment/<slot>/names.json from dev/make-use-data.py. */
+  var armourNames = {};
+  function loadArmourNames(slot) {
+    if (!armourNames[slot]) {
+      armourNames[slot] = fetch("/data/equipment/" + slot + "/names.json").then(function (r) { return r.ok ? r.json() : null; })
+        .catch(function () { return null; }).then(function (d) { return (d && d.names) || []; });
+    }
+    return armourNames[slot];
+  }
+  function armourHref(names, slot, raw) {
+    var id = gameId(raw);
+    return id !== null && names[id] ? "/equipment.html?slot=" + slot + "&id=" + id : null;
+  }
+
   /* The section, search and page live in the URL (defaults left out): ?slot=melee&q=sword&page=3. */
   var SLOTS = ["items", "melee", "ranged", "heads", "chests", "arms", "waists", "legs"];
 
@@ -197,10 +212,12 @@
     }
     var slot = state.slot;
     var weapons = slot === "melee" || slot === "ranged";
-    Promise.all([request(url()), Icons.load(), weapons ? loadWeaponIds() : null]).then(function (results) {
+    var armour = !weapons && PIECES[slot] && PIECES[slot].slot;
+    Promise.all([request(url()), Icons.load(), weapons ? loadWeaponIds() : armour ? loadArmourNames(armour) : null]).then(function (results) {
       results[0].items.forEach(function (entry) {
         entry.key = equipmentKey(results[1], slot, entry.id);
         if (weapons) entry.href = weaponHref(results[2], slot, entry.id);
+        else if (armour) entry.href = armourHref(results[2], armour, entry.id);
       });
       render(results[0]);
     }).catch(showError);
