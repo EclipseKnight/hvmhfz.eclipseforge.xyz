@@ -3,6 +3,17 @@
   "current": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip",
   "patches": [
     {
+      "version": "1.27",
+      "published": "2026-11-14T18:16Z",
+      "sha256": "8fb33fcbec07c548abc6217729c82f15410dca0f0c95fc6d0331fdd3d22bce85",
+      "size": 63591572,
+      "files": 106,
+      "changes": "Fixes the SD guild card Mission page crash. Kaiji Ito's lines in English. Controller and key rebinding saved to your account. Daily board fixes, tower drops and picks.",
+      "changelog": "/changelog.html#d-2026-11-14-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.27/Frontier_Patch.zip",
+      "current": true
+    },
+    {
       "version": "1.26",
       "published": "2026-11-14T03:48Z",
       "sha256": "1c8ce6da4173efb68aed0fd44b47fd2cd8017524b3dd1f7d3bd2d2135f2b3793",
@@ -11,7 +22,7 @@
       "changes": "The Hunting Road counter opens on Hunting Road / Tower; the Rasta bar's collaboration NPCs (Kaiji Ito, Man in Coat, YoRHa Member) stand in a row and talk in English; Rasta chat bubbles in each hunter's colour, Text size, Extra small damage numbers; the smithy lists every weapon and armour piece; game options sync with the website.",
       "changelog": "/changelog.html#d-2026-11-14-client-patch",
       "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.26/Frontier_Patch.zip",
-      "current": true
+      "current": false
     },
     {
       "version": "1.25",
