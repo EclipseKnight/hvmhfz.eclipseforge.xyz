@@ -53,6 +53,9 @@
      PUT /api/account/qol/chat, /panel or /telemetry with only its key (numbers as numbers), the sections redraw from
      the answer, a 400 message is shown; the "each PC keeps its own choice" note shows only while extraStored is false;
      an answer without chatBubbles (an older API) hides all three;
+   - a fourth section "Controller and key rebinds" (users.qol_rebind): three rows, each a pad select and a key-or-mouse select
+     with the real ids and labels, the note, the per-PC note while rebindStored is false; a change sends all three rows with
+     both parts to PUT /api/account/qol/rebind, the selects redraw from the answer; hidden without "rebind" in the answer;
    - at 375px the card and the page content stay inside the screen;
    - no page errors.
 
@@ -113,6 +116,10 @@ let sendExtra = true;   // false: an API without chatBubbles
 let extraStored = false;
 let chatState = { on: true, types: "localParty", size: "normal", seconds: 6, ownLines: true, linesPerHunter: 3, style: "outlined" };
 let telemetryState = { send: true, chosen: false };
+let sendRebind = true;   // false: an API without rebind (users.qol_rebind)
+let rebindStored = false;
+let rebindState = { select: { pad: "default", key: "none" }, l3: { pad: "default", key: "none" }, r3: { pad: "default", key: "none" } };
+const rebindPuts = [];
 let panelState = { openKey: "Ctrl+F10", controllerCombo: true };
 let keysState = { retireKey: "Ctrl+R", retireOnDeath: "off", retireCarts: 1, skipWaitKey: null, talkKeys: [null, null, null, null, null] };
 function state(flags) {
@@ -141,6 +148,7 @@ function state(flags) {
     out.channel = preMode === "open" ? "pre:mods" : "stable";
   }
   if (sendExtra) Object.assign(out, { chatBubbles: chatState, telemetry: telemetryState, panel: panelState, extraStored });
+  if (sendExtra && sendRebind) Object.assign(out, { rebind: rebindState, rebindStored });
   if (sendViewer) out.viewer = viewerState;
   if (sendOverlays) {
     out.damageNumbers = sendStar ? numbersState : Object.fromEntries(Object.entries(numbersState).filter(([k]) => k !== "weakSpotStar"));
@@ -201,6 +209,13 @@ async function run(browser, base) {
       if (refuseOverlay) return reply(400, { error: "Option \"size\" must be one of [normal, small, large, huge]" });
       if (p.endsWith("numbers")) numbersState = Object.assign({}, numbersState, body);
       else meterState = Object.assign({}, meterState, body);
+      return reply(200, state(flags));
+    }
+    if (p === "/api/account/qol/rebind" && req.method() === "PUT") {
+      const body = JSON.parse(req.postData());
+      rebindPuts.push(body);
+      rebindState = body;
+      rebindStored = true;
       return reply(200, state(flags));
     }
     if (/^\/api\/account\/qol\/(chat|panel|telemetry)$/.test(p) && req.method() === "PUT") {
@@ -617,7 +632,7 @@ async function run(browser, base) {
   };
   const extraSaved = () => page.waitForFunction(() => /options saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
   const sectionTitles = await page.$$eval("#qol-extra h3", (n) => n.map((h) => h.textContent));
-  check("three sections in order", JSON.stringify(sectionTitles) === JSON.stringify(["Chat bubbles", "Game options panel", "Crash and usage data"]), JSON.stringify(sectionTitles));
+  check("four sections in order", JSON.stringify(sectionTitles) === JSON.stringify(["Chat bubbles", "Game options panel", "Crash and usage data", "Controller and key rebinds"]), JSON.stringify(sectionTitles));
   let xt = await xtext();
   check("chat bubbles switch with help, on by default", (await page.isChecked("#qol-cb-on")) && xt.includes("Chat lines over the hunters' heads, in town and in quests."), xt);
   const chatSel = (id) => page.$$eval("#" + id + " option", (n) => n.map((o) => o.textContent)).then(JSON.stringify);
@@ -634,8 +649,36 @@ async function run(browser, base) {
   check("telemetry switch on, help, link, not-chosen note", (await page.isChecked("#qol-telemetry")) && xt.includes("On by default. Sends crash reports and a short health report every few minutes so we can fix bugs; local logs are always written.")
     && (await page.getAttribute("#qol-extra a[href='/diagnostics-data.html']", "href")) === "/diagnostics-data.html" && xt.includes("What is sent") && xt.includes("Not chosen yet: on, and the game asks once."), xt);
   check("stored note shown while extraStored is false, takes-effect line in each section", xt.includes("Until you change these here or in the game, each PC keeps its own choice.")
-    && xt.split("Takes effect at your next login; changes made in the game are saved here.").length === 4, xt);
+    && xt.split("Takes effect at your next login; changes made in the game are saved here.").length === 5, xt);
   check("no hidden-info mark and no lock on the new sections", !xt.includes("normally hides") && (await page.$$eval("#qol-extra input, #qol-extra select, #qol-extra button", (n) => n.every((i) => !i.disabled))));
+
+  // Controller and key rebinds (users.qol_rebind).
+  const rbSel = (id) => page.$$eval("#" + id + " option", (n) => n.map((o) => [o.value, o.textContent])).then(JSON.stringify);
+  const PADS = [["default", "Default (where the game has them)"], ["l3", "L3 (LS)"], ["r3", "R3 (RS)"], ["select", "Select (View)"], ["start", "Start (Menu)"], ["l1", "L1 (LB)"], ["r1", "R1 (RB)"], ["l2", "L2 (LT)"], ["r2", "R2 (RT)"], ["triangle", "Triangle (Y)"], ["circle", "Circle (B)"], ["cross", "Cross (A)"], ["square", "Square (X)"], ["dpad_up", "D-pad up"], ["dpad_down", "D-pad down"], ["dpad_left", "D-pad left"], ["dpad_right", "D-pad right"], ["none", "No pad button"]];
+  const KEYS = [["none", "None"], ["mouse_middle", "Mouse middle"], ["wheel_up", "Mouse wheel up"], ["wheel_down", "Mouse wheel down"], ["q", "Q"], ["e", "E"], ["r", "R"], ["t", "T"], ["f", "F"], ["g", "G"], ["z", "Z"], ["x", "X"], ["c", "C"], ["v", "V"], ["b", "B"], ["tab", "Tab"], ["caps_lock", "Caps Lock"]];
+  check("rebind section: note, per-PC note, six selects with all options", xt.includes("Moves every action the game ties to the Select, L3 or R3 button to another pad button, and can add a key or mouse button for them. The same rows are in the in-game panel's Controls tab (Ctrl+F10); a change here reaches the game at your next login.")
+    && xt.includes("Select button actions") && xt.includes("L3 actions") && xt.includes("R3 actions") && xt.includes("Select: key or mouse") && xt.includes("L3: key or mouse") && xt.includes("R3: key or mouse")
+    && (await page.$$eval("#qol-rb-options select", (n) => n.length)) === 6
+    , xt);
+  let rbOk = true;
+  for (const r of ["select", "l3", "r3"]) {
+    rbOk = rbOk && (await rbSel("qol-rb-" + r + "-pad")) === JSON.stringify(PADS) && (await rbSel("qol-rb-" + r + "-key")) === JSON.stringify(KEYS)
+      && (await page.inputValue("#qol-rb-" + r + "-pad")) === "default" && (await page.inputValue("#qol-rb-" + r + "-key")) === "none";
+  }
+  check("rebind selects list pad and key ids/labels, defaults shown", rbOk);
+  const rbPart = await page.evaluate(() => document.querySelector("#qol-rb-options").closest(".qol-keys").textContent.replace(/\s+/g, " "));
+  check("rebind per-PC note while rebindStored is false", rbPart.includes("Until you change these here or in the game, each PC keeps its own choice."), rbPart);
+  const rbWait = async (n) => { for (let i = 0; i < 100 && rebindPuts.length < n; i++) await page.waitForTimeout(50); };
+  await page.selectOption("#qol-rb-select-pad", "dpad_up"); await rbWait(1);
+  check("rebind PUT sends all three rows, both parts", JSON.stringify(rebindPuts[0]) === JSON.stringify({ select: { pad: "dpad_up", key: "none" }, l3: { pad: "default", key: "none" }, r3: { pad: "default", key: "none" } }), JSON.stringify(rebindPuts));
+  await page.waitForFunction(() => /Controller and key rebinds options saved/.test(document.getElementById("qol-note").textContent) && !document.getElementById("qol-rb-r3-key").disabled, null, { timeout: 5000 }).catch(() => {});
+  await page.selectOption("#qol-rb-r3-key", "wheel_down"); await rbWait(2);
+  check("second change keeps the first and sends the key part", JSON.stringify(rebindPuts[1]) === JSON.stringify({ select: { pad: "dpad_up", key: "none" }, l3: { pad: "default", key: "none" }, r3: { pad: "default", key: "wheel_down" } }), JSON.stringify(rebindPuts));
+  await page.waitForFunction(() => document.getElementById("qol-rb-r3-key").value === "wheel_down" && !document.getElementById("qol-rb-r3-key").disabled, null, { timeout: 5000 }).catch(() => {});
+  check("selects redraw from the answer, per-PC note gone", (await page.inputValue("#qol-rb-select-pad")) === "dpad_up" && (await page.inputValue("#qol-rb-r3-key")) === "wheel_down"
+    && !(await page.evaluate(() => document.querySelector("#qol-rb-options").closest(".qol-keys").textContent)).includes("each PC keeps its own choice"));
+  rebindState = { select: { pad: "default", key: "none" }, l3: { pad: "default", key: "none" }, r3: { pad: "default", key: "none" } };
+  rebindStored = true;   // the extraStored checks below read the whole #qol-extra text
 
   await page.click("#qol-cb-on"); await extraSaved();
   check("chat switch PUT", (await extraPut(JSON.stringify(["chat", { on: false }]))) === JSON.stringify(["chat", { on: false }]), lastExtra());
@@ -714,13 +757,21 @@ async function run(browser, base) {
       .slice(0, 6).map((e) => e.tagName + "#" + e.id + "." + e.className) }));
   check("nothing in the page content passes 375px", widths.card <= widths.win && !widths.wide.length, JSON.stringify(widths));
 
+  // An API with chatBubbles but no rebind: only the rebind section is hidden.
+  sendRebind = false;
+  await page.reload(); await openFolds();
+  await page.waitForSelector("#qol-extra input", { timeout: 5000 });
+  check("rebind section hidden without rebind, the other three stay", !(await page.$("#qol-rb-options"))
+    && JSON.stringify(await page.$$eval("#qol-extra h3", (n) => n.map((h) => h.textContent))) === JSON.stringify(["Chat bubbles", "Game options panel", "Crash and usage data"]));
+  sendRebind = true;
+
   // An older API (no "viewer" in the answer): the part is hidden, the switch stays.
   sendViewer = false;
   sendOverlays = false;
   sendExtra = false;
   await page.reload(); await openFolds();
   await page.waitForSelector("#qol-list input", { timeout: 5000 });
-  check("no account-option sections without chatBubbles", !(await page.isVisible("#qol-extra")) && !(await page.$("#qol-cb-on")) && !(await page.$("#qol-telemetry")) && !(await page.$("#qol-panel-combo")));
+  check("no account-option sections without chatBubbles", !(await page.isVisible("#qol-extra")) && !(await page.$("#qol-cb-on")) && !(await page.$("#qol-telemetry")) && !(await page.$("#qol-panel-combo")) && !(await page.$("#qol-rb-options")));
   await page.waitForSelector("#qol-keys:not([hidden])", { timeout: 5000 }).catch(() => {});
   check("viewer part hidden without viewer", !(await page.isVisible("#qol-viewer")) && !(await page.$("#qol-viewer-save")));
   check("iframe viewer switch still listed without viewer", !!(await page.$("#qol-iframeViewer")));

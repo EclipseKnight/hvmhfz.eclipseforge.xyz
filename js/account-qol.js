@@ -29,7 +29,10 @@
    "Chat bubbles" (a switch with six options under it; PUT /api/account/qol/chat), "Game options panel" (the key that opens
    the in-game panel, and the View + Start switch; PUT .../panel) and "Crash and usage data" (one switch, with a note while
    "telemetry.chosen" is false; PUT .../telemetry {send}). Each change saves at once and the sections redraw from the answer.
-   An answer without "chatBubbles" (an older API) hides all three. */
+   An answer without "chatBubbles" (an older API) hides all three.
+   A fourth section, "Controller and key rebinds" (users.qol_rebind), follows when the answer has "rebind": three rows (Select, L3
+   and R3 button actions), each a pad select and a key-or-mouse select; a change sends all three rows with both parts to
+   PUT .../rebind and the card redraws from the answer. "rebindStored" false shows the per-PC note. Without "rebind" it is hidden. */
 (function () {
   "use strict";
   var API = "https://api.hvmhfz.eclipseforge.xyz";
@@ -273,6 +276,44 @@
   }
 
   /* ---- Chat bubbles, game options panel, crash and usage data (users.qol_extra) ---- */
+  var REBIND_PADS = [["default", "Default (where the game has them)"], ["l3", "L3 (LS)"], ["r3", "R3 (RS)"], ["select", "Select (View)"], ["start", "Start (Menu)"],
+    ["l1", "L1 (LB)"], ["r1", "R1 (RB)"], ["l2", "L2 (LT)"], ["r2", "R2 (RT)"], ["triangle", "Triangle (Y)"], ["circle", "Circle (B)"], ["cross", "Cross (A)"],
+    ["square", "Square (X)"], ["dpad_up", "D-pad up"], ["dpad_down", "D-pad down"], ["dpad_left", "D-pad left"], ["dpad_right", "D-pad right"], ["none", "No pad button"]];
+  var REBIND_KEYS = [["none", "None"], ["mouse_middle", "Mouse middle"], ["wheel_up", "Mouse wheel up"], ["wheel_down", "Mouse wheel down"], ["q", "Q"], ["e", "E"],
+    ["r", "R"], ["t", "T"], ["f", "F"], ["g", "G"], ["z", "Z"], ["x", "X"], ["c", "C"], ["v", "V"], ["b", "B"], ["tab", "Tab"], ["caps_lock", "Caps Lock"]];
+  var REBIND_ROWS = [["select", "Select button actions", "Select: key or mouse"], ["l3", "L3 actions", "L3: key or mouse"], ["r3", "R3 actions", "R3: key or mouse"]];
+
+  // Controller and key rebinds (users.qol_rebind): every change sends all three rows, both parts.
+  function rebindPart(data, takes) {
+    var r = data.rebind;
+    if (!r || typeof r !== "object") return;   // an older API
+    var part = extraPart("Controller and key rebinds");
+    if (data.rebindStored === false) part.appendChild(el("p", "note-text qol-rebind-note", "Until you change these here or in the game, each PC keeps its own choice."));
+    part.appendChild(el("p", "note-text", "Moves every action the game ties to the Select, L3 or R3 button to another pad button, and can add a key or mouse button for them. The same rows are in the in-game panel's Controls tab (Ctrl+F10); a change here reaches the game at your next login."));
+    var box = el("div", "qol-sub");
+    box.id = "qol-rb-options";
+    var selects = [];
+    var sub = { path: "rebind", name: "Controller and key rebinds" };
+    function send(input) {
+      var body = {};
+      selects.forEach(function (s) {
+        body[s.row] = body[s.row] || {};
+        body[s.row][s.part] = s.input.value;
+      });
+      saveSub(sub, input, body);
+    }
+    REBIND_ROWS.forEach(function (row) {
+      var v = r[row[0]] && typeof r[row[0]] === "object" ? r[row[0]] : {};
+      [["pad", row[1], REBIND_PADS, "default"], ["key", row[2], REBIND_KEYS, "none"]].forEach(function (p) {
+        var input = viewerSelect(box, "qol-rb-" + row[0] + "-" + p[0], p[1], p[2], pick(p[2], v[p[0]], p[3]));
+        selects.push({ row: row[0], part: p[0], input: input });
+        input.addEventListener("change", function () { send(input); });
+      });
+    });
+    part.appendChild(box);
+    part.appendChild(el("p", "note-text", takes));
+  }
+
   function extraSwitch(parent, id, name, help, checked, onChange) {
     var row = el("div", "qol-item");
     var label = el("label", "qol-label");
@@ -339,6 +380,7 @@
     help.appendChild(more);
     if (tel.chosen === false) row.appendChild(el("p", "note-text qol-telemetry-note", "Not chosen yet: on, and the game asks once."));
     part.appendChild(el("p", "note-text", takes));
+    rebindPart(data, takes);
   }
 
   /* ---- Keys ---- */
