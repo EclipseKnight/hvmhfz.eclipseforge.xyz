@@ -1,1 +1,1 @@
-{"id":5696,"name":"Lucius's Request Ⅲ","drops":[],"quests":[{"id":63098,"name":"Remove the Stench Source！！","count":1}],"rewards":[[63097,"Protect the Hot Spring Town！","LR","main target",10,33.0]],"offered":[63097]}
+{"id":5696,"name":"Lucius's Request Ⅲ","drops":[],"quests":[{"id":63098,"name":"Remove the Stench Source！！","count":1}],"rewards":[[63097,"Protect the Hot Spring Town！","LR","main target",10,33.0]],"where":[["quest-chains",{"chain":[[5695,[63097]],[5696,[63098]]],"note":"reward of quest 63097, which takes 5695 Lucius's Request Ⅱ"}]],"offered":[63097]}

@@ -1,1 +1,1 @@
-{"id":15218,"name":"Shaka Venom Lump","drops":[],"quests":[{"id":55731,"name":"Lord Of Dripping Poison","count":10}],"rewards":[[55730,"Strongest Poison Of The Swamp","G","main target",10,1.0]],"offered":[55730]}
+{"id":15218,"name":"Shaka Venom Lump","drops":[],"quests":[{"id":55731,"name":"Lord Of Dripping Poison","count":10}],"rewards":[[55730,"Strongest Poison Of The Swamp","G","main target",10,1.0]],"where":[["quest-chains",{"chain":[[15217,[55730]],[15218,[55731]]],"note":"reward of quest 55730, which takes 15217 Shaka Poison Lump"}]],"offered":[55730]}

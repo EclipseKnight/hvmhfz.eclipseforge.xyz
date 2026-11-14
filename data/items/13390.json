@@ -1,1 +1,1 @@
-{"id":13390,"name":"Engine Key","drops":[],"quests":[{"id":40217,"name":"That Island of Higanjima","count":1}],"rewards":[]}
+{"id":13390,"name":"Engine Key","drops":[],"quests":[{"id":40217,"name":"That Island of Higanjima","count":1}],"rewards":[],"where":[["npc-man-in-coat",{"chain":[[13390,[40217]]],"note":"chain: 13390 Engine Key -> quest 40217","qty":1,"step":1,"when":"Talk to the Man in Coat and accept the request; only while you hold none"}]]}

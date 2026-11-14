@@ -1,1 +1,1 @@
-{"id":12455,"name":"Moonlight Coin","drops":[],"quests":[{"id":56131,"name":"Deafening Thunderstorm","count":1}],"rewards":[[56130,"Invisible Force","G","main target",5,5.0]],"offered":[56130]}
+{"id":12455,"name":"Moonlight Coin","drops":[],"quests":[{"id":56131,"name":"Deafening Thunderstorm","count":1}],"rewards":[[56130,"Invisible Force","G","main target",5,5.0]],"where":[["quest-chains",{"chain":[[12456,[56130]],[12455,[56131]]],"note":"reward of quest 56130, which takes 12456 Mysterious Coin"}]],"offered":[56130]}

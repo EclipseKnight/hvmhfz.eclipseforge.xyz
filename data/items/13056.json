@@ -1,1 +1,1 @@
-{"id":13056,"name":"10,000 Pelika","drops":[],"quests":[{"id":40215,"name":"Road to Endo Finance","count":1}],"rewards":[]}
+{"id":13056,"name":"10,000 Pelika","drops":[],"quests":[{"id":40215,"name":"Road to Endo Finance","count":1}],"rewards":[],"where":[["npc-kaiji-ito",{"chain":[[13056,[]]],"qty":1,"step":1,"when":"Talk to Kaiji Ito and accept the request; only while you hold none; client patch after v1.25 (part 179)"}]]}
