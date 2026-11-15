@@ -326,7 +326,9 @@
       head.appendChild(el("h3", null, guild.name || "Unnamed guild"));
       var badges = el("div", "badge-row");
       if (guild.recruiting) badges.appendChild(el("span", "badge good", "Recruiting"));
-      badges.appendChild(el("span", "badge", (guild.members || []).length + " members"));
+      badges.appendChild(el("span", "badge", (guild.members || []).length +
+        (guild.memberLimit ? " of " + guild.memberLimit : "") + " members"));
+      if (guild.myRole && guild.myRole !== "Member") badges.appendChild(el("span", "badge", "You: " + guild.myRole));
       head.appendChild(badges);
       card.appendChild(head);
 
@@ -352,7 +354,7 @@
       var table = el("table", "data-table member-table");
       var thead = el("thead");
       var headRow = el("tr");
-      ["Hunter", "Rank", "Recruiter", "Joined", "RP today", "RP yesterday", "Last login"].forEach(function (label) {
+      ["Hunter", "Rank", "Manage right", "HR", "GR", "Weapon", "Joined", "RP today", "RP yesterday", "Last login"].forEach(function (label) {
         headRow.appendChild(el("th", null, label));
       });
       thead.appendChild(headRow);
@@ -361,10 +363,20 @@
       var tbody = el("tbody");
       (guild.members || []).forEach(function (member) {
         var row = el("tr");
-        row.dataset.search = [member.name, member.rank].filter(Boolean).join(" ").toLowerCase();
-        [member.name || "Unknown", member.rank || "Member", member.recruiter ? "Yes" : "-",
-         when(member.joinedAt), number(member.rpToday), number(member.rpYesterday),
-         when(member.lastLogin)].forEach(function (value) {
+        row.dataset.search = [member.name, member.rank, member.weapon].filter(Boolean).join(" ").toLowerCase();
+        var nameCell = el("td");
+        if (member.online) {
+          var dot = el("span", "online-dot");
+          dot.title = "Online now";
+          dot.appendChild(el("span", "visually-hidden", "Online now"));
+          nameCell.appendChild(dot);
+        }
+        nameCell.appendChild(document.createTextNode(member.name || "Unknown"));
+        if (member.own) nameCell.appendChild(el("span", "badge", "You"));
+        row.appendChild(nameCell);
+        [member.rank || "Member", member.recruiter ? "Yes" : "-", hrText(member.hr), number(member.gr),
+         member.weapon || "-", when(member.joinedAt), number(member.rpToday), number(member.rpYesterday),
+         member.online ? "Online now" : when(member.lastLogin)].forEach(function (value) {
           row.appendChild(cellOf("td", null, value));
         });
         tbody.appendChild(row);
@@ -374,6 +386,8 @@
       card.appendChild(wrap);
 
       card.dataset.guild = String(guild.id);
+      // Applications, recruiting and the comment for leaders, sub-leaders and recruiters (js/account-guild.js)
+      if (window.HvGuildManage) window.HvGuildManage.decorate(card, guild, wrap);
       container.appendChild(card);
     });
 
@@ -705,6 +719,18 @@
   }
 
   /* ---------- boot ---------- */
+
+  // js/account-guild.js reloads the guild tab after a change.
+  window.HvAccountGuilds = {
+    reload: function () {
+      return request("/api/account/guilds").then(function (guilds) {
+        state.guilds = guilds;
+        renderGuilds(state.guilds);
+        return guilds;
+      });
+    },
+    request: request
+  };
 
   function signOut() {
     clearToken();

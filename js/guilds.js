@@ -1,9 +1,11 @@
-/* Guild directory: search, sort, paging and a detail view with roster and board. */
+/* Guild directory: search, sort, an "Active" filter (a member logged in during the last 7, 30 or 90 days:
+   /api/public/guilds?active=N; sort "active" = most recently active first), paging, and a detail view with the
+   roster (rank with Sub-leader for order slots 2-3, HR, GR, main weapon, an "online now" dot) and the board. */
 (function () {
   "use strict";
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
-  var state = { q: "", sort: "rp", page: 0, size: 24 };
+  var state = { q: "", sort: "rp", active: 0, page: 0, size: 24 };
 
   function el(tag, className, text) {
     var node = document.createElement(tag);
@@ -62,6 +64,7 @@
       " · led by " + (guild.leader || "unknown")));
     link.appendChild(el("p", "tile-stat", num(guild.rankRp) + " guild RP" + (guild.eventRp ? " · " + num(guild.eventRp) + " event RP" : "")));
     link.appendChild(el("p", "tile-meta", "Founded " + date(guild.createdAt)));
+    link.appendChild(el("p", "tile-meta", guild.lastActive ? "Last active " + date(guild.lastActive) : "No recent activity"));
     return link;
   }
 
@@ -69,7 +72,9 @@
     var grid = document.getElementById("guilds");
     clear(grid);
     if (!data.items.length) {
-      grid.appendChild(el("p", "empty-state", "No guild matches that search."));
+      grid.appendChild(el("p", "empty-state", state.active
+        ? "No guild matches that search with a member active in the last " + state.active + " days."
+        : "No guild matches that search."));
     } else {
       data.items.forEach(function (guild) { grid.appendChild(tile(guild)); });
     }
@@ -86,13 +91,21 @@
 
   function loadList() {
     var url = "/api/public/guilds?q=" + encodeURIComponent(state.q) + "&sort=" + state.sort +
-      "&page=" + state.page + "&size=" + state.size;
+      "&active=" + state.active + "&page=" + state.page + "&size=" + state.size;
     request(url).then(renderList).catch(function () {
       document.getElementById("guild-results").textContent = "Could not load guilds";
     });
   }
 
   /* ---------- detail ---------- */
+
+  // "Online now": a green dot before the name, with the words for screen readers.
+  function onlineDot() {
+    var dot = el("span", "online-dot");
+    dot.title = "Online now";
+    dot.appendChild(el("span", "visually-hidden", "Online now"));
+    return dot;
+  }
 
   function detail(guild) {
     var view = document.getElementById("detail-view");
@@ -148,7 +161,7 @@
     var table = el("table", "data-table");
     var thead = el("thead");
     var headRow = el("tr");
-    ["Hunter", "Rank", "Joined", "RP today", "RP yesterday", "Last seen"].forEach(function (label) {
+    ["Hunter", "Rank", "HR", "GR", "Weapon", "Joined", "RP today", "RP yesterday", "Last seen"].forEach(function (label) {
       headRow.appendChild(el("th", null, label));
     });
     thead.appendChild(headRow);
@@ -160,11 +173,15 @@
       var nameCell = el("td", "cell-name");
       var link = el("a", null, member.name || "Unknown");
       link.href = "/hunters.html?id=" + member.characterId;
+      if (member.online) nameCell.appendChild(onlineDot());
       nameCell.appendChild(link);
-      if (member.recruiter) nameCell.appendChild(el("span", "badge", "Recruiter"));
+      if (member.recruiter && member.rank !== "Recruiter") nameCell.appendChild(el("span", "badge", "Recruiter"));
       row.appendChild(nameCell);
-      [member.rank || "Member", dateValue(member.joinedAt), num(member.rpToday), num(member.rpYesterday),
-       dateValue(member.lastLogin)].forEach(function (value) { row.appendChild(cellOf("td", null, value)); });
+      [member.rank || "Member", num(member.hr), num(member.gr), member.weapon || "-", dateValue(member.joinedAt),
+       num(member.rpToday), num(member.rpYesterday),
+       member.online ? "Online now" : dateValue(member.lastLogin)].forEach(function (value) {
+        row.appendChild(cellOf("td", null, value));
+      });
       tbody.appendChild(row);
     });
     table.appendChild(tbody);
@@ -246,6 +263,12 @@
 
     document.getElementById("guild-sort").addEventListener("change", function (event) {
       state.sort = event.target.value;
+      state.page = 0;
+      loadList();
+    });
+
+    document.getElementById("guild-active").addEventListener("change", function (event) {
+      state.active = Number(event.target.value) || 0;
       state.page = 0;
       loadList();
     });

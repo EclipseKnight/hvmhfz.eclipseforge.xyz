@@ -1,0 +1,23 @@
+/* Guild pages: the "online now" dot in rosters (account Guild tab, guild directory) and the Manage part of a guild
+   card on the account page (js/account-guild.js). Uses the shared theme's variables (css/styles.css). */
+.online-dot{display:inline-block;width:9px;height:9px;margin-right:6px;border-radius:50%;background:#58c48f;
+  box-shadow:0 0 0 2px rgba(88,196,143,.25);vertical-align:middle}
+.guild-manage{margin:12px 0 14px;padding:12px 14px;border:1px solid var(--line);border-radius:3px;
+  background:rgba(183,138,51,.06)}
+.guild-manage h4{margin:0 0 6px}
+.guild-manage .note-text{margin:0 0 8px}
+.guild-manage-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:8px 0}
+.guild-comment-edit input[type="text"]{flex:1 1 280px;min-width:0}
+.guild-switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.guild-apps{margin-top:10px}
+.guild-apps-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.guild-app-actions{white-space:nowrap}
+.guild-app-actions .btn + .btn{margin-left:6px}
+.guild-app-actions .toolbar-note{margin-right:8px}
+.guild-manage-status{min-height:1.2em;margin:4px 0;font-weight:600;color:var(--teal)}
+.guild-manage-status:empty{display:none}
+.guild-manage-status.is-error,.toolbar-note.is-error{color:var(--wax)}
+.guild-own-apps{list-style:none;margin:0;padding:0}
+.guild-own-apps li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;
+  padding:8px 0;border-bottom:1px solid var(--line)}
+.guild-own-apps .badge{margin-left:8px}
