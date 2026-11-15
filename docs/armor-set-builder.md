@@ -69,5 +69,54 @@ wear bits (+4: male, female, blademaster, gunner), top-level slots (+0x1c).
 ## Not in phase 1
 
 Character import, "what I own" and missing materials (phase 2, lane C), search by wanted skills (phase 2b: until
-then the page links to d0t-execute's Frontier Set Searcher), community sets (phase 3), upgrade lines on this page
+then the page links to d0t-execute's Frontier Set Searcher), community sets (phase 3, see "Community sets" below), upgrade lines on this page
 (each piece links to its equipment page, which shows the line and materials).
+
+## Community sets (phase 3, lane D)
+
+Players post a set from the Set builder; everyone can browse, filter and upvote; staff hide reported sets. Sets
+show as soon as they are posted. The author's hunter name shows only if the player ticked it; a character's
+inventory is never public. API side: the lead's work in `hvmhfz_rest_api` (`/api/public/armor-sets`,
+`/api/account/armor-sets`, `/api/admin/armor-sets`, `/share/set/<id>`).
+
+| File | What |
+|---|---|
+| `community-sets.html`, `js/community-sets.js` | Browse (filters in the address), one set (`?id=N`), "My sets" (edit details, delete, link back to the builder) |
+| `js/community-api.js` | The sign-in token, one `request()` function, the options answer (bands, stages, limits; a fallback if the API is down), the account's characters, the sign-in link |
+| `js/set-post-form.js` | The details form (title, notes, band, stage, character, "Show my hunter name"), used by the builder's post panel and by "My sets" edit |
+| `js/set-builder.js`, `set-builder.html` (`#sb-post`) | "Post to Community Sets" panel under the editor; `&edit=<id>` in the address edits one of the player's sets |
+| `js/admin-sets.js`, `admin.html` (`tab-sets`, `panel-sets`, `#sets`) | Admin tab: queue (Reported / Hidden / All), one set with reports and log, Hide, Unhide, Dismiss; badge = open reports |
+| `css/community-sets.css` | Styles of all of the above (the builder and admin pages load it too) |
+| `js/share.js` | The "Copy link" button on `community-sets.html?id=N` copies `https://api.hvmhfz.eclipseforge.xyz/share/set/N` |
+| `dev/check-community-sets.js`, `dev/check-admin-sets.js` | Headless checks with a fake API (page, post form, admin tab) |
+
+Address of the list: `community-sets.html?band=hr4&upTo=gr50&stage=zenith&weapon=7&skill=12&skill=40&match=all&sort=new&page=1`
+(only non-default values are written; `page` counts from 0; bad values are dropped). A band and `upTo` do not combine
+(choosing one clears the other). `?id=N` opens one set. `set-builder.html#s=<code>&edit=<id>` is the builder
+editing set `<id>`.
+
+What the page sends with a post: the current set normalized (`ArmorCalc.normalize`, `data` = the page's data
+version) and `skills` = the active skill ids the calculator shows that work with the weapon (not idle, negative or
+dropped skills). The character select is always sent (staff see which character posted); the name shows publicly only
+with `showAuthor`. The band defaults from the character's rank (`SetPostForm.bandFor`), stage to Any.
+
+Endpoints used (errors are `{"message"}`, shown as they are):
+
+| Call | Used for |
+|---|---|
+| `GET /api/public/armor-sets/options` | bands, stages, `maxTitle` 60, `maxNotes` 1000, `maxReason` 300 (page falls back to built-in values) |
+| `GET /api/public/armor-sets?band&upTo&stage&weapon&skill&match&sort&page&size=20` | the list; sent with the sign-in header when there is one so `voted` is right |
+| `GET /api/public/armor-sets/{id}` | one set |
+| `GET /api/account/armor-sets`, `POST`, `PUT /{id}`, `DELETE /{id}` | my sets, post, edit, delete |
+| `GET /api/account/characters` | the character select |
+| `PUT` / `DELETE /api/account/armor-sets/{id}/vote` | upvote, remove vote |
+| `POST /api/account/armor-sets/{id}/report` | report with a reason |
+| `GET /api/admin/armor-sets?status=reported\|hidden\|all&page&size=50`, `GET /{id}`, `POST /{id}/hide` (`{reason}`), `/unhide`, `/dismiss` | admin tab; tool key `sets`, actions `view` and `act` |
+
+Names on a set's page come from `data/armor/` (pieces by slot, decorations and skills from `index.json`) and
+`data/weapons/<type>.json`; weapon class names and slugs are fixed lists in `js/community-sets.js` (the classes of
+the set format above). Titles, notes, author names and report reasons are only put in with `textContent`.
+Signed out, vote, report and post show "Sign in to ..." links that come back to the page (`js/signin-next.js`).
+
+Checks: `NODE_PATH=/root/work/pw-tools/node_modules node dev/check-community-sets.js` and `dev/check-admin-sets.js`;
+`SHOTS=<folder>` on the first saves pictures.

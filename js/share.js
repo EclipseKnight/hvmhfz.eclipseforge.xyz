@@ -1,11 +1,11 @@
 /* "Copy link" on the pages people link to one thing of: a monster, quest, item, skill, weapon type, changelog day,
-   hunter, guild or leaderboard. It copies the address of that thing's share page, not this
+   hunter, guild, leaderboard or community set. It copies the address of that thing's share page, not this
    page's own address: Discord and X read a page without running its scripts, so /monster.html?m=akantor
    previews as "Monster", while /s/monster/akantor.html previews as Akantor with its picture and opens this
    page. With no share page (an item without sources, a page opened without an id) it copies this page's
    own address. Share pages of the site's own data are files in /s/ (dev/make-share-pages.py); hunters,
    guilds and leaderboards are API data, so their share links are served by the API (/share/hunter/<id>,
-   /share/guild/<id>, /share/leaderboard/<board>[/<option>]; the API README's "Share links"), which also
+   /share/guild/<id>, /share/set/<id>, /share/leaderboard/<board>[/<option>]; the API README's "Share links"), which also
    answers unknown ids with a page that opens the list. The button sits at the end of the breadcrumbs; its
    few styles are inline so the shared stylesheet (and every page's ?v=) does not change for it. */
 (function () {
@@ -51,6 +51,8 @@
     var current = new URLSearchParams(location.search);
     if (page === "hunters.html" && digits(current.get("id"))) return Promise.resolve({ url: API + "/share/hunter/" + current.get("id") });
     if (page === "guilds.html" && digits(current.get("id"))) return Promise.resolve({ url: API + "/share/guild/" + current.get("id") });
+    // a community set: the API's share link names the set (title, weapon, skills) and opens it on community-sets.html
+    if (page === "community-sets.html" && digits(current.get("id"))) return Promise.resolve({ url: API + "/share/set/" + current.get("id") });
     if (page === "leaderboards.html") {
       var board = boardLink(location.hash.slice(1));
       return Promise.resolve(board ? { url: API + board } : null);

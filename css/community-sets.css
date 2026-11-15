@@ -1,0 +1,80 @@
+/* Community sets (community-sets.html, js/community-sets.js), the post form (js/set-post-form.js, shared with
+   set-builder.html) and the admin Community sets tab (js/admin-sets.js). Builds on styles.css: panels, fields,
+   chips, badges, tables, pager. */
+
+/* the filters: selects side by side, the skill picker across the full row */
+.cs-filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:0 16px;align-items:end;margin-bottom:6px}
+.cs-filters .field select{max-width:none}
+.cs-skill-field{grid-column:1/-1}
+.cs-skill-add{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cs-skill-add input{flex:1 1 220px;min-width:0}
+.cs-skill-add select{flex:0 0 auto;min-width:150px}
+.cs-skill-add select[hidden]{display:none}
+.cs-skill-chips{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.cs-skill-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 4px 4px 10px;border:1px solid var(--line);border-radius:14px;
+  background:rgba(183,138,51,.14);font:600 .8rem var(--font-ui)}
+.cs-chip-x{min-width:24px;min-height:24px;border:0;border-radius:12px;background:transparent;color:var(--ink-soft);cursor:pointer;font:700 .8rem var(--font-ui)}
+.cs-chip-x:hover{background:rgba(139,47,39,.15);color:var(--wax)}
+.cs-filter-actions{grid-column:1/-1;margin-bottom:10px}
+
+/* a set in the list: a card per set, as many columns as fit */
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.cs-card,.cs-mine-item{min-width:0;padding:12px 14px;border:1px solid var(--line);border-left:6px solid var(--gold);border-radius:3px;
+  background:rgba(255,250,236,.6)}
+.cs-card-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+.cs-card-title{margin:0;font-size:1.05rem;overflow-wrap:anywhere;min-width:0}
+.cs-votes{font:700 .78rem var(--font-ui);color:var(--ink-soft);white-space:nowrap}
+.cs-votes.is-voted{color:var(--wax)}
+.cs-meta{margin:4px 0 8px;font:600 .8rem var(--font-ui);color:var(--ink-soft);overflow-wrap:anywhere}
+.cs-skills{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.cs-skills .badge{background:rgba(183,138,51,.12)}
+.cs-more{font:.78rem var(--font-ui);color:var(--ink-soft);align-self:center}
+.cs-foot{margin:0;font:.78rem var(--font-ui);color:var(--ink-soft);overflow-wrap:anywhere}
+.cs-empty{margin:8px 0}
+
+/* my sets */
+.cs-mine-list{display:grid;gap:10px}
+.cs-hidden-note{margin:8px 0}
+.cs-confirm{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:8px}
+.cs-edit{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.cs-message{margin:10px 0}
+
+/* one set */
+.cs-back{margin:0 0 12px}
+/* the title sits in the dark panel head, so it takes the head's gold */
+.cs-detail-title,.as-title{margin:0;color:var(--gold-bright);font:700 1.05rem/1.3 var(--font-ui);letter-spacing:.04em;overflow-wrap:anywhere;min-width:0}
+.cs-notes{white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0}
+.cs-sub{margin:18px 0 8px;font-size:1rem}
+.cs-actions{margin:14px 0 8px;align-items:center}
+.cs-own{margin:0}
+.cs-report-form{margin:10px 0;max-width:640px}
+.cs-pieces th[scope],.cs-pieces tbody th{text-align:left;white-space:nowrap}
+.cs-pieces td{overflow-wrap:anywhere}
+
+/* the post / edit form */
+.spf-form{max-width:680px}
+.spf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 16px}
+.spf-check{display:block;margin:0 0 4px}
+.spf-actions{margin-top:12px}
+
+/* the admin tab */
+.as-filters{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px;margin:0 0 12px}
+.as-filters .chips{margin:0 0 16px}
+.as-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;margin:0 0 10px;padding:12px 14px;border:1px solid var(--line);
+  border-left:6px solid var(--gold);border-radius:3px;background:rgba(255,250,236,.6);cursor:pointer}
+.as-card:hover{background:rgba(183,138,51,.12)}
+.as-card.is-hidden{border-left-color:var(--wax)}
+.as-card h3{margin:0;font-size:1rem;overflow-wrap:anywhere}
+.as-card p{margin:0}
+.as-reports{font:700 .74rem var(--font-ui);color:var(--wax)}
+.as-detail .cs-actions{margin:12px 0}
+.as-list{list-style:none;margin:0 0 12px;padding:0}
+.as-list li{padding:6px 0;border-bottom:1px solid rgba(189,166,122,.5);overflow-wrap:anywhere}
+.as-list li:last-child{border-bottom:0}
+.as-reason{width:100%;max-width:640px}
+
+@media (max-width:560px){
+  .cs-grid{grid-template-columns:minmax(0,1fr)}
+  .cs-filters{grid-template-columns:minmax(0,1fr)}
+  .as-card{grid-template-columns:minmax(0,1fr)}
+}

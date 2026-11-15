@@ -23,6 +23,7 @@
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
     <link rel="stylesheet" href="/css/styles.css?v=23" />
     <link rel="stylesheet" href="/css/admin-flags.css?v=2" />
+    <link rel="stylesheet" href="/css/community-sets.css?v=1" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/tablesort.js" defer></script>
     <script src="/js/background.js" defer></script>
@@ -83,6 +84,7 @@
             <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-tools">Tools</button>
             <div class="nav-menu" id="nav-tools">
               <a class="navlink" href="/set-builder.html">Set builder</a>
+              <a class="navlink" href="/community-sets.html">Community sets</a>
               <a class="navlink" href="/quest-editor.html">Quest builder</a>
               <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
             </div>
@@ -143,6 +145,7 @@
         <a class="tab" id="tab-quests" role="tab" aria-controls="panel-quests" aria-selected="false" href="#quests">Custom quests <span class="tab-count" id="count-quests"></span></a>
         <a class="tab" id="tab-users" role="tab" aria-controls="panel-users" aria-selected="false" href="#users">Users <span class="tab-count" id="count-users"></span></a>
         <a class="tab" id="tab-flags" role="tab" aria-controls="panel-flags" aria-selected="false" href="#flags">Flags <span class="fl-badge" id="count-flags" hidden></span><span class="fl-badge is-critical" id="count-flags-critical" hidden></span></a>
+        <a class="tab" id="tab-sets" role="tab" aria-controls="panel-sets" aria-selected="false" href="#sets">Community sets <span class="fl-badge" id="count-sets" hidden></span></a>
         <a class="tab" id="tab-diagnostics" role="tab" aria-controls="panel-diagnostics" aria-selected="false" href="#diagnostics">Diagnostics</a>
         <a class="tab" id="tab-server" role="tab" aria-controls="panel-server" aria-selected="false" href="#server">Server</a>
         <a class="tab" id="tab-audit" role="tab" aria-controls="panel-audit" aria-selected="false" href="#audit">Audit</a>
@@ -821,6 +824,33 @@
       </section>
       </div>
 
+      <!-- Community sets: js/admin-sets.js (/api/admin/armor-sets/**); tool key "sets": view reads, act hides, unhides and dismisses -->
+      <div class="tab-panel" id="panel-sets" hidden>
+      <section class="panel" id="sets-panel">
+        <div class="panel-head"><h2>Community sets</h2><span class="panel-note" id="as-note"></span></div>
+        <p class="form-alert" id="as-alert" hidden></p>
+        <p class="road-ok" id="as-ok" hidden></p>
+        <div id="as-main">
+          <p class="note-text">Armour sets players posted from the Set builder. They show as soon as they are posted; players report the ones that do not belong. <b>Reported</b> lists sets with open reports. Open one to read the reports and the log, then <b>Hide</b> it (a reason is required and the author sees it), <b>Unhide</b> it, or <b>Dismiss</b> the reports to keep it shown. Without the Act permission you can read but not change anything.</p>
+          <div class="as-filters">
+            <div class="chips" id="as-status" role="group" aria-label="Status">
+              <button type="button" class="chip" data-status="reported" aria-pressed="true">Reported</button>
+              <button type="button" class="chip" data-status="hidden" aria-pressed="false">Hidden</button>
+              <button type="button" class="chip" data-status="all" aria-pressed="false">All</button>
+            </div>
+            <button type="button" class="ghost-btn small" id="as-refresh">Refresh</button>
+          </div>
+          <div id="as-list"></div>
+          <div class="pager" id="as-pager" hidden>
+            <button type="button" class="ghost-btn small" id="as-prev">Previous</button>
+            <span class="pager-note" id="as-page-note"></span>
+            <button type="button" class="ghost-btn small" id="as-next">Next</button>
+          </div>
+        </div>
+        <div id="as-detail" hidden></div>
+      </section>
+      </div>
+
       <!-- Flags: js/admin-flags.js (/api/admin/flags/**); admins write, moderators read -->
       <div class="tab-panel" id="panel-flags" hidden>
       <section class="panel" id="flags-panel">
@@ -1105,9 +1135,11 @@
     <script src="/js/move-names.js?v=2"></script>
     <script src="/js/admin-balance-grid.js?v=5"></script>
     <script src="/js/admin-flags.js?v=4"></script>
+    <script src="/js/armor-calc.js?v=1"></script>
+    <script src="/js/admin-sets.js?v=1"></script>
     <script src="/js/admin-permissions.js?v=1"></script>
     <script src="/js/hr.js?v=1"></script>
-    <script src="/js/admin.js?v=12"></script>
+    <script src="/js/admin.js?v=13"></script>
     <script src="/js/search.js?v=5" defer></script>
   </body>
 </html>

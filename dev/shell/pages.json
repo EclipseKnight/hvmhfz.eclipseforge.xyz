@@ -61,6 +61,7 @@
   {"page": "weapons.html", "group": "Database", "label": "Weapons", "title": "Weapons · Hunsterverse", "current": "/weapons.html"},
   {"page": "balance.html", "group": "Database", "label": "Balance changes", "title": "Balance changes · Hunsterverse", "current": "/balance.html"},
   {"page": "set-builder.html", "group": "Tools", "label": "Set builder", "title": "Set builder · Hunsterverse", "current": "/set-builder.html"},
+  {"page": "community-sets.html", "group": "Tools", "label": "Community sets", "title": "Community sets · Hunsterverse", "current": "/community-sets.html"},
   {"page": "sky-corridor.html", "group": "Hunting Road", "label": "Sky Corridor", "title": "Sky Corridor · Hunsterverse", "current": "/sky-corridor.html"},
   {"page": "tournaments.html", "group": "Server", "label": "Tournaments", "title": "Tournaments · Hunsterverse", "current": "/tournaments.html"},
   {"page": "worlds.html", "group": "Server", "label": "Worlds", "title": "Worlds · Hunsterverse", "current": "/worlds.html"}

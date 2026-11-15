@@ -6,7 +6,10 @@
    data/armor/rules.json (skill rules, read by js/armor-rules.js), data/skills/index.json (skill trees and their
    levels), data/weapons/index.json and data/weapons/<type>.json (weapons and their slots). The sums are
    js/armor-calc.js; the controls are js/builder-ui.js's. The set lives in the address (#s=..., the set format of
-   js/armor-calc.js), so a link shares it; nothing is sent to a server. */
+   js/armor-calc.js), so a link shares it; nothing is sent to a server unless the player posts the set: the
+   "Community sets" panel below the editor (js/community-api.js, js/set-post-form.js) posts it with POST
+   /api/account/armor-sets, or, with &edit=<id> in the address (the link "My sets" on community-sets.html gives),
+   changes that set of the player's with PUT. */
 (function () {
   "use strict";
 
@@ -20,11 +23,17 @@
   var editor = document.getElementById("sb-editor");
   var summary = document.getElementById("sb-summary");
   var status = document.getElementById("sb-status");
+  var postBox = document.getElementById("sb-post");
+  var Api = window.CommunityApi;
+  var Form = window.SetPostForm;
 
   var data = { index: null, rules: null, trees: {}, types: [], weapons: {}, pieces: {}, items: {} };
   var loading = {};
   var state = { set: Calc.empty(), gender: "", obtainable: true };
   var optionCache = {};
+  // the Community sets panel: editId = the player's set the address names (&edit=), item = that set once loaded,
+  // open = the form is showing, done = what the last post or save answered
+  var post = { editId: null, item: null, open: false, done: null, note: "", loading: false, form: null };
 
   function el(tag, cls, text) { return UI.el(tag, cls, text); }
 
@@ -187,7 +196,7 @@
 
   function changed() {
     var code = Calc.encode(state.set);
-    var hash = "#s=" + code;
+    var hash = "#s=" + code + (post.editId ? "&edit=" + post.editId : "");
     if (location.hash !== hash) history.replaceState(null, "", location.pathname + location.search + hash);
     render();
   }
@@ -512,6 +521,138 @@
     return frag;
   }
 
+  // ---- posting to Community sets ------------------------------------------------------------------------
+
+  /** The skill ids the calculator says are active and do something: what the community list filters on. */
+  function activeSkillIds() {
+    var seen = {};
+    var ids = [];
+    Calc.compute(state.set, ctx()).active.forEach(function (s) {
+      if (s.dropped || !s.works || s.negative || seen[s.skill]) return;
+      seen[s.skill] = true;
+      ids.push(s.skill);
+    });
+    return ids;
+  }
+
+  function postBody(v) {
+    var set = Calc.normalize(state.set);
+    set.data = data.index.version;
+    // the API's rules: a weapon class (lists filter on it), and a weapon or at least one armour piece
+    if (set.weapon[0] < 0) throw new Error("Pick a weapon class first: community sets are listed by weapon.");
+    var empty = !set.weapon[1] && !set.armour.some(function (a) { return a[1]; });
+    if (empty) throw new Error("Pick a weapon or some armour first: there is nothing to post yet.");
+    return { title: v.title, notes: v.notes, set: set, band: v.band, stage: v.stage, skills: activeSkillIds(),
+             showAuthor: v.showAuthor, charId: v.charId };
+  }
+
+  function openPostForm() {
+    post.loading = true;
+    post.note = "";
+    renderPost();
+    Promise.all([Api.loadOptions(), Api.loadCharacters()]).then(function (all) {
+      var item = post.item;
+      post.form = Form.create({
+        options: all[0], characters: all[1], submitLabel: item ? "Save changes" : "Post set",
+        values: item ? { title: item.title, notes: item.notes, band: item.band, stage: item.stage,
+                         showAuthor: item.showAuthor, charId: item.charId } : {},
+        onCancel: function () { post.open = false; post.form = null; renderPost(); },
+        submit: function (v) {
+          var body = postBody(v);
+          var edit = post.editId;
+          return Api.request("/api/account/armor-sets" + (edit ? "/" + edit : ""),
+                             { method: edit ? "PUT" : "POST", body: body, auth: true }).then(function (saved) {
+            post.done = { id: saved.id, edited: !!edit };
+            post.open = false;
+            post.form = null;
+            renderPost();
+          });
+        }
+      });
+      post.open = true;
+      post.loading = false;
+      renderPost();
+    }, function (error) {
+      post.loading = false;
+      post.note = error.message;
+      renderPost();
+    });
+  }
+
+  /** With &edit=<id> in the address: that set's details from the player's own list, then the form opens on them. */
+  function resolveEdit() {
+    post.item = null;
+    if (!post.editId || !Api.signedIn()) { renderPost(); return; }
+    Api.request("/api/account/armor-sets", { auth: true }).then(function (res) {
+      var found = ((res && res.items) || []).filter(function (it) { return it.id === post.editId; })[0];
+      if (found) {
+        post.item = found;
+        openPostForm();
+        return;
+      }
+      post.note = "Set " + post.editId + " is not one of your sets (it may be deleted), so this posts a new set.";
+      post.editId = null;
+      history.replaceState(null, "", location.pathname + location.search + "#s=" + Calc.encode(state.set));
+      renderPost();
+    }, function (error) {
+      post.note = error.message;
+      renderPost();
+    });
+  }
+
+  function renderPost() {
+    postBox.hidden = false;
+    postBox.textContent = "";
+    var head = el("div", "panel-head");
+    head.appendChild(el("h2", null, "Community sets"));
+    postBox.appendChild(head);
+    if (!Api.signedIn()) {
+      var p = el("p", "note-text");
+      var a = el("a", "btn btn-primary", "Sign in to post");
+      a.id = "sb-post-signin";
+      a.href = Api.signinUrl("/set-builder.html" + location.hash);
+      p.appendChild(a);
+      p.appendChild(document.createTextNode(" Share this set with other hunters. Browsing needs no account: "));
+      var all = el("a", null, "see the community sets");
+      all.href = "/community-sets.html";
+      p.appendChild(all);
+      p.appendChild(document.createTextNode("."));
+      postBox.appendChild(p);
+      return;
+    }
+    if (post.note) {
+      var note = el("p", "form-alert", post.note);
+      note.setAttribute("role", "alert");
+      postBox.appendChild(note);
+    }
+    if (post.done) {
+      var ok = el("p", "road-ok");
+      ok.id = "sb-post-done";
+      ok.setAttribute("role", "status");
+      ok.appendChild(document.createTextNode(post.done.edited ? "Saved. " : "Posted. "));
+      var link = el("a", null, "See the set on Community sets");
+      link.href = "/community-sets.html?id=" + post.done.id;
+      ok.appendChild(link);
+      ok.appendChild(document.createTextNode("."));
+      postBox.appendChild(ok);
+    }
+    if (post.open && post.form) {
+      if (post.item) postBox.appendChild(el("p", "note-text", "Changing your set \"" + post.item.title +
+        "\" to the set shown above. The title, notes and the rest can be changed too."));
+      postBox.appendChild(post.form.el);
+      return;
+    }
+    var row = el("div", "bui-actions");
+    var open = UI.button(post.loading ? "Loading" : post.editId && post.item ? "Save this set over \"" + post.item.title + "\""
+      : "Post to Community Sets", openPostForm);
+    open.id = "sb-post-open";
+    open.disabled = post.loading;
+    row.appendChild(open);
+    postBox.appendChild(row);
+    postBox.appendChild(UI.note("Posting shows the set, your title and notes to everyone, right away. Staff hide sets that are reported. " +
+      "Your characters' items are never shown."));
+  }
+
   // ---- render -----------------------------------------------------------------------------------------
 
   function render() {
@@ -544,9 +685,17 @@
     return set;
   }
 
+  function editFromHash() {
+    var m = /(?:^#|&)edit=(\d{1,10})(?:&|$)/.exec(location.hash);
+    return m ? Number(m[1]) : null;
+  }
+
   function loadHash() {
     var set = fromHash() || Calc.empty();
     state.set = set;
+    var edit = editFromHash();
+    var editChanged = edit !== post.editId;
+    post.editId = edit;
     return loadForSet(set).then(function () {
       if (set.data && data.index && set.data !== data.index.version) {
         showStatus("This set was made with the game data of " + set.data + "; the page now uses " +
@@ -554,6 +703,12 @@
       }
       set.data = data.index.version;
       render();
+      if (editChanged || !postBox.firstChild) {
+        post.done = null;
+        post.open = false;
+        post.form = null;
+        resolveEdit();
+      }
     });
   }
 

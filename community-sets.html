@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community sets · Hunsterverse</title>
+    <meta name="description" content="Armour sets other hunters shared: filter by hunter rank, stage, weapon and skills, upvote the good ones, open them in the Set builder." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Community sets · Hunsterverse" />
+    <meta property="og:description" content="Armour sets other hunters shared: filter by hunter rank, stage, weapon and skills, upvote the good ones, open them in the Set builder." />
+    <meta property="og:url" content="https://frontier.hunsterverse.net/community-sets.html" />
+    <meta property="og:image" content="https://frontier.hunsterverse.net/assets/og/set-builder.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Community sets · Hunsterverse" />
+    <meta name="twitter:description" content="Armour sets other hunters shared: filter by hunter rank, stage, weapon and skills, upvote the good ones, open them in the Set builder." />
+    <meta name="twitter:image" content="https://frontier.hunsterverse.net/assets/og/set-builder.png" />
+    <meta name="theme-color" content="#150e09" />
+    <link rel="icon" href="/assets/favicon.png?v=2" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
+    <link rel="stylesheet" href="/css/styles.css?v=23" />
+    <link rel="stylesheet" href="/css/community-sets.css?v=1" />
+    <script src="/js/nav.js" defer></script>
+    <script src="/js/background.js" defer></script>
+    <script src="/js/consent.js" defer></script>
+  </head>
+
+  <body class="public-page">
+    <!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <div class="nav-status" data-state="loading">
+          <button type="button" class="nav-status-toggle" aria-expanded="false" aria-controls="nav-status-panel">
+            <span class="nav-status-dot" aria-hidden="true"></span><span class="nav-status-label">Server</span>
+          </button>
+          <div class="nav-status-panel" id="nav-status-panel" role="region" aria-label="Server status and how to connect" hidden>
+            <p class="nav-status-head"><span class="nav-status-dot" aria-hidden="true"></span><strong class="nav-status-title">Checking the server</strong></p>
+            <p class="nav-status-sub">Hunters online and which ports answer, checked every minute.</p>
+            <ul class="nav-status-ports"></ul>
+            <h3 class="nav-status-h">Connect in the launcher</h3>
+            <table class="nav-status-connect">
+              <tbody>
+                <tr><th scope="row">Host</th><td><code data-connect="host">129.213.54.221</code></td><td><button type="button" class="nav-copy" data-nav-copy="host">Copy</button></td></tr>
+                <tr><th scope="row">Launcher port</th><td><code data-connect="launcherPort">8080</code></td><td><button type="button" class="nav-copy" data-nav-copy="launcherPort">Copy</button></td></tr>
+                <tr><th scope="row">Game port</th><td><code data-connect="gamePort">53310</code></td><td><button type="button" class="nav-copy" data-nav-copy="gamePort">Copy</button></td></tr>
+                <tr><th scope="row">Server mode</th><td><code data-connect="mode">API</code></td><td></td></tr>
+                <tr><th scope="row">Version</th><td><code data-connect="version">ZZ</code></td><td></td></tr>
+              </tbody>
+            </table>
+            <p class="nav-status-note">API mode will not log in? Use launcher port <code data-connect="signPort">53312</code> with mode <code data-connect="fallbackMode">SignV1</code>.</p>
+            <p class="nav-status-links"><a href="/play.html">Setup guide</a><a href="/worlds.html">Worlds</a><a href="https://discord.gg/NQrvRdRwU8">Discord</a></p>
+          </div>
+        </div>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/play.html">Play</a>
+              <a class="navlink" href="/guide-frontier.html">Frontier guide</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/database.html">Search everything</a>
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/items.html">Items</a>
+              <a class="navlink" href="/sources.html">Sources</a>
+              <a class="navlink" href="/skills.html">Skills</a>
+              <a class="navlink" href="/weapons.html">Weapons</a>
+              <a class="navlink" href="/balance.html">Balance changes</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-tools">Tools</button>
+            <div class="nav-menu" id="nav-tools">
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+              <a class="navlink" href="/community-sets.html" aria-current="page">Community sets</a>
+              <a class="navlink" href="/quest-editor.html">Quest builder</a>
+              <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-road">Hunting Road</button>
+            <div class="nav-menu" id="nav-road">
+              <a class="navlink" href="/road-vote.html">Rotation and vote</a>
+              <a class="navlink" href="/road.html">Road builder</a>
+              <a class="navlink" href="/road-history.html">Past winners</a>
+              <a class="navlink" href="/road-data.html">Road data</a>
+              <a class="navlink" href="/guide-roads.html">Roads in game</a>
+              <a class="navlink" href="/sky-corridor.html">Sky Corridor</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="https://discord.gg/NQrvRdRwU8">Discord</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/tournaments.html">Tournaments</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/report.html">Report a problem</a>
+              <a class="navlink" href="/diagnostics-data.html">Live diagnostics data</a>
+            </div>
+          </div>
+          <a class="navlink nav-cta nav-account" href="/account.html">Sign in</a>
+        </nav>
+      </div>
+    </header>
+    <!-- /site-shell:header -->
+
+    <main id="content" class="wrap page wide tool-page">
+      <!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Tools</li><li aria-current="page">Community sets</li></ol></nav>
+      <!-- /site-shell:crumbs -->
+
+      <div id="cs-list-view">
+        <header class="page-head">
+          <h1>Community sets</h1>
+          <p class="page-sub">Armour sets that hunters built in the <a href="/set-builder.html">Set builder</a> and shared. Filter by hunter rank, stage, weapon and skills, upvote the ones that work, and open any of them in the builder to change it. Sets show up as soon as they are posted; staff hide the ones that are reported and do not belong.</p>
+        </header>
+
+        <p class="form-alert" id="cs-status" role="status" hidden></p>
+        <noscript><p class="form-alert">Community sets need JavaScript.</p></noscript>
+
+        <section class="panel" id="cs-mine" hidden></section>
+
+        <section class="panel" id="cs-browse">
+          <div class="panel-head"><h2>Browse</h2><span class="panel-note" id="cs-total"></span></div>
+          <form class="cs-filters" id="cs-form" novalidate>
+            <div class="field"><label for="cs-band">Hunter rank band</label><select id="cs-band"><option value="">Any band</option></select></div>
+            <div class="field"><label for="cs-upto">Up to my rank</label><select id="cs-upto"><option value="">Not used</option></select></div>
+            <div class="field"><label for="cs-stage">Stage</label><select id="cs-stage"><option value="">Any stage</option></select></div>
+            <div class="field"><label for="cs-weapon">Weapon class</label><select id="cs-weapon"><option value="">Any weapon</option></select></div>
+            <div class="field"><label for="cs-sort">Sort</label><select id="cs-sort"><option value="top">Top (most votes)</option><option value="new">New</option></select></div>
+            <div class="field cs-skill-field">
+              <label for="cs-skill">Skills</label>
+              <div class="cs-skill-add">
+                <input type="text" id="cs-skill" list="cs-skill-names" autocomplete="off" placeholder="Type a skill name" />
+                <button type="button" class="ghost-btn small" id="cs-skill-add">Add</button>
+                <select id="cs-match" aria-label="Match any or all of the skills"><option value="any">Any of them</option><option value="all">All of them</option></select>
+              </div>
+              <datalist id="cs-skill-names"></datalist>
+              <ul class="cs-skill-chips" id="cs-skill-chips"></ul>
+              <p class="note-text" id="cs-skill-note" role="status" hidden></p>
+            </div>
+            <div class="cs-filter-actions"><button type="button" class="ghost-btn small" id="cs-clear">Clear the filters</button></div>
+          </form>
+          <p class="form-alert" id="cs-list-error" hidden></p>
+          <div id="cs-list" aria-live="polite"><p class="note-text">Loading the sets.</p></div>
+          <div class="pager" id="cs-pager" hidden>
+            <button type="button" class="ghost-btn small" id="cs-prev">Previous</button>
+            <span class="pager-note" id="cs-page-note"></span>
+            <button type="button" class="ghost-btn small" id="cs-next">Next</button>
+          </div>
+        </section>
+      </div>
+
+      <div id="cs-detail-view" hidden></div>
+    </main>
+
+    <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <div class="foot-col">
+            <h2 class="foot-head">Guides</h2>
+            <a href="/play.html">Play</a>
+            <a href="/guide-frontier.html">Frontier guide</a>
+            <a href="/guide-roads.html">Roads in game</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Explore</h2>
+            <a href="/database.html">Database</a>
+            <a href="/monsters.html">Monsters</a>
+            <a href="/quests.html">Quests</a>
+            <a href="/items.html">Items</a>
+            <a href="/leaderboards.html">Leaderboards</a>
+            <a href="/road-vote.html">Hunting Road</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Server</h2>
+            <a href="/changelog.html">Changelog</a>
+            <a href="/worlds.html">Worlds</a>
+            <a href="/report.html">Report a problem</a>
+            <a href="/api.html">API</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">About</h2>
+            <a href="/privacy.html">Privacy</a>
+            <a href="/diagnostics-data.html">Live diagnostics data</a>
+                <a href="/bot-terms.html">Bot terms</a>
+            <a href="https://discord.gg/NQrvRdRwU8">Discord</a>
+            <a href="https://hunstermonter.net">hunstermonter.net</a>
+          </div>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+    <!-- /site-shell:footer -->
+
+    <script src="/js/search.js?v=5" defer></script>
+    <script src="/js/share.js?v=4" defer></script>
+    <script src="/js/signin-next.js"></script>
+    <script src="/js/community-api.js?v=1"></script>
+    <script src="/js/armor-calc.js?v=1"></script>
+    <script src="/js/set-post-form.js?v=1"></script>
+    <script src="/js/community-sets.js?v=1" defer></script>
+  </body>
+</html>

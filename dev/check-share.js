@@ -10,7 +10,7 @@
      the changelog without an anchor copy the page's own address;
    - on the hunter, guild and leaderboard pages (API data) it copies the API's share link
      (https://api.hvmhfz.eclipseforge.xyz/share/...; the API README's "Share links"): a hunter or guild by
-     id, the board in the hash (no hash: this week's top hunters; old #guilds: Guild RP), the live Road's
+     id, a community set by id (/share/set/<id>), the board in the hash (no hash: this week's top hunters; old #guilds: Guild RP), the live Road's
      board; a past Road rotation and the hunter list copy the page's own address. The hunter profile's own
      "Copy profile link" copies the hunter's share link too;
    - the button fits beside the breadcrumbs at 375 px.
@@ -118,6 +118,8 @@ async function main() {
   await copies("/hunters.html?id=42", share + "/hunter/42", 375);
   await copies("/hunters.html", "/hunters.html");
   await copies("/guilds.html?id=7", share + "/guild/7");
+  await copies("/community-sets.html?id=12", share + "/set/12");
+  await copies("/community-sets.html", "/community-sets.html");
   await copies("/leaderboards.html", share + "/leaderboard/hunters/week");
   await copies("/leaderboards.html#guilds-lastmonth", share + "/leaderboard/guilds/lastmonth");
   await copies("/leaderboards.html#monsters-all", share + "/leaderboard/monsters/all");

@@ -16,7 +16,9 @@
     "/quest-editor.html": "Sign in to use the Quest builder.",
     "/account.html": "Sign in to open your account.",
     "/road-vote.html": "Sign in to vote for the next Hunting Road.",
-    "/report.html": "Sign in to report a problem."
+    "/report.html": "Sign in to report a problem.",
+    "/community-sets.html": "Sign in to vote for, report or post a community set.",
+    "/set-builder.html": "Sign in to post a set to Community Sets."
   };
 
   /* The path when it is a same-site path, else "". */

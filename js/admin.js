@@ -746,7 +746,7 @@
 
   /* ---------- tabs ---------- */
 
-  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", notices: "panel-notices", content: "panel-content", balance: "panel-balance", flags: "panel-flags", road: "panel-road", quests: "panel-quests", users: "panel-users", diagnostics: "panel-diagnostics", server: "panel-server", audit: "panel-audit", permissions: "panel-permissions" };
+  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", notices: "panel-notices", content: "panel-content", balance: "panel-balance", flags: "panel-flags", sets: "panel-sets", road: "panel-road", quests: "panel-quests", users: "panel-users", diagnostics: "panel-diagnostics", server: "panel-server", audit: "panel-audit", permissions: "panel-permissions" };
   var roadStarted = false;
   var usersWired = false;
   var serverWired = false;
@@ -825,6 +825,9 @@
     }
     if (name === "flags") {
       if (window.startAdminFlags) window.startAdminFlags();
+    }
+    if (name === "sets") {
+      if (window.startAdminSets) window.startAdminSets();
     }
     if (name === "diagnostics") {
       if (window.startAdminDiag) window.startAdminDiag();
@@ -1975,6 +1978,7 @@
     }
     activateTab(hashName() || firstAllowedTab());
     if (window.hvFlagsBadge && can("flags", "view")) window.hvFlagsBadge();
+    if (window.hvSetsBadge && can("sets", "view")) window.hvSetsBadge();
     request("/api/users/self")
       .then(function (self) { currentName = (self && self.username) || ""; })
       .catch(function () { /* the list still works; only the "you" mark is missing */ });

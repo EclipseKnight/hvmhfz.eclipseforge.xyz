@@ -22,6 +22,7 @@
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
     <link rel="stylesheet" href="/css/styles.css?v=23" />
     <link rel="stylesheet" href="/css/set-builder.css?v=1" />
+    <link rel="stylesheet" href="/css/community-sets.css?v=1" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
@@ -81,6 +82,7 @@
             <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-tools">Tools</button>
             <div class="nav-menu" id="nav-tools">
               <a class="navlink" href="/set-builder.html" aria-current="page">Set builder</a>
+              <a class="navlink" href="/community-sets.html">Community sets</a>
               <a class="navlink" href="/quest-editor.html">Quest builder</a>
               <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
             </div>
@@ -140,6 +142,7 @@
         <div class="sb-editor" id="sb-editor"></div>
         <aside class="sb-summary" id="sb-summary" aria-label="The set's skills and stats" aria-live="polite"></aside>
       </div>
+      <section class="panel sb-post" id="sb-post" aria-label="Post this set to Community Sets" hidden></section>
       <p class="tool-credit">Rules marked * are not exact yet: the skill limit, which skills a weapon can use, Zenith skills and defence by armour level are still being read from the game. A skill that looks wrong? <a href="/report.html">Report it</a>.</p>
     </main>
 
@@ -187,6 +190,9 @@
     <script src="/js/builder-ui.js?v=4" defer></script>
     <script src="/js/armor-rules.js?v=1" defer></script>
     <script src="/js/armor-calc.js?v=1" defer></script>
-    <script src="/js/set-builder.js?v=1" defer></script>
+    <script src="/js/signin-next.js"></script>
+    <script src="/js/community-api.js?v=1"></script>
+    <script src="/js/set-post-form.js?v=1"></script>
+    <script src="/js/set-builder.js?v=2" defer></script>
   </body>
 </html>
