@@ -6,10 +6,14 @@
    data/armor/rules.json (skill rules, read by js/armor-rules.js), data/skills/index.json (skill trees and their
    levels), data/weapons/index.json and data/weapons/<type>.json (weapons and their slots). The sums are
    js/armor-calc.js; the controls are js/builder-ui.js's. The set lives in the address (#s=..., the set format of
-   js/armor-calc.js), so a link shares it; nothing is sent to a server unless the player posts the set: the
-   "Community sets" panel below the editor (js/community-api.js, js/set-post-form.js) posts it with POST
-   /api/account/armor-sets, or, with &edit=<id> in the address (the link "My sets" on community-sets.html gives),
-   changes that set of the player's with PUT. */
+   js/armor-calc.js), so a link shares it; nothing is sent to a server unless the player posts the set (or asks
+   what is missing, below): the "Community sets" panel below the editor (js/community-api.js, js/set-post-form.js)
+   posts it with POST /api/account/armor-sets, or, with &edit=<id> in the address (the link "My sets" on
+   community-sets.html gives), changes that set of the player's with PUT.
+
+   Signed in, the "Your character" panel and "Missing for this set" (js/set-builder-mine.js, js/armor-owned.js)
+   load one of the player's characters from the API (read-only): its worn set or a My Set into the builder, an
+   "Only what I own" filter for every picker below, and what the set still needs. */
 (function () {
   "use strict";
 
@@ -27,13 +31,19 @@
   var Api = window.CommunityApi;
   var Form = window.SetPostForm;
 
-  var data = { index: null, rules: null, trees: {}, types: [], weapons: {}, pieces: {}, items: {} };
+  var data = { index: null, rules: null, trees: {}, types: [], weapons: {}, pieces: {}, items: {}, weaponIds: null };
   var loading = {};
   var state = { set: Calc.empty(), gender: "", obtainable: true };
   var optionCache = {};
   // the Community sets panel: editId = the player's set the address names (&edit=), item = that set once loaded,
   // open = the form is showing, done = what the last post or save answered
   var post = { editId: null, item: null, open: false, done: null, note: "", loading: false, form: null };
+  var missingBox = document.getElementById("sb-missing");
+  // the player's character part (js/set-builder-mine.js); null until the game data has loaded
+  var mine = null;
+
+  /** The part of a picker's cache key that the "only what I own" filter changes. */
+  function ownKey() { return mine && mine.filtering() ? "|own" + mine.version() : ""; }
 
   function el(tag, cls, text) { return UI.el(tag, cls, text); }
 
@@ -124,30 +134,35 @@
 
   function pieceOptions(slot) {
     var kind = data.rules.weaponKind(state.set.weapon[0]);
-    var key = slot + "|" + kind + "|" + state.gender + "|" + state.obtainable;
+    var key = slot + "|" + kind + "|" + state.gender + "|" + state.obtainable + ownKey();
     if (optionCache[key]) return optionCache[key];
     var opts = [{ value: 0, label: "Nothing" }];
+    var own = mine && mine.filtering();
     data.pieces[slot].list.forEach(function (row) {
       var p = data.pieces[slot].byId[row[0]];
-      if (state.obtainable && !p.obtainable) return;
+      var level = own ? mine.ownedLevel(slot, p.id) : 0;
+      if (own && !level) return;
+      if (state.obtainable && !p.obtainable && !level) return;
       if (!data.rules.canWear(p.flags, kind, state.gender)) return;
       opts.push({ value: p.id, label: p.name,
-                  hint: "R" + p.rarity + " · Def " + p.defence + " · " + slotWord(p.slots) +
-                        (p.skills.length ? " · " + skillText(p.skills) : "") });
+                  hint: (level ? "yours: Lv " + level + " · " : "") + "R" + p.rarity + " · Def " + p.defence + " · " +
+                        slotWord(p.slots) + (p.skills.length ? " · " + skillText(p.skills) : "") });
     });
     optionCache[key] = opts;
     return opts;
   }
 
   function weaponOptions(cls) {
-    var key = "w" + cls + "|" + state.obtainable;
+    var key = "w" + cls + "|" + state.obtainable + ownKey();
     if (optionCache[key]) return optionCache[key];
     var type = typeOf(cls);
     var opts = [{ value: 0, label: "Any " + (type ? type.name : "weapon") }];
     var w = data.weapons[cls];
+    var own = mine && mine.filtering();
     w.list.forEach(function (row) {
       var id = row[w.fields.id];
       var item = w.byId[id];
+      if (own && !mine.ownsWeapon(cls, id)) return;
       opts.push({ value: id, label: item.name, hint: "R" + item.rarity + " · " + slotWord(item.slots) +
                   (item.defense ? " · Def +" + item.defense : "") });
     });
@@ -157,19 +172,21 @@
 
   /** Decorations that fit in `room` slots; with sigils for the weapon. */
   function decoOptions(room, forWeapon) {
-    var key = "d" + room + "|" + forWeapon + "|" + state.obtainable;
+    var key = "d" + room + "|" + forWeapon + "|" + state.obtainable + ownKey();
     if (optionCache[key]) return optionCache[key];
     var opts = [{ value: 0, label: "Empty slot" }];
+    var own = mine && mine.filtering();
     data.index.decorations.forEach(function (d) {
       if (d[2] === "c" || d[3] > room) return;
-      if (state.obtainable && !d[5]) return;
+      if (own ? !mine.ownsItem(d[0]) : state.obtainable && !d[5]) return;
       opts.push({ value: d[0], label: d[1], group: d[2] === "g" ? "Road gems (Tower Decos)" : "Decorations",
-                  hint: slotWord(d[3]) + " · " + skillText(d[4]) });
+                  hint: (own ? mine.itemHint(d[0]) + " · " : "") + slotWord(d[3]) + " · " + skillText(d[4]) });
     });
     opts.sort(function (a, b) { return groupRank(a) - groupRank(b); });
     if (forWeapon) {
       data.index.sigils.forEach(function (s) {
-        opts.push({ value: s[0], label: s[1], group: "Tower sigils", hint: s[2] });
+        if (own && !mine.ownsItem(s[0])) return;
+        opts.push({ value: s[0], label: s[1], group: "Tower sigils", hint: (own ? mine.itemHint(s[0]) + " · " : "") + s[2] });
       });
     }
     optionCache[key] = opts;
@@ -179,12 +196,14 @@
   function groupRank(opt) { return !opt.group ? 0 : opt.group === "Decorations" ? 1 : 2; }
 
   function cuffOptions() {
-    var key = "c|" + state.obtainable;
+    var key = "c|" + state.obtainable + ownKey();
     if (optionCache[key]) return optionCache[key];
     var opts = [{ value: 0, label: "No cuff" }];
+    var own = mine && mine.filtering();
     data.index.decorations.forEach(function (d) {
-      if (d[2] !== "c" || (state.obtainable && !d[5])) return;
-      opts.push({ value: d[0], label: d[1], hint: skillText(d[4]) });
+      if (d[2] !== "c") return;
+      if (own ? !mine.ownsItem(d[0]) : state.obtainable && !d[5]) return;
+      opts.push({ value: d[0], label: d[1], hint: (own ? mine.itemHint(d[0]) + " · " : "") + skillText(d[4]) });
     });
     optionCache[key] = opts;
     return opts;
@@ -206,7 +225,8 @@
     a[1] = id;
     a[3] = [];
     var piece = id ? ctx().piece(a[0], id) : null;
-    a[2] = piece ? piece.maxLevel : 1;
+    var owned = mine && mine.filtering() ? mine.ownedLevel(a[0], id) : 0;
+    a[2] = piece ? (owned ? Math.min(owned, piece.maxLevel) : piece.maxLevel) : 1;
     changed();
   }
 
@@ -275,7 +295,9 @@
     var grid = el("div", "editor-grid");
     var cls = state.set.weapon[0];
     var classOpts = [{ value: -1, label: "No weapon picked" }].concat(data.types.map(function (t) {
-      return { value: t.class, label: t.name, hint: t.class === 1 || t.class === 5 || t.class === 10 ? "Gunner" : "Blademaster" };
+      var hint = t.class === 1 || t.class === 5 || t.class === 10 ? "Gunner" : "Blademaster";
+      if (mine && mine.loaded()) hint += " · yours: " + mine.weaponCount(t.class);
+      return { value: t.class, label: t.name, hint: hint };
     }));
     var classPicker = UI.picker({
       options: classOpts, value: cls, label: "Weapon class",
@@ -386,6 +408,12 @@
       link.href = "/equipment.html?slot=" + slot + "&id=" + piece.id;
       facts.appendChild(link);
       if (!piece.obtainable) facts.appendChild(el("span", "badge sb-badge-bad", "not obtainable"));
+      if (mine && mine.loaded()) {
+        var have = mine.ownedLevel(slot, piece.id);
+        var badge = el("span", "badge" + (have ? " sb-badge-own" : ""), have ? "yours: Lv " + have : "not yours");
+        badge.setAttribute("data-owned", String(have));
+        facts.appendChild(badge);
+      }
       box.appendChild(facts);
       box.appendChild(decoArea(a[3], info.slots.value, false, slot, function (next) { a[3] = next; changed(); }));
     }
@@ -659,12 +687,14 @@
     var focusKey = document.activeElement && document.activeElement.getAttribute("data-focus");
     var result = Calc.compute(state.set, ctx());
     editor.textContent = "";
+    if (mine) editor.appendChild(mine.panel());
     editor.appendChild(weaponPanel(result));
     editor.appendChild(filtersPanel());
     state.set.armour.forEach(function (_a, i) { editor.appendChild(slotPanel(i, result)); });
     editor.appendChild(cuffPanel());
     summary.textContent = "";
     summary.appendChild(summaryView(result));
+    if (mine) mine.renderMissing(missingBox);
     if (focusKey) {
       var again = document.querySelector('[data-focus="' + focusKey + '"]');
       if (again) again.focus({ preventScroll: true });
@@ -718,8 +748,10 @@
       getJson("/data/armor/rules.json").catch(function () { return null; }),
       getJson("/data/skills/index.json"),
       getJson("/data/weapons/index.json"),
-      UI.loadIcons(["items"])
+      UI.loadIcons(["items"]),
+      Api.signedIn() ? getJson("/data/weapons/ids.json") : null
     ]).then(function (all) {
+      data.weaponIds = all[5];
       data.index = all[0];
       data.rules = window.ArmorRules.make(all[1]);
       all[2].trees.forEach(function (t) { data.trees[t[0]] = { id: t[0], name: t[1], category: t[2], levels: t[3] }; });
@@ -735,7 +767,19 @@
         (data.rules.exact ? "decoded from the game" : "not yet exact (marked *), being decoded from the game") + ".";
       state.set.data = data.index.version;
       app.hidden = false;
-      return loadHash();
+      mine = window.SetBuilderMine.create({
+        data: data,
+        getSet: function () { return state.set; },
+        setGender: function (g) { state.gender = g; },
+        render: render,
+        maxLevelOf: function (slot, id) { var p = ctx().piece(slot, id); return p ? p.maxLevel : 0; },
+        loadSet: function (set) {
+          state.set = Calc.normalize(set);
+          state.set.data = data.index.version;
+          loadForSet(state.set).then(changed, function () { showStatus("Could not load the set's data. Try again."); });
+        }
+      });
+      return loadHash().then(function () { mine.start(); });
     }).catch(function (err) {
       showStatus("The Set builder's data did not load. Reload the page to try again.");
       if (window.console) console.warn(err);

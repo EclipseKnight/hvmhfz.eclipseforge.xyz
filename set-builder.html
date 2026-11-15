@@ -21,7 +21,7 @@
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
     <link rel="stylesheet" href="/css/styles.css?v=23" />
-    <link rel="stylesheet" href="/css/set-builder.css?v=1" />
+    <link rel="stylesheet" href="/css/set-builder.css?v=2" />
     <link rel="stylesheet" href="/css/community-sets.css?v=1" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
@@ -130,7 +130,7 @@
       <!-- /site-shell:crumbs -->
       <header class="page-head">
         <h1>Set builder</h1>
-        <p class="page-sub">Pick a weapon, five armour pieces, decorations and cuffs, and see the set's active skills, skill points, defence and resistances. It runs in your browser on the game's own data; the address holds the set, so a link shares it.</p>
+        <p class="page-sub">Pick a weapon, five armour pieces, decorations and cuffs, and see the set's active skills, skill points, defence and resistances. It runs in your browser on the game's own data; the address holds the set, so a link shares it. Signed in, load your character's gear and see what you are missing.</p>
         <p class="tool-credit">Looking for sets that reach the skills you want? <b>Frontier Set Searcher</b> by <a href="https://github.com/d0t-execute">d0t-execute</a> searches every piece for them: <a href="https://d0t-execute.github.io/frontier-set-searcher/">open it in its own tab</a> (<a href="https://github.com/d0t-execute/frontier-set-searcher">source</a>, <a href="https://github.com/d0t-execute/frontier-set-searcher/issues">its issue page</a>).</p>
         <p class="tool-credit" id="sb-data">Loading the game data.</p>
       </header>
@@ -142,6 +142,7 @@
         <div class="sb-editor" id="sb-editor"></div>
         <aside class="sb-summary" id="sb-summary" aria-label="The set's skills and stats" aria-live="polite"></aside>
       </div>
+      <section class="panel sb-missing" id="sb-missing" aria-label="What you are missing for this set" aria-live="polite" hidden></section>
       <section class="panel sb-post" id="sb-post" aria-label="Post this set to Community Sets" hidden></section>
       <p class="tool-credit">Rules marked * are not exact yet: the skill limit, which skills a weapon can use, Zenith skills and defence by armour level are still being read from the game. A skill that looks wrong? <a href="/report.html">Report it</a>.</p>
     </main>
@@ -191,8 +192,10 @@
     <script src="/js/armor-rules.js?v=1" defer></script>
     <script src="/js/armor-calc.js?v=1" defer></script>
     <script src="/js/signin-next.js"></script>
-    <script src="/js/community-api.js?v=1"></script>
+    <script src="/js/community-api.js?v=2"></script>
     <script src="/js/set-post-form.js?v=1"></script>
-    <script src="/js/set-builder.js?v=2" defer></script>
+    <script src="/js/armor-owned.js?v=1" defer></script>
+    <script src="/js/set-builder-mine.js?v=1" defer></script>
+    <script src="/js/set-builder.js?v=3" defer></script>
   </body>
 </html>

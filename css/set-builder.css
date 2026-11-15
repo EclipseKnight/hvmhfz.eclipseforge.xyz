@@ -40,3 +40,21 @@
   .sb-app{grid-template-columns:minmax(0,1fr)}
   .sb-summary{position:static;max-height:none;overflow:visible}
 }
+
+/* Your character (js/set-builder-mine.js): owned badge on a piece, and the "Missing for this set" panel. */
+.sb-badge-own{background:var(--teal);color:#fff}
+.sb-mine-facts .btn{margin-left:6px}
+.sb-missing-part{margin-top:14px}
+.sb-missing td.num{text-align:right;font-variant-numeric:tabular-nums}
+.sb-missing .badge{margin-left:6px}
+.sb-steps{margin:0;padding-left:1.2em}
+.sb-steps li{margin:2px 0}
+.sb-mats a{white-space:nowrap}
+.sb-missing .sb-from{font-size:.78rem;color:var(--ink-soft)}
+.sb-stale{color:var(--wax);font-weight:600}
+.sb-zenny{margin:14px 0 0}
+.sb-incomplete{color:var(--ink-soft)}
+.sb-missing-notes{margin:10px 0 0;padding-left:1.2em;font-size:.86rem;color:var(--ink-soft)}
+@media (max-width:640px){
+  .sb-missing td.num{text-align:left}   /* the tables are one card per row here (styles.css .bui-table) */
+}

@@ -12,6 +12,9 @@ use (A: decoded rules in `hvmhfz_re`; C: the API's `/builder` and "missing" endp
 | `js/armor-rules.js` | Every game rule the calculator needs, read from `data/armor/rules.json` |
 | `dev/make-armor-data.py` | Writes `data/armor/` from `hvmhfz_re` `data/skills_db.json` and the live patch's `mhfdat.bin` |
 | `dev/check-set-builder.js` | Calculator, rules, data and page checks (node + headless Chromium) |
+| `js/armor-owned.js` | Character import helpers (no page code; node runs it): import pieces to a set, what is owned, the "missing" request body |
+| `js/set-builder-mine.js` | The "Your character" panel, the "Only what I own" filter hooks and the "Missing for this set" panel |
+| `dev/check-set-builder-mine.js` | Set format cross-check with the API, the helpers, and the page against a fake API (headless Chromium) |
 
 Data: `data/armor/<slot>.json` (one per armour slot, about 1.2 MB, 180 KB gzipped, loaded when the slot is first
 opened or a link needs it), `data/armor/index.json` (decorations, Road gems, cuffs, Tower sigils, weapon automatic
@@ -42,6 +45,10 @@ One JSON shape for the address, the API and test fixtures:
 - `cuffs`: skill cuff item ids.
 - `data`: the game data version the set was made with; the page says so when it differs from its own.
 
+The API reads this same shape (`hvmhfz_rest_api` `builder/BuilderSet.java`): the weapon class gives the weapon's
+kind (1, 5 and 10 ranged, the rest melee), weapon id 0 and armour id 0 are left out. Both repos hold the same
+four sets as test strings (`dev/check-set-builder-mine.js`, API `BuilderSetFormatTests`): change them together.
+
 In the address: `set-builder.html#s=<base64url of the JSON, no padding>` (`ArmorCalc.encode` / `decode`; a code
 that does not decode starts an empty set and says so). Gender and the "only what players can get" tick are list
 filters, not part of the set.
@@ -66,11 +73,44 @@ answer that depends on it with `*`. Lane A: write the decoded rules in this shap
 Armour data not yet exact (from the record, medium confidence in the design): resistances (+0x14..+0x18), the
 wear bits (+4: male, female, blademaster, gunner), top-level slots (+0x1c).
 
-## Not in phase 1
+## Not built yet
 
-Character import, "what I own" and missing materials (phase 2, lane C), search by wanted skills (phase 2b: until
+Search by wanted skills (phase 2b: until
 then the page links to d0t-execute's Frontier Set Searcher), community sets (phase 3, see "Community sets" below), upgrade lines on this page
 (each piece links to its equipment page, which shows the line and materials).
+
+## Character import (phase 2, lane C)
+
+Signed in, the builder's "Your character" panel loads one of the player's characters from the API (read-only; the
+API never writes a save; only the account's own characters):
+
+- **Character**: from `GET /api/account/characters`; the choice is kept in `localStorage` `hvmhfz.sb.char`.
+  Picking one loads `GET /api/account/characters/{id}/builder` (the import: `hunting`, `town`, `mySets`, `owned`,
+  `items`, `inEquipment`, `zenny`, `online`, `hasSave`; pieces are `[slot, id, level, [decorations], boxIndex]`,
+  slot `melee`/`ranged`/armour slot, level null for weapons, id null for a My Set piece that left the box). The
+  hunter's gender filter follows the character. "From the last save", Refresh asks again; when `online` the panel
+  says changes since the last save are not shown yet.
+- **Load**: the worn set (`hunting`), the town set, or a My Set (with its cuffs) replaces the set shown. A weapon's
+  class comes from `data/weapons/ids.json`. Pieces that left the box leave their slot empty, and the page says so.
+- **Only what I own**: every picker lists only what the character has: armour pieces from the equipment box (hint
+  "yours: Lv N"; picking one takes that level), weapons of the class, decorations, Road gems, sigils and cuffs
+  counted from the items (box + pouch + warehouse) and those set in equipment (hint "yours: 3 in boxes · 1 set in
+  gear": set in other gear counts as in use). With a character loaded each piece shows "yours: Lv N" or "not
+  yours", and each class its count of owned weapons.
+- **Missing for this set**: "What am I missing?" posts the set to `POST .../builder/missing` and shows each piece's
+  status and cheapest path (owned, level up, upgrade from an owned piece, craft, not craftable with its sources)
+  with every step's materials and zenny; decorations, sigils and cuffs (need, in place, from boxes, in other gear,
+  missing, the recipe or sources); materials (need, have, missing, sources; each links to `item.html?id=`); zenny
+  with "Not complete" when the API's `zenny.complete` is false; the API's notes. When the set changes after a check
+  the panel says to check again. Refusals are `{"error"}` and shown as they are.
+- The body is the set format with two changes (`ArmorOwned.missingBody`): `data` = the first 12 hex digits of the
+  page's `mhfdat.bin` SHA-256 (`data/armor/index.json` `source.mhfdatSha256`, the API's `dataVersion`), so the
+  API's "made with game data ..." note is real; armour levels are capped at the piece's highest. A set with no
+  weapon, piece or cuff is not sent.
+
+Checks: `NODE_PATH=/root/work/pw-tools/node_modules node dev/check-set-builder-mine.js` (`SHOTS=<folder>` saves
+pictures). Its fake API answers with the DTO shapes of `builder/BuilderDtos.java` and refuses what
+`BuilderSet.parse` refuses (a port in the check).
 
 ## Community sets (phase 3, lane D)
 

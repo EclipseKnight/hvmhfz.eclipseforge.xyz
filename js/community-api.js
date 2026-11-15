@@ -1,6 +1,6 @@
 /* The API calls the community sets pages share (community-sets.html, set-builder.html's "Post to Community Sets"):
    the sign-in token, one request function, the options list (bands, stages, limits) and the account's characters.
-   The contract is in docs/armor-set-builder.md "Community sets". Errors are {"message": "..."}; they are thrown as
+   The contract is in docs/armor-set-builder.md "Community sets". Errors are {"message": "..."} (or {"error"}); they are thrown as
    Error(message) and shown as they are. Nothing here touches the page. Also runs under node (no browser calls). */
 (function (root) {
   "use strict";
@@ -49,7 +49,8 @@
         return res.json().catch(function () { return null; }).then(function (data) {
           if (!res.ok) {
             var fallback = res.status === 401 ? "Sign in again: your session has ended." : "HTTP " + res.status;
-            throw Object.assign(new Error((data && data.message) || fallback), { status: res.status });
+            // most endpoints answer {"message"}; the builder import's set check answers {"error"}
+            throw Object.assign(new Error((data && (data.message || data.error)) || fallback), { status: res.status });
           }
           return data;
         });
