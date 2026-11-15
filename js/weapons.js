@@ -50,6 +50,7 @@
   function field(w, name) { return w[doc.fields.indexOf(name)]; }
 
   function isMelee() { return doc && doc.kind === "melee"; }
+  function hasElement() { return doc && (doc.kind === "melee" || doc.kind === "bow"); }
 
   /* ---------- sharpness ---------- */
 
@@ -244,10 +245,10 @@
 
   function fillFilters() {
     var elemSel = $("wp-elem"), rar = $("wp-rarity");
-    $("wp-elem-wrap").hidden = !isMelee();
+    $("wp-elem-wrap").hidden = !hasElement();
     elemSel.length = 1;
     rar.length = 1;
-    if (isMelee()) {
+    if (hasElement()) {
       var seen = {};
       doc.weapons.forEach(function (w) {
         if (field(w, "element")) seen[field(w, "element")] = 1;
