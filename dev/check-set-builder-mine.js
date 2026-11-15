@@ -16,8 +16,8 @@
    - signed in: the character list, picking one loads its import (with the sign-in header), the facts line, the
      in-game warning; the choice is remembered over a reload; Refresh asks again;
    - Load: the worn set and a My Set land in the address as the set format; the lost-piece note;
-   - "Only what I own": the head, chest, weapon, decoration, sigil and cuff pickers list only owned things with
-     their counts; picking an owned piece takes its owned level; the owned badge;
+   - "Only what I own": the head, chest, weapon, decoration and cuff pickers (sigils only on Tower weapons) list
+     only owned things with their counts; picking an owned piece takes its owned level; the owned badge;
    - Missing: the POST body is the set format the API reads, the pieces with status and steps, the item and material
      tables with links to item pages and sources, zenny with the incomplete note, the API's notes; a changed set says
      to check again; the API's {"error"} is shown;
@@ -313,7 +313,8 @@ async function run(chromium) {
       check(V + " owned cuffs only", same(opts.map((o) => o.name), ["No cuff", "SnS・G"]) && /yours: 1 in boxes/.test(opts[1].hint), JSON.stringify(opts));
       opts = await optionsOf("weapon|deco|0");
       const names = opts.map((o) => o.name);
-      check(V + " owned decorations and sigils only", names.length === 3 && names.indexOf("Attack G") !== -1 && names.indexOf(index.sigils[0][1]) !== -1, JSON.stringify(names));
+      // a Long Sword is not a Tower weapon: the owned sigil is not offered (Tower sigils go only on Tower weapons)
+      check(V + " owned decorations only, no sigils on a non-Tower weapon", same(names, ["Empty slot", "Attack G"]), JSON.stringify(names));
       const ag = opts.find((o) => o.name === "Attack G");
       check(V + " decoration counts with in-use", ag && /yours: 2 in boxes · 1 set in gear/.test(ag.hint), ag && ag.hint);
       // Pick the owned head: its owned level, the owned badge

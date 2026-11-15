@@ -8,21 +8,25 @@ use (A: decoded rules in `hvmhfz_re`; C: the API's `/builder` and "missing" endp
 | File | What |
 |---|---|
 | `set-builder.html`, `js/set-builder.js`, `css/set-builder.css` | The page: weapon, five pieces with levels, decorations, sigils, cuffs; summary with active skills, points per tree, defence, resistances; the set in the address |
-| `js/armor-calc.js` | The calculator and the set format (encode, decode, normalize, compute). No page code; node runs it too |
-| `js/armor-rules.js` | Every game rule the calculator needs, read from `data/armor/rules.json` |
-| `dev/make-armor-data.py` | Writes `data/armor/` from `hvmhfz_re` `data/skills_db.json` and the live patch's `mhfdat.bin` |
-| `dev/check-set-builder.js` | Calculator, rules, data and page checks (node + headless Chromium) |
+| `js/armor-calc.js` | The calculator and the set format (encode, decode, normalize; `calc` = the game's recompute, `compute` = the page's set checked and calculated). No page code; node runs it too |
+| `js/armor-rules.js` | The game's rules for one row at a time (activation, weapon gate, Zenith, limit parts, defence and slot growth, gender), read from `data/armor/rules.json` |
+| `dev/make-armor-data.py` | Writes `data/armor/` from `hvmhfz_re` `data/armor_rules.json` and `data/armor_builder.json`; stops when their data version is not the patch zip's `mhfdat.bin` |
+| `dev/check-set-builder.js` | All 3,000 client answers of `hvmhfz_re` `data/armor_calc_cases.json`, the data rows against `hvmhfz_re`'s, rules, page checks (node + headless Chromium) |
 | `js/armor-owned.js` | Character import helpers (no page code; node runs it): import pieces to a set, what is owned, the "missing" request body |
 | `js/set-builder-mine.js` | The "Your character" panel, the "Only what I own" filter hooks and the "Missing for this set" panel |
 | `dev/check-set-builder-mine.js` | Set format cross-check with the API, the helpers, and the page against a fake API (headless Chromium) |
 
 Data: `data/armor/<slot>.json` (one per armour slot, about 1.2 MB, 180 KB gzipped, loaded when the slot is first
-opened or a link needs it), `data/armor/index.json` (decorations, Road gems, cuffs, Tower sigils, weapon automatic
-skills, skill names), `data/armor/rules.json`. Weapons come from `data/weapons/`, skill trees from
-`data/skills/index.json`. Field lists are in the docstring of `dev/make-armor-data.py`.
+opened or a link needs it), `data/armor/index.json` (decorations, Road gems, cuffs, weapon Tower sigils, weapon
+Zenith skills, Tower flags and automatic skills, skill names), `data/armor/rules.json` (the rules and the skill
+trees). Weapons come from `data/weapons/`. Field lists are in the docstring of `dev/make-armor-data.py`.
 
-Rerun `python3 dev/make-armor-data.py` after a client patch changes `mhfdat.bin` or `skills_db.json` is rebuilt
-(defaults: patch v1.29 zip in `/root/backups/client-patch/`), then the check.
+After a client patch: rebuild `hvmhfz_re`'s armour data from the new patch (its `docs/armor-builder.md`,
+"Regenerate and check"), then `python3 dev/make-armor-data.py --zip <patch zip> --version 1.N`, then
+`HVMHFZ_RE=<hvmhfz_re checkout> node dev/check-set-builder.js`. The script refuses `hvmhfz_re` files made from
+another `mhfdat.bin`. Then rebuild the API's community-sets catalog (`tools/make-armor-set-catalog.py`) and
+crafting data (`tools/make-builder-data.py`, from `hvmhfz_re` `data/item_uses.json` of the same patch), so the
+page, the API and `hvmhfz_re` name one data version (`dc6615908fef` for v1.29).
 
 ## Set format (version 1)
 
@@ -53,25 +57,27 @@ In the address: `set-builder.html#s=<base64url of the JSON, no padding>` (`Armor
 that does not decode starts an empty set and says so). Gender and the "only what players can get" tick are list
 filters, not part of the set.
 
-## Rules file (`data/armor/rules.json`)
+## Rules (`data/armor/rules.json`, `js/armor-rules.js`, `js/armor-calc.js`)
 
-Until lane A decodes the rules from the client, the file is a fallback (`"exact": false`) and the page marks every
-answer that depends on it with `*`. Lane A: write the decoded rules in this shape, then
-`python3 dev/make-armor-data.py --rules <file>`; if a rule needs another shape, change `js/armor-rules.js` only.
+The game's own rules, decoded from the client by `hvmhfz_re` (part 199; format and the rules step by step in its
+`docs/armor-builder.md`): `rules.json` is its `data/armor_rules.json` as it is. `ArmorCalc.calc` follows
+`hvmhfz_re` `tools/items/armor_calc.py` step by step and must match all 3,000 sets the client's own code answered
+(`data/armor_calc_cases.json`; `dev/check-set-builder.js`). In short:
 
-| Key | Meaning | Fallback today |
-|---|---|---|
-| `version`, `exact`, `source` | data version, true once decoded, where it comes from | patch version, false, "fallback ..." |
-| `skillLimit` | `{base, max, raises: [{skill, add}], exact, note}`: limit = base + the raises of active skills, capped at max | base 10, no raises |
-| `overLimit` | `{known, order: [tree ids]}`: the game keeps the first `limit` active skills in this tree order | unknown: nothing dropped, the page warns |
-| `weapon` | `{treeClasses: {tree: [classes]}, blademasterTrees, gunnerTrees, gunnerClasses, exact}` | the skill list's categories: Hiden trees work only with their class, Blademaster/Gunner trees with that kind |
-| `zenith` | `{known, pieceSkills: {"slot:id": [skill ids]}}`: skills Zenith pieces add | none |
-| `levels` | `{defencePerLevel: {rarity: [added at level 1..N]}, topSlotsAt: "max", exact}` | defence = level 1 value; top-level slots only at max level |
-| `cuffSlots` | cuff slots | 2 |
-| `bonuses` | `{skills: {skill id: {defence} or {res: [fire, water, thunder, dragon, ice]}}, exact}` | read from the skill names (Defense+20, Fire Res+10, All Res Up +5) |
-
-Armour data not yet exact (from the record, medium confidence in the design): resistances (+0x14..+0x18), the
-wear bits (+4: male, female, blademaster, gunner), top-level slots (+0x1c).
+- Points: pieces, their decorations (first four pairs), the weapon's decorations (not a Tower weapon's), both cuffs.
+- Activation rows in table order; the skill limit (10; +1 / +2 for 3-4 / 5+ G-rank, Zenith or Tower pieces; +
+  Zenith Skill Slots Up; + cuffs, a cuff's slot only while its Tech skill is on; at most 28). Over the limit the
+  skills of later table rows drop first, whatever their points; the kept ones are sorted as the game lists them.
+- Automatic skills (one per piece and weapon) and a Tower weapon's Road gem skills (the best single gem per tree,
+  up to 4) are outside the limit.
+- Tech skills give no effect with another weapon class (they still take their place). Zenith skills from the
+  weapon, pieces and cuff, per group, with their lit rule (and Guard Up / Reflect Up / Stylish Up / Soul Up cases).
+- Defence and slots by level from the growth tables (defence rounded up after each level); resistances as stored.
+- Gender is a hard rule (a problem); blademaster / gunner is only a list filter (no client code refuses a piece by
+  it). A Tower weapon's first `slots` places take weapon Tower sigils, the rest Road gems; the set lists them
+  without gaps, so the page puts sigils first. Sigils go on nothing else.
+- Left out: Tower armour plates (and the armour Tower sigils that go in them), sigils of non-Tower weapons (rolled
+  per copy, never skill points), defence and resistance from skills, food, songs, buffs, special quest rules.
 
 ## Not built yet
 

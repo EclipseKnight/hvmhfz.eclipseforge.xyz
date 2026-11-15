@@ -1,10 +1,10 @@
 /* Set builder page (set-builder.html): pick a weapon, five armour pieces with their levels, decorations,
    sigils and cuffs, and see the skill points, active skills, defence and resistances as you go.
 
-   Data (static, dev/make-armor-data.py): data/armor/index.json (decorations, cuffs, sigils, weapon automatic
-   skills, skill names), data/armor/<slot>.json (pieces; loaded when the slot is first opened or a set needs it),
-   data/armor/rules.json (skill rules, read by js/armor-rules.js), data/skills/index.json (skill trees and their
-   levels), data/weapons/index.json and data/weapons/<type>.json (weapons and their slots). The sums are
+   Data (static, dev/make-armor-data.py): data/armor/index.json (decorations, cuffs, sigils, weapon Zenith skills,
+   Tower flags and automatic skills, skill names), data/armor/<slot>.json (pieces; loaded when the slot is first
+   opened or a set needs it), data/armor/rules.json (the game's skill rules and skill trees, read by
+   js/armor-rules.js), data/weapons/index.json and data/weapons/<type>.json (weapons and their slots). The sums are
    js/armor-calc.js; the controls are js/builder-ui.js's. The set lives in the address (#s=..., the set format of
    js/armor-calc.js), so a link shares it; nothing is sent to a server unless the player posts the set (or asks
    what is missing, below): the "Community sets" panel below the editor (js/community-api.js, js/set-post-form.js)
@@ -31,7 +31,7 @@
   var Api = window.CommunityApi;
   var Form = window.SetPostForm;
 
-  var data = { index: null, rules: null, trees: {}, types: [], weapons: {}, pieces: {}, items: {}, weaponIds: null };
+  var data = { index: null, rules: null, types: [], weapons: {}, pieces: {}, items: {}, weaponIds: null };
   var loading = {};
   var state = { set: Calc.empty(), gender: "", obtainable: true };
   var optionCache = {};
@@ -57,8 +57,9 @@
   // ---- data ----------------------------------------------------------------------------------------
 
   function pieceObject(row) {
-    return { id: row[0], name: row[1], rarity: row[2], defence: row[3], slots: row[4], topSlots: row[5],
-             res: row[6], flags: row[7], maxLevel: row[8], skills: row[9], auto: row[10], obtainable: !!row[11] };
+    return { id: row[0], name: row[1], rarity: row[2], defence: row[3], slots: row[4], maxSlots: row[5],
+             res: row[6], flags: row[7], maxLevel: row[8], skills: row[9], auto: row[10], obtainable: !!row[11],
+             defGrowth: row[12], slotGrowth: row[13], limitKind: row[14], zenith: row[15] };
   }
 
   /** The pieces of one slot, loaded once. */
@@ -90,11 +91,14 @@
       loading[key] = getJson("/data/weapons/" + type.slug + ".json").then(function (json) {
         var f = {};
         json.fields.forEach(function (name, i) { f[name] = i; });
-        var auto = data.index.weaponAuto[json.kind] || {};
+        var table = json.kind === "melee" ? "melee" : "ranged";   // bowguns and bows share the game's ranged table
+        var auto = data.index.weaponAuto[table] || {};
+        var extra = data.index.weapons[table] || {};
         var byId = {};
         json.weapons.forEach(function (w) {
+          var x = extra[w[f.id]] || [0, 0];
           byId[w[f.id]] = { id: w[f.id], name: w[f.name], rarity: w[f.rarity], slots: w[f.slots] || 0,
-                            defense: w[f.defense] || 0, auto: auto[w[f.id]] || [] };
+                            defense: w[f.defense] || 0, auto: auto[w[f.id]] || 0, zenith: x[0], tower: !!x[1] };
         });
         data.weapons[cls] = { list: json.weapons, byId: byId, fields: f, kind: json.kind };
         return data.weapons[cls];
@@ -117,9 +121,7 @@
       gender: state.gender,
       piece: function (slot, id) { var p = data.pieces[slot]; return p ? p.byId[id] || null : null; },
       weapon: function (cls, id) { var w = data.weapons[cls]; return w ? w.byId[id] || null : null; },
-      item: function (id) { return data.items[id] || null; },
-      tree: function (id) { return data.trees[id] || null; },
-      skillName: function (id) { return data.index.skillNames[id] || "Skill " + id; }
+      item: function (id) { return data.items[id] || null; }
     };
   }
 
@@ -127,7 +129,7 @@
 
   function skillText(skills) {
     return (skills || []).map(function (s) {
-      var t = data.trees[s[0]];
+      var t = data.rules.tree(s[0]);
       return (t ? t.name : "Tree " + s[0]) + " " + (s[1] > 0 ? "+" : "") + s[1];
     }).join(", ");
   }
@@ -143,10 +145,11 @@
       var level = own ? mine.ownedLevel(slot, p.id) : 0;
       if (own && !level) return;
       if (state.obtainable && !p.obtainable && !level) return;
-      if (!data.rules.canWear(p.flags, kind, state.gender)) return;
+      if (!data.rules.canWear(p.flags, state.gender) || !data.rules.kindFits(p.flags, kind)) return;
       opts.push({ value: p.id, label: p.name,
                   hint: (level ? "yours: Lv " + level + " · " : "") + "R" + p.rarity + " · Def " + p.defence + " · " +
-                        slotWord(p.slots) + (p.skills.length ? " · " + skillText(p.skills) : "") });
+                        slotWord(p.slots) + (p.skills.length ? " · " + skillText(p.skills) : "") +
+                        (p.zenith ? " · " + data.rules.zenithName(p.zenith) : "") });
     });
     optionCache[key] = opts;
     return opts;
@@ -163,27 +166,30 @@
       var id = row[w.fields.id];
       var item = w.byId[id];
       if (own && !mine.ownsWeapon(cls, id)) return;
-      opts.push({ value: id, label: item.name, hint: "R" + item.rarity + " · " + slotWord(item.slots) +
-                  (item.defense ? " · Def +" + item.defense : "") });
+      opts.push({ value: id, label: item.name, hint: "R" + item.rarity + " · " +
+                  (item.tower ? "Tower weapon, " + item.slots + " sigil places" : slotWord(item.slots)) +
+                  (item.defense ? " · Def +" + item.defense : "") +
+                  (item.zenith ? " · " + data.rules.zenithName(item.zenith) : "") });
     });
     optionCache[key] = opts;
     return opts;
   }
 
-  /** Decorations that fit in `room` slots; with sigils for the weapon. */
-  function decoOptions(room, forWeapon) {
-    var key = "d" + room + "|" + forWeapon + "|" + state.obtainable + ownKey();
+  /** Decorations that fit in `room` slots. A Tower weapon (tower true) takes Tower sigils and Road gems (Tower
+      Decos) instead, one a place; sigils go on nothing else. */
+  function decoOptions(room, tower) {
+    var key = "d" + room + "|" + tower + "|" + state.obtainable + ownKey();
     if (optionCache[key]) return optionCache[key];
     var opts = [{ value: 0, label: "Empty slot" }];
     var own = mine && mine.filtering();
     data.index.decorations.forEach(function (d) {
-      if (d[2] === "c" || d[3] > room) return;
+      if (d[2] === "c" || (tower ? d[2] !== "g" : d[3] > room)) return;
       if (own ? !mine.ownsItem(d[0]) : state.obtainable && !d[5]) return;
       opts.push({ value: d[0], label: d[1], group: d[2] === "g" ? "Road gems (Tower Decos)" : "Decorations",
                   hint: (own ? mine.itemHint(d[0]) + " · " : "") + slotWord(d[3]) + " · " + skillText(d[4]) });
     });
     opts.sort(function (a, b) { return groupRank(a) - groupRank(b); });
-    if (forWeapon) {
+    if (tower) {
       data.index.sigils.forEach(function (s) {
         if (own && !mine.ownsItem(s[0])) return;
         opts.push({ value: s[0], label: s[1], group: "Tower sigils", hint: (own ? mine.itemHint(s[0]) + " · " : "") + s[2] });
@@ -256,10 +262,12 @@
     return p;
   }
 
-  function decoArea(list, capacity, forWeapon, where, onChange) {
+  /** The decoration pickers of a piece or weapon. tower: a Tower weapon, whose 3 places take one sigil or gem each. */
+  function decoArea(list, capacity, tower, where, onChange) {
     var box = el("div", "sb-decos");
     var used = 0;
-    list.forEach(function (id) { var d = data.items[id]; used += d ? d.slots : 1; });
+    function size(id) { var d = data.items[id]; return tower || !d ? 1 : d.slots; }
+    list.forEach(function (id) { used += size(id); });
     var shown = list.length + (used < capacity && list.length < Calc.MAX_DECOS ? 1 : 0);
     if (!capacity) {
       box.appendChild(el("p", "note-text sb-noslots", "No decoration slots."));
@@ -268,10 +276,10 @@
     for (var i = 0; i < shown; i++) {
       (function (i) {
         var current = list[i] || 0;
-        var own = current && data.items[current] ? data.items[current].slots : 0;
+        var own = current ? size(current) : 0;
         var room = capacity - used + own;
         var picker = UI.picker({
-          options: decoOptions(Math.max(1, room), forWeapon), value: current, kind: "item", compact: true,
+          options: decoOptions(Math.max(1, room), tower), value: current, kind: "item", compact: true,
           label: where + " slot " + (i + 1), searchHint: "Type a decoration or skill name",
           unknownLabel: function (v) { return data.items[v] ? data.items[v].name : "Item " + v; },
           onChange: function (v) {
@@ -284,7 +292,7 @@
         box.appendChild(picker.el);
       })(i);
     }
-    var note = el("p", "note-text sb-slots-note", used + " of " + slotWord(capacity) + " used");
+    var note = el("p", "note-text sb-slots-note", tower ? used + " of 3 places used" : used + " of " + slotWord(capacity) + " used");
     if (used > capacity) note.classList.add("sb-bad");
     box.appendChild(note);
     return box;
@@ -319,9 +327,19 @@
       grid.appendChild(weaponField);
     }
     box.appendChild(grid);
-    if (result.weapon) {
-      box.appendChild(UI.subhead("Decorations and sigils"));
-      box.appendChild(decoArea(state.set.weapon[3], result.weapon.slots, true, "weapon", function (next) {
+    if (result.weapon && result.weapon.tower) {
+      box.appendChild(UI.subhead("Tower sigils and Road gems"));
+      var ws = result.weaponSlots;
+      box.appendChild(UI.note("A Tower weapon: " + ws.sigilPlaces + " sigil place" + (ws.sigilPlaces === 1 ? "" : "s") +
+        " and " + ws.gemPlaces + " Road gem place" + (ws.gemPlaces === 1 ? "" : "s") + ". Its Road gems give their own " +
+        "skills (the best gem of each skill, up to 4, outside the skill limit), not skill points."));
+      box.appendChild(decoArea(state.set.weapon[3], 3, true, "weapon", function (next) {
+        state.set.weapon[3] = next;
+        changed();
+      }));
+    } else if (result.weapon) {
+      box.appendChild(UI.subhead("Decorations"));
+      box.appendChild(decoArea(state.set.weapon[3], result.weapon.slots, false, "weapon", function (next) {
         state.set.weapon[3] = next;
         changed();
       }));
@@ -367,7 +385,7 @@
     var slot = a[0];
     var info = result.pieces[index];
     var piece = info && info.piece;
-    var box = UI.section(SLOT_NAMES[slot], piece ? "Def " + info.defence.value + (info.defence.exact ? "" : "*") : "empty");
+    var box = UI.section(SLOT_NAMES[slot], piece ? "Def " + info.defence.value : "empty");
     box.classList.add("sb-slot");
     box.setAttribute("data-slot", slot);
     var grid = el("div", "editor-grid");
@@ -388,7 +406,7 @@
         options: levels, value: info.level,
         onChange: function (v) {
           a[2] = v;
-          var cap = data.rules.slotsAt(piece, v).value;
+          var cap = data.rules.slotsAt(info.row, v);
           var used = 0;
           a[3] = a[3].filter(function (id) { used += (data.items[id] || { slots: 1 }).slots; return used <= cap; });
           changed();
@@ -400,10 +418,11 @@
     box.appendChild(grid);
     if (piece) {
       var facts = el("p", "note-text sb-piece-facts");
-      facts.appendChild(document.createTextNode("R" + piece.rarity + " · Def " + info.defence.value +
-        (info.defence.exact ? "" : "* (level 1 value)") + " · " +
+      facts.appendChild(document.createTextNode("R" + piece.rarity + " · Def " + info.defence.value + " · " +
         RES_ORDER.map(function (r) { var v = piece.res[Calc.RES.indexOf(r)]; return RES_NAMES[r] + " " + signed(v); }).join(", ") +
-        (piece.skills.length ? " · " + skillText(piece.skills) : "") + " "));
+        (piece.skills.length ? " · " + skillText(piece.skills) : "") +
+        (piece.zenith ? " · " + data.rules.zenithName(piece.zenith) : "") +
+        (piece.auto ? " · automatic " + data.rules.skillName(piece.auto) : "") + " "));
       var link = el("a", null, "Materials and upgrades");
       link.href = "/equipment.html?slot=" + slot + "&id=" + piece.id;
       facts.appendChild(link);
@@ -421,7 +440,7 @@
   }
 
   function cuffPanel() {
-    var box = UI.section("Skill cuffs", data.rules.cuffSlots + " slots" + (data.rules.exact ? "" : "*"));
+    var box = UI.section("Skill cuffs", data.rules.cuffSlots + " slots");
     var grid = el("div", "editor-grid");
     for (var i = 0; i < data.rules.cuffSlots; i++) {
       (function (i) {
@@ -448,9 +467,8 @@
 
   function summaryView(result) {
     var frag = document.createDocumentFragment();
-    var rules = data.rules;
 
-    var stats = UI.section("Defence and resistances", result.defence.exact && result.bonusExact ? "" : "* not yet exact");
+    var stats = UI.section("Defence and resistances", "armour and weapon");
     var dl = el("dl", "sb-stats");
     function stat(name, value, title) {
       var pair = el("div", "sb-stat");
@@ -460,47 +478,68 @@
       pair.appendChild(dd);
       dl.appendChild(pair);
     }
-    stat("Defence", String(result.defence.total) + (result.defence.exact ? "" : "*"),
-      "Armour " + result.defence.pieces + ", weapon " + result.defence.weapon + ", skills " + result.defence.skills);
+    stat("Defence", String(result.defence.total), "Armour " + result.defence.pieces + ", weapon " + result.defence.weapon);
     RES_ORDER.forEach(function (r) { stat(RES_NAMES[r], signed(result.res[r])); });
     dl.setAttribute("data-defence", result.defence.total);
     stats.appendChild(dl);
-    if (!result.defence.exact) stats.appendChild(UI.note("* " + rules.notes.levels));
+    stats.appendChild(UI.note("Skills such as Defense+ or Fire Res+ are not added here."));
     frag.appendChild(stats);
 
-    var skills = UI.section("Active skills", result.limit.count + " of " + result.limit.limit +
-      (result.limit.exact ? "" : "*"));
+    var lim = result.limit;
+    var skills = UI.section("Active skills", lim.count + " of " + lim.limit);
     skills.id = "sb-active";
+    skills.setAttribute("data-limit", lim.limit);
     if (!result.active.length) skills.appendChild(UI.note("No skills yet: pick armour and decorations."));
     var ul = el("ul", "sb-active-list");
     result.active.forEach(function (s) {
       var li = el("li", "sb-skill" + (s.negative ? " is-negative" : "") + (s.works ? "" : " is-idle") +
         (s.dropped ? " is-dropped" : ""));
       li.setAttribute("data-skill", s.skill);
+      li.setAttribute("data-from", s.from);
       var name = s.tree ? el("a", "sb-skill-name", s.name) : el("span", "sb-skill-name", s.name);
       if (s.tree) name.href = "/skill.html?id=" + s.tree;
       li.appendChild(name);
-      var meta = s.from === "automatic" ? "set bonus / automatic, from " + s.source : s.treeName + " " + signed(s.total);
+      var meta = s.from === "automatic" ? "automatic, from " + s.source
+        : s.from === "tower" ? "Road gem skill of " + s.source + ", outside the limit"
+        : s.treeName + " " + signed(s.total);
       li.appendChild(el("span", "sb-skill-meta", meta));
       if (!s.works) {
         var type = typeOf(state.set.weapon[0]);
-        li.appendChild(el("span", "sb-skill-warn", "no effect with " + (type ? type.name : "this weapon") +
-          (s.worksExact ? "" : "*")));
+        li.appendChild(el("span", "sb-skill-warn", "no effect with " + (type ? type.name : "this weapon")));
       }
       if (s.dropped) li.appendChild(el("span", "sb-skill-warn", "over the limit: not active"));
       ul.appendChild(li);
     });
     skills.appendChild(ul);
-    if (result.limit.over) {
-      skills.appendChild(el("p", "form-alert sb-over", "More skills than the limit of " + result.limit.limit + "." +
-        (result.limit.dropKnown ? "" : " The game turns some off; which ones is not decoded yet.")));
+    if (lim.over) {
+      skills.appendChild(el("p", "form-alert sb-over", "More skills than the limit of " + lim.limit + ": the game keeps " +
+        "them in the order of its skill table, so the ones marked are off."));
     }
-    var notes = [];
-    if (!result.limit.exact) notes.push(rules.notes.skillLimit);
-    if (result.active.some(function (s) { return !s.works && !s.worksExact; })) notes.push(rules.notes.weapon);
-    if (rules.notes.zenith) notes.push(rules.notes.zenith);
-    if (notes.length) skills.appendChild(UI.note("* " + notes.join(" ")));
+    var p = lim.parts;
+    var why = ["10 to start"];
+    if (p.rank_bonus) why.push("+" + p.rank_bonus + " for " + (p.rank_pieces + p.zenith_pieces + p.tower_plates) + " G-rank or Zenith pieces");
+    if (p.skill_slots_up) why.push("+" + p.skill_slots_up + " Skill Slots Up");
+    if (p.cuffs) why.push("+" + p.cuffs + " for cuffs");
+    if (lim.limit < p.limit) why.push("-" + (p.limit - lim.limit) + " for a cuff whose Tech skill is not on");
+    skills.appendChild(UI.note("Skill limit " + lim.limit + ": " + why.join(", ") + ". Automatic and Road gem skills do not count."));
     frag.appendChild(skills);
+
+    if (result.zenith.length) {
+      var zen = UI.section("Zenith skills");
+      zen.id = "sb-zenith";
+      var zl = el("ul", "sb-active-list");
+      result.zenith.forEach(function (z) {
+        var li = el("li", "sb-skill" + (z.lit ? "" : " is-idle"));
+        li.setAttribute("data-zenith", z.id);
+        li.setAttribute("data-lit", z.lit ? "1" : "0");
+        li.appendChild(el("span", "sb-skill-name", z.name));
+        if (z.needs) li.appendChild(el("span", "sb-skill-meta", "needs a " + z.needs + " skill"));
+        if (!z.lit) li.appendChild(el("span", "sb-skill-warn", "not lit: no effect"));
+        zl.appendChild(li);
+      });
+      zen.appendChild(zl);
+      frag.appendChild(zen);
+    }
 
     var pts = UI.section("Skill points", "per skill tree");
     var rows = result.trees.map(function (t) {
@@ -745,26 +784,26 @@
   function start() {
     Promise.all([
       getJson("/data/armor/index.json"),
-      getJson("/data/armor/rules.json").catch(function () { return null; }),
-      getJson("/data/skills/index.json"),
+      getJson("/data/armor/rules.json"),
       getJson("/data/weapons/index.json"),
       UI.loadIcons(["items"]),
       Api.signedIn() ? getJson("/data/weapons/ids.json") : null
     ]).then(function (all) {
-      data.weaponIds = all[5];
+      data.weaponIds = all[4];
       data.index = all[0];
       data.rules = window.ArmorRules.make(all[1]);
-      all[2].trees.forEach(function (t) { data.trees[t[0]] = { id: t[0], name: t[1], category: t[2], levels: t[3] }; });
-      data.types = all[3].types.map(function (t) { return { slug: t.slug, name: t.name, class: t.class }; });
+      data.types = all[2].types.map(function (t) { return { slug: t.slug, name: t.name, class: t.class }; });
       data.types.sort(function (a, b) { return a.name.localeCompare(b.name); });
       data.index.decorations.forEach(function (d) {
-        data.items[d[0]] = { item: d[0], name: d[1], kind: d[2], slots: d[3], skills: d[4], obtainable: !!d[5] };
+        data.items[d[0]] = { item: d[0], name: d[1], kind: d[2], slots: d[3], skills: d[4], obtainable: !!d[5],
+                             zenith: d[6], firstTree: d[7], firstPoints: d[8] };
       });
       data.index.sigils.forEach(function (s) {
-        data.items[s[0]] = { item: s[0], name: s[1], kind: "s", slots: 1, skills: [], effect: s[2] };
+        data.items[s[0]] = { item: s[0], name: s[1], kind: "s", slots: 1, skills: s[3], effect: s[2], zenith: s[4],
+                             firstTree: s[5], firstPoints: s[6] };
       });
-      document.getElementById("sb-data").textContent = "Game data: client patch " + data.index.version + ". Rules: " +
-        (data.rules.exact ? "decoded from the game" : "not yet exact (marked *), being decoded from the game") + ".";
+      document.getElementById("sb-data").textContent = "Game data: client patch " + data.index.version +
+        ". Skill rules: the game's own, read from the client.";
       state.set.data = data.index.version;
       app.hidden = false;
       mine = window.SetBuilderMine.create({
