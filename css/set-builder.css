@@ -1,0 +1,42 @@
+/* Set builder (set-builder.html, js/set-builder.js). Builds on styles.css: panels, the builder controls
+   (.bui-*) and tables. Two columns on a wide screen (the set on the left, its skills and stats on the right,
+   which stay in view while scrolling); one column on a phone, the summary after the pieces. */
+.sb-app{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,420px);gap:0 22px;align-items:start}
+.sb-editor,.sb-summary{min-width:0}
+.sb-summary{position:sticky;top:calc(var(--nav-h) + 12px);max-height:calc(100vh - var(--nav-h) - 24px);overflow:auto;
+  overscroll-behavior:contain}
+.sb-editor .panel,.sb-summary .panel{margin-bottom:16px}
+
+/* A slot's decoration pickers, side by side when there is room. */
+.sb-decos{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px 12px;align-items:center}
+.sb-decos .note-text{margin:0}
+.sb-slots-note{grid-column:1/-1}
+.sb-bad{color:var(--wax);font-weight:700}
+.sb-piece-facts{font-size:.86rem}
+.sb-piece-facts .badge{margin-left:6px}
+.sb-badge-bad{background:var(--wax);color:#fff}
+
+/* Defence and resistances: label over value, three across in two rows. */
+.sb-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 8px;margin:0}
+.sb-stat{min-width:0}
+.sb-stats dt{font:700 .64rem/1.2 var(--font-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.sb-stats dd{margin:2px 0 0;font:700 1.15rem/1.2 var(--font-ui);font-variant-numeric:tabular-nums;color:var(--ink)}
+
+/* Active skills: name, where the points come from, and a warning when it does nothing or is over the limit. */
+.sb-active-list{list-style:none;margin:0;padding:0}
+.sb-skill{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:6px 0;border-bottom:1px solid rgba(189,166,122,.5)}
+.sb-skill:last-child{border-bottom:0}
+.sb-skill-name{font-weight:700}
+.sb-skill-meta{margin-left:auto;font:.78rem var(--font-ui);color:var(--ink-soft)}
+.sb-skill-warn{flex:1 1 100%;font:600 .76rem var(--font-ui);color:var(--wax)}
+.sb-skill.is-negative .sb-skill-name{color:var(--wax)}
+.sb-skill.is-idle .sb-skill-name,.sb-skill.is-dropped .sb-skill-name{text-decoration:line-through;opacity:.75}
+.sb-over{margin:10px 0 0}
+.sb-points td.num{text-align:right;font-variant-numeric:tabular-nums}
+.sb-points .sb-from{font-size:.78rem;color:var(--ink-soft)}
+.sb-problems{margin:0;padding-left:1.2em;color:var(--wax)}
+
+@media (max-width:960px){
+  .sb-app{grid-template-columns:minmax(0,1fr)}
+  .sb-summary{position:static;max-height:none;overflow:visible}
+}

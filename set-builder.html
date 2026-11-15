@@ -4,23 +4,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Set builder · Hunsterverse</title>
-    <meta name="description" content="Find armor, decoration and cuff sets for the skills you want in Monster Hunter Frontier Z, with Frontier Set Searcher by d0t-execute." />
+    <meta name="description" content="Plan a Monster Hunter Frontier Z armour set: weapon, armour pieces, decorations and cuffs, with its active skills, skill points, defence and resistances." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Hunsterverse" />
     <meta property="og:title" content="Set builder · Hunsterverse" />
-    <meta property="og:description" content="Find armor, decoration and cuff sets for the skills you want in Monster Hunter Frontier Z, with Frontier Set Searcher by d0t-execute." />
+    <meta property="og:description" content="Plan a Monster Hunter Frontier Z armour set: weapon, armour pieces, decorations and cuffs, with its active skills, skill points, defence and resistances." />
     <meta property="og:url" content="https://frontier.hunsterverse.net/set-builder.html" />
     <meta property="og:image" content="https://frontier.hunsterverse.net/assets/og/set-builder.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Set builder · Hunsterverse" />
-    <meta name="twitter:description" content="Find armor, decoration and cuff sets for the skills you want in Monster Hunter Frontier Z, with Frontier Set Searcher by d0t-execute." />
+    <meta name="twitter:description" content="Plan a Monster Hunter Frontier Z armour set: weapon, armour pieces, decorations and cuffs, with its active skills, skill points, defence and resistances." />
     <meta name="twitter:image" content="https://frontier.hunsterverse.net/assets/og/set-builder.png" />
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
     <link rel="stylesheet" href="/css/styles.css?v=23" />
+    <link rel="stylesheet" href="/css/set-builder.css?v=1" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
@@ -127,11 +128,19 @@
       <!-- /site-shell:crumbs -->
       <header class="page-head">
         <h1>Set builder</h1>
-        <p class="page-sub">Pick the skills you want, and it searches every armor piece, decoration, cuff and weapon slot for sets that reach them. It runs in your browser; nothing is sent to our server.</p>
-        <p class="tool-credit"><b>Frontier Set Searcher</b> is made by <a href="https://github.com/d0t-execute">d0t-execute</a> (<a href="https://github.com/d0t-execute/frontier-set-searcher">source on GitHub</a>) and shown here with their permission. Found a problem with it, or have an idea? Tell its author on its <a href="https://github.com/d0t-execute/frontier-set-searcher/issues">issue page</a>. <a href="https://d0t-execute.github.io/frontier-set-searcher/">Open it in its own tab</a>.</p>
+        <p class="page-sub">Pick a weapon, five armour pieces, decorations and cuffs, and see the set's active skills, skill points, defence and resistances. It runs in your browser on the game's own data; the address holds the set, so a link shares it.</p>
+        <p class="tool-credit">Looking for sets that reach the skills you want? <b>Frontier Set Searcher</b> by <a href="https://github.com/d0t-execute">d0t-execute</a> searches every piece for them: <a href="https://d0t-execute.github.io/frontier-set-searcher/">open it in its own tab</a> (<a href="https://github.com/d0t-execute/frontier-set-searcher">source</a>, <a href="https://github.com/d0t-execute/frontier-set-searcher/issues">its issue page</a>).</p>
+        <p class="tool-credit" id="sb-data">Loading the game data.</p>
       </header>
 
-      <iframe class="tool-frame" src="https://d0t-execute.github.io/frontier-set-searcher/" title="Frontier Set Searcher by d0t-execute" allow="clipboard-write" referrerpolicy="no-referrer"></iframe>
+      <p class="form-alert" id="sb-status" role="status" hidden></p>
+      <noscript><p class="form-alert">The Set builder needs JavaScript.</p></noscript>
+
+      <div class="sb-app" id="sb-app" hidden>
+        <div class="sb-editor" id="sb-editor"></div>
+        <aside class="sb-summary" id="sb-summary" aria-label="The set's skills and stats" aria-live="polite"></aside>
+      </div>
+      <p class="tool-credit">Rules marked * are not exact yet: the skill limit, which skills a weapon can use, Zenith skills and defence by armour level are still being read from the game. A skill that looks wrong? <a href="/report.html">Report it</a>.</p>
     </main>
 
     <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
@@ -175,5 +184,9 @@
     <!-- /site-shell:footer -->
 
     <script src="/js/search.js?v=5" defer></script>
+    <script src="/js/builder-ui.js?v=4" defer></script>
+    <script src="/js/armor-rules.js?v=1" defer></script>
+    <script src="/js/armor-calc.js?v=1" defer></script>
+    <script src="/js/set-builder.js?v=1" defer></script>
   </body>
 </html>
