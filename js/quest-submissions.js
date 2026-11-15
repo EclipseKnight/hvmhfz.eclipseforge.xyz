@@ -10,7 +10,11 @@
    Versions and delete (API README "Custom quest versions and delete"): submitting a builder draft again while it is
    in testing updates that quest and bumps its version, shown as "v2" beside the title (and beside the draft). Delete
    takes one of the player's own testing (or pending) quests out of testing and out of the game's list, after a
-   confirm; the draft stays. Both need the API's version field: an older API shows neither. */
+   confirm; the draft stays. Both need the API's version field: an older API shows neither.
+
+   The confirm is in the page (the first click turns the button into "Confirm delete" for a few seconds, the second
+   deletes), not window.confirm: some in-app browsers answer window.confirm with "cancel" without showing it, so the
+   button looked dead (player report 2026-11-15: no delete from that account ever reached the API). */
 (function () {
   "use strict";
   var API = "https://api.hvmhfz.eclipseforge.xyz";
@@ -109,10 +113,36 @@
     }).catch(function (error) { say(note, error.message, true); throw error; });
   }
 
+  var ARMED_MS = 6000;
+
+  function questName(row) {
+    return "“" + row.title + "” (v" + row.version + ")";
+  }
+
+  // Delete with its confirm step: the first click asks (in the note) and arms the button, a second click within
+  // ARMED_MS deletes; otherwise it goes back to "Delete".
+  function deleteButton(row) {
+    var b = el("button", "ghost-btn small", "Delete");
+    b.type = "button";
+    var armed = null;
+    b.addEventListener("click", function () {
+      if (!armed) {
+        say(note, "Delete " + questName(row) + " from testing? It leaves your in-game quest list now and frees its"
+          + " testing slot. Your draft in the quest builder is kept. Click “Confirm delete” to go ahead.", false);
+        b.textContent = "Confirm delete";
+        armed = setTimeout(function () { armed = null; b.textContent = "Delete"; }, ARMED_MS);
+        return;
+      }
+      clearTimeout(armed);
+      armed = null;
+      b.disabled = true;
+      deleteQuest(row).catch(function () {}).then(function () { b.disabled = false; b.textContent = "Delete"; });
+    });
+    return b;
+  }
+
   function deleteQuest(row) {
-    var name = "“" + row.title + "” (v" + row.version + ")";
-    if (!window.confirm("Delete " + name + " from testing? It leaves your in-game quest list now and frees its"
-      + " testing slot. Your draft in the quest builder is kept.")) return Promise.resolve();
+    var name = questName(row);
     return call("/api/account/quest-submissions/" + row.id, "DELETE").then(function () {
       say(note, "Deleted " + name + ". Its draft, if it has one, is still in the quest builder.", false);
       return Promise.all([load(), loadDrafts()]);
@@ -144,7 +174,7 @@
     }
     if ((row.status === "testing" || row.status === "pending") && typeof row.version === "number") {
       td.appendChild(document.createTextNode(" "));
-      td.appendChild(button("Delete", false, function () { return deleteQuest(row); }));
+      td.appendChild(deleteButton(row));
     }
     return td;
   }

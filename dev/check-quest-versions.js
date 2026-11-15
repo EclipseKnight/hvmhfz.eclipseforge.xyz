@@ -3,7 +3,7 @@
    Chromium against a fake API, with a made-up model (no game data):
 
    - account page: each submission shows its version ("v2") beside the title; a testing or pending quest has Delete;
-     dismissing the confirm sends nothing, accepting sends DELETE for that id, the note says it was deleted and the
+     its first click asks in the page (no browser dialog) and sends nothing, "Confirm delete" sends DELETE for that id, the note says it was deleted and the
      draft is kept, and the row is gone after the reload; approved and expired quests have no Delete; a draft shows
      its latest submission ("testing v2");
    - an API without versions: no Delete button, no "v" (js/quest-submissions.js shows neither);
@@ -125,16 +125,20 @@ async function account(browser, base) {
     rowOf("Published"));
   check("draft shows its testing version", (await text(page, "#quest-draft-list")).includes("testing v2"), await text(page, "#quest-draft-list"));
 
-  // Dismissing the confirm sends nothing.
-  let asked = "";
-  page.once("dialog", (d) => { asked = d.message(); d.dismiss(); });
+  // The confirm is in the page (some in-app browsers answer window.confirm with "cancel" unseen): the first click
+  // asks in the note and arms the button, sending nothing; the second deletes. No browser dialog at all.
+  let dialogs = 0;
+  page.on("dialog", (d) => { dialogs++; d.dismiss(); });
   await page.click("#quest-submit-list tr:has-text('Polar Sea') button:has-text('Delete')");
   await page.waitForTimeout(300);
+  const asked = await text(page, "#quest-submit-note");
   check("Delete asks first, naming quest and version", asked.includes("“Polar Sea Migration” (v2)") && asked.includes("draft"), asked);
-  check("a dismissed confirm sends nothing", !api.calls.some((c) => c.method === "DELETE"));
+  check("the first click arms the button", await page.isVisible("#quest-submit-list tr:has-text('Polar Sea') button:has-text('Confirm delete')"));
+  check("the first click sends nothing", !api.calls.some((c) => c.method === "DELETE"));
+  check("the other rows' Delete stay unarmed", (await rowsOf(page)).filter((r) => r.includes("Confirm delete")).length === 1,
+    (await rowsOf(page)).join(" | "));
 
-  page.once("dialog", (d) => d.accept());
-  await page.click("#quest-submit-list tr:has-text('Polar Sea') button:has-text('Delete')");
+  await page.click("#quest-submit-list tr:has-text('Polar Sea') button:has-text('Confirm delete')");
   await until(page, () => !/Polar/.test(document.getElementById("quest-submit-list").textContent));
   check("Delete sends DELETE for quest 1", api.calls.some((c) => c.method === "DELETE" && c.path === "/api/account/quest-submissions/1"),
     JSON.stringify(api.calls.filter((c) => c.method !== "GET")));
@@ -145,6 +149,7 @@ async function account(browser, base) {
   await until(page, () => !/testing v2/.test(document.getElementById("quest-draft-list").textContent));
   const draftsNow = await text(page, "#quest-draft-list");
   check("the draft stays, without the deleted version", draftsNow.startsWith("Polar Sea Migration") && !/v\d/.test(draftsNow), draftsNow);
+  check("no browser dialog", dialogs === 0, String(dialogs));
   check("no page errors", !errors.length, errors.join("; "));
   await page.close();
 }
