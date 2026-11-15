@@ -1,6 +1,6 @@
 {
  "_about": "sha256 of the key game files in each client patch zip, by version (pre-releases as 1.21-pre3). A file a version's zip does not ship is not listed. Read by the API's Diagnostics upload to compare a player's files (hvdiag.txt [files]) with the release. Written by dev/make-patch-files.py --backups DIR.",
- "current": "1.28",
+ "current": "1.29",
  "files": [
   "mhf.exe",
   "mhfo-hd.dll",
@@ -11,6 +11,15 @@
   "hvmods.dll"
  ],
  "versions": {
+  "1.29": {
+   "mhf.exe": "cf16ec07107386030f0e3aafd141912f798eba4888f674d1f8f4642de4e872d7",
+   "mhfo-hd.dll": "3505e522d5086639057da3e2810b946259dfa84637ed10f11e762cb8c7192336",
+   "mhfo.dll": "cdda1ed1496ef82928393f1db3c1b87f6ece69c335c722ea976cd672129defc9",
+   "dat/mhfdat.bin": "ef02d87072747fce248fa9025e4f0f96636e565849ab05623cbb3a49487e74bc",
+   "dat/mhfpac.bin": "4a389839d25150fffef476813498c92d10a2612d37fa67809ea770e55837c4f4",
+   "dat/mhfinf.bin": "2becce6db7ad098bb170c4a3dd90a011ab22a932dcbd5078bb72a9e2606e5744",
+   "hvmods.dll": "0232b21bebf628fb61cd041f458aa2a4f668247b115e034e3c2288688aa292e2"
+  },
   "1.28": {
    "mhf.exe": "65347eb312612d6616164e424db175e6446173f7776e61192a9c06c227d4a7e4",
    "mhfo-hd.dll": "f7e6b8db95b58be00c8c9ab0d0afdeb33b35970abcf18dab148bf42eff618acb",
