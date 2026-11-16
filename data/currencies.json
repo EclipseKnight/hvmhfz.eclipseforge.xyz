@@ -223,6 +223,12 @@
           "amount": "10 Trial Coin G a week. Claim it from the gift list (Claim Items) at the Gacha Cat or the Guide.",
           "limit": "A new gift every Monday 00:05 UTC; each gift once per character, open for 4 weeks.",
           "basis": "cron /etc/cron.d/gacha-weekly-coins on hvmhfz-db (Mondays 00:05 UTC); distribution 37-39 'Weekly Gacha Coins 2026-Wnn' item_type 20 x10, times_acceptable 1, deadline +4 weeks; handlers_distitem.go case 20; docs/gacha-design.md 5 and 10"
+        },
+        {
+          "how": "Gift after each event",
+          "amount": "5 Trial Coin G, in the same gift as the 5 GW Lottery Tickets. Claim it from the gift list (Claim Items) at the Gacha Cat or the Guide.",
+          "limit": "For every character that took part in a Hunter Festival, a Diva Defense, a Speedrun Cup week or a VS Bracket. Given an hour after the event ends; open for 28 days.",
+          "basis": "hvmhfz_ops hvmhfz-db/event-tickets (event-tickets.sql hourly from /etc/cron.d/event-tickets on hvmhfz-db, -v coins=5; installed 2026-11-16 23:54 UTC): the personal distribution's second item row, item_type 20 x5; handlers_distitem.go case 20"
         }
       ],
       "settings": []
@@ -568,27 +574,27 @@
       "ways": [
         {
           "how": "Gift after the Hunter Festival",
-          "amount": "5 tickets, claimed from the gift list (Claim Items) at the Gacha Cat or the Guide.",
+          "amount": "5 tickets, with 5 Trial Coin G in the same gift. Claim it from the gift list (Claim Items) at the Gacha Cat or the Guide.",
           "limit": "For every character that delivered souls. Given an hour after the rewards phase starts; open for 28 days.",
-          "basis": "hvmhfz_ops hvmhfz-db/event-tickets (event-tickets.sql hourly from /etc/cron.d/event-tickets on hvmhfz-db; event_tickets_due in event-tickets-schema.sql): one personal distribution per character, type 1, item_type 7 item 6833 x5, times_acceptable 1, deadline +28 days; gacha 105 costs item 6833 x1 / x5 (docs/gacha-design.md 3); festa: festa_submissions / festa_archive_submissions souls > 0, at T3 + 1 h"
+          "basis": "hvmhfz_ops hvmhfz-db/event-tickets (event-tickets.sql hourly from /etc/cron.d/event-tickets on hvmhfz-db; event_tickets_due in event-tickets-schema.sql): one personal distribution per character, type 1, item_type 7 item 6833 x5 and item_type 20 x5 (cron line -v coins=5; installed 2026-11-16 23:54 UTC), times_acceptable 1, deadline +28 days; gacha 105 costs item 6833 x1 / x5 (docs/gacha-design.md 3); festa: festa_submissions / festa_archive_submissions souls > 0, at T3 + 1 h"
         },
         {
           "how": "Gift after Diva Defense",
-          "amount": "5 tickets, claimed from the gift list (Claim Items) at the Gacha Cat or the Guide.",
+          "amount": "5 tickets, with 5 Trial Coin G in the same gift. Claim it from the gift list (Claim Items) at the Gacha Cat or the Guide.",
           "limit": "For every character that earned Diva Defense points (personal or Clan). Given an hour after the reward week starts; open for 28 days.",
-          "basis": "hvmhfz_ops hvmhfz-db/event-tickets (event-tickets.sql hourly from /etc/cron.d/event-tickets on hvmhfz-db; event_tickets_due in event-tickets-schema.sql): one personal distribution per character, type 1, item_type 7 item 6833 x5, times_acceptable 1, deadline +28 days; gacha 105 costs item 6833 x1 / x5 (docs/gacha-design.md 3); diva: diva_days or diva_tactics points > 0, at start + 14 d + 1 h"
+          "basis": "hvmhfz_ops hvmhfz-db/event-tickets (event-tickets.sql hourly from /etc/cron.d/event-tickets on hvmhfz-db; event_tickets_due in event-tickets-schema.sql): one personal distribution per character, type 1, item_type 7 item 6833 x5 and item_type 20 x5 (cron line -v coins=5; installed 2026-11-16 23:54 UTC), times_acceptable 1, deadline +28 days; gacha 105 costs item 6833 x1 / x5 (docs/gacha-design.md 3); diva: diva_days or diva_tactics points > 0, at start + 14 d + 1 h"
         },
         {
           "how": "Gift after each Speedrun Cup",
-          "amount": "5 tickets, claimed from the gift list (Claim Items) at the Gacha Cat or the Guide.",
+          "amount": "5 tickets, with 5 Trial Coin G in the same gift. Claim it from the gift list (Claim Items) at the Gacha Cat or the Guide.",
           "limit": "For every character with at least one Cup clear that week. Given an hour after the week's Cup closes; open for 28 days.",
-          "basis": "hvmhfz_ops hvmhfz-db/event-tickets (event-tickets.sql hourly from /etc/cron.d/event-tickets on hvmhfz-db; event_tickets_due in event-tickets-schema.sql): one personal distribution per character, type 1, item_type 7 item 6833 x5, times_acceptable 1, deadline +28 days; gacha 105 costs item 6833 x1 / x5 (docs/gacha-design.md 3); speedrun_cup: tournament_results of the cycle, at the cycle's open end + 1 h"
+          "basis": "hvmhfz_ops hvmhfz-db/event-tickets (event-tickets.sql hourly from /etc/cron.d/event-tickets on hvmhfz-db; event_tickets_due in event-tickets-schema.sql): one personal distribution per character, type 1, item_type 7 item 6833 x5 and item_type 20 x5 (cron line -v coins=5; installed 2026-11-16 23:54 UTC), times_acceptable 1, deadline +28 days; gacha 105 costs item 6833 x1 / x5 (docs/gacha-design.md 3); speedrun_cup: tournament_results of the cycle, at the cycle's open end + 1 h"
         },
         {
           "how": "Gift after each VS Bracket",
-          "amount": "5 tickets, claimed from the gift list (Claim Items) at the Gacha Cat or the Guide.",
+          "amount": "5 tickets, with 5 Trial Coin G in the same gift. Claim it from the gift list (Claim Items) at the Gacha Cat or the Guide.",
           "limit": "For every character that signed up. Given an hour after the bracket's cycle ends; open for 28 days.",
-          "basis": "hvmhfz_ops hvmhfz-db/event-tickets (event-tickets.sql hourly from /etc/cron.d/event-tickets on hvmhfz-db; event_tickets_due in event-tickets-schema.sql): one personal distribution per character, type 1, item_type 7 item 6833 x5, times_acceptable 1, deadline +28 days; gacha 105 costs item 6833 x1 / x5 (docs/gacha-design.md 3); vs_bracket: vs_bracket_entries of the cycle, at the cycle end + 1 h"
+          "basis": "hvmhfz_ops hvmhfz-db/event-tickets (event-tickets.sql hourly from /etc/cron.d/event-tickets on hvmhfz-db; event_tickets_due in event-tickets-schema.sql): one personal distribution per character, type 1, item_type 7 item 6833 x5 and item_type 20 x5 (cron line -v coins=5; installed 2026-11-16 23:54 UTC), times_acceptable 1, deadline +28 days; gacha 105 costs item 6833 x1 / x5 (docs/gacha-design.md 3); vs_bracket: vs_bracket_entries of the cycle, at the cycle end + 1 h"
         }
       ],
       "note": "MezFes, the campaigns and Raviente run all the time and give no tickets.",
