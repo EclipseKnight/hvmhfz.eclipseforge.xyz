@@ -1,6 +1,9 @@
 /* The Roads this account plays: the party Road (Erupe pins it when you open a quest room, unless the room
    picks one in game with !road; every Road quest but the solo one) and the solo Road (the solo half of the
-   file, played only by the solo Road quest; empty = the same as the party Road). */
+   file, played only by the solo Road quest; empty = the same as the party Road). A Road with partyHidden
+   (road_version.party_hidden: "Zenith Road (Solo Zenith)", whose solo half is the solo list's Zenith) is
+   left out of the party choices unless it is already this account's party Road; an API without the field
+   hides nothing. */
 (function () {
   "use strict";
   var API = "https://api.hvmhfz.eclipseforge.xyz";
@@ -32,6 +35,20 @@
     return o;
   }
 
+  function partyLabel(v) {
+    var state = v.always ? " (always available)" : v.live ? " (live)" : " (retired)";
+    return (v.name || "Road") + state;
+  }
+
+  // The account's party Road shows even when it is hidden from the choices, so it can be kept.
+  function showParty(sha) {
+    if (sha && !Array.prototype.some.call(select.options, function (o) { return o.value === sha; })) {
+      var road = roads.filter(function (v) { return v.sha256 === sha; })[0];
+      option(select, sha, road ? partyLabel(road) : sha.slice(0, 8));
+    }
+    select.value = sha || "";
+  }
+
   function loadRoads() {
     return fetch(API + "/api/public/road/versions", { cache: "no-store" })
       .then(function (r) { return r.json(); })
@@ -39,9 +56,8 @@
         roads = list || [];
         select.innerHTML = "";
         option(select, "", "Follow the live Road");
-        roads.forEach(function (v) {
-          var state = v.always ? " (always available)" : v.live ? " (live)" : " (retired)";
-          option(select, v.sha256, (v.name || "Road") + state);
+        roads.filter(function (v) { return !v.partyHidden; }).forEach(function (v) {
+          option(select, v.sha256, partyLabel(v));
         });
         if (!soloSelect) return;
         // Each different solo half once: the Roads with a solo name, oldest first like the game's !road solo.
@@ -72,7 +88,7 @@
       if (!r.ok) throw new Error("HTTP " + r.status);
       return r.json();
     }).then(function (d) {
-      select.value = d.sha || "";
+      showParty(d.sha || "");
       showSolo(d.soloSha || "");
       say("Saved.", false);
     }).catch(function () { say("Could not load your Roads right now.", true); });
