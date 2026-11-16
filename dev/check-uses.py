@@ -90,22 +90,27 @@ def test_info(m):
                    "uses": [{"s": "pouch"}, {"s": "fp-trade", "qty": 1, "fp": 3}]},
             "11": {"kind": "material", "r": 1, "sell": 7},
             "12": {"kind": "placeholder", "r": 1, "status": "placeholder"},
+            "35": {"desc": "A charm.", "kind": "consumable", "r": 5, "uses": [{"s": "carry"}],
+                   "fx": ["True attack +6 while it is in your item pouch."]},
             "600": {"desc": "Six hundred.", "kind": "coin", "r": 2}}
     per = m.item_uses(uses, {}, info)
     check(per[10]["rows"][1:] == [{"g": "use", "s": "pouch"}, {"g": "trade", "s": "fp-trade", "qty": 1, "fp": 3}],
           "test info: own uses as rows: %r" % per[10]["rows"])
-    index = {i: [i, "Item %d" % i, ""] for i in (0, 10, 11, 12, 20, 600)}
+    check(per[35]["rows"] == [{"g": "use", "s": "carry"}], "test info: a charm's carry row: %r" % per.get(35))
+    index = {i: [i, "Item %d" % i, ""] for i in (0, 10, 11, 12, 20, 35, 600)}
     details = {11: {"where": [["shop", 1]]}, 20: {"quests": [{"id": 5}]}}
     st = m.item_status(index, per, details, info)
-    check(st["no_use"] == [11, 12, 600] and st["no_source"] == [10, 12, 20, 600] and st["unreleased"] == [12],
+    check(st["no_use"] == [11, 12, 600] and st["no_source"] == [10, 12, 20, 35, 600] and st["unreleased"] == [12],
           "test info: status %r" % st)
     chunks = m.info_chunks(info, index)
     check(sorted(chunks) == [0, 1] and chunks[0]["items"]["10"] == {"desc": "Ten.", "from": "game", "kind": "material",
                                                                      "r": 1, "sell": 5}
           and "600" in chunks[1]["items"], "test info: chunks %r" % chunks)
+    check(chunks[0]["items"]["35"].get("fx") == ["True attack +6 while it is in your item pouch."],
+          "test info: the effect lines go to the chunk: %r" % chunks[0]["items"]["35"])
 
 
-USE_KINDS = {"use": {"pouch", "ammo", "coating", "crystal", "cooking", "deco", "gem", "jewel", "sigil"},
+USE_KINDS = {"use": {"pouch", "carry", "ammo", "coating", "crystal", "cooking", "deco", "gem", "jewel", "sigil"},
              "trade": {"fp-trade", "gcp-sell", "gacha"}}
 
 
@@ -115,8 +120,11 @@ def check_info(items, index):
         return 0
     known = 0
     for p in info_dir.glob("*.json"):
-        for sid in json.loads(p.read_text())["items"]:
+        for sid, e in json.loads(p.read_text())["items"].items():
             check(int(sid) in items and int(sid) // 512 == int(p.stem), "uses/info/%s.json: %s misplaced" % (p.stem, sid))
+            fx = e.get("fx", [])
+            check(isinstance(fx, list) and all(isinstance(l, str) and l.endswith(".") for l in fx),
+                  "uses/info/%s.json: %s has bad effect lines %r" % (p.stem, sid, fx))
             known += 1
     st = json.loads(st_path.read_text())
     for k in ("no_use", "no_source", "unreleased"):

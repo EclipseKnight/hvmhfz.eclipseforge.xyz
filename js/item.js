@@ -328,8 +328,11 @@
   var USE_GROUPS = [["use", "What it does"], ["craft", "Crafting"], ["weapon", "Weapons"], ["armour", "Armour"],
                     ["deco", "Decorations"], ["tower", "Tower"], ["exchange", "Exchanges"],
                     ["trade", "Trade-ins and gacha"], ["quest", "Quests"]];
-  /* The "What it does" lines (hvmhfz_re item_info.py): [title, what to do with it]. */
+  /* The "What it does" lines (hvmhfz_re item_info.py): [title, what to do with it]. Items whose effect the
+     client's item-use code shows (hvmhfz_re item_effects.py, info "fx") list it under the pouch line instead
+     of pointing at the description. */
   var OWN_USES = { pouch: ["Item pouch", "use it from the item pouch during a quest (what it does: the description above)"],
+                   carry: ["Item pouch", "works while it is in your item pouch"],
                    ammo: ["Bowgun ammo", "load it into a bowgun"],
                    coating: ["Bow coating", "load it onto a bow's arrows"],
                    crystal: ["S.Crystal", "load it into a weapon that takes S.Crystals (the description above says which)"],
@@ -359,7 +362,7 @@
 
   /* One "Used for" line and its filter text. */
   function useLine(r, ctx) {
-    var li = el("li", "where-line"), head = el("span", "where-src"), facts = [], text;
+    var li = el("li", "where-line"), head = el("span", "where-src"), facts = [], text, fx = null;
     li.appendChild(head);
     if (Array.isArray(r)) { // [slot, id, qty, kind]
       var slot = r[0], id = r[1], e = ctx.names[slot] && ctx.names[slot][id];
@@ -384,10 +387,11 @@
       text = eqName(ctx.names, r.eq[0], r.eq[1]) + " " + r.stat;
     } else if (r.g === "use") {
       var own = OWN_USES[r.s] || [r.s, ""];
+      fx = (r.s === "pouch" || r.s === "carry") && ctx.info && ctx.info.fx || null;
       head.appendChild(el("span", null, own[0]));
-      if (own[1]) facts.push(own[1]);
+      if (own[1]) facts.push(fx && r.s === "pouch" ? "use it from the item pouch during a quest" : own[1]);
       if ((r.s === "deco" || r.s === "gem") && ctx.info && ctx.info.slots) facts.push(ctx.info.slots + (ctx.info.slots === 1 ? " slot" : " slots"));
-      text = own.join(" ");
+      text = own.join(" ") + (fx ? " " + fx.join(" ") : "");
     } else if (r.s === "fp-trade" || r.s === "gcp-sell") {
       head.appendChild(el("span", null, r.s === "fp-trade" ? "Frontier Point exchange" : "GCP sell list"));
       facts.push("trade in x" + num(r.qty) + " for " + num(r.s === "fp-trade" ? r.fp : r.gcp) + (r.s === "fp-trade" ? " Frontier Points" : " GCP"));
@@ -422,6 +426,11 @@
     }
     factsEl.appendChild(document.createTextNode(facts.join(" · ")));
     li.appendChild(factsEl);
+    if (fx) { // what it does, with the numbers
+      var fxList = el("ul", "item-fx");
+      fx.forEach(function (line) { fxList.appendChild(el("li", null, line)); });
+      li.appendChild(fxList);
+    }
     if (!Array.isArray(r) && r.with && r.with.length) { // (arrays have a .with method)
       var w = el("span", "where-mats");
       w.appendChild(document.createTextNode("with "));

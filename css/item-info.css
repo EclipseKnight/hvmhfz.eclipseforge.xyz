@@ -1,9 +1,11 @@
-/* Item page description and facts, Items list filters and badges (js/item.js, js/catalog.js; task item-info). */
+/* Item page description, facts and effect lines, Items list filters and badges (js/item.js, js/catalog.js; task item-info). */
 .item-desc{margin:12px 0 0;max-width:72ch;line-height:1.55;color:#e8dcc2}
 .item-desc-note{margin:4px 0 0;font-size:.85rem}
 .item-facts{list-style:none;display:flex;flex-wrap:wrap;gap:6px 18px;margin:12px 0 0;padding:0;font-size:.92rem;color:var(--text-dim)}
 .item-facts li{white-space:nowrap}
 .item-fact-label{font:600 .72rem/1.3 var(--font-ui);letter-spacing:.08em;text-transform:uppercase;color:#c9a96b}
+.item-fx{flex-basis:100%;margin:4px 0 0;padding-left:18px}
+.item-fx li{margin:2px 0;overflow-wrap:anywhere}
 .catalog-filters{margin-top:10px}
 .catalog-flag{display:inline-block;margin:2px 0 2px 8px;padding:1px 8px;border:1px solid #8a6a3e;border-radius:999px;
   font-size:.72rem;line-height:1.5;color:#5c4526;background:rgba(138,106,62,.08);white-space:nowrap;vertical-align:middle}

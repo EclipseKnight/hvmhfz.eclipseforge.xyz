@@ -22,12 +22,14 @@ Writes:
                                weapon / armour: [slot, id, qty, kind] (kind "c" made, "u" upgraded, "t"
                                transmog unlock); quest: {"g": "quest", "quest", "name", "qty", "obj" ("main",
                                "sub A", "sub B")}; what the item's own data says (item_info.json):
-                               {"g": "use", "s": pouch | ammo | coating | crystal | cooking | deco | gem | jewel
-                               | sigil} and {"g": "trade", "s": fp-trade ("qty", "fp") | gcp-sell ("qty", "gcp")
+                               {"g": "use", "s": pouch | carry | ammo | coating | crystal | cooking | deco | gem
+                               | jewel | sigil} and {"g": "trade", "s": fp-trade ("qty", "fp") | gcp-sell ("qty", "gcp")
                                | gacha ("gacha" id, "name", "qty", "rolls")};
   - data/uses/index.json       {"_about", "items": {id: [uses, groups]}}: what the checks read;
   - data/uses/info/<id // 512>.json  {"items": {id: {"desc", "from" (game | site), "kind", "r", "stack",
-                               "buy", "sell", "status", "slots"}}}: the item page's description and facts, for
+                               "buy", "sell", "status", "slots", "fx" [line]}}}: the item page's description, facts
+                               and what using or carrying the item does with the numbers ("fx": hvmhfz_re
+                               item_effects.py, from the client's item-use code; shown under "What it does"), for
                                every item of the index (only with item_info.json; skill points are
                                dev/make-skill-data.py's);
   - data/uses/status.json      {"_about", "no_use": [ids], "no_source": [ids], "unreleased": [ids]}: the Items
@@ -61,7 +63,7 @@ OBJECTIVES = ("main", "sub A", "sub B")
 CHUNK = 1024
 INFO_CHUNK = 512
 TRADE = ("fp-trade", "gcp-sell", "gacha")
-INFO_KEYS = ("desc", "from", "kind", "r", "stack", "buy", "sell", "status", "slots")
+INFO_KEYS = ("desc", "from", "kind", "r", "stack", "buy", "sell", "status", "slots", "fx")
 SOURCE_KEYS = ("where", "offered", "gather", "fish", "supply")   # dev/make-source-data.py: the item has a source
 
 

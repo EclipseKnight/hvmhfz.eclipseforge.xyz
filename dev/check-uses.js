@@ -8,7 +8,8 @@
    the lines; an item with deliver quests lists them under Quests with "Needed to enter" first when the item has
    entry quests; an item with no use says "No known use" and its sell price, an unused entry of the game's list
    says "Unreleased content"; an item shows its description and facts (Type, Rarity, Carry limit, Sell) and an
-   item pouch item its "What it does" line; the Items list's "No known use" filter shows only items with that
+   item pouch item its "What it does" line with the effect lines under it (and a charm its carried line and
+   lines); the Items list's "No known use" filter shows only items with that
    badge (data/uses/status.json) and keeps ?only= in the address; the equipment page of an upgraded piece shows its line,
    what it upgrades into and the materials of each way to make it, linked; a weapon on the Weapons page lists its
    materials; an unknown piece says so; no sideways scrolling and no script errors. SHOTS=<dir> saves screenshots.
@@ -46,13 +47,18 @@ const pouch = ids.find(function (i) {
   return uses[i][1].indexOf("use") !== -1 && infoOf(i).desc &&
     readJson("data/uses/" + i + ".json").rows.some(function (r) { return r.g === "use" && r.s === "pouch"; });
 });
+/* a charm or talon: its effect works while it is carried (a "carry" row and effect lines, hvmhfz_re item_effects.py) */
+const carried = ids.find(function (i) {
+  return (infoOf(i).fx || []).length && readJson("data/uses/" + i + ".json").rows.some(function (r) { return r.g === "use" && r.s === "carry"; });
+});
 /* an upgraded melee weapon that has a type on the Weapons page and upgrades on */
 const melee = readJson("data/equipment/melee/names.json").names;
 const wtypes = readJson("data/weapons/ids.json");
 const weapon = melee.findIndex(function (n, i) {
   return n && n[2] && wtypes.melee.charAt(i) !== "." && melee.some(function (m) { return m && m[2] === i; });
 });
-check(big && needs && none && unused && pouch && weapon > 0, "found test items in the data (" + [big, needs, none, unused, pouch, weapon] + ")");
+check(big && needs && none && unused && pouch && carried && weapon > 0, "found test items in the data (" + [big, needs, none, unused, pouch, carried, weapon] + ")");
+check((infoOf(pouch).fx || []).length > 0, "the pouch test item " + pouch + " has effect lines");
 const GROUPS = ["What it does", "Crafting", "Weapons", "Armour", "Decorations", "Tower", "Exchanges", "Trade-ins and gacha", "Quests"];
 
 function serve() {
@@ -149,8 +155,21 @@ async function run(chromium) {
       check(["Type", "Rarity", "Carry limit", "Sell"].every(function (f) { return facts.indexOf(f) !== -1; }), V + ": facts " + facts);
       const ownHeads = await pg.$$eval("#uses h3", function (h) { return h.map(function (x) { return x.textContent.split(" · ")[0]; }); });
       check(ownHeads[0] === "What it does" && /Item pouch/.test(await pg.textContent("#uses")), V + ": What it does first: " + ownHeads.join(", "));
+      const fxShown = await pg.$$eval("#uses .item-fx li", function (l) { return l.map(function (x) { return x.textContent; }); });
+      check(JSON.stringify(fxShown) === JSON.stringify(infoOf(pouch).fx), V + ": the effect lines under the pouch line: " + fxShown.join(" | "));
+      check(!/the description above/.test(await pg.textContent("#uses")), V + ": no pointer to the description when the lines are there");
       await noSideways("item with a description");
       await shot("item-info-" + pouch);
+
+      /* a carried charm: What it does with its lines, not "No known use" */
+      await pg.goto(base + "/item.html?id=" + carried, { waitUntil: "load" });
+      await pg.waitForSelector("#uses");
+      const carriedText = await pg.textContent("#uses");
+      const carriedFx = await pg.$$eval("#uses .item-fx li", function (l) { return l.map(function (x) { return x.textContent; }); });
+      check(/works while it is in your item pouch/.test(carriedText) && !/No known use/.test(carriedText) &&
+        JSON.stringify(carriedFx) === JSON.stringify(infoOf(carried).fx), V + ": carried item " + carried + ": " + carriedFx.join(" | "));
+      await noSideways("carried item");
+      await shot("item-carried-" + carried);
 
       /* the Items list filter */
       await pg.goto(base + "/items.html?only=no_use", { waitUntil: "load" });
