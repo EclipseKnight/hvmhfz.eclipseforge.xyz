@@ -3,6 +3,17 @@
   "current": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip",
   "patches": [
     {
+      "version": "1.30",
+      "published": "2026-11-16T12:54Z",
+      "sha256": "68084e7e8d62cab12babc9ca7f3f7bcf50896e840d5943ac53f365cd315c8009",
+      "size": 63629413,
+      "files": 106,
+      "changes": "Armour and weapon names in English: about 10,700 armour pieces and 131 weapons that still showed Japanese names now match the website.",
+      "changelog": "/changelog.html#d-2026-11-16-client-patch",
+      "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.30/Frontier_Patch.zip",
+      "current": true
+    },
+    {
       "version": "1.29",
       "published": "2026-11-15T07:39Z",
       "sha256": "bdedc291be87418269e49c9487cbe059c3eac8c0df50396456f498478a47a917",
@@ -11,7 +22,7 @@
       "changes": "Rasta bar: the Man in Coat and the YoRHa Member are visible again. Sky Corridor traps no longer knock out monsters. mhf.exe can use 4 GB of memory (fixes a crash on long sessions).",
       "changelog": "/changelog.html#d-2026-11-15-client-patch",
       "download": "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client-patch-v1.29/Frontier_Patch.zip",
-      "current": true
+      "current": false
     },
     {
       "version": "1.28",
