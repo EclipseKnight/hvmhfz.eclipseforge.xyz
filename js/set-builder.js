@@ -52,7 +52,8 @@
   var loading = {};
   // edit: what the centre list is for: {kind: "class"|"weapon"|"piece"|"deco"|"cuff", slot, where, index}
   // rank: the hunter's rank for the lists and Find sets (js/armor-rank.js): band 0 = any, 1-7; gr and gsr as typed
-  var state = { set: Calc.empty(), gender: "", obtainable: true, rank: { band: 0, gr: "", gsr: "" }, edit: { kind: "class" },
+  // canGet: "What I can get" = only what players can get, at the hunter's rank (filled from a loaded character)
+  var state = { set: Calc.empty(), gender: "", obtainable: true, canGet: false, rank: { band: 0, gr: "", gsr: "" }, edit: { kind: "class" },
                 view: "equip", list: freshList(), allTrees: false, preview: null };
   var optionCache = {};
   var current = null;      // the last compute() of the set shown
@@ -84,7 +85,9 @@
   function pieceObject(row) {
     return { id: row[0], name: row[1], rarity: row[2], defence: row[3], slots: row[4], maxSlots: row[5],
              res: row[6], flags: row[7], maxLevel: row[8], skills: row[9], auto: row[10], obtainable: !!row[11],
-             defGrowth: row[12], slotGrowth: row[13], limitKind: row[14], zenith: row[15], craft: row[16] || 0 };
+             defGrowth: row[12], slotGrowth: row[13], limitKind: row[14], zenith: row[15],
+             // a G-rank or Zenith upgrade of an HR piece needs G Rank (js/armor-rank.js pieceCraft)
+             craft: Rank.pieceCraft(row[16] || 0, row[2], row[14]) };
   }
 
   // ---- the hunter's rank --------------------------------------------------------------------------------
@@ -97,11 +100,58 @@
 
   function rankKey() { var h = hunterRank(); return h ? "|r" + h.band + "." + h.gr + "." + h.gsr : ""; }
 
-  /** A character was loaded: its HR and GR fill the rank when none is set. */
+  /** A character was loaded: "What I can get" turns on (the first time) and its HR and GR fill the rank (with the
+      tick on, or when no rank is set). */
   function rankFromCharacter(imp) {
-    if (!imp || state.rank.band || state.rank.gr !== "") return;
+    if (!imp) return;
+    if (!state.canGetSeen) { state.canGetSeen = true; state.canGet = true; state.obtainable = true; }
+    if (!state.canGet && (state.rank.band || state.rank.gr !== "")) return;
+    fillRank(imp);
+  }
+
+  function fillRank(imp) {
     if (imp.gr) { state.rank.band = Rank.G_BAND; state.rank.gr = String(imp.gr); }
-    else if (imp.hr) state.rank.band = Rank.bandOfHr(imp.hr, rankBands());
+    else if (imp.hr) { state.rank.band = Rank.bandOfHr(imp.hr, rankBands()); state.rank.gr = ""; }
+  }
+
+  function charImport() { return mine && mine.importData ? mine.importData() : null; }
+
+  /** "What I can get" on or off (the Hunter card and Find sets share it): on = only what players can get, at the
+      loaded character's rank (or the rank picked); off = any rank. */
+  function setCanGet(on) {
+    state.canGet = !!on;
+    state.canGetSeen = true;
+    if (on) {
+      state.obtainable = true;
+      var imp = charImport();
+      if (imp && (imp.hr || imp.gr)) fillRank(imp);
+    } else state.rank = { band: 0, gr: "", gsr: state.rank.gsr };
+  }
+
+  /** The "What I can get" tick with a line saying what it means now (prefix "filter" / "find"). */
+  function canGetControl(prefix, onChange) {
+    var box = el("div", "sb-canget");
+    var label = el("label", "bui-check sb-check sb-canget-check");
+    var check = el("input");
+    check.type = "checkbox";
+    check.checked = state.canGet;
+    check.setAttribute("data-focus", prefix + "|canget");
+    check.addEventListener("change", function () { setCanGet(check.checked); onChange(); });
+    label.appendChild(check);
+    label.appendChild(el("strong", null, "What I can get"));
+    box.appendChild(label);
+    var h = hunterRank(), imp = charImport();
+    var rank = h && h.gr ? "GR " + h.gr : h && h.band ? Rank.bandLabel(h.band, rankBands()) + " (no G Rank)" : "";
+    var text = !state.canGet ? "Only what your rank allows and players can get" + (imp ? "" : " (sign in and load a character, or set your rank)")
+      : (rank ? "Up to " + rank + (h.gsr !== null ? ", GSR " + h.gsr : "") : "Any rank: set your rank below") +
+        " · only what players can get" + (imp ? " · from " + imp.name : "");
+    var note = el("span", "sb-canget-note", text);
+    note.id = prefix === "find" ? "sb-find-canget-note" : "sb-canget-note";
+    box.appendChild(note);
+    box.title = "Pieces the smithy offers at your HR band, GR and GSR (G-rank and Zenith upgrades need G Rank; an HR " +
+      "hunter gets no cuffs and no G-rank or Zenith decorations), and only what players can get on this server. " +
+      "Only what I own is a different filter: what is in your boxes.";
+    return box;
   }
 
   /** The rank controls (band chips, GR, GSR), in the Hunter card and in Find sets (prefix "filter" / "find"). */
@@ -115,6 +165,7 @@
         chips.appendChild(chip(Rank.bandLabel(band, rankBands()), state.rank.band === band, prefix + "|band|" + band, function () {
           state.rank.band = band;
           if (band !== Rank.G_BAND) state.rank.gr = "";
+          if (!band) state.canGet = false;
           onChange();
         }));
       })(b);
@@ -343,13 +394,16 @@
   /** Decorations that fit in `room` slots. A Tower weapon (tower true) takes Tower sigils and Road gems (Tower
       Decos) instead, one a place; sigils go on nothing else. */
   function decoRows(room, tower) {
-    var key = "d" + room + "|" + tower + "|" + state.obtainable + ownKey();
+    var key = "d" + room + "|" + tower + "|" + state.obtainable + ownKey() + rankKey();
     if (optionCache[key]) return optionCache[key];
     var own = mine && mine.filtering();
+    var rank = hunterRank();
     var rows = [];
     data.index.decorations.forEach(function (d) {
       if (d[2] === "c" || (tower ? d[2] !== "g" : d[3] > room)) return;
       if (own ? !mine.ownsItem(d[0]) : state.obtainable && !d[5]) return;
+      // an HR hunter: no G-rank or Zenith decorations, except what the character has
+      if (!Rank.itemFits(data.items[d[0]], rank) && !(mine && mine.loaded() && mine.ownsItem(d[0]))) return;
       rows.push({ id: d[0], name: d[1], icon: itemIcon(d[0]), size: tower ? 1 : d[3], skills: d[4],
                   kind: d[2] === "g" ? "Road gem" : "", text: (d[1] + " " + skillText(d[4])).toLowerCase(),
                   owned: mine && mine.loaded() ? mine.itemHint(d[0]) : "", obtainable: !!d[5] });
@@ -367,13 +421,15 @@
   }
 
   function cuffRows() {
-    var key = "c|" + state.obtainable + ownKey();
+    var key = "c|" + state.obtainable + ownKey() + rankKey();
     if (optionCache[key]) return optionCache[key];
     var own = mine && mine.filtering();
+    var rank = hunterRank();
     var rows = [];
     data.index.decorations.forEach(function (d) {
       if (d[2] !== "c") return;
       if (own ? !mine.ownsItem(d[0]) : state.obtainable && !d[5]) return;
+      if (!Rank.itemFits(data.items[d[0]], rank) && !(mine && mine.loaded() && mine.ownsItem(d[0]))) return;   // no cuffs before G Rank
       rows.push({ id: d[0], name: d[1], icon: itemIcon(d[0]), skills: d[4], text: (d[1] + " " + skillText(d[4])).toLowerCase(),
                   owned: mine && mine.loaded() ? mine.itemHint(d[0]) : "", obtainable: !!d[5] });
     });
@@ -705,12 +761,17 @@
       }));
     });
     box.appendChild(chips);
+    box.appendChild(canGetControl("filter", render));
     var label = el("label", "bui-check sb-check");
     var check = el("input");
     check.type = "checkbox";
     check.checked = state.obtainable;
     check.setAttribute("data-focus", "filter|obtainable");
-    check.addEventListener("change", function () { state.obtainable = check.checked; render(); });
+    check.addEventListener("change", function () {
+      state.obtainable = check.checked;
+      if (!check.checked) state.canGet = false;
+      render();
+    });
     label.appendChild(check);
     label.appendChild(document.createTextNode("Only what players can get"));
     box.appendChild(label);
@@ -822,20 +883,35 @@
     return mineText ? el("span", "badge sb-badge-own", mineText) : el("span", "sb-none", "none");
   }
 
-  /** A skill tree whose name is the whole search: the list then shows only rows with its points, best first. */
+  function squash(text) { return String(text).toLowerCase().replace(/\s+/g, ""); }
+
+  /** The skill tree a search names: a tree's whole name ("Attack"), a skill's whole name ("Attack Up Large",
+      "Evasion+2"), or the start of the names of one tree only ("attack up", "razor sh"); null otherwise. The list
+      then shows only rows with the tree's points, best first. Spaces and case do not count. */
   function treeMatch(q) {
-    var want = q.trim().toLowerCase();
+    var want = squash(q);
     if (!want) return null;
-    for (var i = 0; i < data.rules.trees.length; i++) {
-      var t = data.rules.trees[i];
-      if (t.name.toLowerCase() === want) return t;
+    var trees = data.rules.trees.filter(function (t) { return /[A-Za-z]/.test(t.name); });
+    var names = function (t) {
+      return [t.name].concat(t.levels.map(function (l) { return l[1] ? data.rules.skillName(l[1]) : ""; })).map(squash);
+    };
+    var i, t;
+    for (i = 0; i < trees.length; i++) if (squash(trees[i].name) === want) return trees[i];
+    for (i = 0; i < trees.length; i++) if (names(trees[i]).indexOf(want) !== -1) return trees[i];
+    if (want.length < 3) return null;
+    var hit = null;
+    for (i = 0; i < trees.length; i++) {
+      t = trees[i];
+      if (!names(t).some(function (n) { return n && n.indexOf(want) === 0; })) continue;
+      if (hit) return null;   // two trees: the words search below
+      hit = t;
     }
-    return null;
+    return hit;
   }
 
   function filteredRows(model) {
     var q = state.list.q.trim().toLowerCase();
-    var match = treeMatch(q);
+    var match = model.kind === "weapon" ? null : treeMatch(q);   // weapons carry no skill points
     var rows = model.rows;
     if (match) rows = rows.filter(function (r) { return pointsIn(r, match.id) !== 0; });
     else if (q) {
@@ -882,7 +958,7 @@
     search.value = state.list.q;
     search.addEventListener("input", function () {
       // a skill tree's name as the search sorts by its points, whatever sort was picked before
-      if (treeMatch(search.value) !== treeMatch(state.list.q)) { state.list.sort = ""; state.list.dir = 0; }
+      if (model.kind !== "weapon" && treeMatch(search.value) !== treeMatch(state.list.q)) { state.list.sort = ""; state.list.dir = 0; }
       state.list.q = search.value;
       state.list.limit = PAGE;
       renderRows(model);
@@ -1695,6 +1771,7 @@
         itemIcon: itemIcon, colourOf: colourOf, treeName: treeName, thresholds: thresholds, deltaNode: deltaNode,
         piece: function (slot, id) { return ctx().piece(slot, id); },
         rank: hunterRank, rankControls: rankControls, rankText: function (craft) { return Rank.text(craft, rankClasses()); },
+        canGet: function () { return state.canGet; }, canGetControl: canGetControl,
         rerender: render,
         loadSet: function (set, note) { setView("equip"); return loadSet(set, note); }
       });

@@ -18,7 +18,8 @@
    - Load: the worn set and a My Set land in the address as the set format; the lost-piece note;
    - "Only what I own": the head, weapon, decoration and cuff lists (sigils only on Tower weapons) list only owned
      things with their counts; picking an owned piece takes its owned level; the owned badge on the cards;
-   - Find sets and the Hunter card: the rank (G Rank band, GR) comes from the character, "Only what I own" sends the import to the search engine
+   - Find sets and the Hunter card: the rank (G Rank band, GR) comes from the character and "What I can get" is ticked
+     (unticking clears the rank, ticking again fills it), "Only what I own" sends the import to the search engine
      (dev/fake-armor-search-worker.js served as js/armor-search-worker.js);
    - Missing: the POST body is the set format the API reads, the pieces with status and steps, the item and material
      tables with links to item pages and sources, zenny with the incomplete note, the API's notes; a changed set says
@@ -388,6 +389,16 @@ async function run(chromium) {
       check(V + " find: rank filled from the character", (await pg.inputValue('[data-focus="find|gr"]')) === "120" &&
             (await pg.getAttribute('[data-focus="find|band|7"]', "aria-pressed")) === "true");
       check(V + " builder: the Hunter card shows the same rank", (await pg.inputValue('[data-focus="filter|gr"]')) === "120");
+      // "What I can get" turns on with the character: its rank and only what players can get, apart from Only what I own
+      if (!(await pg.evaluate(() => document.querySelector(".sb-find-filters").open))) await pg.click(".sb-find-filters-sum");
+      check(V + " find: What I can get is ticked from the character", (await pg.isChecked('[data-focus="find|canget"]')) &&
+            /Up to GR 120 · only what players can get · from Aldric/.test(await pg.textContent("#sb-find-canget-note")) &&
+            !(await pg.isChecked('[data-focus="find|owned"]')), await pg.textContent("#sb-find-canget-note"));
+      await pg.click('[data-focus="find|canget"]');
+      check(V + " find: unticking What I can get clears the rank", (await pg.getAttribute('[data-focus="find|band|0"]', "aria-pressed")) === "true");
+      await pg.click('[data-focus="find|canget"]');
+      check(V + " find: ticking it again fills the character's rank", (await pg.inputValue('[data-focus="find|gr"]')) === "120" &&
+            (await pg.isChecked('[data-focus="find|canget"]')));
       await pg.fill("#sb-find-q", "Expert");
       await pg.click('#sb-find-trees .sb-skill-pick:has(.sb-skill-pick-name:text-is("Expert")) .sb-level-chip >> nth=0');
       if (!(await pg.evaluate(() => document.querySelector(".sb-find-filters").open))) await pg.click(".sb-find-filters-sum");   // folded on a phone

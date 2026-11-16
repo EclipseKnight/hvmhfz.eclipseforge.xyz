@@ -93,8 +93,10 @@ its pickers.
 - **Wide screens (1200 px and up), three columns.** Left: the set as cards: weapon (class, weapon, sockets or a Tower
   weapon's sigil and Road gem places), head to legs (icon, name, defence, skills, owned badge, level pips, one socket
   per decoration and one empty socket per free slot), skill cuffs (two sockets), hunter filters (gender, "Only what
-  players can get", the rank: see "Rank needed to craft"). Clicking a card's name or a socket opens its list in the centre. Centre: that list, searchable
-  (name or skill; a skill tree's whole name lists only rows with its points and sorts by them), sortable by its
+  players can get", "What I can get", the rank: see "Rank needed to craft"). Clicking a card's name or a socket opens its list in the centre. Centre: that list, searchable
+  (name or skill; a skill tree's whole name, a skill's whole name such as "Attack Up Large" or "Evasion+2", or the
+  start of one tree's names such as "attack up" lists only rows with that tree's points and sorts by them; spaces and
+  case do not count; weapons have no skill points, so their list searches names only), sortable by its
   headers, paged by 80; a "Yours" column with a character loaded; pointing at or tabbing to a row shows what it
   changes against what you have (defence, skills gained and lost, points per tree). Right: defence and resistances,
   the skill limit as boxes, active skills (automatic, Road gem and over-the-limit skills in their own groups), Zenith
@@ -119,12 +121,13 @@ more", fix and exclude pieces, honest caps, which skill blocks a search):
 - **Top, full width**: the wanted skills as chips (× removes one), the room counter (ten boxes, "Room for N more": the
   game's limit before G-rank, Zenith pieces and cuffs add places, and the engine's 10 wanted skills at most), Find
   sets / Cancel / Clear skills, progress; then the filters, folded on screens below 1200 px with a one-line summary:
-  weapon class (defaults to the builder's), gender, hunter type (set by the class when there is one), rank (the
-  Hunter card's, shared: see "Rank needed to craft"), only what I own
+  weapon class (defaults to the builder's), gender, hunter type (set by the class when there is one), "What I can
+  get" and the rank (the Hunter card's, shared: see "Rank needed to craft"), only what I own
   (with a character), Zenith pieces, Tower decorations; then the pieces: "+ Keep <piece>" for the builder's weapon and
   pieces, and a chip for each piece kept or left out (× undoes it).
 - **Left (1200 px and up; below it under the top)**: every skill tree as a tile in a category grid (Attack, Defence,
-  Resistance, Gunner, Weapon Tech, Other; chosen by tree name since the game has no categories), one chip per
+  Resistance, Gunner, Weapon Tech, Other; chosen by tree name since the game has no categories; and Zenith: one tile
+  per Zenith group of `rules.json` `zenith`, a chip per Zenith skill at the fewest Zenith points that give it), one chip per
   level labelled by what its name adds ("Large 25" for Attack Up Large; the whole name and points in its label), a
   name search over trees and level names (it looks in every category), its own scroll. One level per tree; Tech trees
   of another weapon class are left out; thresholds of 1000 and more (the game's Zenith markers for Reflect+3 and
@@ -157,7 +160,8 @@ Messages (the interface agreed with the armor-search lane):
 | worker to page | `{type: "progress", done, total}` ..., then `{type: "done", result: {results: [{set, skills, extraSkills, defence, res, freeSlots, score, met, missing}], stats, truncated}}`; `{type: "error", message}` is shown as it is |
 
 `query`: `wanted: [{skill, level, tree}]` (skill = the skill id of the level picked, level = its points threshold,
-always 10 or more so the engine reads it as points, tree = its tree), `weaponClass` (null = any), `weaponId` (0 unless
+always 10 or more so the engine reads it as points, tree = its tree; a Zenith skill is `{zenith, level}`: its id and
+Zenith points; on the page its keys are `"z" + id` and `"z" + group`), `weaponClass` (null = any), `weaponId` (0 unless
 the builder's weapon is kept), `gender` (`""`, `male`, `female`), `hunterType` (`blade`, `gunner`, `any`), `rankMax`
 (`{band, gr, gsr}` or null), `ownedOnly`, `owned` (the character's `/builder` import when one is loaded, else null),
 `allowZenith`, `allowTowerDecos`, `fixed` (`{slot: id}` of the pieces kept), `exclude` (`"slot:id"` of pieces and
@@ -168,7 +172,10 @@ builder and the compare table.
 Checks: `dev/check-set-builder.js` runs Find sets against the stand-in (the query, cards, compare, load, cancel, no
 engine) and then against the real worker at 1600 and 390 px: Attack Up Large + Razor Sharp +1 + Evasion+2 for a Long
 Sword and Attack Up Large for a Bow, each card confirmed by the calculator; sort, Show more, Keep and × on a card;
-PwrSwd+3 added blocks the search, every card misses it, "Search without" it finds full sets.
+PwrSwd+3 added blocks the search, every card misses it, "Search without" it finds full sets; HR100-299 (no G-rank,
+GX, Zenith or rarity 8+ piece, no G-rank decoration, no cuff); the Zenith category and Skill Slots Up+2, lit in every
+card. The list part checks skill names as the search, G-rank rows per rank and "What I can get";
+`dev/check-set-builder-mine.js` checks that a character ticks it and fills the rank.
 
 ## Rank needed to craft
 
@@ -183,6 +190,10 @@ The rule (hvmhfz_re "Site filter"), in `js/armor-rank.js` for the lists, Find se
 with HR band b (G Rank = band 7) and GR g reaches a piece when it is `hr` with band <= b or `gr` with value <= g; a
 GSR gate also needs the GSR (one number for every class: the page does not know a hunter's GSR per class).
 
+- **"What I can get"** (Hunter card and Find sets, one state; player request 16 Nov): only what players can get, at
+  the hunter's rank. A loaded character ticks it the first time and fills the band and GR from its HR and GR
+  (ticking it again refills them); without one it uses the rank picked. Unticking it clears the rank to Any;
+  unticking "Only what players can get" or picking Any unticks it. It is not "Only what I own" (the character's boxes).
 - **Hunter card** "Rank (up to)": band chips (Any, HR1 ... HR300-998, HR999 / G Rank), GR, GSR. Any = no filter.
   A GR above 0 picks the G Rank band. Find sets shows the same controls (one state). A loaded character fills the
   band and GR when no rank is set (its shown HR's band: an HR30 hunter past the HR31 Urgent gets band 2, one band
@@ -191,8 +202,15 @@ GSR gate also needs the GSR (one number for every class: the page does not know 
   column says "HR band 5", "GR 100", "GSR 300 Long Sword" (its tooltip: the band's HRs and how the smithy lists it),
   sortable. A GSR row is marked while no GSR is given.
 - **Find sets**: the query's `rankMax`; a result card with a GSR piece says what it needs while no GSR is given.
-- Upgrades read no rank in the client (only material conditions), so a G-rank upgrade of an HR piece (6,016 armour
-  pieces, e.g. Barioth GX Helm from the HR100 Barioth line) carries the HR band of its line and shows for HR hunters.
+- Upgrades read no rank in the client (only material conditions), so a G-rank upgrade of an HR piece (6,016 obtainable
+  armour pieces, e.g. Barioth GX Helm from the HR100 Barioth line) carries the HR band of its line in the data. Their
+  materials drop only in G rank, so `ArmorRank.pieceCraft` (page and engine) gives them **GR 1** (how `G`): pieces with
+  the client's G-rank flag (`limitKind` bit 0) or rarity 8 and up (no HR armour is rarer than 7), and **GR 200** to
+  Zenith pieces (`limitKind` bit 1 or rarity 12, how `Z`; the Zenith menu's own need). Before this an HR299 search
+  returned GX pieces (player report, 16 Nov). A GSR gate also needs G Rank.
+- Decorations and cuffs have no smithy rank in the data. `ArmorRank.itemFits`: an HR hunter (a band, no GR) gets no
+  cuffs, no Zenith decorations and no G-rank decorations, known by name ("... G", "... GF", "... GX", "... GX1" to
+  "GX5"), in the lists and the engine; what the character owns still counts.
 
 ## Not built yet
 
@@ -218,11 +236,12 @@ Query (every field but `wanted` optional):
 
 | Field | Meaning |
 |---|---|
+| `wanted: [{zenith, level}]` | A Zenith skill (`rules.json` `zenith.skills` id): met when the calculator lists it lit at that or a higher skill of its group. `level` 1-7 = Zenith points (default: the fewest that give it). Zenith points come from the weapon, the five pieces and the first cuff with one; in the data every armour piece with a Zenith skill is a Zenith piece and no cuff has one, so the search picks Zenith pieces (a kept weapon's points count). A skill that needs a tree to be lit also aims for that tree's lowest positive skill (`stats.wanted` `implicit`, not counted as met or missing on its own). Impossible (`stats.impossible` `{zenith, problem}`): Guard Up / Reflect Up without a weapon that guards, Stylish Up without a blademaster weapon, Zenith pieces left out, or a rank below GR 200. A result names a missed one as `"z" + id` in `missing` |
 | `wanted: [{skill, level}]` | `skill` = a positive skill id (`rules.json` `skills`); met by it or a higher level of its tree. `level` (optional): 1-7 = the tree's n-th positive skill (1 = lowest), 10 or more = a points total (no positive skill needs fewer than 10 points). The higher of the two needs counts; two wanted skills of one tree become one. At most 10. Unknown skills, negative skills and Tech skills of another weapon class come back in `stats.impossible` and the search returns nothing |
 | `weaponClass`, `weaponId` | The set format's class (-1 or absent = none). `weaponId` 0 = any weapon of the class (no weapon slots used); a weapon with slots gets decorations; a Tower weapon gets Road gems (below) |
 | `gender` | `"male"`, `"female"` or `""` (any): a hard rule |
 | `hunterType` | `"blade"`, `"gunner"` or `"any"`: the pieces' blademaster / gunner marks, a list filter as on the page |
-| `rankMax: {band, gr, gsr}` | The hunter's rank (`js/armor-rank.js`, "Rank needed to craft"): pieces the smithy does not offer at it are left out (with "only what I own" the owned pieces count whatever their rank). `band` 1-7 (an older `{hr}` is turned into its band), 0 = no band; a `gr` means band 7. A band with no GR (an HR hunter): no cuffs and no Zenith decorations. `gsr` null = GSR gates not checked |
+| `rankMax: {band, gr, gsr}` | The hunter's rank (`js/armor-rank.js`, "Rank needed to craft"): pieces the smithy does not offer at it are left out (with "only what I own" the owned pieces count whatever their rank); G-rank and Zenith upgrades of HR pieces need GR 1 / GR 200. `band` 1-7 (an older `{hr}` is turned into its band), 0 = no band; a `gr` means band 7. A band with no GR (an HR hunter): no cuffs, no G-rank or Zenith decorations, no GSR pieces. `gsr` null = GSR gates not checked |
 | `ownedOnly`, `owned` | Only pieces in the character's equipment box (at the level owned) and decorations and cuffs it has (box, pouch, warehouse and set in gear; never more of one than it has). `owned` is the `/builder` import ("Character import" below) |
 | `allowZenith` | false = no Zenith pieces, decorations or cuffs (default true) |
 | `allowTowerDecos` | false = no Road gems on a Tower weapon (default true) |

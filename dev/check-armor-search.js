@@ -10,7 +10,12 @@
      that holds the known set's pieces and decorations plus decoys finds a set made only of what it owns (counts
      and levels respected);
    - the rank rule (js/armor-rank.js, hvmhfz_re part 200 "Site filter"): HR bands from an HR, the band / GR / GSR
-     tests, the list texts;
+     tests (a GSR needs G Rank), the list texts; G-rank and Zenith upgrades of HR pieces need GR 1 / GR 200 (the
+     6,016 of part 200; none fits an HR300-998 hunter); an HR hunter gets no G-rank or Zenith decoration or cuff;
+   - HR band 5 searches: no G-rank, Zenith or rarity 8+ piece and no G-rank decoration in any result;
+   - Zenith skills: alone, with a skill, with a weapon that guards, by points; each result lit in the calculator
+     with the points counted here; impossible ones (no guard weapon, gunner, below GR 200, Zenith pieces off,
+     unknown) reported; a Zenith skill no set reaches is named "z" + id in missing;
    - common searches (3 to 5 skills, with gender, blademaster / gunner, HR999 without G Rank, HR band 3, GR 50,
      GSR 1, no Zenith, a Tower weapon, a weapon with slots, fixed and excluded pieces): every result is checked on its own with ArmorCalc.compute (no
      problem, every wanted skill active and working with the weapon, defence and free slots as reported), every
@@ -80,12 +85,26 @@ function problemsOf(res, q, need) {
   const active = r.active.filter(function (s) { return !s.dropped && s.works; });
   const missing = [];
   need.forEach(function (w) {
+    if (w.zenith) {
+      // a Zenith skill: lit in the calculator, at least the wanted one of its group, and the group's points from
+      // the pieces (and a kept weapon) counted here on their own
+      const Z = R.raw.zenith, row = Z.groups[w.group], at = row.indexOf(row[w.need - 1]);
+      const lit = r.zenith.some(function (z) { return z.lit && Z.skills[z.id].group === w.group && row.indexOf(z.id) >= at; });
+      let pts = 0;
+      const add = function (zid) { if (zid && Z.skills[zid].group === w.group) pts += Z.skills[zid].points; };
+      if (r.weapon) add(r.weapon.zenith);
+      r.pieces.forEach(function (p) { if (p.piece) add(p.piece.zenith); });
+      if (lit && pts < w.need) out.push("Zenith skill " + w.zenith + " lit with " + pts + " of " + w.need + " points");
+      if (!lit) missing.push("z" + w.zenith);
+      return;
+    }
     const ok = active.some(function (s) {
       if (s.tree !== w.tree) return false;
       if (s.from === "points") return s.total >= w.need && !s.negative;
       const lv = R.tree(w.tree).levels.find(function (l) { return l[1] === s.skill; });
       return lv && lv[0] >= w.need;
     });
+    if (w.implicit) { if (!ok && res.met) out.push("met, but tree " + w.tree + " a Zenith skill needs is not active"); return; }
     if (!ok) missing.push(w.skill);
   });
   if (res.met !== (missing.length === 0)) out.push("met says " + res.met + ", missing " + missing.join(","));
@@ -119,8 +138,21 @@ function problemsOf(res, q, need) {
     });
   });
   if (hunter && hunter.band && !hunter.gr && res.set.cuffs.length) out.push("cuffs for an HR hunter");
-  if (hunter && hunter.band && !hunter.gr && res.set.armour.some(function (a) { return a[3].some(function (d) { return D.items[d].zenith; }); })) {
-    out.push("Zenith decorations for an HR hunter");
+  if (hunter && hunter.band && !hunter.gr && !q.ownedOnly) {
+    res.set.armour.forEach(function (a) {
+      const p = a[1] ? D.byId[a[0]][a[1]] : null;
+      if (p && ((p.limitKind & 3) || p.rarity >= 8)) out.push(p.name + " (G-rank or Zenith) for an HR hunter");
+      a[3].forEach(function (d) {
+        const it = D.items[d];
+        if (it.zenith || / G(F|X)?\d*$/.test(it.name)) out.push(it.name + " (a G-rank or Zenith decoration) for an HR hunter");
+      });
+    });
+  }
+  if (hunter && hunter.gr && hunter.gr < Rank.ZENITH_GR && !q.ownedOnly) {
+    res.set.armour.forEach(function (a) {
+      const p = a[1] ? D.byId[a[0]][a[1]] : null;
+      if (p && (p.limitKind & 2)) out.push(p.name + " (Zenith) below GR " + Rank.ZENITH_GR);
+    });
   }
   if (res.set.cuffs.length > 2) out.push("more than 2 cuffs");
   if (new Set(res.set.cuffs).size !== res.set.cuffs.length) out.push("the same cuff twice");
@@ -207,7 +239,43 @@ console.log("rank rule");
   check(!Rank.fits(["gr", 200, 7, "m"], h(7, 199)) && Rank.fits(["gr", 200, 7, "m"], h(7, 200)), "a GR row needs its GR");
   check(!Rank.fits(0, h(7, 999)) && Rank.fits(0, null) && Rank.fits(0, h(0, 0, 5)), "never offered: out with a band, in without one");
   const gsr = ["hr", 1, 1, "g", 7, 300];
-  check(Rank.fits(gsr, h(1, 0)) && !Rank.fits(gsr, h(1, 0, 299)) && Rank.fits(gsr, h(1, 0, 300)), "a GSR gate needs the GSR when one is given");
+  check(Rank.fits(gsr, h(7, 1)) && !Rank.fits(gsr, h(7, 1, 299)) && Rank.fits(gsr, h(7, 1, 300)) && Rank.fits(gsr, h(0, 0, 300)),
+        "a GSR gate needs the GSR when one is given");
+  check(!Rank.fits(gsr, h(5, 0)) && !Rank.fits(gsr, h(7, 0)) && !Rank.fits(gsr, h(7, 0, 300)), "a GSR gate needs G Rank (an HR hunter has no GSR)");
+  // G-rank and Zenith upgrades of HR pieces (hvmhfz_re part 200: upgrades read no rank, so they carry their line's
+  // HR band) need G Rank: GR 1, Zenith GR 200; a GSR gate stays
+  check(JSON.stringify(Rank.pieceCraft(["hr", 100, 5, "u"], 11, 1)) === '["gr",1,7,"G"]', "a G-rank piece (flag) at HR band 5 needs GR 1");
+  check(JSON.stringify(Rank.pieceCraft(["hr", 100, 5, "u"], 10, 0)) === '["gr",1,7,"G"]', "a rarity 10 piece at HR band 5 needs GR 1");
+  check(JSON.stringify(Rank.pieceCraft(["hr", 1, 1, "u"], 12, 2)) === '["gr",200,7,"Z"]', "a Zenith piece at an HR band needs GR 200");
+  check(JSON.stringify(Rank.pieceCraft(["hr", 1, 1, "g", 7, 300], 9, 0)) === '["gr",1,7,"G",7,300]', "a G-rank GSR piece keeps its gate");
+  check(JSON.stringify(Rank.pieceCraft(["hr", 100, 5, "u"], 7, 4)) === '["hr",100,5,"u"]' && Rank.pieceCraft(0, 11, 1) === 0 &&
+        JSON.stringify(Rank.pieceCraft(["gr", 50, 7, "r"], 9, 1)) === '["gr",50,7,"r"]', "HR pieces, GR pieces and never-offered pieces keep theirs");
+  check(Rank.text(Rank.pieceCraft(["hr", 100, 5, "u"], 11, 1)) === "GR 1" && /G-rank upgrade of an HR piece/.test(Rank.title(["gr", 1, 7, "G"])),
+        "a G-rank upgrade's list text and tooltip");
+  // from the data files as they are: the 6,016 obtainable G-rank pieces part 200 counts at an HR band now need GR 1
+  let gUp = 0, zUp = 0, hrG = 0;
+  SLOTS.forEach(function (s) {
+    const f = {};
+    pieceFiles[s].fields.forEach(function (n, i) { f[n] = i; });
+    pieceFiles[s].pieces.forEach(function (r) {
+      const craft = r[f.craft];
+      if (!r[f.obtainable] || !craft || craft[0] !== "hr") return;
+      if ((r[f.limitKind] & 1) && craft[3] === "u") gUp++;
+      if (r[f.limitKind] & 2) zUp++;
+      const p = D.byId[s][r[f.id]];
+      if (Rank.fits(p.craft, h(6, 0)) && ((r[f.limitKind] & 3) || r[f.rarity] >= 8)) hrG++;
+    });
+  });
+  check(gUp === 6016, "obtainable G-rank upgrades at an HR band: " + gUp + " (part 200: 6,016)");
+  check(zUp > 1000, "Zenith pieces at an HR band: " + zUp);
+  check(hrG === 0, hrG + " G-rank, Zenith or rarity 8+ pieces still fit an HR300-998 hunter");
+  const item = function (name, kind, zenith) { return { name: name, kind: kind || "d", zenith: zenith || 0 }; };
+  check(!Rank.itemFits(item("Hermit G"), h(5, 0)) && !Rank.itemFits(item("Abi BM GX3"), h(7, 0)) &&
+        !Rank.itemFits(item("W.Monoblos BM GF"), h(6, 0)) && !Rank.itemFits(item("SnS・G", "c"), h(5, 0)) &&
+        !Rank.itemFits(item("Skill Slots Up SZ", "d", 1), h(5, 0)), "an HR hunter: no G-rank or Zenith decorations, no cuffs");
+  check(Rank.itemFits(item("Attack 2 Deco"), h(5, 0)) && Rank.itemFits(item("Sharpness SP"), h(5, 0)) &&
+        Rank.itemFits(item("Hermit G"), h(7, 1)) && Rank.itemFits(item("Hermit G"), null) && Rank.itemFits(item("SnS・G", "c"), h(0, 0, 5)),
+        "HR decorations for an HR hunter; everything with G Rank or no rank");
   check(Rank.text(["hr", 100, 5, "u"]) === "HR band 5" && Rank.text(["gr", 100, 7, "r"]) === "GR 100" &&
         Rank.text(gsr, index.rank.classes) === "GSR 300 Long Sword" && Rank.text(0) === "", "the list texts");
   // every piece the client lists for the Create/G/Zenith menus has a rank; never-offered pieces are not obtainable
@@ -298,6 +366,8 @@ const COMMON = [
   ["5 skills", { wanted: wanted(["Health+50", "Attack Up Very Large", "Razor Sharp +1", "Evasion+1", "Guard+2"]), weaponClass: ls, gender: "male", hunterType: "blade" }],
   ["HR999, no G Rank", { wanted: wanted(["Attack Up Large", "Sharpness+1", "Evasion+1"]), weaponClass: ls, gender: "female", hunterType: "blade", rankMax: { hr: 999, gr: 0 } }],
   ["HR band 3", { wanted: wanted(["Attack Up Small", "Evasion+1"]), weaponClass: ls, gender: "male", hunterType: "blade", rankMax: { band: 3, gr: 0 } }],
+  ["HR band 5 (HR100-299)", { wanted: wanted(["Attack Up Large", "Critical Eye +3", "Evasion+2"]), weaponClass: ls, gender: "", hunterType: "blade", rankMax: { band: 5, gr: "", gsr: "" } }],
+  ["HR band 5, one skill", { wanted: wanted(["Attack Up Large"]), weaponClass: ls, gender: "", hunterType: "blade", rankMax: { band: 5, gr: 0 } }],
   ["GR 50", { wanted: wanted(["Attack Up Large", "Sharpness+1", "Evasion+1"]), weaponClass: ls, gender: "male", hunterType: "blade", rankMax: { band: 7, gr: 50 } }],
   ["GSR 1", { wanted: wanted(["Attack Up Large", "Evasion+2"]), weaponClass: 4, gender: "male", hunterType: "blade", rankMax: { gsr: 1 } }],
   ["no Zenith", { wanted: wanted(["Attack Up Large", "Speed Sharpening", "Evasion+2", "Guard+1"]), weaponClass: ls, gender: "male", allowZenith: false }],
@@ -315,6 +385,45 @@ COMMON.forEach(function (c) {
     check(out.stats.gems.length > 0 && out.results.every(function (r) { return r.set.weapon[3].length > 0; }), c[0] + ": Road gems on the weapon");
   }
 });
+
+/* ---- Zenith skills ---- */
+console.log("Zenith skills");
+function zenith(name) {
+  const id = R.raw.zenith.skills.findIndex(function (z) { return z.name === name; });
+  if (id < 1) throw new Error("no Zenith skill " + name);
+  return id;
+}
+const ZEN = [
+  ["Zenith: Skill Slots Up+3", { wanted: [{ zenith: zenith("Skill Slots Up+3") }], weaponClass: ls, gender: "male", rankMax: { band: 7, gr: 999 } }],
+  ["Zenith + skill: Vampirism Up+2, Attack Up Large", { wanted: [{ zenith: zenith("Vampirism Up+2") }].concat(wanted(["Attack Up Large"])), weaponClass: ls, gender: "female" }],
+  ["Zenith with a weapon that guards: Guard Up+1, Lance", { wanted: [{ zenith: zenith("Guard Up+1") }].concat(wanted(["Evasion+1"])), weaponClass: 3, gender: "male", rankMax: { band: 7, gr: 300 } }],
+  ["Zenith, points level: Earplugs Up 2 points", { wanted: [{ zenith: zenith("Earplugs Up+1"), level: 2 }], weaponClass: 10, hunterType: "gunner" }]
+];
+ZEN.forEach(function (c) {
+  const out = run(c[0], c[1]);
+  const zw = out.stats.wanted.filter(function (w) { return w.zenith; });
+  check(zw.length === 1, c[0] + ": the Zenith skill in stats.wanted");
+  const req = R.raw.zenith.skills[c[1].wanted[0].zenith].requires_tree;
+  if (req) check(out.stats.wanted.some(function (w) { return w.tree === req; }), c[0] + ": the tree it needs is searched for too");
+});
+check(run("Zenith, points level: Earplugs Up 2 points", ZEN[3][1]).stats.wanted.some(function (w) { return w.zenith && w.need === 2; }),
+      "a Zenith level asks for that many points");
+[["Guard Up+1", { weaponClass: ls }, "works only with a weapon that guards"],
+ ["Stylish Up", { weaponClass: 10 }, "works only with a blademaster weapon"],
+ ["Skill Slots Up+1", { weaponClass: ls, rankMax: { band: 5, gr: 0 } }, "needs Zenith pieces, which need GR 200"],
+ ["Skill Slots Up+1", { weaponClass: ls, rankMax: { band: 7, gr: 199 } }, "needs Zenith pieces, which need GR 200"],
+ ["Skill Slots Up+1", { weaponClass: ls, allowZenith: false }, "needs Zenith pieces, which the filters leave out"]].forEach(function (c) {
+  const out = Search.search(Object.assign({ wanted: [{ zenith: zenith(c[0]) }] }, c[1]));
+  check(!out.results.length && out.stats.impossible.length === 1 && out.stats.impossible[0].zenith === zenith(c[0]) &&
+        out.stats.impossible[0].problem === c[2], c[0] + " " + JSON.stringify(c[1]) + ": impossible, " + c[2] + " (got " + JSON.stringify(out.stats.impossible) + ")");
+});
+const zbad = Search.search({ wanted: [{ zenith: 999 }], weaponClass: ls });
+check(!zbad.results.length && zbad.stats.impossible[0].problem === "unknown Zenith skill", "an unknown Zenith skill is reported");
+// nothing meets both: the partial result names the Zenith skill as "z" + id
+const zpart = run("Zenith blocked by fixed pieces", { wanted: [{ zenith: zenith("Skill Slots Up+1") }].concat(wanted(["Fire Res+10"])), weaponClass: ls,
+  gender: "male", fixed: { head: 53, chest: 0, arms: 0, waist: 0, legs: 0 }, timeLimitMs: 3000 }, { partial: true });
+check(zpart.stats.relaxed && zpart.results.length && zpart.results.every(function (r) { return !r.met && r.missing[0] === "z" + zenith("Skill Slots Up+1"); }),
+      "a Zenith skill no set can reach is named in missing");
 
 /* ---- limits ---- */
 console.log("limits");

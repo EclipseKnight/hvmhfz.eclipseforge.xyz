@@ -12,18 +12,30 @@
    HR300-998, HR999; G Rank = band 7), 0 = any (no rank filter); gr = GR (0 = no G Rank yet); gsr = the G Supremacy
    Rank to compare with a GSR gate (null = not given: GSR pieces stay in, with a warning). The rule (hvmhfz_re "Site
    filter"): a piece fits when rank is "hr" and band <= the hunter's band, or rank is "gr" and value <= the hunter's
-   GR; and, behind a GSR gate, the GSR level <= the hunter's GSR. The game's GSR is per weapon class; this filter takes
-   one number for every class. */
+   GR; and, behind a GSR gate, the GSR level <= the hunter's GSR (and some G Rank: a hunter with an HR band and no GR
+   has no GSR). The game's GSR is per weapon class; this filter takes one number for every class.
+
+   Upgrades read no rank in the client, so a G-rank or Zenith piece upgraded from an HR line carries that line's HR
+   band in the data (6,016 obtainable G-rank pieces, e.g. Barioth GX Helm at HR band 5). Their materials drop only in
+   G rank, so pieceCraft() gives them GR 1 (the client's G-rank piece flag, or rarity 8 and up: no HR armour is
+   rarer than 7) and Zenith pieces GR 200 (the Zenith menu's own need; Zenith monsters open at GR 200). Decorations
+   and cuffs have no smithy rank in the data: itemFits() keeps an HR hunter (a band, no GR) off cuffs, Zenith
+   decorations and the G-rank ones (named "... G", "... GF", "... GX1" to "GX5"). */
 (function (root) {
   "use strict";
 
   var G_BAND = 7;
+  var ZENITH_GR = 200;
+  var G_RARITY = 8, ZENITH_RARITY = 12;
+  var G_ITEM = /\sG(F|X)?\d*$/;   // "Hermit G", "W.Monoblos BM GF", "Abi BM GX3"
   var HOW = {
     r: "listed from this rank, earlier once you have had one of its materials",
     m: "listed once you have had one of its materials",
     o: "always listed",
     g: "needs your GSR in that weapon class",
-    u: "upgraded from a piece of this rank"
+    u: "upgraded from a piece of this rank",
+    G: "a G-rank upgrade of an HR piece: its materials drop only in G rank",
+    Z: "a Zenith upgrade of an HR piece: its materials drop only from Zenith monsters"
   };
 
   function int(v) { var n = Math.trunc(Number(v)); return isFinite(n) && n > 0 ? n : 0; }
@@ -47,6 +59,24 @@
     return { band: band, gr: gr, gsr: gsr };
   }
 
+  /** The craft rank the site uses for an armour piece: the data's, except a G-rank or Zenith piece the data puts at
+      an HR band (an upgrade of an HR piece): GR 1, or GR 200 for a Zenith piece; a GSR gate stays. */
+  function pieceCraft(craft, rarity, limitKind) {
+    if (!craft || craft[0] !== "hr") return craft;
+    var zenith = (limitKind & 2) || rarity >= ZENITH_RARITY;
+    if (!zenith && !(limitKind & 1) && !(rarity >= G_RARITY)) return craft;
+    var out = ["gr", zenith ? ZENITH_GR : 1, G_BAND, zenith ? "Z" : "G"];
+    if (craft.length > 5) out.push(craft[4], craft[5]);
+    return out;
+  }
+
+  /** A G-rank decoration (by its name: no smithy rank in the data), a Zenith decoration or a cuff. */
+  function gItem(it) { return !!it && (it.kind === "c" || !!it.zenith || G_ITEM.test(it.name || "")); }
+
+  /** Whether a hunter reaches a decoration, Road gem or cuff ({kind, name, zenith}): only an HR hunter (a band, no
+      GR) is limited, to what is not a G-rank item. */
+  function itemFits(it, h) { return !(h && h.band && !h.gr && gItem(it)); }
+
   function gsrOf(craft) { return craft && craft.length > 5 ? { cls: craft[4], level: craft[5] } : null; }
 
   /** Whether a hunter (hunter() above, or null) reaches a craft rank. */
@@ -57,6 +87,7 @@
       if (craft[0] === "hr" ? craft[2] > h.band : craft[1] > h.gr) return false;
     }
     var g = gsrOf(craft);
+    if (g && h.band && !h.gr) return false;   // a GSR needs G Rank
     return !(g && h.gsr !== null && g.level > h.gsr);
   }
 
@@ -94,8 +125,9 @@
     return band === G_BAND ? (b ? b[1] + " / G Rank" : "G Rank") : b ? b[1] : "HR band " + band;
   }
 
-  var api = { G_BAND: G_BAND, bandOfHr: bandOfHr, hunter: hunter, fits: fits, gsrOf: gsrOf, text: text, title: title,
-              order: order, bandLabel: bandLabel };
+  var api = { G_BAND: G_BAND, ZENITH_GR: ZENITH_GR, bandOfHr: bandOfHr, hunter: hunter, fits: fits, gsrOf: gsrOf,
+              pieceCraft: pieceCraft, gItem: gItem, itemFits: itemFits, text: text, title: title, order: order,
+              bandLabel: bandLabel };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.ArmorRank = api;
 })(typeof self !== "undefined" ? self : this);

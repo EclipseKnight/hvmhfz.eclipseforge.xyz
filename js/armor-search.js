@@ -17,7 +17,9 @@
       game's calculator decides. A Tower weapon takes Road gems for wanted skills a single gem reaches.
    4. Ranked: all wanted skills met, then defence, free slots, fewer negative skills, more other skills.
    When nothing meets every wanted skill, it searches again without one wanted skill at a time and says which is
-   missing. A search that hits its time limit says so (truncated). */
+   missing. A search that hits its time limit says so (truncated).
+   Zenith skills ({zenith} in wanted) are one more column per Zenith group: the pieces' Zenith points (decorations
+   give none), with the tree a Zenith skill needs to be lit as an implicit want; the calculator decides lit. */
 (function (root) {
   "use strict";
 
@@ -62,6 +64,8 @@
                   maxLevel: r[f.maxLevel], skills: r[f.skills], auto: r[f.auto], obtainable: !!r[f.obtainable],
                   defGrowth: r[f.defGrowth], slotGrowth: r[f.slotGrowth], limitKind: r[f.limitKind],
                   zenith: r[f.zenith], craft: f.craft === undefined ? null : r[f.craft] || 0 };
+        // a G-rank or Zenith upgrade of an HR piece needs G Rank (js/armor-rank.js pieceCraft)
+        if (p.craft) p.craft = Rank.pieceCraft(p.craft, p.rarity, p.limitKind);
         p.row = Calc.armourRow(p);
         pieces[slot].push(p);
         byId[slot][p.id] = p;
@@ -166,6 +170,42 @@
     return { skill: skill, tree: tree.id, need: need };
   }
 
+  /** {zenith, level} -> {zenith, zgroup, need, requires} or {zenith, problem}. zenith = a Zenith skill id
+      (rules.json zenith.skills); need = the fewest Zenith points of its group that give it (level 1-7 raises it);
+      requires = the lowest positive skill of the tree it needs to be lit ({skill, tree, need}), or null. Zenith
+      points come from the weapon, the five pieces and the first cuff with one (js/armor-calc.js zenithSources). */
+  function resolveZenith(w, cls) {
+    var R = D.R, Z = R.raw.zenith, r = R.rules;
+    var zid = int(w && w.zenith, 0);
+    var row = zid >= 1 ? Z.skills[zid] : null;
+    var levels = row && row.group ? Z.groups[row.group] : null;
+    var need = levels ? levels.indexOf(zid) + 1 : 0;
+    if (!need) return { zenith: zid, problem: "unknown Zenith skill" };
+    var level = int(w.level, 0);
+    if (level >= 1 && level <= 7) need = Math.max(need, level);
+    if (r.zenith_guard_skills.indexOf(zid) !== -1 && r.guard_classes.indexOf(cls) === -1) {
+      return { zenith: zid, problem: "works only with a weapon that guards" };
+    }
+    if (r.zenith_blademaster_skills.indexOf(zid) !== -1 && (cls < 0 || r.class_kind[cls] & 2)) {
+      return { zenith: zid, problem: "works only with a blademaster weapon" };
+    }
+    var requires = null;
+    if (row.requires_tree) {
+      var tree = R.tree(row.requires_tree);
+      var low = tree ? positiveLevels(tree)[0] : null;
+      if (!low) return { zenith: zid, problem: "needs a skill the game data does not have" };
+      if (cls >= 0 && R.noEffect(low.skill, cls)) return { zenith: zid, problem: "works only with another weapon class" };
+      requires = { skill: low.skill, tree: tree.id, need: low.points };
+    }
+    return { zenith: zid, zgroup: row.group, need: need, requires: requires };
+  }
+
+  /** Zenith points of a Zenith skill id in a group (0 when it is of another group). */
+  function zenithPoints(zid, group) {
+    var row = zid ? D.R.raw.zenith.skills[zid] : null;
+    return row && row.group === group ? row.points : 0;
+  }
+
   function readQuery(q) {
     q = q || {};
     var cls = q.weaponClass === null || q.weaponClass === undefined ? -1 : int(q.weaponClass, -1);
@@ -181,7 +221,7 @@
       timeLimitMs: Math.max(50, int(q.timeLimitMs, DEFAULT_TIME_MS)),
       wanted: [], impossible: [], notes: []
     };
-    // an HR hunter (a band, no GR): no cuffs and no Zenith decorations; pieces go by their craft rank
+    // an HR hunter (a band, no GR): no cuffs, no G-rank or Zenith decorations; pieces go by their craft rank
     Q.noGRank = !!(Q.rank && Q.rank.band && !Q.rank.gr);
     if (Q.rank && !D.craft) {
       Q.notes.push("The game data has no craft ranks, so the rank filter was not applied");
@@ -210,14 +250,30 @@
       if (m[1] === "item") Q.exItem[Number(m[2])] = true;
       else Q.exPiece[m[1] + ":" + m[2]] = true;
     });
-    var byTree = {};
+    var byTree = {}, byGroup = {};
     (q.wanted || []).slice(0, MAX_WANTED).forEach(function (w) {
+      if (w && w.zenith) {
+        var z = resolveZenith(w, cls);
+        if (z.problem) { Q.impossible.push(z); return; }
+        if (byGroup[z.zgroup]) { if (z.need > byGroup[z.zgroup].need) { byGroup[z.zgroup].need = z.need; byGroup[z.zgroup].zenith = z.zenith; } return; }
+        byGroup[z.zgroup] = z;
+        Q.wanted.push(z);
+        return;
+      }
       var r = resolveWanted(w, cls);
       if (r.problem) { Q.impossible.push(r); return; }
       if (byTree[r.tree]) { byTree[r.tree].need = Math.max(byTree[r.tree].need, r.need); return; }
       byTree[r.tree] = r;
       Q.wanted.push(r);
     });
+    // a Zenith skill with a required tree is lit only while a positive skill of that tree is: aim for its lowest
+    // one too (an implicit want: not counted as met or missing on its own)
+    Q.wanted.forEach(function (z) {
+      if (!z.requires || byTree[z.requires.tree]) return;
+      byTree[z.requires.tree] = { skill: z.requires.skill, tree: z.requires.tree, need: z.requires.need, implicit: true };
+      Q.wanted.push(byTree[z.requires.tree]);
+    });
+    Q.visible = Q.wanted.filter(function (w) { return !w.implicit; });
     if ((q.wanted || []).length > MAX_WANTED) Q.notes.push("Only the first " + MAX_WANTED + " wanted skills are searched");
     return Q;
   }
@@ -225,11 +281,12 @@
   /** How many of an item the query may use: Infinity, or what the character has for "only what I own". */
   function itemCount(Q, it) {
     if (Q.exItem[it.item]) return 0;
-    if ((!Q.allowZenith || Q.noGRank) && it.zenith) return 0;
+    if (!Q.allowZenith && it.zenith) return 0;
     if (Q.ownedOnly) {
       var own = Q.inv.items[it.item];
       return own ? Math.max(0, own.have) + Math.max(0, own.inEquipment) : 0;
     }
+    if (!Rank.itemFits(it, Q.rank)) return 0;   // an HR hunter: no G-rank or Zenith decorations (owned ones count)
     return it.obtainable ? Infinity : 0;
   }
 
@@ -287,6 +344,7 @@
     var groups = {};
     list.forEach(function (c) {
       var wp = c.p ? wantedPoints(c.p.skills, wanted) : { pts: new Int32Array(wanted.length), neg: 0 };
+      if (c.p && c.p.zenith) for (var z = 0; z < wanted.length; z++) if (wanted[z].zgroup) wp.pts[z] += zenithPoints(c.p.zenith, wanted[z].zgroup);
       c.pts = wp.pts;
       c.neg = wp.neg;
       c.cap = new Int32Array(wanted.length);
@@ -508,6 +566,13 @@
       wanted points, or an automatic or Tower Deco skill of the tree is at least the wanted level. */
   function meets(c, w, cls) {
     var R = D.R;
+    if (w.zgroup) {
+      // a Zenith skill: lit, and its group's skill at least the wanted one
+      var Z = R.raw.zenith, row = Z.groups[w.zgroup], at = row.indexOf(row[w.need - 1]);
+      return c.zenith.some(function (z) {
+        return z[1] && Z.skills[z[0]] && Z.skills[z[0]].group === w.zgroup && row.indexOf(z[0]) >= at;
+      });
+    }
     var ids = listed(c, cls);
     var fromPoints = R.skillFor(w.tree, c.points[w.tree] || 0);
     if (fromPoints && (c.points[w.tree] || 0) >= w.need && c.active.some(function (a) { return a[0] === fromPoints; }) &&
@@ -638,7 +703,7 @@
       set.armour.forEach(function (a) { if (a[1]) calcSet.armour[a[0]] = { id: a[1], level: a[2], decos: a[3] }; });
       var res = Calc.calc(T, calcSet);
       var metCount = 0;
-      Q.wanted.forEach(function (wt) { if (meets(res, wt, Q.cls)) metCount++; });
+      Q.visible.forEach(function (wt) { if (meets(res, wt, Q.cls)) metCount++; });
       if (metCount < keep.needMet) { stats.rejected++; return; }
       var side = sideSkills(res, Q.wanted);
       var entry = { set: set, metCount: metCount, defence: defence, freeSlots: free, negatives: side.negatives,
@@ -710,7 +775,7 @@
     if (!w || !w.tower || !Q.allowTowerDecos) return out;
     var places = Math.max(0, Calc.MAX_DECOS - w.slots);
     var gems = D.decos.filter(function (it) { return it.kind === "g" && itemCount(Q, it) > 0; });
-    Q.wanted.slice().sort(function (a, b) { return b.need - a.need; }).forEach(function (wt) {
+    Q.wanted.filter(function (wt) { return wt.tree; }).sort(function (a, b) { return b.need - a.need; }).forEach(function (wt) {
       if (out.gems.length >= places) return;
       var best = null, bestPts = 0;
       gems.forEach(function (g) {
@@ -726,18 +791,21 @@
     return out;
   }
 
+  /** How a result names a wanted skill in missing: its skill id, or "z" + the Zenith skill id. */
+  function wantedKey(w) { return w.zgroup ? "z" + w.zenith : w.skill; }
+
   /** A result for the caller: the set checked by the page's calculator, with its skills and numbers. */
   function finishResult(Q, e) {
     var r = Calc.compute(e.set, ctxFor(Q.gender));
     var c = r.calc;
-    var missing = Q.wanted.filter(function (w) { return !meets(c, w, Q.cls); }).map(function (w) { return w.skill; });
+    var missing = Q.visible.filter(function (w) { return !meets(c, w, Q.cls); }).map(wantedKey);
     var skills = r.active.filter(function (s) { return !s.dropped; });
-    var wantedTrees = Q.wanted.map(function (w) { return w.tree; });
+    var wantedTrees = Q.visible.map(function (w) { return w.tree; });
     var extraSkills = skills.filter(function (s) {
       return !s.negative && s.works && wantedTrees.indexOf(s.tree) === -1;
     });
     var side = sideSkills(c, Q.wanted);
-    var score = (Q.wanted.length - missing.length) * 1e8 + r.defence.total * 1e3 + e.freeSlots * 20 -
+    var score = (Q.visible.length - missing.length) * 1e8 + r.defence.total * 1e3 + e.freeSlots * 20 -
       side.negatives * 5 + side.extras;
     return { set: r.set, skills: skills, extraSkills: extraSkills, defence: r.defence.total, res: r.res,
              freeSlots: e.freeSlots, score: score, met: missing.length === 0, missing: missing,
@@ -756,9 +824,23 @@
     var allowed = {};
     SLOTS.forEach(function (slot) { allowed[slot] = allowedPieces(Q, slot); });
     var gem = chooseGems(Q);
-    var armourWanted = Q.wanted.filter(function (w) { return !gem.covered[w.tree]; });
+    // the armour's part of each want (a copy: a kept weapon's Zenith points count already)
+    var armourWanted = [];
+    Q.wanted.forEach(function (w) {
+      if (w.tree && gem.covered[w.tree]) return;
+      var a = Object.assign({}, w, { orig: w });
+      if (w.zgroup) {
+        a.need = w.need - (Q.weapon ? zenithPoints(Q.weapon.zenith, w.zgroup) : 0);
+        if (a.need <= 0) return;
+        // only Zenith pieces give Zenith skills (data/armor: every piece with one is a Zenith piece)
+        var why = !Q.allowZenith ? "needs Zenith pieces, which the filters leave out"
+          : !Q.ownedOnly && Q.rank && Q.rank.band && Q.rank.gr < Rank.ZENITH_GR ? "needs Zenith pieces, which need GR " + Rank.ZENITH_GR : "";
+        if (why) { Q.impossible.push({ zenith: w.zenith, problem: why }); return; }
+      }
+      armourWanted.push(a);
+    });
     var passes = [], passIndex = 0, timedOut = false, relaxed = false, cancelled = false, done = false;
-    var keep = makeKeep(Q.maxResults, Q.wanted.length);
+    var keep = makeKeep(Q.maxResults, Q.visible.length);
     var lastProgress = 0;
     var allStats = [];
 
@@ -767,9 +849,14 @@
     function relax() {
       // nothing meets every wanted skill: once more without each wanted skill in turn
       relaxed = true;
-      keep = makeKeep(Q.maxResults, Q.wanted.length - 1);
-      Q.wanted.forEach(function (w) {
-        var rest = armourWanted.filter(function (x) { return x !== w; });
+      keep = makeKeep(Q.maxResults, Q.visible.length - 1);
+      Q.visible.forEach(function (w) {
+        // without w (and the tree only w's Zenith skill needed)
+        var rest = armourWanted.filter(function (x) {
+          if (x.orig === w) return false;
+          return !(x.orig.implicit && w.requires && w.requires.tree === x.tree &&
+                   !Q.visible.some(function (o) { return o !== w && o.requires && o.requires.tree === x.tree; }));
+        });
         passes.push(makePass(Q, allowed, rest, gem.gems, keep));
       });
     }
@@ -794,7 +881,7 @@
         }
         allStats.push(p.stats());
         passIndex++;
-        if (passIndex === passes.length && !relaxed && !keep.list.length && Q.wanted.length > 1 && now() < deadline) relax();
+        if (passIndex === passes.length && !relaxed && !keep.list.length && Q.visible.length > 1 && now() < deadline) relax();
       }
       done = true;
       return true;
@@ -809,7 +896,11 @@
       return {
         results: results,
         stats: {
-          ms: Math.round(now() - t0), wanted: Q.wanted.map(function (w) { return { skill: w.skill, tree: w.tree, need: w.need }; }),
+          ms: Math.round(now() - t0),
+          wanted: Q.wanted.map(function (w) {
+            return w.zgroup ? { zenith: w.zenith, group: w.zgroup, need: w.need }
+              : { skill: w.skill, tree: w.tree, need: w.need, implicit: !!w.implicit };
+          }),
           impossible: Q.impossible, notes: Q.notes, relaxed: relaxed, timedOut: timedOut, cancelled: cancelled,
           gems: gem.gems, invalid: invalid, passes: allStats
         },

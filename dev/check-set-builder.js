@@ -22,7 +22,11 @@
    loads on the first open; pointing at a row previews the defence it adds), a decoration in the first socket and a
    cuff, each from the centre list by search; the skills panel shows the skills, one bar per tree, the defence and
    resistances the calculator gives for that set; the address holds the set and a reload restores it; the list
-   sorts by a header and a skill tree's name as the search lists only pieces with its points, best first; a level
+   sorts by a header and a skill tree's name, a skill's name ("Attack Up Large", "Evasion+2") or the start of one
+   tree's names ("attack up") as the search lists only pieces (and decorations) with its points, best first; G-rank
+   upgrades of HR pieces show "GR 1" and an HR100-299 hunter sees no G-rank row, GSR piece, G-rank or Zenith
+   decoration or cuff; "What I can get" ticks "Only what players can get", says what it means and is shared with
+   Find sets (unticking clears the rank); a level
    pip changes the level and drops the decorations that no longer fit; a cuff for another weapon marks the skill "no
    effect"; a broken link says so. Layout: cards, list and skills side by side on a wide screen; on a phone the
    skills are their own tab; an empty set offers the quick start (weapon class tiles, Find sets, one-skill
@@ -35,7 +39,9 @@
    whose cards the calculator confirms (defence, every wanted skill, no problem, gunner pieces); sorting by
    defence, "Show more", keeping a result's piece and leaving one out search again with it fixed or excluded;
    adding PwrSwd+3 (no Long Sword set reaches it) says it blocks the search and each card misses it, and "Search
-   without" it finds full sets again. No sideways scrolling and no script errors. SHOTS=<dir> saves screenshots
+   without" it finds full sets again; an HR100-299 search sends the band and no card has a G-rank, GX, Zenith or
+   rarity 8+ piece, a G-rank or Zenith decoration or a cuff; the Zenith category has a tile per Zenith group and
+   Skill Slots Up+2 gives cards where the calculator lights it. No sideways scrolling and no script errors. SHOTS=<dir> saves screenshots
    (the Find sets ones with the real engine's results).
 
    One data version: the API's crafting data (HVMHFZ_API, default /root/mhfz/hvmhfz_rest_api) names the page's
@@ -519,6 +525,23 @@ async function run(chromium) {
       });
       check(pts.length > 5 && pts[0] > 0 && pts.every(function (v, i) { return v !== 0 && (!i || pts[i - 1] >= v); }),
             V + " a tree name lists pieces with its points, best first " + pts.slice(0, 8).join(","));
+      // a skill's name, or the start of one tree's names, lists the same way (player report, 16 Nov: "typing Attack
+      // should list every decoration ... that gives Attack points, sorted by points")
+      const treePoints = function (tree) {
+        return pg.$$eval("#sb-list tbody tr", function (rows, tree) {
+          const col = Array.from(document.querySelectorAll("#sb-list thead th")).findIndex(function (th) { return th.textContent.indexOf(tree) === 0; });
+          return col < 0 ? [] : rows.slice(0, 30).map(function (tr) { return Number(tr.children[col].textContent); });
+        }, tree);
+      };
+      const byPoints = function (list) { return list.length > 3 && list[0] > 0 && list.every(function (v, i) { return v !== 0 && (!i || list[i - 1] >= v); }); };
+      for (const typed of [["Attack Up Large", "Attack"], ["attack up", "Attack"], ["Evasion+2", "Evasion"], ["razor sharp", "Sharpness"]]) {
+        await pg.fill("#sb-list .sb-search", typed[0]);
+        await pg.waitForFunction(function (tree) {
+          return Array.from(document.querySelectorAll("#sb-list thead th")).some(function (th) { return th.textContent.indexOf(tree) === 0; });
+        }, typed[1]);
+        const got = await treePoints(typed[1]);
+        check(byPoints(got), V + " \"" + typed[0] + "\" lists pieces with " + typed[1] + " points, best first " + got.slice(0, 8).join(","));
+      }
 
       // the hunter's rank (Hunter card): each row shows the smithy's rank; a band, a GR and a GSR filter the list
       await pg.fill("#sb-list .sb-search", "");
@@ -528,10 +551,24 @@ async function run(chromium) {
       const allRanks = await rankTexts();
       check(allRanks.length > 20 && allRanks.every(function (t) { return /^((HR band \d|GR \d+)( · GSR \d+ .+)?|GSR \d+ .+|–)$/.test(t); }) &&
             allRanks.some(function (t) { return /^GR \d+$/.test(t); }), V + " the list shows each piece's craft rank " + allRanks.slice(0, 3).join(", "));
+      // G-rank upgrades of HR pieces need GR 1 (hvmhfz_re part 200 put them at their line's HR band): an HR hunter
+      // does not see them
+      await pg.fill("#sb-list .sb-search", "Uragaan GX");
+      await pg.waitForFunction(function () { return document.querySelectorAll("#sb-list tbody .sb-col-rank").length > 0; });
+      const gx = await rankTexts();
+      check(gx.length > 0 && gx.every(function (t) { return t === "GR 1"; }), V + " Uragaan GX pieces need GR 1 " + gx.join(", "));
+      await pg.click('[data-focus="filter|band|5"]');
+      await pg.waitForSelector('[data-focus="filter|band|5"][aria-pressed="true"]');
+      await pg.waitForFunction(function () { return !document.querySelector("#sb-list tbody .sb-col-rank"); });
+      await pg.fill("#sb-list .sb-search", "");
+      await pg.waitForFunction(function () { return document.querySelectorAll("#sb-list tbody .sb-col-rank").length > 20; });
+      const band5 = await rankTexts();
+      check(band5.every(function (t) { return /^(HR band [1-5]( · GSR \d+ .+)?|GSR \d+ .+)$/.test(t); }) && !band5.some(function (t) { return /GSR/.test(t); }),
+            V + " HR100-299 lists no G-rank row and no GSR piece " + band5.slice(0, 4).join(", "));
       await pg.click('[data-focus="filter|band|3"]');
       await pg.waitForSelector('[data-focus="filter|band|3"][aria-pressed="true"]');
       const band3 = await rankTexts();
-      check(band3.length > 20 && band3.every(function (t) { return /^(HR band [123]( · GSR \d+ .+)?|GSR \d+ .+)$/.test(t); }) && (await count()) < anyRank,
+      check(band3.length > 20 && band3.every(function (t) { return /^HR band [123]$/.test(t); }) && (await count()) < anyRank,
             V + " HR band 3 lists only pieces of bands 1-3 " + band3.slice(0, 4).join(", "));
       await pg.click('[data-focus="filter|band|7"]');
       await pg.fill('[data-focus="filter|gr"]', "100");
@@ -551,6 +588,49 @@ async function run(chromium) {
       await pg.press('[data-focus="filter|gsr"]', "Enter");
       await pg.fill("#sb-list .sb-search", "");
       await pg.waitForFunction(function (n) { return Number(document.getElementById("sb-list-count").textContent.replace(/\D/g, "")) === n; }, anyRank);
+
+      // the decoration list: a skill's name lists decorations with its points, best first; an HR hunter gets no
+      // G-rank or Zenith decoration and no cuff
+      await pg.click('[data-focus="head|deco|0"]');
+      await pg.waitForSelector('#sb-list[data-kind="deco"] .sb-search');
+      await pg.fill("#sb-list .sb-search", "Attack Up Large");
+      await pg.waitForFunction(function () { return Array.from(document.querySelectorAll("#sb-list thead th")).some(function (th) { return th.textContent.indexOf("Attack") === 0; }); });
+      const decoPts = await treePoints("Attack");
+      check(byPoints(decoPts), V + " \"Attack Up Large\" lists decorations with Attack points, best first " + decoPts.slice(0, 8).join(","));
+      await shot("list-skill-name", false);
+      const decoNames = function () { return pg.$$eval("#sb-list tbody .sb-row-name", function (n) { return n.map(function (x) { return x.textContent; }); }); };
+      check((await decoNames()).some(function (n) { return / G(F|X)?\d*$/.test(n); }), V + " G-rank decorations listed with no rank set");
+      await pg.click('[data-focus="filter|band|5"]');
+      await pg.waitForSelector('[data-focus="filter|band|5"][aria-pressed="true"]');
+      const hrDecos = await decoNames();
+      check(hrDecos.length > 3 && !hrDecos.some(function (n) { return / G(F|X)?\d*$/.test(n) || / [SP]Z\d*$/.test(n); }),
+            V + " HR100-299: no G-rank or Zenith decoration " + hrDecos.slice(0, 5).join(", "));
+      await pg.click('[data-focus="cuff|0"]');
+      await pg.waitForSelector('#sb-list[data-kind="cuff"]');
+      check(!(await pg.$("#sb-list tbody .sb-pick:not(.is-current)")) || (await decoNames()).length === 0, V + " HR100-299: no cuffs to pick");
+      await pg.click('[data-focus="filter|band|0"]');
+      await pg.click('[data-focus="head|piece"]');
+      await pg.waitForSelector('#sb-list[data-kind="piece"] .sb-search');
+
+      // "What I can get": only what players can get at the hunter's rank (no character here: the rank picked)
+      check(!(await pg.isChecked('[data-focus="filter|canget"]')), V + " What I can get starts off without a character");
+      await pg.click('[data-focus="filter|obtainable"]');
+      check(!(await pg.isChecked('[data-focus="filter|obtainable"]')), V + " Only what players can get unticks");
+      await pg.click('[data-focus="filter|canget"]');
+      check((await pg.isChecked('[data-focus="filter|canget"]')) && (await pg.isChecked('[data-focus="filter|obtainable"]')),
+            V + " What I can get ticks Only what players can get too");
+      await pg.click('[data-focus="filter|band|5"]');
+      check(/Up to HR100-299 \(no G Rank\) · only what players can get/.test(await pg.textContent("#sb-canget-note")) &&
+            (await pg.isChecked('[data-focus="filter|canget"]')), V + " What I can get says what it means: " + await pg.textContent("#sb-canget-note"));
+      await pg.click("#sb-tab-find");
+      if (!(await pg.evaluate(function () { return document.querySelector(".sb-find-filters").open; }))) await pg.click(".sb-find-filters-sum");
+      check((await pg.isChecked('[data-focus="find|canget"]')) && /what I can get/.test(await pg.textContent(".sb-find-filters-now")),
+            V + " Find sets shows the same What I can get");
+      await pg.click('[data-focus="find|canget"]');
+      check(await pg.getAttribute('[data-focus="find|band|0"]', "aria-pressed") === "true", V + " unticking What I can get clears the rank");
+      await pg.click(phone ? "#sb-tab-equip" : "#sb-tab-equip");
+      await pg.waitForSelector('[data-focus="filter|canget"]');
+      check(!(await pg.isChecked('[data-focus="filter|canget"]')), V + " and the Hunter card's tick follows");
 
       await pg.reload({ waitUntil: "load" });
       await pg.waitForSelector("#sb-app[data-ready]");
@@ -802,6 +882,56 @@ async function realSearch(browser, base, view, shots) {
   q = await lastQuery();
   check(q.weaponClass === 10 && q.hunterType === "gunner", V + " a Bow search is a gunner search");
   allConfirmed(await cards(), [WANT_LS[0]], "Bow, Attack Up Large", true);
+
+  // an HR hunter (HR100-299, no GR): no G-rank, GX or Zenith piece, no G-rank or Zenith decoration, no cuff (player
+  // report, 16 Nov: "Find sets with the rank limited to HR299 returns G-rank pieces")
+  await pg.click('[data-focus="find|clear"]');
+  await weaponClass(7);
+  await pg.click('[data-focus="find|band|5"]');
+  const WANT_HR = [WANT_LS[0], WANT_LS[2]];
+  for (const w of WANT_HR) await want(w);
+  await searched();
+  q = await lastQuery();
+  check(q.rankMax && q.rankMax.band === 5 && !q.rankMax.gr, V + " an HR100-299 search sends the band " + JSON.stringify(q.rankMax));
+  list = await cards();
+  allConfirmed(list, WANT_HR, "HR100-299, Attack Up Large + Evasion+2");
+  let gBad = null;
+  list.forEach(function (c, i) {
+    const set = Calc.decode(c.set);
+    if (set.cuffs.length) gBad = gBad || "#" + (i + 1) + " has a cuff";
+    set.armour.forEach(function (a) {
+      const row = a[1] ? pieceById[a[0]][a[1]] : null;
+      if (row && ((row[14] & 3) || row[2] >= 8)) gBad = gBad || "#" + (i + 1) + " " + row[1] + " (rarity " + row[2] + ")";
+      a[3].forEach(function (d) { if (items[d].zenith || / G(F|X)?\d*$/.test(items[d].name)) gBad = gBad || "#" + (i + 1) + " " + items[d].name; });
+    });
+  });
+  check(list.length > 0 && !gBad, V + " HR100-299: no G-rank or Zenith piece, decoration or cuff in " + list.length + " cards " + (gBad || ""));
+  await shot("find-hr299");
+  await pg.click('[data-focus="find|band|0"]');
+
+  // Zenith skills: their own category, a tile per Zenith group; a search finds sets where the skill is lit
+  await pg.click('[data-focus="find|clear"]');
+  await pg.fill("#sb-find-q", "");
+  await pg.click('[data-focus="find|cat|zenith"]');
+  const zTiles = await pg.$$eval('#sb-find-trees .sb-skill-cat[data-cat="zenith"] .sb-skill-pick', function (n) { return n.length; });
+  const zGroups = rulesJson.zenith.groups.filter(function (row, g) { return g && rulesJson.zenith.skills[row[0]].group; }).length;
+  check(zTiles === zGroups && zTiles >= 26, V + " the Zenith category has a tile per Zenith group (" + zTiles + " of " + zGroups + ")");
+  await pg.click('[data-focus="find|cat|all"]');
+  const SLOTS_UP = { name: "Skill Slots", tree: "z1", skill: "z2", points: 2 };
+  await want(SLOTS_UP);
+  await searched();
+  q = await lastQuery();
+  check(q.wanted.length === 1 && q.wanted[0].zenith === 2 && q.wanted[0].level === 2, V + " a Zenith skill goes to the engine as {zenith, level} " + JSON.stringify(q.wanted));
+  list = await cards();
+  let zBad = null;
+  list.forEach(function (c, i) {
+    const r = Calc.compute(Calc.decode(c.set), ctxWith(""));
+    const row = rulesJson.zenith.groups[1];
+    const lit = r.zenith.some(function (z) { return z.lit && row.indexOf(z.id) >= row.indexOf(2); });
+    if (!lit || c.unmet || r.problems.length) zBad = zBad || "#" + (i + 1) + " " + JSON.stringify(r.zenith);
+  });
+  check(list.length > 0 && !zBad, V + " Skill Slots Up+2: " + list.length + " cards, each lit in the calculator " + (zBad || ""));
+  await shot("find-zenith");
 
   const over = await pg.evaluate(function () {
     const m = document.querySelector("main") || document.body;

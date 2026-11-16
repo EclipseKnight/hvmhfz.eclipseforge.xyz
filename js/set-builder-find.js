@@ -16,14 +16,17 @@
    query = {wanted: [{skill, level, tree}], weaponClass, weaponId, gender, hunterType, rankMax, ownedOnly, owned,
             allowZenith, allowTowerDecos, fixed, exclude, maxResults, timeLimitMs}. wanted[].skill is the skill id of
    the level picked, level its points threshold (always 10 or more, so the engine reads it as points) and tree its
-   skill tree. When the worker file is not on the site the tab says so and searches nothing.
+   skill tree. A Zenith skill (the "Zenith" category: one tile per Zenith group of rules.json, a chip per skill) is
+   {zenith, level}: the Zenith skill id and the group's points; on this page its skill key is "z" + id and its tree
+   key "z" + group, and the engine names it so in missing. When the worker file is not on the site the tab says so
+   and searches nothing.
 
    Every result is recalculated here with js/armor-calc.js for what the cards show, so the cards always follow the
    game's rules as the builder does. js/set-builder.js creates this with a host object (see create()). */
 (function () {
   "use strict";
 
-  var WORKER_URL = "/js/armor-search-worker.js?v=3";
+  var WORKER_URL = "/js/armor-search-worker.js?v=4";
   var MAX_RESULTS = 50;
   var MAX_WANTED = 10;          // what the engine searches at most (js/armor-search.js MAX_WANTED)
   var BASE_LIMIT = 10;          // the game's skill limit before G-rank, Zenith pieces and cuffs add to it
@@ -37,7 +40,7 @@
   var RES_NAMES = { fire: "Fire", water: "Water", thunder: "Thunder", ice: "Ice", dragon: "Dragon" };
   var RES_ORDER = ["fire", "water", "thunder", "ice", "dragon"];
   var CATEGORIES = [["attack", "Attack"], ["defence", "Defence"], ["res", "Resistance"], ["gunner", "Gunner"],
-                    ["tech", "Weapon Tech"], ["other", "Other"]];
+                    ["tech", "Weapon Tech"], ["other", "Other"], ["zenith", "Zenith"]];
   var SORTS = [["best", "Best match"], ["def", "Defence"], ["free", "Free slots"], ["extra", "Extra skills"]];
   // Categories by tree name (the game has none): the first pattern that matches wins; Tech trees by their class.
   var CATEGORY_RULES = [
@@ -101,9 +104,40 @@
         trees.push({ tree: t.id, name: t.name, cat: cat, cls: tech ? t.weapon_class : null, levels: levels,
                      labels: shortLabels(names), text: (t.name + " " + names.join(" ")).toLowerCase() });
       });
+      zenithTiles().forEach(function (t) { trees.push(t); });
       trees.sort(function (a, b) { return a.name.localeCompare(b.name); });
       return trees;
     }
+
+    /** The Zenith skills as tiles: one per group of rules.json zenith.groups (points 1-7 give the group's skill),
+        a level per skill at the fewest points that give it; the tree it needs (when it needs one) in its text. */
+    function zenithTiles() {
+      var Z = R.raw.zenith, out = [];
+      Z.groups.forEach(function (row, g) {
+        var levels = [];
+        row.forEach(function (zid, k) {
+          var z = Z.skills[zid];
+          if (!z || !z.group || levels.some(function (l) { return l[1] === "z" + zid; })) return;
+          if (levels.some(function (l) { return R.zenithName(Number(l[1].slice(1))) === z.name; })) return;
+          levels.push([k + 1, "z" + zid]);
+        });
+        if (!levels.length) return;
+        var names = levels.map(function (l) { return nameOf(l[1]); });
+        var need = Z.skills[row[0]].requires_tree;
+        var base = names[0].replace(/\s*\+\d+$/, "");
+        out.push({ tree: "z" + g, name: base, cat: "zenith", cls: null, levels: levels, labels: shortLabels(names),
+                   zenith: true, needs: need ? host.treeName(need) : "",
+                   text: (base + " zenith " + names.join(" ") + (need ? " " + host.treeName(need) : "")).toLowerCase() });
+      });
+      return out;
+    }
+
+    /** The name of a wanted skill key: a skill id, or "z" + a Zenith skill id. */
+    function nameOf(key) {
+      return typeof key === "string" && key.charAt(0) === "z" ? R.zenithName(Number(key.slice(1))) : R.skillName(key);
+    }
+
+    function isZenith(w) { return typeof w.skill === "string" && w.skill.charAt(0) === "z"; }
 
     // ---- what the filters mean -------------------------------------------------------------------------
 
@@ -131,7 +165,9 @@
       SLOTS.forEach(function (s) { if (f.fixed[s]) fixed[s] = f.fixed[s]; });
       var i = imp();
       return {
-        wanted: f.wanted.map(function (w) { return { skill: w.skill, level: w.points, tree: w.tree }; }),
+        wanted: f.wanted.map(function (w) {
+          return isZenith(w) ? { zenith: Number(w.skill.slice(1)), level: w.points } : { skill: w.skill, level: w.points, tree: w.tree };
+        }),
         weaponClass: cls >= 0 ? cls : null,
         weaponId: keptWeapon(),
         gender: effGender(),
@@ -334,21 +370,24 @@
       li.setAttribute("data-tree", t.tree);
       var top = el("div", "sb-skill-pick-top");
       top.appendChild(el("span", "sb-skill-pick-name", t.name));
-      if (w) top.appendChild(el("span", "sb-skill-pick-now", R.skillName(w.skill)));
+      if (w) top.appendChild(el("span", "sb-skill-pick-now", nameOf(w.skill)));
+      if (t.zenith) li.title = "Zenith skill: from Zenith pieces (GR " + window.ArmorRank.ZENITH_GR + ") and Zenith weapons" +
+        (t.needs ? "; lit only while a " + t.needs + " skill is active (the search aims for it too)" : "");
       li.appendChild(top);
       var levels = el("span", "sb-level-chips");
       levels.setAttribute("role", "group");
       levels.setAttribute("aria-label", t.name + " levels");
       t.levels.forEach(function (l, k) {
         var on = !!(w && w.skill === l[1]);
-        var fullName = R.skillName(l[1]);
+        var fullName = nameOf(l[1]);
         var b = chip("", on, "find|want|" + t.tree + "|" + l[1], function () { toggleWanted(t, l); });
         b.classList.add("sb-level-chip");
         b.setAttribute("data-skill", l[1]);
         b.appendChild(el("span", "sb-level-name", t.labels[k]));
         b.appendChild(el("span", "sb-level-pts", String(l[0])));
-        b.setAttribute("aria-label", fullName + ", " + l[0] + " points");
-        b.title = (on ? "Remove " : "Want ") + fullName + " (" + l[0] + " points)";
+        var ptsWord = t.zenith ? " Zenith point" + (l[0] === 1 ? "" : "s") : " points";
+        b.setAttribute("aria-label", fullName + ", " + l[0] + ptsWord);
+        b.title = (on ? "Remove " : "Want ") + fullName + " (" + l[0] + ptsWord + ")";
         if (!w && full) { b.disabled = true; b.title = "The search takes up to " + MAX_WANTED + " skills"; }
         levels.appendChild(b);
       });
@@ -370,11 +409,11 @@
       f.wanted.forEach(function (w) {
         var c = el("span", "sb-want");
         c.setAttribute("data-skill", w.skill);
-        c.appendChild(el("span", "sb-want-name", R.skillName(w.skill)));
+        c.appendChild(el("span", "sb-want-name", nameOf(w.skill)));
         c.appendChild(el("span", "sb-want-pts", w.name + " " + w.points));
         var x = el("button", "sb-want-x", "×");
         x.type = "button";
-        x.setAttribute("aria-label", "Remove " + R.skillName(w.skill));
+        x.setAttribute("aria-label", "Remove " + nameOf(w.skill));
         x.setAttribute("data-focus", "find|unwant|" + w.tree);
         x.addEventListener("click", function () { f.wanted = f.wanted.filter(function (o) { return o !== w; }); render(); });
         c.appendChild(x);
@@ -481,6 +520,7 @@
       parts.push(g ? (g === "male" ? "Male" : "Female") : "Any gender");
       if (cls < 0 && f.hunterType !== "any") parts.push(f.hunterType === "gunner" ? "Gunner" : "Blademaster");
       var h = host.rank();
+      if (host.canGet && host.canGet()) parts.push("what I can get");
       if (h && h.gr) parts.push("up to GR " + h.gr);
       else if (h && h.band) parts.push("up to " + window.ArmorRank.bandLabel(h.band, host.data.index.rank.bands));
       if (h && h.gsr !== null) parts.push("GSR " + h.gsr);
@@ -535,6 +575,7 @@
       });
       box.appendChild(group("Hunter type", types));
 
+      if (host.canGetControl) box.appendChild(group("Hunter", host.canGetControl("find", host.rerender), "is-wide"));
       var rg = group("Rank (up to)", host.rankControls("find", host.rerender), "is-wide");
       rg.title = "The same rank as the Equipment tab's Hunter card: only pieces the smithy offers at it (an HR band alone " +
         "means no G-rank pieces and no cuffs); what your character owns always counts with Only what I own";
@@ -645,13 +686,27 @@
       return c.active.filter(function (s) { return !s.dropped && s.works && !s.negative && !(s.from === "points" && wantedTree(s.tree)); }).length;
     }
 
+    /** The set's Zenith points in a group (weapon and pieces; js/armor-calc.js zenithSources). */
+    function zenithGroupPoints(c, group) {
+      var Z = R.raw.zenith, p = 0;
+      var add = function (zid) { var z = zid ? Z.skills[zid] : null; if (z && z.group === group) p += z.points; };
+      if (c.weapon) add(c.weapon.zenith);
+      c.pieces.forEach(function (x) { if (x.piece) add(x.piece.zenith); });
+      return p;
+    }
+
     function met(c, w) {
+      if (isZenith(w)) {
+        var Z = R.raw.zenith, g = Number(w.tree.slice(1)), row = Z.groups[g], at = row.indexOf(row[w.points - 1]);
+        return c.zenith.some(function (z) { return z.lit && Z.skills[z.id] && Z.skills[z.id].group === g && row.indexOf(z.id) >= at; });
+      }
       return c.active.some(function (s) {
         return !s.dropped && s.works && (s.skill === w.skill || (s.from === "points" && s.tree === w.tree && !s.negative && s.total >= w.points));
       });
     }
 
     function pointsOf(c, tree) {
+      if (typeof tree === "string") return zenithGroupPoints(c, Number(tree.slice(1)));
       var t = c.trees.filter(function (x) { return x.tree === tree; })[0];
       return t ? t.total : 0;
     }
@@ -667,7 +722,7 @@
       return list;
     }
 
-    function skillNames(ids) { return ids.map(function (id) { return R.skillName(id); }); }
+    function skillNames(ids) { return ids.map(nameOf); }
 
     function orList(names) {
       if (names.length < 2) return names.join("");
@@ -687,14 +742,14 @@
       }
       var blockers = [];      // [{skill, why}]
       (stats.impossible || []).forEach(function (x) {
-        var why = x.problem === "works only with another weapon class" ? "it works only with another weapon class"
-          : x.problem === "unknown skill" ? "the game data has no such skill" : x.problem;
-        blockers.push({ skill: x.skill, why: why });
+        var why = x.problem === "unknown skill" || x.problem === "unknown Zenith skill" ? "the game data has no such skill"
+          : "it " + x.problem;
+        blockers.push({ skill: x.zenith ? "z" + x.zenith : x.skill, why: why });
       });
       if (stats.relaxed && n) {
         var count = {};
         f.shown.forEach(function (r) { (r.engine.missing || []).forEach(function (s) { count[s] = (count[s] || 0) + 1; }); });
-        Object.keys(count).map(Number).sort(function (a, b) { return count[b] - count[a]; }).forEach(function (s) {
+        Object.keys(count).map(function (k) { return /^z/.test(k) ? k : Number(k); }).sort(function (a, b) { return count[b] - count[a]; }).forEach(function (s) {
           blockers.push({ skill: s, why: "" });
         });
       }
@@ -735,7 +790,7 @@
         none.setAttribute("role", "status");
         var one = all.length === 1;
         none.appendChild(el("p", "sb-find-blocked-head", one
-          ? "Nothing gives " + R.skillName(all[0].skill) + " with these filters."
+          ? "Nothing gives " + nameOf(all[0].skill) + " with these filters."
           : "No set reaches these " + all.length + " skills with these filters, not even with one of them left out."));
         var tips = [];
         if (one) {
@@ -743,6 +798,7 @@
           if (lower && lower.levels[0][1] !== all[0].skill) tips.push("pick a lower level");
         } else tips.push("pick fewer skills or lower levels");
         if (!f.allowZenith) tips.push("allow Zenith pieces");
+        if (host.canGet && host.canGet()) tips.push("untick What I can get");
         var hr = host.rank();
         if (hr && hr.band && hr.band < 7) tips.push("raise the rank");
         else if (hr && hr.band && !hr.gr) tips.push("add a GR (an HR alone leaves out G-rank pieces and cuffs)");
@@ -886,7 +942,7 @@
         var li = el("li", "sb-rbar " + (ok ? "is-met" : "is-unmet"));
         li.setAttribute("data-skill", w.skill);
         var top = el("div", "sb-rbar-top");
-        top.appendChild(el("span", "sb-rbar-name", (ok ? "✓ " : "✗ ") + R.skillName(w.skill)));
+        top.appendChild(el("span", "sb-rbar-name", (ok ? "✓ " : "✗ ") + nameOf(w.skill)));
         top.appendChild(el("span", "sb-rbar-pts", pts + " / " + w.points));
         li.appendChild(top);
         var bar = el("div", "sb-bar");
@@ -1022,7 +1078,7 @@
       RES_ORDER.forEach(function (k) { row(RES_NAMES[k], cols.map(function (c) { return signed(c.calc.res[k]); })); });
       row("Free slots", cols.map(function (c) { return String(freeSlots(c.calc)); }));
       asked().forEach(function (w) {
-        row(R.skillName(w.skill), cols.map(function (c) { return met(c.calc, w) ? "✓" : "–"; }), "is-wanted");
+        row(nameOf(w.skill), cols.map(function (c) { return met(c.calc, w) ? "✓" : "–"; }), "is-wanted");
       });
       var names = {};
       var order = [];
