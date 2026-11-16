@@ -1,0 +1,678 @@
+{
+  "_about": "Every currency and point type on Hunsterverse, shown by /currencies.html (js/currencies.js) and found by the site search. Edited by hand: change a line, keep the shape, then run NODE_PATH=/root/work/pw-tools/node_modules node dev/check-currencies.js. Each currency: id (the page anchor #id), name (as the game shows it in English), also (other names: the Discord bot's or common ones), group (one of groups), what (one line), spend ([label, link] pairs, headed \"Spent at\" or spend_label: link the site's pages, never copy a shop list), cap, items (item ids that ARE this currency: their item page links here), ways (how, amount, limit, optional link; basis = where it was checked, never shown), note (optional, shown under the ways), not_here (what the original game had that this server lacks; basis), settings (live settings the numbers depend on: when one changes, edit the numbers here). Only write what was checked in the live code, the live database or the game's data.",
+  "checked": "2026-11-16",
+  "groups": [
+    [
+      "main",
+      "Money and coins"
+    ],
+    [
+      "road",
+      "Hunting Road and Sky Corridor"
+    ],
+    [
+      "event",
+      "Events"
+    ],
+    [
+      "clan",
+      "Clan"
+    ],
+    [
+      "other",
+      "Other"
+    ]
+  ],
+  "currencies": [
+    {
+      "id": "zenny",
+      "name": "Zenny",
+      "also": [
+        "z"
+      ],
+      "group": "main",
+      "what": "The game's basic money. Shops, the smithy and two gachas take it.",
+      "spend": [
+        [
+          "Town shop",
+          "/source.html?id=town-shop"
+        ],
+        [
+          "Daily Free Draw (1 z)",
+          "/source.html?id=gacha-101"
+        ],
+        [
+          "Materials Gacha 3 (5,000 z for 3 draws)",
+          "/source.html?id=gacha-107"
+        ]
+      ],
+      "cap": null,
+      "ways": [
+        {
+          "how": "Clear quests",
+          "amount": "The quest's zenny reward. The server's zenny rates are 1.0 (no bonus) for normal and G rank quests.",
+          "basis": "Erupe handlers_quest.go tune values from live.Rates.Zenny/ZennyNC/GZenny/GZennyNC; server_settings rates zenny, zenny_nc, g_zenny, g_zenny_nc = 1.0 on 2026-11-16. The client computes the amount."
+        },
+        {
+          "how": "Sell items",
+          "amount": "Each item's sell price, shown on its item page.",
+          "link": [
+            "Items",
+            "/items.html"
+          ],
+          "basis": "client-side shop; sell prices from the game's item table (site data/uses/info, hvmhfz_re item_info.json)"
+        },
+        {
+          "how": "Hunting Road prizes",
+          "amount": "Each Road pays two boards (the Road design vote and the Road floors board) by place: 100,000 z for 1st, 75,000 for 2nd, 50,000 for 3rd, 30,000 for 4th-10th and 10,000 for 11th-50th.",
+          "limit": "Once per board per Road, sent as a gift.",
+          "link": [
+            "Hunting Road vote",
+            "/road-vote.html"
+          ],
+          "basis": "hvmhfz_rest_api road/RoadProperties.java approvedTiers (item type 10); live ~/frontier/config/application.properties has no road.reward.* override (2026-11-16)"
+        }
+      ],
+      "settings": [
+        "rates.zenny",
+        "rates.zenny_nc",
+        "rates.g_zenny",
+        "rates.g_zenny_nc"
+      ]
+    },
+    {
+      "id": "gcp",
+      "name": "GCP",
+      "also": [
+        "Guild Contribution Points"
+      ],
+      "group": "main",
+      "what": "Each character's points from quests and Diva Defense, spent in the Diva shops.",
+      "spend": [
+        [
+          "Diva GCP item shop",
+          "/source.html?id=gcp-item-shop"
+        ],
+        [
+          "Diva shop",
+          "/source.html?id=diva-shop"
+        ],
+        [
+          "Diva limited shop",
+          "/source.html?id=diva-limited-shop"
+        ]
+      ],
+      "cap": null,
+      "ways": [
+        {
+          "how": "Clear quests",
+          "amount": "The quest's GCP reward. The server's GCP rate is 1.0 (no bonus).",
+          "basis": "handlers_quest.go tune value 1020 = live.Rates.GCP*100; handlers_mercenary.go handleMsgMhfSaveMercenary stores the client's GCP; rates.gcp = 1.0"
+        },
+        {
+          "how": "Diva Defense: personal reward list",
+          "amount": "26 GCP rewards from 500 to 7,100 GCP, reached at 20 to 14,000 event points: 102,000 GCP in all per event.",
+          "limit": "Each reward once per character per Diva Defense.",
+          "link": [
+            "the list",
+            "/source.html?id=diva-list-1"
+          ],
+          "basis": "diva_rewards list 1 item_type 26: 26 rows per rank class, sum 102000, thresholds 20-14000 (2026-11-16)"
+        },
+        {
+          "how": "Diva Defense: Clan progress list",
+          "amount": "1,000 GCP at Clan progress 13, 2,000 at 17, 3,000 at 26 and 50,000 at 100: 56,000 GCP in all.",
+          "limit": "Each reward once per member per Diva Defense.",
+          "link": [
+            "the list",
+            "/source.html?id=diva-list-2"
+          ],
+          "basis": "diva_rewards list 2 item_type 26: 4 rows, sum 56000, thresholds 13-100"
+        },
+        {
+          "how": "Trade in Guild Point Tkt or Goushu Ticket",
+          "amount": "10 GCP each, at the GCP item exchange. The New & Returning Hunter Pack gives 3 Guild Point Tkt once, the Weekly Supply Drop 1 a week, and the gachas have them as prizes.",
+          "link": [
+            "Guild Point Tkt",
+            "/item.html?id=13190"
+          ],
+          "basis": "shop_items shop_type 7 (handlers_shop_gacha.go 'Item->GCP'): items 13190 and 1662, cost 10; event_campaign_items 1001 item 13190 x3, 1002 x1 (repeat weekly)"
+        }
+      ],
+      "settings": [
+        "rates.gcp"
+      ]
+    },
+    {
+      "id": "frontier-points",
+      "name": "Frontier Points",
+      "also": [
+        "FP"
+      ],
+      "group": "main",
+      "what": "Shared by all characters of your account. Spent in the Frontier Points shop.",
+      "spend": [
+        [
+          "Frontier points shop",
+          "/source.html?id=fp-shop"
+        ]
+      ],
+      "cap": null,
+      "ways": [
+        {
+          "how": "Trade in items",
+          "amount": "328 items trade in for 1, 2 or 3 Frontier Points each, mostly tickets; an item's page says what it trades in for.",
+          "limit": "None.",
+          "link": [
+            "Items",
+            "/items.html"
+          ],
+          "basis": "fpoint_items buyable=false: 328 rows (fpoints 1: 89, 2: 3, 3: 236); handlers_shop_gacha.go handleMsgMhfExchangeItem2Fpoint adds count x fpoints"
+        },
+        {
+          "how": "Coin Step-Up gacha",
+          "amount": "50 Frontier Points with step 2 and 100 with step 3: 150 for a full run of 6 coins.",
+          "link": [
+            "Coin Step-Up",
+            "/source.html?id=gacha-103"
+          ],
+          "basis": "gacha_entries gacha 103 entry_type 1 and 2: frontier_points 50, 100; handlers_shop_gacha.go step-up adds gacha_entries.frontier_points"
+        },
+        {
+          "how": "Hunting Road prizes",
+          "amount": "Each Road pays two boards by place: 5,000 for 1st, 3,000 for 2nd, 2,000 for 3rd, 1,000 for 4th-10th and 500 for 11th-50th.",
+          "limit": "Once per board per Road, sent as a gift.",
+          "link": [
+            "Hunting Road vote",
+            "/road-vote.html"
+          ],
+          "basis": "hvmhfz_rest_api RoadProperties.java approvedTiers (item type 21); handlers_distitem.go case 21; no live override"
+        }
+      ],
+      "not_here": [
+        {
+          "what": "Buying Frontier Points with real money.",
+          "basis": "no payment system; only distitem case 21, trade-ins and the step-up add frontier_points (grep of server/channelserver)"
+        }
+      ],
+      "settings": []
+    },
+    {
+      "id": "trial-coin",
+      "name": "Trial Coin G",
+      "also": [
+        "trial coins",
+        "Gacha Coins (Discord bot)"
+      ],
+      "group": "main",
+      "what": "Gacha coins shared by your account. They pay for the Coin Step-Up and the Coin Lucky Box, and are used before Golden Coin G.",
+      "spend": [
+        [
+          "Coin Step-Up",
+          "/source.html?id=gacha-103"
+        ],
+        [
+          "Coin Lucky Box",
+          "/source.html?id=gacha-104"
+        ]
+      ],
+      "cap": null,
+      "ways": [
+        {
+          "how": "Weekly Gacha Coins gift",
+          "amount": "10 Trial Coin G a week. Claim it from the gift list (Claim Items) at the Gacha Cat or the Guide.",
+          "limit": "A new gift every Monday 00:05 UTC; each gift once per character, open for 4 weeks.",
+          "basis": "cron /etc/cron.d/gacha-weekly-coins on hvmhfz-db (Mondays 00:05 UTC); distribution 37-39 'Weekly Gacha Coins 2026-Wnn' item_type 20 x10, times_acceptable 1, deadline +4 weeks; handlers_distitem.go case 20; docs/gacha-design.md 5 and 10"
+        }
+      ],
+      "settings": []
+    },
+    {
+      "id": "golden-coin",
+      "name": "Golden Coin G",
+      "also": [
+        "premium coins",
+        "Gacha Coins (Discord bot)"
+      ],
+      "group": "main",
+      "what": "The other gacha coin, shared by your account. Pays for the same gachas as Trial Coin G, after your trial coins are used up.",
+      "spend": [
+        [
+          "Coin Step-Up",
+          "/source.html?id=gacha-103"
+        ],
+        [
+          "Coin Lucky Box",
+          "/source.html?id=gacha-104"
+        ]
+      ],
+      "cap": null,
+      "ways": [
+        {
+          "how": "Hunting Road prizes",
+          "amount": "Each Road pays two boards by place: 50 Golden Coin G for 1st, 30 for 2nd, 20 for 3rd and 10 for 4th-10th.",
+          "limit": "Once per board per Road, sent as a gift.",
+          "link": [
+            "Hunting Road vote",
+            "/road-vote.html"
+          ],
+          "basis": "hvmhfz_rest_api RoadProperties.java approvedTiers (item type 19); handlers_distitem.go case 19; handlers_shop_gacha.go spends gacha_trial before gacha_premium"
+        }
+      ],
+      "not_here": [
+        {
+          "what": "Buying coins with real money, and the General Store's coin shop (it has nothing for sale).",
+          "basis": "shop_items shop_type 6: 0 rows on 2026-11-16; no payment system"
+        }
+      ],
+      "settings": []
+    },
+    {
+      "id": "n-points",
+      "name": "N Points",
+      "also": [
+        "NP",
+        "Net Cafe points"
+      ],
+      "group": "main",
+      "what": "Each character's Net Cafe points, spent in the Net Cafe shop (its list is built into the game). Every account here has the Net Cafe course.",
+      "spend": [],
+      "cap": "500,000",
+      "ways": [
+        {
+          "how": "Daily check-in",
+          "amount": "5 N Points the first time each day; it also refills the day's bonus quests (3) and daily quests (10).",
+          "limit": "Once a day; the day starts at 03:00 UTC.",
+          "basis": "handlers_cafe.go handleMsgMhfCheckDailyCafepoint: addPointNetcafe(s, 5), daily_time = JST noon; live daily.bonus_quest_allowance 3, daily_quest_allowance 10"
+        },
+        {
+          "how": "Net Cafe time bonuses",
+          "amount": "Paid for time logged in during the week: 250 at 30 minutes, 500 at 1 hour, 1,000 at 2 h, 1,250 at 3 h, 1,500 at 5 h, 2,000 at 8 h, 2,500 at 12 h, 3,000 at 16 h, 3,500 at 20 h, 4,000 at 24 h, 5,000 at 34 h, 10,000 at 48 h, 10,000 at 72 h and 100,000 at 167 h.",
+          "limit": "Each step once a week; the time resets every Monday 00:00 Japan time (Sunday 15:00 UTC).",
+          "basis": "cafebonus table (14 rows, item_type 17, time_req seconds); handlers_cafe.go acceptCafeBonuses (course 30, LEAST(... maximum_np)), GetCafeDuration weekly reset TimeWeekNext; every account's rights 469766734 include course 26 -> 30 (common/mhfcourse)"
+        }
+      ],
+      "not_here": [
+        {
+          "what": "Net Cafe bonus quests of real certified Net Cafes.",
+          "basis": "mhfpac.tsv 114930 'Net Cafe Bonus Quests, only at Certified Net Cafes'; no certified cafes on this server"
+        }
+      ],
+      "settings": [
+        "caps.maximum_np",
+        "daily.bonus_quest_allowance",
+        "daily.daily_quest_allowance"
+      ]
+    },
+    {
+      "id": "road-points",
+      "name": "RdP",
+      "also": [
+        "Road Points",
+        "Rd P",
+        "rdP (Discord bot)"
+      ],
+      "group": "road",
+      "what": "Hunting Road points, paid at the end of each Road quest and spent in the Hunting Road shop.",
+      "spend": [
+        [
+          "Basic",
+          "/source.html?id=road-shop-0"
+        ],
+        [
+          "Gatherables",
+          "/source.html?id=road-shop-1"
+        ],
+        [
+          "HR1-4 materials",
+          "/source.html?id=road-shop-2"
+        ],
+        [
+          "HR5-7 materials",
+          "/source.html?id=road-shop-3"
+        ],
+        [
+          "Decorations",
+          "/source.html?id=road-shop-4"
+        ],
+        [
+          "Other",
+          "/source.html?id=road-shop-5"
+        ],
+        [
+          "G materials",
+          "/source.html?id=road-shop-6"
+        ],
+        [
+          "Limited",
+          "/source.html?id=road-shop-7"
+        ],
+        [
+          "Special",
+          "/source.html?id=road-shop-8"
+        ]
+      ],
+      "cap": null,
+      "ways": [
+        {
+          "how": "Hunting Road quests",
+          "amount": "Set by the monsters you hunt, the difficulty and how far you get.",
+          "link": [
+            "Roads in game",
+            "/guide-roads.html"
+          ],
+          "basis": "hvmhfz_re docs/hunting-road.md (settlement 0x10b1e020 -> 0x10b1dc70 adds the run's points to Rd P); live GameplayOptions.DisableRoad false"
+        },
+        {
+          "how": "Sky Corridor quests",
+          "amount": "A tower quest ends with the same settlement, so it pays RdP too.",
+          "link": [
+            "Sky Corridor",
+            "/sky-corridor.html"
+          ],
+          "basis": "hvmhfz_re docs/hunting-road.md: the settlement runs at the end of Road quests and tower quests (0x10aff970)"
+        }
+      ],
+      "settings": []
+    },
+    {
+      "id": "tower-medal",
+      "name": "Tower Medal",
+      "also": [
+        "Guild Medals"
+      ],
+      "group": "road",
+      "what": "An item used as money at the Guild Medal Exchange, in the Tower menu of the Hunting Road / Sky Corridor counter.",
+      "spend": [
+        [
+          "What the exchange sold in the original game",
+          "/guide-frontier-hunters-road.html#tower-medals"
+        ]
+      ],
+      "cap": null,
+      "items": [
+        11167
+      ],
+      "ways": [
+        {
+          "how": "Sky Corridor daily rewards",
+          "amount": "5 Tower Medals a day, claimed in the counter's Tower menu under Daily Rewards.",
+          "limit": "Once a day; the day starts at 00:00 UTC.",
+          "basis": "live config SkyCorridor.DailyRewards true, DailyRewardItems unset -> sys_tower_daily.go towerDailyDefault 11167 x5; client menu issue: hvmhfz_re docs/progress.md part 205 (v1.30, fix not live)"
+        },
+        {
+          "how": "Sky Corridor daily tasks",
+          "amount": "Six tasks a day: five run tasks worth 2 or 3 medals each and the day's Guardian worth 5. They are added to the daily rewards.",
+          "limit": "Each task once a day.",
+          "basis": "live config SkyCorridor.DailyChallenges true; sys_tower_challenges.go towerChallengesFor (towerChallengeMedals {2,3}, towerChallengeGuardianMedals 5)"
+        },
+        {
+          "how": "Sky Corridor present box",
+          "amount": "One-time presents: 10, 15, 25 and 40 medals at 1, 5, 20 and 50 floors climbed; 10 and 25 at 1 and 5 Duremudira clears; 10, 15, 20 and 25 for the first clear of the 1st to 4th District. 195 medals in all.",
+          "limit": "Each present once per character. Claimed in the Tower menu under Contribution Rewards.",
+          "link": [
+            "Present box",
+            "/source.html?id=sky-present-box"
+          ],
+          "basis": "sky_corridor_rewards (kinds floors, clears, district; 2026-11-16); live sky_corridor.present_box true; docs/hvmhfz-sky-corridor.md SK5; hvmhfz_re part 205"
+        },
+        {
+          "how": "Campaigns",
+          "amount": "3 in the New & Returning Hunter Pack (once) and 1 in the Weekly Supply Drop.",
+          "limit": "The weekly one resets every Monday 00:00 Japan time (Sunday 15:00 UTC).",
+          "basis": "event_campaign_items 1001 item 11167 x3, 1002 x1; event_campaigns 1002 repeat weekly; campaigns.enabled true"
+        },
+        {
+          "how": "Gacha prizes",
+          "amount": "Tower Medals are prizes in the gachas.",
+          "link": [
+            "Gacha sources",
+            "/sources.html?q=gacha"
+          ],
+          "basis": "gacha_items item 11167 in gachas 101-107 (site data/sources gacha-101..107)"
+        }
+      ],
+      "settings": [
+        "sky_corridor.present_box",
+        "config SkyCorridor.DailyRewards / DailyChallenges / DailyRewardItems",
+        "campaigns.enabled"
+      ],
+      "note": "In client patch v1.30 the Tower menu's Contribution Rewards and Daily Rewards rows open an empty window (the cursor still works); a fix is ready for the next client patch."
+    },
+    {
+      "id": "souls",
+      "name": "Souls",
+      "also": [
+        "Hunter Festival souls"
+      ],
+      "group": "event",
+      "what": "Hunter Festival points. They are not spent: your own souls and your Clan's souls unlock the festival prizes.",
+      "spend": [
+        [
+          "Prizes for your souls",
+          "/source.html?id=festa-personal"
+        ],
+        [
+          "Prizes for your Clan's souls",
+          "/source.html?id=festa-guild"
+        ]
+      ],
+      "cap": null,
+      "ways": [
+        {
+          "how": "Hunt the festival's trial monsters",
+          "amount": "Each trial is worth a set number of souls per hunt: 1 to 18 for most trials, 89 to 400 for three. Souls are handed in when you enter town.",
+          "limit": "Only during the souls part of a Hunter Festival, in a Clan that has entered a team; at most 500 souls are handed in at a time.",
+          "link": [
+            "Events",
+            "/events.html"
+          ],
+          "basis": "festa_trials reward by objective 1-5 (1-15, 6-18, 1-12, 1, 89-400; 2026-11-16, Erupe defaults); handlers_festa.go chargeFesta; hvmhfz_re docs/festa.md section 3 (500 per charge)"
+        }
+      ],
+      "settings": [
+        "festa_trials table (a new trial list changes the souls per hunt)"
+      ],
+      "spend_label": "Unlocks"
+    },
+    {
+      "id": "diva-points",
+      "name": "Diva Defense points",
+      "also": [
+        "event points"
+      ],
+      "group": "event",
+      "what": "Your Diva Defense score for the current event. They are not spent: they unlock the Diva Defense reward lists, and your Clan's progress is its members' points.",
+      "spend": [
+        [
+          "Personal reward list",
+          "/source.html?id=diva-list-1"
+        ],
+        [
+          "Clan progress list",
+          "/source.html?id=diva-list-2"
+        ],
+        [
+          "Clan rank list",
+          "/source.html?id=diva-list-3"
+        ]
+      ],
+      "cap": null,
+      "ways": [
+        {
+          "how": "Clear Diva Defense quests in week 1",
+          "amount": "Points for the monsters you hunt. Each day every prayer gem has 3 bonus Diva quests that pay double monster points.",
+          "link": [
+            "Events",
+            "/events.html"
+          ],
+          "basis": "Erupe docs/hvmhfz-diva.md section 2 (bonus quests: 3 per gem per day at 200 %, diva_bonus_quests 74 hunts); handlers_diva_event.go ADD_UD_POINT (one add capped at 100,000)"
+        },
+        {
+          "how": "Hand in tactics points in week 2",
+          "amount": "Points from the Diva quests you hand in during the guild tactics week.",
+          "basis": "handlers_diva_event.go ADD_UD_TACTICS_POINT; docs/hvmhfz-diva.md section 2"
+        }
+      ],
+      "settings": [
+        "config Diva.GuildPointsPerStep (100: Clan progress = points / 100, at most 100)"
+      ],
+      "spend_label": "Unlocks"
+    },
+    {
+      "id": "diva-coins",
+      "name": "Diva coins",
+      "also": [],
+      "group": "event",
+      "what": "Coins from Diva Defense, kept by each character from one event to the next and spent at the Diva Defense coin exchange (1 to 3 coins an item).",
+      "spend": [
+        [
+          "Diva Defense coin exchange",
+          "/source.html?id=diva-coin-shop"
+        ]
+      ],
+      "cap": null,
+      "ways": [
+        {
+          "how": "Diva Defense: personal reward list",
+          "amount": "1 coin each at 700, 1,700, 2,700, 3,700, 4,200, 4,700, 5,200, 5,700, 6,200 and 6,700 event points: 10 coins per event.",
+          "limit": "Each reward once per character per Diva Defense.",
+          "link": [
+            "the list",
+            "/source.html?id=diva-list-1"
+          ],
+          "basis": "diva_rewards list 1 item_type 29: 10 rows x1, thresholds 700-6700; shop_items shop_type 9: 12 rows cost 1-3; docs/hvmhfz-diva.md (coins per character, all events)"
+        }
+      ],
+      "settings": []
+    },
+    {
+      "id": "mezfes-tickets",
+      "name": "MezFes tickets",
+      "also": [
+        "Mezeporta Festival tickets"
+      ],
+      "group": "event",
+      "what": "Tickets for the MezFes minigames in Mezeporta Square: solo tickets for the solo games and group tickets for the group games.",
+      "spend": [],
+      "cap": null,
+      "ways": [
+        {
+          "how": "Weekly tickets",
+          "amount": "5 solo tickets and 1 group ticket.",
+          "limit": "Refilled every week, on Monday 00:00 Japan time (Sunday 15:00 UTC). MezFes runs every week.",
+          "basis": "server/signserver/dsgn_resp.go (live.MezFes.SoloTickets/GroupTickets, event id TimeWeekStart, start TimeWeekNext - duration); server_settings mezfes solo_tickets 5, group_tickets 1, duration_seconds 604800"
+        }
+      ],
+      "settings": [
+        "mezfes.solo_tickets",
+        "mezfes.group_tickets",
+        "mezfes.duration_seconds"
+      ]
+    },
+    {
+      "id": "clan-points",
+      "name": "Clan Points",
+      "also": [
+        "RP",
+        "guild points"
+      ],
+      "group": "clan",
+      "what": "Points that build up while you are logged in. You donate them to your Clan: for its rank, its Clan room, its Clan events and its Sky Corridor missions.",
+      "spend": [
+        [
+          "Clan guide",
+          "/guide-frontier-guild.html"
+        ],
+        [
+          "Sky Corridor Clan missions",
+          "/sky-corridor.html#missions"
+        ]
+      ],
+      "cap": "65,535",
+      "ways": [
+        {
+          "how": "Time logged in",
+          "amount": "1 Clan Point for every 15 minutes played (the Net Cafe rate; every account here has it). Added when you log out; left-over minutes count toward the next point.",
+          "basis": "handlers.go logoutPlayer: rpGained = timePlayed/900 with course 30 (all accounts), remainder kept in time_played; capped at live.Caps.MaximumRP"
+        }
+      ],
+      "settings": [
+        "caps.maximum_rp"
+      ]
+    },
+    {
+      "id": "merit-points",
+      "name": "Merit",
+      "also": [
+        "merit points",
+        "kouryou points"
+      ],
+      "group": "clan",
+      "what": "Points HR 999 hunters earn for monsters hunted in quests; spent on the merit-point lottery. What you earn also counts for the weekly Caravan ranking.",
+      "spend": [
+        [
+          "Merit-point lottery prizes",
+          "/sources.html?q=merit"
+        ]
+      ],
+      "cap": null,
+      "ways": [
+        {
+          "how": "Clear quests at HR 999",
+          "amount": "Monsters marked in the game's own table are worth a set number of merit points each, times the number hunted. Shown on the quest's result screen.",
+          "basis": "handlers_kouryou.go handleMsgMhfAddKouryouPoint (adds the client's amount to characters.kouryou_point, addCaravanScore); hvmhfz_re docs/seibattle.md 'Merit points (kouryou)'; live Conquest.CaravanRankings true"
+        }
+      ],
+      "not_here": [
+        {
+          "what": "Caravan Points (CP) and Pallone gems: the Pallone Caravan is not built on this server.",
+          "basis": "handlers_caravan.go: GetRyoudama empty, PostRyoudama not implemented, CaravanMyScore empty lists"
+        },
+        {
+          "what": "The Conquest seasons and the weekly conquest gifts are switched off.",
+          "basis": "live config Conquest.Enabled false, WeeklyRewards false; conquest_reward_grants 0 rows (2026-11-16)"
+        }
+      ],
+      "settings": [
+        "config Conquest.CaravanRankings"
+      ]
+    },
+    {
+      "id": "stamps",
+      "name": "Weekly stamps",
+      "also": [
+        "HL stamps",
+        "EX stamps"
+      ],
+      "group": "other",
+      "what": "Two stamp counts (HL and EX) that you trade for tickets at the weekly stamp exchange.",
+      "spend": [
+        [
+          "Weekly stamp exchange",
+          "/source.html?id=stamp-exchange"
+        ]
+      ],
+      "cap": null,
+      "ways": [
+        {
+          "how": "One stamp of each kind a week",
+          "amount": "1 HL stamp and 1 EX stamp, the first time the game checks after the week starts. 8 HL stamps trade for 5 HL Tkt, 8 EX stamps for 5 EX Tkt, 48 HL stamps for a Yearly Sub Ticket.",
+          "limit": "One of each a week; the week starts Monday 00:00 Japan time (Sunday 15:00 UTC).",
+          "basis": "handlers.go handleMsgMhfCheckWeeklyStamp (hl/ex_total +1 when last check < TimeWeekStart), handleMsgMhfExchangeWeeklyStamp (8 -> 1630 x5 / 1631 x5; 48 hl -> 2210 x1)"
+        }
+      ],
+      "settings": []
+    }
+  ],
+  "not_currencies": [
+    {
+      "name": "HRP, SRP, GRP and GSRP",
+      "text": "Rank points: they raise your ranks and are never spent.",
+      "link": [
+        "Hunter Rank and Style Rank",
+        "/guide-frontier-hunter-rank.html"
+      ]
+    }
+  ]
+}

@@ -8,7 +8,8 @@
    item pouch, ammo, decoration slots, trade-ins, gacha costs). The description and facts under the name come
    from data/uses/info/<id // 512>.json (dev/make-use-data.py, from hvmhfz_re item_info.json); an item with no
    use and no source says so plainly. Monster icons and the game's monster ids come from data/monsters/index.json.
-   ?name= (an exact item name) is accepted too, for old links. */
+   ?name= (an exact item name) is accepted too, for old links. An item that is itself a currency (listed under
+   "items" in data/currencies.json) links to its entry on /currencies.html under the facts. */
 (function () {
   "use strict";
 
@@ -687,7 +688,7 @@
     box.appendChild(list);
   }
 
-  function render(row, detail, monsterIcons, sources, itemRows, monsterPages, uses, facts) {
+  function render(row, detail, monsterIcons, sources, itemRows, monsterPages, uses, facts, currency) {
     var id = row[0], name = row[1], icon = row[2], aka = row[3];
     document.title = name + " · Hunsterverse";
     if (window.HvCrumbs) window.HvCrumbs.item(name);
@@ -714,6 +715,12 @@
     if (aka) sub.appendChild(document.createTextNode(" · the server's item list calls it " + aka));
     info.appendChild(sub);
     if (facts) aboutItem(info, facts);
+    if (currency) {
+      var cur = el("p", "note-text item-currency");
+      cur.appendChild(document.createTextNode("A currency: "));
+      cur.appendChild(el("a", null, "how to get " + currency.name + " and what it buys")).href = "/currencies.html#" + encodeURIComponent(currency.id);
+      info.appendChild(cur);
+    }
     if (window.HvSkillLinks) info.appendChild(window.HvSkillLinks.item(id)); // "Skills: ..." (js/skill-links.js)
     head.appendChild(info);
     view.appendChild(head);
@@ -747,7 +754,8 @@
   Promise.all([
     json("/data/items/index.json"),
     json("/data/monsters/index.json").catch(function () { return []; }),
-    json("/data/sources/index.json").catch(function () { return null; })
+    json("/data/sources/index.json").catch(function () { return null; }),
+    json("/data/currencies.json").catch(function () { return null; })
   ]).then(function (res) {
     var rows = res[0].items || [];
     var row = rows.filter(function (r) {
@@ -767,6 +775,10 @@
       sources = {};
       (res[2].sources || []).forEach(function (s) { sources[s[0]] = { name: s[1], group: s[2], cur: s[3] }; });
     }
+    var currency = null; // the currency this item is, if any (data/currencies.json "items")
+    ((res[3] && res[3].currencies) || []).forEach(function (c) {
+      if ((c.items || []).indexOf(row[0]) !== -1) currency = c;
+    });
     var detail = row[4] ? json("/data/items/" + row[0] + ".json").catch(function () { return null; }) : Promise.resolve(null);
     // the description and facts: one file per 512 ids (dev/make-use-data.py)
     var facts = json("/data/uses/info/" + Math.floor(row[0] / 512) + ".json").then(function (d) {
@@ -779,6 +791,6 @@
       var u = got[0];
       return u ? useContext(u, itemRows, sources, got[1]).then(function (ctx) { return { data: u, ctx: ctx }; }) : null;
     });
-    return Promise.all([detail, uses, facts]).then(function (res) { render(row, res[0], monsterIcons, sources, itemRows, monsterPages, res[1], res[2]); });
+    return Promise.all([detail, uses, facts]).then(function (res) { render(row, res[0], monsterIcons, sources, itemRows, monsterPages, res[1], res[2], currency); });
   }).catch(function () { fail("The item list could not be loaded."); });
 })();
