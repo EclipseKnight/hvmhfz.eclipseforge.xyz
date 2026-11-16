@@ -94,10 +94,10 @@ async function main() {
     check(await page.getAttribute("#quest-page", "aria-live") === "polite", `${tag}: the count is not aria-live`);
     check(await page.$eval("#quest-clear", (b) => b.hidden), `${tag}: Clear filters shows with nothing set`);
     check((await query(page)) === "", `${tag}: the bare list has a query: ${await query(page)}`);
-    await page.selectOption("#quest-rank", "Supremacy");
+    await page.selectOption("#quest-rank", "Zenith");
     await page.fill("#quest-search", "a");
     await page.waitForFunction(() => location.search.includes("q=a"));
-    check((await query(page)).includes("rank=Supremacy"), `${tag}: rank not in the address: ${await query(page)}`);
+    check((await query(page)).includes("rank=Zenith"), `${tag}: rank not in the address: ${await query(page)}`);
     check(!(await page.$eval("#quest-clear", (b) => b.hidden)), `${tag}: Clear filters hidden with a filter set`);
     check(/Page 1 of ([2-9]|\d\d)/.test(await pageText(page)), `${tag}: expected several pages: ${await pageText(page)}`);
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -118,7 +118,7 @@ async function main() {
     await page.reload({ waitUntil: "load" });
     await settle(page);
     check((await query(page)) === search, `${tag}: reload changed the address: ${await query(page)}`);
-    check(await page.inputValue("#quest-rank") === "Supremacy" && await page.inputValue("#quest-search") === "a", `${tag}: reload lost the rank or search`);
+    check(await page.inputValue("#quest-rank") === "Zenith" && await page.inputValue("#quest-search") === "a", `${tag}: reload lost the rank or search`);
     check(/Page 2 of/.test(await pageText(page)), `${tag}: reload lost the page: ${await pageText(page)}`);
     check(await page.$eval("#quest-body td a", (a) => a.textContent) === firstName, `${tag}: reload shows other quests`);
     await sideways(page, tag);
@@ -146,7 +146,7 @@ async function main() {
     await context.unroute("**/data/quests/rewards/*");
 
     // Clear filters
-    page = await open("/quests.html?rank=Supremacy&area=zzz&page=2&q=a", tag);
+    page = await open("/quests.html?rank=Zenith&area=zzz&page=2&q=a", tag);
     await settle(page);
     check(await page.inputValue("#quest-area") === "", `${tag}: an unknown area was taken`);
     await page.click("#quest-clear");

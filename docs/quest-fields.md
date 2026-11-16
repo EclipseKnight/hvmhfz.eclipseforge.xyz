@@ -69,11 +69,11 @@ with the builder and plans the missing ones.
 
 | Key | Label | Struct | Offset | Bytes | Type | Range | Values | Builder | Confidence |
 |---|---|---|---|---|---|---|---|---|---|
-| `header.questClass` | Quest class (the copy the client uses) | header | 0x5c | 1 | u8enum | 0..9 | 0 = Low rank; 1 = High rank; 2 = Exercise / trial; 3 = HR 100 and up; 7 = G rank; 8 = Hunting Road / Sky Corridor; 9 = Supremacy (names: one source) | edits | confirmed |
+| `header.questClass` | Quest class (the copy the client uses) | header | 0x5c | 1 | u8enum | 0..9 | 0 = Low rank; 1 = High rank; 2 = Exercise / trial; 3 = HR 100 and up; 7 = G rank; 8 = Hunting Road / Sky Corridor; 9 = Zenith (names: one source) | edits | confirmed |
 | `body.seasonFlags` | Season and time of day | body | 0x02 | 1 | bitfield |  | bits 0, 1, 2, 3, 4, 6 (JSON) | edits | confirmed |
 | `body.level` | Quest level (stars) | body | 0x04 | 1 | u8 | 1..8 |  | edits | confirmed |
 | `body.monsterGroup` | Monster group (list filter) | body | 0x05 | 1 | u8 | 0..6 |  | carried | one source |
-| `body.questClass` | Quest class | body | 0x0a | 1 | u8enum | 0..9 | 0 = Low rank; 1 = High rank; 2 = Exercise / trial; 3 = HR 100 and up; 7 = G rank; 8 = Hunting Road / Sky Corridor; 9 = Supremacy (names: one source) | edits | confirmed |
+| `body.questClass` | Quest class | body | 0x0a | 1 | u8enum | 0..9 | 0 = Low rank; 1 = High rank; 2 = Exercise / trial; 3 = HR 100 and up; 7 = G rank; 8 = Hunting Road / Sky Corridor; 9 = Zenith (names: one source) | edits | confirmed |
 | `body.maxHunters` | Max hunters | body | 0x0b | 1 | u8 | 0..4 | 0 = 4 hunters; 1 = solo (skips the multi-hunter paths); 2 = 2 hunters; 3 = 3 hunters; 4 = 4 hunters | edits | confirmed |
 | `body.timeLimit` | Time limit | body | 0x20 | 4 | u32 | 1800..90000 |  | edits | confirmed |
 | `body.conditionNote` | Restriction (condition note) | body | 0x2c | 1 | u8 |  | 0 = none; 109 = Hardcore (with 110-113, 118; class 3 only); the 136 of `data/quest-condition-notes.json` | edits | one source |
@@ -244,7 +244,7 @@ size, and names every value this file names. What is left of "The codec" below i
    the body copy is compared once (RE body +0xa and header +0x5c). The two are equal in 13,867 of 13,867
    files. Fix: set both, `model.header.questClass = v` next to `b.questClass = v`. The field is also a bare
    number: offer the 7 values 0, 1, 2, 3, 7, 8, 9 with the names from the JSON (Low rank, High rank,
-   Exercise / trial, HR 100 and up, G rank, Hunting Road / Sky Corridor, Supremacy). Those names come from
+   Exercise / trial, HR 100 and up, G rank, Hunting Road / Sky Corridor, Zenith). Those names come from
    the quest lists each class appears in and the min-HR values (`one source`); the client code names none.
 2. **Changing the map leaves the map record and the per-area tables on the blank's map.** The builder sets
    `body.mapId` only. The map record (`map.mapId`, header pointer 9) is what indexes the client's per-map

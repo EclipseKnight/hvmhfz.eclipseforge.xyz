@@ -340,7 +340,7 @@
     },
     "3": {
      "name": "HR 100 and up",
-     "evidence": "min HR 99..999; Hardcore, Superior, Zenith, Daily lists"
+     "evidence": "min HR 99..999; Hardcore, Superior, Supremacy (覇種), Daily lists"
     },
     "7": {
      "name": "G rank",
@@ -351,8 +351,8 @@
      "evidence": "only Sky Corridor and Hunting Road quests; body +0x98 bit 7 (Erupe: Road) set in all 60 files"
     },
     "9": {
-     "name": "Supremacy",
-     "evidence": "Supremacy ★1-★4 lists, min HR 200/400/600/800"
+     "name": "Zenith",
+     "evidence": "Zenith ★1-★4 lists (辿異), min HR 200/400/600/800"
     }
    },
    "valuesConfidence": "one source",
@@ -801,7 +801,7 @@
     },
     "3": {
      "name": "HR 100 and up",
-     "evidence": "min HR 99..999; Hardcore, Superior, Zenith, Daily lists"
+     "evidence": "min HR 99..999; Hardcore, Superior, Supremacy (覇種), Daily lists"
     },
     "7": {
      "name": "G rank",
@@ -812,8 +812,8 @@
      "evidence": "only Sky Corridor and Hunting Road quests; body +0x98 bit 7 (Erupe: Road) set in all 60 files"
     },
     "9": {
-     "name": "Supremacy",
-     "evidence": "Supremacy ★1-★4 lists, min HR 200/400/600/800"
+     "name": "Zenith",
+     "evidence": "Zenith ★1-★4 lists (辿異), min HR 200/400/600/800"
     }
    },
    "valuesConfidence": "one source",

@@ -24,7 +24,19 @@ the quest's own monsters (its Japanese objectives) are accepted: a served title 
 ("Ancient Hymn 1 Rathian Variant") or a client line holding an objective has another fault. An objective whose
 English has other numbers than its Japanese is another objective's text: listed, not renamed.
 
-Texts checked (site): data/quests.json name (nameJp); data/quest-details.json objectiveEn (objectiveJp),
+Forms (check_forms, titles, categories and objectives only; the lead's find of 2026-11-16, quests 40236 and 54593):
+- form words: 辿異 is Zenith and 覇種 Supremacy (the client patch's words); the translation waves swapped them, so
+  "Supremacy" for 辿異 becomes "Zenith" and "Zenith" for 覇種 "Supremacy"; 対辿異 (G Rank quests that train for
+  Zenith ones) is "Anti-Zenith"; a title whose Japanese says 辿異/覇種 and whose English names one monster and no
+  form gets the word before it; a served title's ≪tag≫ that dropped the form (≪辿異★１クエスト≫ served as
+  ≪Event≫) becomes ≪Zenith★1≫ (≪覇種クエスト≫: ≪Supremacy≫). 剛種 "Hardcore" is not changed (see FORM_WORDS);
+- subspecies: a subspecies or rare species the Japanese names (リオレウス希少種, 蒼眠鳥) against the English one
+  ("Azure Rathalos" for Silver Rathalos, "Hunt Rathian" for Pink Rathian); "Rathian Subspecies", "Espinas Rare
+  Species" and a colour word before the name ("Azure Hypnocatrice", "Blue Kut-Ku") count as naming it; a Japanese
+  base name never refutes an English subspecies (毒怪鳥亜種 is not read as one).
+
+Texts checked (site): data/quests.json name (nameJp), objective (objectiveJp: the Quests list's column) and category
+(categoryJp: "Supremacy ★1" for 辿異★１クエスト was the same swap); data/quest-details.json objectiveEn (objectiveJp),
 subAEn (subAJp), subBEn (subBJp), descriptionEn and description (descriptionJp), clientEn and client (the quest's
 Japanese "client" in data/quests.json, when it has kana).
 
@@ -154,12 +166,25 @@ OVERRIDES = {
     (50874, "name", "Shantien"): "=Tower",             # 天廊ネコ指南: the Sky Corridor tower (that is too wide)
     (55707, "name", "Plesioth"): None,                 # 受け継がれる魚竜魂！ (a Rathalos quest): the fish wyvern spirit
     (63107, "name", "Yian Kut-Ku"): "=Blue Kut-Ku & Purple Gypceros",  # みんなで青紫怪鳥討伐！
+    (63107, "name", "Blue & Purple Kut-Ku"): "=Blue Kut-Ku & Purple Gypceros",
     (50650, "description", "Plesioth"): "=Goruganosu and Aruganosu",  # 金銀魚竜
     (50873, "description", "Shantien"): "=Sky Corridor",  # 天廊調査, next to a wrong ≪Toa Tesukatora≫ for 華鳳鳥
     (53139, "name", "Yian Kut-Ku"): None,              # an April Fools' "メガ個体" (mega specimen) quest
     (63299, "description", "Plesioth"): None,          # 魚竜のキモ, the Plesioth liver item
     (50163, "description", "Kuarusepusu"): "=Orugaron",  # reward list: 響狼の紅玉, the Orugaron ruby
     (50172, "description", "Akura Vashimu"): "akura-jebia",  # reward list: 灰晶蠍の血晶石 ...
+    # data/quests.json "objective" of delivery quests named the item's monster, or another one: the item, as
+    # data/quest-details.json objectiveEn has it.
+    (63299, "objective", "Plesioth"): "=Piscine Wyvern Livers",  # 魚竜のキモ
+    (63204, "objective", "Gravios"): "=Dragonite Ore",  # ドラグライト鉱石
+    (21286, "objective", "Gravios"): "=Dragonite Ore",
+    (63155, "objective", "Basarios"): "=Odibatorasu Crumble Scale",  # 弩岩竜の崩鱗
+    (63160, "objective", "Basarios"): "=Odibatorasu Crumble Scale",
+    (63161, "objective", "Basarios"): "=Odibatorasu Crumble Scale",
+    (63162, "objective", "Basarios"): "=Odibatorasu Crumble Scale",
+    (62640, "objective", "Taikun Zamuza"): "=Gurenzeburu Scale+",  # 蛮竜の上鱗
+    (21680, "objective", "Taikun Zamuza"): "=Gurenzeburu Scale+",
+    (21471, "objective", "Taikun Zamuza"): "=Gurenzeburu Scale+",
 }
 
 # Subspecies, rare species and forms count as their species.
@@ -179,6 +204,151 @@ FAMILY = {
     # English is the other way round. Not settled here, so either name is accepted for either crab.
     "hermitaur": "ceanataur",
 }
+
+
+# Forms. Owner's standing rule: a quest's text says whether it is Zenith or another special form, as its file has
+# it. The translation waves swapped two form words: 辿異 (Zenith: class 9 files with monster variant 16) as
+# "Supremacy" (quest 40236 "Gz & GRP Bonanza [Supremacy Hypnocatrice]"), 覇種 (Supremacy) as "Zenith" (none of
+# those files is class 9). The client patch's own words: 辿異 Zenith (746 texts), 覇種 Supremacy (322).
+# Not here: 剛種 (Gou) written "Hardcore". Of those titles 47 are on HC files (class 3, condition note 109-113 or 118)
+# and 83 are not; this script does not see the files, and the word is the owner's call.
+# (Japanese word, its English, wrong English words, Japanese words that make the text unclear: then it is skipped.)
+FORM_WORDS = [
+    # 対辿異種ミドガロン研究 (G Rank quests that train for the Zenith ones): not a Zenith quest itself.
+    ("対辿異", "Anti-Zenith", ("Supremacy", "Zenith"), ("覇種",)),
+    ("辿異", "Zenith", ("Supremacy",), ("覇種", "対辿異")),
+    ("覇種", "Supremacy", ("Zenith",), ("辿異",)),
+]
+
+# Subspecies and rare species: the English spellings that name one ("Rathian Subspecies" is Pink Rathian). Only
+# the form check uses them; check_text compares species. Quest 54593's objective said "Azure Rathalos" for
+# リオレウス希少種 (Silver Rathalos).
+SUBSPECIES = {"rathalos": "azure-rathalos", "rathian": "pink-rathian", "yian-kut-ku": "blue-yian-kut-ku",
+              "gypceros": "purple-gypceros", "diablos": "black-diablos", "monoblos": "white-monoblos",
+              "gravios": "black-gravios", "plesioth": "green-plesioth", "khezu": "red-khezu",
+              "volganos": "red-volganos", "espinas": "orange-espinas", "hypnocatrice": "breeding-season-hypnocatrice",
+              "lao-shan-lung": "ashen-lao-shan-lung", "zinogre": "stygian-zinogre"}
+RARE_SPECIES = {"rathalos": "silver-rathalos", "rathian": "gold-rathian", "espinas": "white-espinas",
+                "hypnocatrice": "silver-hypnocatrice"}
+FORM_SPELLINGS = {"Hypnocatrice (Breeding Season)": "breeding-season-hypnocatrice",
+                  "Hypnocatrice Mating": "breeding-season-hypnocatrice"}
+FORM_KINDS = ("name", "category", "objective", "subA", "subB")  # titles, categories, objectives; not prose
+# Families whose members the form check leaves alone: the two small crabs (see FAMILY).
+FORM_SKIP = {"ceanataur"}
+# Words before a species name that already name its form, the epithets' own translations (蒼眠鳥 "Azure
+# Hypnocatrice", 棘茶竜 "Brown Espinas", 蒼白眠鳥 "Pale Hypnocatrice").
+FORM_ADJECTIVES = ("Azure", "Blue", "Brown", "Pale", "Crimson", "Red", "White", "Black", "Silver", "Gold", "Golden",
+                   "Pink", "Purple", "Green", "Orange", "Ashen", "Stygian", "Rusted", "Nono", "Kamu", "Ray", "Lolo",
+                   "Breeding")
+
+
+def form_names(names, en):
+    """en plus the subspecies spellings ("Rathalos Subspecies", "Rathalos Subsp.", "Rathalos Rare Species")."""
+    out = dict(en)
+    spellings = {}  # base slug -> its English spellings ("Volganos", "Lavasioth")
+    for spelling, slug in en.items():
+        spellings.setdefault(slug, []).append(spelling)
+    for table, suffixes in ((SUBSPECIES, (" Subspecies", " Subsp.", " Subsp", " Sub")),
+                            (RARE_SPECIES, (" Rare Species", " Rare"))):
+        for base, form in table.items():
+            for spelling in spellings[base]:
+                for suffix in suffixes:
+                    out[spelling + suffix] = form
+    out.update(FORM_SPELLINGS)
+    return out
+
+
+def form_tag(jp_text, en_text):
+    """en_text with its first line, a served title's ≪tag≫, naming the form when the Japanese tag does and the
+    English one does not: ≪辿異★１クエスト≫ is ≪Zenith★1≫, ≪覇種クエスト≫ ≪Supremacy≫ (most served Zenith titles
+    say ≪Event≫, so the game's quest list did not show the form). Other texts are returned unchanged."""
+    jp_first, en_first = jp_text.split("\n")[0], en_text.split("\n")[0]
+    if "\n" not in en_text or not (jp_first.startswith("≪") and en_first.startswith("≪")):
+        return en_text
+    zenith = re.search(r"辿異(?:種)?(?:★([1-4１-４]))?", jp_first)
+    if zenith and "覇種" not in jp_first:
+        tag = "Zenith" + ("★" + unicodedata.normalize("NFKC", zenith.group(1)) if zenith.group(1) else "")
+    elif "覇種" in jp_first and not zenith:
+        tag = "Supremacy"
+    else:
+        return en_text
+    if re.search(r"\b(Zenith|Supremacy)\b", en_first):
+        return en_text  # the tag names a form: the words are checked below
+    return "≪%s≫" % tag + en_text[len(en_first):]
+
+
+def form_words(jp_text, text, kind, en_forms):
+    """(text, [(wrong label, right)]): FORM_WORDS applied to one English text against its Japanese one."""
+    wrong = []
+    flat = re.sub(r"[\n　 ]", "", jp_text)
+    for jp_word, right, wrongs, unclear in FORM_WORDS:
+        if jp_word not in flat or any(u in flat for u in unclear):
+            continue
+        for bad in wrongs:
+            word = r"(?<![\w-])%s\b" % bad  # not the "Zenith" of "Anti-Zenith"
+            if re.search(word, text):
+                text = re.sub(word, right, text)
+                wrong.append((bad + " (for %s)" % jp_word, right))
+        if kind == "name" and not re.search(r"(?<![\w-])%s\b" % right, text):
+            # The form left out ("Summit Guidance: Khezu" for 頂きへの導き・辿異種白影): put it before the monster
+            # when the title names one.
+            have = en_monsters(text, en_forms)
+            if len({s for _, _, s in have}) == 1:
+                start = have[0][0]
+                text = text[:start] + right + " " + text[start:]
+                wrong.append(("no %s (for %s)" % (right, jp_word), right))
+    return text, wrong
+
+
+def check_forms(jp_text, en_text, kind, jp, en_forms, names, where=None):
+    """(new English text or None, [(wrong label, right or None)]): the form words and the subspecies of a title or
+    objective against its Japanese text. en_forms = form_names(); where = (quest id, kind) for OVERRIDES."""
+    if kind not in FORM_KINDS or not jp_text or not en_text:
+        return None, []
+    text, wrong = form_tag(jp_text, en_text), []
+    if text != en_text:
+        wrong.append((en_text.split("\n")[0], text.split("\n")[0]))
+    # A served title's ≪tag≫ line and the title proper are checked apart (≪辿異★１クエスト≫ 対辿異種武器研究 is a
+    # Zenith quest's tag over an "Anti-Zenith" title).
+    if kind == "name" and text.startswith("≪") and jp_text.startswith("≪") and "\n" in text and "\n" in jp_text:
+        jp_tag, jp_rest = jp_text.split("\n", 1)
+        tag, rest = text.split("\n", 1)
+        tag, wrong_tag = form_words(jp_tag, tag, "category", en_forms)
+        rest, wrong_rest = form_words(jp_rest, rest, kind, en_forms)
+        text, wrong = tag + "\n" + rest, wrong + wrong_tag + wrong_rest
+    else:
+        text, wrong_words = form_words(jp_text, text, kind, en_forms)
+        wrong += wrong_words
+    want = jp_monsters(jp_text, jp)
+    out, last = [], 0
+    for start, end, slug in en_monsters(text, en_forms):
+        if slug.startswith("!") or slug in want or family(slug) in FORM_SKIP:
+            continue
+        # Only a subspecies the Japanese names counts: its base name may stand in a phrase the tables do not read
+        # (毒怪鳥亜種, 白き一角竜 "white Monoblos", ヒプノックキショウ種).
+        same = [s for s in want if family(s) == family(slug) and family(s) != s]
+        if not same:
+            continue  # another species (check_text's business) or the base species
+        if family(slug) == slug and re.search(r"\b(%s)[ \n]$" % "|".join(FORM_ADJECTIVES), text[:start]):
+            continue  # "Azure Hypnocatrice" (蒼眠鳥), "Blue Kut-Ku", "Nono Orgaron": the word names the form
+        label = text[start:end].replace("\n", " ")
+        override = (where[0], where[1], label) if where else None
+        if override in OVERRIDES:
+            if OVERRIDES[override] is None:
+                continue
+            same = [OVERRIDES[override]]
+        if len(same) != 1:
+            wrong.append((label, None))  # the Japanese names two forms of it: only a human can tell
+            continue
+        right = same[0][1:] if same[0].startswith("=") else names[same[0]]
+        wrong.append((label, right))
+        out += [text[last:start], keep_break(text[start:end], right)]
+        last = end
+    out.append(text[last:])
+    new = "".join(out)
+    if kind in ("objective", "subA", "subB") and numbers(en_text) and numbers(en_text) != numbers(jp_text):
+        return None, [("objective text of another objective", None)] if wrong else []
+    return (new if new != en_text else None), wrong
 
 
 def family(slug):
@@ -322,7 +492,8 @@ def check_text(jp_text, en_text, jp, en, names, where=None, quest_monsters=()):
     return (new if new != en_text else None), wrong
 
 
-KIND = {"name": "name", "objectiveEn": "objective", "subAEn": "subA", "subBEn": "subB", "descriptionEn": "description",
+KIND = {"name": "name", "category": "category", "objective": "objective", "objectiveEn": "objective", "subAEn": "subA",
+        "subBEn": "subB", "descriptionEn": "description",
         "description": "description", "clientEn": "client", "client": "client"}
 FILE_KIND = {0: "name", 1: "objective", 2: "subA", 3: "subB", 4: "clear", 5: "fail", 6: "client", 7: "description"}
 
@@ -337,8 +508,18 @@ def repair(jp_text, en_text, qid, kind, objectives_jp=""):
     if not _TABLES:
         _TABLES.extend(load_names())
     names, jp, en = _TABLES
-    new, _ = check_text(jp_text, en_text, jp, en, names, (qid, kind), jp_monsters(objectives_jp, jp))
+    new, _ = check_all(jp_text, en_text, (jp, en, form_names(names, en), names), (qid, kind),
+                       jp_monsters(objectives_jp, jp))
     return new or en_text
+
+
+def check_all(jp_text, en_text, tables, where, quest_monsters=()):
+    """check_text, then check_forms on its result: (new English text or None, [(wrong label, right or None)]).
+    tables = (jp, en, form_names(), names)."""
+    jp, en, en_forms, names = tables
+    new, wrong = check_text(jp_text, en_text, jp, en, names, where, quest_monsters)
+    newer, wrong_forms = check_forms(jp_text, new or en_text, where[1], jp, en_forms, names, where)
+    return (newer or new), wrong + wrong_forms
 
 
 def site_pairs(quests, details):
@@ -346,6 +527,8 @@ def site_pairs(quests, details):
     for q in quests:
         qid = q["id"]
         yield qid, "name", q, "name", q.get("nameJp")
+        yield qid, "objective", q, "objective", q.get("objectiveJp")
+        yield qid, "category", q, "category", q.get("categoryJp")
         d = details.get(str(qid))
         if not d:
             continue
@@ -359,6 +542,7 @@ def site_pairs(quests, details):
 
 def run_site(write):
     names, jp, en = load_names()
+    tables = (jp, en, form_names(names, en), names)
     data = json.loads(QUESTS.read_text(encoding="utf-8"))
     details = json.loads(DETAILS.read_text(encoding="utf-8"))
     changes, left = [], []
@@ -369,7 +553,7 @@ def run_site(write):
         texts = [q.get("objectiveJp"), d.get("objectiveJp"), d.get("subAJp"), d.get("subBJp")]
         objectives[q["id"]] = jp_monsters(" ".join(t for t in texts if t), jp)
     for qid, label, holder, key, jp_text in site_pairs(data["quests"], details):
-        new, wrong = check_text(jp_text, holder.get(key), jp, en, names, (qid, KIND[key]), objectives[qid])
+        new, wrong = check_all(jp_text, holder.get(key), tables, (qid, KIND[key]), objectives[qid])
         for wrong_label, target in wrong:
             pairs[(wrong_label, target or "?")] += 1
             if not target:
@@ -433,6 +617,7 @@ def snapshot(path):
 
 def run_files(live_path, orig_path, fixes_path):
     names, jp, en = load_names()
+    tables = (jp, en, form_names(names, en), names)
     live, orig = snapshot(live_path), snapshot(orig_path)
     pairs, files, quests, left = collections.Counter(), set(), set(), []
     rows = []
@@ -441,7 +626,7 @@ def run_files(live_path, orig_path, fixes_path):
             continue
         objectives = jp_monsters(" ".join(orig[name][1:4]), jp)
         for i, (en_text, jp_text) in enumerate(zip(live[name], orig[name])):
-            new, wrong = check_text(jp_text, en_text, jp, en, names, (int(name[:5]), FILE_KIND[i]), objectives)
+            new, wrong = check_all(jp_text, en_text, tables, (int(name[:5]), FILE_KIND[i]), objectives)
             for wrong_label, target in wrong:
                 pairs[(wrong_label, target or "?")] += 1
                 if not target:
@@ -491,10 +676,34 @@ def self_test():
         ("デュラガウア１頭の狩猟", "Hunt 1 Dyuragaua", "objective", "", None),
         ("ヒプノック１頭の狩猟", "Slay 8 Ioprey", "objective", "", None),  # another objective's text: left
         ("フルフルベビー２匹の納品", "Deliver 2 Khezu Babies", "objective", "", None),
+        # Forms (check_forms): 辿異 is Zenith, 覇種 Supremacy; subspecies the Japanese names.
+        ("Gz&GRP大量獲得【辿異・眠鳥】", "Gz & GRP Bonanza [Supremacy Hypnocatrice]", "name", "",
+         "Gz & GRP Bonanza [Zenith Hypnocatrice]"),
+        ("リオレウス希少種１頭の狩猟", "Hunt 1 Azure Rathalos", "objective", "", "Hunt 1 Silver Rathalos"),
+        ("リオレイア亜種１頭の狩猟", "Hunt Rathian", "objective", "", "Hunt Pink Rathian"),
+        ("【覇種】オディバFXシリーズ", "[Zenith] Odiba FX Series", "name", "", "[Supremacy] Odiba FX Series"),
+        ("頂きへの導き・辿異種白影", "Summit Guidance: Khezu", "name", "", "Summit Guidance: Zenith Khezu"),
+        ("対辿異種ミドガロン研究", "Supremacy Midogaron Study", "name", "", "Anti-Zenith Midogaron Study"),
+        ("対辿異種ミドガロン研究", "Anti-Zenith Midogaron Study", "name", "", None),
+        ("辿異★１クエスト", "Supremacy ★1", "category", "", "Zenith ★1"),
+        ("覇種クエスト", "Zenith Quest", "category", "", "Supremacy Quest"),
+        ("≪辿異★１クエスト≫\n極翼を備えし火竜", "≪Event≫\nRathalos with Extreme Wings", "name", "",
+         "≪Zenith★1≫\nRathalos with Extreme Wings"),
+        ("≪覇種クエスト≫\n覇種撃退！", "≪Event≫\nSupremacy Repel!", "name", "", "≪Supremacy≫\nSupremacy Repel!"),
+        ("≪辿異★２クエスト≫\n白影嚥下", "≪２★ Zenith≫\nSwallowed by Khezu", "name", "", None),
+        ("≪辿異★１クエスト≫\n対辿異種武器研究", "≪Zenith≫\nAnti-Zenith Weapon Research", "name", "", None),
+        ("≪辿異★１クエスト≫\n対辿異種武器研究", "≪Event≫\nSupremacy Weapon Research", "name", "",
+         "≪Zenith★1≫\nAnti-Zenith Weapon Research"),
+        ("天嵐への導き【蒼眠鳥】", "Storm Guidance: Azure Hypnocatrice", "name", "", None),  # the epithet's colour
+        ("毒怪鳥亜種迅速討伐！", "Purple Gypceros Swift Slay!", "name", "", None),  # 毒怪鳥 + 亜種: not read as one
+        ("ヒプノック繁殖期１頭の狩猟", "Hunt 1 Hypnocatrice (Breeding Season)", "objective", "", None),
+        ("剛種適性試験・水竜", "Hardcore Test: Plesioth", "name", "", None),  # 剛種: left to the owner
+        ("リオレウス希少種１頭の狩猟", "Hunt 3 Azure Rathalos", "objective", "", None),  # another objective's text
     ]
     failures = 0
+    tables = (jp, en, form_names(names, en), names)
     for jp_text, en_text, kind, objectives, want in cases:
-        new, _ = check_text(jp_text, en_text, jp, en, names, (0, kind), jp_monsters(objectives, jp))
+        new, _ = check_all(jp_text, en_text, tables, (0, kind), jp_monsters(objectives, jp))
         if new != want:
             failures += 1
             print("self-test: %r / %r gave %r, expected %r" % (jp_text, en_text, new, want))
