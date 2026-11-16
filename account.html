@@ -497,15 +497,21 @@
       <!-- Game options -->
       <section class="tab-panel" id="panel-game-options" role="tabpanel" aria-labelledby="tab-game-options" hidden>
         <section class="panel" id="road-pref-panel">
-          <div class="panel-head"><h2>Road you play</h2><span class="panel-note">applies to rooms you open</span></div>
-          <p class="note-text">Erupe pins this Road when you open a quest room. A room can still change it in game with <code>!road</code>, and that choice lasts for that room only.</p>
+          <div class="panel-head"><h2>Roads you play</h2><span class="panel-note">applies to rooms you open</span></div>
+          <p class="note-text">Erupe pins your party Road when you open a quest room. A room can still change it in game with <code>!road</code>, and that choice lasts for that room only. Your solo Road is yours alone: change it in game with <code>!road solo</code>.</p>
           <div class="field">
-            <label for="road-pref-select">Default Road</label>
+            <label for="road-pref-select">Party Road</label>
             <select id="road-pref-select"><option value="">Follow the live Road</option></select>
           </div>
+          <p class="note-text">Every Road quest except the solo one; a party plays the host's.</p>
+          <div class="field">
+            <label for="road-pref-solo-select">Solo Road</label>
+            <select id="road-pref-solo-select"><option value="">Same as my party Road</option></select>
+          </div>
+          <p class="note-text">The solo Road quest &laquo;I Walk a Lonely Road&raquo;.</p>
           <p class="note-text"><a href="/guide-roads.html">How Roads work in game</a>: the commands, and what the rest of the party sees.</p>
           <p class="note-text" id="road-pref-note" aria-live="polite"></p>
-          <button type="button" class="btn btn-primary btn-small" id="road-pref-save">Save Road</button>
+          <button type="button" class="btn btn-primary btn-small" id="road-pref-save">Save Roads</button>
         </section>
 
         <section class="panel" id="qol-panel">
@@ -693,7 +699,7 @@
     <script src="/js/time.js?v=1"></script>
     <script src="/js/monster-links.js"></script>
     <script src="/js/questlog.js?v=3"></script>
-    <script src="/js/road-preference.js?v=1"></script>
+    <script src="/js/road-preference.js?v=3"></script>
     <script src="/js/subtabs.js?v=1"></script>
     <script src="/js/account-qol.js?v=12"></script>
     <script src="/js/account-patch-channel.js?v=7"></script>

@@ -85,7 +85,7 @@ No token, cached 30 seconds unless stated. Paged endpoints return {items, page, 
 
 | GET /api/public/leaderboards/hunts | period (week default, lastweek, month, lastmonth, all), limit (100 default, 1 to 100) | period, from, to, resetsAt, hunters[], guilds[], monsters[] |
 
-| GET /api/public/road/leaderboard | rotation (current default, original, or a cycle number), mode (open default, solo), limit (100 default, 1 to 100) | rotation, rotations[], tracking, hunters, entries[] |
+| GET /api/public/road/leaderboard | rotation (current default, original, a cycle number, or for an installed Road that was never a rotation "v" and the first 12 hex digits of its sha256, as listed in rotations[]), mode (open default, solo), limit (100 default, 1 to 100) | rotation, rotations[], tracking, hunters, entries[] |
 
 | GET /api/public/road/history | none | every Road that has gone live, newest first |
 

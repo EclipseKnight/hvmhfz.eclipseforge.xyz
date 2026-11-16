@@ -154,15 +154,21 @@
       </details>
 
         <section class="panel" id="road-play-panel">
-          <div class="panel-head"><h2>Road you play in game</h2><span class="panel-note">saved to your account</span></div>
-          <p class="note-text">This is what the server pins when you open a quest room. A room can still change it with <code>!road</code>, and anyone on a different Road is moved back to town automatically so their client loads the new one.</p>
+          <div class="panel-head"><h2>Roads you play in game</h2><span class="panel-note">saved to your account</span></div>
+          <p class="note-text">The party Road is what the server pins when you open a quest room. A room can still change it with <code>!road</code>, and anyone on a different Road is moved back to town automatically so their client loads the new one. The solo Road is yours alone (<code>!road solo</code> in game).</p>
           <div class="field">
-            <label for="road-pref-select">Default Road</label>
+            <label for="road-pref-select">Party Road</label>
             <select id="road-pref-select"><option value="">Follow the live Road</option></select>
           </div>
+          <p class="note-text">Every Road quest except the solo one; a party plays the host's.</p>
+          <div class="field">
+            <label for="road-pref-solo-select">Solo Road</label>
+            <select id="road-pref-solo-select"><option value="">Same as my party Road</option></select>
+          </div>
+          <p class="note-text">The solo Road quest &laquo;I Walk a Lonely Road&raquo;.</p>
           <p class="note-text"><a href="/guide-roads.html">How Roads work in game</a>: the commands, and what the rest of the party sees.</p>
           <p class="note-text" id="road-pref-note" aria-live="polite"></p>
-          <button type="button" class="btn btn-primary btn-small" id="road-pref-save">Save Road</button>
+          <button type="button" class="btn btn-primary btn-small" id="road-pref-save">Save Roads</button>
         </section>
 
       <div id="road-app" hidden>
@@ -308,7 +314,7 @@
     <script src="/js/road.js?v=5"></script>
     <script src="/js/road-help.js?v=3"></script>
     <script src="/js/search.js?v=5" defer></script>
-    <script src="/js/road-preference.js?v=2"></script>
+    <script src="/js/road-preference.js?v=3"></script>
     <script src="/js/road-drafts.js?v=2"></script>
     <script src="/js/road-test.js?v=2"></script>
   </body>

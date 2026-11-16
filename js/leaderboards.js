@@ -275,7 +275,8 @@
 
   // The address keeps the board and period: #hunters-week, #guilds-month, #monsters-all, #rp, #tower (Sky Corridor
   // hunter boards: #tower-kills-all, #tower-floors-3, see skyBoard); for the
-  // Road, the Road and the rotation: #road (open, current), #road-solo, #road-open-2, #road-open-original.
+  // Road, the Road and the rotation: #road (open, current), #road-solo, #road-open-2, #road-open-original,
+  // #road-solo-v50800947e8d2 (a Road that was never a rotation).
   // Older links (#hr and #gr from the removed rank boards, #guilds from the guild page) still work.
   var LEGACY = { hr: "hunters-week", gr: "hunters-week", guilds: "rp" };
   function parse(hash) {
@@ -285,7 +286,7 @@
       board: BOARDS[parts[0]] ? parts[0] : "hunters",
       period: PERIODS[parts[1]] ? parts[1] : "week",
       mode: MODES[parts[1]] ? parts[1] : "open",
-      rotation: /^(\d+|original)$/.test(parts[2] || "") ? parts[2] : "current",
+      rotation: /^(\d+|original|v[0-9a-f]{12})$/.test(parts[2] || "") ? parts[2] : "current",
       sky: SKY_BOARDS[parts[1]] ? parts[1] : "points",
       district: /^[1-4]$/.test(parts[2] || "") ? parts[2] : "all"
     };
@@ -293,6 +294,8 @@
 
   function rotationLabel(r) {
     if (r.key === "original") return "Original Road";
+    // A Road that was never a rotation (key "v" + its sha256's start), e.g. a solo half players can pick.
+    if (r.number === null || r.number === undefined) return r.name || "Road " + String(r.key).slice(1, 9);
     if (r.number !== null && r.number !== undefined && r.number <= 0) return r.name || "Base Road";
     return "Rotation " + r.number + (r.name ? ": " + r.name : "");
   }
