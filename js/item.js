@@ -4,7 +4,10 @@
    to enter, and from dev/make-source-data.py "where", "gather", "offered" and "unlisted": every way to get it,
    shown first under "Where to get it", each source linked to its page /source.html?id=, named from
    data/sources/index.json), then "Used for" (data/uses/<id>.json from dev/make-use-data.py: recipes, weapons
-   and armour, decorations, the Tower, exchanges and quests that take it). Monster icons and the game's monster ids come from data/monsters/index.json.
+   and armour, decorations, the Tower, exchanges and quests that take it, and what the item's own data says:
+   item pouch, ammo, decoration slots, trade-ins, gacha costs). The description and facts under the name come
+   from data/uses/info/<id // 512>.json (dev/make-use-data.py, from hvmhfz_re item_info.json); an item with no
+   use and no source says so plainly. Monster icons and the game's monster ids come from data/monsters/index.json.
    ?name= (an exact item name) is accepted too, for old links. */
 (function () {
   "use strict";
@@ -243,7 +246,7 @@
     panel.id = "where";
     panel.classList.add("where-panel");
     if (!ways) {
-      panel.appendChild(el("p", "empty-state", "No known source: no shop, quest, monster, event, gacha, craft or exchange on Hunsterverse gives this item right now."));
+      panel.appendChild(el("p", "empty-state", "No source on this server yet: no shop, quest, monster, event, gacha, craft or exchange on Hunsterverse gives this item right now."));
       if (unlisted[0] || unlisted[1]) {
         panel.appendChild(el("p", "note-text", "It is in " + num(unlisted[0] + unlisted[1]) + " quest files that no quest list offers, so players can't get it from them."));
       }
@@ -313,8 +316,19 @@
   /* "Used for": every recipe, piece of equipment, Tower upgrade, exchange and quest that takes the item
      (data/uses/<id>.json, dev/make-use-data.py). Equipment rows are [slot, id, qty, kind], named from
      data/equipment/<slot>/names.json ([name, rarity, parent id] by id) and linked to /equipment.html. */
-  var USE_GROUPS = [["craft", "Crafting"], ["weapon", "Weapons"], ["armour", "Armour"], ["deco", "Decorations"],
-                    ["tower", "Tower"], ["exchange", "Exchanges"], ["quest", "Quests"]];
+  var USE_GROUPS = [["use", "What it does"], ["craft", "Crafting"], ["weapon", "Weapons"], ["armour", "Armour"],
+                    ["deco", "Decorations"], ["tower", "Tower"], ["exchange", "Exchanges"],
+                    ["trade", "Trade-ins and gacha"], ["quest", "Quests"]];
+  /* The "What it does" lines (hvmhfz_re item_info.py): [title, what to do with it]. */
+  var OWN_USES = { pouch: ["Item pouch", "use it from the item pouch during a quest (what it does: the description above)"],
+                   ammo: ["Bowgun ammo", "load it into a bowgun"],
+                   coating: ["Bow coating", "load it onto a bow's arrows"],
+                   crystal: ["S.Crystal", "load it into a weapon that takes S.Crystals (the description above says which)"],
+                   cooking: ["Cooking ingredient", "the game marks it as a cooking item"],
+                   deco: ["Decoration", "set it into a decoration slot for the skill points above"],
+                   gem: ["Road gem (Tower Deco)", "set it into a Tower weapon for the skill points above"],
+                   jewel: ["Partnya decoration", "set it into your Partnya's (partner Felyne's) gear"],
+                   sigil: ["Sigil", "gives a weapon a special effect (the description above says which)"] };
   var USE_SYS = { combining: ["Item combining", "combining"], combiner: ["Combiner", "combiner"],
                   deco: ["Smithy decoration", "smithy-decorations"], cuff: ["Skill cuff workshop", "cuff-workshop"],
                   tower: ["Tower smithy", "tower-smithy"], "tower-gem": ["Tower Decos", "tower-gems"],
@@ -359,6 +373,23 @@
       head.appendChild(eqLink(ctx.names, r.eq[0], r.eq[1]));
       facts.push(r.stat + " to its maximum (" + r.levels + (r.levels === 1 ? " level" : " levels") + ")", "x" + num(r.qty) + " in all");
       text = eqName(ctx.names, r.eq[0], r.eq[1]) + " " + r.stat;
+    } else if (r.g === "use") {
+      var own = OWN_USES[r.s] || [r.s, ""];
+      head.appendChild(el("span", null, own[0]));
+      if (own[1]) facts.push(own[1]);
+      if ((r.s === "deco" || r.s === "gem") && ctx.info && ctx.info.slots) facts.push(ctx.info.slots + (ctx.info.slots === 1 ? " slot" : " slots"));
+      text = own.join(" ");
+    } else if (r.s === "fp-trade" || r.s === "gcp-sell") {
+      head.appendChild(el("span", null, r.s === "fp-trade" ? "Frontier Point exchange" : "GCP sell list"));
+      facts.push("trade in x" + num(r.qty) + " for " + num(r.s === "fp-trade" ? r.fp : r.gcp) + (r.s === "fp-trade" ? " Frontier Points" : " GCP"));
+      text = r.s === "fp-trade" ? "frontier point exchange trade in" : "gcp sell";
+    } else if (r.s === "gacha") {
+      var gsrc = ctx.sources && ctx.sources["gacha-" + r.gacha];
+      var g = el(gsrc ? "a" : "span", null, r.name || "Gacha " + r.gacha);
+      if (gsrc) g.href = "/source.html?id=" + encodeURIComponent("gacha-" + r.gacha);
+      head.appendChild(g);
+      facts.push("gacha cost: x" + num(r.qty) + " for " + num(r.rolls) + (r.rolls === 1 ? " draw" : " draws"));
+      text = (r.name || "") + " gacha";
     } else if (r.s === "gem-mixer") {
       head.appendChild(el("span", null, "Any " + r.any + "+ Tower gems"));
       facts.push("a random gem, " + r.made.length + (r.made.length === 1 ? " possible result" : " possible results"));
@@ -436,6 +467,17 @@
     return block;
   }
 
+  /* The line an item with no use shows: an unused slot of the game's list, or what it sells for. */
+  function noUseText(info) {
+    if (info && info.status) {
+      return "Unreleased content: this is an unused " + (info.status === "dev" ? "development" : info.status) +
+        " entry of the game's item list. Nothing in the game or on this server uses it.";
+    }
+    var sell = info && info.sell ? "sells for " + num(info.sell) + " z" : info ? "it can't be sold for zenny" : "";
+    return "No known use" + (sell ? ": " + sell + "." : ".") +
+      " No recipe, piece of equipment, Tower upgrade, exchange, trade-in or quest takes it, and its game data marks no other use.";
+  }
+
   function usesPanel(uses, needs, ctx) {
     var rows = (uses && uses.rows) || [];
     var groups = {};
@@ -448,7 +490,7 @@
     panel.id = "uses";
     panel.classList.add("where-panel");
     if (!total) {
-      panel.appendChild(el("p", "empty-state", "No known use: no recipe, piece of equipment, Tower upgrade, exchange or quest takes this item."));
+      panel.appendChild(el("p", "empty-state", noUseText(ctx && ctx.info)));
       return panel;
     }
     USE_GROUPS.forEach(function (g) {
@@ -477,7 +519,7 @@
   }
 
   /* The names files of the equipment slots the rows name, and the weapon types (data/weapons/ids.json). */
-  function useContext(uses, itemRows, sources) {
+  function useContext(uses, itemRows, sources, info) {
     var slots = {}, weapons = false;
     ((uses && uses.rows) || []).forEach(function (r) {
       var s = Array.isArray(r) ? r[0] : r.eq && r.eq[0];
@@ -490,7 +532,7 @@
     if (weapons) jobs.push(json("/data/weapons/ids.json").then(function (d) { ids = d; }).catch(function () {}));
     return Promise.all(jobs).then(function () {
       return {
-        names: names, itemRows: itemRows, sources: sources,
+        names: names, itemRows: itemRows, sources: sources, info: info,
         weaponType: function (slot, id) {
           var ch = ids && ids[slot] && ids[slot].charAt(id);
           if (!ch || ch === ".") return SLOT_NAMES[slot];
@@ -605,7 +647,39 @@
     return panel;
   }
 
-  function render(row, detail, monsterIcons, sources, itemRows, monsterPages, uses) {
+  var KINDS = { material: "Material", consumable: "Consumable", tool: "Tool", ammo: "Ammo", book: "Book",
+                "ticket-proof": "Ticket or proof", coin: "Coin", decoration: "Decoration", "road-gem": "Road gem (Tower Deco)",
+                "felyne-jewel": "Partnya jewel", "skill-scroll": "Sigil", sigil: "Sigil", "armor-sphere": "Armour sphere",
+                "special-material": "Special material", poogie: "Poogie item", house: "House item", pot: "Pot", song: "Song",
+                placeholder: "Unused slot" };
+
+  /* The description and the basic facts under the name (data/uses/info, from the game's item table). */
+  function aboutItem(box, f) {
+    if (f.desc) {
+      var d = el("p", "item-desc", f.desc);
+      box.appendChild(d);
+      if (f.from === "site") box.appendChild(el("p", "note-text item-desc-note", "Translated for this site: the game still shows this description in Japanese."));
+    } else if (f.status) {
+      box.appendChild(el("p", "item-desc", "An unused " + (f.status === "dev" ? "development" : f.status) + " entry of the game's item list: it has no real description."));
+    } else {
+      box.appendChild(el("p", "item-desc", "The game gives this item no description."));
+    }
+    var list = el("ul", "item-facts");
+    function fact(label, value) {
+      var li = el("li");
+      li.appendChild(el("span", "item-fact-label", label));
+      li.appendChild(document.createTextNode(" " + value));
+      list.appendChild(li);
+    }
+    if (f.kind) fact("Type", KINDS[f.kind] || f.kind);
+    if (f.r) fact("Rarity", f.r);
+    if (f.stack) fact("Carry limit", num(f.stack));
+    if (f.buy) fact("Buy", num(f.buy) + " z");
+    fact("Sell", f.sell ? num(f.sell) + " z" : "can't be sold");
+    box.appendChild(list);
+  }
+
+  function render(row, detail, monsterIcons, sources, itemRows, monsterPages, uses, facts) {
     var id = row[0], name = row[1], icon = row[2], aka = row[3];
     document.title = name + " · Hunsterverse";
     if (window.HvCrumbs) window.HvCrumbs.item(name);
@@ -631,6 +705,7 @@
     sub.appendChild(document.createTextNode("Item id " + id + " (hex " + id.toString(16).toUpperCase().padStart(4, "0") + ")"));
     if (aka) sub.appendChild(document.createTextNode(" · the server's item list calls it " + aka));
     info.appendChild(sub);
+    if (facts) aboutItem(info, facts);
     if (window.HvSkillLinks) info.appendChild(window.HvSkillLinks.item(id)); // "Skills: ..." (js/skill-links.js)
     head.appendChild(info);
     view.appendChild(head);
@@ -685,12 +760,17 @@
       (res[2].sources || []).forEach(function (s) { sources[s[0]] = { name: s[1], group: s[2], cur: s[3] }; });
     }
     var detail = row[4] ? json("/data/items/" + row[0] + ".json").catch(function () { return null; }) : Promise.resolve(null);
+    // the description and facts: one file per 512 ids (dev/make-use-data.py)
+    var facts = json("/data/uses/info/" + Math.floor(row[0] / 512) + ".json").then(function (d) {
+      return (d.items || {})[row[0]] || null;
+    }).catch(function () { return null; });
     // data/uses/<id>.json exists only for an item with a use: a 404 is "no known use"
-    var uses = fetch("/data/uses/" + row[0] + ".json").then(function (r) {
+    var uses = Promise.all([fetch("/data/uses/" + row[0] + ".json").then(function (r) {
       return r.status === 404 ? { rows: [] } : r.ok ? r.json() : null;
-    }).catch(function () { return null; }).then(function (u) {
-      return u ? useContext(u, itemRows, sources).then(function (ctx) { return { data: u, ctx: ctx }; }) : null;
+    }).catch(function () { return null; }), facts]).then(function (got) {
+      var u = got[0];
+      return u ? useContext(u, itemRows, sources, got[1]).then(function (ctx) { return { data: u, ctx: ctx }; }) : null;
     });
-    return Promise.all([detail, uses]).then(function (res) { render(row, res[0], monsterIcons, sources, itemRows, monsterPages, res[1]); });
+    return Promise.all([detail, uses, facts]).then(function (res) { render(row, res[0], monsterIcons, sources, itemRows, monsterPages, res[1], res[2]); });
   }).catch(function () { fail("The item list could not be loaded."); });
 })();

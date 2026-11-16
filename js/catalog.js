@@ -3,7 +3,8 @@
   "use strict";
 
   var API = "https://api.hvmhfz.eclipseforge.xyz";
-  var state = { slot: "items", q: "", page: 0, size: 30 };
+  var state = { slot: "items", q: "", page: 0, size: 30, filter: "" };
+  var FILTERS = ["no_use", "no_source", "unreleased"];
 
   function el(tag, className, text) {
     var node = document.createElement(tag);
@@ -83,6 +84,7 @@
     if (state.slot !== "items") u.searchParams.set("slot", state.slot); else u.searchParams.delete("slot");
     if (state.q) u.searchParams.set("q", state.q); else u.searchParams.delete("q");
     if (state.page > 0) u.searchParams.set("page", String(state.page + 1)); else u.searchParams.delete("page");
+    if (state.filter && state.slot === "items") u.searchParams.set("only", state.filter); else u.searchParams.delete("only");
     history.replaceState(null, "", u);
   }
 
@@ -141,6 +143,7 @@
       var nameCell = el("td");
       if (entry.href) {
         nameCell.appendChild(el("a", null, entry.name)).href = entry.href;
+        (entry.flags || []).forEach(function (f) { nameCell.appendChild(el("span", "catalog-flag " + f[0], f[1])); });
         // The space keeps the two names apart even before the stylesheet puts the other name on its own line.
         if (entry.aka) {
           nameCell.appendChild(document.createTextNode(" "));
@@ -176,10 +179,35 @@
   var itemRows = null;
   function loadItems() {
     if (itemRows) return Promise.resolve(itemRows);
-    return fetch("/data/items/index.json").then(function (r) {
+    return Promise.all([fetch("/data/items/index.json").then(function (r) {
       if (!r.ok) throw new Error("HTTP " + r.status);
       return r.json();
-    }).then(function (d) { itemRows = d.items || []; return itemRows; });
+    }), loadStatus()]).then(function (res) { itemRows = res[0].items || []; return itemRows; });
+  }
+
+  /* data/uses/status.json (dev/make-use-data.py): the ids with no known use, no source on this server, and the
+     unused entries of the game's list with neither. Without it the filters and badges stay off. */
+  var status = null;
+  function loadStatus() {
+    return fetch("/data/uses/status.json").then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; }).then(function (d) {
+        status = {};
+        FILTERS.forEach(function (f) {
+          var set = {};
+          ((d && d[f]) || []).forEach(function (id) { set[id] = true; });
+          status[f] = set;
+        });
+        return status;
+      });
+  }
+
+  function flagsOf(id) {
+    if (!status) return [];
+    if (status.unreleased[id]) return [["unreleased", "unreleased"]];
+    var out = [];
+    if (status.no_use[id]) out.push(["no-use", "no known use"]);
+    if (status.no_source[id]) out.push(["no-source", "no source yet"]);
+    return out;
   }
 
   function itemMatches(rows, q) {
@@ -199,9 +227,10 @@
 
   function renderItems(rows) {
     var found = itemMatches(rows, state.q);
+    if (state.filter && status) found = found.filter(function (r) { return status[state.filter][r[0]]; });
     var start = state.page * state.size;
     render({ total: found.length, size: state.size, items: found.slice(start, start + state.size).map(function (r) {
-      return { id: String(r[0]), name: r[1], key: r[2], aka: r[3], sources: r[4], href: "/item.html?id=" + r[0] };
+      return { id: String(r[0]), name: r[1], key: r[2], aka: r[3], sources: r[4], href: "/item.html?id=" + r[0], flags: flagsOf(r[0]) };
     }) });
   }
 
@@ -240,6 +269,22 @@
         other.setAttribute("aria-pressed", other === chip ? "true" : "false");
       });
       document.getElementById("catalog-src-head").hidden = state.slot !== "items";
+      document.getElementById("catalog-filters").hidden = state.slot !== "items";
+      saveState();
+      load();
+    });
+  });
+
+  function showFilter() {
+    document.querySelectorAll("#catalog-filters .chip").forEach(function (chip) {
+      chip.setAttribute("aria-pressed", chip.dataset.filter === state.filter ? "true" : "false");
+    });
+  }
+  document.querySelectorAll("#catalog-filters .chip").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      state.filter = chip.dataset.filter;
+      state.page = 0;
+      showFilter();
       saveState();
       load();
     });
@@ -266,6 +311,9 @@
   state.q = (params.get("q") || "").trim();
   if (SLOTS.indexOf(params.get("slot")) >= 0) state.slot = params.get("slot");
   if (/^[1-9]\d{0,5}$/.test(params.get("page") || "")) state.page = Number(params.get("page")) - 1;
+  if (FILTERS.indexOf(params.get("only")) >= 0) state.filter = params.get("only");
+  showFilter();
+  document.getElementById("catalog-filters").hidden = state.slot !== "items";
   document.getElementById("catalog-search").value = state.q;
   document.querySelectorAll("#catalog-slots .chip").forEach(function (chip) {
     chip.setAttribute("aria-pressed", chip.dataset.slot === state.slot ? "true" : "false");

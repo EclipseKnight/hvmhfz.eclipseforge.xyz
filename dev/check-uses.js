@@ -6,7 +6,10 @@
    shows "Used for" right after "Where to get it", its groups in order with their counts, each line linked (pieces
    to /equipment.html, items to /item.html); a long group shows 8 lines, "Show all" more, and its filter narrows
    the lines; an item with deliver quests lists them under Quests with "Needed to enter" first when the item has
-   entry quests; an item with no use says "No known use"; the equipment page of an upgraded piece shows its line,
+   entry quests; an item with no use says "No known use" and its sell price, an unused entry of the game's list
+   says "Unreleased content"; an item shows its description and facts (Type, Rarity, Carry limit, Sell) and an
+   item pouch item its "What it does" line; the Items list's "No known use" filter shows only items with that
+   badge (data/uses/status.json) and keeps ?only= in the address; the equipment page of an upgraded piece shows its line,
    what it upgrades into and the materials of each way to make it, linked; a weapon on the Weapons page lists its
    materials; an unknown piece says so; no sideways scrolling and no script errors. SHOTS=<dir> saves screenshots.
 
@@ -34,15 +37,23 @@ const needs = ids.find(function (i) {
   const f = path.join(ROOT, "data/items/" + i + ".json");
   return fs.existsSync(f) && (readJson("data/items/" + i + ".json").quests || []).length > 0;
 });
-const none = [...items.keys()].find(function (i) { return i > 0 && !uses[i]; });
+const status = readJson("data/uses/status.json");
+const unreleased = new Set(status.unreleased);
+const none = status.no_use.find(function (i) { return !unreleased.has(i); });
+const unused = status.unreleased[0];
+const infoOf = function (i) { return (readJson("data/uses/info/" + Math.floor(i / 512) + ".json").items || {})[i] || {}; };
+const pouch = ids.find(function (i) {
+  return uses[i][1].indexOf("use") !== -1 && infoOf(i).desc &&
+    readJson("data/uses/" + i + ".json").rows.some(function (r) { return r.g === "use" && r.s === "pouch"; });
+});
 /* an upgraded melee weapon that has a type on the Weapons page and upgrades on */
 const melee = readJson("data/equipment/melee/names.json").names;
 const wtypes = readJson("data/weapons/ids.json");
 const weapon = melee.findIndex(function (n, i) {
   return n && n[2] && wtypes.melee.charAt(i) !== "." && melee.some(function (m) { return m && m[2] === i; });
 });
-check(big && needs && none && weapon > 0, "found test items in the data (" + [big, needs, none, weapon] + ")");
-const GROUPS = ["Crafting", "Weapons", "Armour", "Decorations", "Tower", "Exchanges", "Quests"];
+check(big && needs && none && unused && pouch && weapon > 0, "found test items in the data (" + [big, needs, none, unused, pouch, weapon] + ")");
+const GROUPS = ["What it does", "Crafting", "Weapons", "Armour", "Decorations", "Tower", "Exchanges", "Trade-ins and gacha", "Quests"];
 
 function serve() {
   const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json",
@@ -92,7 +103,7 @@ async function run(chromium) {
       const note = await pg.textContent("#uses .panel-head-note");
       check(note.replace(/,/g, "").indexOf(String(uses[big][0])) === 0, V + ": count " + note + " = " + uses[big][0]);
       const links = await hrefs("#uses .where-src a");
-      check(links.length > 0 && links.every(function (h) { return /^\/(equipment\.html\?slot=[a-z]+&id=\d+|item\.html\?id=\d+|quest\.html\?id=\d+)$/.test(h) || h === "#needs"; }), V + ": every line linked");
+      check(links.length > 0 && links.every(function (h) { return /^\/(equipment\.html\?slot=[a-z]+&id=\d+|item\.html\?id=\d+|quest\.html\?id=\d+|source\.html\?id=[a-z0-9-]+)$/.test(h) || h === "#needs"; }), V + ": every line linked");
       const weaponsBlock = (await pg.$$("#uses .where-group"))[heads.indexOf("Weapons")];
       const before = await weaponsBlock.$$eval(".where-line", function (l) { return l.length; });
       const total = Number((await weaponsBlock.$eval("h3", function (h) { return h.textContent; })).split(" · ")[1].replace(/,/g, ""));
@@ -121,6 +132,38 @@ async function run(chromium) {
       await pg.goto(base + "/item.html?id=" + none, { waitUntil: "load" });
       await pg.waitForSelector("#uses");
       check(/No known use/.test(await pg.textContent("#uses")), V + ": an item with no use says so");
+      const noneInfo = infoOf(none);
+      check(noneInfo.sell ? (await pg.textContent("#uses")).indexOf("sells for " + noneInfo.sell.toLocaleString("en-US") + " z") !== -1 : /can't be sold/.test(await pg.textContent("#uses")),
+        V + ": the no-use line gives the sell price");
+
+      /* an unused entry of the game's list */
+      await pg.goto(base + "/item.html?id=" + unused, { waitUntil: "load" });
+      await pg.waitForSelector("#uses");
+      check(/Unreleased content/.test(await pg.textContent("#uses")), V + ": an unused entry says Unreleased content");
+
+      /* description, facts and "What it does" */
+      await pg.goto(base + "/item.html?id=" + pouch, { waitUntil: "load" });
+      await pg.waitForSelector("#uses");
+      check((await pg.textContent(".item-hero .item-desc")) === infoOf(pouch).desc, V + ": the description under the name");
+      const facts = await pg.textContent(".item-hero .item-facts");
+      check(["Type", "Rarity", "Carry limit", "Sell"].every(function (f) { return facts.indexOf(f) !== -1; }), V + ": facts " + facts);
+      const ownHeads = await pg.$$eval("#uses h3", function (h) { return h.map(function (x) { return x.textContent.split(" · ")[0]; }); });
+      check(ownHeads[0] === "What it does" && /Item pouch/.test(await pg.textContent("#uses")), V + ": What it does first: " + ownHeads.join(", "));
+      await noSideways("item with a description");
+      await shot("item-info-" + pouch);
+
+      /* the Items list filter */
+      await pg.goto(base + "/items.html?only=no_use", { waitUntil: "load" });
+      await pg.waitForSelector("#catalog-body tr td a");
+      const flagged = await pg.$$eval("#catalog-body tr", function (rows) {
+        return rows.map(function (r) { return !!r.querySelector(".catalog-flag.no-use, .catalog-flag.unreleased"); });
+      });
+      check(flagged.length > 0 && flagged.every(Boolean), V + ": the No known use filter shows only flagged rows (" + flagged.length + ")");
+      check(/[?&]only=no_use/.test(pg.url()) && (await pg.getAttribute('#catalog-filters [data-filter="no_use"]', "aria-pressed")) === "true", V + ": filter kept in the address and pressed");
+      check(/^[\d,]+ entries$/.test(await pg.textContent("#catalog-results")) &&
+        Number((await pg.textContent("#catalog-results")).replace(/\D/g, "")) === status.no_use.length, V + ": the filter counts " + status.no_use.length);
+      await noSideways("items list filtered");
+      await shot("items-no-use");
 
       /* equipment page */
       await pg.goto(base + "/equipment.html?slot=melee&id=" + weapon, { waitUntil: "load" });

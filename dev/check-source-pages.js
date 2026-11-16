@@ -7,7 +7,7 @@
    its item links open items that exist, the Price header sorts by number, ?q= filters; an unknown source says so;
    an item with a shop and a recipe (found in the data) shows "Where to get it" first, with the shop linked to its
    source page and the materials linked to their items; an item with gathering quests opens the quest list; an
-   item with no source says "No known source"; the Database search finds a source; no sideways scrolling and no
+   item with no source says "No source on this server yet"; the Database search finds a source; no sideways scrolling and no
    script errors. SHOTS=<dir> saves screenshots of each page at both widths.
 
      NODE_PATH=/root/work/pw-tools/node_modules [SHOTS=dir] node dev/check-source-pages.js
@@ -145,7 +145,7 @@ async function run(chromium) {
 
       await pg.goto(base + "/item.html?id=" + none[0], { waitUntil: "load" });
       await pg.waitForSelector("#where");
-      check(/No known source/.test(await pg.textContent("#where")), V + ": an item with no source says No known source");
+      check(/No source on this server yet/.test(await pg.textContent("#where")), V + ": an item with no source says No source on this server yet");
       await shot("item-" + none[0] + "-none");
 
       /* the Database search */

@@ -3,9 +3,13 @@
 
 Input: hvmhfz_re `data/item_uses.json` (`tools/items/item_uses.py build`): every recipe of the client's tables
 that takes items (smithy weapon and armour create / upgrade lists, transmog unlocks, decorations, skill cuffs,
-item combining, the Combiner, the Tower smithy and its weapon upgrades, the Series Quests exchanges), and
-this site's data/quest-objectives.json (deliver objectives), data/search/quests.json (quest names),
-data/items/index.json (item names and icons).
+item combining, the Combiner, the Tower smithy and its weapon upgrades, the Series Quests exchanges);
+`item_info.json` beside it when there is one (hvmhfz_re `tools/items/item_info.py`: every item's description,
+facts and the uses its own data shows: item pouch, ammo, coating, S.Crystal, cooking, decoration skills, Road
+gems, Partnya jewels, sigils, and from live the Frontier Point trade-ins, the GCP sell list and gacha roll
+costs); this site's data/quest-objectives.json (deliver objectives), data/search/quests.json (quest names),
+data/items/index.json (item names and icons) and data/items/<id>.json (written before this by
+dev/make-source-data.py: "where", "offered", "gather" = has a source, "quests" = needed to enter a quest).
 
 Writes:
   - data/uses/<item id>.json   {"id", "rows": [...]} for every item with a use; rows, by group ("g"):
@@ -16,8 +20,19 @@ Writes:
                                "s": "tower-up", "eq": [slot, id], "stat", "levels", "qty"};
                                weapon / armour: [slot, id, qty, kind] (kind "c" made, "u" upgraded, "t"
                                transmog unlock); quest: {"g": "quest", "quest", "name", "qty", "obj" ("main",
-                               "sub A", "sub B")};
+                               "sub A", "sub B")}; what the item's own data says (item_info.json):
+                               {"g": "use", "s": pouch | ammo | coating | crystal | cooking | deco | gem | jewel
+                               | sigil} and {"g": "trade", "s": fp-trade ("qty", "fp") | gcp-sell ("qty", "gcp")
+                               | gacha ("gacha" id, "name", "qty", "rolls")};
   - data/uses/index.json       {"_about", "items": {id: [uses, groups]}}: what the checks read;
+  - data/uses/info/<id // 512>.json  {"items": {id: {"desc", "from" (game | site), "kind", "r", "stack",
+                               "buy", "sell", "status", "slots"}}}: the item page's description and facts, for
+                               every item of the index (only with item_info.json; skill points are
+                               dev/make-skill-data.py's);
+  - data/uses/status.json      {"_about", "no_use": [ids], "no_source": [ids], "unreleased": [ids]}: the Items
+                               list's filters (no use = no row and no quest needs it; no source = no "where",
+                               "offered" or "gather"; unreleased = an unused slot of the game's list with
+                               neither);
   - data/equipment/<slot>/names.json  {"names": [[name, rarity, parent id or 0] or 0, ...] by id}: every piece a
                                recipe names, parent = the first piece it is upgraded from (the item page names
                                its rows, the equipment page draws the line and what it upgrades into);
@@ -43,6 +58,10 @@ GROUP_OF = {"combining": "craft", "combiner": "craft", "deco": "deco", "cuff": "
 DELIVER = (2, 4098)     # data/objective-types.json: Deliver, Deliver Flag
 OBJECTIVES = ("main", "sub A", "sub B")
 CHUNK = 1024
+INFO_CHUNK = 512
+TRADE = ("fp-trade", "gcp-sell", "gacha")
+INFO_KEYS = ("desc", "from", "kind", "r", "stack", "buy", "sell", "status", "slots")
+SOURCE_KEYS = ("where", "offered", "gather")   # dev/make-source-data.py: the item has a source
 
 
 def deliveries(objectives, quest_names):
@@ -59,8 +78,19 @@ def deliveries(objectives, quest_names):
     return out
 
 
-def item_uses(uses, delivered=None):
-    """{item: {"rows"}} from the hvmhfz_re file: every recipe once under each item it takes."""
+def info_rows(info):
+    """{item: [row]} from item_info.json's "uses": what the item's own data says it is used for."""
+    out = {}
+    for item, e in (info or {}).items():
+        for u in e.get("uses", []):
+            row = dict(u, g="trade" if u["s"] in TRADE else "use")
+            out.setdefault(int(item), []).append(row)
+    return out
+
+
+def item_uses(uses, delivered=None, info=None):
+    """{item: {"rows"}} from the hvmhfz_re file: every recipe once under each item it takes, then what the
+    item's own data says (info, item_info.json "items")."""
     out = {}
 
     def add(item, row):
@@ -93,6 +123,9 @@ def item_uses(uses, delivered=None):
                         row[k] = r[k]
                 add(i, row)
     for item, rows in (delivered or {}).items():
+        for row in rows:
+            add(item, row)
+    for item, rows in info_rows(info).items():
         for row in rows:
             add(item, row)
     # merge the gem mixer's rows of one item into one
@@ -155,7 +188,38 @@ def dump(path, value):
                     encoding="utf-8")
 
 
-def write(per_item, names, pieces, item_index, out=DATA):
+def item_status(item_index, per_item, details, info):
+    """{"no_use", "no_source", "unreleased"} id lists (see the module doc); details = {id: item file}."""
+    no_use, no_source, unreleased = [], [], []
+    for item in sorted(item_index):
+        if not item:
+            continue
+        d = details.get(item) or {}
+        used = item in per_item or bool(d.get("quests"))
+        sourced = any(d.get(k) for k in SOURCE_KEYS)
+        if not used:
+            no_use.append(item)
+        if not sourced:
+            no_source.append(item)
+        if not used and not sourced and (info or {}).get(str(item), {}).get("status"):
+            unreleased.append(item)
+    return {"_about": "Items list filters (dev/make-use-data.py): items with no known use, no source on this "
+                      "server, and unused slots of the game's item list with neither.",
+            "no_use": no_use, "no_source": no_source, "unreleased": unreleased}
+
+
+def info_chunks(info, item_index):
+    """{chunk: {"items": {id: facts}}} for every item of the index that item_info.json knows."""
+    out = {}
+    for item in sorted(item_index):
+        e = (info or {}).get(str(item))
+        if e:
+            out.setdefault(item // INFO_CHUNK, {"items": {}})["items"][str(item)] = {
+                k: e[k] for k in INFO_KEYS if k in e}
+    return out
+
+
+def write(per_item, names, pieces, item_index, out=DATA, info=None, status=None):
     uses_dir, eq_dir = out / "uses", out / "equipment"
     for d in (uses_dir, eq_dir):
         if d.exists():
@@ -168,6 +232,12 @@ def write(per_item, names, pieces, item_index, out=DATA):
         dump(uses_dir / ("%d.json" % item), {"id": item, "rows": e["rows"]})
     dump(uses_dir / "index.json", {"_about": "Items with a use (dev/make-use-data.py): id -> [uses, groups].",
                                    "items": index})
+    if info:
+        (uses_dir / "info").mkdir()
+        for c, body in info_chunks(info, item_index).items():
+            dump(uses_dir / "info" / ("%d.json" % c), body)
+    if status:
+        dump(uses_dir / "status.json", status)
     for slot, by_id in pieces.items():
         (eq_dir / slot).mkdir(parents=True)
         dump(eq_dir / slot / "names.json", {"names": names[slot]})
@@ -184,16 +254,27 @@ def main(argv):
         print(__doc__, file=sys.stderr)
         return 2
     uses = json.loads(src.read_text(encoding="utf-8"))
+    info_path = src.parent / "item_info.json"
+    info = json.loads(info_path.read_text(encoding="utf-8"))["items"] if info_path.exists() else None
     load = lambda p: json.loads((DATA / p).read_text(encoding="utf-8"))
     item_index = {r[0]: r for r in load("items/index.json")["items"]}
     quest_names = {q[0]: q[1] for q in load("search/quests.json")["quests"]}
-    per_item = item_uses(uses, deliveries(load("quest-objectives.json"), quest_names))
+    per_item = item_uses(uses, deliveries(load("quest-objectives.json"), quest_names), info)
     per_item = {i: e for i, e in per_item.items() if i in item_index and i}
+    details = {}
+    for p in (DATA / "items").glob("*.json"):
+        if p.stem.isdigit():
+            details[int(p.stem)] = json.loads(p.read_text(encoding="utf-8"))
+    status = item_status(item_index, per_item, details, info) if info else None
     names, pieces = equipment(uses)
-    index = write(per_item, names, pieces, item_index)
+    index = write(per_item, names, pieces, item_index, info=info, status=status)
     rows = sum(v[0] for v in index.values())
     print("uses: %d items, %d rows; equipment: %s" % (
         len(index), rows, ", ".join("%s %d" % (s, len(p)) for s, p in sorted(pieces.items()))))
+    if status:
+        print("info: %d items described; no known use %d, no source %d, unreleased %d" % (
+            sum(1 for i in item_index if (info.get(str(i)) or {}).get("desc")), len(status["no_use"]),
+            len(status["no_source"]), len(status["unreleased"])))
     return 0
 
 

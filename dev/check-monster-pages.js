@@ -278,7 +278,7 @@ async function pages() {
       const none = itemIndex.find(function (r) { return !r[4]; });
       await pg.goto(base + "/item.html?id=" + none[0], { waitUntil: "load" });
       await pg.waitForSelector("#item-view .panel");
-      check(/No known source/.test(await pg.textContent("#item-view")), V + ": an item with no source says so");
+      check(/No source on this server yet/.test(await pg.textContent("#item-view")), V + ": an item with no source says so");
       check(errors.length === 0, V + ": no script errors: " + errors.join(" | "));
       await ctx.close();
     }
