@@ -17,6 +17,8 @@ use (A: decoded rules in `hvmhfz_re`; C: the API's `/builder` and "missing" endp
 | `js/armor-owned.js` | Character import helpers (no page code; node runs it): import pieces to a set, what is owned, the "missing" request body |
 | `js/set-builder-mine.js` | The "Your character" panel, the "Only what I own" filter hooks and the "Missing for this set" panel |
 | `dev/check-set-builder-mine.js` | Set format cross-check with the API, the helpers, and the page against a fake API (headless Chromium) |
+| `js/armor-search.js`, `js/armor-search-worker.js` | The skill search (no page code; node runs it) and its Web Worker; see "Skill search" |
+| `dev/check-armor-search.js` | The skill search: known sets, every result checked by the calculator, the query's limits, time budget, the worker in headless Chromium |
 
 Data: `data/armor/<slot>.json` (one per armour slot, about 1.2 MB, 180 KB gzipped, loaded when the slot is first
 opened or a link needs it), `data/armor/index.json` (decorations, Road gems, cuffs, weapon Tower sigils, weapon
@@ -139,6 +141,85 @@ calculator gives for it (defence, free slots, skills), so they agree with the bu
 
 Upgrade lines on this page (each piece links to its equipment page, which shows the line and materials).
 d0t-execute's Frontier Set Searcher stays linked under the builder as another search.
+
+The page's form for the skill search (phase 2b: the engine is built, see "Skill search"; until the form is on the
+page it links to d0t-execute's Frontier Set Searcher), community sets (phase 3, see "Community sets" below), upgrade lines on this page
+(each piece links to its equipment page, which shows the line and materials).
+
+## Skill search (phase 2b)
+
+Pick the skills you want; the search finds armour sets that give them within the limits you set. `js/armor-search.js`
+is the engine (no page code; node runs it), `js/armor-search-worker.js` runs it in a Web Worker so the page never
+freezes. Every set it returns is checked by `ArmorCalc.compute` with the game's rules: no problem (gender, slots,
+kinds), every wanted skill active (not dropped by the skill limit) and working with the weapon class.
+
+**In a page**: `new Worker("/js/armor-search-worker.js")`, then post `{type: "search", query}`; it answers
+`{type: "progress", done, total}` now and then and `{type: "done", result}` at the end. `{type: "cancel"}` drops the
+running search (nothing more is sent for it); a new `search` also drops the old one. The worker loads
+`data/armor/*.json`, `data/weapons/index.json` and the query's weapon class once (about 7 MB, 1 MB gzipped). When a
+search cannot run (data did not load, unknown weapon, "only what I own" without an import) the answer is still
+`done`, with no results and `stats.error`. **In node**: `ArmorSearch.setData({rules, index, pieces: {head, ...},
+weaponTypes, weapons: {class: json}})` (or `loadData(getJson, query)`), then `ArmorSearch.search(query, onProgress)`.
+
+Query (every field but `wanted` optional):
+
+| Field | Meaning |
+|---|---|
+| `wanted: [{skill, level}]` | `skill` = a positive skill id (`rules.json` `skills`); met by it or a higher level of its tree. `level` (optional): 1-7 = the tree's n-th positive skill (1 = lowest), 10 or more = a points total (no positive skill needs fewer than 10 points). The higher of the two needs counts; two wanted skills of one tree become one. At most 10. Unknown skills, negative skills and Tech skills of another weapon class come back in `stats.impossible` and the search returns nothing |
+| `weaponClass`, `weaponId` | The set format's class (-1 or absent = none). `weaponId` 0 = any weapon of the class (no weapon slots used); a weapon with slots gets decorations; a Tower weapon gets Road gems (below) |
+| `gender` | `"male"`, `"female"` or `""` (any): a hard rule |
+| `hunterType` | `"blade"`, `"gunner"` or `"any"`: the pieces' blademaster / gunner marks, a list filter as on the page |
+| `rankMax: {hr, gr}` | `gr` 0 = an HR hunter: no G-rank or Zenith pieces, no cuffs. The data has no rank requirement per piece (hvmhfz_re has not decoded it), so `hr` does not filter yet |
+| `ownedOnly`, `owned` | Only pieces in the character's equipment box (at the level owned) and decorations and cuffs it has (box, pouch, warehouse and set in gear; never more of one than it has). `owned` is the `/builder` import ("Character import" below) |
+| `allowZenith` | false = no Zenith pieces, decorations or cuffs (default true) |
+| `allowTowerDecos` | false = no Road gems on a Tower weapon (default true) |
+| `fixed: {slot: id}` | That piece in that slot whatever the filters (id 0 = leave the slot empty) |
+| `exclude: [...]` | A number = that piece id in every slot; `"head:123"` = one slot's piece; `"item:5803"` = a decoration or cuff |
+| `maxResults` | Default 50, at most 200 |
+| `timeLimitMs` | Default 8000; a search that hits it returns what it has with `truncated: true` |
+
+Result: `{results: [...], stats, truncated}`. Each result: `set` (the set format above, `data` = the page's data
+version), `skills` (the active skills as `ArmorCalc.compute` lists them, dropped ones left out), `extraSkills` (the
+positive working ones of other trees), `defence` (pieces + weapon), `res` (`{fire, water, thunder, dragon, ice}`),
+`freeSlots` (decoration slots left on the pieces and the weapon), `score` (one number in the ranking order, for
+display), `met` (every wanted skill met), `missing` (wanted skill ids not met). `stats`: `ms`, `wanted` (each skill's
+tree and points needed), `impossible`, `notes`, `relaxed`, `timedOut`, `gems` (Road gems chosen), `invalid` (sets
+the calculator refused; always 0 unless the search has a bug) and per pass the pieces kept per slot, decorations
+tried, nodes, sets checked and rejected. `truncated` = the time limit was hit (or a decoration search gave up early),
+so better sets may exist.
+
+Ranking: all wanted skills met, then defence, free slots, fewer negative skills, more other skills (automatic ones
+too). Pieces are used at their highest level (the owned level with "only what I own"); only pieces players can get
+(`obtainable`) unless owned.
+
+How it works (the comment at the top of `js/armor-search.js` has the same in short):
+
+1. **Pieces per slot**: the ones the query allows, then only those no other piece beats: a piece beats another
+   when it has at least its points in every wanted tree (points above the need count as the need), as many slots,
+   as many skill limit pieces (G-rank / Zenith) and as much defence. This keeps 20 to 60 pieces per slot of about
+   8,000.
+2. **Branch and bound** over the five slots (fewest pieces first), each slot's pieces by defence: a branch stops
+   when even the best pieces left plus the best decoration in every free slot and the best two cuffs cannot reach a
+   wanted total, or when its defence cannot reach the worst kept result.
+3. **Decorations and cuffs** per complete set: the fewest slots (then cuffs) that reach every wanted total, an exact
+   search over the best few decorations per wanted tree and size plus any that help two wanted trees, packed by slot
+   size (3-slot decorations in 3-slot pieces, 2-slot in 2-slot first). Answers are cached by the missing points and
+   free slots, so most sets cost one lookup. Then `ArmorCalc.calc` decides: a set whose wanted skill is dropped by the
+   skill limit, or does nothing with the weapon, is rejected.
+4. **Tower weapon**: a wanted skill one Road gem reaches on its own takes a gem place (hardest skills first, as many
+   as the weapon has gem places); Tower sigils are not chosen (they give no skill points).
+5. **Nothing meets every skill**: it searches again without one wanted skill at a time (sharing the time left)
+   and returns the best of those with `met: false` and `missing`.
+
+Limits it accepts: a piece that another one beats is never tried, even when its other skills would have kept a set
+under the skill limit; decorations' negative points outside the wanted trees only count in the ranking; automatic
+and Zenith skills are not aimed for (they show when a set has them); a cuff is used at most once per set.
+
+Speed (node, `dev/check-armor-search.js`): 3 to 8 wanted skills take 50-250 ms; in headless Chromium the worker
+loads the data and answers a 5 skill search in about half a second.
+
+Check: `NODE_PATH=/root/work/pw-tools/node_modules node dev/check-armor-search.js` (`BUDGET_MS`, default 3000, is the
+node budget per search; `BROWSER_BUDGET_MS`, default 8000, the worker's with the data load).
 
 ## Character import (phase 2, lane C)
 
