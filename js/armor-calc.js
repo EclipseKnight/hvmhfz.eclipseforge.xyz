@@ -563,7 +563,7 @@
 
   var ArmorCalc = { VERSION: VERSION, SLOTS: SLOTS, RES: RES, MAX_DECOS: MAX_DECOS, normalize: normalize,
                     empty: empty, encode: encode, decode: decode, calc: calc, tablesFromRe: tablesFromRe,
-                    compute: compute };
+                    compute: compute, armourRow: armourRow, decoRow: decoRow };
   if (typeof module !== "undefined" && module.exports) module.exports = ArmorCalc;
   else root.ArmorCalc = ArmorCalc;
 })(typeof window !== "undefined" ? window : this);
