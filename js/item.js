@@ -141,8 +141,8 @@
 
   function num(n) { return Number(n).toLocaleString("en-US"); }
 
-  /* "Where to get it": every source of the item (data/items/<id>.json "where", "gather", "offered", "unlisted"),
-     grouped as data/sources/index.json's groups, each line linked to its source page. */
+  /* "Where to get it": every source of the item (data/items/<id>.json "where", "gather", "fish", "supply", "offered",
+     "unlisted"), grouped as data/sources/index.json's groups, each line linked to its source page. */
   var WHERE_TOP = 8;
   var GROUP_NAMES = { shop: "Shops", gacha: "Gacha", event: "Events and gifts", sky: "Sky Corridor", craft: "Crafting",
                       exchange: "Exchanges and other rewards", monster: "Monsters", quest: "Quests" };
@@ -235,13 +235,20 @@
     var where = (detail && detail.where) || [];
     var offered = (detail && detail.offered) || [];
     var gather = (detail && detail.gather) || [];
+    var fish = (detail && detail.fish) || [];
+    var supply = (detail && detail.supply) || [];
     var unlisted = (detail && detail.unlisted) || [0, 0];
+    /* The quest lists of the Quests group: gathering, fishing (part 208) and the supply box (part 208). */
+    var questKinds = [[gather, "gathering", "Gathering in quests", ""],
+                      [fish, "fishing", "Fishing in quests", ""],
+                      [supply, "quest-supply-box", "Quest supply box", "in that quest only: taken back when it ends"]]
+      .filter(function (k) { return k[0].length; });
     var groups = {};
     where.forEach(function (e) {
       var g = e[0] === "monster" ? "monster" : (sources[e[0]] || {}).group || "exchange";
       (groups[g] = groups[g] || []).push(e);
     });
-    var ways = where.length + (offered.length ? 1 : 0) + (gather.length ? 1 : 0);
+    var ways = where.length + (offered.length ? 1 : 0) + questKinds.length;
     var panel = section("Where to get it", ways ? ways + (ways === 1 ? " way" : " ways") : "");
     panel.id = "where";
     panel.classList.add("where-panel");
@@ -255,7 +262,7 @@
     GROUP_ORDER.forEach(function (g) {
       var rows = groups[g];
       if (g === "quest") {
-        if (!offered.length && !gather.length) return;
+        if (!offered.length && !questKinds.length) return;
         rows = [];
       } else if (!rows) return;
       var block = el("div", "where-group");
@@ -274,20 +281,21 @@
           li.appendChild(facts);
           list.appendChild(li);
         }
-        if (gather.length) {
-          var gl = el("li", "where-line");
-          var ga = el("a", null, "Gathering in quests");
-          ga.href = "/source.html?id=gathering";
+        questKinds.forEach(function (k) {
+          var ids = k[0];
+          var gl = el("li", "where-line where-" + k[1]);
+          var ga = el("a", null, k[2]);
+          ga.href = "/source.html?id=" + k[1];
           gl.appendChild(el("span", "where-src")).appendChild(ga);
-          gl.appendChild(el("span", "where-facts", num(gather.length) + (gather.length === 1 ? " quest" : " quests") + " players can start"));
+          gl.appendChild(el("span", "where-facts", num(ids.length) + (ids.length === 1 ? " quest" : " quests") + " players can start" + (k[3] ? " · " + k[3] : "")));
           var fold = el("details", "where-fold");
           fold.appendChild(el("summary", null, "Show the quests"));
           var box = el("div");
           fold.appendChild(box);
-          fold.addEventListener("toggle", function () { if (fold.open && !box.firstChild) questLinks(gather, box); });
+          fold.addEventListener("toggle", function () { if (fold.open && !box.firstChild) questLinks(ids, box); });
           gl.appendChild(fold);
           list.appendChild(gl);
-        }
+        });
       } else {
         rows.forEach(function (e, i) {
           var line = whereLine(e, sources, itemRows, monsterPages);

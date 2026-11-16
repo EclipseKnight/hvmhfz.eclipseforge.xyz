@@ -9,7 +9,8 @@ facts and the uses its own data shows: item pouch, ammo, coating, S.Crystal, coo
 gems, Partnya jewels, sigils, and from live the Frontier Point trade-ins, the GCP sell list and gacha roll
 costs); this site's data/quest-objectives.json (deliver objectives), data/search/quests.json (quest names),
 data/items/index.json (item names and icons) and data/items/<id>.json (written before this by
-dev/make-source-data.py: "where", "offered", "gather" = has a source, "quests" = needed to enter a quest).
+dev/make-source-data.py: "where", "offered", "gather", "fish", "supply" = has a source, "quests" = needed to enter a
+quest).
 
 Writes:
   - data/uses/<item id>.json   {"id", "rows": [...]} for every item with a use; rows, by group ("g"):
@@ -31,7 +32,7 @@ Writes:
                                dev/make-skill-data.py's);
   - data/uses/status.json      {"_about", "no_use": [ids], "no_source": [ids], "unreleased": [ids]}: the Items
                                list's filters (no use = no row and no quest needs it; no source = no "where",
-                               "offered" or "gather"; unreleased = an unused slot of the game's list with
+                               "offered", "gather", "fish" or "supply"; unreleased = an unused slot of the game's list with
                                neither);
   - data/equipment/<slot>/names.json  {"names": [[name, rarity, parent id or 0] or 0, ...] by id}: every piece a
                                recipe names, parent = the first piece it is upgraded from (the item page names
@@ -61,7 +62,7 @@ CHUNK = 1024
 INFO_CHUNK = 512
 TRADE = ("fp-trade", "gcp-sell", "gacha")
 INFO_KEYS = ("desc", "from", "kind", "r", "stack", "buy", "sell", "status", "slots")
-SOURCE_KEYS = ("where", "offered", "gather")   # dev/make-source-data.py: the item has a source
+SOURCE_KEYS = ("where", "offered", "gather", "fish", "supply")   # dev/make-source-data.py: the item has a source
 
 
 def deliveries(objectives, quest_names):

@@ -39,7 +39,8 @@ def test_build(mod):
                  {"item": 2, "src": "combining", "qty": 1, "mats": [[1, 1], [3, 2]], "cur": ""},
                  {"item": 2, "src": "monster-104", "monster": 104, "when": "G", "methods": ["carve"]},
                  {"item": 99, "src": "road-shop-4", "price": 1}],
-        "quests": {"1": {"reward": [10, 11], "gather": [12], "unlisted_reward": 4}, "3": {"unlisted_gather": 2}},
+        "quests": {"1": {"reward": [10, 11], "gather": [12], "unlisted_reward": 4}, "3": {"unlisted_gather": 2},
+                   "2": {"fish": [13, 14], "supply": [15]}},
     }
     index, pages, per_item = mod.build(detail, {1: "Gem", 2: "Potion", 3: "Herb"})
     problems = []
@@ -47,9 +48,11 @@ def test_build(mod):
     def want(ok, what):
         if not ok:
             problems.append("make-source-data build: " + what)
-    want(sorted(pages) == ["combining", "gathering", "quest-rewards", "road-shop-4"], "pages %s" % sorted(pages))
+    want(sorted(pages) == ["combining", "fishing", "gathering", "quest-rewards", "quest-supply-box", "road-shop-4"],
+         "pages %s" % sorted(pages))
     want(index["skipped"] == 1, "the unknown item 99 is skipped")
-    want([s[0] for s in index["sources"]] == ["road-shop-4", "combining", "gathering", "quest-rewards"],
+    want([s[0] for s in index["sources"]] == ["road-shop-4", "combining", "fishing", "gathering", "quest-rewards",
+                                              "quest-supply-box"],
          "sources in group order %s" % [s[0] for s in index["sources"]])
     want(index["taken"] == "2026-11-13", "taken date")
     want(per_item[1]["where"] == [["road-shop-4", {"qty": 1, "price": 35000, "gate": "GR1"}]], "item 1 where")
@@ -59,6 +62,10 @@ def test_build(mod):
          "monster rows go to the item with the monster's name")
     want(per_item[3] == {"unlisted": [0, 2]}, "item 3 only unlisted")
     want(pages["gathering"]["rows"] == [{"item": 1, "quests": 1}], "gathering page")
+    # part 208: fishing and the quest supply box, quest lists like gathering
+    want(per_item[2]["fish"] == [13, 14] and per_item[2]["supply"] == [15], "item 2 fish and supply")
+    want(pages["fishing"]["rows"] == [{"item": 2, "quests": 2}], "fishing page")
+    want(pages["quest-supply-box"]["rows"] == [{"item": 2, "quests": 1}], "supply page")
 
     # merge_items: an item whose last source is gone loses its file; one with drops keeps it without "where"
     with tempfile.TemporaryDirectory() as tmp:
@@ -77,6 +84,9 @@ def test_build(mod):
         six = json.loads((d / "6.json").read_text(encoding="utf-8"))
         want("where" not in six and counts[6] == 1, "an item with drops keeps its file, without the old where")
         want((d / "2.json").exists() and counts[1] == 2, "items with sources get or keep their file")
+        two = json.loads((d / "2.json").read_text(encoding="utf-8"))
+        want(two.get("fish") == [13, 14] and two.get("supply") == [15] and counts[2] == 5,
+             "fishing and supply quests are written and counted (part 208)")
     return problems
 
 
@@ -115,11 +125,11 @@ def check_data():
         if path.name == "index.json":
             continue
         d = json.loads(path.read_text(encoding="utf-8"))
-        has = any(k in d for k in ("where", "gather", "offered", "unlisted"))
+        has = any(k in d for k in ("where", "gather", "fish", "supply", "offered", "unlisted"))
         if has and d["id"] not in items:
             problems.append(f"item {d['id']}: has a file but no index row")
             continue
-        if (d.get("where") or d.get("gather")) and not items[d["id"]][4]:
+        if any(d.get(k) for k in ("where", "gather", "fish", "supply")) and not items[d["id"]][4]:
             problems.append(f"item {d['id']}: has sources but its index count is 0 (the page would not load them)")
         for sid, r in d.get("where") or []:
             if sid == "monster":
@@ -134,9 +144,10 @@ def check_data():
                     problems.append(f"item {d['id']}: material {m[0]} is not in data/items/index.json")
         if d.get("offered"):
             where_of.setdefault("quest-rewards", set()).add(d["id"])
-        if d.get("gather"):
-            where_of.setdefault("gathering", set()).add(d["id"])
-        no_page |= {q for q in (d.get("gather") or []) + (d.get("offered") or []) if q not in quests}
+        for key, sid in (("gather", "gathering"), ("fish", "fishing"), ("supply", "quest-supply-box")):
+            if d.get(key):
+                where_of.setdefault(sid, set()).add(d["id"])
+        no_page |= {q for k in ("gather", "fish", "supply", "offered") for q in (d.get(k) or []) if q not in quests}
     for sid, mine in by_source.items():
         if mine != where_of.get(sid, set()):
             problems.append(f"source {sid}: {len(mine ^ where_of.get(sid, set()))} items not linked both ways")

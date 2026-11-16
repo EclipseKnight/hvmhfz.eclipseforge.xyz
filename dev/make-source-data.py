@@ -3,8 +3,8 @@
 
 Input: hvmhfz_re `data/item_sources_detail.json` (`tools/items/item_sources.py build`, docs/item-sources.md section
 14): every source of every item (shops, gacha, events and gifts, the Sky Corridor, crafting, exchanges) as
-structured rows, and per item the quests players can start that reward it or let you gather it. Item names come
-from this site's data/items/index.json (dev/make-item-data.py), so run that first.
+structured rows, and per item the quests players can start that reward it, let you gather or fish it, or put it in
+the supply box. Item names come from this site's data/items/index.json (dev/make-item-data.py), so run that first.
 
 Writes:
   - data/sources/index.json   {"_about", "taken", "groups": [[id, name, about]], "sources": [[id, name, group,
@@ -16,7 +16,9 @@ Writes:
   - data/items/<id>.json      adds "where": [[source id, row without item]] (monster drops in quests players can
                               start as ["monster", {"monster": game id, "name", "when": rank, "methods", "note"}]),
                               "gather" (quest ids players can start
-                              that let you gather it), "offered" (the quests of "rewards" that players can start)
+                              that let you gather it), "fish" (that let you fish it; part 208), "supply" (whose
+                              supply box holds it, usable in that quest only; part 208), "offered" (the quests of
+                              "rewards" that players can start)
                               and "unlisted": [reward, gather] (quest files no list offers); makes the file for an
                               item that has only these, and counts them in data/items/index.json (the 5th field).
                               dev/make-item-data.py keeps these keys when it rewrites the item files.
@@ -31,7 +33,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 RE_DETAIL = pathlib.Path("/root/mhfz/hvmhfz_re/data/item_sources_detail.json")
-SOURCE_KEYS = ("where", "gather", "offered", "unlisted")
+SOURCE_KEYS = ("where", "gather", "fish", "supply", "offered", "unlisted")
 
 GROUPS = [
     ("shop", "Shops", "Bought for Road points (RdP), GCP, Frontier points or zenny."),
@@ -40,14 +42,20 @@ GROUPS = [
     ("sky", "Sky Corridor", "The tower's treasure by district and its present box."),
     ("craft", "Crafting", "Made at the smithy, the Tower Felyne, the Combiner, the cuff workshop or by combining."),
     ("exchange", "Exchanges and other rewards", "Lotteries, guild treasure hunts, stamp cards, the Raviente claim and quest supplies."),
-    ("quest", "Quests", "Quest rewards and gathering in quests players can start."),
+    ("quest", "Quests", "Quest rewards, gathering, fishing and supply boxes in quests players can start."),
 ]
 QUEST_SOURCES = {
     "quest-rewards": ("Quest rewards", "Items in the reward groups of quests players can start (the quest lists, events, "
                       "cups and the Sky Corridor). Each item's page lists the quests and chances."),
     "gathering": ("Gathering in quests", "Items you can gather (gathering points, fishing, mining, bug catching) in quests "
                   "players can start. Each item's page lists the quests."),
+    "fishing": ("Fishing in quests", "Fish caught from the fish in a quest's water (the game's fish table, drawn by "
+                "the quest's rank) in quests players can start. Each item's page lists the quests."),
+    "quest-supply-box": ("Quest supply boxes", "Items in the supply box of quests players can start. They can be used in "
+                     "that quest only: supply items are taken back when the quest ends. Each item's page lists the "
+                     "quests."),
 }
+QUEST_KEYS = (("gather", "gathering"), ("fish", "fishing"), ("supply", "quest-supply-box"))
 
 
 def build(detail, names):
@@ -78,6 +86,8 @@ def build(detail, names):
         per_item.setdefault(r["item"], {}).setdefault("where", []).append(
             [r["src"], {k: v for k, v in row.items() if k != "item"}])
     for sid, (name, about) in QUEST_SOURCES.items():
+        if sid in pages:
+            raise ValueError("quest source %s is also a source of the detail file" % sid)
         pages[sid] = {"id": sid, "name": name, "group": "quest", "cur": "", "about": about, "rows": []}
     for key, q in sorted(detail.get("quests", {}).items(), key=lambda kv: int(kv[0])):
         item = int(key)
@@ -88,9 +98,10 @@ def build(detail, names):
         if q.get("reward"):
             mine["offered"] = q["reward"]
             pages["quest-rewards"]["rows"].append({"item": item, "quests": len(q["reward"])})
-        if q.get("gather"):
-            mine["gather"] = q["gather"]
-            pages["gathering"]["rows"].append({"item": item, "quests": len(q["gather"])})
+        for k, sid in QUEST_KEYS:
+            if q.get(k):
+                mine[k] = q[k]
+                pages[sid]["rows"].append({"item": item, "quests": len(q[k])})
         if q.get("unlisted_reward") or q.get("unlisted_gather"):
             mine["unlisted"] = [q.get("unlisted_reward", 0), q.get("unlisted_gather", 0)]
     pages = {k: v for k, v in pages.items() if v["rows"]}
@@ -124,7 +135,8 @@ def merge_items(items_dir, per_item, names):
         if not (d["drops"] or d["quests"] or d["rewards"] or new):
             path.unlink()  # its last source is gone: no file, as dev/make-item-data.py would write it
             continue
-        counts[d["id"]] = sum(len(d.get(k) or []) for k in ("drops", "quests", "rewards", "where", "gather"))
+        counts[d["id"]] = sum(len(d.get(k) or []) for k in ("drops", "quests", "rewards", "where", "gather", "fish",
+                                                             "supply"))
         if old != {k: new[k] for k in SOURCE_KEYS if k in new}:
             path.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     for item, new in per_item.items():
@@ -133,7 +145,7 @@ def merge_items(items_dir, per_item, names):
             continue
         d = {"id": item, "name": names[item], "drops": [], "quests": [], "rewards": []}
         d.update({k: new[k] for k in SOURCE_KEYS if k in new})
-        counts[item] = len(d.get("where") or []) + len(d.get("gather") or [])
+        counts[item] = sum(len(d.get(k) or []) for k in ("where", "gather", "fish", "supply"))
         path.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     for row in index["items"]:
         row[4] = counts.get(row[0], 0)
@@ -161,7 +173,7 @@ def main(argv):
     index, pages, per_item = build(detail, names)
     write(index, pages, DATA / "sources")
     merge_items(DATA / "items", per_item, names)
-    with_src = sum(1 for v in per_item.values() if v.get("where") or v.get("offered") or v.get("gather"))
+    with_src = sum(1 for v in per_item.values() if any(v.get(k) for k in ("where", "offered", "gather", "fish", "supply")))
     print(f"{len(pages)} sources, {sum(len(p['rows']) for p in pages.values())} rows, {len(per_item)} items with "
           f"source data ({with_src} with a source players can use), {index['skipped']} rows of items the site lacks")
     return 0

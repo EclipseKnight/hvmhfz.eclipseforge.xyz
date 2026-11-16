@@ -7,7 +7,9 @@
    its item links open items that exist, the Price header sorts by number, ?q= filters; an unknown source says so;
    an item with a shop and a recipe (found in the data) shows "Where to get it" first, with the shop linked to its
    source page and the materials linked to their items; an item with gathering quests opens the quest list; an
-   item with no source says "No source on this server yet"; the Database search finds a source; no sideways scrolling and no
+   item that is fished and one only in a quest supply box (part 208) show those lines, linked to their source pages,
+   the supply line says "in that quest only", and the fishing list opens; an item with no source says "No source on
+   this server yet"; the Database search finds a source; no sideways scrolling and no
    script errors. SHOTS=<dir> saves screenshots of each page at both widths.
 
      NODE_PATH=/root/work/pw-tools/node_modules [SHOTS=dir] node dev/check-source-pages.js
@@ -30,17 +32,19 @@ const road = readJson("data/sources/road-shop-4.json");
 
 /* An item with a shop row and a craft row with materials, one with gathering quests, one with no source at all. */
 const groupOf = new Map(index.sources.map(function (s) { return [s[0], s[2]]; }));
-let both = null, gatherer = null;
+let both = null, gatherer = null, fisher = null, supplied = null;
 for (const file of fs.readdirSync(path.join(ROOT, "data/items"))) {
-  if (file === "index.json" || (both && gatherer)) continue;
+  if (file === "index.json" || (both && gatherer && fisher && supplied)) continue;
   const d = readJson("data/items/" + file);
   const w = d.where || [];
   if (!both && w.some(function (e) { return groupOf.get(e[0]) === "shop"; }) &&
       w.some(function (e) { return groupOf.get(e[0]) === "craft" && e[1].mats; })) both = d;
   if (!gatherer && (d.gather || []).length > 2) gatherer = d;
+  if (!fisher && (d.fish || []).length > 1) fisher = d;
+  if (!supplied && (d.supply || []).length && !w.length && !d.gather && !d.offered && !d.fish) supplied = d;
 }
 const none = [...items.values()].find(function (r) { return r[0] > 0 && !r[4]; });
-check(both && gatherer && none, "found test items in the data");
+check(both && gatherer && none && fisher && supplied, "found test items in the data");
 
 function serve() {
   const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json",
@@ -142,6 +146,33 @@ async function run(chromium) {
       const ql = await pg.$$eval("#where .where-quests li", function (l) { return l.length; });
       check(ql === gatherer.gather.length, V + ": the gathering list shows " + ql + " of " + gatherer.gather.length + " quests");
       await shot("item-" + gatherer.id + "-gathering");
+
+      /* part 208: fishing and the quest supply box */
+      await pg.goto(base + "/item.html?id=" + fisher.id, { waitUntil: "load" });
+      await pg.waitForSelector("#where .where-fishing");
+      check(await pg.$eval("#where .where-fishing .where-src a", function (a) { return a.getAttribute("href"); }) === "/source.html?id=fishing",
+            V + ": the fishing line links its source page (item " + fisher.id + ")");
+      await pg.click("#where .where-fishing .where-fold summary");
+      await pg.waitForSelector("#where .where-fishing .where-quests li");
+      const fl = await pg.$$eval("#where .where-fishing .where-quests li", function (l) { return l.length; });
+      check(fl === fisher.fish.length, V + ": the fishing list shows " + fl + " of " + fisher.fish.length + " quests");
+      await noSideways("item with fishing");
+      await shot("item-" + fisher.id + "-fishing");
+      await pg.goto(base + "/item.html?id=" + supplied.id, { waitUntil: "load" });
+      await pg.waitForSelector("#where .where-quest-supply-box");
+      const sup = await pg.textContent("#where .where-quest-supply-box");
+      check(/Quest supply box/.test(sup) && /in that quest only/.test(sup), V + ": the supply line says it is for that quest only (item " + supplied.id + ")");
+      check(!/No source on this server yet/.test(await pg.textContent("#where")), V + ": a supply-only item is not shown as having no source");
+      await noSideways("item with a supply box");
+      await shot("item-" + supplied.id + "-supply");
+      for (const sid of ["fishing", "quest-supply-box"]) {
+        await pg.goto(base + "/source.html?id=" + sid, { waitUntil: "load" });
+        await pg.waitForSelector(".source-table tbody tr");
+        const n = await pg.$$eval(".source-table tbody tr", function (r) { return r.length; });
+        const want = readJson("data/sources/" + sid + ".json").rows.length;
+        check(n === want, V + ": " + sid + " lists " + n + " of " + want + " items");
+        await noSideways(sid);
+      }
 
       await pg.goto(base + "/item.html?id=" + none[0], { waitUntil: "load" });
       await pg.waitForSelector("#where");
