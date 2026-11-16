@@ -4,24 +4,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Set builder · Hunsterverse</title>
-    <meta name="description" content="Plan a Monster Hunter Frontier Z armour set: weapon, armour pieces, decorations and cuffs, with its active skills, skill points, defence and resistances." />
+    <meta name="description" content="Plan a Monster Hunter Frontier Z armour set piece by piece, or pick the skills you want and find sets that reach them: active skills, skill points, defence and resistances." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Hunsterverse" />
     <meta property="og:title" content="Set builder · Hunsterverse" />
-    <meta property="og:description" content="Plan a Monster Hunter Frontier Z armour set: weapon, armour pieces, decorations and cuffs, with its active skills, skill points, defence and resistances." />
+    <meta property="og:description" content="Plan a Monster Hunter Frontier Z armour set piece by piece, or pick the skills you want and find sets that reach them: active skills, skill points, defence and resistances." />
     <meta property="og:url" content="https://frontier.hunsterverse.net/set-builder.html" />
     <meta property="og:image" content="https://frontier.hunsterverse.net/assets/og/set-builder.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Set builder · Hunsterverse" />
-    <meta name="twitter:description" content="Plan a Monster Hunter Frontier Z armour set: weapon, armour pieces, decorations and cuffs, with its active skills, skill points, defence and resistances." />
+    <meta name="twitter:description" content="Plan a Monster Hunter Frontier Z armour set piece by piece, or pick the skills you want and find sets that reach them: active skills, skill points, defence and resistances." />
     <meta name="twitter:image" content="https://frontier.hunsterverse.net/assets/og/set-builder.png" />
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
     <link rel="stylesheet" href="/css/styles.css?v=23" />
-    <link rel="stylesheet" href="/css/set-builder.css?v=2" />
+    <link rel="stylesheet" href="/css/set-builder.css?v=3" />
     <link rel="stylesheet" href="/css/community-sets.css?v=1" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
@@ -124,26 +124,36 @@
     </header>
     <!-- /site-shell:header -->
 
-    <main id="content" class="wrap page wide tool-page">
+    <main id="content" class="wrap page wide tool-page sb-page">
       <!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
       <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Tools</li><li aria-current="page">Set builder</li></ol></nav>
       <!-- /site-shell:crumbs -->
-      <header class="page-head">
+      <header class="page-head sb-head">
         <h1>Set builder</h1>
-        <p class="page-sub">Pick a weapon, five armour pieces, decorations and cuffs, and see the set's active skills, skill points, defence and resistances. It runs in your browser on the game's own data; the address holds the set, so a link shares it. Signed in, load your character's gear and see what you are missing.</p>
-        <p class="tool-credit">Looking for sets that reach the skills you want? <b>Frontier Set Searcher</b> by <a href="https://github.com/d0t-execute">d0t-execute</a> searches every piece for them: <a href="https://d0t-execute.github.io/frontier-set-searcher/">open it in its own tab</a> (<a href="https://github.com/d0t-execute/frontier-set-searcher">source</a>, <a href="https://github.com/d0t-execute/frontier-set-searcher/issues">its issue page</a>).</p>
+        <p class="page-sub">Build a set on the cards: click a piece or a decoration socket and pick from the list beside it, with what each choice changes. Or open Find sets, pick the skills you want and get sets that reach them. It runs in your browser on the game's own data; the address holds the set, so a link shares it. Signed in, load your character's gear and see what you are missing.</p>
         <p class="tool-credit" id="sb-data">Loading the game data.</p>
       </header>
 
       <p class="form-alert" id="sb-status" role="status" hidden></p>
       <noscript><p class="form-alert">The Set builder needs JavaScript.</p></noscript>
 
-      <div class="sb-app" id="sb-app" hidden>
-        <div class="sb-editor" id="sb-editor"></div>
-        <aside class="sb-summary" id="sb-summary" aria-label="The set's skills and stats" aria-live="polite"></aside>
+      <div class="sb-app" id="sb-app" data-view="equip" hidden>
+        <div class="sb-mine-box" id="sb-mine-box"></div>
+        <div class="tabs sb-tabs" role="tablist" aria-label="Set builder">
+          <button type="button" class="tab sb-tab" role="tab" id="sb-tab-equip" data-view="equip" aria-selected="true" aria-controls="sb-build">Equipment</button>
+          <button type="button" class="tab sb-tab" role="tab" id="sb-tab-skills" data-view="skills" aria-selected="false" aria-controls="sb-summary" tabindex="-1">Skills</button>
+          <button type="button" class="tab sb-tab" role="tab" id="sb-tab-find" data-view="find" aria-selected="false" aria-controls="sb-find" tabindex="-1">Find sets</button>
+        </div>
+        <div class="sb-build" id="sb-build">
+          <div class="sb-slots" id="sb-editor" role="region" aria-label="Your set"></div>
+          <section class="panel sb-list" id="sb-list" aria-label="Choose"></section>
+          <aside class="sb-summary" id="sb-summary" aria-label="The set's skills and stats" aria-live="polite"></aside>
+        </div>
+        <div class="sb-find" id="sb-find" role="region" aria-label="Find sets"></div>
       </div>
       <section class="panel sb-missing" id="sb-missing" aria-label="What you are missing for this set" aria-live="polite" hidden></section>
       <section class="panel sb-post" id="sb-post" aria-label="Post this set to Community Sets" hidden></section>
+      <p class="tool-credit">Another search: <b>Frontier Set Searcher</b> by <a href="https://github.com/d0t-execute">d0t-execute</a> also searches every piece for the skills you want: <a href="https://d0t-execute.github.io/frontier-set-searcher/">open it in its own tab</a> (<a href="https://github.com/d0t-execute/frontier-set-searcher">source</a>, <a href="https://github.com/d0t-execute/frontier-set-searcher/issues">its issue page</a>).</p>
       <p class="tool-credit">The skill rules are the game's own, read from the client: the skill limit and which skills drop over it, automatic, Zenith and Tower Deco skills, which skills a weapon can use, defence and slots by armour level. Not counted: Tower armour plates, sigils of non-Tower weapons, food, Diva songs and other buffs, and special quest rules. A skill that looks wrong? <a href="/report.html">Report it</a>.</p>
     </main>
 
@@ -195,7 +205,8 @@
     <script src="/js/community-api.js?v=2"></script>
     <script src="/js/set-post-form.js?v=1"></script>
     <script src="/js/armor-owned.js?v=1" defer></script>
-    <script src="/js/set-builder-mine.js?v=1" defer></script>
-    <script src="/js/set-builder.js?v=4" defer></script>
+    <script src="/js/set-builder-mine.js?v=2" defer></script>
+    <script src="/js/set-builder-find.js?v=1" defer></script>
+    <script src="/js/set-builder.js?v=5" defer></script>
   </body>
 </html>

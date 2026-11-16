@@ -7,11 +7,13 @@ use (A: decoded rules in `hvmhfz_re`; C: the API's `/builder` and "missing" endp
 
 | File | What |
 |---|---|
-| `set-builder.html`, `js/set-builder.js`, `css/set-builder.css` | The page: weapon, five pieces with levels, decorations, sigils, cuffs; summary with active skills, points per tree, defence, resistances; the set in the address |
+| `set-builder.html`, `js/set-builder.js`, `css/set-builder.css` | The page (see "Page layout"): the set as cards (weapon, five pieces with level pips and decoration sockets, cuffs, hunter filters), the list for the card being edited, the skills panel; the set in the address |
+| `js/set-builder-find.js` | The "Find sets" tab: skill picker, filters, the search engine's worker, result cards, compare (see "Find sets") |
+| `dev/fake-armor-search-worker.js` | A stand-in for `js/armor-search-worker.js` that the page checks serve in its place |
 | `js/armor-calc.js` | The calculator and the set format (encode, decode, normalize; `calc` = the game's recompute, `compute` = the page's set checked and calculated). No page code; node runs it too |
 | `js/armor-rules.js` | The game's rules for one row at a time (activation, weapon gate, Zenith, limit parts, defence and slot growth, gender), read from `data/armor/rules.json` |
 | `dev/make-armor-data.py` | Writes `data/armor/` from `hvmhfz_re` `data/armor_rules.json` and `data/armor_builder.json`; stops when their data version is not the patch zip's `mhfdat.bin` |
-| `dev/check-set-builder.js` | All 3,000 client answers of `hvmhfz_re` `data/armor_calc_cases.json`, the data rows against `hvmhfz_re`'s, rules, page checks (node + headless Chromium) |
+| `dev/check-set-builder.js` | All 3,000 client answers of `hvmhfz_re` `data/armor_calc_cases.json`, the data rows against `hvmhfz_re`'s, rules, page checks including Find sets (node + headless Chromium) |
 | `js/armor-owned.js` | Character import helpers (no page code; node runs it): import pieces to a set, what is owned, the "missing" request body |
 | `js/set-builder-mine.js` | The "Your character" panel, the "Only what I own" filter hooks and the "Missing for this set" panel |
 | `dev/check-set-builder-mine.js` | Set format cross-check with the API, the helpers, and the page against a fake API (headless Chromium) |
@@ -79,11 +81,64 @@ The game's own rules, decoded from the client by `hvmhfz_re` (part 199; format a
 - Left out: Tower armour plates (and the armour Tower sigils that go in them), sigils of non-Tower weapons (rolled
   per copy, never skill points), defence and resistance from skills, food, songs, buffs, special quest rules.
 
+## Page layout
+
+Owner, 2026-11-15: a wide, game-like page with a skill list, not a column of dropdowns. Every step is a button
+(cards, sockets, level pips, list rows, chips), so the page works from the keyboard; only the character panel keeps
+its pickers.
+
+- **Wide screens (1200 px and up), three columns.** Left: the set as cards: weapon (class, weapon, sockets or a Tower
+  weapon's sigil and Road gem places), head to legs (icon, name, defence, skills, owned badge, level pips, one socket
+  per decoration and one empty socket per free slot), skill cuffs (two sockets), hunter filters (gender, "Only what
+  players can get"). Clicking a card's name or a socket opens its list in the centre. Centre: that list, searchable
+  (name or skill; a skill tree's whole name lists only rows with its points and sorts by them), sortable by its
+  headers, paged by 80; a "Yours" column with a character loaded; pointing at or tabbing to a row shows what it
+  changes against what you have (defence, skills gained and lost, points per tree). Right: defence and resistances,
+  the skill limit as boxes, active skills (automatic, Road gem and over-the-limit skills in their own groups), Zenith
+  skills, one bar per tree with points (ticks at its thresholds, filled to its points, "N more for ..."; "All skill
+  trees" lists every tree), problems, share. The list and the skills stay in view with their own scroll.
+- **Below 1200 px** the skills are their own tab (Equipment / Skills / Find sets); **below 760 px** the list sits
+  under the cards with its own scroll, its headers a row of sort buttons and each row one card.
+- The character panel ("Your character", `js/set-builder-mine.js`) is a strip above the tabs, so "Only what I own"
+  filters every list and Find sets can send the import to the search.
+- A new piece keeps the decorations that still fit; a lower level drops the ones that no longer fit. Filling a socket
+  moves on to the next free one.
+- The list's preview box has a fixed height: rows must not move under a still pointer (that previewed the next row,
+  and so on). The tables are not `.table-wrap`, whose swipe hint (`js/tablesort.js`) came and went as the phone
+  layout reflowed.
+
+## Find sets
+
+The "Find sets" tab (`js/set-builder-find.js`): pick the skills you want (search by name or a skill's level name,
+category chips Attack / Defence / Resistance / Gunner / Weapon Tech / Other, chosen by tree name since the game has no
+categories; one chip per level, one level per tree), then the filters: weapon class (defaults to the builder's),
+gender, hunter type (set by the class when there is one), rank (up to HR / GR, filled from a loaded character), only
+what I own (with a character), Zenith pieces, Tower decorations, and which of the builder's pieces to keep. "Find
+sets" runs the search engine in the Web Worker `js/armor-search-worker.js` (the armor-search lane; its engine and
+rules are in "Skill search" once merged) and shows its progress, a Cancel button, and one card per set: pieces with
+levels and decorations, each wanted skill met or not, the other skills, defence, free slots, resistances; "Load into
+builder" puts the set on the cards (and in the address), "Compare" lines up to three sets beside the builder's set.
+Every result is recalculated with `ArmorCalc.compute` for what the cards show. Without the worker file the tab says
+the search is not on the site and searches nothing.
+
+Messages (the interface agreed with the armor-search lane):
+
+| Direction | Message |
+|---|---|
+| page to worker | `{type: "search", query}`; `{type: "cancel"}` to stop (the page waits 1.5 s for a last `done`, then ends the worker) |
+| worker to page | `{type: "progress", done, total}` ..., then `{type: "done", result: {results: [{set, skills, extraSkills, defence, res, freeSlots, score}], stats, truncated}}`; `{type: "error", message}` is shown as it is |
+
+`query`: `wanted: [{skill, level, tree}]` (skill = the skill id of the level picked, level = its points threshold,
+tree = its tree), `weaponClass` (null = any), `weaponId` (0 unless the builder's weapon is kept), `gender` (`""`,
+`male`, `female`), `hunterType` (`blade`, `gunner`, `any`), `rankMax` (`{hr, gr}` or null), `ownedOnly`, `owned`
+(the character's `/builder` import when one is loaded, else null), `allowZenith`, `allowTowerDecos`, `fixed`
+(`{slot: id}` of the pieces kept), `exclude` (`[]`), `maxResults` 50, `timeLimitMs` 10000. The cards take only each result's `set` and show what the
+calculator gives for it (defence, free slots, skills), so they agree with the builder and the compare table.
+
 ## Not built yet
 
-Search by wanted skills (phase 2b: until
-then the page links to d0t-execute's Frontier Set Searcher), community sets (phase 3, see "Community sets" below), upgrade lines on this page
-(each piece links to its equipment page, which shows the line and materials).
+Upgrade lines on this page (each piece links to its equipment page, which shows the line and materials).
+d0t-execute's Frontier Set Searcher stays linked under the builder as another search.
 
 ## Character import (phase 2, lane C)
 
@@ -115,7 +170,8 @@ API never writes a save; only the account's own characters):
   weapon, piece or cuff is not sent.
 
 Checks: `NODE_PATH=/root/work/pw-tools/node_modules node dev/check-set-builder-mine.js` (`SHOTS=<folder>` saves
-pictures). Its fake API answers with the DTO shapes of `builder/BuilderDtos.java` and refuses what
+pictures). It also checks that Find sets fills the rank from the character and sends the import with "Only what I
+own". Its fake API answers with the DTO shapes of `builder/BuilderDtos.java` and refuses what
 `BuilderSet.parse` refuses (a port in the check).
 
 ## Community sets (phase 3, lane D)

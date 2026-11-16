@@ -9,7 +9,8 @@
                                                          materials with sources, zenny
    The import's meaning for the builder (sets, owned counts, the request body) is js/armor-owned.js.
    js/set-builder.js creates this with a host object: getSet(), data (the page's data), setGender(g),
-   loadSet(set) (replaces the set and redraws), render(), maxLevelOf(slot, id). */
+   loadSet(set) (replaces the set and redraws), render(), maxLevelOf(slot, id). The panel sits in a strip above the
+   builder's tabs, so "Only what I own" filters the Equipment lists and Find sets can use the import too. */
 (function () {
   "use strict";
 
@@ -406,7 +407,9 @@
       start: start, panel: panel, renderMissing: renderMissing, filtering: filtering, ownedLevel: ownedLevel,
       ownsWeapon: ownsWeapon, weaponCount: weaponCount, ownsItem: ownsItem, itemHint: itemHint,
       loaded: function () { return !!mine.inv; },
-      version: function () { return mine.version; }
+      version: function () { return mine.version; },
+      // the character's import as the API sent it (Find sets passes it to the search engine), null when none
+      importData: function () { return mine.imp; }
     };
   }
 

@@ -18,11 +18,19 @@
    does nothing; gender is a hard rule, blademaster/gunner only a list filter; a Tower weapon's Road gem gives its
    skill outside the limit and sigils go to the sigil places.
 
-   Page, at 1280 px and 390 px: pick a weapon class and weapon, a head piece (its slot's list loads on the first
-   open), a decoration and a cuff; the summary shows the skills, the points table, the defence and resistances the
-   calculator gives for that set; the address holds the set and a reload restores it; a shared link with a cuff
-   for another weapon marks the skill "no effect"; a broken link says so; the summary sits beside the set on a wide
-   screen and under it on a phone; no sideways scrolling and no script errors. SHOTS=<dir> saves screenshots.
+   Page, at 1600 px and 390 px: on the cards pick a weapon class (tiles) and weapon, a head piece (its slot's list
+   loads on the first open; pointing at a row previews the defence it adds), a decoration in the first socket and a
+   cuff, each from the centre list by search; the skills panel shows the skills, one bar per tree, the defence and
+   resistances the calculator gives for that set; the address holds the set and a reload restores it; the list
+   sorts by a header and a skill tree's name as the search lists only pieces with its points, best first; a level
+   pip changes the level and drops the decorations that no longer fit; a cuff for another weapon marks the skill "no
+   effect"; a broken link says so. Layout: cards, list and skills side by side on a wide screen; on a phone the
+   skills are their own tab. Find sets (with dev/fake-armor-search-worker.js served as js/armor-search-worker.js):
+   a skill level chip makes the wanted skill, Find sets sends the engine the query of the interface, shows progress
+   and one card per result with the defence and the wanted skills met as the calculator says, Compare lines a
+   result up with the builder's set, Load into builder puts it in the address, Cancel stops a search; without the
+   worker file the tab says the search is not there. No sideways scrolling and no script errors. SHOTS=<dir> saves
+   screenshots.
 
    One data version: the API's crafting data (HVMHFZ_API, default /root/mhfz/hvmhfz_rest_api) names the page's
    mhfdat.bin and its community-sets catalog the page's version, and offers every piece and item the page does.
@@ -337,19 +345,33 @@ if (towerW && gem) {
 }
 
 /* ---- the page ---- */
+const FAKE_WORKER = path.join(ROOT, "dev/fake-armor-search-worker.js");
+let fakeEngine = true;   // false: js/armor-search-worker.js answers 404, as on a site without the engine
 function serve() {
   const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json",
     ".png": "image/png", ".webp": "image/webp", ".svg": "image/svg+xml", ".jpg": "image/jpeg", ".gif": "image/gif" };
   const srv = http.createServer(function (req, res) {
     let p = decodeURIComponent(req.url.split("?")[0].split("#")[0]);
     if (p.endsWith("/")) p += "index.html";
-    const file = path.join(ROOT, p);
+    let file = path.join(ROOT, p);
+    if (p === "/js/armor-search-worker.js") file = fakeEngine ? FAKE_WORKER : path.join(ROOT, "no such file");
     if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); res.end(); return; }
     res.writeHead(200, { "Content-Type": types[path.extname(file)] || "application/octet-stream" });
+    if (req.method === "HEAD") { res.end(); return; }
     fs.createReadStream(file).pipe(res);
   });
   return new Promise(function (resolve) { srv.listen(0, "127.0.0.1", function () { resolve(srv); }); });
 }
+
+// The first fake result (dev/fake-armor-search-worker.js) for a Long Sword query, as the page normalizes it.
+const fakeSet0 = Calc.normalize({ weapon: [7, 31, [], []], armour: [["head", 29, 7, [attackG[0]]], ["chest", 32, 7, []],
+  ["legs", 33, 7, []]], cuffs: [] });
+const fake0 = Calc.compute(fakeSet0, ctxWith());
+const attackTree = rulesJson.trees.find(function (t) { return t.name === "Attack"; });
+const attackLarge = attackTree.levels.find(function (l) { return l[0] === 25; });   // [25, skill]
+const fake0Free = fake0.pieces.reduce(function (n, p) { return n + (p.piece ? p.slots.value - p.decos.used : 0); }, 0) +
+  (fake0.weaponSlots ? fake0.weaponSlots.capacity - fake0.weaponSlots.used : 0);
+const fake0Met = fake0.active.some(function (s) { return !s.dropped && s.works && s.tree === attackTree.id && s.total >= 25; });
 
 async function run(chromium) {
   const srv = await serve();
@@ -358,14 +380,22 @@ async function run(chromium) {
   const shots = process.env.SHOTS;
   if (shots) fs.mkdirSync(shots, { recursive: true });
   try {
-    for (const view of [{ name: "desktop", width: 1280, height: 900 }, { name: "phone", width: 390, height: 844 }]) {
+    for (const view of [{ name: "desktop", width: 1600, height: 1000 }, { name: "phone", width: 390, height: 844 }]) {
       const V = view.name;
-      const ctx = await browser.newContext({ viewport: { width: view.width, height: view.height }, deviceScaleFactor: V === "phone" ? 2 : 1 });
+      const phone = V === "phone";
+      fakeEngine = true;
+      const ctx = await browser.newContext({ viewport: { width: view.width, height: view.height }, deviceScaleFactor: phone ? 2 : 1 });
       const pg = await ctx.newPage();
       const errors = [];
       pg.on("pageerror", function (e) { errors.push(e.message); });
       await pg.route(/api\.hvmhfz\.eclipseforge\.xyz/, function (rt) { rt.abort(); });
-      await pg.addInitScript(function () { localStorage.setItem("hvmhfz.consent", JSON.stringify({ choice: "declined", at: new Date().toISOString() })); });
+      await pg.addInitScript(function () {
+        localStorage.setItem("hvmhfz.consent", JSON.stringify({ choice: "declined", at: new Date().toISOString() }));
+        // record what the page sends the search worker
+        window.__sbSent = [];
+        const post = Worker.prototype.postMessage;
+        Worker.prototype.postMessage = function (m) { window.__sbSent.push(JSON.parse(JSON.stringify(m))); return post.apply(this, arguments); };
+      });
       async function noSideways(what) {
         const over = await pg.evaluate(function () {
           const m = document.querySelector("main") || document.body;
@@ -373,14 +403,24 @@ async function run(chromium) {
         });
         check(over <= 0, V + " " + what + ": no sideways scrolling (" + over + " px)");
       }
-      async function shot(name) { if (shots) await pg.screenshot({ path: path.join(shots, V + "-" + name + ".png"), fullPage: true }); }
+      async function shot(name, full) {
+        if (!shots) return;
+        const nav = await pg.addStyleTag({ content: ".site-nav{position:static !important}" });   // no header over a full-page picture
+        await pg.screenshot({ path: path.join(shots, V + "-" + name + ".png"), fullPage: full !== false });
+        await nav.evaluate(function (n) { n.remove(); });
+      }
+      // open a card's list, search it and pick the row with exactly this name
       async function pick(focusKey, typed, exact) {
         await pg.click('[data-focus="' + focusKey + '"]');
-        await pg.waitForSelector(".bui-pop:not([hidden])");
-        if (typed && await pg.isVisible(".bui-pop .bui-search")) await pg.fill(".bui-pop .bui-search", typed);
-        await pg.click('.bui-pop .bui-option:has(.bui-name:text-is("' + exact + '"))');
-        await pg.waitForFunction(function () { return document.querySelector(".bui-pop").hidden; });
+        await pg.waitForSelector("#sb-list .sb-search");
+        await pg.fill("#sb-list .sb-search", typed);
+        const row = '#sb-list .sb-pick:has(.sb-row-name:text-is("' + exact + '"))';
+        await pg.waitForSelector(row);
+        await pg.click(row);
       }
+      const setInAddress = function () {
+        return pg.evaluate(function () { return location.hash; }).then(function (h) { return Calc.decode(/s=([A-Za-z0-9_-]+)/.exec(h)[1]); });
+      };
       const loaded = [];
       pg.on("request", function (req) { if (/\/data\/armor\/\w+\.json/.test(req.url())) loaded.push(req.url().split("/").pop()); });
 
@@ -389,45 +429,171 @@ async function run(chromium) {
       check(!loaded.some(function (f) { return SLOTS.indexOf(f.replace(".json", "")) !== -1; }), V + " no slot list loads before it is opened");
       check((await pg.textContent("#sb-data")).indexOf(index.version) !== -1, V + " names the data version");
       check(await pg.$('a[href="https://d0t-execute.github.io/frontier-set-searcher/"]') !== null && await pg.$("iframe") === null,
-            V + " the searcher is a link, not embedded");
-      await pick("weapon|class", "", "Long Sword");
-      await pg.waitForSelector('[data-focus="weapon|id"]');
+            V + " the other searcher is a link, not embedded");
+      check(await pg.$$eval("#sb-list .sb-class", function (n) { return n.length; }) === weaponTypes.length,
+            V + " an empty set opens on the weapon class tiles");
+      await shot("empty", false);
+
+      // weapon class tile, weapon, head piece (with the compare preview), decoration socket, cuff
+      await pg.click('[data-focus="list|class|7"]');
+      await pg.waitForSelector('#sb-list[data-kind="weapon"] .sb-search');
       await pick("weapon|id", "Black Katana", "Black Katana Mk.Ⅲ");
-      await pick("head|piece", "Rathalos Helm", "Rathalos Helm");
+      await pg.waitForSelector('[data-focus="weapon|id"]:text("Black Katana")');
+      await pg.click('[data-focus="head|piece"]');
+      await pg.waitForSelector('#sb-list[data-kind="piece"] .sb-search');
+      await pg.fill("#sb-list .sb-search", "Rathalos Helm");
+      const helmRow = '#sb-list .sb-pick:has(.sb-row-name:text-is("Rathalos Helm"))';
+      await pg.waitForSelector(helmRow);
+      await pg.hover(helmRow);
+      await pg.waitForSelector("#sb-preview .sb-delta");
+      const preview = await pg.textContent("#sb-preview");
+      check(new RegExp("Def \\+" + rules.defenceAt({ defence: helm[3], def_growth: helm[12] }, helm[8]) + "(?!\\d)").test(preview),
+            V + " pointing at a piece previews the defence it adds: " + preview);
+      await pg.click(helmRow);
       check(loaded.indexOf("head.json") !== -1 && loaded.indexOf("legs.json") === -1, V + " only the opened slot's list loaded");
       await pg.waitForSelector('[data-focus="head|deco|0"]');
       await pick("head|deco|0", "Attack G", "Attack G");
       await pick("cuff|0", "SnS", "SnS・G");
       await pg.waitForFunction(function () { return /#s=/.test(location.hash); });
-      const hash = await pg.evaluate(function () { return location.hash; });
-      const fromPage = Calc.decode(hash.replace("#s=", ""));
+      const fromPage = await setInAddress();
       check(fromPage && same(fromPage.armour[0], ["head", helm[0], helm[8], [attackG[0]]]) &&
             fromPage.weapon[1] === katana[0] && same(fromPage.cuffs, [snsCuff[0]]), V + " the address holds the set");
       const shown = await pg.evaluate(function () {
         return { def: document.querySelector(".sb-stats").getAttribute("data-defence"),
                  skills: Array.from(document.querySelectorAll("#sb-active .sb-skill")).map(function (li) { return Number(li.getAttribute("data-skill")); }),
                  idle: Array.from(document.querySelectorAll("#sb-active .sb-skill.is-idle")).map(function (li) { return li.textContent; }),
-                 rows: document.querySelectorAll(".sb-points tbody tr").length };
+                 trees: Array.from(document.querySelectorAll("#sb-trees .sb-tree")).map(function (li) {
+                   return [Number(li.getAttribute("data-tree")), li.querySelector(".sb-tree-pts").textContent]; }),
+                 socket: (document.querySelector('[data-focus="head|deco|0"]') || {}).textContent };
       });
       check(Number(shown.def) === r.defence.total, V + " defence shown = calculator (" + shown.def + ")");
       check(same(shown.skills, r.active.map(function (a) { return a.skill; })), V + " active skills shown = calculator");
-      check(shown.rows === r.trees.length, V + " one points row per tree");
+      check(same(shown.trees, r.trees.map(function (t) { return [t.tree, (t.total > 0 ? "+" : "") + t.total]; })), V + " one bar per tree with its points");
       check(shown.idle.some(function (t) { return /no effect with Long Sword/.test(t); }), V + " SnS Tech marked no effect");
-      await shot("set");
+      check(/Attack G/.test(shown.socket || ""), V + " the decoration sits in the head's first socket");
       await noSideways("set");
       const layout = await pg.evaluate(function () {
-        const e = document.getElementById("sb-editor").getBoundingClientRect();
-        const s = document.getElementById("sb-summary").getBoundingClientRect();
-        return { beside: s.left >= e.right - 1, under: s.top >= e.bottom - 1 };
+        const box = function (id) { const b = document.getElementById(id).getBoundingClientRect(); return { l: b.left, r: b.right, t: b.top, b: b.bottom, w: b.width }; };
+        return { cards: box("sb-editor"), list: box("sb-list"), skills: box("sb-summary") };
       });
-      check(V === "desktop" ? layout.beside : layout.under, V + " summary " + (V === "desktop" ? "beside" : "under") + " the set");
+      if (!phone) {
+        check(layout.list.l >= layout.cards.r - 1 && layout.skills.l >= layout.list.r - 1 && layout.skills.w > 0,
+              V + " cards, list and skills side by side " + JSON.stringify(layout));
+        await shot("set", false);
+      } else {
+        check(layout.skills.w === 0 && layout.list.t >= layout.cards.b - 1, V + " list under the cards, skills in their own tab " + JSON.stringify(layout));
+        await shot("equipment");
+        await pg.click("#sb-tab-skills");
+        const tabbed = await pg.evaluate(function () {
+          return { skills: document.getElementById("sb-summary").getBoundingClientRect().width, cards: document.getElementById("sb-editor").getBoundingClientRect().width };
+        });
+        check(tabbed.skills > 0 && tabbed.cards === 0, V + " the Skills tab shows the skills alone " + JSON.stringify(tabbed));
+        await shot("skills");
+        await noSideways("skills tab");
+        await pg.click("#sb-tab-equip");
+      }
+
+      // sorting and a skill tree's name as the search
+      await pg.click('[data-focus="head|piece"]');
+      await pg.fill("#sb-list .sb-search", "");
+      await pg.waitForSelector('#sb-list th[aria-sort="descending"] [data-focus="list|sort|def"]');
+      await pg.click('[data-focus="list|sort|def"]');
+      await pg.waitForSelector('#sb-list th[aria-sort="ascending"] [data-focus="list|sort|def"]');
+      const defs = await pg.$$eval("#sb-list tbody tr", function (rows) { return rows.slice(0, 20).map(function (tr) { return Number(tr.children[2].textContent); }); });
+      check(defs.length === 20 && defs.every(function (d, i) { return !i || defs[i - 1] <= d; }), V + " Def sorts lowest first on a click " + defs.join(","));
+      await pg.fill("#sb-list .sb-search", "Attack");
+      await pg.waitForSelector('[data-focus="list|sort|pts"]');
+      const pts = await pg.$$eval("#sb-list tbody tr", function (rows) {
+        const col = Array.from(document.querySelectorAll("#sb-list thead th")).findIndex(function (th) { return th.textContent.indexOf("Attack") === 0; });
+        return rows.slice(0, 30).map(function (tr) { return Number(tr.children[col].textContent); });
+      });
+      check(pts.length > 5 && pts[0] > 0 && pts.every(function (v, i) { return v !== 0 && (!i || pts[i - 1] >= v); }),
+            V + " a tree name lists pieces with its points, best first " + pts.slice(0, 8).join(","));
 
       await pg.reload({ waitUntil: "load" });
       await pg.waitForSelector("#sb-app[data-ready]");
-      await pg.waitForSelector(".sb-skill");
+      await pg.waitForSelector(".sb-skill", { state: "attached" });
       const again = await pg.evaluate(function () { return document.querySelector(".sb-stats").getAttribute("data-defence"); });
       check(Number(again) === r.defence.total, V + " a reload restores the set");
       check((await pg.textContent('[data-focus="head|piece"]')).indexOf("Rathalos Helm") !== -1, V + " the piece's name is back");
+
+      // a level pip: level 1 has no slots, so the decoration comes off
+      await pg.click('[data-focus="head|level|1"]');
+      await pg.waitForFunction(function () { return document.querySelector('[data-focus="head|level|1"][aria-pressed="true"]'); });
+      let s1 = await setInAddress();
+      check(s1.armour[0][2] === 1 && s1.armour[0][3].length === 0, V + " level 1 from its pip, the decoration that no longer fits is off " + JSON.stringify(s1.armour[0]));
+      await pg.click('[data-focus="head|level|' + helm[8] + '"]');
+      await pg.waitForFunction(function (l) { return document.querySelector('[data-focus="head|level|' + l + '"][aria-pressed="true"]'); }, helm[8]);
+
+      // Find sets with the stand-in engine
+      await pg.click("#sb-tab-find");
+      await pg.waitForSelector("#sb-find-q");
+      await pg.fill("#sb-find-q", "Attack");
+      const chipSel = '[data-focus="find|want|' + attackTree.id + '|' + attackLarge[1] + '"]';
+      await pg.waitForSelector(chipSel);
+      await pg.click(chipSel);
+      await pg.waitForSelector('#sb-find-wanted .sb-want[data-skill="' + attackLarge[1] + '"]');
+      check(await pg.getAttribute(chipSel, "aria-pressed") === "true", V + " the level chip is pressed once wanted");
+      await pg.click("#sb-find-go");
+      await pg.waitForSelector(".sb-result");
+      const sent = await pg.evaluate(function () { return window.__sbSent; });
+      const q = sent.filter(function (m) { return m.type === "search"; }).pop();
+      const query = q && q.query;
+      check(query && same(query.wanted, [{ skill: attackLarge[1], level: 25, tree: attackTree.id }]) && query.weaponClass === 7 &&
+            query.weaponId === 0 && query.hunterType === "blade" && query.gender === "" && query.rankMax === null &&
+            query.ownedOnly === false && query.owned === null && query.allowZenith === true && query.allowTowerDecos === true &&
+            same(query.fixed, {}) && same(query.exclude, []) && query.maxResults === 50 && query.timeLimitMs > 0,
+            V + " Find sets sends the interface's query " + JSON.stringify(query));
+      const cards = await pg.evaluate(function () {
+        return Array.from(document.querySelectorAll(".sb-result")).map(function (c) {
+          return { def: c.querySelector(".sb-result-def").textContent, free: c.querySelector(".sb-result-free").textContent,
+                   met: c.querySelectorAll(".is-met").length, unmet: c.querySelectorAll(".is-unmet").length,
+                   pieces: c.querySelectorAll(".sb-result-pieces li").length };
+        });
+      });
+      check(cards.length === 2 && cards[0].def === "Def " + fake0.defence.total && cards[0].free === fake0Free + " free slots" && cards[0].pieces === 6,
+            V + " one card per result with the calculator's defence and free slots " + JSON.stringify(cards));
+      check(cards[0].met === (fake0Met ? 1 : 0) && cards[0].unmet === (fake0Met ? 0 : 1), V + " wanted skill met as the calculator says");
+      await pg.click('.sb-result[data-index="0"] .sb-result-compare');
+      await pg.waitForSelector("#sb-compare");
+      const cmp = await pg.evaluate(function () {
+        const rows = Array.from(document.querySelectorAll("#sb-compare tbody tr"));
+        return { cols: document.querySelectorAll("#sb-compare thead th").length, def: rows[0].children[2].textContent };
+      });
+      check(cmp.cols === 3 && cmp.def === String(fake0.defence.total), V + " Compare lines the result up with the builder's set " + JSON.stringify(cmp));
+      await noSideways("find results");
+      await shot("find");
+      await pg.click('.sb-result[data-index="0"] .sb-result-load');
+      await pg.waitForFunction(function () { return document.getElementById("sb-app").getAttribute("data-view") === "equip"; });
+      const loadedSet = await setInAddress();
+      check(same(Calc.normalize(loadedSet).armour, fakeSet0.armour) && same(loadedSet.weapon, fakeSet0.weapon),
+            V + " Load into builder puts the result in the address " + JSON.stringify(loadedSet));
+      check((await pg.textContent('[data-focus="chest|piece"]')).indexOf("Rathalos Mail") !== -1, V + " the loaded set is on the cards");
+
+      // Cancel a slow search (the stand-in is slow with 4 wanted skills)
+      await pg.click("#sb-tab-find");
+      await pg.fill("#sb-find-q", "");
+      for (const name of ["Guard", "Evasion", "Expert"]) {
+        await pg.fill("#sb-find-q", name);
+        await pg.click('#sb-find-trees .sb-skill-pick:has(.sb-skill-pick-name:text-is("' + name + '")) .sb-level-chip >> nth=0');
+      }
+      await pg.click("#sb-find-go");
+      await pg.waitForSelector("#sb-find-cancel");
+      await pg.waitForSelector("#sb-find-progress progress");
+      await pg.click("#sb-find-cancel");
+      await pg.waitForSelector("#sb-find-truncated");
+      check(/stopped early/.test(await pg.textContent("#sb-find-truncated")) &&
+            (await pg.evaluate(function () { return window.__sbSent.some(function (m) { return m.type === "cancel"; }); })),
+            V + " Cancel sends cancel and says the search stopped early");
+
+      if (!phone) {
+        fakeEngine = false;
+        await pg.reload({ waitUntil: "load" });
+        await pg.waitForSelector("#sb-app[data-ready]");
+        await pg.click("#sb-tab-find");
+        await pg.waitForSelector(".sb-engine-note");
+        check(/not on the site yet/.test(await pg.textContent(".sb-engine-note")), V + " without the worker file Find sets says the search is not there");
+      }
 
       await pg.goto(base + "/set-builder.html#s=bm90IGpzb24", { waitUntil: "load" });
       await pg.waitForSelector("#sb-app[data-ready]");

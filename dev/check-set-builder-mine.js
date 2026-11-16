@@ -16,8 +16,10 @@
    - signed in: the character list, picking one loads its import (with the sign-in header), the facts line, the
      in-game warning; the choice is remembered over a reload; Refresh asks again;
    - Load: the worn set and a My Set land in the address as the set format; the lost-piece note;
-   - "Only what I own": the head, chest, weapon, decoration and cuff pickers (sigils only on Tower weapons) list
-     only owned things with their counts; picking an owned piece takes its owned level; the owned badge;
+   - "Only what I own": the head, weapon, decoration and cuff lists (sigils only on Tower weapons) list only owned
+     things with their counts; picking an owned piece takes its owned level; the owned badge on the cards;
+   - Find sets: the rank filter comes from the character, "Only what I own" sends the import to the search engine
+     (dev/fake-armor-search-worker.js served as js/armor-search-worker.js);
    - Missing: the POST body is the set format the API reads, the pieces with status and steps, the item and material
      tables with links to item pages and sources, zenny with the incomplete note, the API's notes; a changed set says
      to check again; the API's {"error"} is shown;
@@ -175,12 +177,14 @@ check("owned: nothing to count", Owned.missingBody(Calc.empty(), "x", () => 7) =
 const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json",
   ".png": "image/png", ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml", ".jpg": "image/jpeg" };
 const server = http.createServer((req, res) => {
-  const file = path.join(ROOT, decodeURIComponent(req.url.split("?")[0]));
+  let p = decodeURIComponent(req.url.split("?")[0]);
+  if (p === "/js/armor-search-worker.js") p = "/dev/fake-armor-search-worker.js";   // the stand-in engine
+  const file = path.join(ROOT, p);
   if (!file.startsWith(ROOT)) { res.writeHead(404); res.end(); return; }
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404); res.end(); return; }
     res.writeHead(200, { "Content-Type": types[path.extname(file)] || "application/octet-stream" });
-    res.end(data);
+    res.end(req.method === "HEAD" ? undefined : data);
   });
 });
 
@@ -260,14 +264,22 @@ async function run(chromium) {
         await pg.click('.bui-pop .bui-option:has(.bui-name:text-is("' + exact + '"))');
         await pg.waitForFunction(() => document.querySelector(".bui-pop").hidden);
       }
+      // the centre list of a card or socket: each row's name and its "Yours" cell
       async function optionsOf(focusKey) {
         await pg.click('[data-focus="' + focusKey + '"]');
-        await pg.waitForSelector(".bui-pop:not([hidden]) .bui-option");
-        const out = await pg.evaluate(() => Array.from(document.querySelectorAll(".bui-pop .bui-option")).map((li) =>
-          ({ name: li.querySelector(".bui-name").textContent, hint: (li.querySelector(".bui-hint") || {}).textContent || "" })));
-        await pg.keyboard.press("Escape");
-        await pg.waitForFunction(() => document.querySelector(".bui-pop").hidden);
-        return out;
+        await pg.waitForSelector("#sb-list .sb-search");
+        await pg.fill("#sb-list .sb-search", "");
+        await pg.waitForSelector("#sb-list .sb-pick");
+        return pg.evaluate(() => Array.from(document.querySelectorAll("#sb-list tbody tr")).map((tr) =>
+          ({ name: tr.querySelector(".sb-row-name").textContent, hint: (tr.querySelector(".sb-col-own") || {}).textContent || "" })));
+      }
+      // open a card's list and pick the row with exactly this name
+      async function pickRow(focusKey, exact) {
+        await pg.click('[data-focus="' + focusKey + '"]');
+        await pg.waitForSelector("#sb-list .sb-search");
+        const row = '#sb-list .sb-pick:has(.sb-row-name:text-is("' + exact + '"))';
+        await pg.waitForSelector(row);
+        await pg.click(row);
       }
       const setInAddress = () => pg.evaluate(() => location.hash).then((h) => Calc.decode(/s=([A-Za-z0-9_-]+)/.exec(h)[1]));
       async function noSideways(what) {
@@ -305,20 +317,20 @@ async function run(chromium) {
       await pg.check("#sb-owned-only");
       await pg.waitForSelector("#sb-owned-only:checked");
       let opts = await optionsOf("head|piece");
-      check(V + " owned heads only", same(opts.map((o) => o.name), ["Nothing", "Rathalos Helm"]), JSON.stringify(opts.map((o) => o.name)));
-      check(V + " owned level in the hint", /yours: Lv 7/.test(opts[1].hint));
+      check(V + " owned heads only", same(opts.map((o) => o.name), ["Rathalos Helm"]), JSON.stringify(opts.map((o) => o.name)));
+      check(V + " owned level in the list", /Lv 7/.test(opts[0].hint), opts[0].hint);
       opts = await optionsOf("weapon|id");
-      check(V + " owned weapons only", same(opts.map((o) => o.name), ["Any Long Sword", "Black Katana Mk.Ⅲ"]), JSON.stringify(opts.map((o) => o.name)));
+      check(V + " owned weapons only", same(opts.map((o) => o.name), ["Black Katana Mk.Ⅲ"]), JSON.stringify(opts.map((o) => o.name)));
       opts = await optionsOf("cuff|0");
-      check(V + " owned cuffs only", same(opts.map((o) => o.name), ["No cuff", "SnS・G"]) && /yours: 1 in boxes/.test(opts[1].hint), JSON.stringify(opts));
+      check(V + " owned cuffs only", same(opts.map((o) => o.name), ["SnS・G"]) && /yours: 1 in boxes/.test(opts[0].hint), JSON.stringify(opts));
       opts = await optionsOf("weapon|deco|0");
       const names = opts.map((o) => o.name);
       // a Long Sword is not a Tower weapon: the owned sigil is not offered (Tower sigils go only on Tower weapons)
-      check(V + " owned decorations only, no sigils on a non-Tower weapon", same(names, ["Empty slot", "Attack G"]), JSON.stringify(names));
+      check(V + " owned decorations only, no sigils on a non-Tower weapon", same(names, ["Attack G"]), JSON.stringify(names));
       const ag = opts.find((o) => o.name === "Attack G");
       check(V + " decoration counts with in-use", ag && /yours: 2 in boxes · 1 set in gear/.test(ag.hint), ag && ag.hint);
       // Pick the owned head: its owned level, the owned badge
-      await pick("head|piece", "Rathalos Helm");
+      await pickRow("head|piece", "Rathalos Helm");
       await pg.waitForSelector('.sb-slot[data-slot="head"] [data-owned="7"]');
       s = await setInAddress();
       check(V + " owned piece at its level", s.armour[0][2] === 7);
@@ -356,13 +368,29 @@ async function run(chromium) {
       }
 
       // A change makes the answer stale
-      await pick("chest|piece", "Nothing");
+      await pg.click('[data-focus="chest|clear"]');
       await pg.waitForSelector("#sb-missing-stale");
       // The API's refusal
       api.refuse = "armour: head is in the set twice.";
       await pg.click("#sb-missing-check");
       await pg.waitForFunction(() => /twice/.test((document.querySelector("#sb-missing .form-alert") || {}).textContent || ""));
       api.refuse = null;
+
+      // Find sets: rank from the character, "Only what I own" sends the import
+      await pg.addScriptTag({ content: "window.__sbSent = []; (function () { var post = Worker.prototype.postMessage; " +
+        "Worker.prototype.postMessage = function (m) { window.__sbSent.push(JSON.parse(JSON.stringify(m))); return post.apply(this, arguments); }; })();" });
+      await pg.click("#sb-tab-find");
+      await pg.waitForSelector("#sb-find-q");
+      check(V + " find: rank filled from the character", (await pg.inputValue('[data-focus="find|gr"]')) === "120");
+      await pg.fill("#sb-find-q", "Expert");
+      await pg.click('#sb-find-trees .sb-skill-pick:has(.sb-skill-pick-name:text-is("Expert")) .sb-level-chip >> nth=0');
+      await pg.check('[data-focus="find|owned"]');
+      await pg.click("#sb-find-go");
+      await pg.waitForSelector(".sb-result");
+      const fq = await pg.evaluate(() => (window.__sbSent.filter((m) => m.type === "search").pop() || {}).query);
+      check(V + " find: owned-only query carries the import and the rank", fq && fq.ownedOnly === true && fq.owned && fq.owned.name === "Aldric" &&
+            same(fq.rankMax, { hr: 999, gr: 120 }) && fq.gender === "female", JSON.stringify(fq && { ownedOnly: fq.ownedOnly, rankMax: fq.rankMax, gender: fq.gender }));
+      await pg.click("#sb-tab-equip");
 
       // Remembered over a reload; Refresh asks again
       const before = api.calls.filter((c) => c.path === "/api/account/characters/5/builder").length;
