@@ -18,7 +18,7 @@
    - Load: the worn set and a My Set land in the address as the set format; the lost-piece note;
    - "Only what I own": the head, weapon, decoration and cuff lists (sigils only on Tower weapons) list only owned
      things with their counts; picking an owned piece takes its owned level; the owned badge on the cards;
-   - Find sets: the rank filter comes from the character, "Only what I own" sends the import to the search engine
+   - Find sets and the Hunter card: the rank (G Rank band, GR) comes from the character, "Only what I own" sends the import to the search engine
      (dev/fake-armor-search-worker.js served as js/armor-search-worker.js);
    - Missing: the POST body is the set format the API reads, the pieces with status and steps, the item and material
      tables with links to item pages and sources, zenny with the incomplete note, the API's notes; a changed set says
@@ -385,7 +385,9 @@ async function run(chromium) {
         "Worker.prototype.postMessage = function (m) { window.__sbSent.push(JSON.parse(JSON.stringify(m))); return post.apply(this, arguments); }; })();" });
       await pg.click("#sb-tab-find");
       await pg.waitForSelector("#sb-find-q");
-      check(V + " find: rank filled from the character", (await pg.inputValue('[data-focus="find|gr"]')) === "120");
+      check(V + " find: rank filled from the character", (await pg.inputValue('[data-focus="find|gr"]')) === "120" &&
+            (await pg.getAttribute('[data-focus="find|band|7"]', "aria-pressed")) === "true");
+      check(V + " builder: the Hunter card shows the same rank", (await pg.inputValue('[data-focus="filter|gr"]')) === "120");
       await pg.fill("#sb-find-q", "Expert");
       await pg.click('#sb-find-trees .sb-skill-pick:has(.sb-skill-pick-name:text-is("Expert")) .sb-level-chip >> nth=0');
       if (!(await pg.evaluate(() => document.querySelector(".sb-find-filters").open))) await pg.click(".sb-find-filters-sum");   // folded on a phone
@@ -394,7 +396,7 @@ async function run(chromium) {
       await pg.waitForSelector(".sb-result");
       const fq = await pg.evaluate(() => (window.__sbSent.filter((m) => m.type === "search").pop() || {}).query);
       check(V + " find: owned-only query carries the import and the rank", fq && fq.ownedOnly === true && fq.owned && fq.owned.name === "Aldric" &&
-            same(fq.rankMax, { hr: 999, gr: 120 }) && fq.gender === "female", JSON.stringify(fq && { ownedOnly: fq.ownedOnly, rankMax: fq.rankMax, gender: fq.gender }));
+            same(fq.rankMax, { band: 7, gr: 120, gsr: null }) && fq.gender === "female", JSON.stringify(fq && { ownedOnly: fq.ownedOnly, rankMax: fq.rankMax, gender: fq.gender }));
       await pg.click("#sb-tab-equip");
 
       // Remembered over a reload; Refresh asks again

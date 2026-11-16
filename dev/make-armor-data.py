@@ -9,6 +9,8 @@ Inputs (all read here, never copied whole; hvmhfz_re is private, its game data m
     skills, Zenith tables, defence and slot growth tables. Copied to data/armor/rules.json as it is.
   - hvmhfz_re data/armor_builder.json: armour pieces, decorations, weapons (class, Zenith skill, Tower flag,
     slots), the automatic skill table (the first row of a (type, id) wins).
+  - hvmhfz_re data/armor_craft_rank.json (part 200, its docs/armor-builder.md "Rank needed to craft"): the rank at
+    which the smithy offers each armour piece and weapon, and the HR bands. Same data_version as the others.
   - hvmhfz_re data/skills_db.json: only the list of weapon Tower sigils and their effect text (armour Tower sigils
     are Tower armour plate items and are left out, as the calculator leaves plates out).
   - dat/mhfdat.bin of the client patch zip, decoded with hvmhfz_re build/unpack_cli: only its SHA-256. The re
@@ -21,14 +23,18 @@ Writes:
     defence (level 1), slots (level 1), maxSlots (record +0x1c), [fire, water, thunder, dragon, ice], flags (bit 0
     male, 1 female, 2 blademaster, 3 gunner), maxLevel, [[tree, points]], automatic skill id or 0, obtainable 1/0,
     defGrowth (defence growth row), slotGrowth (slot growth row), limitKind (bit 0 counts as a G-rank piece for the
-    skill limit, 1 a Zenith piece, 2 a Tower piece), Zenith skill id or 0]]} (one file per slot, loaded when the
-    slot is first opened). Placeholder rows (no name, "dummy") are left out.
+    skill limit, 1 a Zenith piece, 2 a Tower piece), Zenith skill id or 0, craft]]} (one file per slot, loaded when
+    the slot is first opened). Placeholder rows (no name, "dummy") are left out. craft = the rank the smithy needs
+    (CRAFT_DOC below) or 0 when the smithy never offers the piece (event, transmog-only and unused pieces).
+  - data/armor/weapon-craft.json: {"_about", "melee": {id: craft}, "ranged": {id: craft}} (weapons the smithy
+    offers), loaded by the builder's weapon list.
   - data/armor/index.json: {"_about", "version", "source", "res", "flags", "classes", "gunnerClasses",
     "pieceFields", "decorations": [[item, name, kind "d" decoration / "g" Road gem (Tower Deco) / "c" skill cuff,
     slots, [[tree, points]] (the first four pairs: the only ones the game adds), obtainable 1/0, Zenith skill id,
     first tree, first points]], "sigils": [[item, name, effect, [[tree, points]], Zenith skill id, first tree, first
     points]], "weapons": {"melee"|"ranged": {id: [Zenith skill id, Tower 1/0]}} (only weapons with either),
-    "weaponAuto": {"melee"|"ranged": {id: skill id}}, "skillNames": {skill id: name}};
+    "weaponAuto": {"melee"|"ranged": {id: skill id}}, "skillNames": {skill id: name}, "rank": {"bands": [[HR cap,
+    label]] (band 1-7 in order), "classes": [weapon class names of a GSR gate, the set format's class order]}};
   - data/armor/rules.json: hvmhfz_re data/armor_rules.json plus "_about", "version" and "source".
 
 Usage: python3 dev/make-armor-data.py [--re /root/mhfz/hvmhfz_re] [--zip Frontier_Patch.zip --version 1.29]
@@ -56,10 +62,17 @@ FLAGS = {"male": 1, "female": 2, "blademaster": 4, "gunner": 8}
 DECO_KIND = {"decoration": "d", "road-gem": "g"}
 DUMMY_NAMES = ("", "dummy", "ダミー")
 PIECE_FIELDS = ["id", "name", "rarity", "defence", "slots", "maxSlots", "res", "flags", "maxLevel", "skills", "auto",
-                "obtainable", "defGrowth", "slotGrowth", "limitKind", "zenith"]
+                "obtainable", "defGrowth", "slotGrowth", "limitKind", "zenith", "craft"]
 LIMIT_KIND = (("g_piece", 1), ("z_piece", 2), ("tower_piece", 4))
 # Automatic skill table types (hvmhfz_re: 0 legs, 2 head, 3 chest, 4 arms, 5 waist, 6 melee, 7 ranged)
 AUTO_TYPE = {"legs": 0, "head": 2, "chest": 3, "arms": 4, "waist": 5, "melee": 6, "ranged": 7}
+
+# The craft rank of a piece or weapon, from hvmhfz_re armor_craft_rank.json (piece_columns rank, value, band, how,
+# gsr): [rank "hr" | "gr", value (HR cap row rank or GR), band (HR band 1-7; 7 for "gr"), how (first letter: r rank,
+# m materials, o open, g gsr, u upgrade)] plus [GSR weapon class, GSR level] for a piece behind a GSR gate.
+CRAFT_DOC = "[rank hr|gr, value, band 1-7, how r|m|o|g|u] (+ [GSR class, GSR level])"
+CRAFT_FORMAT, CRAFT_VERSION = "hvmhfz craft rank", 1
+CRAFT_HOW = {"rank": "r", "materials": "m", "open": "o", "gsr": "g", "upgrade": "u"}
 
 # Weapon classes, the game's index (weapon record +3 / +4; dev/make-weapons-data.py SLUGS). Gunner: 1, 5, 10.
 CLASSES = ("great-sword", "heavy-bowgun", "hammer", "lance", "sword-and-shield", "light-bowgun", "dual-swords",
@@ -108,7 +121,31 @@ def automatic(builder):
     return out
 
 
-def build_pieces(builder, auto):
+def craft_value(row, cols):
+    """One craft rank row of armor_craft_rank.json -> the site's craft value (CRAFT_DOC), 0 when it has no stage."""
+    c = dict(zip(cols, row))
+    if c["rank"] is None:
+        return 0
+    if c["rank"] not in ("hr", "gr") or c["how"] not in CRAFT_HOW:
+        sys.exit("armor_craft_rank.json: unknown rank %r or how %r (id %r)" % (c["rank"], c["how"], c["id"]))
+    out = [c["rank"], c["value"], c["band"] if c["rank"] == "hr" else 7, CRAFT_HOW[c["how"]]]
+    if c["gsr"]:
+        out += list(c["gsr"])
+    return out
+
+
+def craft_ranks(craft):
+    """{(slot or weapon kind, id): craft value} from armor_craft_rank.json."""
+    cols = craft["piece_columns"]
+    out = {}
+    for part in ("armour", "weapons"):
+        for kind, rows in craft[part].items():
+            for r in rows:
+                out[(kind, r[0])] = craft_value(r, cols)
+    return out
+
+
+def build_pieces(builder, auto, craft):
     """{slot: [row]} in id order."""
     out = {}
     cols = builder["armour_columns"]
@@ -122,7 +159,7 @@ def build_pieces(builder, auto):
             pieces.append([a["id"], a["name"], a["rarity"], a["defence"], a["slots"], a["max_slots"], a["resist"],
                            a["flags"] & 0x0F, max(1, a["max_level"]), merged(a["skills"]),
                            auto.get((AUTO_TYPE[slot], a["id"]), 0), 1 if a["obtainable"] else 0,
-                           a["def_growth"], a["slot_growth"], limit_kind, a["zenith"]])
+                           a["def_growth"], a["slot_growth"], limit_kind, a["zenith"], craft[(slot, a["id"])]])
         out[slot] = pieces
     return out
 
@@ -146,7 +183,7 @@ def check_weapons(builder):
                  "weapons data from the same patch" % (len(bad), bad[:3]))
 
 
-def build_index(builder, db, auto, version, source, rules):
+def build_index(builder, db, auto, version, source, rules, craft_doc):
     decorations = []
     by_item = {}
     for d in rows(builder, "decorations", "decoration_columns"):
@@ -183,6 +220,7 @@ def build_index(builder, db, auto, version, source, rules):
         "gunnerClasses": list(GUNNER), "pieceFields": PIECE_FIELDS,
         "decorations": decorations, "sigils": sigils, "weapons": weapons, "weaponAuto": weapon_auto,
         "skillNames": {k: v["name"] for k, v in sorted(rules["skills"].items(), key=lambda kv: int(kv[0]))},
+        "rank": {"bands": craft_doc["hr_bands"], "classes": craft_doc["weapon_classes"]},
     }
 
 
@@ -203,10 +241,14 @@ def main(argv):
         return json.loads((re_root / "data" / name).read_text(encoding="utf-8"))
 
     rules, builder, db = load("armor_rules.json"), load("armor_builder.json"), load("skills_db.json")
+    craft_doc = load("armor_craft_rank.json")
     dat = decode_dat(re_root, args.zip)
     sha = hashlib.sha256(dat).hexdigest()
-    for name, doc in (("armor_rules.json", rules), ("armor_builder.json", builder)):
-        if doc.get("format_version") != FORMAT_VERSION:
+    if craft_doc.get("format") != CRAFT_FORMAT or craft_doc.get("format_version") != CRAFT_VERSION:
+        sys.exit("armor_craft_rank.json is %r version %r, this script reads %r version %d"
+                 % (craft_doc.get("format"), craft_doc.get("format_version"), CRAFT_FORMAT, CRAFT_VERSION))
+    for name, doc in (("armor_rules.json", rules), ("armor_builder.json", builder), ("armor_craft_rank.json", craft_doc)):
+        if name != "armor_craft_rank.json" and doc.get("format_version") != FORMAT_VERSION:
             sys.exit("%s is format_version %r, this script reads %d" % (name, doc.get("format_version"), FORMAT_VERSION))
         if doc.get("data_version") != sha[:12]:
             sys.exit("%s comes from mhfdat.bin %s, the patch zip's is %s: rebuild hvmhfz_re's armour data from this "
@@ -217,16 +259,27 @@ def main(argv):
     re_head = subprocess.run(["git", "-C", str(re_root), "rev-parse", "--short", "HEAD"],
                              capture_output=True, text=True).stdout.strip()
     source = {"patch": version, "zip": pathlib.Path(args.zip).name, "mhfdatSha256": sha,
-              "armorData": "hvmhfz_re " + re_head + " data/armor_builder.json, data/armor_rules.json",
+              "armorData": "hvmhfz_re " + re_head + " data/armor_builder.json, data/armor_rules.json, "
+                           "data/armor_craft_rank.json",
               "script": "dev/make-armor-data.py"}
 
     auto = automatic(builder)
-    pieces = build_pieces(builder, auto)
+    craft = craft_ranks(craft_doc)
+    missing = [(slot, r[0]) for slot in SLOTS for r in builder["armour"][slot] if (slot, r[0]) not in craft]
+    if missing:
+        sys.exit("armor_craft_rank.json has no row for %d armour pieces (first %r)" % (len(missing), missing[:3]))
+    pieces = build_pieces(builder, auto, craft)
     for slot, rs in pieces.items():
         write(OUT / (slot + ".json"), {"_about": "dev/make-armor-data.py: every %s armour piece; fields below, "
                                                  "res in the order of index.json res" % slot,
                                        "fields": PIECE_FIELDS, "pieces": rs})
-    write(OUT / "index.json", build_index(builder, db, auto, version, source, rules))
+    write(OUT / "index.json", build_index(builder, db, auto, version, source, rules, craft_doc))
+    write(OUT / "weapon-craft.json", {
+        "_about": "dev/make-armor-data.py: the rank the smithy needs per weapon id (hvmhfz_re data/armor_craft_rank.json); "
+                  "value " + CRAFT_DOC + "; weapons the smithy never offers are left out. docs/armor-set-builder.md",
+        "version": version,
+        "melee": {str(k[1]): v for k, v in sorted(craft.items()) if k[0] == "melee" and v},
+        "ranged": {str(k[1]): v for k, v in sorted(craft.items()) if k[0] == "ranged" and v}})
     site_rules = {"_about": "The client's skill rules for js/armor-rules.js: hvmhfz_re data/armor_rules.json as it "
                             "is (format: its docs/armor-builder.md \"Data format\"), written by dev/make-armor-data.py.",
                   "version": version, "source": source}

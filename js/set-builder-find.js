@@ -23,7 +23,7 @@
 (function () {
   "use strict";
 
-  var WORKER_URL = "/js/armor-search-worker.js?v=2";
+  var WORKER_URL = "/js/armor-search-worker.js?v=3";
   var MAX_RESULTS = 50;
   var MAX_WANTED = 10;          // what the engine searches at most (js/armor-search.js MAX_WANTED)
   var BASE_LIMIT = 10;          // the game's skill limit before G-rank, Zenith pieces and cuffs add to it
@@ -76,7 +76,7 @@
   function create(host) {
     var R = host.data.rules;
     var f = {
-      q: "", cat: "all", wanted: [], weaponClass: null, gender: null, hunterType: "any", hr: "", gr: "",
+      q: "", cat: "all", wanted: [], weaponClass: null, gender: null, hunterType: "any",
       ownedOnly: false, allowZenith: true, allowTower: true,
       fixed: {},          // {slot: piece id} kept in every search; weapon: true keeps the builder's weapon
       exclude: [],        // [{key: "head:123" | "item:5803", name}]
@@ -118,11 +118,6 @@
     function imp() { return host.mine && host.mine.importData ? host.mine.importData() : null; }
     function className(cls) { var t = host.typeOf(cls); return t ? t.name : "weapon"; }
 
-    function wholeOrEmpty(v, max) {
-      var n = Math.trunc(Number(v));
-      return v === "" || !isFinite(n) || n < 1 ? 0 : Math.min(n, max);
-    }
-
     function keptWeapon() {
       var set = host.getSet(), cls = effClass();
       return f.fixed.weapon && cls >= 0 && set.weapon[0] === cls && set.weapon[1] ? set.weapon[1] : 0;
@@ -131,7 +126,7 @@
     /** The query for the engine (the interface in the header). */
     function query() {
       var cls = effClass();
-      var hr = wholeOrEmpty(f.hr, 999), gr = wholeOrEmpty(f.gr, 999);
+      var h = host.rank();
       var fixed = {};
       SLOTS.forEach(function (s) { if (f.fixed[s]) fixed[s] = f.fixed[s]; });
       var i = imp();
@@ -141,7 +136,7 @@
         weaponId: keptWeapon(),
         gender: effGender(),
         hunterType: effType(),
-        rankMax: hr || gr ? { hr: hr || (gr ? 999 : 0), gr: gr } : null,
+        rankMax: h ? { band: h.band, gr: h.gr, gsr: h.gsr } : null,
         ownedOnly: !!(f.ownedOnly && i),
         owned: i || null,
         allowZenith: f.allowZenith,
@@ -485,9 +480,10 @@
       var g = effGender();
       parts.push(g ? (g === "male" ? "Male" : "Female") : "Any gender");
       if (cls < 0 && f.hunterType !== "any") parts.push(f.hunterType === "gunner" ? "Gunner" : "Blademaster");
-      var hr = wholeOrEmpty(f.hr, 999), gr = wholeOrEmpty(f.gr, 999);
-      if (gr) parts.push("up to GR " + gr);
-      else if (hr) parts.push("HR only");
+      var h = host.rank();
+      if (h && h.gr) parts.push("up to GR " + h.gr);
+      else if (h && h.band) parts.push("up to " + window.ArmorRank.bandLabel(h.band, host.data.index.rank.bands));
+      if (h && h.gsr !== null) parts.push("GSR " + h.gsr);
       if (f.ownedOnly && imp()) parts.push("only what I own");
       if (!f.allowZenith) parts.push("no Zenith");
       if (!f.allowTower) parts.push("no Road gems");
@@ -539,24 +535,9 @@
       });
       box.appendChild(group("Hunter type", types));
 
-      var rank = el("div", "sb-rank");
-      [["HR", "hr"], ["GR", "gr"]].forEach(function (r) {
-        var l = el("label", "sb-rank-field");
-        l.appendChild(el("span", null, "Up to " + r[0]));
-        var input = el("input");
-        input.type = "number";
-        input.min = "1";
-        input.max = "999";
-        input.placeholder = "any";
-        input.value = f[r[1]];
-        input.setAttribute("data-focus", "find|" + r[1]);
-        input.addEventListener("input", function () { f[r[1]] = input.value; });
-        input.addEventListener("change", function () { render(); });
-        l.appendChild(input);
-        rank.appendChild(l);
-      });
-      var rg = group("Rank", rank);
-      rg.title = "An HR alone means no G-rank or Zenith pieces and no cuffs";
+      var rg = group("Rank (up to)", host.rankControls("find", host.rerender), "is-wide");
+      rg.title = "The same rank as the Equipment tab's Hunter card: only pieces the smithy offers at it (an HR band alone " +
+        "means no G-rank pieces and no cuffs); what your character owns always counts with Only what I own";
       box.appendChild(rg);
 
       var opts = el("div", "sb-checks");
@@ -762,7 +743,10 @@
           if (lower && lower.levels[0][1] !== all[0].skill) tips.push("pick a lower level");
         } else tips.push("pick fewer skills or lower levels");
         if (!f.allowZenith) tips.push("allow Zenith pieces");
-        if (wholeOrEmpty(f.hr, 999) && !wholeOrEmpty(f.gr, 999)) tips.push("add a GR (an HR alone leaves out G-rank pieces and cuffs)");
+        var hr = host.rank();
+        if (hr && hr.band && hr.band < 7) tips.push("raise the rank");
+        else if (hr && hr.band && !hr.gr) tips.push("add a GR (an HR alone leaves out G-rank pieces and cuffs)");
+        if (hr && hr.gsr !== null) tips.push("raise or clear the GSR");
         if (Object.keys(f.fixed).length || f.exclude.length) tips.push("keep or leave out fewer pieces");
         if (f.ownedOnly && imp()) tips.push("untick Only what I own");
         if (tips.length) none.appendChild(el("p", "sb-find-blocked-sub", "Try to " + orList(tips) + "."));
@@ -834,6 +818,20 @@
       return box;
     }
 
+    /** Pieces behind a GSR gate while no GSR is given: the card says what they need. */
+    function gsrWarning(set) {
+      var h = host.rank();
+      if (h && h.gsr !== null) return null;
+      var need = [];
+      set.armour.forEach(function (a) {
+        var p = a[1] ? host.piece(a[0], a[1]) : null;
+        if (p && window.ArmorRank.gsrOf(p.craft)) need.push(p.name + ": " + host.rankText(p.craft));
+      });
+      if (!need.length) return null;
+      var n = el("p", "sb-find-note sb-result-gsr", "Needs " + need.join("; ") + ". Set your GSR under Rank to leave out what you cannot make.");
+      return n;
+    }
+
     function resultCard(r) {
       var c = r.calc, i = r.rank;
       var missing = r.engine.missing || [];
@@ -878,6 +876,8 @@
           var d = host.data.items[id]; return d ? d.name : "#" + id; }).join(", "), decos: [], cuffs: r.set.cuffs }));
       }
       card.appendChild(ul);
+      var gsrNote = gsrWarning(r.set);
+      if (gsrNote) card.appendChild(gsrNote);
 
       var bars = el("ul", "sb-result-bars");
       asked().forEach(function (w) {
@@ -1086,15 +1086,8 @@
       if (f.engine === null) checkEngine().then(function () { if (f.engine === false) render(); });
     }
 
-    /** A character was loaded: its rank fills the rank filter when that is empty. */
-    function characterChanged() {
-      var i = imp();
-      if (!i) return;
-      if (f.hr === "" && f.gr === "") {
-        if (i.gr) f.gr = String(i.gr);
-        else if (i.hr) f.hr = String(i.hr);
-      }
-    }
+    /** A character was loaded (the builder has already filled the shared rank from it). */
+    function characterChanged() { }
 
     return { render: render, characterChanged: characterChanged, query: query, quick: quick };
   }

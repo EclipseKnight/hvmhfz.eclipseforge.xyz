@@ -9,8 +9,10 @@
      for their skills finds a set at least as strong (defence), and "only what I own" with a fake character import
      that holds the known set's pieces and decorations plus decoys finds a set made only of what it owns (counts
      and levels respected);
-   - common searches (3 to 5 skills, with gender, blademaster / gunner, HR only, no Zenith, a Tower weapon, a
-     weapon with slots, fixed and excluded pieces): every result is checked on its own with ArmorCalc.compute (no
+   - the rank rule (js/armor-rank.js, hvmhfz_re part 200 "Site filter"): HR bands from an HR, the band / GR / GSR
+     tests, the list texts;
+   - common searches (3 to 5 skills, with gender, blademaster / gunner, HR999 without G Rank, HR band 3, GR 50,
+     GSR 1, no Zenith, a Tower weapon, a weapon with slots, fixed and excluded pieces): every result is checked on its own with ArmorCalc.compute (no
      problem, every wanted skill active and working with the weapon, defence and free slots as reported), every
      constraint holds, results are ranked, and each search finishes inside the time budget (BUDGET_MS, default
      3000 ms on node) without being truncated;
@@ -32,6 +34,7 @@ const http = require("http");
 const ROOT = path.resolve(__dirname, "..");
 const Calc = require(path.join(ROOT, "js/armor-calc.js"));
 const Search = require(path.join(ROOT, "js/armor-search.js"));
+const Rank = require(path.join(ROOT, "js/armor-rank.js"));
 const BUDGET_MS = Number(process.env.BUDGET_MS) || 3000;
 const BROWSER_BUDGET_MS = Number(process.env.BROWSER_BUDGET_MS) || 8000;
 let failed = 0;
@@ -96,6 +99,7 @@ function problemsOf(res, q, need) {
   if ((q.weaponId || 0) !== res.set.weapon[1]) out.push("weapon " + res.set.weapon[1]);
   const kind = q.hunterType === "blade" ? "blademaster" : q.hunterType === "gunner" ? "gunner" : null;
   const exclude = q.exclude || [];
+  const hunter = Rank.hunter(q.rankMax, index.rank.bands);
   res.set.armour.forEach(function (a) {
     const fixed = q.fixed && q.fixed[a[0]] !== undefined ? q.fixed[a[0]] : null;
     if (fixed !== null) { if (a[1] !== fixed) out.push(a[0] + " is not the fixed piece"); return; }
@@ -105,7 +109,7 @@ function problemsOf(res, q, need) {
     if (!R.canWear(p.flags, q.gender || "")) out.push(p.name + " not for " + q.gender);
     if (kind && !R.kindFits(p.flags, kind)) out.push(p.name + " not a " + kind + " piece");
     if (q.allowZenith === false && ((p.limitKind & 2) || p.zenith)) out.push(p.name + " is a Zenith piece");
-    if (q.rankMax && !q.rankMax.gr && (p.limitKind & 3)) out.push(p.name + " is a G-rank piece");
+    if (!q.ownedOnly && !Rank.fits(p.craft, hunter)) out.push(p.name + " needs " + (Rank.text(p.craft) || "a smithy that never offers it"));
     if (exclude.indexOf(a[1]) !== -1 || exclude.indexOf(a[0] + ":" + a[1]) !== -1) out.push(p.name + " was excluded");
     a[3].forEach(function (d) {
       const it = D.items[d];
@@ -114,7 +118,10 @@ function problemsOf(res, q, need) {
       if (exclude.indexOf("item:" + d) !== -1) out.push(it.name + " was excluded");
     });
   });
-  if (q.rankMax && !q.rankMax.gr && res.set.cuffs.length) out.push("cuffs for an HR hunter");
+  if (hunter && hunter.band && !hunter.gr && res.set.cuffs.length) out.push("cuffs for an HR hunter");
+  if (hunter && hunter.band && !hunter.gr && res.set.armour.some(function (a) { return a[3].some(function (d) { return D.items[d].zenith; }); })) {
+    out.push("Zenith decorations for an HR hunter");
+  }
   if (res.set.cuffs.length > 2) out.push("more than 2 cuffs");
   if (new Set(res.set.cuffs).size !== res.set.cuffs.length) out.push("the same cuff twice");
   res.set.weapon[3].forEach(function (d) {
@@ -178,6 +185,36 @@ const ls = 7;
   check(!!need({ skill: 999999 }).problem, "an unknown skill is not searched");
   check(!!need({ skill: skill("Bow Tech (Expert)") }, 7).problem, "a Bow Tech skill with a Long Sword is impossible");
   check(!need({ skill: skill("Bow Tech (Expert)") }, 10).problem, "a Bow Tech skill with a Bow is fine");
+})();
+
+/* ---- the rank rule ---- */
+console.log("rank rule");
+(function () {
+  const bands = index.rank.bands;
+  check(bands.length === 7 && bands[0][0] === 1 && bands[6][0] === 999, "index.json rank.bands are the 7 HR bands");
+  check(index.rank.classes[7] === "Long Sword", "index.json rank.classes in the set format's class order");
+  const band = function (hr) { return Rank.bandOfHr(hr, bands); };
+  check(band(0) === 0 && band(1) === 1 && band(2) === 2 && band(30) === 2 && band(31) === 3 && band(99) === 4 &&
+        band(100) === 5 && band(299) === 5 && band(300) === 6 && band(998) === 6 && band(999) === 7, "HR bands from an HR");
+  check(Rank.hunter(null, bands) === null && Rank.hunter({ band: 0, gr: "", gsr: "" }, bands) === null, "no rank: no filter");
+  check(JSON.stringify(Rank.hunter({ hr: 120, gr: 0 }, bands)) === '{"band":5,"gr":0,"gsr":null}', "the older {hr} query");
+  check(JSON.stringify(Rank.hunter({ band: 2, gr: "40", gsr: "" }, bands)) === '{"band":7,"gr":40,"gsr":null}', "a GR means G Rank (band 7)");
+  check(JSON.stringify(Rank.hunter({ gsr: "300" }, bands)) === '{"band":0,"gr":0,"gsr":300}', "a GSR alone filters only GSR gates");
+  const h = function (b, gr, gsr) { return Rank.hunter({ band: b, gr: gr, gsr: gsr }, bands); };
+  check(Rank.fits(["hr", 31, 3, "r"], h(3, 0)) && !Rank.fits(["hr", 31, 3, "r"], h(2, 0)), "an HR row needs its band");
+  check(Rank.fits(["hr", 500, 6, "r"], h(7, 0)) && !Rank.fits(["gr", 1, 7, "r"], h(7, 0)) && Rank.fits(["gr", 1, 7, "r"], h(7, 1)),
+        "HR999 without G Rank: no GR rows");
+  check(!Rank.fits(["gr", 200, 7, "m"], h(7, 199)) && Rank.fits(["gr", 200, 7, "m"], h(7, 200)), "a GR row needs its GR");
+  check(!Rank.fits(0, h(7, 999)) && Rank.fits(0, null) && Rank.fits(0, h(0, 0, 5)), "never offered: out with a band, in without one");
+  const gsr = ["hr", 1, 1, "g", 7, 300];
+  check(Rank.fits(gsr, h(1, 0)) && !Rank.fits(gsr, h(1, 0, 299)) && Rank.fits(gsr, h(1, 0, 300)), "a GSR gate needs the GSR when one is given");
+  check(Rank.text(["hr", 100, 5, "u"]) === "HR band 5" && Rank.text(["gr", 100, 7, "r"]) === "GR 100" &&
+        Rank.text(gsr, index.rank.classes) === "GSR 300 Long Sword" && Rank.text(0) === "", "the list texts");
+  // every piece the client lists for the Create/G/Zenith menus has a rank; never-offered pieces are not obtainable
+  let unranked = 0, gsrGates = 0;
+  SLOTS.forEach(function (s) { D.pieces[s].forEach(function (p) { if (p.obtainable && !p.craft) unranked++; if (Rank.gsrOf(p.craft)) gsrGates++; }); });
+  check(unranked === 0, unranked + " obtainable pieces with no craft rank");
+  check(gsrGates > 2000, "GSR gates in the data: " + gsrGates);
 })();
 
 /* ---- known sets ---- */
@@ -259,7 +296,10 @@ const COMMON = [
   ["3 skills", { wanted: wanted(["Attack Up Large", "Sharpness+1", "Evasion+2"]), weaponClass: ls, gender: "male", hunterType: "blade" }],
   ["4 skills, female", { wanted: wanted(["Attack Up Large", "Razor Sharp +1", "Evasion+1", "Health+30"]), weaponClass: ls, gender: "female", hunterType: "blade" }],
   ["5 skills", { wanted: wanted(["Health+50", "Attack Up Very Large", "Razor Sharp +1", "Evasion+1", "Guard+2"]), weaponClass: ls, gender: "male", hunterType: "blade" }],
-  ["HR only", { wanted: wanted(["Attack Up Large", "Sharpness+1", "Evasion+1"]), weaponClass: ls, gender: "female", hunterType: "blade", rankMax: { hr: 999, gr: 0 } }],
+  ["HR999, no G Rank", { wanted: wanted(["Attack Up Large", "Sharpness+1", "Evasion+1"]), weaponClass: ls, gender: "female", hunterType: "blade", rankMax: { hr: 999, gr: 0 } }],
+  ["HR band 3", { wanted: wanted(["Attack Up Small", "Evasion+1"]), weaponClass: ls, gender: "male", hunterType: "blade", rankMax: { band: 3, gr: 0 } }],
+  ["GR 50", { wanted: wanted(["Attack Up Large", "Sharpness+1", "Evasion+1"]), weaponClass: ls, gender: "male", hunterType: "blade", rankMax: { band: 7, gr: 50 } }],
+  ["GSR 1", { wanted: wanted(["Attack Up Large", "Evasion+2"]), weaponClass: 4, gender: "male", hunterType: "blade", rankMax: { gsr: 1 } }],
   ["no Zenith", { wanted: wanted(["Attack Up Large", "Speed Sharpening", "Evasion+2", "Guard+1"]), weaponClass: ls, gender: "male", allowZenith: false }],
   ["Bow, gunner, Tech", { wanted: wanted(["Attack Up Large", "Evasion+2", "Bow Tech (Expert)"]), weaponClass: 10, gender: "male", hunterType: "gunner" }],
   ["Gunlance, any kind", { wanted: wanted(["Artillery Expert", "Guard+2", "Attack Up Medium"]), weaponClass: 9, gender: "", hunterType: "any" }],

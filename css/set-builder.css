@@ -250,6 +250,14 @@ main.page.wrap.wide.sb-page{max-width:2400px}   /* the whole screen: three colum
 .sb-rank{display:flex;flex-wrap:wrap;gap:10px}
 .sb-rank-field{display:flex;flex-direction:column;gap:4px;font:600 .74rem var(--font-ui);color:var(--ink-soft)}
 .sb-rank-field input{width:90px;padding-top:6px;padding-bottom:6px}
+/* the hunter's rank (Hunter card and Find sets): band chips, GR, GSR; a piece's craft rank in the lists */
+.sb-rank-box{display:flex;flex-direction:column;gap:8px}
+.sb-rank-bands{margin:0}
+.sb-hunter-rank{margin-top:10px}
+.sb-craft{font:600 .74rem var(--font-ui);white-space:nowrap}
+.sb-craft.is-warn{color:var(--wax)}
+.sb-craft.is-warn::before{content:"! "}
+.sb-result-gsr{margin:6px 12px 0;color:var(--wax)}
 .sb-checks{display:flex;flex-direction:column;gap:6px}
 .sb-find-pieces-group{margin-top:12px}
 .sb-find-pieces .chip.sb-chip{text-transform:none;letter-spacing:.02em}

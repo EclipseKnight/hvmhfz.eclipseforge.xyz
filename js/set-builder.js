@@ -26,6 +26,7 @@
 
   var UI = window.BuilderUI;
   var Calc = window.ArmorCalc;
+  var Rank = window.ArmorRank;
   var SLOT_NAMES = { head: "Head", chest: "Chest", arms: "Arms", waist: "Waist", legs: "Legs" };
   var RES_NAMES = { fire: "Fire", water: "Water", thunder: "Thunder", ice: "Ice", dragon: "Dragon" };
   var RES_ORDER = ["fire", "water", "thunder", "ice", "dragon"];   // as the game's status screen lists them
@@ -50,8 +51,9 @@
   var data = { index: null, rules: null, types: [], weapons: {}, pieces: {}, items: {}, weaponIds: null };
   var loading = {};
   // edit: what the centre list is for: {kind: "class"|"weapon"|"piece"|"deco"|"cuff", slot, where, index}
-  var state = { set: Calc.empty(), gender: "", obtainable: true, edit: { kind: "class" }, view: "equip",
-                list: freshList(), allTrees: false, preview: null };
+  // rank: the hunter's rank for the lists and Find sets (js/armor-rank.js): band 0 = any, 1-7; gr and gsr as typed
+  var state = { set: Calc.empty(), gender: "", obtainable: true, rank: { band: 0, gr: "", gsr: "" }, edit: { kind: "class" },
+                view: "equip", list: freshList(), allTrees: false, preview: null };
   var optionCache = {};
   var current = null;      // the last compute() of the set shown
   // the Community sets panel: editId = the player's set the address names (&edit=), item = that set once loaded,
@@ -82,7 +84,75 @@
   function pieceObject(row) {
     return { id: row[0], name: row[1], rarity: row[2], defence: row[3], slots: row[4], maxSlots: row[5],
              res: row[6], flags: row[7], maxLevel: row[8], skills: row[9], auto: row[10], obtainable: !!row[11],
-             defGrowth: row[12], slotGrowth: row[13], limitKind: row[14], zenith: row[15] };
+             defGrowth: row[12], slotGrowth: row[13], limitKind: row[14], zenith: row[15], craft: row[16] || 0 };
+  }
+
+  // ---- the hunter's rank --------------------------------------------------------------------------------
+
+  function rankBands() { return (data.index && data.index.rank && data.index.rank.bands) || []; }
+  function rankClasses() { return (data.index && data.index.rank && data.index.rank.classes) || []; }
+
+  /** The hunter's rank as js/armor-rank.js reads it (null = no filter). */
+  function hunterRank() { return Rank.hunter(state.rank, rankBands()); }
+
+  function rankKey() { var h = hunterRank(); return h ? "|r" + h.band + "." + h.gr + "." + h.gsr : ""; }
+
+  /** A character was loaded: its HR and GR fill the rank when none is set. */
+  function rankFromCharacter(imp) {
+    if (!imp || state.rank.band || state.rank.gr !== "") return;
+    if (imp.gr) { state.rank.band = Rank.G_BAND; state.rank.gr = String(imp.gr); }
+    else if (imp.hr) state.rank.band = Rank.bandOfHr(imp.hr, rankBands());
+  }
+
+  /** The rank controls (band chips, GR, GSR), in the Hunter card and in Find sets (prefix "filter" / "find"). */
+  function rankControls(prefix, onChange) {
+    var box = el("div", "sb-rank-box");
+    var chips = el("div", "sb-chips sb-rank-bands");
+    chips.setAttribute("role", "group");
+    chips.setAttribute("aria-label", "HR band");
+    for (var b = 0; b <= Rank.G_BAND; b++) {
+      (function (band) {
+        chips.appendChild(chip(Rank.bandLabel(band, rankBands()), state.rank.band === band, prefix + "|band|" + band, function () {
+          state.rank.band = band;
+          if (band !== Rank.G_BAND) state.rank.gr = "";
+          onChange();
+        }));
+      })(b);
+    }
+    box.appendChild(chips);
+    var nums = el("div", "sb-rank");
+    [["GR", "gr", "Your G Rank (0 before G Rank)"],
+     ["GSR", "gsr", "Your G Supremacy Rank: pieces behind a GSR gate need it in one weapon class; this number is used for every class. Empty: GSR pieces stay in the lists, marked"]].forEach(function (r) {
+      var l = el("label", "sb-rank-field");
+      l.title = r[2];
+      l.appendChild(el("span", null, r[0]));
+      var input = el("input");
+      input.type = "number";
+      input.min = "0";
+      input.max = "999";
+      input.placeholder = "any";
+      input.value = state.rank[r[1]];
+      input.setAttribute("data-focus", prefix + "|" + r[1]);
+      input.addEventListener("input", function () { state.rank[r[1]] = input.value; });
+      input.addEventListener("change", function () {
+        if (r[1] === "gr" && Number(input.value) > 0) state.rank.band = Rank.G_BAND;
+        onChange();
+      });
+      l.appendChild(input);
+      nums.appendChild(l);
+    });
+    box.appendChild(nums);
+    return box;
+  }
+
+  /** The list cell of a piece's or weapon's craft rank; a GSR gate without a GSR given is marked. */
+  function rankCell(r) {
+    if (!r.craft) return el("span", "sb-none", "–");
+    var g = Rank.gsrOf(r.craft);
+    var h = hunterRank();
+    var s = el("span", "sb-craft" + (g && (!h || h.gsr === null) ? " is-warn" : ""), Rank.text(r.craft, rankClasses()));
+    s.title = Rank.title(r.craft, rankBands(), rankClasses()) + (g && (!h || h.gsr === null) ? ". Set your GSR to filter these" : "");
+    return s;
   }
 
   /** The pieces of one slot, loaded once. */
@@ -111,23 +181,32 @@
     if (data.weapons[cls]) return Promise.resolve(data.weapons[cls]);
     var key = "w" + cls;
     if (!loading[key]) {
-      loading[key] = getJson("/data/weapons/" + type.slug + ".json").then(function (json) {
+      loading[key] = Promise.all([getJson("/data/weapons/" + type.slug + ".json"), loadWeaponCraft()]).then(function (got) {
+        var json = got[0];
         var f = {};
         json.fields.forEach(function (name, i) { f[name] = i; });
         var table = json.kind === "melee" ? "melee" : "ranged";   // bowguns and bows share the game's ranged table
         var auto = data.index.weaponAuto[table] || {};
         var extra = data.index.weapons[table] || {};
+        var craft = (got[1] && got[1][table]) || {};
         var byId = {};
         json.weapons.forEach(function (w) {
           var x = extra[w[f.id]] || [0, 0];
           byId[w[f.id]] = { id: w[f.id], name: w[f.name], rarity: w[f.rarity], slots: w[f.slots] || 0,
-                            defense: w[f.defense] || 0, auto: auto[w[f.id]] || 0, zenith: x[0], tower: !!x[1] };
+                            defense: w[f.defense] || 0, auto: auto[w[f.id]] || 0, zenith: x[0], tower: !!x[1],
+                            craft: craft[w[f.id]] || 0 };
         });
         data.weapons[cls] = { list: json.weapons, byId: byId, fields: f, kind: json.kind };
         return data.weapons[cls];
       });
     }
     return loading[key];
+  }
+
+  /** The smithy's rank per weapon (data/armor/weapon-craft.json), loaded once; null when it does not load. */
+  function loadWeaponCraft() {
+    if (!loading.weaponCraft) loading.weaponCraft = getJson("/data/armor/weapon-craft.json").catch(function () { return null; });
+    return loading.weaponCraft;
   }
 
   /** Loads what a set needs (its weapon class and pieces' slots). */
@@ -215,7 +294,8 @@
   /** The pieces a slot's list offers: who can wear them, the weapon's kind, obtainable, owned. */
   function pieceRows(slot) {
     var kind = data.rules.weaponKind(state.set.weapon[0]);
-    var key = slot + "|" + kind + "|" + state.gender + "|" + state.obtainable + ownKey();
+    var key = slot + "|" + kind + "|" + state.gender + "|" + state.obtainable + ownKey() + rankKey();
+    var rank = hunterRank();
     if (optionCache[key]) return optionCache[key];
     var own = mine && mine.filtering();
     var facts = slotFacts(slot);
@@ -226,9 +306,10 @@
       if (own && !level) return;
       if (state.obtainable && !p.obtainable && !level) return;
       if (!data.rules.canWear(p.flags, state.gender) || !data.rules.kindFits(p.flags, kind)) return;
+      if (!level && !Rank.fits(p.craft, rank)) return;     // what the character owns needs no smithy
       var f = facts[p.id];
       rows.push({ id: p.id, name: p.name, icon: pieceIcon(slot, p), rarity: p.rarity, def: f.def, slots: f.slots,
-                  skills: p.skills, text: f.text, owned: level ? "Lv " + level : "", obtainable: p.obtainable,
+                  skills: p.skills, text: f.text, owned: level ? "Lv " + level : "", obtainable: p.obtainable, craft: p.craft,
                   note: p.zenith ? data.rules.zenithName(p.zenith) : p.auto ? "automatic " + data.rules.skillName(p.auto) : "" });
     });
     optionCache[key] = rows;
@@ -236,7 +317,8 @@
   }
 
   function weaponRows(cls) {
-    var key = "w" + cls + "|" + state.obtainable + ownKey();
+    var key = "w" + cls + "|" + state.obtainable + ownKey() + rankKey();
+    var rank = hunterRank();
     if (optionCache[key]) return optionCache[key];
     var w = data.weapons[cls];
     var own = mine && mine.filtering();
@@ -246,12 +328,13 @@
       var item = w.byId[id];
       var owned = mine && mine.loaded() && mine.ownsWeapon(cls, id);
       if (own && !owned) return;
+      if (!owned && !Rank.fits(item.craft, rank)) return;
       var note = item.tower ? "Tower weapon, " + item.slots + " sigil place" + (item.slots === 1 ? "" : "s") : "";
       if (item.zenith) note += (note ? " · " : "") + data.rules.zenithName(item.zenith);
       if (item.auto) note += (note ? " · " : "") + "automatic " + data.rules.skillName(item.auto);
       rows.push({ id: id, name: item.name, icon: weaponIcon(cls, item), rarity: item.rarity, def: item.defense,
                   slots: item.slots, skills: [], text: (item.name + " " + note).toLowerCase(), owned: owned ? "yours" : "",
-                  obtainable: true, note: note });
+                  obtainable: true, note: note, craft: item.craft });
     });
     optionCache[key] = rows;
     return rows;
@@ -631,6 +714,11 @@
     label.appendChild(check);
     label.appendChild(document.createTextNode("Only what players can get"));
     box.appendChild(label);
+    var rk = el("div", "sb-hunter-rank");
+    rk.appendChild(el("div", "sb-card-kind", "Rank (up to)"));
+    rk.appendChild(rankControls("filter", render));
+    rk.title = "Lists show only what the smithy offers at this rank (and what your character owns)";
+    box.appendChild(rk);
     return box;
   }
 
@@ -695,6 +783,10 @@
     if (match) {
       cols.push({ key: "pts", label: match.name, title: match.name + " points", num: true, sort: function (r) { return pointsIn(r, match.id); },
                   cell: function (r) { return signed(pointsIn(r, match.id)); } });
+    }
+    if (kind === "piece" || kind === "weapon") {
+      cols.push({ key: "rank", label: "Rank", title: "Rank the smithy needs", sort: function (r) { return -Rank.order(r.craft); },
+                  cell: rankCell });
     }
     if (kind !== "weapon") cols.push({ key: "skills", label: "Skills", cell: skillCell });
     else cols.push({ key: "notes", label: "Notes", cell: function (r) { return r.note || ""; } });
@@ -1587,7 +1679,11 @@
       mine = window.SetBuilderMine.create({
         data: data,
         getSet: function () { return state.set; },
-        setGender: function (g) { state.gender = g; if (find) find.characterChanged(); },
+        setGender: function (g) {
+          state.gender = g;
+          rankFromCharacter(mine && mine.importData ? mine.importData() : null);
+          if (find) find.characterChanged();
+        },
         render: render,
         maxLevelOf: function (slot, id) { var p = ctx().piece(slot, id); return p ? p.maxLevel : 0; },
         loadSet: function (set) { loadSet(set); }
@@ -1598,6 +1694,8 @@
         loadForSet: loadForSet, compute: compute, typeOf: typeOf, weaponIcon: weaponIcon, pieceIcon: pieceIcon,
         itemIcon: itemIcon, colourOf: colourOf, treeName: treeName, thresholds: thresholds, deltaNode: deltaNode,
         piece: function (slot, id) { return ctx().piece(slot, id); },
+        rank: hunterRank, rankControls: rankControls, rankText: function (craft) { return Rank.text(craft, rankClasses()); },
+        rerender: render,
         loadSet: function (set, note) { setView("equip"); return loadSet(set, note); }
       });
       setView(state.view);

@@ -13,7 +13,10 @@
 
    docs/armor-set-builder.md "Skill search". */
 /* global importScripts, ArmorSearch */
-importScripts("armor-rules.js", "armor-calc.js", "armor-owned.js", "armor-search.js");
+// the page's ?v= on this file versions the scripts it loads too, so a new search engine is never mixed with an old one
+var SCRIPT_V = self.location.search;
+importScripts("armor-rules.js" + SCRIPT_V, "armor-calc.js" + SCRIPT_V, "armor-owned.js" + SCRIPT_V,
+              "armor-rank.js" + SCRIPT_V, "armor-search.js" + SCRIPT_V);
 
 (function () {
   "use strict";

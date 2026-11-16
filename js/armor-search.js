@@ -25,6 +25,7 @@
   var Calc = node ? require("./armor-calc.js") : root.ArmorCalc;
   var Rules = node ? require("./armor-rules.js") : root.ArmorRules;
   var Owned = node ? require("./armor-owned.js") : root.ArmorOwned;
+  var Rank = node ? require("./armor-rank.js") : root.ArmorRank;
 
   var SLOTS = Calc.SLOTS;
   var MAX_WANTED = 10;
@@ -60,7 +61,7 @@
                   slots: r[f.slots], maxSlots: r[f.maxSlots], res: r[f.res], flags: r[f.flags],
                   maxLevel: r[f.maxLevel], skills: r[f.skills], auto: r[f.auto], obtainable: !!r[f.obtainable],
                   defGrowth: r[f.defGrowth], slotGrowth: r[f.slotGrowth], limitKind: r[f.limitKind],
-                  zenith: r[f.zenith] };
+                  zenith: r[f.zenith], craft: f.craft === undefined ? null : r[f.craft] || 0 };
         p.row = Calc.armourRow(p);
         pieces[slot].push(p);
         byId[slot][p.id] = p;
@@ -81,6 +82,7 @@
       items[it.item] = it;
     });
     D = { R: R, index: src.index, version: src.index.version || "", pieces: pieces, byId: byId, items: items,
+          craft: SLOTS.every(function (s) { return src.pieces[s].fields.indexOf("craft") !== -1; }),
           decos: decos, types: src.weaponTypes ? src.weaponTypes.types : null, weapons: {} };
     Object.keys(src.weapons || {}).forEach(function (cls) { addWeapons(Number(cls), src.weapons[cls]); });
     return D;
@@ -171,7 +173,7 @@
       cls: cls, weapon: null, gender: q.gender === "male" || q.gender === "female" ? q.gender : "",
       kind: q.hunterType === "blade" || q.hunterType === "blademaster" ? "blademaster"
         : q.hunterType === "gunner" ? "gunner" : null,
-      noGRank: !!(q.rankMax && int(q.rankMax.gr, 0) <= 0),
+      rank: Rank.hunter(q.rankMax, D.index.rank ? D.index.rank.bands : []),
       ownedOnly: !!q.ownedOnly, inv: null,
       allowZenith: q.allowZenith !== false, allowTowerDecos: q.allowTowerDecos !== false,
       fixed: {}, exPiece: {}, exItem: {},
@@ -179,7 +181,12 @@
       timeLimitMs: Math.max(50, int(q.timeLimitMs, DEFAULT_TIME_MS)),
       wanted: [], impossible: [], notes: []
     };
-    if (Q.noGRank) Q.allowZenith = false;
+    // an HR hunter (a band, no GR): no cuffs and no Zenith decorations; pieces go by their craft rank
+    Q.noGRank = !!(Q.rank && Q.rank.band && !Q.rank.gr);
+    if (Q.rank && !D.craft) {
+      Q.notes.push("The game data has no craft ranks, so the rank filter was not applied");
+      Q.rank = null;
+    }
     var weaponId = int(q.weaponId, 0);
     if (cls >= 0 && weaponId) {
       Q.weapon = (D.weapons[cls] || {})[weaponId] || null;
@@ -218,7 +225,7 @@
   /** How many of an item the query may use: Infinity, or what the character has for "only what I own". */
   function itemCount(Q, it) {
     if (Q.exItem[it.item]) return 0;
-    if (!Q.allowZenith && it.zenith) return 0;
+    if ((!Q.allowZenith || Q.noGRank) && it.zenith) return 0;
     if (Q.ownedOnly) {
       var own = Q.inv.items[it.item];
       return own ? Math.max(0, own.have) + Math.max(0, own.inEquipment) : 0;
@@ -248,7 +255,7 @@
       if (!R.canWear(p.flags, Q.gender)) return;
       if (Q.kind && !R.kindFits(p.flags, Q.kind)) return;
       if (!Q.allowZenith && ((p.limitKind & 2) || p.zenith)) return;
-      if (Q.noGRank && (p.limitKind & 1)) return;
+      if (!Q.ownedOnly && !Rank.fits(p.craft, Q.rank)) return;   // what the character owns needs no smithy
       out.push(pieceAt(p, level));
     });
     if (!out.length) out.push(emptyPiece(slot));

@@ -520,6 +520,38 @@ async function run(chromium) {
       check(pts.length > 5 && pts[0] > 0 && pts.every(function (v, i) { return v !== 0 && (!i || pts[i - 1] >= v); }),
             V + " a tree name lists pieces with its points, best first " + pts.slice(0, 8).join(","));
 
+      // the hunter's rank (Hunter card): each row shows the smithy's rank; a band, a GR and a GSR filter the list
+      await pg.fill("#sb-list .sb-search", "");
+      const count = async function () { return Number((await pg.textContent("#sb-list-count")).replace(/\D/g, "")); };
+      const anyRank = await count();
+      const rankTexts = function () { return pg.$$eval("#sb-list tbody .sb-col-rank", function (tds) { return tds.map(function (td) { return td.textContent; }); }); };
+      const allRanks = await rankTexts();
+      check(allRanks.length > 20 && allRanks.every(function (t) { return /^((HR band \d|GR \d+)( · GSR \d+ .+)?|GSR \d+ .+|–)$/.test(t); }) &&
+            allRanks.some(function (t) { return /^GR \d+$/.test(t); }), V + " the list shows each piece's craft rank " + allRanks.slice(0, 3).join(", "));
+      await pg.click('[data-focus="filter|band|3"]');
+      await pg.waitForSelector('[data-focus="filter|band|3"][aria-pressed="true"]');
+      const band3 = await rankTexts();
+      check(band3.length > 20 && band3.every(function (t) { return /^(HR band [123]( · GSR \d+ .+)?|GSR \d+ .+)$/.test(t); }) && (await count()) < anyRank,
+            V + " HR band 3 lists only pieces of bands 1-3 " + band3.slice(0, 4).join(", "));
+      await pg.click('[data-focus="filter|band|7"]');
+      await pg.fill('[data-focus="filter|gr"]', "100");
+      await pg.press('[data-focus="filter|gr"]', "Enter");
+      await pg.waitForFunction(function () { return Array.from(document.querySelectorAll("#sb-list tbody .sb-col-rank")).some(function (td) { return /^GR /.test(td.textContent); }); });
+      const gr100 = await rankTexts();
+      check(gr100.every(function (t) { var m = /^GR (\d+)/.exec(t); return !m || Number(m[1]) <= 100; }), V + " GR 100 lists G rows up to GR 100");
+      await pg.click('[data-focus="filter|band|0"]');
+      await pg.fill("#sb-list .sb-search", "Kensei");
+      await pg.waitForFunction(function () { return document.querySelector("#sb-list tbody .sb-craft.is-warn"); });
+      check(/GSR \d+ /.test(await pg.textContent("#sb-list tbody .sb-craft.is-warn")), V + " a GSR piece is marked while no GSR is given");
+      await pg.fill('[data-focus="filter|gsr"]', "0");
+      await pg.press('[data-focus="filter|gsr"]', "Enter");
+      await pg.waitForFunction(function () { return !document.querySelector("#sb-list tbody .sb-craft.is-warn"); });
+      check(!(await rankTexts()).some(function (t) { return /GSR/.test(t); }), V + " GSR 0 leaves out every GSR piece");
+      await pg.fill('[data-focus="filter|gsr"]', "");
+      await pg.press('[data-focus="filter|gsr"]', "Enter");
+      await pg.fill("#sb-list .sb-search", "");
+      await pg.waitForFunction(function (n) { return Number(document.getElementById("sb-list-count").textContent.replace(/\D/g, "")) === n; }, anyRank);
+
       await pg.reload({ waitUntil: "load" });
       await pg.waitForSelector("#sb-app[data-ready]");
       await pg.waitForSelector(".sb-skill", { state: "attached" });

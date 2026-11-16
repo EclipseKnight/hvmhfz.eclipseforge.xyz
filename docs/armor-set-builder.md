@@ -11,8 +11,9 @@ use (A: decoded rules in `hvmhfz_re`; C: the API's `/builder` and "missing" endp
 | `js/set-builder-find.js` | The "Find sets" tab: skill grid, filters, kept and excluded pieces, the search engine's worker, result cards, compare (see "Find sets") |
 | `dev/fake-armor-search-worker.js` | A stand-in for `js/armor-search-worker.js` with the same messages, for the fast page checks; `dev/check-set-builder.js` also runs the real worker |
 | `js/armor-calc.js` | The calculator and the set format (encode, decode, normalize; `calc` = the game's recompute, `compute` = the page's set checked and calculated). No page code; node runs it too |
+| `js/armor-rank.js` | The rank the smithy needs (a piece's or weapon's `craft`) and whether the hunter's rank reaches it; the list texts. Page, worker and node (see "Rank needed to craft") |
 | `js/armor-rules.js` | The game's rules for one row at a time (activation, weapon gate, Zenith, limit parts, defence and slot growth, gender), read from `data/armor/rules.json` |
-| `dev/make-armor-data.py` | Writes `data/armor/` from `hvmhfz_re` `data/armor_rules.json` and `data/armor_builder.json`; stops when their data version is not the patch zip's `mhfdat.bin` |
+| `dev/make-armor-data.py` | Writes `data/armor/` from `hvmhfz_re` `data/armor_rules.json`, `data/armor_builder.json` and `data/armor_craft_rank.json`; stops when their data version is not the patch zip's `mhfdat.bin` |
 | `dev/check-set-builder.js` | All 3,000 client answers of `hvmhfz_re` `data/armor_calc_cases.json`, the data rows against `hvmhfz_re`'s, rules, page checks including Find sets (node + headless Chromium) |
 | `js/armor-owned.js` | Character import helpers (no page code; node runs it): import pieces to a set, what is owned, the "missing" request body |
 | `js/set-builder-mine.js` | The "Your character" panel, the "Only what I own" filter hooks and the "Missing for this set" panel |
@@ -22,8 +23,8 @@ use (A: decoded rules in `hvmhfz_re`; C: the API's `/builder` and "missing" endp
 
 Data: `data/armor/<slot>.json` (one per armour slot, about 1.2 MB, 180 KB gzipped, loaded when the slot is first
 opened or a link needs it), `data/armor/index.json` (decorations, Road gems, cuffs, weapon Tower sigils, weapon
-Zenith skills, Tower flags and automatic skills, skill names), `data/armor/rules.json` (the rules and the skill
-trees). Weapons come from `data/weapons/`. Field lists are in the docstring of `dev/make-armor-data.py`.
+Zenith skills, Tower flags and automatic skills, skill names, the HR bands), `data/armor/rules.json` (the rules and
+the skill trees), `data/armor/weapon-craft.json` (the smithy's rank per weapon, loaded with the first weapon list). Weapons come from `data/weapons/`. Field lists are in the docstring of `dev/make-armor-data.py`.
 
 After a client patch: rebuild `hvmhfz_re`'s armour data from the new patch (its `docs/armor-builder.md`,
 "Regenerate and check"), then `python3 dev/make-armor-data.py --zip <patch zip> --version 1.N`, then
@@ -92,7 +93,7 @@ its pickers.
 - **Wide screens (1200 px and up), three columns.** Left: the set as cards: weapon (class, weapon, sockets or a Tower
   weapon's sigil and Road gem places), head to legs (icon, name, defence, skills, owned badge, level pips, one socket
   per decoration and one empty socket per free slot), skill cuffs (two sockets), hunter filters (gender, "Only what
-  players can get"). Clicking a card's name or a socket opens its list in the centre. Centre: that list, searchable
+  players can get", the rank: see "Rank needed to craft"). Clicking a card's name or a socket opens its list in the centre. Centre: that list, searchable
   (name or skill; a skill tree's whole name lists only rows with its points and sorts by them), sortable by its
   headers, paged by 80; a "Yours" column with a character loaded; pointing at or tabbing to a row shows what it
   changes against what you have (defence, skills gained and lost, points per tree). Right: defence and resistances,
@@ -118,8 +119,8 @@ more", fix and exclude pieces, honest caps, which skill blocks a search):
 - **Top, full width**: the wanted skills as chips (× removes one), the room counter (ten boxes, "Room for N more": the
   game's limit before G-rank, Zenith pieces and cuffs add places, and the engine's 10 wanted skills at most), Find
   sets / Cancel / Clear skills, progress; then the filters, folded on screens below 1200 px with a one-line summary:
-  weapon class (defaults to the builder's), gender, hunter type (set by the class when there is one), rank (up to HR /
-  GR, filled from a loaded character; an HR alone means no G-rank or Zenith pieces and no cuffs), only what I own
+  weapon class (defaults to the builder's), gender, hunter type (set by the class when there is one), rank (the
+  Hunter card's, shared: see "Rank needed to craft"), only what I own
   (with a character), Zenith pieces, Tower decorations; then the pieces: "+ Keep <piece>" for the builder's weapon and
   pieces, and a chip for each piece kept or left out (× undoes it).
 - **Left (1200 px and up; below it under the top)**: every skill tree as a tile in a category grid (Attack, Defence,
@@ -158,7 +159,7 @@ Messages (the interface agreed with the armor-search lane):
 `query`: `wanted: [{skill, level, tree}]` (skill = the skill id of the level picked, level = its points threshold,
 always 10 or more so the engine reads it as points, tree = its tree), `weaponClass` (null = any), `weaponId` (0 unless
 the builder's weapon is kept), `gender` (`""`, `male`, `female`), `hunterType` (`blade`, `gunner`, `any`), `rankMax`
-(`{hr, gr}` or null), `ownedOnly`, `owned` (the character's `/builder` import when one is loaded, else null),
+(`{band, gr, gsr}` or null), `ownedOnly`, `owned` (the character's `/builder` import when one is loaded, else null),
 `allowZenith`, `allowTowerDecos`, `fixed` (`{slot: id}` of the pieces kept), `exclude` (`"slot:id"` of pieces and
 `"item:id"` of decorations left out), `maxResults` 50, `timeLimitMs` 10000. The cards take each result's `set` and
 `missing` and show what the calculator gives for the set (defence, free slots, skills), so they agree with the
@@ -168,6 +169,30 @@ Checks: `dev/check-set-builder.js` runs Find sets against the stand-in (the quer
 engine) and then against the real worker at 1600 and 390 px: Attack Up Large + Razor Sharp +1 + Evasion+2 for a Long
 Sword and Attack Up Large for a Bow, each card confirmed by the calculator; sort, Show more, Keep and × on a card;
 PwrSwd+3 added blocks the search, every card misses it, "Search without" it finds full sets.
+
+## Rank needed to craft
+
+hvmhfz_re part 200 (its `docs/armor-builder.md` "Rank needed to craft", `data/armor_craft_rank.json`) decoded the
+rank at which the smithy offers every armour piece and weapon. `dev/make-armor-data.py` adds it as each piece's
+`craft` (the last field of `data/armor/<slot>.json`) and per weapon in `data/armor/weapon-craft.json`: 0 = never
+offered (event, transmog-only, unused), else `[rank "hr"|"gr", value, band 1-7, how, (GSR class, GSR level)]`; `how`
+r rank, m materials, o open, g GSR gate, u upgraded from a piece of that rank. `index.json` `rank` holds the HR bands
+(HR1, HR2-30, HR31-50, HR51-99, HR100-299, HR300-998, HR999) and the GSR classes' names.
+
+The rule (hvmhfz_re "Site filter"), in `js/armor-rank.js` for the lists, Find sets and the search engine: a hunter
+with HR band b (G Rank = band 7) and GR g reaches a piece when it is `hr` with band <= b or `gr` with value <= g; a
+GSR gate also needs the GSR (one number for every class: the page does not know a hunter's GSR per class).
+
+- **Hunter card** "Rank (up to)": band chips (Any, HR1 ... HR300-998, HR999 / G Rank), GR, GSR. Any = no filter.
+  A GR above 0 picks the G Rank band. Find sets shows the same controls (one state). A loaded character fills the
+  band and GR when no rank is set (its shown HR's band: an HR30 hunter past the HR31 Urgent gets band 2, one band
+  low).
+- **Lists**: armour and weapon rows outside the rank are left out, except what the loaded character owns; a Rank
+  column says "HR band 5", "GR 100", "GSR 300 Long Sword" (its tooltip: the band's HRs and how the smithy lists it),
+  sortable. A GSR row is marked while no GSR is given.
+- **Find sets**: the query's `rankMax`; a result card with a GSR piece says what it needs while no GSR is given.
+- Upgrades read no rank in the client (only material conditions), so a G-rank upgrade of an HR piece (6,016 armour
+  pieces, e.g. Barioth GX Helm from the HR100 Barioth line) carries the HR band of its line and shows for HR hunters.
 
 ## Not built yet
 
@@ -197,7 +222,7 @@ Query (every field but `wanted` optional):
 | `weaponClass`, `weaponId` | The set format's class (-1 or absent = none). `weaponId` 0 = any weapon of the class (no weapon slots used); a weapon with slots gets decorations; a Tower weapon gets Road gems (below) |
 | `gender` | `"male"`, `"female"` or `""` (any): a hard rule |
 | `hunterType` | `"blade"`, `"gunner"` or `"any"`: the pieces' blademaster / gunner marks, a list filter as on the page |
-| `rankMax: {hr, gr}` | `gr` 0 = an HR hunter: no G-rank or Zenith pieces, no cuffs. The data has no rank requirement per piece (hvmhfz_re has not decoded it), so `hr` does not filter yet |
+| `rankMax: {band, gr, gsr}` | The hunter's rank (`js/armor-rank.js`, "Rank needed to craft"): pieces the smithy does not offer at it are left out (with "only what I own" the owned pieces count whatever their rank). `band` 1-7 (an older `{hr}` is turned into its band), 0 = no band; a `gr` means band 7. A band with no GR (an HR hunter): no cuffs and no Zenith decorations. `gsr` null = GSR gates not checked |
 | `ownedOnly`, `owned` | Only pieces in the character's equipment box (at the level owned) and decorations and cuffs it has (box, pouch, warehouse and set in gear; never more of one than it has). `owned` is the `/builder` import ("Character import" below) |
 | `allowZenith` | false = no Zenith pieces, decorations or cuffs (default true) |
 | `allowTowerDecos` | false = no Road gems on a Tower weapon (default true) |
