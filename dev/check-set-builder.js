@@ -25,12 +25,18 @@
    sorts by a header and a skill tree's name as the search lists only pieces with its points, best first; a level
    pip changes the level and drops the decorations that no longer fit; a cuff for another weapon marks the skill "no
    effect"; a broken link says so. Layout: cards, list and skills side by side on a wide screen; on a phone the
-   skills are their own tab. Find sets (with dev/fake-armor-search-worker.js served as js/armor-search-worker.js):
-   a skill level chip makes the wanted skill, Find sets sends the engine the query of the interface, shows progress
-   and one card per result with the defence and the wanted skills met as the calculator says, Compare lines a
-   result up with the builder's set, Load into builder puts it in the address, Cancel stops a search; without the
-   worker file the tab says the search is not there. No sideways scrolling and no script errors. SHOTS=<dir> saves
-   screenshots.
+   skills are their own tab; an empty set offers the quick start (weapon class tiles, Find sets, one-skill
+   searches). Find sets, fast (dev/fake-armor-search-worker.js served as js/armor-search-worker.js): a skill level
+   chip makes the wanted skill, Find sets sends the engine the query of the interface, shows progress and one card
+   per result with the defence and the wanted skills met as the calculator says, Compare lines a result up with the
+   builder's set, Load into builder puts it in the address, Cancel stops a search at once; without the worker file
+   the tab says the search is not there. Find sets with the real engine (js/armor-search-worker.js), at both sizes:
+   Attack Up Large + Razor Sharp +1 + Evasion+2 for a Long Sword and Attack Up Large for a Bow (gunner) give sets
+   whose cards the calculator confirms (defence, every wanted skill, no problem, gunner pieces); sorting by
+   defence, "Show more", keeping a result's piece and leaving one out search again with it fixed or excluded;
+   adding PwrSwd+3 (no Long Sword set reaches it) says it blocks the search and each card misses it, and "Search
+   without" it finds full sets again. No sideways scrolling and no script errors. SHOTS=<dir> saves screenshots
+   (the Find sets ones with the real engine's results).
 
    One data version: the API's crafting data (HVMHFZ_API, default /root/mhfz/hvmhfz_rest_api) names the page's
    mhfdat.bin and its community-sets catalog the page's version, and offers every piece and item the page does.
@@ -346,7 +352,9 @@ if (towerW && gem) {
 
 /* ---- the page ---- */
 const FAKE_WORKER = path.join(ROOT, "dev/fake-armor-search-worker.js");
-let fakeEngine = true;   // false: js/armor-search-worker.js answers 404, as on a site without the engine
+// what /js/armor-search-worker.js serves: "fake" (the stand-in), "real" (the engine) or "none" (404, as on a site
+// without the engine)
+let engine = "fake";
 function serve() {
   const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json",
     ".png": "image/png", ".webp": "image/webp", ".svg": "image/svg+xml", ".jpg": "image/jpeg", ".gif": "image/gif" };
@@ -354,7 +362,7 @@ function serve() {
     let p = decodeURIComponent(req.url.split("?")[0].split("#")[0]);
     if (p.endsWith("/")) p += "index.html";
     let file = path.join(ROOT, p);
-    if (p === "/js/armor-search-worker.js") file = fakeEngine ? FAKE_WORKER : path.join(ROOT, "no such file");
+    if (p === "/js/armor-search-worker.js" && engine !== "real") file = engine === "fake" ? FAKE_WORKER : path.join(ROOT, "no such file");
     if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); res.end(); return; }
     res.writeHead(200, { "Content-Type": types[path.extname(file)] || "application/octet-stream" });
     if (req.method === "HEAD") { res.end(); return; }
@@ -383,7 +391,7 @@ async function run(chromium) {
     for (const view of [{ name: "desktop", width: 1600, height: 1000 }, { name: "phone", width: 390, height: 844 }]) {
       const V = view.name;
       const phone = V === "phone";
-      fakeEngine = true;
+      engine = "fake";
       const ctx = await browser.newContext({ viewport: { width: view.width, height: view.height }, deviceScaleFactor: phone ? 2 : 1 });
       const pg = await ctx.newPage();
       const errors = [];
@@ -432,6 +440,8 @@ async function run(chromium) {
             V + " the other searcher is a link, not embedded");
       check(await pg.$$eval("#sb-list .sb-class", function (n) { return n.length; }) === weaponTypes.length,
             V + " an empty set opens on the weapon class tiles");
+      check(await pg.isVisible("#sb-start-find") && (await pg.$$eval(".sb-start-quick .sb-chip", function (n) { return n.length; })) >= 4,
+            V + " an empty set offers Find sets and one-skill searches");
       await shot("empty", false);
 
       // weapon class tile, weapon, head piece (with the compare preview), decoration socket, cuff
@@ -562,7 +572,6 @@ async function run(chromium) {
       });
       check(cmp.cols === 3 && cmp.def === String(fake0.defence.total), V + " Compare lines the result up with the builder's set " + JSON.stringify(cmp));
       await noSideways("find results");
-      await shot("find");
       await pg.click('.sb-result[data-index="0"] .sb-result-load');
       await pg.waitForFunction(function () { return document.getElementById("sb-app").getAttribute("data-view") === "equip"; });
       const loadedSet = await setInAddress();
@@ -581,13 +590,13 @@ async function run(chromium) {
       await pg.waitForSelector("#sb-find-cancel");
       await pg.waitForSelector("#sb-find-progress progress");
       await pg.click("#sb-find-cancel");
-      await pg.waitForSelector("#sb-find-truncated");
-      check(/stopped early/.test(await pg.textContent("#sb-find-truncated")) &&
+      await pg.waitForSelector("#sb-find-stopped");
+      check(/stopped/.test(await pg.textContent("#sb-find-stopped")) && !(await pg.$("#sb-find-cancel")) &&
             (await pg.evaluate(function () { return window.__sbSent.some(function (m) { return m.type === "cancel"; }); })),
-            V + " Cancel sends cancel and says the search stopped early");
+            V + " Cancel sends cancel and stops the search at once");
 
       if (!phone) {
-        fakeEngine = false;
+        engine = "none";
         await pg.reload({ waitUntil: "load" });
         await pg.waitForSelector("#sb-app[data-ready]");
         await pg.click("#sb-tab-find");
@@ -602,10 +611,173 @@ async function run(chromium) {
       check(!errors.length, V + ": no script errors " + errors.join(" | "));
       await ctx.close();
     }
+    for (const view of [{ name: "desktop", width: 1600, height: 1000 }, { name: "phone", width: 390, height: 844 }]) {
+      await realSearch(browser, base, view, shots);
+    }
   } finally {
     await browser.close();
     srv.close();
   }
+}
+
+/* ---- Find sets with the real engine (js/armor-search-worker.js) ---- */
+function level(treeName, points) {
+  const t = rulesJson.trees.find(function (x) { return x.name === treeName; });
+  const l = t.levels.find(function (x) { return x[0] === points && x[1]; });
+  return { tree: t.id, skill: l[1], points: points, name: treeName };
+}
+const WANT_LS = [level("Attack", 25), level("Sharpness", 10), level("Evasion", 20)];
+const BLOCKER = level("Power", 20);   // PwrSwd+3: no Long Sword set reaches it (dev/check-armor-search.js data)
+
+/** What the calculator says about a card's set (its data-set): defence, wanted skills met, problems, pieces. */
+function judge(code, wanted) {
+  const set = Calc.decode(code);
+  const r = Calc.compute(set, ctxWith(""));
+  const met = wanted.map(function (w) {
+    return r.active.some(function (a) { return !a.dropped && a.works && a.tree === w.tree && !a.negative && a.total >= w.points; });
+  });
+  return { set: set, def: r.defence.total, met: met, problems: r.problems };
+}
+
+async function realSearch(browser, base, view, shots) {
+  const V = view.name + " real engine";
+  const phone = view.name === "phone";
+  engine = "real";
+  const ctx = await browser.newContext({ viewport: { width: view.width, height: view.height }, deviceScaleFactor: phone ? 2 : 1 });
+  const pg = await ctx.newPage();
+  const errors = [];
+  pg.on("pageerror", function (e) { errors.push(e.message); });
+  await pg.route(/api\.hvmhfz\.eclipseforge\.xyz/, function (rt) { rt.abort(); });
+  await pg.addInitScript(function () {
+    localStorage.setItem("hvmhfz.consent", JSON.stringify({ choice: "declined", at: new Date().toISOString() }));
+    window.__sbSent = [];
+    const post = Worker.prototype.postMessage;
+    Worker.prototype.postMessage = function (m) { window.__sbSent.push(JSON.parse(JSON.stringify(m))); return post.apply(this, arguments); };
+  });
+  async function shot(name) {
+    if (!shots) return;
+    const nav = await pg.addStyleTag({ content: ".site-nav{position:static !important}" });
+    await pg.screenshot({ path: path.join(shots, view.name + "-" + name + ".png"), fullPage: true });
+    await nav.evaluate(function (n) { n.remove(); });
+  }
+  const lastQuery = function () {
+    return pg.evaluate(function () { return window.__sbSent.filter(function (m) { return m.type === "search"; }).pop().query; });
+  };
+  const cards = function () {
+    return pg.$$eval(".sb-result", function (list) {
+      return list.map(function (c) {
+        return { set: c.getAttribute("data-set"), def: Number(c.querySelector(".sb-result-def").getAttribute("data-defence")),
+                 unmet: c.querySelectorAll(".sb-rbar.is-unmet").length, miss: (c.querySelector(".sb-result-miss") || {}).textContent || "" };
+      });
+    });
+  };
+  async function want(w) {
+    await pg.fill("#sb-find-q", w.name);
+    await pg.click('[data-focus="find|want|' + w.tree + "|" + w.skill + '"]');
+    await pg.waitForSelector('#sb-find-wanted .sb-want[data-skill="' + w.skill + '"]');
+    await pg.fill("#sb-find-q", "");
+  }
+  async function searched() {
+    await pg.click("#sb-find-go");
+    await pg.waitForSelector("#sb-find-results .sb-find-count", { timeout: 30000 });
+  }
+  async function weaponClass(cls) {
+    if (!(await pg.evaluate(function () { return document.querySelector(".sb-find-filters").open; }))) await pg.click(".sb-find-filters-sum");
+    await pg.click('[data-focus="find|class|' + cls + '"]');
+  }
+  function allConfirmed(list, wanted, what, gunner) {
+    let bad = null;
+    list.forEach(function (c, i) {
+      const j = judge(c.set, wanted);
+      if (bad) return;
+      if (j.def !== c.def) bad = "#" + (i + 1) + " defence " + c.def + " vs calculator " + j.def;
+      else if (j.problems.length) bad = "#" + (i + 1) + " problems " + j.problems.join("; ");
+      else if (!j.met.every(Boolean) || c.unmet) bad = "#" + (i + 1) + " misses a wanted skill " + JSON.stringify(j.met);
+      else if (gunner && j.set.armour.some(function (a) { return a[1] && !rules.kindFits(pieceById[a[0]][a[1]][7], "gunner"); })) bad = "#" + (i + 1) + " has a blademaster piece";
+    });
+    check(list.length > 0 && !bad, V + " " + what + ": " + list.length + " cards, each confirmed by the calculator " + (bad || ""));
+  }
+
+  await pg.goto(base + "/set-builder.html", { waitUntil: "load" });
+  await pg.waitForSelector("#sb-app[data-ready]");
+  await pg.click("#sb-tab-find");
+  await pg.waitForSelector("#sb-find-q");
+  await weaponClass(7);
+  for (const w of WANT_LS) await want(w);
+  check((await pg.textContent("#sb-find-room")).indexOf("Room for 7 more") !== -1, V + " the room counter counts the wanted skills");
+  await searched();
+  let q = await lastQuery();
+  check(q.weaponClass === 7 && q.hunterType === "blade" && q.wanted.length === 3 &&
+        q.wanted.every(function (w, i) { return w.skill === WANT_LS[i].skill && w.level === WANT_LS[i].points && w.tree === WANT_LS[i].tree; }),
+        V + " the query names each wanted skill, its points and tree " + JSON.stringify(q.wanted));
+  let list = await cards();
+  allConfirmed(list, WANT_LS, "Long Sword, 3 skills");
+  check(list.length === 12 && /found/.test(await pg.textContent(".sb-find-count")), V + " 12 cards first, then Show more");
+  if (await pg.$("#sb-find-more")) {
+    await pg.click("#sb-find-more");
+    check((await cards()).length === 24, V + " Show more adds 12 cards");
+  }
+  if (await pg.$("#sb-find-truncated")) check(/best 50|limit/.test(await pg.textContent("#sb-find-truncated")), V + " the cap is said plainly");
+  await pg.click('[data-focus="find|sort|def"]');
+  list = await cards();
+  check(list.every(function (c, i) { return !i || list[i - 1].def >= c.def; }), V + " sort by defence, highest first");
+  await pg.click('[data-focus="find|sort|best"]');
+  await shot("find");
+
+  // keep the first card's head piece: the next search has it fixed and every set wears it
+  const first = Calc.decode((await cards())[0].set);
+  const head = first.armour[0][1];
+  await pg.click('.sb-result[data-index="0"] [data-focus="find|pin|head|' + head + '"]');
+  await pg.waitForSelector('#sb-find-pieces [data-focus="find|keep|head"]');
+  await pg.waitForSelector("#sb-find-results .sb-find-count", { timeout: 30000 });
+  q = await lastQuery();
+  list = await cards();
+  check(q.fixed.head === head && list.length && list.every(function (c) { return Calc.decode(c.set).armour[0][1] === head; }),
+        V + " Keep on a card's piece searches again with it in every set");
+  // leave the first card's chest piece out: the next search excludes it and no set wears it
+  const chest = Calc.decode(list[0].set).armour[1][1];
+  await pg.click('.sb-result[data-index="0"] [data-focus="find|out|chest|' + chest + '"]');
+  await pg.waitForSelector('#sb-find-pieces [data-focus="find|unexclude|chest:' + chest + '"]');
+  await pg.waitForSelector("#sb-find-results .sb-find-count", { timeout: 30000 });
+  q = await lastQuery();
+  list = await cards();
+  check(q.exclude.indexOf("chest:" + chest) !== -1 && list.length && list.every(function (c) { return Calc.decode(c.set).armour[1][1] !== chest; }),
+        V + " × on a card's piece searches again without it");
+  allConfirmed(list, WANT_LS, "with a kept and an excluded piece");
+  await pg.click('[data-focus="find|keep|head"]');
+  await pg.click('[data-focus="find|unexclude|chest:' + chest + '"]');
+
+  // a skill no Long Sword set reaches: it blocks the search, the cards miss it, "Search without" it finds full sets
+  await want(BLOCKER);
+  await searched();
+  await pg.waitForSelector("#sb-find-blocked");
+  const blocked = await pg.textContent("#sb-find-blocked");
+  const blockName = rules.skillName(BLOCKER.skill);
+  list = await cards();
+  check(blocked.indexOf(blockName + " blocks it") !== -1, V + " says which skill blocks the search: " + blocked.slice(0, 120));
+  check(list.length > 0 && list.every(function (c) { return c.miss === "Misses " + blockName && c.unmet === 1; }),
+        V + " every card says it misses " + blockName);
+  await shot("find-blocked");
+  await pg.click('[data-focus="find|drop|' + BLOCKER.skill + '"]');
+  await pg.waitForFunction(function () { return !document.getElementById("sb-find-blocked") && document.querySelector(".sb-result"); }, null, { timeout: 30000 });
+  allConfirmed(await cards(), WANT_LS, "Search without " + blockName);
+
+  // a gunner: Bow with Attack Up Large
+  await pg.click('[data-focus="find|clear"]');
+  await weaponClass(10);
+  await want(WANT_LS[0]);
+  await searched();
+  q = await lastQuery();
+  check(q.weaponClass === 10 && q.hunterType === "gunner", V + " a Bow search is a gunner search");
+  allConfirmed(await cards(), [WANT_LS[0]], "Bow, Attack Up Large", true);
+
+  const over = await pg.evaluate(function () {
+    const m = document.querySelector("main") || document.body;
+    return Math.max(m.scrollWidth - m.clientWidth, Math.ceil(m.getBoundingClientRect().right - document.documentElement.clientWidth));
+  });
+  check(over <= 0, V + ": no sideways scrolling (" + over + " px)");
+  check(!errors.length, V + ": no script errors " + errors.join(" | "));
+  await ctx.close();
 }
 
 let chromium;

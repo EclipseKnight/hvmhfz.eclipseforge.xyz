@@ -8,8 +8,8 @@ use (A: decoded rules in `hvmhfz_re`; C: the API's `/builder` and "missing" endp
 | File | What |
 |---|---|
 | `set-builder.html`, `js/set-builder.js`, `css/set-builder.css` | The page (see "Page layout"): the set as cards (weapon, five pieces with level pips and decoration sockets, cuffs, hunter filters), the list for the card being edited, the skills panel; the set in the address |
-| `js/set-builder-find.js` | The "Find sets" tab: skill picker, filters, the search engine's worker, result cards, compare (see "Find sets") |
-| `dev/fake-armor-search-worker.js` | A stand-in for `js/armor-search-worker.js` that the page checks serve in its place |
+| `js/set-builder-find.js` | The "Find sets" tab: skill grid, filters, kept and excluded pieces, the search engine's worker, result cards, compare (see "Find sets") |
+| `dev/fake-armor-search-worker.js` | A stand-in for `js/armor-search-worker.js` with the same messages, for the fast page checks; `dev/check-set-builder.js` also runs the real worker |
 | `js/armor-calc.js` | The calculator and the set format (encode, decode, normalize; `calc` = the game's recompute, `compute` = the page's set checked and calculated). No page code; node runs it too |
 | `js/armor-rules.js` | The game's rules for one row at a time (activation, weapon gate, Zenith, limit parts, defence and slot growth, gender), read from `data/armor/rules.json` |
 | `dev/make-armor-data.py` | Writes `data/armor/` from `hvmhfz_re` `data/armor_rules.json` and `data/armor_builder.json`; stops when their data version is not the patch zip's `mhfdat.bin` |
@@ -111,40 +111,68 @@ its pickers.
 
 ## Find sets
 
-The "Find sets" tab (`js/set-builder-find.js`): pick the skills you want (search by name or a skill's level name,
-category chips Attack / Defence / Resistance / Gunner / Weapon Tech / Other, chosen by tree name since the game has no
-categories; one chip per level, one level per tree), then the filters: weapon class (defaults to the builder's),
-gender, hunter type (set by the class when there is one), rank (up to HR / GR, filled from a loaded character), only
-what I own (with a character), Zenith pieces, Tower decorations, and which of the builder's pieces to keep. "Find
-sets" runs the search engine in the Web Worker `js/armor-search-worker.js` (the armor-search lane; its engine and
-rules are in "Skill search" once merged) and shows its progress, a Cancel button, and one card per set: pieces with
-levels and decorations, each wanted skill met or not, the other skills, defence, free slots, resistances; "Load into
-builder" puts the set on the cards (and in the address), "Compare" lines up to three sets beside the builder's set.
-Every result is recalculated with `ArmorCalc.compute` for what the cards show. Without the worker file the tab says
-the search is not on the site and searches nothing.
+The "Find sets" tab (`js/set-builder-find.js`). Owner, 2026-11-15 (twice): more intuitive, no dropdowns, use the width,
+a skill list, find sets by the skills you want. Layout from other builders (wiki-db's skill grid, Game8's "room for
+more", fix and exclude pieces, honest caps, which skill blocks a search):
+
+- **Top, full width**: the wanted skills as chips (× removes one), the room counter (ten boxes, "Room for N more": the
+  game's limit before G-rank, Zenith pieces and cuffs add places, and the engine's 10 wanted skills at most), Find
+  sets / Cancel / Clear skills, progress; then the filters, folded on screens below 1200 px with a one-line summary:
+  weapon class (defaults to the builder's), gender, hunter type (set by the class when there is one), rank (up to HR /
+  GR, filled from a loaded character; an HR alone means no G-rank or Zenith pieces and no cuffs), only what I own
+  (with a character), Zenith pieces, Tower decorations; then the pieces: "+ Keep <piece>" for the builder's weapon and
+  pieces, and a chip for each piece kept or left out (× undoes it).
+- **Left (1200 px and up; below it under the top)**: every skill tree as a tile in a category grid (Attack, Defence,
+  Resistance, Gunner, Weapon Tech, Other; chosen by tree name since the game has no categories), one chip per
+  level labelled by what its name adds ("Large 25" for Attack Up Large; the whole name and points in its label), a
+  name search over trees and level names (it looks in every category), its own scroll. One level per tree; Tech trees
+  of another weapon class are left out; thresholds of 1000 and more (the game's Zenith markers for Reflect+3 and
+  Encourage+2) are not offered.
+- **Right**: the sets found, 12 cards at a time ("Show more"), sortable by best match (the engine's order), defence,
+  free slots and extra skills. Each card: rank, defence, free slots, "All N skills" or "Misses X" (the engine's
+  `missing`), resistances; the pieces on a dark panel in their rarity colours (the client's equipment colours) with
+  level and decorations; a bar per wanted skill (points / needed, the calculator's); the other skills; Load into
+  builder and Compare (up to three beside the builder's set). On each armour piece "Keep" fixes it and × leaves it
+  out, a decoration's chip leaves it out; each searches again at once.
+- **Messages**: a skill the engine cannot search (`stats.impossible`, e.g. a Tech skill of another class) or, when
+  nothing met every skill (`stats.relaxed`), the skill(s) the results miss: "Nothing matches all N skills. X blocks
+  it" with "Search without X". No result at all: "Nothing gives X with these filters" (one skill) or "No set reaches
+  these N skills ..., not even with one of them left out", with what to try. Caps said plainly: 50 results shown when
+  the engine found more, the 10 s time limit (`truncated`), the engine's notes. Cancel ends the worker at once (the
+  engine sends nothing more for a cancelled search) and says the search stopped.
+
+Every result is recalculated with `ArmorCalc.compute` for what the cards show; each card carries its set in
+`data-set` (the `#s=` code). Without the worker file the tab says the search is not on the site and searches nothing.
+
+The Equipment tab's empty set opens on "Start a set": build piece by piece (the weapon class tiles below) or Find sets
+for skills, with one-skill searches for six common skills (Attack Up Large, Critical Eye +3, Razor Sharp +1,
+Evasion+2, Guard+1, Health+30) that open Find sets and search.
 
 Messages (the interface agreed with the armor-search lane):
 
 | Direction | Message |
 |---|---|
-| page to worker | `{type: "search", query}`; `{type: "cancel"}` to stop (the page waits 1.5 s for a last `done`, then ends the worker) |
-| worker to page | `{type: "progress", done, total}` ..., then `{type: "done", result: {results: [{set, skills, extraSkills, defence, res, freeSlots, score}], stats, truncated}}`; `{type: "error", message}` is shown as it is |
+| page to worker | `{type: "search", query}`; `{type: "cancel"}` to stop (the page ends the worker at once) |
+| worker to page | `{type: "progress", done, total}` ..., then `{type: "done", result: {results: [{set, skills, extraSkills, defence, res, freeSlots, score, met, missing}], stats, truncated}}`; `{type: "error", message}` is shown as it is |
 
 `query`: `wanted: [{skill, level, tree}]` (skill = the skill id of the level picked, level = its points threshold,
-tree = its tree), `weaponClass` (null = any), `weaponId` (0 unless the builder's weapon is kept), `gender` (`""`,
-`male`, `female`), `hunterType` (`blade`, `gunner`, `any`), `rankMax` (`{hr, gr}` or null), `ownedOnly`, `owned`
-(the character's `/builder` import when one is loaded, else null), `allowZenith`, `allowTowerDecos`, `fixed`
-(`{slot: id}` of the pieces kept), `exclude` (`[]`), `maxResults` 50, `timeLimitMs` 10000. The cards take only each result's `set` and show what the
-calculator gives for it (defence, free slots, skills), so they agree with the builder and the compare table.
+always 10 or more so the engine reads it as points, tree = its tree), `weaponClass` (null = any), `weaponId` (0 unless
+the builder's weapon is kept), `gender` (`""`, `male`, `female`), `hunterType` (`blade`, `gunner`, `any`), `rankMax`
+(`{hr, gr}` or null), `ownedOnly`, `owned` (the character's `/builder` import when one is loaded, else null),
+`allowZenith`, `allowTowerDecos`, `fixed` (`{slot: id}` of the pieces kept), `exclude` (`"slot:id"` of pieces and
+`"item:id"` of decorations left out), `maxResults` 50, `timeLimitMs` 10000. The cards take each result's `set` and
+`missing` and show what the calculator gives for the set (defence, free slots, skills), so they agree with the
+builder and the compare table.
+
+Checks: `dev/check-set-builder.js` runs Find sets against the stand-in (the query, cards, compare, load, cancel, no
+engine) and then against the real worker at 1600 and 390 px: Attack Up Large + Razor Sharp +1 + Evasion+2 for a Long
+Sword and Attack Up Large for a Bow, each card confirmed by the calculator; sort, Show more, Keep and × on a card;
+PwrSwd+3 added blocks the search, every card misses it, "Search without" it finds full sets.
 
 ## Not built yet
 
 Upgrade lines on this page (each piece links to its equipment page, which shows the line and materials).
 d0t-execute's Frontier Set Searcher stays linked under the builder as another search.
-
-The page's form for the skill search (phase 2b: the engine is built, see "Skill search"; until the form is on the
-page it links to d0t-execute's Frontier Set Searcher), community sets (phase 3, see "Community sets" below), upgrade lines on this page
-(each piece links to its equipment page, which shows the line and materials).
 
 ## Skill search (phase 2b)
 

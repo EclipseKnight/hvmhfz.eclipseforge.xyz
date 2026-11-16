@@ -228,7 +228,7 @@ async function run(chromium) {
   const base = "http://127.0.0.1:" + server.address().port;
   const browser = await chromium.launch();
   try {
-    for (const view of [{ name: "desktop", width: 1280, height: 900 }, { name: "phone", width: 390, height: 844 }]) {
+    for (const view of [{ name: "desktop", width: 1600, height: 1000 }, { name: "phone", width: 390, height: 844 }]) {
       const V = view.name;
       const api = { calls: [], online: false, refuse: null };
 
@@ -364,7 +364,11 @@ async function run(chromium) {
       await noSideways("missing");
       if (process.env.SHOTS) {
         fs.mkdirSync(process.env.SHOTS, { recursive: true });
+        // from the top with the header in the flow: sticky parts are drawn where the scroll left them
+        const nav = await pg.addStyleTag({ content: ".site-nav{position:static !important}" });
+        await pg.evaluate(() => window.scrollTo(0, 0));
         await pg.screenshot({ path: path.join(process.env.SHOTS, V + "-missing.png"), fullPage: true });
+        await nav.evaluate((n) => n.remove());
       }
 
       // A change makes the answer stale
@@ -384,6 +388,7 @@ async function run(chromium) {
       check(V + " find: rank filled from the character", (await pg.inputValue('[data-focus="find|gr"]')) === "120");
       await pg.fill("#sb-find-q", "Expert");
       await pg.click('#sb-find-trees .sb-skill-pick:has(.sb-skill-pick-name:text-is("Expert")) .sb-level-chip >> nth=0');
+      if (!(await pg.evaluate(() => document.querySelector(".sb-find-filters").open))) await pg.click(".sb-find-filters-sum");   // folded on a phone
       await pg.check('[data-focus="find|owned"]');
       await pg.click("#sb-find-go");
       await pg.waitForSelector(".sb-result");

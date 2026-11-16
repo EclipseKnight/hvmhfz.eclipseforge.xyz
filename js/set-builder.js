@@ -767,13 +767,17 @@
     var model = listModel(result);
     listBox.textContent = "";
     var head = el("div", "panel-head");
-    head.appendChild(el("h2", null, model.title));
+    head.appendChild(el("h2", null, model.kind === "class" && isEmptySet() ? "Start a set" : model.title));
     var count = el("span", "panel-note");
     count.id = "sb-list-count";
     head.appendChild(count);
     listBox.appendChild(head);
     listBox.setAttribute("data-kind", model.kind);
-    if (model.kind === "class") { listBox.appendChild(classTiles()); return; }
+    if (model.kind === "class") {
+      if (isEmptySet()) listBox.appendChild(quickStart());
+      listBox.appendChild(classTiles());
+      return;
+    }
     if (model.kind === "loading") { listBox.appendChild(UI.note("Loading the list.")); return; }
     if (model.kind === "none") { listBox.appendChild(UI.note(model.text)); return; }
 
@@ -941,6 +945,57 @@
       });
       box.appendChild(more);
     }
+  }
+
+  function isEmptySet() {
+    var set = state.set;
+    return set.weapon[0] < 0 && !set.armour.some(function (a) { return a[1]; }) && !set.cuffs.length;
+  }
+
+  // A few skills hunters ask for most, for the quick start: [tree name, points].
+  var QUICK_SKILLS = [["Attack", 25], ["Expert", 20], ["Sharpness", 10], ["Evasion", 20], ["Guard", 10], ["Health", 20]];
+
+  /** An empty set's welcome: pick a weapon class (the tiles below it), or let Find sets build a set from skills. */
+  function quickStart() {
+    var box = el("div", "sb-start");
+    box.id = "sb-start";
+    var two = el("div", "sb-start-ways");
+    var a = el("div", "sb-start-way");
+    a.appendChild(el("span", "sb-start-step", "1"));
+    var at = el("div");
+    at.appendChild(el("h3", "sb-start-title", "Build it piece by piece"));
+    at.appendChild(el("p", "sb-start-text", "Pick your weapon class below, then click each card on the left to choose a piece; " +
+      "the list shows what every choice changes."));
+    a.appendChild(at);
+    two.appendChild(a);
+    var b = el("div", "sb-start-way is-find");
+    b.appendChild(el("span", "sb-start-step", "2"));
+    var bt = el("div");
+    bt.appendChild(el("h3", "sb-start-title", "Or start from the skills you want"));
+    bt.appendChild(el("p", "sb-start-text", "Find sets searches every piece, decoration and cuff for sets that reach them."));
+    var go = el("button", "btn btn-primary btn-small", "Find sets for skills");
+    go.type = "button";
+    go.id = "sb-start-find";
+    go.setAttribute("data-focus", "start|find");
+    go.addEventListener("click", function () { setView("find"); });
+    bt.appendChild(go);
+    var quick = el("div", "sb-chips sb-start-quick");
+    quick.setAttribute("role", "group");
+    quick.setAttribute("aria-label", "Search for one skill");
+    QUICK_SKILLS.forEach(function (q) {
+      var t = data.rules.trees.filter(function (x) { return x.name === q[0]; })[0];
+      var l = t && t.levels.filter(function (x) { return x[0] === q[1] && x[1]; })[0];
+      if (!l) return;
+      var name = data.rules.skillName(l[1]);
+      var c = chip(name, false, "start|skill|" + l[1], function () { setView("find"); find.quick([l[1]]); });
+      c.title = "Find sets with " + name;
+      quick.appendChild(c);
+    });
+    if (quick.firstChild) bt.appendChild(quick);
+    b.appendChild(bt);
+    two.appendChild(b);
+    box.appendChild(two);
+    return box;
   }
 
   /** Weapon classes as tiles with their icons. */
@@ -1541,7 +1596,7 @@
         box: findBox, data: data, mine: mine, getSet: function () { return state.set; },
         gender: function () { return state.gender; },
         loadForSet: loadForSet, compute: compute, typeOf: typeOf, weaponIcon: weaponIcon, pieceIcon: pieceIcon,
-        itemIcon: itemIcon, treeName: treeName, thresholds: thresholds, deltaNode: deltaNode,
+        itemIcon: itemIcon, colourOf: colourOf, treeName: treeName, thresholds: thresholds, deltaNode: deltaNode,
         piece: function (slot, id) { return ctx().piece(slot, id); },
         loadSet: function (set, note) { setView("equip"); return loadSet(set, note); }
       });
