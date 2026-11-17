@@ -120,14 +120,14 @@
    "band": 1,
    "reqHr": 1,
    "flag": 1,
-   "name": "[Urgent] Unknown Species,"
+   "name": "[Urgent] Unknown Species, Fierce Wyvern"
   },
   "22013": {
    "role": "key",
    "band": 1,
    "reqHr": 1,
    "flag": 2,
-   "name": "Habitat of the Azure"
+   "name": "Habitat of the Azure Hunter"
   },
   "22011": {
    "role": "key",
@@ -141,105 +141,105 @@
    "band": 1,
    "reqHr": 1,
    "flag": 4,
-   "name": "Chasing the Yian Kut-Ku's"
+   "name": "Chasing the Yian Kut-Ku's Cry"
   },
   "22010": {
    "role": "key",
    "band": 1,
    "reqHr": 1,
    "flag": 5,
-   "name": "Congalala's"
+   "name": "Congalala's Territory"
   },
   "22009": {
    "role": "key",
    "band": 1,
    "reqHr": 1,
    "flag": 6,
-   "name": "Daimyo at the"
+   "name": "Daimyo at the Water's Edge"
   },
   "22032": {
    "role": "key",
    "band": 1,
    "reqHr": 1,
    "flag": 7,
-   "name": "Great Forest"
+   "name": "Great Forest Hypnocatrice"
   },
   "21974": {
    "role": "urgent",
    "band": 2,
    "reqHr": 30,
    "flag": 8,
-   "name": "[Urgent] Great Forest Lord"
+   "name": "[Urgent] Great Forest Lord Awakens"
   },
   "26215": {
    "role": "key",
    "band": 2,
    "reqHr": 5,
    "flag": 9,
-   "name": "Poisoned Land"
+   "name": "Poisoned Land Rhapsody"
   },
   "21049": {
    "role": "key",
    "band": 2,
    "reqHr": 11,
    "flag": 10,
-   "name": "White Shadow in"
+   "name": "White Shadow in the Darkness"
   },
   "21039": {
    "role": "key",
    "band": 2,
    "reqHr": 11,
    "flag": 11,
-   "name": "Lord of the Fanged"
+   "name": "Lord of the Fanged Pack"
   },
   "22033": {
    "role": "key",
    "band": 2,
    "reqHr": 11,
    "flag": 12,
-   "name": "Land Where the Queen"
+   "name": "Land Where the Queen Dwells"
   },
   "26013": {
    "role": "key",
    "band": 2,
    "reqHr": 22,
    "flag": 13,
-   "name": "The Rathalos's"
+   "name": "The Rathalos's Nest"
   },
   "26240": {
    "role": "key",
    "band": 2,
    "reqHr": 22,
    "flag": 14,
-   "name": "Solitary"
+   "name": "Solitary Monoblos"
   },
   "22036": {
    "role": "key",
    "band": 2,
    "reqHr": 17,
    "flag": 15,
-   "name": "Ruler of the Red"
+   "name": "Ruler of the Red Sea"
   },
   "21032": {
    "role": "key",
    "band": 2,
    "reqHr": 17,
    "flag": 16,
-   "name": "Great Scythe in"
+   "name": "Great Scythe in the Marsh"
   },
   "22035": {
    "role": "key",
    "band": 2,
    "reqHr": 22,
    "flag": 17,
-   "name": "The Frozen"
+   "name": "The Frozen Tower"
   },
   "22034": {
    "role": "key",
    "band": 2,
    "reqHr": 22,
    "flag": 18,
-   "name": "Gurenzeburu of"
+   "name": "Gurenzeburu of the Highlands"
   },
   "22045": {
    "role": "urgent",
@@ -253,35 +253,35 @@
    "band": 3,
    "reqHr": 31,
    "flag": 20,
-   "name": "Leaping Shadow,"
+   "name": "Leaping Shadow, Fierce Kin"
   },
   "26686": {
    "role": "key",
    "band": 3,
    "reqHr": 31,
    "flag": 21,
-   "name": "Guardian of"
+   "name": "Guardian of the Abyss"
   },
   "22040": {
    "role": "key",
    "band": 3,
    "reqHr": 31,
    "flag": 22,
-   "name": "Avatar of"
+   "name": "Avatar of Gluttony"
   },
   "26229": {
    "role": "key",
    "band": 3,
    "reqHr": 31,
    "flag": 23,
-   "name": "Azure"
+   "name": "Azure Hypnocatrice"
   },
   "22039": {
    "role": "key",
    "band": 3,
    "reqHr": 41,
    "flag": 24,
-   "name": "Noble Female"
+   "name": "Noble Female Orugaron"
   },
   "22064": {
    "role": "key",
@@ -302,49 +302,49 @@
    "band": 4,
    "reqHr": 99,
    "flag": 27,
-   "name": "[Urgent] Desert Crystal"
+   "name": "[Urgent] Desert Crystal Scorpion"
   },
   "26460": {
    "role": "key",
    "band": 4,
    "reqHr": 61,
    "flag": 28,
-   "name": "Proud Male"
+   "name": "Proud Male Orugaron"
   },
   "22043": {
    "role": "key",
    "band": 4,
    "reqHr": 71,
    "flag": 29,
-   "name": "Flash! Highlands"
+   "name": "Flash! Highlands Kuarlusepusu"
   },
   "26404": {
    "role": "key",
    "band": 4,
    "reqHr": 81,
    "flag": 30,
-   "name": "Bolt from the"
+   "name": "Bolt from the Blue"
   },
   "22041": {
    "role": "key",
    "band": 4,
    "reqHr": 71,
    "flag": 31,
-   "name": "Pale Hypnocatrice"
+   "name": "Pale Hypnocatrice Sighting Report"
   },
   "21771": {
    "role": "key",
    "band": 4,
    "reqHr": 51,
    "flag": 32,
-   "name": "Lawless"
+   "name": "Lawless Black-Purple"
   },
   "22044": {
    "role": "key",
    "band": 4,
    "reqHr": 91,
    "flag": 33,
-   "name": "Unleashed Dark"
+   "name": "Unleashed Dark Thunder"
   },
   "22042": {
    "role": "key",
@@ -358,203 +358,203 @@
    "band": 4,
    "reqHr": 61,
    "flag": 35,
-   "name": "White Wreathed in"
+   "name": "White Wreathed in Flame"
   },
   "21995": {
    "role": "urgent",
    "band": 5,
    "reqHr": 299,
    "flag": 36,
-   "name": "[Urgent Repel] Unsinking"
+   "name": "[Urgent Repel] Unsinking Cannon"
   },
   "21707": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 37,
-   "name": "Hardcore Bloom!"
+   "name": "Hardcore Bloom! Forokururu"
   },
   "21651": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 38,
-   "name": "Hardcore Might!"
+   "name": "Hardcore Might! Crimson-Azure Gougarf"
   },
   "21681": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 39,
-   "name": "Hardcore Drain!"
+   "name": "Hardcore Drain! Baruragaru"
   },
   "21166": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 40,
-   "name": "Hardcore Flash! Desert"
+   "name": "Hardcore Flash! Desert Resonance"
   },
   "21147": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 41,
-   "name": "Hardcore Soar!"
+   "name": "Hardcore Soar! Twin Fangs"
   },
   "21482": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 42,
-   "name": "Swamp Ash"
+   "name": "Swamp Ash Crystal Scorpion"
   },
   "21162": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 43,
-   "name": "Hardcore Rampage!"
+   "name": "Hardcore Rampage! Twin Abiorugu"
   },
   "21915": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 44,
-   "name": "Hardcore Falls!"
+   "name": "Hardcore Falls! Gureadomosu"
   },
   "21870": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 45,
-   "name": "Hardcore Melody!"
+   "name": "Hardcore Melody! Poborubarumu"
   },
   "21930": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 46,
-   "name": "Hardcore Anomaly!"
+   "name": "Hardcore Anomaly! Yama Kurai"
   },
   "21736": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 47,
-   "name": "Hardcore Engrave!"
+   "name": "Hardcore Engrave! Inagami"
   },
   "21683": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 48,
-   "name": "Hardcore Dark!"
+   "name": "Hardcore Dark! Meraginasu"
   },
   "21964": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 49,
-   "name": "Hardcore Swift!"
+   "name": "Hardcore Swift! Toridcless"
   },
   "21871": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 50,
-   "name": "Hardcore Blaze!"
+   "name": "Hardcore Blaze! Varusaburosu"
   },
   "21929": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 51,
-   "name": "Hardcore Change!"
+   "name": "Hardcore Change! Gasurabazura"
   },
   "21914": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 52,
-   "name": "Hardcore Blade!"
+   "name": "Hardcore Blade! Harudomerugu"
   },
   "21709": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 53,
-   "name": "Hardcore Bolt!"
+   "name": "Hardcore Bolt! Diorex"
   },
   "21682": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 54,
-   "name": "Hardcore Sky!"
+   "name": "Hardcore Sky! Zerureusu"
   },
   "21965": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 55,
-   "name": "Hardcore Zero! Toa"
+   "name": "Hardcore Zero! Toa Tesukatora"
   },
   "22071": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 56,
-   "name": "Hardcore Ogre! Crimson"
+   "name": "Hardcore Ogre! Crimson Lion"
   },
   "21737": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 57,
-   "name": "Hardcore Gleam!"
+   "name": "Hardcore Gleam! Garuba Daora"
   },
   "22055": {
    "role": "key",
    "band": 5,
    "reqHr": 100,
    "flag": 58,
-   "name": "Hardcore Emperor!"
+   "name": "Hardcore Emperor! Guanzorumu"
   },
   "21984": {
    "role": "key",
    "band": 6,
    "reqHr": 300,
    "flag": 59,
-   "name": "Radiance Upon"
+   "name": "Radiance Upon Radiance"
   },
   "21983": {
    "role": "key",
    "band": 6,
    "reqHr": 300,
    "flag": 60,
-   "name": "Blazing Flame"
+   "name": "Blazing Flame Blossom"
   },
   "21985": {
    "role": "key",
    "band": 6,
    "reqHr": 300,
    "flag": 61,
-   "name": "Heaven-Shaking"
+   "name": "Heaven-Shaking Thunder"
   },
   "21986": {
    "role": "key",
    "band": 6,
    "reqHr": 300,
    "flag": 62,
-   "name": "Insatiable"
+   "name": "Insatiable Devouring"
   },
   "21987": {
    "role": "key",
    "band": 6,
    "reqHr": 300,
    "flag": 63,
-   "name": "Hour of Utmost"
+   "name": "Hour of Utmost Calamity"
   }
  }
 }
