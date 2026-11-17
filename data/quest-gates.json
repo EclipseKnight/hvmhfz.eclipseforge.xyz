@@ -4,7 +4,7 @@
   {
    "band": 1,
    "label": "HR1",
-   "hr": "HR 1-29",
+   "hr": "HR 1",
    "urgent": 22030,
    "unlocksHr": 30,
    "keys": [
@@ -19,7 +19,7 @@
   {
    "band": 2,
    "label": "HR2",
-   "hr": "HR 30-49",
+   "hr": "HR 2-30",
    "urgent": 21974,
    "unlocksHr": 50,
    "keys": [
@@ -38,7 +38,7 @@
   {
    "band": 3,
    "label": "HR3",
-   "hr": "HR 50-98",
+   "hr": "HR 31-50",
    "urgent": 22045,
    "unlocksHr": 99,
    "keys": [
@@ -54,7 +54,7 @@
   {
    "band": 4,
    "label": "HR4",
-   "hr": "HR 99-298",
+   "hr": "HR 51-99",
    "urgent": 21976,
    "unlocksHr": 299,
    "keys": [
@@ -71,7 +71,7 @@
   {
    "band": 5,
    "label": "HR5",
-   "hr": "HR 299-997",
+   "hr": "HR 100-299",
    "urgent": 21995,
    "unlocksHr": 998,
    "keys": [
@@ -102,7 +102,7 @@
   {
    "band": 6,
    "label": "HR6",
-   "hr": "HR 998",
+   "hr": "HR 300-998",
    "urgent": null,
    "unlocksHr": null,
    "keys": [

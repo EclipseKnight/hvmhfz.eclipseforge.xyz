@@ -117,7 +117,7 @@ async function main() {
       JSON.stringify(shown.slice(0, 10)));
     check(rows.filter((r) => r.id).length === 40, tag + ": ?gate=all page 1 has " + rows.filter((r) => r.id).length + " quests, not 40");
     check(/63 quests$/.test(await page.textContent("#quest-page")), tag + ": ?gate=all count: " + await page.textContent("#quest-page"));
-    check(rows[0].band && rows[0].band.startsWith("HR1 (HR 1-29): 6 Key Quests, then the Urgent Quest unlocks HR 30 (HR2)."), tag + ": first band row: " + rows[0].band);
+    check(rows[0].band && rows[0].band.startsWith("HR1 (HR 1): 6 Key Quests, then the Urgent Quest unlocks HR 30 (HR2)."), tag + ": first band row: " + rows[0].band);
     check(rows[1].badge === "Urgent Quest · HR1" && rows[2].badge === "Key Quest · HR1", tag + ": badges " + rows[1].badge + " / " + rows[2].badge);
     check(rows.filter((r) => r.id).every((r) => /^(Key|Urgent) Quest · HR\d$/.test(r.badge)), tag + ": a listed quest without a badge");
     check(await page.inputValue("#quest-gate") === "all", tag + ": the Progression filter is not set from ?gate=all");
@@ -156,7 +156,7 @@ async function main() {
     await open("/quest.html?id=22013");
     await page.waitForSelector("#hr-gate");
     let text = await page.textContent("#hr-gate");
-    check(text.includes("Key Quest for HR1: clear all 6 Key Quests of HR1 (HR 1-29) to unlock the Urgent Quest " + gates.quests[22030].name +
+    check(text.includes("Key Quest for HR1: clear all 6 Key Quests of HR1 (HR 1) to unlock the Urgent Quest " + gates.quests[22030].name +
       ", which raises your HR cap to HR 30 (HR2)."), tag + ": quest 22013 panel: " + text);
     let links = await page.$$eval("#hr-gate a[href^='/quest.html']", (as) => as.map((a) => a.getAttribute("href")));
     check(links.includes("/quest.html?id=22030") && !links.includes("/quest.html?id=22013") &&
@@ -169,7 +169,7 @@ async function main() {
     await open("/quest.html?id=21995");
     await page.waitForSelector("#hr-gate");
     text = await page.textContent("#hr-gate");
-    check(text.includes("Urgent Quest: unlocks HR 998 (HR6).") && text.includes("all 22 Key Quests of HR5 (HR 299-997)"), tag + ": quest 21995 panel: " + text);
+    check(text.includes("Urgent Quest: unlocks HR 998 (HR6).") && text.includes("all 22 Key Quests of HR5 (HR 100-299)"), tag + ": quest 21995 panel: " + text);
     check(await page.$$eval("#hr-gate .quest-gate-list a", (as) => as.length) === 22, tag + ": quest 21995 does not link the 22 Key Quests");
     if (shots) await page.screenshot({ path: path.join(shots, "quest-urgent-" + width + ".png"), fullPage: true });
 

@@ -52,7 +52,9 @@ def hr_range(lo, hi):
 
 
 def build(thresholds, rows, names):
-    """thresholds[n-1] is band n's lowest HR; band n ends one below thresholds[n]."""
+    """thresholds[n-1] is band n's HR cap (the save's cap word: 1, 30, 50, 99, 299, 998, 999). In band n the HR shown
+    (from HR points) runs from one above band n-1's cap to band n's cap: HR1 = HR 1, HR2 = HR 2-30, ... HR6 = HR 300-998
+    (hvmhfz_re docs/progression.md 1-2). Clearing band n's Urgent Quest raises the cap to thresholds[n]."""
     bands, quests = {}, {}
     for row in rows:
         band = int(row["band"])
@@ -60,7 +62,7 @@ def build(thresholds, rows, names):
         if qid not in names:
             raise SystemExit("quest %d (HR%d %s) is not in data/quests.json" % (qid, band, row["role"]))
         lo, nxt = thresholds[band - 1], thresholds[band]
-        b = bands.setdefault(band, {"band": band, "label": "HR%d" % band, "hr": hr_range(lo, nxt - 1),
+        b = bands.setdefault(band, {"band": band, "label": "HR%d" % band, "hr": hr_range(thresholds[band - 2] + 1 if band > 1 else 1, lo),
                                     "urgent": None, "unlocksHr": None, "keys": []})
         role = row["role"]
         if role == "urgent":
