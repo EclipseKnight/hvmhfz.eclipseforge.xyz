@@ -1,0 +1,484 @@
+{
+ "_about": "Answers of GET /api/account/characters/{id}/next-step for made-up saves, from the API's NextStepPlanner (hvmhfz_rest_api branch next-step-api, 5f8dd18): HR1 with one Key Quest cleared, HR4 with three, GR 37, GR 650. Used by dev/check-next-step.js; regenerate when the API's words change.",
+ "hr1": {
+  "characterId": 10,
+  "characterName": "Aldra",
+  "hasSave": true,
+  "stage": "hr",
+  "summary": "HR1 (HR 1), now HR 1. Key Quests: 1 of 6 cleared.",
+  "recommended": "Clear the Key Quests left, starting with \"Hunt the Boar Chief!\". Then the Urgent Quest \"[Urgent] Unknown Species, Fierce Wyvern\" appears.",
+  "details": [
+   "Key Quests left: \"Hunt the Boar Chief!\", \"Chasing the Yian Kut-Ku's Cry\", \"Congalala's Territory\", \"Daimyo at the Water's Edge\", \"Great Forest Hypnocatrice\".",
+   "Key Quests cleared: \"Habitat of the Azure Hunter\".",
+   "Urgent Quest \"[Urgent] Unknown Species, Fierce Wyvern\": appears in Quest Counter > Hunter Quests > Urgent Quests once every Key Quest is cleared. Clearing it raises your HR cap to 30 (HR2)."
+  ],
+  "links": [
+   {
+    "label": "Next Key Quest: Hunt the Boar Chief!",
+    "href": "/quest.html?id=22011"
+   },
+   {
+    "label": "Urgent Quest: [Urgent] Unknown Species, Fierce Wyvern",
+    "href": "/quest.html?id=22030"
+   },
+   {
+    "label": "Key and Urgent Quests of HR1",
+    "href": "/quests.html?gate=HR1"
+   },
+   {
+    "label": "Progression guide: HR1",
+    "href": "/guide-frontier-progression.html#hr1"
+   }
+  ],
+  "notes": [],
+  "hr": {
+   "band": 1,
+   "bandLabel": "HR1",
+   "bandRange": "HR 1",
+   "cap": 1,
+   "shown": 1,
+   "unlocksHr": 30,
+   "keysCleared": 1,
+   "keysTotal": 6,
+   "keys": [
+    {
+     "id": 22013,
+     "name": "Habitat of the Azure Hunter",
+     "cleared": true,
+     "link": "/quest.html?id=22013"
+    },
+    {
+     "id": 22011,
+     "name": "Hunt the Boar Chief!",
+     "cleared": false,
+     "link": "/quest.html?id=22011"
+    },
+    {
+     "id": 22006,
+     "name": "Chasing the Yian Kut-Ku's Cry",
+     "cleared": false,
+     "link": "/quest.html?id=22006"
+    },
+    {
+     "id": 22010,
+     "name": "Congalala's Territory",
+     "cleared": false,
+     "link": "/quest.html?id=22010"
+    },
+    {
+     "id": 22009,
+     "name": "Daimyo at the Water's Edge",
+     "cleared": false,
+     "link": "/quest.html?id=22009"
+    },
+    {
+     "id": 22032,
+     "name": "Great Forest Hypnocatrice",
+     "cleared": false,
+     "link": "/quest.html?id=22032"
+    }
+   ],
+   "urgent": {
+    "id": 22030,
+    "name": "[Urgent] Unknown Species, Fierce Wyvern",
+    "reqHr": 1,
+    "available": false,
+    "cleared": false,
+    "where": "Quest Counter > Hunter Quests > Urgent Quests",
+    "link": "/quest.html?id=22030"
+   },
+   "catalogLink": "/quests.html?gate=HR1"
+  },
+  "g": null
+ },
+ "hr4": {
+  "characterId": 11,
+  "characterName": "Bexo",
+  "hasSave": true,
+  "stage": "hr",
+  "summary": "HR4 (HR 51-99), now HR 75. Key Quests: 3 of 8 cleared.",
+  "recommended": "Clear the Key Quests left, starting with \"Bolt from the Blue\". Then the Urgent Quest \"[Urgent] Desert Crystal Scorpion\" appears at HR 99.",
+  "details": [
+   "Key Quests left: \"Bolt from the Blue\", \"Pale Hypnocatrice Sighting Report\", \"Unleashed Dark Thunder\", \"All-Out Strike\", \"White Wreathed in Flame\".",
+   "Key Quests cleared: \"Proud Male Orugaron\", \"Flash! Highlands Kuarlusepusu\", \"Lawless Black-Purple\".",
+   "Urgent Quest \"[Urgent] Desert Crystal Scorpion\": appears in Quest Counter > Hunter Quests > Urgent Quests once every Key Quest is cleared and you are HR 99. Clearing it raises your HR cap to 299 (HR5)."
+  ],
+  "links": [
+   {
+    "label": "Next Key Quest: Bolt from the Blue",
+    "href": "/quest.html?id=26404"
+   },
+   {
+    "label": "Urgent Quest: [Urgent] Desert Crystal Scorpion",
+    "href": "/quest.html?id=21976"
+   },
+   {
+    "label": "Key and Urgent Quests of HR4",
+    "href": "/quests.html?gate=HR4"
+   },
+   {
+    "label": "Progression guide: HR4",
+    "href": "/guide-frontier-progression.html#hr4"
+   }
+  ],
+  "notes": [],
+  "hr": {
+   "band": 4,
+   "bandLabel": "HR4",
+   "bandRange": "HR 51-99",
+   "cap": 99,
+   "shown": 75,
+   "unlocksHr": 299,
+   "keysCleared": 3,
+   "keysTotal": 8,
+   "keys": [
+    {
+     "id": 26460,
+     "name": "Proud Male Orugaron",
+     "cleared": true,
+     "link": "/quest.html?id=26460"
+    },
+    {
+     "id": 22043,
+     "name": "Flash! Highlands Kuarlusepusu",
+     "cleared": true,
+     "link": "/quest.html?id=22043"
+    },
+    {
+     "id": 26404,
+     "name": "Bolt from the Blue",
+     "cleared": false,
+     "link": "/quest.html?id=26404"
+    },
+    {
+     "id": 22041,
+     "name": "Pale Hypnocatrice Sighting Report",
+     "cleared": false,
+     "link": "/quest.html?id=22041"
+    },
+    {
+     "id": 21771,
+     "name": "Lawless Black-Purple",
+     "cleared": true,
+     "link": "/quest.html?id=21771"
+    },
+    {
+     "id": 22044,
+     "name": "Unleashed Dark Thunder",
+     "cleared": false,
+     "link": "/quest.html?id=22044"
+    },
+    {
+     "id": 22042,
+     "name": "All-Out Strike",
+     "cleared": false,
+     "link": "/quest.html?id=22042"
+    },
+    {
+     "id": 21702,
+     "name": "White Wreathed in Flame",
+     "cleared": false,
+     "link": "/quest.html?id=21702"
+    }
+   ],
+   "urgent": {
+    "id": 21976,
+    "name": "[Urgent] Desert Crystal Scorpion",
+    "reqHr": 99,
+    "available": false,
+    "cleared": false,
+    "where": "Quest Counter > Hunter Quests > Urgent Quests",
+    "link": "/quest.html?id=21976"
+   },
+   "catalogLink": "/quests.html?gate=HR4"
+  },
+  "g": null
+ },
+ "gr37": {
+  "characterId": 12,
+  "characterName": "Cirra",
+  "hasSave": true,
+  "stage": "g-rank",
+  "summary": "GR 37: all of G★1-7 is open. Next milestone: G Rank Pugi Cuff Licence at GR50 (13 GR to go).",
+  "recommended": "Build the Furogada or Samurai set from G★1-3 quests (the Hunter Navi GR tasks lead you through it), then move on to G★4-5.",
+  "details": [
+   "GR points: 113,500. To GR 38: 4,900. To GR50: 87,400.",
+   "GR50: buy the G Rank Pugi Cuff Licence from the Pugi Farm Manager (60P) to wear G Rank cuffs.",
+   "GR300: ★1 Zenith monsters (Zenith Monster Quests on the G counter) and Zenith armour and weapons. Until the coming game update it opens at GR200.",
+   "GR500: G Exotic quests (★8), for Exotic weapon upgrades.",
+   "GR500: ★2 Zenith monsters. Until the coming game update it opens at GR400.",
+   "GR700: ★3 Zenith monsters. Until the coming game update it opens at GR600.",
+   "GR800: G Finesse upgrades: G Exotic monsters hunted from GR800 give their materials.",
+   "GR900: ★4 Zenith monsters, the hardest standard fights in the game. Until the coming game update it opens at GR800."
+  ],
+  "links": [
+   {
+    "label": "G Rank Pugi Cuff Licence",
+    "href": "/guide-frontier-g-rank.html"
+   },
+   {
+    "label": "Progression guide: G Rank",
+    "href": "/guide-frontier-progression.html#g-rank"
+   }
+  ],
+  "notes": [
+   "Coming game update: Zenith ★1, Zenith ★2, Zenith ★3 and Zenith ★4 move to GR 300, 500, 700 and 900 (GR 200, 400, 600 and 800 in the game now). The GR shown here are the new ones."
+  ],
+  "hr": {
+   "band": 7,
+   "bandLabel": "HR7",
+   "bandRange": "HR 999",
+   "cap": 999,
+   "shown": 999,
+   "unlocksHr": null,
+   "keysCleared": 0,
+   "keysTotal": 0,
+   "keys": [],
+   "urgent": null,
+   "catalogLink": "/quests.html?gate=HR7"
+  },
+  "g": {
+   "gr": 37,
+   "points": 113500,
+   "nextGr": 38,
+   "pointsToNextGr": 4900,
+   "nextMilestoneGr": 50,
+   "grToNextMilestone": 13,
+   "pointsToNextMilestone": 87400,
+   "next": [
+    {
+     "gr": 50,
+     "id": "cuff-licence",
+     "name": "G Rank Pugi Cuff Licence",
+     "opens": "buy the G Rank Pugi Cuff Licence from the Pugi Farm Manager (60P) to wear G Rank cuffs",
+     "link": "/guide-frontier-g-rank.html",
+     "reached": false,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false
+    }
+   ],
+   "milestones": [
+    {
+     "gr": 50,
+     "id": "cuff-licence",
+     "name": "G Rank Pugi Cuff Licence",
+     "opens": "buy the G Rank Pugi Cuff Licence from the Pugi Farm Manager (60P) to wear G Rank cuffs",
+     "link": "/guide-frontier-g-rank.html",
+     "reached": false,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false
+    },
+    {
+     "gr": 300,
+     "id": "zenith-1",
+     "name": "Zenith ★1",
+     "opens": "★1 Zenith monsters (Zenith Monster Quests on the G counter) and Zenith armour and weapons",
+     "link": "/quests.html?rank=Zenith%E2%98%851",
+     "reached": false,
+     "pendingGameChange": true,
+     "grToday": 200,
+     "openInGameNow": false
+    },
+    {
+     "gr": 500,
+     "id": "g-exotic",
+     "name": "G Exotic quests (★8)",
+     "opens": "G Exotic quests (★8), for Exotic weapon upgrades",
+     "link": "/quests.html?rank=G%E2%98%858",
+     "reached": false,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false
+    },
+    {
+     "gr": 500,
+     "id": "zenith-2",
+     "name": "Zenith ★2",
+     "opens": "★2 Zenith monsters",
+     "link": "/quests.html?rank=Zenith%E2%98%852",
+     "reached": false,
+     "pendingGameChange": true,
+     "grToday": 400,
+     "openInGameNow": false
+    },
+    {
+     "gr": 700,
+     "id": "zenith-3",
+     "name": "Zenith ★3",
+     "opens": "★3 Zenith monsters",
+     "link": "/quests.html?rank=Zenith%E2%98%853",
+     "reached": false,
+     "pendingGameChange": true,
+     "grToday": 600,
+     "openInGameNow": false
+    },
+    {
+     "gr": 800,
+     "id": "g-finesse",
+     "name": "G Finesse upgrades",
+     "opens": "G Finesse upgrades: G Exotic monsters hunted from GR800 give their materials",
+     "link": "/guide-frontier-g-rank.html",
+     "reached": false,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false
+    },
+    {
+     "gr": 900,
+     "id": "zenith-4",
+     "name": "Zenith ★4",
+     "opens": "★4 Zenith monsters, the hardest standard fights in the game",
+     "link": "/quests.html?rank=Zenith%E2%98%854",
+     "reached": false,
+     "pendingGameChange": true,
+     "grToday": 800,
+     "openInGameNow": false
+    }
+   ]
+  }
+ },
+ "gr650": {
+  "characterId": 13,
+  "characterName": "Dovan",
+  "hasSave": true,
+  "stage": "g-rank",
+  "summary": "GR 650: all of G★1-7 is open. Next milestone: Zenith ★3 at GR700 (50 GR to go).",
+  "recommended": "Hunt G Exotic (★8) and ★2 Zenith monsters, and upgrade your Zenith gear.",
+  "details": [
+   "GR points: 6,633,400. To GR 651: 15,650. To GR700: 782,500.",
+   "GR700: ★3 Zenith monsters. Open for you now: the game opens it at GR600 until the coming update.",
+   "GR800: G Finesse upgrades: G Exotic monsters hunted from GR800 give their materials.",
+   "GR900: ★4 Zenith monsters, the hardest standard fights in the game. Until the coming game update it opens at GR800.",
+   "Reached: GR50 G Rank Pugi Cuff Licence, GR300 Zenith ★1, GR500 G Exotic quests (★8) and GR500 Zenith ★2."
+  ],
+  "links": [
+   {
+    "label": "Zenith ★3",
+    "href": "/quests.html?rank=Zenith%E2%98%853"
+   },
+   {
+    "label": "Progression guide: G Rank",
+    "href": "/guide-frontier-progression.html#g-rank"
+   }
+  ],
+  "notes": [
+   "Coming game update: Zenith ★1, Zenith ★2, Zenith ★3 and Zenith ★4 move to GR 300, 500, 700 and 900 (GR 200, 400, 600 and 800 in the game now). The GR shown here are the new ones."
+  ],
+  "hr": {
+   "band": 7,
+   "bandLabel": "HR7",
+   "bandRange": "HR 999",
+   "cap": 999,
+   "shown": 999,
+   "unlocksHr": null,
+   "keysCleared": 0,
+   "keysTotal": 0,
+   "keys": [],
+   "urgent": null,
+   "catalogLink": "/quests.html?gate=HR7"
+  },
+  "g": {
+   "gr": 650,
+   "points": 6633400,
+   "nextGr": 651,
+   "pointsToNextGr": 15650,
+   "nextMilestoneGr": 700,
+   "grToNextMilestone": 50,
+   "pointsToNextMilestone": 782500,
+   "next": [
+    {
+     "gr": 700,
+     "id": "zenith-3",
+     "name": "Zenith ★3",
+     "opens": "★3 Zenith monsters",
+     "link": "/quests.html?rank=Zenith%E2%98%853",
+     "reached": false,
+     "pendingGameChange": true,
+     "grToday": 600,
+     "openInGameNow": true
+    }
+   ],
+   "milestones": [
+    {
+     "gr": 50,
+     "id": "cuff-licence",
+     "name": "G Rank Pugi Cuff Licence",
+     "opens": "buy the G Rank Pugi Cuff Licence from the Pugi Farm Manager (60P) to wear G Rank cuffs",
+     "link": "/guide-frontier-g-rank.html",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true
+    },
+    {
+     "gr": 300,
+     "id": "zenith-1",
+     "name": "Zenith ★1",
+     "opens": "★1 Zenith monsters (Zenith Monster Quests on the G counter) and Zenith armour and weapons",
+     "link": "/quests.html?rank=Zenith%E2%98%851",
+     "reached": true,
+     "pendingGameChange": true,
+     "grToday": 200,
+     "openInGameNow": true
+    },
+    {
+     "gr": 500,
+     "id": "g-exotic",
+     "name": "G Exotic quests (★8)",
+     "opens": "G Exotic quests (★8), for Exotic weapon upgrades",
+     "link": "/quests.html?rank=G%E2%98%858",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true
+    },
+    {
+     "gr": 500,
+     "id": "zenith-2",
+     "name": "Zenith ★2",
+     "opens": "★2 Zenith monsters",
+     "link": "/quests.html?rank=Zenith%E2%98%852",
+     "reached": true,
+     "pendingGameChange": true,
+     "grToday": 400,
+     "openInGameNow": true
+    },
+    {
+     "gr": 700,
+     "id": "zenith-3",
+     "name": "Zenith ★3",
+     "opens": "★3 Zenith monsters",
+     "link": "/quests.html?rank=Zenith%E2%98%853",
+     "reached": false,
+     "pendingGameChange": true,
+     "grToday": 600,
+     "openInGameNow": true
+    },
+    {
+     "gr": 800,
+     "id": "g-finesse",
+     "name": "G Finesse upgrades",
+     "opens": "G Finesse upgrades: G Exotic monsters hunted from GR800 give their materials",
+     "link": "/guide-frontier-g-rank.html",
+     "reached": false,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false
+    },
+    {
+     "gr": 900,
+     "id": "zenith-4",
+     "name": "Zenith ★4",
+     "opens": "★4 Zenith monsters, the hardest standard fights in the game",
+     "link": "/quests.html?rank=Zenith%E2%98%854",
+     "reached": false,
+     "pendingGameChange": true,
+     "grToday": 800,
+     "openInGameNow": false
+    }
+   ]
+  }
+ }
+}

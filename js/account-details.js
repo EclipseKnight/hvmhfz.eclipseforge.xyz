@@ -756,6 +756,8 @@
     state.boxQuery = "";
     cardLink.hidden = false;
     cardLink.href = hunterCardUrl(id);
+    // The "Your next step" panel follows the character shown here (js/account-next-step.js).
+    document.dispatchEvent(new CustomEvent("hv:character", { detail: { id: String(id) } }));
     var path = "/api/account/characters/" + encodeURIComponent(id);
     Promise.all([
       settle(request(path + "/details")),

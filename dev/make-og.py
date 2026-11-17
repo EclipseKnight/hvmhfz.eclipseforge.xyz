@@ -92,6 +92,7 @@ PAGES = {
     "guide-frontier-items": ("Items and materials", "Where materials come from, and every combination"),
     "guide-frontier-menus": ("Menus and town NPCs", "In-game menus, chat, Guild Card and every NPC"),
     "guide-frontier-monsters": ("Monsters", "The monster list, status effects and special rules"),
+    "guide-frontier-progression": ("Progression", "Key and Urgent Quests by HR, then GR milestones"),
     "guide-frontier-quests-food": ("Quests and food", "Finding quests, quest cards, food buffs and bentos"),
     "guide-frontier-tools": ("Tools and references", "Set builders, sigils, area maps and tables"),
     "guide-frontier-transcend": ("Transcend", "The timed buff you charge during quests"),
