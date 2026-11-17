@@ -176,6 +176,16 @@
     var table = el("table", "data-table quest-facts");
     var body = el("tbody");
     body.appendChild(row("Category", quest.category));
+    // Rank and form from the quest file (data/quests.json via the piece; dev/make-quest-ranks.py): the band links
+    // to the catalog filtered to it. "HR3 · needs HR 41 · Hardcore".
+    if (quest.rank) {
+      var rankRow = row("Rank", "");
+      rankRow.lastChild.appendChild(el("a", null, quest.rank)).href = "/quests.html?rank=" + encodeURIComponent(quest.rank);
+      var rankMore = (quest.rankNeed ? " · needs " + quest.rankNeed : "") +
+        (quest.form && quest.rank.indexOf(quest.form) !== 0 ? " · " + quest.form : "");
+      if (rankMore) rankRow.lastChild.appendChild(document.createTextNode(rankMore));
+      body.appendChild(rankRow);
+    }
     body.appendChild(row("Area", quest.area || "-"));
     var objective = (details && details.objectiveEn) || quest.objective || quest.objectiveJp || "-";
     var objectiveRow = row("Objective", objective);

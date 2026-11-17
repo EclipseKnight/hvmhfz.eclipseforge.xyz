@@ -22,7 +22,8 @@ QUESTS = ROOT / "data" / "quests.json"
 DETAILS = ROOT / "data" / "quest-details.json"
 OUT = ROOT / "data" / "quests" / "pieces"
 
-QUEST_FIELDS = ["id", "name", "nameJp", "category", "area", "objective", "objectiveJp", "monsters", "variants"]
+QUEST_FIELDS = ["id", "name", "nameJp", "category", "area", "objective", "objectiveJp", "monsters", "variants", "rank",
+                "rankNeed", "form"]
 DETAIL_FIELDS = ["objectiveEn", "objectiveJp", "subAEn", "subAJp", "subBEn", "subBJp", "clientEn", "client", "minutes",
                  "rewardMoney", "zenny", "requirementItemId", "requirementItemName", "requirementCount",
                  "descriptionEn", "description", "descriptionJp"]

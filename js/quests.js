@@ -3,8 +3,8 @@
   "use strict";
 
   var PAGE = 40;
-  var state = { all: [], shown: [], page: 0, q: "", rank: "", type: "", area: "", monster: "", gate: "", sort: "", links: null,
-    bands: {} };
+  var state = { all: [], shown: [], page: 0, q: "", rank: "", form: "", type: "", area: "", monster: "", gate: "", sort: "",
+    links: null, bands: {} };
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -20,25 +20,38 @@
     });
   }
 
-  /** Rank tokens that appear in quest categories, longest first so "G★7 Event" wins over "G". */
-  var RANKS = [
-    [/G★\d+/i, null], [/Supremacy\s*★?\s*\d*/i, "Supremacy"], [/Zenith/i, "Zenith"],
-    [/Hardcore|剛種/i, "Hardcore"], [/G Rank|Ｇ級/i, "G Rank"], [/HR\s*\d+/i, null],
-    [/★\s*\d+/, null], [/Master Rank/i, "Master Rank"], [/High Rank/i, "High Rank"], [/Low Rank/i, "Low Rank"]
+  /* Rank and form come from each quest's own file (data/quests.json "rank", "rankNeed", "form", written by
+     dev/make-quest-ranks.py): the HR band a hunter must have reached, the G★ level or the Zenith ★, or what the
+     file says a quest without a rank is. The options are the game's, in the game's order; the HR bands carry the
+     site's HR labels (js/hr.js, the Progression filter). */
+  var RANK_GROUPS = [
+    ["Hunter Rank", [["HR1", "HR1 (HR 1-29)"], ["HR2", "HR2 (HR 30-49)"], ["HR3", "HR3 (HR 50-98)"],
+      ["HR4", "HR4 (HR 99-298)"], ["HR5", "HR5 (HR 299-997)"], ["HR6", "HR6 (HR 998)"], ["HR7", "HR7 (HR 999)"]]],
+    ["G Rank", [1, 2, 3, 4, 5, 6, 7, 8].map(function (n) { return ["G★" + n, "G★" + n]; })],
+    ["Zenith", [1, 2, 3, 4].map(function (n) { return ["Zenith★" + n, "Zenith★" + n]; })],
+    ["No rank", [["Practice", "Practice"], ["Greetings", "Greetings"], ["Hunting Road", "Hunting Road"]]]
   ];
+  var FORMS = ["Zenith", "Supremacy", "Hardcore", "Musou"];
+  /* Old links (?rank= from the category-text guess) that name a form open the Form filter instead. */
+  var OLD_RANK_FORMS = { Zenith: 1, Supremacy: 1, Hardcore: 1 };
 
-  function rankOf(category) {
-    for (var i = 0; i < RANKS.length; i++) {
-      var m = category.match(RANKS[i][0]);
-      if (m) return (RANKS[i][1] || m[0]).replace(/\s+/g, " ").trim().replace(/Ｇ/g, "G");
-    }
-    return "Unranked";
+  /** "HR3 · needs HR 41 · Hardcore": the quest's rank line in the list and on the quest page. */
+  function rankText(quest) {
+    if (!quest.rank) return "";
+    var parts = [quest.rank];
+    if (quest.rankNeed) parts.push("needs " + quest.rankNeed);
+    if (quest.form && quest.rank.indexOf(quest.form) !== 0) parts.push(quest.form);
+    return parts.join(" · ");
   }
 
-  /** The quest type: the category with rank tokens and the word "Quest" taken out. */
+  /** Words of quest categories that name a rank or form, taken out of the Type filter's values. */
+  var RANK_WORDS = [/G★\d+/i, /Supremacy\s*★?\s*\d*/i, /Zenith/i, /Hardcore|剛種/i, /G Rank|Ｇ級/i, /HR\s*\d+/i,
+    /★\s*\d+/, /Master Rank/i, /High Rank/i, /Low Rank/i];
+
+  /** The quest type: the category with rank words and the word "Quest" taken out. */
   function typeOf(category) {
     var text = category;
-    for (var i = 0; i < RANKS.length; i++) text = text.replace(RANKS[i][0], " ");
+    for (var i = 0; i < RANK_WORDS.length; i++) text = text.replace(RANK_WORDS[i], " ");
     text = text.replace(/Quest|Event|クエスト/gi, " ").replace(/\s+/g, " ").trim();
     return text || "Other";
   }
@@ -52,10 +65,24 @@
     select.options[0].textContent = label;
   }
 
-  /* The list's state lives in the address (?q=&rank=&type=&area=&monster=&gate=&page=, defaults left out) so a
-     reload, a shared link or the quest page's back link opens the same list. replaceState: no history
+  function fillRanks(select, present) {
+    RANK_GROUPS.forEach(function (group) {
+      var box = el("optgroup");
+      box.label = group[0];
+      group[1].forEach(function (option) {
+        if (!present[option[0]]) return;
+        var opt = el("option", null, option[1]);
+        opt.value = option[0];
+        box.appendChild(opt);
+      });
+      if (box.children.length) select.appendChild(box);
+    });
+  }
+
+  /* The list's state lives in the address (?q=&rank=&form=&type=&area=&monster=&gate=&page=, defaults left out)
+     so a reload, a shared link or the quest page's back link opens the same list. replaceState: no history
      entry per keystroke. */
-  var FIELDS = ["rank", "type", "area", "monster", "gate"];
+  var FIELDS = ["rank", "form", "type", "area", "monster", "gate"];
 
   /* Key Quests and Urgent Quests (data/quest-gates.json, dev/make-quest-gates.py). The "Progression" filter
      (?gate=all, or one band: ?gate=HR2) lists them by band, the Urgent Quest first, then the Key Quests in the
@@ -106,6 +133,7 @@
     var q = state.q.toLowerCase();
     state.shown = state.all.filter(function (quest) {
       if (state.rank && quest.rank !== state.rank) return false;
+      if (state.form && quest.form !== state.form) return false;
       if (state.type && quest.type !== state.type) return false;
       if (state.area && quest.area !== state.area) return false;
       if (state.monster && quest.monsters.indexOf(state.monster) === -1) return false;
@@ -163,7 +191,9 @@
       nameCell.appendChild(el("span", "cell-sub muted", "#" + quest.id + (quest.nameJp !== quest.name ? " · " + quest.nameJp : "")));
       tr.appendChild(nameCell);
 
-      tr.appendChild(el("td", null, quest.category));
+      var catCell = el("td", null, quest.category);
+      if (quest.rank) catCell.appendChild(el("div", "cell-sub muted quest-rank", rankText(quest)));
+      tr.appendChild(catCell);
       tr.appendChild(el("td", null, quest.area || "-"));
       tr.appendChild(el("td", "quest-objective", quest.objective || quest.objectiveJp || "-"));
 
@@ -246,7 +276,6 @@
         gateSelect.appendChild(opt);
       });
       state.all = data.quests.map(function (q) {
-        q.rank = rankOf(q.category);
         q.type = typeOf(q.category);
         var gate = gates.quests[String(q.id)];
         if (gate) {
@@ -257,24 +286,30 @@
       });
       document.getElementById("quest-count").textContent = state.all.length.toLocaleString() + " quests";
 
-      var ranks = {}, types = {}, areas = {}, monsters = {};
+      var ranks = {}, forms = {}, types = {}, areas = {}, monsters = {};
       state.all.forEach(function (q) {
-        ranks[q.rank] = 1;
+        if (q.rank) ranks[q.rank] = 1;
+        if (q.form) forms[q.form] = 1;
         types[q.type] = 1;
         if (q.area) areas[q.area] = 1;
         q.monsters.forEach(function (m) { monsters[m] = 1; });
       });
-      fill(document.getElementById("quest-rank"), Object.keys(ranks).sort(), "Any rank");
+      fillRanks(document.getElementById("quest-rank"), ranks);
+      fill(document.getElementById("quest-form"), FORMS.filter(function (f) { return forms[f]; }), "Any form");
       fill(document.getElementById("quest-type"), Object.keys(types).sort(), "Any type");
       fill(document.getElementById("quest-area"), Object.keys(areas).sort(), "Any area");
       fill(document.getElementById("quest-monster"), Object.keys(monsters).sort(), "Any monster");
 
       // ?q= opens the catalog searching (the quest page's category link), ?monster= filtered to one
       // monster (a monster page's quest link), ?gate= the Key and Urgent Quests (the quest page's band link);
-      // rank, type, area and page come back from the list's own address.
+      // rank, form, type, area and page come back from the list's own address.
       var params = new URLSearchParams(window.location.search);
       state.q = (params.get("q") || "").trim();
-      [["rank", ranks], ["type", types], ["area", areas]].forEach(function (f) {
+      if (OLD_RANK_FORMS[params.get("rank")] && !params.get("form")) { // an old ?rank=Zenith link
+        params.set("form", params.get("rank"));
+        params.delete("rank");
+      }
+      [["rank", ranks], ["form", forms], ["type", types], ["area", areas]].forEach(function (f) {
         var value = params.get(f[0]) || "";
         if (f[1][value]) {
           state[f[0]] = value;
