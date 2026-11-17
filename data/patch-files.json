@@ -262,6 +262,15 @@
    "mhfo.dll": "a21322ca5864d6a4c8599fd4522fdbcc8997225c05d82d958d9aeba2678adfc7",
    "dat/mhfdat.bin": "f7940508b0434003d9fd1357d1b5487594866d0c548d0fbeb8a747f43b9fdfaf"
   },
+  "1.32-pre1": {
+   "mhf.exe": "cf16ec07107386030f0e3aafd141912f798eba4888f674d1f8f4642de4e872d7",
+   "mhfo-hd.dll": "b9e736e1b10dff61f6787c26fc1f3ab69a9656d1265d5673f864c0d5ac7fbbb1",
+   "mhfo.dll": "260b01e5ca9c1fb677c1d7e2fb5a6cebc8d011ae2c25a05e9eba696b65fda0bc",
+   "dat/mhfdat.bin": "cf5199d4b2b541216ef9fc2e9e047335a4b66a994efb6c7fe05d2fdb306f5ef4",
+   "dat/mhfpac.bin": "5062c5b7d28de2d51a9298f526d45b6286d68adaba47aca23e7576a7ef2af413",
+   "dat/mhfinf.bin": "15e1a0ce5f178e4d4d2e0000577cb3d1525133f6da9c90b83da318e9f005b7ad",
+   "hvmods.dll": "3aeba78a17f4593348c61613e01a020838e96a4d0d0a6e089be3c491e280ac4e"
+  },
   "1.31-pre1": {
    "mhf.exe": "cf16ec07107386030f0e3aafd141912f798eba4888f674d1f8f4642de4e872d7",
    "mhfo-hd.dll": "935dd3f6f08eba721eefbaafbdefa0166ba25b6db9e718c4f9f60604a88c796f",
