@@ -256,7 +256,7 @@ async function run() {
       }
       const g = await page.$eval("section#g-rank", (n) => n.textContent.replace(/\s+/g, " "));
       check(width + " px guide: new Zenith GR", /GR 200, 400, 600 and 800/.test(g) && /GR 300, 500, 700 and 900/.test(g));
-      check(width + " px guide: Exotic materials", /Exotic Gem/.test(g) && /before GR800/.test(g));
+      check(width + " px guide: Exotic materials", /Exotic Gem/.test(g) && /no GR 800 gate/.test(g) && /open at GR 100/.test(g));
       check(width + " px guide: no sideways scroll", (await sideways(page)) <= 0, String(await sideways(page)));
       check(width + " px guide: no page errors", errors.length === 0, errors.join("; "));
       await shot(page, "guide-" + width + ".png");
