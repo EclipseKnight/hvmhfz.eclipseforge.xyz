@@ -1,0 +1,560 @@
+{
+ "_about": "Key Quests and Urgent Quests per HR band, written by dev/make-quest-gates.py from hvmhfz_re data/progression_hr_gates.tsv (the client's gate tables). A band's Urgent Quest appears once all its Key Quests are cleared and the HR is high enough (reqHr); clearing it raises the HR cap to unlocksHr. Keys in the game's order (flag = its clear flag). HR7 and G Rank have none.",
+ "bands": [
+  {
+   "band": 1,
+   "label": "HR1",
+   "hr": "HR 1-29",
+   "urgent": 22030,
+   "unlocksHr": 30,
+   "keys": [
+    22013,
+    22011,
+    22006,
+    22010,
+    22009,
+    22032
+   ]
+  },
+  {
+   "band": 2,
+   "label": "HR2",
+   "hr": "HR 30-49",
+   "urgent": 21974,
+   "unlocksHr": 50,
+   "keys": [
+    26215,
+    21049,
+    21039,
+    22033,
+    26013,
+    26240,
+    22036,
+    21032,
+    22035,
+    22034
+   ]
+  },
+  {
+   "band": 3,
+   "label": "HR3",
+   "hr": "HR 50-98",
+   "urgent": 22045,
+   "unlocksHr": 99,
+   "keys": [
+    26676,
+    26686,
+    22040,
+    26229,
+    22039,
+    22064,
+    22038
+   ]
+  },
+  {
+   "band": 4,
+   "label": "HR4",
+   "hr": "HR 99-298",
+   "urgent": 21976,
+   "unlocksHr": 299,
+   "keys": [
+    26460,
+    22043,
+    26404,
+    22041,
+    21771,
+    22044,
+    22042,
+    21702
+   ]
+  },
+  {
+   "band": 5,
+   "label": "HR5",
+   "hr": "HR 299-997",
+   "urgent": 21995,
+   "unlocksHr": 998,
+   "keys": [
+    21707,
+    21651,
+    21681,
+    21166,
+    21147,
+    21482,
+    21162,
+    21915,
+    21870,
+    21930,
+    21736,
+    21683,
+    21964,
+    21871,
+    21929,
+    21914,
+    21709,
+    21682,
+    21965,
+    22071,
+    21737,
+    22055
+   ]
+  },
+  {
+   "band": 6,
+   "label": "HR6",
+   "hr": "HR 998",
+   "urgent": null,
+   "unlocksHr": null,
+   "keys": [
+    21984,
+    21983,
+    21985,
+    21986,
+    21987
+   ]
+  }
+ ],
+ "quests": {
+  "22030": {
+   "role": "urgent",
+   "band": 1,
+   "reqHr": 1,
+   "flag": 1,
+   "name": "[Urgent] Unknown Species,"
+  },
+  "22013": {
+   "role": "key",
+   "band": 1,
+   "reqHr": 1,
+   "flag": 2,
+   "name": "Habitat of the Azure"
+  },
+  "22011": {
+   "role": "key",
+   "band": 1,
+   "reqHr": 1,
+   "flag": 3,
+   "name": "Hunt the Boar Chief!"
+  },
+  "22006": {
+   "role": "key",
+   "band": 1,
+   "reqHr": 1,
+   "flag": 4,
+   "name": "Chasing the Yian Kut-Ku's"
+  },
+  "22010": {
+   "role": "key",
+   "band": 1,
+   "reqHr": 1,
+   "flag": 5,
+   "name": "Congalala's"
+  },
+  "22009": {
+   "role": "key",
+   "band": 1,
+   "reqHr": 1,
+   "flag": 6,
+   "name": "Daimyo at the"
+  },
+  "22032": {
+   "role": "key",
+   "band": 1,
+   "reqHr": 1,
+   "flag": 7,
+   "name": "Great Forest"
+  },
+  "21974": {
+   "role": "urgent",
+   "band": 2,
+   "reqHr": 30,
+   "flag": 8,
+   "name": "[Urgent] Great Forest Lord"
+  },
+  "26215": {
+   "role": "key",
+   "band": 2,
+   "reqHr": 5,
+   "flag": 9,
+   "name": "Poisoned Land"
+  },
+  "21049": {
+   "role": "key",
+   "band": 2,
+   "reqHr": 11,
+   "flag": 10,
+   "name": "White Shadow in"
+  },
+  "21039": {
+   "role": "key",
+   "band": 2,
+   "reqHr": 11,
+   "flag": 11,
+   "name": "Lord of the Fanged"
+  },
+  "22033": {
+   "role": "key",
+   "band": 2,
+   "reqHr": 11,
+   "flag": 12,
+   "name": "Land Where the Queen"
+  },
+  "26013": {
+   "role": "key",
+   "band": 2,
+   "reqHr": 22,
+   "flag": 13,
+   "name": "The Rathalos's"
+  },
+  "26240": {
+   "role": "key",
+   "band": 2,
+   "reqHr": 22,
+   "flag": 14,
+   "name": "Solitary"
+  },
+  "22036": {
+   "role": "key",
+   "band": 2,
+   "reqHr": 17,
+   "flag": 15,
+   "name": "Ruler of the Red"
+  },
+  "21032": {
+   "role": "key",
+   "band": 2,
+   "reqHr": 17,
+   "flag": 16,
+   "name": "Great Scythe in"
+  },
+  "22035": {
+   "role": "key",
+   "band": 2,
+   "reqHr": 22,
+   "flag": 17,
+   "name": "The Frozen"
+  },
+  "22034": {
+   "role": "key",
+   "band": 2,
+   "reqHr": 22,
+   "flag": 18,
+   "name": "Gurenzeburu of"
+  },
+  "22045": {
+   "role": "urgent",
+   "band": 3,
+   "reqHr": 50,
+   "flag": 19,
+   "name": "[Urgent] Defense: Twin Threats"
+  },
+  "26676": {
+   "role": "key",
+   "band": 3,
+   "reqHr": 31,
+   "flag": 20,
+   "name": "Leaping Shadow,"
+  },
+  "26686": {
+   "role": "key",
+   "band": 3,
+   "reqHr": 31,
+   "flag": 21,
+   "name": "Guardian of"
+  },
+  "22040": {
+   "role": "key",
+   "band": 3,
+   "reqHr": 31,
+   "flag": 22,
+   "name": "Avatar of"
+  },
+  "26229": {
+   "role": "key",
+   "band": 3,
+   "reqHr": 31,
+   "flag": 23,
+   "name": "Azure"
+  },
+  "22039": {
+   "role": "key",
+   "band": 3,
+   "reqHr": 41,
+   "flag": 24,
+   "name": "Noble Female"
+  },
+  "22064": {
+   "role": "key",
+   "band": 3,
+   "reqHr": 50,
+   "flag": 25,
+   "name": "Roaring Tigrex"
+  },
+  "22038": {
+   "role": "key",
+   "band": 3,
+   "reqHr": 31,
+   "flag": 26,
+   "name": "Rajang"
+  },
+  "21976": {
+   "role": "urgent",
+   "band": 4,
+   "reqHr": 99,
+   "flag": 27,
+   "name": "[Urgent] Desert Crystal"
+  },
+  "26460": {
+   "role": "key",
+   "band": 4,
+   "reqHr": 61,
+   "flag": 28,
+   "name": "Proud Male"
+  },
+  "22043": {
+   "role": "key",
+   "band": 4,
+   "reqHr": 71,
+   "flag": 29,
+   "name": "Flash! Highlands"
+  },
+  "26404": {
+   "role": "key",
+   "band": 4,
+   "reqHr": 81,
+   "flag": 30,
+   "name": "Bolt from the"
+  },
+  "22041": {
+   "role": "key",
+   "band": 4,
+   "reqHr": 71,
+   "flag": 31,
+   "name": "Pale Hypnocatrice"
+  },
+  "21771": {
+   "role": "key",
+   "band": 4,
+   "reqHr": 51,
+   "flag": 32,
+   "name": "Lawless"
+  },
+  "22044": {
+   "role": "key",
+   "band": 4,
+   "reqHr": 91,
+   "flag": 33,
+   "name": "Unleashed Dark"
+  },
+  "22042": {
+   "role": "key",
+   "band": 4,
+   "reqHr": 51,
+   "flag": 34,
+   "name": "All-Out Strike"
+  },
+  "21702": {
+   "role": "key",
+   "band": 4,
+   "reqHr": 61,
+   "flag": 35,
+   "name": "White Wreathed in"
+  },
+  "21995": {
+   "role": "urgent",
+   "band": 5,
+   "reqHr": 299,
+   "flag": 36,
+   "name": "[Urgent Repel] Unsinking"
+  },
+  "21707": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 37,
+   "name": "Hardcore Bloom!"
+  },
+  "21651": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 38,
+   "name": "Hardcore Might!"
+  },
+  "21681": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 39,
+   "name": "Hardcore Drain!"
+  },
+  "21166": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 40,
+   "name": "Hardcore Flash! Desert"
+  },
+  "21147": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 41,
+   "name": "Hardcore Soar!"
+  },
+  "21482": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 42,
+   "name": "Swamp Ash"
+  },
+  "21162": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 43,
+   "name": "Hardcore Rampage!"
+  },
+  "21915": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 44,
+   "name": "Hardcore Falls!"
+  },
+  "21870": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 45,
+   "name": "Hardcore Melody!"
+  },
+  "21930": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 46,
+   "name": "Hardcore Anomaly!"
+  },
+  "21736": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 47,
+   "name": "Hardcore Engrave!"
+  },
+  "21683": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 48,
+   "name": "Hardcore Dark!"
+  },
+  "21964": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 49,
+   "name": "Hardcore Swift!"
+  },
+  "21871": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 50,
+   "name": "Hardcore Blaze!"
+  },
+  "21929": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 51,
+   "name": "Hardcore Change!"
+  },
+  "21914": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 52,
+   "name": "Hardcore Blade!"
+  },
+  "21709": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 53,
+   "name": "Hardcore Bolt!"
+  },
+  "21682": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 54,
+   "name": "Hardcore Sky!"
+  },
+  "21965": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 55,
+   "name": "Hardcore Zero! Toa"
+  },
+  "22071": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 56,
+   "name": "Hardcore Ogre! Crimson"
+  },
+  "21737": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 57,
+   "name": "Hardcore Gleam!"
+  },
+  "22055": {
+   "role": "key",
+   "band": 5,
+   "reqHr": 100,
+   "flag": 58,
+   "name": "Hardcore Emperor!"
+  },
+  "21984": {
+   "role": "key",
+   "band": 6,
+   "reqHr": 300,
+   "flag": 59,
+   "name": "Radiance Upon"
+  },
+  "21983": {
+   "role": "key",
+   "band": 6,
+   "reqHr": 300,
+   "flag": 60,
+   "name": "Blazing Flame"
+  },
+  "21985": {
+   "role": "key",
+   "band": 6,
+   "reqHr": 300,
+   "flag": 61,
+   "name": "Heaven-Shaking"
+  },
+  "21986": {
+   "role": "key",
+   "band": 6,
+   "reqHr": 300,
+   "flag": 62,
+   "name": "Insatiable"
+  },
+  "21987": {
+   "role": "key",
+   "band": 6,
+   "reqHr": 300,
+   "flag": 63,
+   "name": "Hour of Utmost"
+  }
+ }
+}

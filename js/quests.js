@@ -3,7 +3,8 @@
   "use strict";
 
   var PAGE = 40;
-  var state = { all: [], shown: [], page: 0, q: "", rank: "", type: "", area: "", monster: "", sort: "", links: null };
+  var state = { all: [], shown: [], page: 0, q: "", rank: "", type: "", area: "", monster: "", gate: "", sort: "", links: null,
+    bands: {} };
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -51,10 +52,28 @@
     select.options[0].textContent = label;
   }
 
-  /* The list's state lives in the address (?q=&rank=&type=&area=&monster=&page=, defaults left out) so a
+  /* The list's state lives in the address (?q=&rank=&type=&area=&monster=&gate=&page=, defaults left out) so a
      reload, a shared link or the quest page's back link opens the same list. replaceState: no history
      entry per keystroke. */
-  var FIELDS = ["rank", "type", "area", "monster"];
+  var FIELDS = ["rank", "type", "area", "monster", "gate"];
+
+  /* Key Quests and Urgent Quests (data/quest-gates.json, dev/make-quest-gates.py). The "Progression" filter
+     (?gate=all, or one band: ?gate=HR2) lists them by band, the Urgent Quest first, then the Key Quests in the
+     game's order, unless another sort is chosen. */
+  function gateText(gate) {
+    return (gate.role === "urgent" ? "Urgent Quest" : "Key Quest") + " · " + gate.bandLabel;
+  }
+
+  function gateOrder(a, b) {
+    return (a.gate.band - b.gate.band) || ((a.gate.role === "urgent" ? 0 : 1) - (b.gate.role === "urgent" ? 0 : 1)) ||
+      (a.gate.flag - b.gate.flag);
+  }
+
+  function bandHeading(band) {
+    var text = band.label + " (" + band.hr + "): " + band.keys.length + " Key Quests, ";
+    text += band.urgent ? "then the Urgent Quest unlocks HR " + band.unlocksHr + " (HR" + (band.band + 1) + ")." : "no Urgent Quest.";
+    return text;
+  }
 
   /* Sort (?sort=, default left out): data/quests.json order (highest id first), lowest id first, name or
      area. Not a filter, so "Clear filters" leaves it. */
@@ -90,11 +109,15 @@
       if (state.type && quest.type !== state.type) return false;
       if (state.area && quest.area !== state.area) return false;
       if (state.monster && quest.monsters.indexOf(state.monster) === -1) return false;
+      if (state.gate && !(quest.gate && (state.gate === "all" || quest.gate.bandLabel === state.gate))) return false;
       if (!q) return true;
       return (quest.name + " " + quest.nameJp + " " + quest.category + " " + (quest.objective || "") +
-        " " + quest.monsters.join(" ") + " " + quest.id).toLowerCase().indexOf(q) >= 0;
+        " " + quest.monsters.join(" ") + " " + quest.id + (quest.gate ? " " + gateText(quest.gate).replace(" · ", " ") : ""))
+        .toLowerCase().indexOf(q) >= 0;
     });
     if (SORTS[state.sort]) state.shown.sort(SORTS[state.sort]);
+    else if (state.gate) state.shown.sort(gateOrder);
+    document.getElementById("quest-gate-note").hidden = !state.gate;
     var pages = Math.max(1, Math.ceil(state.shown.length / PAGE));
     state.page = keepPage ? Math.min(Math.max(0, keepPage), pages - 1) : 0;
     render();
@@ -112,13 +135,31 @@
       row.appendChild(cell);
       body.appendChild(row);
     }
+    var byBand = state.gate && !SORTS[state.sort], lastBand = null;
     rows.forEach(function (quest) {
+      if (byBand && quest.gate.band !== lastBand) { // a heading row where each band starts (and atop each page)
+        lastBand = quest.gate.band;
+        var band = state.bands[lastBand];
+        var head = el("tr", "quest-band-row");
+        var headCell = el("th");
+        headCell.appendChild(el("span", null, bandHeading(band)));
+        headCell.colSpan = 6;
+        headCell.scope = "colgroup";
+        head.appendChild(headCell);
+        body.appendChild(head);
+      }
       var tr = el("tr");
 
       var nameCell = el("td", "cell-name");
       var nameLink = el("a", null, quest.name);
       nameLink.href = "/quest.html?id=" + quest.id;
       nameCell.appendChild(nameLink);
+      if (quest.gate) {
+        var badge = el("span", "badge quest-gate quest-gate-" + quest.gate.role, gateText(quest.gate));
+        badge.title = (quest.gate.role === "urgent" ? "Urgent Quest of " : "Key Quest of ") + quest.gate.bandLabel +
+          " (" + state.bands[quest.gate.band].hr + ")";
+        nameCell.appendChild(badge);
+      }
       nameCell.appendChild(el("span", "cell-sub muted", "#" + quest.id + (quest.nameJp !== quest.name ? " · " + quest.nameJp : "")));
       tr.appendChild(nameCell);
 
@@ -188,13 +229,30 @@
   }
 
   function start() {
+    // The gate list is an extra: without it the catalog still works, with no badges and no Progression choices.
+    var gatesLoad = get("/data/quest-gates.json").catch(function () { return { bands: [], quests: {} }; });
     MonsterLinks.load().then(function (links) {
       state.links = links;
-      return get("/data/quests.json");
-    }).then(function (data) {
+      return Promise.all([get("/data/quests.json"), gatesLoad]);
+    }).then(function (loaded) {
+      var data = loaded[0], gates = loaded[1];
+      var gateSelect = document.getElementById("quest-gate");
+      var gateValues = { all: 1 };
+      gates.bands.forEach(function (band) {
+        state.bands[band.band] = band;
+        gateValues[band.label] = 1;
+        var opt = el("option", null, band.label + " (" + band.hr + ")");
+        opt.value = band.label;
+        gateSelect.appendChild(opt);
+      });
       state.all = data.quests.map(function (q) {
         q.rank = rankOf(q.category);
         q.type = typeOf(q.category);
+        var gate = gates.quests[String(q.id)];
+        if (gate) {
+          gate.bandLabel = state.bands[gate.band].label;
+          q.gate = gate;
+        }
         return q;
       });
       document.getElementById("quest-count").textContent = state.all.length.toLocaleString() + " quests";
@@ -212,7 +270,8 @@
       fill(document.getElementById("quest-monster"), Object.keys(monsters).sort(), "Any monster");
 
       // ?q= opens the catalog searching (the quest page's category link), ?monster= filtered to one
-      // monster (a monster page's quest link); rank, type, area and page come back from the list's own address.
+      // monster (a monster page's quest link), ?gate= the Key and Urgent Quests (the quest page's band link);
+      // rank, type, area and page come back from the list's own address.
       var params = new URLSearchParams(window.location.search);
       state.q = (params.get("q") || "").trim();
       [["rank", ranks], ["type", types], ["area", areas]].forEach(function (f) {
@@ -222,6 +281,11 @@
           document.getElementById("quest-" + f[0]).value = value;
         }
       });
+      var gate = params.get("gate") || ""; // "all" or a band ("HR2")
+      if (gateValues[gate]) {
+        state.gate = gate;
+        gateSelect.value = gate;
+      }
       document.getElementById("quest-search").value = state.q;
       if (SORTS[params.get("sort")]) {
         state.sort = params.get("sort");
@@ -249,7 +313,7 @@
       var value = event.target.value;
       timer = setTimeout(function () { state.q = value.trim(); apply(); }, 150);
     });
-    ["rank", "type", "area", "monster"].forEach(function (field) {
+    FIELDS.forEach(function (field) {
       document.getElementById("quest-" + field).addEventListener("change", function (event) {
         state[field] = event.target.value;
         apply();

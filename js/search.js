@@ -4,7 +4,7 @@
      HvSearch.load(kind)            -> Promise of true (loaded) or false (could not be loaded)
      HvSearch.find(kind, q, limit)  -> {total, rows: [{title, sub, href}], more: list page href or null}
    kinds in HvSearch.KINDS: monsters, quests, items, weapons, sources, currencies, skills. A query matches a row when every word of it is in
-   the row's name (or other name, monsters, category); rows whose name starts with the query come first.
+   the row's name (or other name, monsters, category, Key/Urgent Quest role); rows whose name starts with the query come first.
    Indexes: data/monsters/index.json, data/items/index.json, data/search/quests.json and data/search/weapons.json
    (dev/make-search-index.py), data/sources/index.json (dev/make-source-data.py), data/currencies.json (by hand), data/skills/index.json (dev/make-skill-data.py). */
 (function () {
@@ -45,9 +45,10 @@
         var cats = data.categories || [], mons = data.monsters || [];
         return (data.quests || []).map(function (r) {
           var monsters = (r[3] || []).map(function (i) { return mons[i]; });
-          var sub = [cats[r[2]], monsters.slice(0, 3).join(", ") + (monsters.length > 3 ? " +" + (monsters.length - 3) : ""),
+          // r[4]: a Key Quest's or Urgent Quest's role and band ("Urgent Quest HR2"), so "urgent" finds them.
+          var sub = [r[4], cats[r[2]], monsters.slice(0, 3).join(", ") + (monsters.length > 3 ? " +" + (monsters.length - 3) : ""),
             "#" + r[0]].filter(Boolean).join(" · "); // the id tells apart quests of the same name
-          return { name: r[1] || "Quest " + r[0], extra: monsters.join(" ") + " " + (cats[r[2]] || ""), id: r[0],
+          return { name: r[1] || "Quest " + r[0], extra: monsters.join(" ") + " " + (cats[r[2]] || "") + " " + (r[4] || ""), id: r[0],
                    title: r[1] || "Quest " + r[0], sub: sub, href: "/quest.html?id=" + r[0] };
         });
       },

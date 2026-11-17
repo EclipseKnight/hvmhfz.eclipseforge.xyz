@@ -4,13 +4,14 @@ search box) reads for quests and weapons, so a search never loads data/quests.js
 file (1.4 MB):
 
 - data/search/quests.json:  {"categories": [...], "monsters": [...], "quests": [[id, name, category, [monster, ...]]]}
-  from data/quests.json; category and monsters are positions in the two lists (most used first). Opens
-  /quest.html?id=<id>.
+  from data/quests.json; category and monsters are positions in the two lists (most used first). A Key Quest or
+  Urgent Quest has a fifth entry, its role and band ("Urgent Quest HR2", data/quest-gates.json), so a search for
+  "urgent" or "key quest" finds them. Opens /quest.html?id=<id>.
 - data/search/weapons.json: {"types": [[slug, name], ...], "weapons": [[type, id, name, rarity]]} from the type files
   data/weapons/<slug>.json (the order of data/weapons/index.json); type is a position in "types". Opens
   /weapons.html?type=<slug>&w=<id>.
 
-Run it after data/quests.json or the weapon data change (make-quest-monsters.py, make-weapons-data.py):
+Run it after data/quests.json, data/quest-gates.json or the weapon data change (make-quest-monsters.py, make-weapons-data.py):
   python3 dev/make-search-index.py
   python3 dev/make-search-index.py --check   # change nothing; exit 1 when data/search/ is out of date
                                              # (run by dev/check-db-search.js)
@@ -38,12 +39,20 @@ def quests():
     cats = by_use(collections.Counter(q.get("category") or "" for q in rows))
     mons = by_use(collections.Counter(m for q in rows for m in q.get("monsters") or []))
     ci, mi = {c: i for i, c in enumerate(cats)}, {m: i for i, m in enumerate(mons)}
+    gates = json.loads((ROOT / "data" / "quest-gates.json").read_text(encoding="utf-8"))["quests"]
+
+    def row(q):
+        out = [q["id"], q.get("name") or "", ci[q.get("category") or ""], [mi[m] for m in q.get("monsters") or []]]
+        gate = gates.get(str(q["id"]))
+        if gate:
+            out.append("%s Quest HR%d" % ("Urgent" if gate["role"] == "urgent" else "Key", gate["band"]))
+        return out
     return dump({
         "_about": "Quest names for the site search, written by dev/make-search-index.py from data/quests.json: "
-                  "[id, name, category, [monster, ...]], category and monsters as positions in the lists.",
+                  "[id, name, category, [monster, ...]], category and monsters as positions in the lists; "
+                  "Key and Urgent Quests add their role and band (data/quest-gates.json).",
         "categories": cats, "monsters": mons,
-        "quests": [[q["id"], q.get("name") or "", ci[q.get("category") or ""],
-                    [mi[m] for m in q.get("monsters") or []]] for q in rows]})
+        "quests": [row(q) for q in rows]})
 
 
 def weapons():

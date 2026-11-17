@@ -51,7 +51,66 @@
     main.appendChild(panel);
   }
 
-  function render(quest, details, links) {
+  // Key Quest or Urgent Quest of an HR band (data/quest-gates.json, dev/make-quest-gates.py): what it unlocks and
+  // links to the band's other gate quests. Null for every other quest.
+  // The HR an Urgent Quest unlocks, with its band as the game shows it (owner 2026-11-12): "HR 50 (HR3)".
+  function capText(band) {
+    return "HR " + band.unlocksHr + " (HR" + (band.band + 1) + ")";
+  }
+
+  function gatePanel(quest, gates) {
+    var gate = gates && gates.quests[String(quest.id)];
+    if (!gate) return null;
+    var band = gates.bands.filter(function (b) { return b.band === gate.band; })[0];
+    var link = function (qid) {
+      var a = el("a", null, gates.quests[String(qid)].name);
+      a.href = "/quest.html?id=" + qid;
+      return a;
+    };
+    var urgent = gate.role === "urgent";
+    var panel = section(urgent ? "Urgent Quest" : "Key Quest", "HR progression");
+    panel.id = "hr-gate";
+    var p = el("p", "quest-gate-text");
+    var keys = band.keys.length + " Key Quests of " + band.label + " (" + band.hr + ")";
+    if (urgent) {
+      p.appendChild(el("strong", null, "Urgent Quest: unlocks " + capText(band) + "."));
+      p.appendChild(document.createTextNode(" It appears once all " + keys + " are cleared and your HR is " +
+        gate.reqHr + " or higher; clearing it raises your HR cap to " + capText(band) + "."));
+    } else if (band.urgent) {
+      p.appendChild(el("strong", null, "Key Quest for " + band.label + ":"));
+      p.appendChild(document.createTextNode(" clear all " + keys + " to unlock the Urgent Quest "));
+      p.appendChild(link(band.urgent));
+      p.appendChild(document.createTextNode(", which raises your HR cap to " + capText(band) + ". Needs HR " +
+        gate.reqHr + "."));
+    } else {
+      p.appendChild(el("strong", null, "Key Quest for " + band.label + ":"));
+      p.appendChild(document.createTextNode(" one of the " + keys + ". " + band.label +
+        " has no Urgent Quest in the game's data. Needs HR " + gate.reqHr + "."));
+    }
+    panel.appendChild(p);
+    var all = (band.urgent ? [band.urgent] : []).concat(band.keys);
+    var fold = el("details", "quest-gate-fold");
+    fold.open = all.length <= 12;
+    fold.appendChild(el("summary", null, "All " + all.length + " Key and Urgent Quests of " + band.label));
+    var list = el("ol", "quest-gate-list");
+    all.forEach(function (qid) {
+      var li = el("li");
+      var g = gates.quests[String(qid)];
+      if (qid === quest.id) li.appendChild(el("strong", null, g.name + " (this quest)"));
+      else li.appendChild(link(qid));
+      li.appendChild(document.createTextNode(" · " + (g.role === "urgent" ? "Urgent Quest" : "Key Quest") +
+        ", HR " + g.reqHr));
+      list.appendChild(li);
+    });
+    fold.appendChild(list);
+    var more = el("p", "note-text");
+    more.appendChild(el("a", null, "Every Key and Urgent Quest in the catalog")).href = "/quests.html?gate=all";
+    fold.appendChild(more);
+    panel.appendChild(fold);
+    return { panel: panel, badge: (urgent ? "Urgent Quest" : "Key Quest") + " · " + band.label, role: gate.role };
+  }
+
+  function render(quest, details, links, gates) {
     main.textContent = "";
     document.title = quest.name + " · Hunsterverse";
     var placeholder = document.getElementById("quest-head");
@@ -67,8 +126,14 @@
       sub.appendChild(el("span", null, quest.area));
     }
     sub.appendChild(document.createTextNode(" · quest " + quest.id));
+    var gate = gatePanel(quest, gates);
+    if (gate) {
+      sub.appendChild(document.createTextNode(" "));
+      sub.appendChild(el("a", "badge quest-gate quest-gate-" + gate.role, gate.badge)).href = "#hr-gate";
+    }
     head.appendChild(sub);
     main.appendChild(head);
+    if (gate) main.appendChild(gate.panel);
 
     // A Speedrun Cup quest is only in the game's event list during a week it is the cup's quest: say whether
     // it is this week's, and how to find it (GET /api/public/tournament/standings, current.quests).
@@ -353,11 +418,13 @@
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();
       }),
-      MonsterLinks.load()
+      MonsterLinks.load(),
+      // Small (63 quests); a failure only leaves out the Key/Urgent Quest panel.
+      fetch("/data/quest-gates.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
     ]).then(function (results) {
       var quest = (results[0].quests || {})[String(id)];
       if (!quest) { fail("No quest with id " + id + " on this server."); return; }
-      render(quest, quest.details, results[1]);
+      render(quest, quest.details, results[1], results[2]);
     }).catch(function (error) {
       fail("The quest could not be loaded (" + error.message + "). Check the connection and try again.",
         "Quest could not be loaded", load);

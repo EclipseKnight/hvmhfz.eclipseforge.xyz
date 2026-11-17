@@ -20,12 +20,12 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=23" />
+    <link rel="stylesheet" href="/css/styles.css?v=24" />
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
     <script src="/js/monster-links.js" defer></script>
-    <script src="/js/quests.js?v=5" defer></script>
+    <script src="/js/quests.js?v=6" defer></script>
   </head>
 
   <body class="public-page">
@@ -133,7 +133,7 @@
         <h1>Quest catalog</h1>
         <a class="btn btn-primary" href="/quest-editor.html">Create a quest</a>
         <a class="btn btn-ghost" href="/account.html#quests">Upload a quest file</a>
-        <p class="page-sub"><span id="quest-count">Loading</span> from the server's own quest files, with English titles. Search by name, monster, area or rank.</p>
+        <p class="page-sub"><span id="quest-count">Loading</span> from the server's own quest files, with English titles. Search by name, monster, area or rank, or list the <a href="/quests.html?gate=all">Key and Urgent Quests</a> that raise your HR cap.</p>
         <p class="page-sub">Made one yourself? The <a href="/quest-editor.html">quest builder</a> writes it from a blank quest, and a file you already have can be uploaded from the account page. Either way it is yours to test in game straight away, under Event. An admin publishes it when it is ready; until then it pays its money but no item rewards.</p>
       </header>
 
@@ -147,10 +147,12 @@
             <label class="field"><span>Type</span><select id="quest-type"><option value="">Any type</option></select></label>
             <label class="field"><span>Area</span><select id="quest-area"><option value="">Any area</option></select></label>
             <label class="field"><span>Monster</span><select id="quest-monster"><option value="">Any monster</option></select></label>
+            <label class="field"><span>Progression</span><select id="quest-gate"><option value="">Any quest</option><option value="all">Key &amp; Urgent quests</option></select></label>
             <label class="field"><span>Sort</span><select id="quest-sort"><option value="">Id, highest first</option><option value="id">Id, lowest first</option><option value="name">Name</option><option value="area">Area</option></select></label>
           </div>
           <div><button class="btn btn-ghost" type="button" id="quest-clear" hidden>Clear filters</button></div>
         </div>
+        <p class="panel-note quest-gate-note" id="quest-gate-note" hidden>In each HR band the Urgent Quest appears once all that band's Key Quests are cleared and your HR is high enough; clearing it raises your HR cap to the next band. HR6 has Key Quests but no Urgent Quest; HR7, G Rank and Zenith have no Key or Urgent Quests.</p>
         <p class="form-alert" id="quest-alert" hidden></p>
         <div class="table-wrap">
           <table class="data-table quest-table sticky-first">
@@ -214,6 +216,6 @@
       </div>
     </footer>
     <!-- /site-shell:footer -->
-    <script src="/js/search.js?v=6" defer></script>
+    <script src="/js/search.js?v=7" defer></script>
   </body>
 </html>

@@ -1474,6 +1474,16 @@ a.char-chip:hover{border-color:#8a6a24;background:rgba(183,138,51,.18)}
 .quest-table td{vertical-align:middle}
 .quest-objective{color:var(--ink-soft);max-width:34ch}
 .monster-icons{display:flex;flex-wrap:wrap;gap:6px}
+/* Key Quests and Urgent Quests (js/quests.js badges and band rows, js/quest.js progression panel) */
+.badge.quest-gate{padding:3px 6px;font-size:.6rem;letter-spacing:.08em}
+.badge.quest-gate-key{background:rgba(183,138,51,.14);color:var(--gold-ink);border-color:rgba(127,87,18,.45)}
+.badge.quest-gate-urgent{background:rgba(190,60,50,.14);color:#7f1d17;border-color:rgba(150,40,32,.55)}
+.data-table .quest-band-row th{padding:12px 12px 8px;white-space:normal;background:var(--parchment-2);color:var(--ink);
+  font:700 .74rem/1.4 var(--font-ui);letter-spacing:.04em;text-transform:none;border-top:2px solid var(--line)}
+.page-head .badge.quest-gate-key{background:rgba(232,200,119,.14);color:var(--gold-bright);border-color:rgba(232,200,119,.45)}
+.page-head .badge.quest-gate-urgent{background:rgba(190,60,50,.3);color:#f6c3b9;border-color:rgba(238,165,150,.55)}
+.quest-gate-list{margin:8px 0 0;padding-left:1.2em;columns:2 280px;column-gap:28px}
+.quest-gate-list li{margin:0 0 4px;break-inside:avoid}
 .monster-chip{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);transition:transform .15s ease,border-color .15s ease}
 .monster-chip:hover{transform:translateY(-1px);border-color:var(--gold)}
@@ -2427,6 +2437,9 @@ tr.mv-unused{opacity:.65}
   .data-table.mg-heat.sticky-first > * > tr > :first-child{min-width:0}
   .data-table.sticky-first > tbody > tr > td.empty-cell:first-child,
   .data-table.sticky-first > tbody > tr.no-results > td:first-child{position:static;max-width:none;box-shadow:none}
+  /* A quest catalog band row spans the table: its text (not the cell) stays in view when the table is swiped. */
+  .data-table.sticky-first > tbody > tr.quest-band-row > th:first-child{position:static;max-width:none;box-shadow:none}
+  .quest-band-row th > span{position:sticky;left:12px;display:inline-block;max-width:calc(100vw - 80px)}
   /* Catalog: the icon and the name both stay (the id between them slides under the name). */
   .catalog-table.sticky-first > * > tr > :first-child{width:48px;min-width:48px;max-width:48px;padding:6px 8px}
   .catalog-table td:nth-child(3) > a{display:-webkit-inline-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
