@@ -1103,6 +1103,18 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 tr.is-disabled td{color:var(--ink-soft);font-style:italic}
 .content-now{color:var(--ink);font-weight:700}
 .content-rotation{margin:0 0 12px;color:var(--ink)}
+.cup-queue{margin:0 0 16px;padding:12px 14px;border:1px solid rgba(90,64,24,.35);border-radius:6px;background:rgba(255,248,230,.55)}
+.cup-queue h4{margin:0 0 4px;color:var(--ink)}
+.cup-queue-head .note-text{margin:0 0 10px;color:var(--ink-soft)}
+.cup-queue-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.cup-queue-list li{display:grid;grid-template-columns:28px minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:6px 8px;border:1px solid rgba(90,64,24,.2);border-radius:4px;color:var(--ink)}
+.cup-queue-list li.is-next{border-color:#8a6a24;background:rgba(138,106,36,.12);font-weight:700}
+.cup-queue-pos{text-align:center;color:var(--ink-soft)}
+.cup-queue-title{min-width:0;overflow-wrap:anywhere}
+.cup-queue-when{color:var(--ink-soft);font-size:.9rem;white-space:nowrap}
+.cup-queue-arrows{display:flex;gap:4px}
+.cup-queue-arrows button{min-width:34px;font-size:1rem;line-height:1}
+@media (max-width:560px){.cup-queue-list li{grid-template-columns:24px minmax(0,1fr) auto}.cup-queue-when{grid-column:2;grid-row:2}}
 .ghost-btn.is-armed{border-color:var(--wax);color:var(--wax)}
 
 /* admin Balance tab (js/admin-balance.js) */

@@ -84,6 +84,10 @@ function helpers() {
     && C.plays(rot, { id: 2, enabled: true }, at) === "Not in the next 3 Cup weeks"
     && C.plays({ weeks: [] }, { id: 2, enabled: true }, at) === "No Cup weeks on the calendar"
     && C.plays(null, { id: 2, enabled: true }, at) === "");
+  check("moved", JSON.stringify(C.moved([1, 2, 3], 0, 1)) === "[2,1,3]" && JSON.stringify(C.moved([1, 2, 3], 0, -1)) === "[1,2,3]"
+    && JSON.stringify(C.moved([1, 2, 3], 2, -1)) === "[1,3,2]");
+  check("queueRows", JSON.stringify(C.queueRows({ queue: [{ id: 13, title: "Z" }, { id: 4, title: "Q" }], weeks: rot.weeks }, at))
+    === JSON.stringify([{ id: 13, title: "Z", when: "10 Dec" }, { id: 4, title: "Q", when: "" }]) && C.queueRows(null).length === 0);
   check("fromInput is UTC", C.fromInput("2026-11-23T03:00") === "2026-11-23T03:00:00Z" && C.fromInput("") === null);
 }
 
@@ -140,7 +144,9 @@ function rowsOf(api, key, query) {
     { id: 21, gacha_id: 3, entry_type: 100, weight: 600, _labels: {} },
     { id: 22, gacha_id: 3, entry_type: 100, weight: 400, _labels: {} }] : [] };
   if (key === "cup-quests") return { tableReady: true, lock: null, count: 4, maxRows: 100,
-    rotation: { cycle: 2, phase: "open", currentRow: 1, enabled: 3,
+    rotation: { mode: "queue", cycle: 2, phase: "open", currentRow: 1, enabled: 3,
+      queue: [{ id: 2, title: "Speedrun Cup: Breeding Hypnocatrice" }, { id: 13, title: "Speedrun Cup: Zenith★4 Rukodiora (solo and group)" },
+        { id: 1, title: "Speedrun Cup: Espinas" }],
       note: "The Speedrun Cup is open: this week plays #1 (Speedrun Cup: Espinas). A change that would swap it waits until the results (25 Nov 2026, 16:00 UTC); anything else can change now.",
       weeks: [{ cycle: 3, startsAt: "2026-12-10T15:00:00Z", row: 2 }, { cycle: 4, startsAt: "2026-12-31T15:00:00Z", row: 13 },
         { cycle: 5, startsAt: "2027-01-21T15:00:00Z", row: 1 }] },
@@ -170,6 +176,7 @@ function fakeApi(page, api) {
     if (p === "/api/admin/distributions/options") return reply(200, { lists: {}, items: {}, needsItemId: [], maxCharacters: 100 });
     if (p === "/api/admin/distributions") return reply(200, []);
     if (p === "/api/admin/content") return reply(200, SPECS);
+    if (p === "/api/admin/content/cup-quests/queue" && req.method() === "POST") return reply(200, { order: sent.order });
     if (p === "/api/admin/content/quest-search") return reply(200, [{ id: 58043, name: "Keoaruboru！", category: "G Event" }]);
     let m = p.match(/^\/api\/admin\/content\/([a-z-]+)$/);
     if (m && req.method() === "GET") {
@@ -344,6 +351,18 @@ async function adminPage(browser, base) {
   check("cup: not locked", await page.$eval("#content-lock", (n) => n.hidden) && !(await page.$eval("#content-save", (n) => n.disabled)));
   check("cup: edit on every row", (await page.locator("#content-rows button", { hasText: "Edit" }).count()) === 4);
   check("cup: off row greyed", (await page.$$eval("#content-rows tr.is-disabled", (n) => n.length)) === 1);
+  const queue = await page.$$eval("#content-queue li", (n) => n.map((x) => x.querySelector(".cup-queue-title").textContent
+    + " | " + x.querySelector(".cup-queue-when").textContent));
+  check("cup queue: rows front first with their week", JSON.stringify(queue) === JSON.stringify([
+    "Speedrun Cup: Breeding Hypnocatrice | Next, 10 Dec", "Speedrun Cup: Zenith★4 Rukodiora (solo and group) | 31 Dec",
+    "Speedrun Cup: Espinas | 21 Jan 2027"]), JSON.stringify(queue));
+  check("cup queue: ends can't move out", await page.$eval("#content-queue li:first-child button", (b) => b.disabled)
+    && await page.$eval("#content-queue li:last-child button:last-child", (b) => b.disabled));
+  await page.click("#content-queue li:first-child button:last-child");
+  await page.waitForFunction(() => /Queue saved/.test(document.getElementById("content-ok").textContent));
+  const saved = last(api, "POST", "/api/admin/content/cup-quests/queue");
+  check("cup queue: moving down saves the order", saved && JSON.stringify(saved.body) === JSON.stringify({ order: [13, 2, 1] }),
+    saved && JSON.stringify(saved.body));
   await shot(page, "admin-content-cup.png");
 
   check("admin: no page errors", errors.length === 0, errors.join(" | "));

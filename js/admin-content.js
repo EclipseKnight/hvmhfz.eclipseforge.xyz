@@ -113,6 +113,26 @@
     return out.slice(0, 3).join(", ") + (out.length > 3 ? " +" + (out.length - 3) + " more" : "");
   }
 
+  /** order with the entry at index i moved by delta (-1 up, +1 down); the same order when it can't move. */
+  function moved(order, i, delta) {
+    var j = i + delta;
+    var out = order.slice();
+    if (i < 0 || i >= out.length || j < 0 || j >= out.length) return out;
+    var x = out[i];
+    out[i] = out[j];
+    out[j] = x;
+    return out;
+  }
+
+  /** The queue's rows with the first coming week each would play ("" when none of the shown weeks). */
+  function queueRows(rotation, now) {
+    if (!rotation || !rotation.queue) return [];
+    return rotation.queue.map(function (q) {
+      var first = (rotation.weeks || []).filter(function (w) { return w.row === q.id; })[0];
+      return { id: q.id, title: q.title, when: first ? shortDate(first.startsAt, now) : "" };
+    });
+  }
+
   /** The prizes' shares in a gacha (weight / total of every row's weight, as Erupe sends them), by row id. */
   function shares(rows) {
     var total = 0;
@@ -126,7 +146,7 @@
 
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { utc: utc, fromInput: fromInput, toInput: toInput, body: body, searchItems: searchItems,
-      cell: cell, shares: shares, shortDate: shortDate, plays: plays };
+      cell: cell, shares: shares, shortDate: shortDate, plays: plays, moved: moved, queueRows: queueRows };
   }
   if (typeof document === "undefined") return;
 
@@ -315,6 +335,7 @@
       state.lock = res.lock || null;
       state.rotation = res.rotation || null;
       say("content-rotation", state.rotation && state.rotation.note ? state.rotation.note : "");
+      renderQueue();
       say("content-lock", state.lock ? "Locked: " + state.lock : (res.tableReady === false
         ? "This table is not in the game database yet (it comes with a game server release)." : ""));
       var count = res.count !== undefined ? res.count + " row" + (res.count === 1 ? "" : "s") : "";
@@ -402,6 +423,75 @@
       row.appendChild(actions);
       body.appendChild(row);
     });
+  }
+
+  /* ---- the Speedrun Cup queue ---- */
+
+  /**
+   * The queue above the Cup list (API mode "queue"): the rows that are on, front first, each with the first week it
+   * would play, and arrows that move it. Each move saves at once (POST .../cup-quests/queue) and reloads the list.
+   */
+  function renderQueue() {
+    var box = $("content-queue");
+    clear(box);
+    var rot = state.rotation;
+    var isCup = state.table && state.table.key === "cup-quests";
+    if (!isCup || !rot || rot.mode !== "queue") {
+      box.hidden = true;
+      if (isCup && rot && rot.mode === "rotation") {
+        box.hidden = false;
+        box.appendChild(el("p", "note-text", rot.queueReady
+          ? "The queue starts with the next game server restart. Until then week n plays switched-on row n mod count."
+          : "The queue arrives with the next game server update. Until then week n plays switched-on row n mod count."));
+      }
+      return;
+    }
+    box.hidden = false;
+    var head = el("div", "cup-queue-head");
+    head.appendChild(el("h4", null, "Up next"));
+    head.appendChild(el("p", "note-text", "The top row plays the next Cup week, then it goes to the bottom. A row you switch on "
+      + "goes to the top; a row you switch off leaves the queue. Use the arrows to change the order."));
+    box.appendChild(head);
+    var rows = queueRows(rot);
+    if (!rows.length) {
+      box.appendChild(el("p", "note-text", "No row is on: the next Cup week has no quest. Switch a row on below."));
+      return;
+    }
+    var order = rows.map(function (r) { return r.id; });
+    var ol = el("ol", "cup-queue-list");
+    rows.forEach(function (r, i) {
+      var li = el("li", i === 0 ? "is-next" : null);
+      li.appendChild(el("span", "cup-queue-pos", String(i + 1)));
+      var name = el("span", "cup-queue-title", r.title);
+      li.appendChild(name);
+      li.appendChild(el("span", "cup-queue-when", i === 0 ? "Next" + (r.when ? ", " + r.when : "") : r.when));
+      var arrows = el("span", "cup-queue-arrows");
+      [["\u25B2", -1, "Move up"], ["\u25BC", 1, "Move down"]].forEach(function (a) {
+        var b = el("button", "ghost-btn small", a[0]);
+        b.type = "button";
+        b.setAttribute("aria-label", a[2] + ": " + r.title);
+        b.title = a[2];
+        b.disabled = (a[1] < 0 && i === 0) || (a[1] > 0 && i === rows.length - 1);
+        b.addEventListener("click", function () { saveQueue(moved(order, i, a[1])); });
+        arrows.appendChild(b);
+      });
+      li.appendChild(arrows);
+      ol.appendChild(li);
+    });
+    box.appendChild(ol);
+  }
+
+  function saveQueue(order) {
+    say("content-alert", "");
+    Array.prototype.forEach.call(document.querySelectorAll("#content-queue button"), function (b) { b.disabled = true; });
+    request("/api/admin/content/cup-quests/queue", { method: "POST", body: JSON.stringify({ order: order }) })
+      .then(function () {
+        say("content-ok", "Queue saved.");
+        return load();
+      }).catch(function (e) {
+        say("content-alert", e.message);
+        return load();
+      });
   }
 
   /** Buttons to a row's own rows: a campaign's items, a gacha's costs and prizes, a prize's items. */
