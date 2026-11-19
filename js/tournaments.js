@@ -144,7 +144,9 @@
     var wrap = el("div", "table-wrap");
     var t = el("table", "data-table");
     var head = el("tr");
-    ["Rank", "Hunter", "Guild", "Time"].forEach(function (h) { head.appendChild(el("th", null, h)); });
+    // The guild board (event 200) lists every hunter of a run on one row.
+    var party = board && board.eventId === 200;
+    ["Rank", party ? "Hunters" : "Hunter", "Guild", "Time"].forEach(function (h) { head.appendChild(el("th", null, h)); });
     var thead = el("thead");
     thead.appendChild(head);
     t.appendChild(thead);
