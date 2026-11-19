@@ -1101,6 +1101,8 @@ h2.panel-head::before{content:"\25C6";color:var(--gold);font-size:.7em}
 .content-bool input{width:auto}
 .content-bad{color:var(--wax);font-size:.85rem}
 tr.is-disabled td{color:var(--ink-soft);font-style:italic}
+.content-now{color:var(--ink);font-weight:700}
+.content-rotation{margin:0 0 12px;color:var(--ink)}
 .ghost-btn.is-armed{border-color:var(--wax);color:var(--wax)}
 
 /* admin Balance tab (js/admin-balance.js) */

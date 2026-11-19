@@ -88,6 +88,31 @@
     return label ? label + " (" + v + ")" : String(v);
   }
 
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  /** "10 Dec" (UTC), with the year when it is not the year of now. */
+  function shortDate(iso, now) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    var y = d.getUTCFullYear() !== new Date(now || Date.now()).getUTCFullYear() ? " " + d.getUTCFullYear() : "";
+    return d.getUTCDate() + " " + MONTHS[d.getUTCMonth()] + y;
+  }
+
+  /**
+   * A Cup quest row's "Plays" cell from the API's rotation (the running week's row and the coming calendar weeks
+   * with the row each plays): "This week, 10 Dec, 21 Jan 2027", "Off", or why it plays none.
+   */
+  function plays(rotation, row, now) {
+    if (!rotation) return "";
+    if (!row.enabled) return "Off";
+    var out = [];
+    if (rotation.currentRow === row.id) out.push("This week");
+    var weeks = rotation.weeks || [];
+    weeks.forEach(function (w) { if (w.row === row.id) out.push(shortDate(w.startsAt, now)); });
+    if (!out.length) return weeks.length ? "Not in the next " + weeks.length + " Cup weeks" : "No Cup weeks on the calendar";
+    return out.slice(0, 3).join(", ") + (out.length > 3 ? " +" + (out.length - 3) + " more" : "");
+  }
+
   /** The prizes' shares in a gacha (weight / total of every row's weight, as Erupe sends them), by row id. */
   function shares(rows) {
     var total = 0;
@@ -101,7 +126,7 @@
 
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { utc: utc, fromInput: fromInput, toInput: toInput, body: body, searchItems: searchItems,
-      cell: cell, shares: shares };
+      cell: cell, shares: shares, shortDate: shortDate, plays: plays };
   }
   if (typeof document === "undefined") return;
 
@@ -110,7 +135,7 @@
   var started = false;
   var specs = null;
   var items = null;   // the site's item list, loaded once
-  var state = { table: null, filters: {}, rows: [], editing: null, lock: null, armed: null, trail: [] };
+  var state = { table: null, filters: {}, rows: [], editing: null, lock: null, rotation: null, armed: null, trail: [] };
 
   function $(id) { return document.getElementById(id); }
 
@@ -288,6 +313,8 @@
       if (state.table !== t) return;
       state.rows = res.rows || [];
       state.lock = res.lock || null;
+      state.rotation = res.rotation || null;
+      say("content-rotation", state.rotation && state.rotation.note ? state.rotation.note : "");
       say("content-lock", state.lock ? "Locked: " + state.lock : (res.tableReady === false
         ? "This table is not in the game database yet (it comes with a game server release)." : ""));
       var count = res.count !== undefined ? res.count + " row" + (res.count === 1 ? "" : "s") : "";
@@ -319,6 +346,12 @@
     columns().forEach(function (f) { if (f.name !== t.id || t.idGiven) tr.appendChild(el("th", null, f.label)); });
     if (t.key === "gacha-entries") tr.appendChild(el("th", null, "Share"));
     if (t.key === "gachas") tr.appendChild(el("th", null, "Check"));
+    if (t.key === "cup-quests") {
+      var th = el("th", null, "Plays");
+      th.title = "The Cup weeks on the calendar this row plays, with the list as it is now. Week n plays switched-on "
+        + "row n mod count, so switching a row on or off moves the weeks after it.";
+      tr.appendChild(th);
+    }
     tr.appendChild(el("th", null, ""));
     head.appendChild(tr);
 
@@ -328,15 +361,19 @@
     if (!state.rows.length) {
       var empty = el("tr");
       var td = el("td", "empty-cell", "No rows.");
-      td.colSpan = columns().length + 3;
+      td.colSpan = columns().length + 3 + (t.key === "cup-quests" ? 1 : 0);
       empty.appendChild(td);
       body.appendChild(empty);
     }
     state.rows.forEach(function (r) {
-      var row = el("tr", r._disabled ? "is-disabled" : null);
+      var row = el("tr", r._disabled || (t.key === "cup-quests" && r.enabled === false) ? "is-disabled" : null);
       row.appendChild(el("td", null, String(r[t.id])));
       columns().forEach(function (f) { if (f.name !== t.id || t.idGiven) row.appendChild(f.type === "time" && r[f.name] && utc(r[f.name]) ? tcell(r[f.name]) : el("td", null, cell(f, r))); });
       if (t.key === "gacha-entries") row.appendChild(el("td", null, r.entry_type === 100 ? share[r.id] + " %" : ""));
+      if (t.key === "cup-quests") {
+        var playing = plays(state.rotation, r);
+        row.appendChild(el("td", playing.indexOf("This week") === 0 ? "content-now" : null, playing));
+      }
       if (t.key === "gachas") {
         var p = r._problems || [];
         row.appendChild(el("td", p.length ? "content-bad" : null, p.length ? p.join("; ") : "OK"));

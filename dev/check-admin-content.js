@@ -75,6 +75,15 @@ function helpers() {
     && C.cell(F("t", "T", "time"), { t: "2026-11-23T03:00:00Z" }) === "2026-11-23 03:00");
   const s = C.shares([{ id: 1, entry_type: 0, weight: 0 }, { id: 2, entry_type: 100, weight: 600 }, { id: 3, entry_type: 100, weight: 400 }]);
   check("shares", s[2] === 60 && s[3] === 40 && s[1] === undefined, JSON.stringify(s));
+  const rot = { currentRow: 1, weeks: [{ cycle: 3, startsAt: "2026-12-10T15:00:00Z", row: 13 },
+    { cycle: 4, startsAt: "2026-12-31T15:00:00Z", row: 1 }, { cycle: 5, startsAt: "2027-01-21T15:00:00Z", row: 13 }] };
+  const at = Date.parse("2026-11-19T20:00:00Z");
+  check("plays: this week and later dates", C.plays(rot, { id: 1, enabled: true }, at) === "This week, 31 Dec"
+    && C.plays(rot, { id: 13, enabled: true }, at) === "10 Dec, 21 Jan 2027", C.plays(rot, { id: 13, enabled: true }, at));
+  check("plays: off, none in range, no calendar", C.plays(rot, { id: 14, enabled: false }, at) === "Off"
+    && C.plays(rot, { id: 2, enabled: true }, at) === "Not in the next 3 Cup weeks"
+    && C.plays({ weeks: [] }, { id: 2, enabled: true }, at) === "No Cup weeks on the calendar"
+    && C.plays(null, { id: 2, enabled: true }, at) === "");
   check("fromInput is UTC", C.fromInput("2026-11-23T03:00") === "2026-11-23T03:00:00Z" && C.fromInput("") === null);
 }
 
@@ -105,7 +114,11 @@ const SPECS = {
       T("gacha-entries", "gachas", "Gacha costs and prizes", [F("gacha_id", "Gacha", "int"), F("entry_type", "Group", "int"),
         F("weight", "Weight", "int", { dflt: 0 })], { filters: ["gacha_id"], parent: "gacha_id" }),
       T("gacha-items", "gachas", "Gacha prize items", [F("entry_id", "Prize row", "int"), F("item_type", "Kind", "int", { dflt: 7 }),
-        F("item_id", "Item or amount", "int", { names: "item_if_type7" })], { filters: ["entry_id"], parent: "entry_id" })] }
+        F("item_id", "Item or amount", "int", { names: "item_if_type7" })], { filters: ["entry_id"], parent: "entry_id" })] },
+    { key: "cup", title: "Speedrun Cup", tables: [
+      T("cup-quests", "cup", "Speedrun Cup quests", [F("solo_quest_id", "Solo quest", "int", { names: "quest" }),
+        F("guild_quest_id", "Group quest", "int", { names: "quest", nullable: true }), F("quest_type", "Quest type", "int", { dflt: 18 }),
+        F("title", "Title", "text", { maxBytes: 62 }), F("enabled", "In the rotation", "bool", { dflt: true })])] }
   ]
 };
 
@@ -126,6 +139,20 @@ function rowsOf(api, key, query) {
     { id: 20, gacha_id: 3, entry_type: 0, weight: 0, _labels: {} },
     { id: 21, gacha_id: 3, entry_type: 100, weight: 600, _labels: {} },
     { id: 22, gacha_id: 3, entry_type: 100, weight: 400, _labels: {} }] : [] };
+  if (key === "cup-quests") return { tableReady: true, lock: null, count: 4, maxRows: 100,
+    rotation: { cycle: 2, phase: "open", currentRow: 1, enabled: 3,
+      note: "The Speedrun Cup is open: this week plays #1 (Speedrun Cup: Espinas). A change that would swap it waits until the results (25 Nov 2026, 16:00 UTC); anything else can change now.",
+      weeks: [{ cycle: 3, startsAt: "2026-12-10T15:00:00Z", row: 2 }, { cycle: 4, startsAt: "2026-12-31T15:00:00Z", row: 13 },
+        { cycle: 5, startsAt: "2027-01-21T15:00:00Z", row: 1 }] },
+    rows: [
+      { id: 1, solo_quest_id: 60562, guild_quest_id: 60561, quest_type: 18, title: "Speedrun Cup: Espinas", enabled: true,
+        _labels: { solo_quest_id: "Espinas Speed Slay!", guild_quest_id: "All Slay Espinas!" } },
+      { id: 2, solo_quest_id: 60493, guild_quest_id: 60494, quest_type: 18, title: "Speedrun Cup: Breeding Hypnocatrice", enabled: true,
+        _labels: { solo_quest_id: "Breeding Season Hypnocatrice Speed Slay!", guild_quest_id: "All Slay Azure Hypnocatrice!" } },
+      { id: 12, solo_quest_id: 64812, guild_quest_id: 64832, quest_type: 28, title: "Speedrun Cup: Musou Elzelion (solo and group)", enabled: false,
+        _labels: { solo_quest_id: "Musou Elzelion Solo", guild_quest_id: "Musou Elzelion Group" } },
+      { id: 13, solo_quest_id: 64800, guild_quest_id: 64820, quest_type: 43, title: "Speedrun Cup: Zenith★4 Rukodiora (solo and group)", enabled: true,
+        _labels: { solo_quest_id: "Zenith★4 Rukodiora Solo", guild_quest_id: "Zenith★4 Rukodiora Group" } }] };
   if (key === "gacha-items") return { tableReady: true, count: 1, rows: [{ id: 30, entry_id: 21, item_type: 7, item_id: 7, _labels: { item_id: "Potion" } }] };
   return null;
 }
@@ -195,7 +222,7 @@ async function adminPage(browser, base) {
   const api = { calls: [], prizes: prizes() };
   const { page, errors } = await open(browser, base + "/admin.html#content", api, 1280);
   await page.waitForSelector("#content-groups .chip");
-  check("groups", (await page.$$eval("#content-groups .chip", (n) => n.map((x) => x.textContent))).join() === "Festival,Diva Defense,Event quests,Gachas");
+  check("groups", (await page.$$eval("#content-groups .chip", (n) => n.map((x) => x.textContent))).join() === "Festival,Diva Defense,Event quests,Gachas,Speedrun Cup");
   await page.waitForSelector("#content-rows tr td");
   check("first table opened", (await text(page, "#content-title")) === "Festival trials");
   check("note: no restart", /no.*restart/i.test(await text(page, "#content-note")));
@@ -306,6 +333,18 @@ async function adminPage(browser, base) {
   await page.locator("#content-trail button", { hasText: "Back to row 21" }).click();
   await page.waitForFunction(() => document.getElementById("content-title").textContent.indexOf("Gacha costs and prizes") === 0);
   check("trail: back to the gacha's rows", (await page.$$("#content-trail button")).length === 1);
+
+  // Speedrun Cup quests: no lock, the running week's note, the Plays column, rows that are off greyed.
+  await button(page, "#content-groups", "Speedrun Cup").click();
+  await page.waitForFunction(() => document.getElementById("content-rows").textContent.indexOf("Musou Elzelion Solo (64812)") !== -1);
+  const plays = await page.$$eval("#content-rows tr", (rows) => rows.map((r) => r.children[r.children.length - 2].textContent));
+  check("cup: plays column", JSON.stringify(plays) === JSON.stringify(["This week, 21 Jan 2027", "10 Dec", "Off", "31 Dec"]), JSON.stringify(plays));
+  check("cup: header", (await page.$$eval("#content-head th", (n) => n.map((x) => x.textContent))).indexOf("Plays") !== -1);
+  check("cup: running week note", /this week plays #1/.test(await text(page, "#content-rotation")));
+  check("cup: not locked", await page.$eval("#content-lock", (n) => n.hidden) && !(await page.$eval("#content-save", (n) => n.disabled)));
+  check("cup: edit on every row", (await page.locator("#content-rows button", { hasText: "Edit" }).count()) === 4);
+  check("cup: off row greyed", (await page.$$eval("#content-rows tr.is-disabled", (n) => n.length)) === 1);
+  await shot(page, "admin-content-cup.png");
 
   check("admin: no page errors", errors.length === 0, errors.join(" | "));
   await page.close();
