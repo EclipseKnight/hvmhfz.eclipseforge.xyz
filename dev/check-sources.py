@@ -73,7 +73,9 @@ def test_build(mod):
         empty = {"drops": [], "quests": [], "rewards": []}
         files = {5: dict(empty, id=5, name="Jewel", where=[["road-shop-4", {"price": 1}]]),
                  6: dict(empty, id=6, name="Bone", drops=[{"monster": 1}], where=[["road-shop-4", {"price": 1}]]),
-                 1: dict(empty, id=1, name="Gem")}
+                 1: dict(empty, id=1, name="Gem", rewards=[[10, "Q10", "G", "main target", 1, 50.0],
+                                                           [30, "Q30", "G", "main target", 1, 50.0]]),
+                 3: dict(empty, id=3, name="Herb", rewards=[[40, "Q40", "LR", "main target", 1, 1.0]])}
         for iid, f in files.items():
             (d / f"{iid}.json").write_text(json.dumps(f), encoding="utf-8")
         (d / "index.json").write_text(json.dumps({"items": [[i, "", "", "", 1] for i in (1, 2, 3, 5, 6)]}),
@@ -83,7 +85,11 @@ def test_build(mod):
         want(not (d / "5.json").exists() and counts[5] == 0, "an item with no source left loses its file")
         six = json.loads((d / "6.json").read_text(encoding="utf-8"))
         want("where" not in six and counts[6] == 1, "an item with drops keeps its file, without the old where")
-        want((d / "2.json").exists() and counts[1] == 2, "items with sources get or keep their file")
+        want((d / "2.json").exists() and counts[1] == 3,
+             "items with sources get or keep their file; only reward rows of offered quests count (10, not 30)")
+        three = json.loads((d / "3.json").read_text(encoding="utf-8"))
+        want(three.get("offered") == [] and three.get("unlisted") == [0, 2] and counts[3] == 0,
+             "an item whose reward quests are all not offered gets offered [] and counts 0")
         two = json.loads((d / "2.json").read_text(encoding="utf-8"))
         want(two.get("fish") == [13, 14] and two.get("supply") == [15] and counts[2] == 5,
              "fishing and supply quests are written and counted (part 208)")

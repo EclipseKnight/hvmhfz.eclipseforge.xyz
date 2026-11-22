@@ -9,7 +9,8 @@
    source page and the materials linked to their items; an item with gathering quests opens the quest list; an
    item that is fished and one only in a quest supply box (part 208) show those lines, linked to their source pages,
    the supply line says "in that quest only", and the fishing list opens; an item with no source says "No source on
-   this server yet"; the Database search finds a source; no sideways scrolling and no
+   this server yet"; reward quests no list offers are marked "not offered in game" and left out of the count, the
+   best chance and the index count (part 240); the Database search finds a source; no sideways scrolling and no
    script errors. SHOTS=<dir> saves screenshots of each page at both widths.
 
      NODE_PATH=/root/work/pw-tools/node_modules [SHOTS=dir] node dev/check-source-pages.js
@@ -32,10 +33,14 @@ const road = readJson("data/sources/road-shop-4.json");
 
 /* An item with a shop row and a craft row with materials, one with gathering quests, one with no source at all. */
 const groupOf = new Map(index.sources.map(function (s) { return [s[0], s[2]]; }));
-let both = null, gatherer = null, fisher = null, supplied = null;
+let both = null, gatherer = null, fisher = null, supplied = null, closed = null, mixed = null;
 for (const file of fs.readdirSync(path.join(ROOT, "data/items"))) {
-  if (file === "index.json" || (both && gatherer && fisher && supplied)) continue;
+  if (file === "index.json" || (both && gatherer && fisher && supplied && closed && mixed)) continue;
   const d = readJson("data/items/" + file);
+  /* reward quests: none offered (offered []), or some offered and some not */
+  const rq = new Set((d.rewards || []).map(function (r) { return r[0]; }));
+  if (!closed && rq.size && Array.isArray(d.offered) && !d.offered.length) closed = d;
+  if (!mixed && (d.offered || []).length && [...rq].some(function (q) { return d.offered.indexOf(q) === -1; })) mixed = d;
   const w = d.where || [];
   if (!both && w.some(function (e) { return groupOf.get(e[0]) === "shop"; }) &&
       w.some(function (e) { return groupOf.get(e[0]) === "craft" && e[1].mats; })) both = d;
@@ -44,7 +49,7 @@ for (const file of fs.readdirSync(path.join(ROOT, "data/items"))) {
   if (!supplied && (d.supply || []).length && !w.length && !d.gather && !d.offered && !d.fish) supplied = d;
 }
 const none = [...items.values()].find(function (r) { return r[0] > 0 && !r[4]; });
-check(both && gatherer && none && fisher && supplied, "found test items in the data");
+check(both && gatherer && none && fisher && supplied && closed && mixed, "found test items in the data");
 
 function serve() {
   const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json",
@@ -178,6 +183,28 @@ async function run(chromium) {
       await pg.waitForSelector("#where");
       check(/No source on this server yet/.test(await pg.textContent("#where")), V + ": an item with no source says No source on this server yet");
       await shot("item-" + none[0] + "-none");
+
+      /* quests no list offers: marked "not offered in game", left out of the count and the best chance */
+      for (const d of [closed, mixed]) {
+        const rq = [...new Set(d.rewards.map(function (r) { return r[0]; }))];
+        const shut = rq.filter(function (q) { return d.offered.indexOf(q) === -1; }).length;
+        await pg.goto(base + "/item.html?id=" + d.id, { waitUntil: "load" });
+        await pg.waitForSelector("#rewards");
+        const badges = await pg.$$eval("#rewards .src-unlisted", function (b) { return b.map(function (x) { return x.textContent; }); });
+        const rows = await pg.$$eval("#rewards tbody tr", function (r) { return r.length; });
+        check(badges.length && badges.every(function (t) { return t === "not offered in game"; }),
+              V + ": item " + d.id + " marks its quests no list offers \"not offered in game\"");
+        const panel = await pg.textContent("#rewards");
+        check(panel.indexOf((rq.length - shut) + (rq.length - shut === 1 ? " quest" : " quests") + " players can start · " + shut + " not offered in game") !== -1,
+              V + ": item " + d.id + " counts " + (rq.length - shut) + " offered and " + shut + " not offered quests (rows " + rows + ")");
+        if (d === closed) {
+          check(/No quest players can start rewards it/.test(panel), V + ": item " + d.id + " has no best chance from a quest not offered");
+          check(items.get(d.id)[4] === ["drops", "quests", "where", "gather", "fish", "supply"].reduce(function (n, k) { return n + (d[k] || []).length; }, 0),
+                V + ": item " + d.id + "'s index count leaves its not-offered quests out");
+        }
+        await noSideways("item with quests not offered");
+        await shot("item-" + d.id + "-not-offered");
+      }
 
       /* the Database search */
       await pg.goto(base + "/database.html?q=" + encodeURIComponent("Diva limited shop"), { waitUntil: "load" });

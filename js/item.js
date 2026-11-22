@@ -614,18 +614,27 @@
   }
 
   /* Quests whose reward groups hold the item (data/items/<id>.json "rewards": [quest id, name, rank, when,
-     qty, pct], best chance first; dev/make-item-data.py from data/quests/rewards/). */
+     qty, pct], best chance first; dev/make-item-data.py from data/quests/rewards/). "offered" (dev/make-source-data.py)
+     lists the quests players can start ([] when none); the others are marked "not offered in game" and left out of
+     the count and the best chance. */
   function rewardsPanel(rewards, offered) {
     var open = {};
     (offered || []).forEach(function (q) { open[q] = true; });
-    var quests = {};
-    rewards.forEach(function (r) { quests[r[0]] = true; });
-    var count = Object.keys(quests).length;
-    var best = rewards[0];
+    var quests = {}, closed = {};
+    rewards.forEach(function (r) {
+      quests[r[0]] = true;
+      if (offered && !open[r[0]]) closed[r[0]] = true;
+    });
+    var nClosed = Object.keys(closed).length;
+    var count = Object.keys(quests).length - nClosed;
+    var best = rewards.filter(function (r) { return !closed[r[0]]; })[0];
+    var note = offered ? num(count) + (count === 1 ? " quest" : " quests") + " players can start" +
+      (nClosed ? " · " + num(nClosed) + " not offered in game" : "") : count + (count === 1 ? " quest" : " quests") + ", from the game's data";
     var panel = listPanel({
       title: "Rewarded by", cls: "item-rewards", searchLabel: "Quest",
-      note: count + (count === 1 ? " quest" : " quests") + ", from the game's data",
-      best: best ? "Best chance: " + pct(best[5]) + " from " + best[1] + " (" + (best[2] ? best[2] + ", " : "") + rewardWhen(best[3]) + ")." : "",
+      note: note,
+      best: best ? "Best chance: " + pct(best[5]) + " from " + best[1] + " (" + (best[2] ? best[2] + ", " : "") + rewardWhen(best[3]) + ")." :
+        (nClosed ? "No quest players can start rewards it." : ""),
       rows: rewards,
       rank: function (r) { return r[2]; },
       search: function (r) { return r[1] + " " + r[0]; },
@@ -635,7 +644,7 @@
         var q = el("td", "item-quest");
         q.appendChild(el("a", null, r[1])).href = "/quest.html?id=" + r[0];
         q.appendChild(el("span", "item-quest-id", " #" + r[0]));
-        if (offered && !open[r[0]]) q.appendChild(el("span", "badge src-unlisted", "not offered"));
+        if (closed[r[0]]) q.appendChild(el("span", "badge src-unlisted", "not offered in game"));
         tr.appendChild(q);
         tr.appendChild(cell(r[2] || "-"));
         tr.appendChild(cell(rewardWhen(r[3])));
@@ -645,7 +654,7 @@
       }
     });
     panel.appendChild(el("p", "note-text", "Chance of the item on one draw of that reward group. Sub-target and extra condition names are the game's group order; the quest page says more." +
-      (offered ? " \"Not offered\": no quest list on Hunsterverse offers that quest file right now." : "")));
+      (nClosed ? " \"Not offered in game\": no quest list on Hunsterverse offers that quest right now, so it is not a source." : "")));
     panel.id = "rewards";
     return panel;
   }

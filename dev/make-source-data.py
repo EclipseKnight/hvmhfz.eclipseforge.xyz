@@ -18,7 +18,8 @@ Writes:
                               "gather" (quest ids players can start
                               that let you gather it), "fish" (that let you fish it; part 208), "supply" (whose
                               supply box holds it, usable in that quest only; part 208), "offered" (the quests of
-                              "rewards" that players can start)
+                              "rewards" that players can start; [] when the item has rewards but none is, so the
+                              page marks them "not offered in game" and the index count leaves them out)
                               and "unlisted": [reward, gather] (quest files no list offers); makes the file for an
                               item that has only these, and counts them in data/items/index.json (the 5th field).
                               dev/make-item-data.py keeps these keys when it rewrites the item files.
@@ -119,9 +120,18 @@ def build(detail, names):
     return index, pages, per_item
 
 
+def count_sources(d):
+    """The index count of an item file: drop rows, quest needs, reward rows of quests players can start ("offered";
+    rows of quests no list offers are left out), other sources and quest lists."""
+    offered = set(d.get("offered") or [])
+    return (sum(len(d.get(k) or []) for k in ("drops", "quests", "where", "gather", "fish", "supply"))
+            + sum(1 for r in d.get("rewards") or [] if r[0] in offered))
+
+
 def merge_items(items_dir, per_item, names):
     """Puts the source keys into data/items/<id>.json and the counts into index.json. An item file left with no
-    drops, quests, rewards or source keys is deleted (dev/make-item-data.py writes none for such an item)."""
+    drops, quests, rewards or source keys is deleted (dev/make-item-data.py writes none for such an item). An item
+    with reward quests none of which players can start gets "offered": [], so its page marks each of them."""
     index_path = items_dir / "index.json"
     index = json.loads(index_path.read_text(encoding="utf-8"))
     counts = {}
@@ -131,13 +141,15 @@ def merge_items(items_dir, per_item, names):
         d = json.loads(path.read_text(encoding="utf-8"))
         old = {k: d.pop(k) for k in SOURCE_KEYS if k in d}
         new = per_item.get(d["id"], {})
-        d.update({k: new[k] for k in SOURCE_KEYS if k in new})
         if not (d["drops"] or d["quests"] or d["rewards"] or new):
             path.unlink()  # its last source is gone: no file, as dev/make-item-data.py would write it
             continue
-        counts[d["id"]] = sum(len(d.get(k) or []) for k in ("drops", "quests", "rewards", "where", "gather", "fish",
-                                                             "supply"))
-        if old != {k: new[k] for k in SOURCE_KEYS if k in new}:
+        mine = {k: new[k] for k in SOURCE_KEYS if k in new}
+        if d["rewards"] and "offered" not in mine:
+            mine["offered"] = []  # no reward quest is offered: the page marks each "not offered in game"
+        d.update(mine)
+        counts[d["id"]] = count_sources(d)
+        if old != mine:
             path.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     for item, new in per_item.items():
         path = items_dir / f"{item}.json"
@@ -145,7 +157,7 @@ def merge_items(items_dir, per_item, names):
             continue
         d = {"id": item, "name": names[item], "drops": [], "quests": [], "rewards": []}
         d.update({k: new[k] for k in SOURCE_KEYS if k in new})
-        counts[item] = sum(len(d.get(k) or []) for k in ("where", "gather", "fish", "supply"))
+        counts[item] = count_sources(d)
         path.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     for row in index["items"]:
         row[4] = counts.get(row[0], 0)
