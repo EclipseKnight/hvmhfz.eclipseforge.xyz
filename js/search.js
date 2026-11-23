@@ -3,10 +3,11 @@
    counts. The same engine is window.HvSearch, which the Database page's search box (js/database.js) uses:
      HvSearch.load(kind)            -> Promise of true (loaded) or false (could not be loaded)
      HvSearch.find(kind, q, limit)  -> {total, rows: [{title, sub, href}], more: list page href or null}
-   kinds in HvSearch.KINDS: monsters, quests, items, weapons, sources, currencies, skills. A query matches a row when every word of it is in
+   kinds in HvSearch.KINDS: monsters, quests, items, weapons, sources, currencies, skills, food. A query matches a row when every word of it is in
    the row's name (or other name, monsters, category, Key/Urgent Quest role); rows whose name starts with the query come first.
    Indexes: data/monsters/index.json, data/items/index.json, data/search/quests.json and data/search/weapons.json
-   (dev/make-search-index.py), data/sources/index.json (dev/make-source-data.py), data/currencies.json (by hand), data/skills/index.json (dev/make-skill-data.py). */
+   (dev/make-search-index.py), data/sources/index.json (dev/make-source-data.py), data/currencies.json (by hand), data/skills/index.json (dev/make-skill-data.py),
+   data/food-recipes.json (dev/copy-food-data.py). */
 (function () {
   "use strict";
 
@@ -117,9 +118,40 @@
         return out;
       },
       more: function (q) { return "/skills.html?q=" + encodeURIComponent(q); }
+    },
+    food: {
+      // The Food and Bentos page itself, its ingredients (each opens the bentos made with it), the 16 dish names and
+      // the 16 SR bentos.
+      label: "Food and Bentos", url: "/data/food-recipes.json", min: 2,
+      rows: function (data) {
+        var page = "/food.html", ing = {}, dishes = {};
+        var out = [{ name: "Food and Bentos", extra: "bento bentos food lunchbox meal buff recipes 弁当", title: "Food and Bentos",
+                     sub: "Every bento, its buff and where to buy the ingredients", href: page }];
+        (data.ingredients || []).forEach(function (i) {
+          ing[i.id] = i;
+          out.push({ name: i.en, extra: i.ja + " bento ingredient" + (i.sr ? " sr" : ""), title: i.en,
+                     sub: (i.sr ? "SR bento ingredient · " : "Bento ingredient · ") + i.ja,
+                     href: i.sr ? page + "#sr" : page + "?q=" + encodeURIComponent(i.en) + "#bentos" });
+        });
+        (data.bentos || []).forEach(function (b) {
+          var d = dishes[b.name.en] || (dishes[b.name.en] = { ja: b.name.ja, n: 0 });
+          d.n++;
+        });
+        Object.keys(dishes).forEach(function (name) {
+          out.push({ name: name, extra: dishes[name].ja + " bento dish", title: name,
+                     sub: "Bento dish · " + dishes[name].n + " ingredient pairs", href: page + "?q=" + encodeURIComponent(name) + "#bentos" });
+        });
+        (data.sr_bentos || []).forEach(function (b) {
+          var pair = (ing[b.a] || {}).en + " + " + (ing[b.b] || {}).en;
+          out.push({ name: b.name.en, extra: b.name.ja + " sr bento " + pair, title: b.name.en, sub: "SR bento · " + pair,
+                     href: page + "#sr" });
+        });
+        return out;
+      },
+      more: function (q) { return "/food.html?q=" + encodeURIComponent(q) + "#bentos"; }
     }
   };
-  var ORDER = ["monsters", "quests", "items", "weapons", "sources", "currencies", "skills"];
+  var ORDER = ["monsters", "quests", "items", "weapons", "sources", "currencies", "skills", "food"];
   var cache = {};
   var monsterIds = {}; // the server's monster id -> its page, from the monster index
 

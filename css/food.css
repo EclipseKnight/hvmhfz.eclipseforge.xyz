@@ -1,0 +1,124 @@
+/* Food and Bentos page (food.html, js/food.js). */
+.food-page .tab-panel > .note-text{color:var(--text-dim);max-width:100ch}
+.food-page .tab-panel > .note-text strong{color:var(--text-light)}
+.food-seasons.chips[role="group"]{flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none}
+.food-h{margin:26px 0 12px;font-size:1.3rem;color:var(--gold-bright)}
+.food-seasons{margin-bottom:8px}
+.food-season-note{margin-bottom:4px}
+
+/* Recommended strip */
+.food-rec{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.food-card{display:flex;flex-direction:column;gap:6px;padding:14px 16px;background:var(--parchment-3);border:1px solid var(--line);
+  border-top:3px solid var(--gold);border-radius:3px;color:var(--ink);--link:#7a4b12;--link-hover:var(--wax)}
+.food-card p{margin:0}
+.food-card-kind{font:700 .66rem/1.2 var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--gold-ink)}
+.food-card-dish{margin:0;font-size:1.08rem}
+.food-card-pair{display:flex;flex-wrap:wrap;align-items:center;gap:2px 4px}
+.food-card-stats{display:flex;flex-wrap:wrap;gap:6px}
+.food-card-where{font-size:.8rem;color:var(--ink-soft)}
+.food-badge{display:inline-block;padding:3px 7px;border-radius:3px;font:700 .74rem/1.2 var(--font-ui);font-variant-numeric:tabular-nums;
+  border:1px solid var(--line);background:rgba(183,138,51,.1);white-space:nowrap}
+.food-badge.is-up{color:var(--teal);border-color:rgba(46,91,78,.45);background:rgba(46,91,78,.1)}
+.food-badge.is-down{color:var(--wax);border-color:rgba(139,47,39,.45);background:rgba(139,47,39,.08)}
+.food-badge.is-zero{color:var(--ink-soft)}
+
+/* Filters */
+.food-filters{margin:0 0 12px;padding:14px 16px}
+.food-filter-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 16px}
+.food-filter-row + .food-filter-row{margin-top:12px}
+.food-filters .search input{min-width:280px}
+.food-filters select{min-width:150px}
+.food-reset{margin-left:auto}
+.food-results{padding-top:16px}
+.food-legend{font-size:.86rem;line-height:1.55;max-width:110ch}
+.food-count{margin:0 0 8px;font:600 .8rem var(--font-ui);color:var(--ink-soft)}
+
+/* The table */
+.food-table td{vertical-align:middle}
+.food-dish{white-space:normal;min-width:150px}
+.food-dish-en{display:block;font-weight:600}
+.food-ja{display:block;font-size:.78rem;color:var(--ink-soft)}
+.food-pair{white-space:normal}
+.food-pair-line{display:flex;flex-wrap:wrap;align-items:center;gap:0 6px;line-height:1.5}
+.food-plus{color:var(--ink-soft);font-weight:700}
+.food-ing{display:inline-flex;align-items:center;gap:5px;font-weight:600}
+.food-icon{width:20px;height:20px;flex:0 0 20px}
+.food-where{font-size:.74rem;color:var(--ink-soft)}
+.food-where::before{content:"\00b7 "}
+.food-stat{font-weight:700;font-size:.95rem;width:84px}
+.food-stat.is-up{color:var(--teal)}
+.food-stat.is-down{color:var(--wax)}
+.food-stat.is-zero{color:var(--text-faint);font-weight:400}
+.food-more{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:12px 0 0}
+.food-more .toolbar-note{margin-left:0;padding:0}
+
+/* SR grid */
+.food-sr-wrap{margin-bottom:12px}
+.food-sr-table th,.food-sr-table td{white-space:normal;vertical-align:top}
+.food-sr-table thead th{color:var(--ink);background:rgba(183,138,51,.12);min-width:150px}
+.food-sr-table thead th .food-ing{color:inherit}
+.food-sr-table tbody th{text-align:left;min-width:150px;background:rgba(183,138,51,.08)}
+.food-sr-corner{font:600 .7rem/1.3 var(--font-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)!important}
+.food-sr-gives{display:block;margin-top:4px;font:600 .74rem/1.3 var(--font-ui);color:var(--ink-soft)}
+.food-sr-stats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.food-sr-stats .food-badge{font-size:.68rem;padding:2px 5px}
+.food-sr-get{margin-top:18px}
+.food-list{margin:0 0 6px;padding-left:1.3em;line-height:1.6}
+.food-list li{margin:0 0 6px}
+
+/* Ingredients */
+.food-ing-name .food-ja{margin-left:25px}
+.food-where-long{white-space:normal;min-width:220px}
+.food-where-line{display:block}
+.food-shops{margin:16px 0 0;color:var(--text-dim);max-width:100ch}
+.food-shops dt{font-weight:700;color:var(--text-light)}
+.food-shops dd{margin:2px 0 10px}
+
+/* How bentos work */
+.food-how + .food-how{margin-top:16px}
+.food-how p{margin:8px 0 0}
+
+/* Phones: each bento row becomes a small card (dish, ingredients, then the four numbers in a row with their names). */
+@media (max-width:720px){
+  .food-filters .search,.food-filters .search input{min-width:0;width:100%}
+  .food-filters .food-q{flex:1 1 100%}
+  .food-filter-row .select-wrap{flex:1 1 calc(50% - 8px);min-width:0}
+  .food-filters select{min-width:0;width:100%;max-width:none}
+  .food-reset{margin-left:0}
+  .food-table-wrap{overflow:visible;border:0;background:none}
+  .food-table,.food-table tbody{display:block}
+  .food-table thead{display:none}
+  .food-table tbody tr{display:grid;grid-template-columns:repeat(4,1fr);margin:0 0 10px;border:1px solid var(--line);border-radius:3px;
+    background:var(--parchment-3)}
+  .food-table tbody tr:nth-child(even),.food-table tbody tr:hover{background:var(--parchment-3)}
+  .food-results{--pad-x:12px}
+  .food-table td{border-top:0;padding:8px 10px}
+  .food-table td.food-dish,.food-table td.food-pair{grid-column:1 / -1;min-width:0}
+  .food-table td.food-dish{padding-bottom:2px}
+  .food-table td.food-pair{padding-top:2px;border-bottom:1px solid rgba(189,166,122,.45)}
+  .food-table td.food-stat{width:auto;text-align:center}
+  .food-table td.food-stat::before{content:attr(data-label);display:block;font:600 .62rem/1.3 var(--font-ui);letter-spacing:.08em;
+    text-transform:uppercase;color:var(--ink-soft)}
+  .food-sr-wrap{overflow:visible;border:0;background:none}
+  .food-sr-table,.food-sr-table tbody{display:block}
+  .food-sr-table thead{display:none}
+  .food-sr-table tbody tr{display:grid;grid-template-columns:1fr 1fr;margin:0 0 12px;border:1px solid var(--line);border-radius:3px;background:var(--parchment-3)}
+  .food-sr-table tbody tr:nth-child(even),.food-sr-table tbody tr:hover{background:var(--parchment-3)}
+  .food-sr-table.sticky-first > tbody > tr > th:first-child{position:static;grid-column:1 / -1;min-width:0;max-width:none;box-shadow:none;
+    background:rgba(183,138,51,.14)}
+  .food-sr-table td{min-width:0;border-top:1px solid rgba(189,166,122,.45)}
+  .food-sr-table td:nth-child(odd){border-left:1px solid rgba(189,166,122,.45)}
+  .food-sr-table td::before{content:attr(data-label);display:block;margin-bottom:3px;font:600 .62rem/1.3 var(--font-ui);letter-spacing:.06em;
+    text-transform:uppercase;color:var(--ink-soft)}
+  .food-ing-wrap{overflow:visible;border:0;background:none}
+  .food-ing-table,.food-ing-table tbody{display:block}
+  .food-ing-table thead{display:none}
+  .food-ing-table tbody tr{display:grid;grid-template-columns:1fr 1fr;margin:0 0 10px;border:1px solid var(--line);border-radius:3px;background:var(--parchment-3)}
+  .food-ing-table tbody tr:nth-child(even),.food-ing-table tbody tr:hover{background:var(--parchment-3)}
+  .food-ing-table td{border-top:0;padding:6px 10px;min-width:0}
+  .food-ing-table.sticky-first > tbody > tr > td:first-child{position:static;grid-column:1 / -1;max-width:none;box-shadow:none;background:none!important}
+  .food-ing-table td.food-where-long,.food-ing-table td.food-ing-go{grid-column:1 / -1}
+  .food-ing-table td.food-ing-price{text-align:left}
+  .food-ing-table td[data-label]::before{content:attr(data-label);display:block;font:600 .62rem/1.3 var(--font-ui);letter-spacing:.06em;
+    text-transform:uppercase;color:var(--ink-soft)}
+}

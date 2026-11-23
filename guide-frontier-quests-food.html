@@ -25,7 +25,7 @@
 <script src="/js/nav.js" defer></script>
 <script src="/js/background.js" defer></script>
 <script src="/js/consent.js" defer></script>
-<script src="/js/search.js?v=7" defer></script>
+<script src="/js/search.js?v=8" defer></script>
 <script src="/js/guide-frontier.js" defer></script>
 </head>
 <body class="guide guide-frontier">
@@ -75,6 +75,7 @@
               <a class="navlink" href="/sources.html">Sources</a>
               <a class="navlink" href="/currencies.html">Currencies</a>
               <a class="navlink" href="/skills.html">Skills</a>
+              <a class="navlink" href="/food.html">Food and Bentos</a>
               <a class="navlink" href="/weapons.html">Weapons</a>
               <a class="navlink" href="/balance.html">Balance changes</a>
             </div>
@@ -188,29 +189,30 @@
 <p>Once you have made a meal, it is added to a quick list. While you post a quest, press <kbd>X</kbd> on a controller or <kbd>Z</kbd> on a keyboard to prepare any meal on that list at once.</p>
 <figure class="hb-fig side"><img src="/assets/guide/quests-food/quest-post-bento-icon.webp" alt="The quest posting screen with the rice ball icon marked in red. A note says the icon appears when a food buff is set for the quest, and X or Z changes or checks the buffs." width="330" height="394" loading="lazy" decoding="async" /><figcaption>The rice ball icon shows that a bento is set</figcaption></figure>
 <p>The game remembers your meal between quests. If you chose the right food the first time, you do not need to choose again until the season changes.</p>
+<p>Every pair of ingredients and its buff in each season, the SR bentos and where to buy each ingredient on our server are on the <a href="/food.html">Food and Bentos</a> page.</p>
 
 <h3 id="bento-combinations">Combinations</h3>
 <p>The tables below list the basic combinations. Always post quests with buffs at least as good as these when you can. Each meal is two ingredients. Which meal is best depends on the season of the quest (warm, cold or breeding).</p>
 <div class="hb-table"><table>
 <thead><tr><th>Season</th><th>Ingredients</th><th>Effect</th></tr></thead>
 <tbody>
-<tr><td rowspan="3">Warm</td><td>Fist Rice + Spirit Mushrooms (shown in the guide as Demon Mushrooms)</td><td>+50 HP / +50 Stamina</td></tr>
+<tr><td rowspan="3">Warm</td><td>Fist Rice + Demon Mushroom</td><td>+50 HP / +50 Stamina</td></tr>
 <tr><td>Fist Rice + Predator Honey</td><td>+50 HP / +25 Stamina / +5 Attack</td></tr>
 <tr><td>Fist Rice + Round Egg</td><td>+50 HP / +3 Attack / +20 Defense</td></tr>
-<tr><td rowspan="3">Cold</td><td>Fist Rice + Frost Tomatoes</td><td>+50 HP / +50 Stamina</td></tr>
-<tr><td>Ancient Bean + Gold Extract</td><td>+50 HP / +25 Stamina / +5 Attack</td></tr>
+<tr><td rowspan="3">Cold</td><td>Fist Rice + Fatty Tomato</td><td>+50 HP / +50 Stamina</td></tr>
+<tr><td>Ancient Beans + Gold Extract</td><td>+50 HP / +25 Stamina / +5 Attack</td></tr>
 <tr><td>Fist Rice + Round Egg</td><td>+50 HP / +3 Attack / +10 Defense</td></tr>
 <tr><td rowspan="3">Breeding</td><td>Fist Rice + Power Lard</td><td>+50 HP / +25 Stamina</td></tr>
 <tr><td>Pepper Bug + Predator Honey</td><td>+50 HP / +25 Stamina / +5 Attack</td></tr>
-<tr><td>Fist Rice + Gold Extract</td><td>+50 HP / +5 Attack</td></tr>
+<tr><td>Fist Rice + Gold Extract</td><td>&minus;40 HP / &minus;5 Attack: avoid. The original guide listed +50 HP / +5 Attack here, but the game lowers both (checked in the game's data).</td></tr>
 </tbody>
 </table></div>
 <p>Adrenaline combinations lower your HP so that Adrenaline skills trigger straight away.</p>
 <div class="hb-table"><table>
 <thead><tr><th>Season</th><th>Ingredients</th><th>Effect</th></tr></thead>
 <tbody>
-<tr><td>Warm or Cold</td><td>Fist Rice + Pugi Cracker</td><td>-50 HP / +25 Stamina / Small Attack (+3)</td></tr>
-<tr><td>Breeding</td><td>Fist Rice + Hot Oil</td><td>-50 HP / +25 Stamina</td></tr>
+<tr><td>Warm or Cold</td><td>Fist Rice + Poogie Crackers</td><td>-50 HP / +25 Stamina / Small Attack (+3)</td></tr>
+<tr><td>Breeding</td><td>Fist Rice + Red Oil</td><td>-50 HP / +25 Stamina</td></tr>
 </tbody>
 </table></div>
 
@@ -218,9 +220,9 @@
 <div class="hb-table"><table>
 <thead><tr><th>Shop</th><th>Ingredient and price</th></tr></thead>
 <tbody>
-<tr><td>Guild Cat Store</td><td>Spirit Mushrooms, 980z<br>Frost Tomatoes, 450z<br>Pugi Crackers, 10z</td></tr>
-<tr><td>Lunchbox NPC</td><td>Hot Oil, 50z<br>Power Lard, 200z<br>Fist Rice, 275z<br>Pepper Bug, 265z<br>Round Egg, 400z</td></tr>
-<tr><td>Town General Store</td><td>Ancient Bean, 440z<br>Gold Extract, 640z</td></tr>
+<tr><td>Guild Cat Store</td><td>Demon Mushroom, 980z<br>Fatty Tomato, 450z<br>Poogie Crackers, 10z</td></tr>
+<tr><td>Lunchbox NPC</td><td>Red Oil, 50z<br>Power Lard, 200z<br>Fist Rice, 275z<br>Pepper Bug, 265z<br>Round Egg, 400z</td></tr>
+<tr><td>Town General Store</td><td>Ancient Beans, 440z<br>Gold Extract, 640z</td></tr>
 <tr><td>Pugi Farm General Store (Lv3)</td><td>Predator Honey, 1940z (also available rarely from the food NPC)</td></tr>
 </tbody>
 </table></div>
@@ -231,17 +233,17 @@
 <div class="hb-table"><table>
 <thead><tr><th>Where you get it</th><th>SR food</th></tr></thead>
 <tbody>
-<tr><td rowspan="4">HC quest, broken parts</td><td>Millenium Rice (also available for 6000 CP)</td></tr>
-<tr><td>Great Puffer</td></tr>
-<tr><td>Dragon Filet</td></tr>
+<tr><td rowspan="4">HC quest, broken parts</td><td>Millennium Rice (also available for 6000 CP)</td></tr>
+<tr><td>Tuna Blowfish</td></tr>
+<tr><td>Thin Wyvern Cut</td></tr>
 <tr><td>Silver Liver</td></tr>
-<tr><td rowspan="4">GCP or Festival Points</td><td>Millenium Rice (a second item with the same English name in the guide; its Chinese name means seven-colour lettuce)</td></tr>
+<tr><td rowspan="4">GCP or Festival Points</td><td>Rainbow Lettuce</td></tr>
 <tr><td>Queen Parsley</td></tr>
 <tr><td>Bitter Cheese</td></tr>
 <tr><td>Dancing Spice</td></tr>
 </tbody>
 </table></div>
-<aside class="box hv-note hv-diff" id="hv-bentos"><p><strong class="hv-verdict">Different.</strong> Bentos and their buffs work the same, but menu names may differ slightly because of our English patch. SR food bought with GCP or Hunter Festival Points is not available yet: the GCP shop has only 2 entries here and the points exchange has none.</p></aside>
+<aside class="box hv-note hv-diff" id="hv-bentos"><p><strong class="hv-verdict">Different.</strong> Bentos and their buffs work the same; every pair, season and SR bento is on our <a href="/food.html">Food and Bentos</a> page, read from the game's own data, with where to buy each ingredient here. The ingredient names above are our English patch's. The food shop sells the eight SR ingredients to GR 999 hunters; below GR 999 they come from quests, the Hunting Road shop and guild treasure hunts (<a href="/food.html#sr-ingredients">how to get them</a>). The GCP shop and the Hunter Festival prizes sell no bento ingredient here.</p></aside>
 </section>
 
 <section id="server-types">
