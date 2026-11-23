@@ -58,14 +58,14 @@ const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers
 
 /* ---- permissions fixtures: the default grants ---- */
 
-const TABS = ["gifts", "events", "settings", "notices", "content", "balance", "road", "quests", "users", "flags", "sets", "diagnostics", "server", "audit"];
+const TABS = ["gifts", "events", "settings", "notices", "content", "balance", "road", "quests", "users", "flags", "sets", "reports", "diagnostics", "server", "audit"];
 const FLAG_ACTIONS = ["view", "approve", "cheat", "undo", "notes", "act"];
 const ACTION_ROWS_OF = (tools) => tools.reduce((n, t) => n + t.actions.length, 0);
 /* The API's tool list (StaffTools.TOOLS), in its order and with its labels. */
 const VIEW_ACT = [{ key: "view", label: "View" }, { key: "act", label: "Change" }];
 const TOOLS = [["gifts", "Gifts"], ["events", "Events"], ["settings", "Settings"], ["notices", "Notices"],
   ["content", "Content"], ["balance", "Balance"], ["road", "Hunting Road"], ["quests", "Custom quests"], ["users", "Users"],
-  ["patches", "Patch channels"], ["flags", "Flags"], ["sets", "Community sets"], ["diagnostics", "Diagnostics"], ["server", "Server"], ["audit", "Audit"]]
+  ["patches", "Patch channels"], ["flags", "Flags"], ["sets", "Community sets"], ["reports", "Page reports"], ["diagnostics", "Diagnostics"], ["server", "Server"], ["audit", "Audit"]]
   .map(([key, label]) => ({ key: key, label: label,
     actions: key === "flags" ? [["view", "View"], ["approve", "Approve"], ["cheat", "Cheat"], ["undo", "Undo"], ["notes", "Add notes"], ["act", "Rules and scan"]].map(([k, l]) => ({ key: k, label: l }))
       : key === "audit" ? [VIEW_ACT[0]] : VIEW_ACT }));
