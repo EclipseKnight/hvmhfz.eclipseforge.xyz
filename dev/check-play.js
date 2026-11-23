@@ -65,8 +65,8 @@ async function main() {
   const ids = await page.locator("[data-step]").evaluateAll((els) => els.map((el) => el.getAttribute("data-step")));
   check("step ids are unique", new Set(ids).size === ids.length);
 
-  // Steam Deck is marked as not tested
-  check("Steam Deck not tested note", /Steam Deck is not tested yet/.test(await page.locator("#linux .note-text").first().innerText()));
+  // the Steam Deck is marked as not working yet (the Deck setup is not published)
+  check("Steam Deck not-yet note", /Not on the Steam Deck yet/.test(await page.locator("#linux .note-text").first().innerText()));
   // Android is marked as not tested by us, and its tile says so too
   check("Android not tested note", /Not tested by us yet/.test(await page.locator("#android .note-text").first().innerText()));
   check("Android tile says not tested", /Not tested by us yet/.test(await page.locator('.play-paths a[href="#android"]').innerText()));
@@ -100,6 +100,17 @@ async function main() {
   check("bad saved value ignored", (await win.locator("input:checked").count()) === 0 && errors.length === 0, errors.join("; "));
   await page.evaluate(() => localStorage.removeItem("hvmhfz.play"));
 
+  // the launcher: our fork's newest release (it updates itself from 1.5.4-hv2 on), not a pinned build;
+  // the outdated "every file within 10 seconds" text is gone; the high-DPI row is there
+  const fork = "https://github.com/EclipseKnight/Mezeporta/releases/latest/download/";
+  check("Windows launcher is the fork's newest zip", (await page.locator('#windows-launcher a[href="' + fork + 'Mezeporta-Windows.zip"]').count()) === 1);
+  check("Linux launcher is the fork's newest zip", (await page.locator('#linux-launcher a[href="' + fork + 'Mezeporta-Linux.zip"]').count()) === 1);
+  check("no pinned launcher build left", (await page.locator('a[href*="mezeporta-v1.5.4"]').count()) === 0);
+  const bodyText = await page.locator("main").textContent();
+  check("no 'within 10 seconds' text", !/must arrive within 10 seconds|cannot fetch it on a connection slower/.test(bodyText));
+  check("launcher update notes in both cards", (await page.locator("#windows-launcher-update, #linux-launcher-update").count()) === 2);
+  check("Windows high-DPI row", /Fix text scaling on high-DPI screens/.test(await page.locator("#windows-trouble").textContent()));
+
   // copy buttons: server settings in both cards and the two Discord commands
   const copies = await page.locator("[data-copy]").evaluateAll((els) => els.map((el) => [el.closest("[data-card]").id, el.getAttribute("data-copy")]));
   ["Hunsterverse", "129.213.54.221", "8080", "53310"].forEach((v) =>
@@ -112,10 +123,10 @@ async function main() {
   // slots: the published installers are on; the full download stays hidden until its flag is set
   check("installer slots shown", (await page.locator('[data-slot^="installer"]:visible').count()) === 2);
   check("full download shown", (await page.locator('[data-slot="full"]:visible').count()) === 1);
-  check("installer link", (await page.locator('[data-slot="installer"] a').getAttribute("href")).endsWith("/releases/download/installer/HunsterverseSetup.exe"));
+  check("installer link", (await page.locator('[data-slot="installer"] a[data-slot-link]').getAttribute("href")).endsWith("/releases/download/installer/HunsterverseSetup.exe"));
   await page.goto(base + "/play.html?slots=on");
   check("slots shown when on", (await page.locator("[data-slot]:visible").count()) === 3);
-  check("slot link set", (await page.locator('[data-slot="full"] a').getAttribute("href")) .startsWith("https://"));
+  check("slot link set", (await page.locator('[data-slot="full"] a[data-slot-link]').getAttribute("href")) .startsWith("https://"));
 
   // the transfer table and the transfer wizard link (account page, Transfer tab)
   check("transfer table rows", (await page.locator("#transfer .play-sources tbody tr").count()) >= 4);
@@ -193,6 +204,8 @@ async function main() {
   check("load note hidden once loaded", await page.locator("[data-patch-status]").isHidden());
   const sizes = await page.locator("[data-patch-size]").allTextContents();
   check("patch size in the steps follows the current patch", sizes.length === 4 && sizes.every((t) => t === mb), sizes.join());
+  const counts = await page.locator("[data-patch-files]").allTextContents();
+  check("patch file count in the help follows the current patch", counts.length === 2 && counts.every((t) => t === String(pvNow.files)), counts.join());
   await page.locator('[data-patch-rows] tr[data-version="' + older[0].version + '"] button[data-copy-sha]').click();
   check("copy puts the full sha256 on the clipboard", (await page.evaluate(() => navigator.clipboard.readText())) === older[0].sha256);
   check("patch links from the help sections", (await page.locator('#windows-patch a[href="#patches"], #linux-patch a[href="#patches"]').count()) === 2);

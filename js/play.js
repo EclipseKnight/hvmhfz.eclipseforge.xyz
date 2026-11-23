@@ -85,7 +85,8 @@
 
   // Client patch versions (#patches), from data/patch-versions.json (newest first; exactly one has
   // "current": true). The current one goes in the box at the top, the others in the table; the patch
-  // size in the steps ([data-patch-size]) follows the current one. Without the file the note stays.
+  // size in the steps ([data-patch-size]) and its file count ([data-patch-files]) follow the current one.
+  // Without the file the note stays.
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   function patchSize(bytes) { return (bytes / 1e6).toFixed(1) + " MB"; }
@@ -136,6 +137,7 @@
     var nowUrl = okUrl(data.current) ? data.current : now.download;
 
     document.querySelectorAll("[data-patch-size]").forEach(function (span) { span.textContent = patchSize(now.size); });
+    if (now.files > 0) document.querySelectorAll("[data-patch-files]").forEach(function (span) { span.textContent = String(now.files); });
 
     var box = section.querySelector("[data-patch-current]");
     box.textContent = "";

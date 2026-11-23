@@ -25,7 +25,7 @@
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
     <script src="/js/time.js?v=1" defer></script>
-    <script src="/js/play.js?v=2" defer></script>
+    <script src="/js/play.js?v=3" defer></script>
   </head>
 
   <body class="public-page play-page">
@@ -136,7 +136,7 @@
 
       <nav class="route-tiles play-paths" aria-label="Your path">
         <a class="tile route-tile" href="#windows"><span><strong>New on Windows</strong><span class="tile-meta">Client, patch, launcher, server and your first login.</span></span></a>
-        <a class="tile route-tile" href="#linux"><span><strong>Linux / Steam Deck</strong><span class="tile-meta">With Wine. Steam Deck is not tested yet.</span></span></a>
+        <a class="tile route-tile" href="#linux"><span><strong>Linux / Steam Deck</strong><span class="tile-meta">With Wine. Not on the Steam Deck yet.</span></span></a>
         <a class="tile route-tile" href="#android"><span><strong>Android</strong><span class="tile-meta">With Winlator. Not tested by us yet.</span></span></a>
         <a class="tile route-tile" href="#transfer"><span><strong>Bringing a character</strong><span class="tile-meta">From another server: get your file, then import it.</span></span></a>
       </nav>
@@ -146,16 +146,17 @@
           <h2 id="windows-title">New on Windows</h2>
           <span class="panel-note play-progress" data-progress aria-live="polite"></span>
         </div>
-        <p class="note-text">Windows 10 or 11, 64-bit, about 8 GB free. If something goes wrong, open <a href="#windows-trouble">Troubleshooting</a> below the steps.</p>
+        <p class="note-text">Windows 10 or 11, 64-bit, about 8 GB free. If something goes wrong, open <a href="#windows-trouble">Troubleshooting</a> below the steps; still stuck, ask in the <a href="https://discord.gg/NQrvRdRwU8" rel="noopener">Discord</a> or <a href="/report.html">report a problem</a>.</p>
 
         <!-- SLOT: one-click installer and our own full download. Hidden until a flag in js/play.js is true
-             and its URL is set. The installer is published (release tag "installer"); the full download is not yet. -->
+             and its URL is set. Both are published (release tags "installer" and "client-full") and still
+             carry launcher 1.5.4-hv1, which cannot update itself: hence the "update the launcher once" line. -->
         <div class="play-slot" data-slot="installer" hidden>
-          <p><strong>One-click installer (beta)</strong> Sets up the client, our patch and the launcher with Hunsterverse already added, then you press REGISTER in the launcher. Not yet tried on many PCs: if it fails, use the steps below and tell us in Discord. Windows may say "Windows protected your PC": choose More info, then Run anyway.</p>
+          <p><strong>One-click installer (beta)</strong> Sets up the client, our patch and the launcher with Hunsterverse already added, then you press REGISTER in the launcher. Not yet tried on many PCs: if it fails, use the steps below and tell us in Discord. Windows may say "Windows protected your PC": choose More info, then Run anyway. It still sets up launcher 1.5.4-hv1: <a href="#windows-launcher-update">update the launcher once</a>, after that it updates itself.</p>
           <a class="btn btn-primary btn-small" data-slot-link href="/play.html" rel="noopener">Download the installer</a>
         </div>
         <div class="play-slot" data-slot="full" hidden>
-          <p><strong>Full download (beta)</strong> The whole client (about 5.7 GB in 4 zip parts), already patched, with the launcher and Hunsterverse set up. Download all four parts, choose Extract All for each into the same folder, then run <code>Finish-setup.bat</code>.</p>
+          <p><strong>Full download (beta)</strong> The whole client (about 5.7 GB in 4 zip parts), already patched, with the launcher and Hunsterverse set up. Download all four parts, choose Extract All for each into the same folder, then run <code>Finish-setup.bat</code>. Its launcher is 1.5.4-hv1: <a href="#windows-launcher-update">update it once</a>, after that it updates itself.</p>
           <a class="btn btn-primary btn-small" data-slot-link href="/play.html" rel="noopener">Download the full client</a>
         </div>
 
@@ -172,13 +173,13 @@
           </li>
           <li data-step="win-patch">
             <label><input type="checkbox" /> <span class="play-step-title">Apply our client patch before the first launch</span></label>
-            <p>Unzip <code>Frontier_Patch.zip</code> (<span data-patch-size>58.1 MB</span>) over the game folder. The launcher cannot fetch it on a connection slower than about 3 MB/s. A PowerShell script that also backs up the files it replaces is in <a href="#windows-patch">Apply the patch with a script</a> below.</p>
+            <p>Unzip <code>Frontier_Patch.zip</code> (<span data-patch-size>63.6 MB</span>) over the game folder. The launcher would also fetch it at your first login, but doing it yourself is quicker on a slow or unreliable connection. A PowerShell script that also backs up the files it replaces is in <a href="#windows-patch">Apply the patch with a script</a> below.</p>
             <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a>
           </li>
           <li id="windows-launcher" data-step="win-launcher">
             <label><input type="checkbox" /> <span class="play-step-title">Install the Mezeporta launcher into the same folder</span></label>
-            <p>Extract it so that <code>Mezeporta.exe</code> sits next to <code>dat</code>, not in a subfolder. The launcher is by LilButter (GPL-2.0, <a href="https://github.com/LilButter/Mezeporta" rel="noopener">original</a>); this is our build with a longer patch download timeout, for slow connections (<a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/tag/mezeporta-v1.5.4-hv1">our source</a>).</p>
-            <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/mezeporta-v1.5.4-hv1/Mezeporta-Windows.zip">Mezeporta-Windows.zip (1.5.4-hv1)</a>
+            <p>Extract it so that <code>Mezeporta.exe</code> sits next to <code>dat</code>, not in a subfolder. The launcher is by LilButter (GPL-2.0, <a href="https://github.com/LilButter/Mezeporta" rel="noopener">original</a>); this is our build (<a href="https://github.com/EclipseKnight/Mezeporta" rel="noopener">our source</a>, <a href="https://github.com/EclipseKnight/Mezeporta/releases/latest" rel="noopener">what's new</a>). It adds a <b>Patch</b> button after you log in, to choose Stable or a pre-release (the same choice as the account page); it updates itself; it shows the Hunsterverse events running now; it fixes broken game text on screens scaled above 100%; and a patch download only gives up after 60 seconds without data, not 10 seconds per file.</p>
+            <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/Mezeporta/releases/latest/download/Mezeporta-Windows.zip" rel="noopener">Mezeporta-Windows.zip (newest)</a>
           </li>
           <li data-step="win-vc">
             <label><input type="checkbox" /> <span class="play-step-title">Install Visual C++ 2015-2022, x86</span></label>
@@ -192,7 +193,7 @@
           </li>
           <li data-step="win-run">
             <label><input type="checkbox" /> <span class="play-step-title">Start <code>Mezeporta.exe</code></span></label>
-            <p>Windows may say "Windows protected your PC": the launcher is not code-signed. Choose More info, then Run anyway, only for the file from the releases page above.</p>
+            <p>Windows may say "Windows protected your PC": the launcher is not code-signed. Choose More info, then Run anyway, only for the file from the releases page above. When a newer launcher is out, a bar at the top offers <b>Update and restart</b>.</p>
           </li>
           <li id="windows-server" data-step="win-server">
             <label><input type="checkbox" /> <span class="play-step-title">Press ADD A SERVER and enter the server settings</span></label>
@@ -226,8 +227,8 @@
           <h3 class="play-more-head">More help</h3>
 
           <details class="play-help" id="windows-patch">
-            <summary>Apply the patch with a script, and "Patcher failed to connect"</summary>
-            <p><b>Slow connection? Download the patch yourself, before the first launch.</b> When the launcher checks for updates it downloads <code>Frontier_Patch.zip</code> (<span data-patch-size>58.1 MB</span>) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>"Patcher failed to connect"</b>. With the patch already in place the launcher has nothing left to download. The same works for later patch releases: download the new zip and unzip it over the game folder. Older versions are in <a href="#patches">Client patch versions</a>.</p>
+            <summary>Apply the patch with a script, "Patcher failed to connect", and updating the launcher</summary>
+            <p><b>Slow or unreliable connection? Download the patch yourself, before the first launch.</b> When you log in, the launcher downloads what your game folder lacks of the patch (<code>Frontier_Patch.zip</code>, <span data-patch-size>63.6 MB</span>). Our launcher gives up on a file only after 60 seconds without data; older launchers (LilButter's own, or ours from before 5 Nov 2026) gave every file 10 seconds, which fails below about 3 MB/s with <b>"Patcher failed to connect"</b>. With the patch already in place the launcher has nothing left to download. The same works for later patch releases: download the new zip and unzip it over the game folder. Older versions are in <a href="#patches">Client patch versions</a>.</p>
             <p>Or open PowerShell and run this. It downloads the patch, backs up every game file it replaces into <code>original-files</code> (only the first time, so running it again keeps your original files), then copies the patch over the game:</p>
 <pre><code>$game = "C:\Games\MHFZ"
 
@@ -252,8 +253,8 @@ Get-ChildItem $src -Recurse -File | ForEach-Object {
 
 # 3. copy the patch over the game
 Copy-Item "$src\*" -Destination $game -Recurse -Force</code></pre>
-            <p>The patch replaces <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>dat\mhfdat.bin</code>, plus 79 files with the English Diva storyline and a town's dialogue. To get the original client back, copy everything from <code>C:\Games\MHFZ\original-files\</code> over the game folder.</p>
-            <p>To update the launcher later, extract a newer <code>Mezeporta-Windows.zip</code> over the same folder. <code>Mezeporta\config.json</code> keeps your server list, so back that folder up before a big update.</p>
+            <p>The patch holds <span data-patch-files>106</span> files: <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code>, our <code>hvmods.dll</code>, and data files in <code>dat</code> (the game's text and quest data, the English Diva storyline and a town's dialogue, and some stages). To get the original client back, copy everything from <code>C:\Games\MHFZ\original-files\</code> over the game folder.</p>
+            <p id="windows-launcher-update"><b>Updating the launcher.</b> Our launcher updates itself: about 2 seconds after it opens, a bar at the top offers <b>Update and restart</b> when a newer build is out. Never seen that bar? Launchers from before 23 Nov 2026 (also the one our installer and full client set up) cannot update themselves: extract the newest <a href="https://github.com/EclipseKnight/Mezeporta/releases/latest/download/Mezeporta-Windows.zip" rel="noopener">Mezeporta-Windows.zip</a> over the same folder once. <code>Mezeporta\config.json</code> keeps your server list, so back that folder up first.</p>
           </details>
 
           <details class="play-help" id="windows-trouble">
@@ -268,7 +269,8 @@ Copy-Item "$src\*" -Destination $game -Recurse -Force</code></pre>
                   <tr><td>Antivirus deletes <code>mhfo.dll</code>, <code>mhf.exe</code> or <code>Mezeporta.exe</code></td><td>Restore it from quarantine and exclude <code>C:\Games\MHFZ</code>; keep real-time protection on. Exclude the folder before you patch, so a quarantine does not leave a half patched install.</td></tr>
                   <tr><td>The launcher opens, the game does not appear</td><td>Check that <code>mhf.exe</code> sits directly next to <code>dat</code>. In a nested folder the launcher cannot find it.</td></tr>
                   <tr><td>Login fails or the character list is empty</td><td>The username and password must be exactly as registered (case-sensitive), and the server entry must match the table: host <code>129.213.54.221</code>, launcher port <code>8080</code>, game port <code>53310</code>, mode API. A name you never registered is refused: press REGISTER first. Still refused? Launcher port <code>53312</code> and mode SignV1.</td></tr>
-                  <tr><td>"Patcher failed to connect" when the launcher checks for updates</td><td>Your connection is under about 3 MB/s. Download <code>Frontier_Patch.zip</code> and unzip it over the game folder: <a href="#windows-patch">see above</a>.</td></tr>
+                  <tr><td>"Patcher failed to connect" when the launcher checks for updates</td><td>The download stalled. Older launchers give every file 10 seconds (too short below about 3 MB/s): get our <a href="#windows-launcher">newest launcher</a>, which waits 60 seconds for data. On any launcher you can download <code>Frontier_Patch.zip</code> and unzip it over the game folder: <a href="#windows-patch">see above</a>.</td></tr>
+                  <tr><td>Game text is broken, cut off or blurry on a screen scaled above 100%</td><td>In the launcher's settings, turn on <b>Fix text scaling on high-DPI screens</b> (on by default) and start the launcher again: it works from the next start. An older launcher has no such setting: right-click <code>Mezeporta.exe</code>, Properties, Compatibility, <b>Change high DPI settings</b>, tick <b>Override high DPI scaling behavior</b>, Scaling performed by: <b>System</b>.</td></tr>
                   <tr><td>Controller not detected</td><td>Enable controller support in the launcher settings and keep <code>xinput1_3.dll</code> and <code>XInputPlus.ini</code> in the game folder.</td></tr>
                   <tr><td>Japanese text shows as boxes</td><td>See <a href="#language">English and Japanese text</a>.</td></tr>
                   <tr><td>You want the original client back</td><td>Copy everything from <code>C:\Games\MHFZ\original-files\</code> over the game folder.</td></tr>
@@ -285,11 +287,11 @@ Copy-Item "$src\*" -Destination $game -Recurse -Force</code></pre>
           <h2 id="linux-title">Linux / Steam Deck</h2>
           <span class="panel-note play-progress" data-progress aria-live="polite"></span>
         </div>
-        <p class="note-text">Tested on Arch based systems (CachyOS) with Wine. <strong>Steam Deck is not tested yet:</strong> SteamOS cannot install packages with pacman and the launcher needs a system Wine, so this method may not work there. If you try it, tell us in the Discord. The commands below are for Arch based systems; Debian, Ubuntu, Fedora, openSUSE and others are under <a href="#linux-packages">Install Wine and 32-bit support</a>.</p>
+        <p class="note-text">Tested on Arch based systems (CachyOS) with Wine. <strong>Not on the Steam Deck yet:</strong> SteamOS has no Wine and cannot install packages with pacman, and the launcher window needs a library SteamOS lacks (the error names <code>libwebkit2gtk-4.1.so.0</code>), so neither these steps nor the installer work there yet. If you find a way, tell us in the Discord. The commands below are for Arch based systems; Debian, Ubuntu, Fedora, openSUSE and others are under <a href="#linux-packages">Install Wine and 32-bit support</a>.</p>
 
         <!-- SLOT: same as in the Windows card, for the Linux installer. Hidden until the flag in js/play.js is set. -->
         <div class="play-slot" data-slot="installer-linux" hidden>
-          <p><strong>One-click installer (beta)</strong> A script that sets up everything and adds Hunsterverse to the launcher. Run it with <code>bash install-hunsterverse.sh</code>. Steam Deck is not tested yet.</p>
+          <p><strong>One-click installer (beta)</strong> A script that sets up everything and adds Hunsterverse to the launcher. Run it with <code>bash install-hunsterverse.sh</code>. Not for the Steam Deck yet. It still sets up launcher 1.5.4-hv1: <a href="#linux-launcher-update">update the launcher once</a>, after that it updates itself.</p>
           <a class="btn btn-primary btn-small" data-slot-link href="/play.html" rel="noopener">Download the installer</a>
         </div>
 
@@ -315,8 +317,8 @@ Copy-Item "$src\*" -Destination $game -Recurse -Force</code></pre>
           </li>
           <li id="linux-launcher" data-step="lin-launcher">
             <label><input type="checkbox" /> <span class="play-step-title">Install the Mezeporta launcher into the same folder</span></label>
-            <p>By LilButter (GPL-2.0, <a href="https://github.com/LilButter/Mezeporta" rel="noopener">original</a>); our build with a longer patch download timeout (<a href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/tag/mezeporta-v1.5.4-hv1">our source</a>). Unzip it next to <code>dat/</code>, not inside it, then make <code>run-mezeporta.sh</code> and <code>mezeporta-bin</code> executable (<code>chmod +x</code>).</p>
-            <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/mezeporta-v1.5.4-hv1/Mezeporta-Linux.zip">Mezeporta-Linux.zip (1.5.4-hv1)</a>
+            <p>By LilButter (GPL-2.0, <a href="https://github.com/LilButter/Mezeporta" rel="noopener">original</a>); this is our build (<a href="https://github.com/EclipseKnight/Mezeporta" rel="noopener">our source</a>, <a href="https://github.com/EclipseKnight/Mezeporta/releases/latest" rel="noopener">what's new</a>). It adds a <b>Patch</b> button to choose Stable or a pre-release (the same choice as the account page), updates itself, shows the Hunsterverse events running now, and only gives up on a patch download after 60 seconds without data. Unzip it next to <code>dat/</code>, not inside it, then make <code>run-mezeporta.sh</code> and <code>mezeporta-bin</code> executable (<code>chmod +x</code>).</p>
+            <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/Mezeporta/releases/latest/download/Mezeporta-Linux.zip" rel="noopener">Mezeporta-Linux.zip (newest)</a>
           </li>
           <li data-step="lin-wine">
             <label><input type="checkbox" /> <span class="play-step-title">Create the Wine prefix, the launch wrapper and the launcher options</span></label>
@@ -389,8 +391,8 @@ sudo apt install wine wine32:i386 winetricks cabextract p7zip-full \
           </details>
 
           <details class="play-help" id="linux-patch">
-            <summary>Apply the patch with commands, and "Patcher failed to connect"</summary>
-            <p><b>Slow connection? Download the patch yourself, before the first launch.</b> The launcher downloads <code>Frontier_Patch.zip</code> (<span data-patch-size>58.1 MB</span>) itself, and every file must arrive within 10 seconds. Below about 3 MB/s that fails with <b>"Patcher failed to connect"</b>. With the patch already in place there is nothing left to download. The same works for later patch releases. Older versions are in <a href="#patches">Client patch versions</a>.</p>
+            <summary>Apply the patch with commands, "Patcher failed to connect", and updating the launcher</summary>
+            <p><b>Slow or unreliable connection? Download the patch yourself, before the first launch.</b> When you log in, the launcher downloads what your game folder lacks of the patch (<code>Frontier_Patch.zip</code>, <span data-patch-size>63.6 MB</span>). Our launcher gives up on a file only after 60 seconds without data; older launchers gave every file 10 seconds, which fails below about 3 MB/s with <b>"Patcher failed to connect"</b>. With the patch already in place there is nothing left to download. The same works for later patch releases. Older versions are in <a href="#patches">Client patch versions</a>.</p>
             <p>This downloads the patch, backs up every game file it replaces into <code>original-files/</code> (only the first time), then copies it over the game:</p>
 <pre><code>curl -L -o /tmp/Frontier_Patch.zip \
   "https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip"
@@ -404,7 +406,8 @@ cd ~/Games/MHFZ
 done
 
 rsync -rlt /tmp/fp/Frontier_Patch/ ~/Games/MHFZ/</code></pre>
-            <p>The patch replaces <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code> and <code>dat/mhfdat.bin</code>, plus 79 files with the English Diva storyline and a town's dialogue. To get the original files back, copy everything from <code>~/Games/MHFZ/original-files/</code> over the game folder.</p>
+            <p>The patch holds <span data-patch-files>106</span> files: <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code>, our <code>hvmods.dll</code>, and data files in <code>dat/</code> (the game's text and quest data, the English Diva storyline and a town's dialogue, and some stages). To get the original files back, copy everything from <code>~/Games/MHFZ/original-files/</code> over the game folder.</p>
+            <p id="linux-launcher-update"><b>Updating the launcher.</b> Our launcher updates itself: a bar at the top offers <b>Update and restart</b> when a newer build is out. Never seen that bar? Launchers from before 23 Nov 2026 (also the one our installer sets up) cannot update themselves: unzip the newest <a href="https://github.com/EclipseKnight/Mezeporta/releases/latest/download/Mezeporta-Linux.zip" rel="noopener">Mezeporta-Linux.zip</a> over the same folder once, and make <code>mezeporta-bin</code> executable again.</p>
           </details>
 
           <details class="play-help" id="linux-prefix">
@@ -461,7 +464,7 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
                   <tr><td>Text in game is boxes or garbage</td><td>See <a href="#language">English and Japanese text</a>.</td></tr>
                   <tr><td>No sound</td><td>Install <code>gst-plugin-pipewire</code> and <code>gst-plugins-good</code> (names differ by distribution), then run the <code>--verify</code> step again.</td></tr>
                   <tr><td>"Patcher failed to manage files in game folder"</td><td>The Wine prefix is inside the game folder. Move it out and set a Custom Prefix: <a href="#linux-prefix">see Wine prefix</a>. Or use launcher port <code>53312</code> with mode SignV1, which skips the patcher.</td></tr>
-                  <tr><td>"Patcher failed to connect" when the launcher checks for updates</td><td>Your connection is under about 3 MB/s. Download <code>Frontier_Patch.zip</code> and unzip it over the game folder: <a href="#linux-patch">see above</a>.</td></tr>
+                  <tr><td>"Patcher failed to connect" when the launcher checks for updates</td><td>The download stalled. Older launchers give every file 10 seconds (too short below about 3 MB/s): get our <a href="#linux-launcher">newest launcher</a>, which waits 60 seconds for data. On any launcher you can download <code>Frontier_Patch.zip</code> and unzip it over the game folder: <a href="#linux-patch">see above</a>.</td></tr>
                   <tr><td>Login fails or the server is refused</td><td>The username and password must be exactly as registered (case-sensitive), and the server entry must match the table: host <code>129.213.54.221</code>, launcher port <code>8080</code>, game port <code>53310</code>, mode API. A name you never registered is refused: press REGISTER first. Still refused? Launcher port <code>53312</code> and mode SignV1.</td></tr>
                   <tr><td>Wrong or broken prefix</td><td>Delete <code>~/Games/MHFZ-prefix</code> and make it again. Your game files are untouched.</td></tr>
                   <tr><td>You want the original files back</td><td>Copy everything from <code>~/Games/MHFZ/original-files/</code> over the game folder.</td></tr>
@@ -566,7 +569,7 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
 
           <details class="play-help" id="android-update">
             <summary>Update the patch</summary>
-            <p>The full client comes with the patch of the day it was built. Each new patch is in the <a href="/changelog.html">changelog</a> and in <a href="#patches">Client patch versions</a>. To update, download <code>Frontier_Patch.zip</code> (<span data-patch-size>58.1 MB</span>) on the phone and extract it with your file manager. It holds a folder <code>Frontier_Patch</code>: copy everything inside it into <code>Download/MHFZ</code> and replace the files. Your characters are on the server, so nothing is lost.</p>
+            <p>The full client comes with the patch of the day it was built. Each new patch is in the <a href="/changelog.html">changelog</a> and in <a href="#patches">Client patch versions</a>. To update, download <code>Frontier_Patch.zip</code> (<span data-patch-size>63.6 MB</span>) on the phone and extract it with your file manager. It holds a folder <code>Frontier_Patch</code>: copy everything inside it into <code>Download/MHFZ</code> and replace the files. Your characters are on the server, so nothing is lost.</p>
             <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/hvmhfz.eclipseforge.xyz/releases/download/client_patch/Frontier_Patch.zip">Frontier_Patch.zip</a>
           </details>
 
@@ -679,7 +682,7 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
         <div class="panel-head">
           <h2 id="patches-title">Client patch versions</h2>
         </div>
-        <p>The Mezeporta launcher always installs the current patch, and so do the downloads in the steps above. Older versions are kept for troubleshooting only: to check which patch you have (compare the SHA-256 of your zip) or to try the one before while we look at a problem. Each version is listed in the <a href="/changelog.html">changelog</a>.</p>
+        <p>The Mezeporta launcher always installs the current patch, and so do the downloads in the steps above. To test what comes next, choose a pre-release on the account page's <a href="/account.html#client-patch">Client patch</a> tab or with the launcher's Patch button (the first one makes you a playtester); a pre-release plays only on the Test land. Older versions are kept for troubleshooting only: to check which patch you have (compare the SHA-256 of your zip) or to try the one before while we look at a problem. Each version is listed in the <a href="/changelog.html">changelog</a>.</p>
         <div class="play-patch-current" data-patch-current hidden></div>
         <h3 class="play-more-head" data-patch-older hidden>Older versions</h3>
         <div class="table-wrap" data-patch-older hidden>
