@@ -746,7 +746,7 @@
 
   /* ---------- tabs ---------- */
 
-  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", notices: "panel-notices", content: "panel-content", balance: "panel-balance", flags: "panel-flags", sets: "panel-sets", reports: "panel-reports", road: "panel-road", quests: "panel-quests", users: "panel-users", diagnostics: "panel-diagnostics", server: "panel-server", audit: "panel-audit", permissions: "panel-permissions" };
+  var TAB_PANELS = { gifts: "panel-gifts", events: "panel-events", settings: "panel-settings", notices: "panel-notices", content: "panel-content", balance: "panel-balance", flags: "panel-flags", sets: "panel-sets", reports: "panel-reports", streamers: "panel-streamers", road: "panel-road", quests: "panel-quests", users: "panel-users", diagnostics: "panel-diagnostics", server: "panel-server", audit: "panel-audit", permissions: "panel-permissions" };
   var roadStarted = false;
   var usersWired = false;
   var serverWired = false;
@@ -831,6 +831,9 @@
     }
     if (name === "reports") {
       if (window.startAdminReports) window.startAdminReports();
+    }
+    if (name === "streamers") {
+      if (window.startAdminStreamers) window.startAdminStreamers();
     }
     if (name === "diagnostics") {
       if (window.startAdminDiag) window.startAdminDiag();
