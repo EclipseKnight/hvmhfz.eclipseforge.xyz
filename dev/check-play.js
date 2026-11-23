@@ -65,8 +65,9 @@ async function main() {
   const ids = await page.locator("[data-step]").evaluateAll((els) => els.map((el) => el.getAttribute("data-step")));
   check("step ids are unique", new Set(ids).size === ids.length);
 
-  // the Steam Deck is marked as not working yet (the Deck setup is not published)
-  check("Steam Deck not-yet note", /Not on the Steam Deck yet/.test(await page.locator("#linux .note-text").first().innerText()));
+  // the Steam Deck goes through the one-click installer (Flatpak runtime, Proton)
+  check("Steam Deck note", /Steam Deck:/.test(await page.locator("#linux .note-text").first().innerText()));
+  check("no launcher 1.5.4-hv1 left in the installer boxes", !/1\.5\.4-hv1/.test(await page.locator("[data-slot]").allInnerTexts().then(t => t.join(" "))));
   // Android is marked as not tested by us, and its tile says so too
   check("Android not tested note", /Not tested by us yet/.test(await page.locator("#android .note-text").first().innerText()));
   check("Android tile says not tested", /Not tested by us yet/.test(await page.locator('.play-paths a[href="#android"]').innerText()));

@@ -137,7 +137,7 @@
 
       <nav class="route-tiles play-paths" aria-label="Your path">
         <a class="tile route-tile" href="#windows"><span><strong>New on Windows</strong><span class="tile-meta">Client, patch, launcher, server and your first login.</span></span></a>
-        <a class="tile route-tile" href="#linux"><span><strong>Linux / Steam Deck</strong><span class="tile-meta">With Wine. Not on the Steam Deck yet.</span></span></a>
+        <a class="tile route-tile" href="#linux"><span><strong>Linux / Steam Deck</strong><span class="tile-meta">With Wine, or our installer on the Steam Deck.</span></span></a>
         <a class="tile route-tile" href="#android"><span><strong>Android</strong><span class="tile-meta">With Winlator. Not tested by us yet.</span></span></a>
         <a class="tile route-tile" href="#transfer"><span><strong>Bringing a character</strong><span class="tile-meta">From another server: get your file, then import it.</span></span></a>
       </nav>
@@ -150,14 +150,14 @@
         <p class="note-text">Windows 10 or 11, 64-bit, about 8 GB free. If something goes wrong, open <a href="#windows-trouble">Troubleshooting</a> below the steps; still stuck, ask in the <a href="https://discord.gg/NQrvRdRwU8" rel="noopener">Discord</a> or <a href="/report.html">report a problem</a>.</p>
 
         <!-- SLOT: one-click installer and our own full download. Hidden until a flag in js/play.js is true
-             and its URL is set. Both are published (release tags "installer" and "client-full") and still
-             carry launcher 1.5.4-hv1, which cannot update itself: hence the "update the launcher once" line. -->
+             and its URL is set. Both are published (release tags "installer" and "client-full") and
+             carry launcher 1.5.4-hv3, which updates itself. -->
         <div class="play-slot" data-slot="installer" hidden>
-          <p><strong>One-click installer (beta)</strong> Sets up the client, our patch and the launcher with Hunsterverse already added, then you press REGISTER in the launcher. Not yet tried on many PCs: if it fails, use the steps below and tell us in Discord. Windows may say "Windows protected your PC": choose More info, then Run anyway. It still sets up launcher 1.5.4-hv1: <a href="#windows-launcher-update">update the launcher once</a>, after that it updates itself.</p>
+          <p><strong>One-click installer (beta)</strong> Sets up the client, our patch and the launcher with Hunsterverse already added, then you press REGISTER in the launcher. Not yet tried on many PCs: if it fails, use the steps below and tell us in Discord. Windows may say "Windows protected your PC": choose More info, then Run anyway.</p>
           <a class="btn btn-primary btn-small" data-slot-link href="/play.html" rel="noopener">Download the installer</a>
         </div>
         <div class="play-slot" data-slot="full" hidden>
-          <p><strong>Full download (beta)</strong> The whole client (about 5.7 GB in 4 zip parts), already patched, with the launcher and Hunsterverse set up. Download all four parts, choose Extract All for each into the same folder, then run <code>Finish-setup.bat</code>. Its launcher is 1.5.4-hv1: <a href="#windows-launcher-update">update it once</a>, after that it updates itself.</p>
+          <p><strong>Full download (beta)</strong> The whole client (about 5.7 GB in 4 zip parts), already patched, with the launcher and Hunsterverse set up. Download all four parts, choose Extract All for each into the same folder, then run <code>Finish-setup.bat</code>.</p>
           <a class="btn btn-primary btn-small" data-slot-link href="/play.html" rel="noopener">Download the full client</a>
         </div>
 
@@ -255,7 +255,7 @@ Get-ChildItem $src -Recurse -File | ForEach-Object {
 # 3. copy the patch over the game
 Copy-Item "$src\*" -Destination $game -Recurse -Force</code></pre>
             <p>The patch holds <span data-patch-files>106</span> files: <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code>, our <code>hvmods.dll</code>, and data files in <code>dat</code> (the game's text and quest data, the English Diva storyline and a town's dialogue, and some stages). To get the original client back, copy everything from <code>C:\Games\MHFZ\original-files\</code> over the game folder.</p>
-            <p id="windows-launcher-update"><b>Updating the launcher.</b> Our launcher updates itself: about 2 seconds after it opens, a bar at the top offers <b>Update and restart</b> when a newer build is out. Never seen that bar? Launchers from before 23 Nov 2026 (also the one our installer and full client set up) cannot update themselves: extract the newest <a href="https://github.com/EclipseKnight/Mezeporta/releases/latest/download/Mezeporta-Windows.zip" rel="noopener">Mezeporta-Windows.zip</a> over the same folder once. <code>Mezeporta\config.json</code> keeps your server list, so back that folder up first.</p>
+            <p id="windows-launcher-update"><b>Updating the launcher.</b> Our launcher updates itself: about 2 seconds after it opens, a bar at the top offers <b>Update and restart</b> when a newer build is out. Never seen that bar? Launchers from before 23 Nov 2026 cannot update themselves: extract the newest <a href="https://github.com/EclipseKnight/Mezeporta/releases/latest/download/Mezeporta-Windows.zip" rel="noopener">Mezeporta-Windows.zip</a> over the same folder once. <code>Mezeporta\config.json</code> keeps your server list, so back that folder up first.</p>
           </details>
 
           <details class="play-help" id="windows-trouble">
@@ -288,11 +288,11 @@ Copy-Item "$src\*" -Destination $game -Recurse -Force</code></pre>
           <h2 id="linux-title">Linux / Steam Deck</h2>
           <span class="panel-note play-progress" data-progress aria-live="polite"></span>
         </div>
-        <p class="note-text">Tested on Arch based systems (CachyOS) with Wine. <strong>Not on the Steam Deck yet:</strong> SteamOS has no Wine and cannot install packages with pacman, and the launcher window needs a library SteamOS lacks (the error names <code>libwebkit2gtk-4.1.so.0</code>), so neither these steps nor the installer work there yet. If you find a way, tell us in the Discord. The commands below are for Arch based systems; Debian, Ubuntu, Fedora, openSUSE and others are under <a href="#linux-packages">Install Wine and 32-bit support</a>.</p>
+        <p class="note-text">Tested on Arch based systems (CachyOS) with Wine. <strong>Steam Deck:</strong> use the one-click installer below. It runs the launcher in a Flatpak GNOME runtime (about 1.4 GB, no password, kept across SteamOS updates) and starts the game with Steam's Proton. Not yet tried on many Decks: tell us in the Discord how it goes. The commands below are for Arch based systems; Debian, Ubuntu, Fedora, openSUSE and others are under <a href="#linux-packages">Install Wine and 32-bit support</a>.</p>
 
         <!-- SLOT: same as in the Windows card, for the Linux installer. Hidden until the flag in js/play.js is set. -->
         <div class="play-slot" data-slot="installer-linux" hidden>
-          <p><strong>One-click installer (beta)</strong> A script that sets up everything and adds Hunsterverse to the launcher. Run it with <code>bash install-hunsterverse.sh</code>. Not for the Steam Deck yet. It still sets up launcher 1.5.4-hv1: <a href="#linux-launcher-update">update the launcher once</a>, after that it updates itself.</p>
+          <p><strong>One-click installer (beta)</strong> A script that sets up everything and adds Hunsterverse to the launcher. Run it with <code>bash install-hunsterverse.sh</code>. On a Steam Deck it also installs the runtime the launcher window needs (about 1.4 GB) and uses Steam's Proton.</p>
           <a class="btn btn-primary btn-small" data-slot-link href="/play.html" rel="noopener">Download the installer</a>
         </div>
 
@@ -318,7 +318,7 @@ Copy-Item "$src\*" -Destination $game -Recurse -Force</code></pre>
           </li>
           <li id="linux-launcher" data-step="lin-launcher">
             <label><input type="checkbox" /> <span class="play-step-title">Install the Mezeporta launcher into the same folder</span></label>
-            <p>By LilButter (GPL-2.0, <a href="https://github.com/LilButter/Mezeporta" rel="noopener">original</a>); this is our build (<a href="https://github.com/EclipseKnight/Mezeporta" rel="noopener">our source</a>, <a href="https://github.com/EclipseKnight/Mezeporta/releases/latest" rel="noopener">what's new</a>). It adds a <b>Patch</b> button to choose Stable or a pre-release (the same choice as the account page), updates itself, shows the Hunsterverse events running now, and only gives up on a patch download after 60 seconds without data. Unzip it next to <code>dat/</code>, not inside it, then make <code>run-mezeporta.sh</code> and <code>mezeporta-bin</code> executable (<code>chmod +x</code>).</p>
+            <p>By LilButter (GPL-2.0, <a href="https://github.com/LilButter/Mezeporta" rel="noopener">original</a>); this is our build (<a href="https://github.com/EclipseKnight/Mezeporta" rel="noopener">our source</a>, <a href="https://github.com/EclipseKnight/Mezeporta/releases/latest" rel="noopener">what's new</a>). It adds a <b>Patch</b> button to choose Stable or a pre-release (the same choice as the account page), updates itself, shows the Hunsterverse events running now, starts the game through Proton on the Steam Deck, and only gives up on a patch download after 60 seconds without data. Unzip it next to <code>dat/</code>, not inside it, then make <code>run-mezeporta.sh</code> and <code>mezeporta-bin</code> executable (<code>chmod +x</code>).</p>
             <a class="btn btn-secondary btn-small" href="https://github.com/EclipseKnight/Mezeporta/releases/latest/download/Mezeporta-Linux.zip" rel="noopener">Mezeporta-Linux.zip (newest)</a>
           </li>
           <li data-step="lin-wine">
@@ -408,7 +408,7 @@ done
 
 rsync -rlt /tmp/fp/Frontier_Patch/ ~/Games/MHFZ/</code></pre>
             <p>The patch holds <span data-patch-files>106</span> files: <code>mhf.exe</code>, <code>mhfo.dll</code>, <code>mhfo-hd.dll</code>, <code>mhl.dll</code>, our <code>hvmods.dll</code>, and data files in <code>dat/</code> (the game's text and quest data, the English Diva storyline and a town's dialogue, and some stages). To get the original files back, copy everything from <code>~/Games/MHFZ/original-files/</code> over the game folder.</p>
-            <p id="linux-launcher-update"><b>Updating the launcher.</b> Our launcher updates itself: a bar at the top offers <b>Update and restart</b> when a newer build is out. Never seen that bar? Launchers from before 23 Nov 2026 (also the one our installer sets up) cannot update themselves: unzip the newest <a href="https://github.com/EclipseKnight/Mezeporta/releases/latest/download/Mezeporta-Linux.zip" rel="noopener">Mezeporta-Linux.zip</a> over the same folder once, and make <code>mezeporta-bin</code> executable again.</p>
+            <p id="linux-launcher-update"><b>Updating the launcher.</b> Our launcher updates itself: a bar at the top offers <b>Update and restart</b> when a newer build is out. Never seen that bar? Launchers from before 23 Nov 2026 cannot update themselves: unzip the newest <a href="https://github.com/EclipseKnight/Mezeporta/releases/latest/download/Mezeporta-Linux.zip" rel="noopener">Mezeporta-Linux.zip</a> over the same folder once, and make <code>mezeporta-bin</code> executable again.</p>
           </details>
 
           <details class="play-help" id="linux-prefix">
@@ -458,6 +458,7 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
               <table class="data-table play-help-table">
                 <thead><tr><th>Symptom</th><th>Cause and fix</th></tr></thead>
                 <tbody>
+                  <tr><td>Steam Deck: "error while loading shared libraries: libwebkit2gtk-4.1.so.0"</td><td>Your install is older than the Deck support. Run the installer again: it adds the runtime the launcher needs and keeps your game folder.</td></tr>
                   <tr><td>Launcher exits at once with <code>Gdk-Message: Error 71</code></td><td>Native Wayland path. Start it through the <a href="#linux-wrapper">wrapper</a>.</td></tr>
                   <tr><td>Launcher window is blank or black</td><td>WebKitGTK cannot allocate a buffer on NVIDIA. Use <code>WEBKIT_DMABUF_RENDERER_FORCE_SHM=1</code> (in the wrapper). <code>WEBKIT_DISABLE_DMABUF_RENDERER</code> and <code>WEBKIT_DISABLE_COMPOSITING_MODE</code> do not fix it.</td></tr>
                   <tr><td>The launcher closes and nothing appears, every time</td><td>It is run under <code>systemd-run</code>, whose unit is killed with it. Start it from a terminal or with <code>setsid nohup</code>.</td></tr>
