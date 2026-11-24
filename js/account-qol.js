@@ -8,7 +8,8 @@
    keys with PUT /api/account/qol/viewer.
    Under the "damageNumbers" switch (when the answer has "damageNumbers"): "Other players' hits", "Size", "Multi-hit
    numbers" (Spread / Combine), "Show move id" and "Weak-spot star" (a checkbox, shown when the answer has
-   "weakSpotStar"; it is on by default); under the "damageMeter" switch (when the answer has "damageMeter"):
+   "weakSpotStar"; it is on by default) and "Raw and element apart" (a checkbox right after it, shown when the answer has
+   "elementsApart"; off by default: one number, or the raw part and each element part with the element's icon); under the "damageMeter" switch (when the answer has "damageMeter"):
    "Corner", "Size", "Show monster health", "Health as effective HP", "Show status build-up", "DPS graph" and "Time to
    kill estimate". Each change saves at once with only that key: PUT /api/account/qol/damage-numbers or /damage-meter.
    Greyed out with the switch.
@@ -128,6 +129,7 @@
       { id: "size", type: "select", label: "Size", options: NUMBER_SIZES, fallback: "normal", hint: "Extra small needs the newest game patch; an older one shows Small." },
       { id: "multiHit", type: "select", label: "Multi-hit numbers", options: [["spread", "Spread"], ["combine", "Combine"]], fallback: "spread", hint: "Spread shows every hit as its own number; Combine adds up rapid hits on one spot." },
       { id: "weakSpotStar", type: "check", label: "Weak-spot star", optional: true, hint: "A small gold star above the number when you hit a weak spot (45 or more)." },
+      { id: "elementsApart", type: "check", label: "Raw and element apart", optional: true, hint: "Split each hit into its raw part and each element part, with the element's icon (one number when off)." },
       { id: "showMoveId", type: "check", label: "Show move id", hint: "Shows which move hit (its attack record id, weapon and style) next to each of your damage numbers, and writes every hit to hvmods.log in the game folder so you can send us the list. For testing move names." }
     ] },
     damageMeter: { key: "damageMeter", path: "damage-meter", prefix: "qol-dm-", name: "Damage meter", fields: [

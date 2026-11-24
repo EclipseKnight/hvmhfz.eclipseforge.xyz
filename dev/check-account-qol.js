@@ -29,6 +29,9 @@
    - "Weak-spot star" under Damage numbers: a checkbox with its help ("A small gold star above the number when you hit
      a weak spot (45 or more)."), checked from GET (on by default), a change sends PUT .../damage-numbers with only
      {weakSpotStar}; no checkbox when the answer has no "weakSpotStar" (an older API);
+   - "Raw and element apart" right after it: a checkbox with its help ("Split each hit into its raw part and each element
+     part, with the element's icon (one number when off)."), off by default, a change sends only {elementsApart};
+     no checkbox when the answer has no "elementsApart";
    - the line "You can also change these in game: Ctrl+F10, or hold View + Start on a controller." is the first line
      of the card, above the next-login note;
    - "Show sharpness hits left" (the answer's "sharpness": no flags bit) is its own switch line right under Damage
@@ -96,8 +99,9 @@ let sendViewer = true;
 // "off": an API without the pre-release fields; "locked": on Stable, "open": on a slot that has them; "moved": stable has reached 1.21
 let preMode = "off";
 let listViewer = true;
-let numbersState = { othersHits: true, size: "large", showMoveId: false, multiHit: "spread", weakSpotStar: true };
+let numbersState = { othersHits: true, size: "large", showMoveId: false, multiHit: "spread", weakSpotStar: true, elementsApart: false };
 let sendStar = true;   // false: an API without "weakSpotStar"
+const SPLIT_HELP = "Split each hit into its raw part and each element part, with the element's icon (one number when off).";
 const STAR_HELP = "A small gold star above the number when you hit a weak spot (45 or more).";
 let meterState = { corner: "bottomLeft", size: "small", showHealth: false, statusBuildUp: false, effectiveHp: false, dpsGraph: false, timeToKill: false };
 let sharpnessOn = false;
@@ -151,7 +155,7 @@ function state(flags) {
   if (sendExtra && sendRebind) Object.assign(out, { rebind: rebindState, rebindStored });
   if (sendViewer) out.viewer = viewerState;
   if (sendOverlays) {
-    out.damageNumbers = sendStar ? numbersState : Object.fromEntries(Object.entries(numbersState).filter(([k]) => k !== "weakSpotStar"));
+    out.damageNumbers = sendStar ? numbersState : Object.fromEntries(Object.entries(numbersState).filter(([k]) => k !== "weakSpotStar" && k !== "elementsApart"));
     out.damageMeter = meterState;
     const pre = preMode !== "off" && preMode !== "moved";
     out.sharpness = { hitsLeft: sharpnessOn, name: "Show sharpness hits left", description: SHARPNESS_DESC, revealsHiddenInfo: true, minPatch: "1.21",
@@ -482,6 +486,16 @@ async function run(browser, base) {
   await page.click("#qol-dn-weakSpotStar");
   await page.waitForFunction(() => document.getElementById("qol-dn-weakSpotStar").checked && !document.getElementById("qol-dn-weakSpotStar").disabled, null, { timeout: 5000 }).catch(() => {});
   check("weak-spot star back on sends true", JSON.stringify(overlayPuts[starN + 1]) === JSON.stringify(["damage-numbers", { weakSpotStar: true }]), JSON.stringify(overlayPuts.slice(starN)));
+  // Raw and element apart: a checkbox next to the weak-spot star, off by default, its own key.
+  const splitText = (await page.textContent("#qol-dn-options")).replace(/\s+/g, " ");
+  check("raw and element apart label and help, unchecked from GET, right after the star", splitText.includes("Raw and element apart") && splitText.includes(SPLIT_HELP) && !(await page.isChecked("#qol-dn-elementsApart")) && splitText.indexOf("Weak-spot star") < splitText.indexOf("Raw and element apart") && splitText.indexOf("Raw and element apart") < splitText.indexOf("Show move id"), splitText);
+  const splitN = overlayPuts.length;
+  await page.click("#qol-dn-elementsApart");
+  await page.waitForFunction(() => /Damage numbers options saved/.test(document.getElementById("qol-note").textContent) && document.getElementById("qol-dn-elementsApart").checked, null, { timeout: 5000 }).catch(() => {});
+  check("raw and element apart sends only its key and is redrawn on", overlayPuts.length === splitN + 1 && JSON.stringify(overlayPuts[splitN]) === JSON.stringify(["damage-numbers", { elementsApart: true }]) && (await page.isChecked("#qol-dn-elementsApart")) && (await page.isChecked("#qol-dn-weakSpotStar")), JSON.stringify(overlayPuts.slice(splitN)));
+  await page.click("#qol-dn-elementsApart");
+  await page.waitForFunction(() => !document.getElementById("qol-dn-elementsApart").checked && !document.getElementById("qol-dn-elementsApart").disabled, null, { timeout: 5000 }).catch(() => {});
+  check("raw and element apart back off sends false", JSON.stringify(overlayPuts[splitN + 1]) === JSON.stringify(["damage-numbers", { elementsApart: false }]), JSON.stringify(overlayPuts.slice(splitN)));
   // Extra small (hvmhfz_re part 170): one more size value, sent as such (the API stores Small plus qol_extra bit 26).
   const xsN = overlayPuts.length;
   await page.selectOption("#qol-dn-size", "extraSmall");
@@ -578,7 +592,7 @@ async function run(browser, base) {
   check("on Stable: viewer options and Save disabled with the message", (await enabledIn("#qol-viewer input, #qol-viewer select, #qol-viewer button")).every((e) => !e)
     && (await page.textContent("#qol-viewer")).includes(lockedText));
   const overlayEnabled = await enabledIn("#qol-dn-options input, #qol-dn-options select, #qol-dm-options input, #qol-dm-options select");
-  check("on Stable: damage numbers and meter options greyed out", overlayEnabled.length === 12 && overlayEnabled.every((e) => !e), JSON.stringify(overlayEnabled));
+  check("on Stable: damage numbers and meter options greyed out", overlayEnabled.length === 13 && overlayEnabled.every((e) => !e), JSON.stringify(overlayEnabled));
   const before = puts.length;
   await page.check("#qol-trueRaw");
   await page.waitForFunction(() => /True raw attack is on/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
@@ -784,7 +798,7 @@ async function run(browser, base) {
   sendStar = false;
   await page.reload(); await openFolds();
   await page.waitForSelector("#qol-dn-options", { timeout: 5000 });
-  check("no weak-spot star checkbox without weakSpotStar, the other options stay", !(await page.$("#qol-dn-weakSpotStar")) && !!(await page.$("#qol-dn-showMoveId")) && !!(await page.$("#qol-dn-multiHit")));
+  check("no weak-spot star checkbox without weakSpotStar, the other options stay", !(await page.$("#qol-dn-weakSpotStar")) && !(await page.$("#qol-dn-elementsApart")) && !!(await page.$("#qol-dn-showMoveId")) && !!(await page.$("#qol-dn-multiHit")));
   sendStar = true;
   // Viewer in the answer but the list has no iframeViewer: hidden too.
   sendViewer = true;
