@@ -19,6 +19,13 @@ The numbers are the game's own tables, read with the hvmhfz_re tools (private re
     of 400 before levels and 50 more a Sharpness level. tenrouz.github.io's pictures (KIRE_37, 47, 82) show the
     same steps.
 
+  - element and status as the game shows them: the weapon panel (mhfo-hd.dll 0x1098d620) adds the Tower Element /
+    Status bonus (plate record +0x16 / +0x18) to the weapon record's own value (+0x10 / +0x12, 0 on every Tower
+    weapon) and prints the sum with a literal 0 after it (mhfpac 0x97c entries 0xc / 0xd "%3d0"; hvmhfz_re
+    docs/qol-options.md part 80, docs/weapons.md 2), so shown = true x 10, as the Weapons page shows it
+    (js/weapons.js elemText). The gains here are the true values; js/tower-weapons.js shownElement shows them x 10.
+    tenrouz.github.io's simulator shows its stored values x 10 the same way (Virus Element 100: 280, shown 2800).
+
 And this site's own data: data/weapons/ (type, rarity, true attack, the shown-attack factor, sharpness bar,
 elements), data/equipment/ (each weapon's Tower smithy recipe), data/items/ (names; the shop rows of every
 material, which are the live server's) and data/sources/index.json (the shops' currencies).
@@ -211,8 +218,9 @@ def main(argv):
     doc = {
         "_about": "Tower weapons and their upgrades at the Tower smithy (\"Level GR Weapons\"), written by "
                   "dev/make-tower-weapons.py. Per weapon: its line per stat; gain[i] and points[i] are what level "
-                  "i + 1 adds and uses (attack, element and status in the game's raw units; attack is shown x the "
-                  "type's displayFactor / 100), cost rows [first level, last level, [[item, qty]]] (0-based) "
+                  "i + 1 adds and uses (attack, element and status in the game's raw units, the true values; attack is "
+                  "shown x the type's displayFactor / 100, element and status x 10: the game prints them with a "
+                  "0 after the value, mhfo-hd.dll 0x1098d620), cost rows [first level, last level, [[item, qty]]] (0-based) "
                   "pay for each level in that range. Status has a column per status sigil; a Shelling Level gain "
                   "of 3 is one step along shells (the Gunlance shell names). budget = the most "
                   "points a weapon takes. shops: the live shop rows of each material [source, currency, price, "

@@ -11,7 +11,9 @@
      High, 27,000 RdP in 90 Road purchases of 10, 5,400 GCP in 30 of 30 (whole bundles: the doc's 26,910 and
      5,382 are per gem), 38 tower clears in the 1st District; Element 280 for
      600 Glittering; Poison 80, Paralysis and Sleep 50; Sharpness 20/40/70/100/120 points; Sacred Worlds Attack 10
-     = 966 for 440 Courage gems; the budget holds (a level over it is refused);
+     = 966 for 440 Courage gems; the budget holds (a level over it is refused); element and status shown as the
+     game shows them, true x 10 (mhfo-hd.dll 0x1098d620), against the simulator's figures for Virus and Sacred
+     Worlds at several levels, and every Tower weapon's own element and status 0;
    - the sharpness the game's weapon panel shows per Sharpness level (mhfo-hd.dll 0x1098f740: 150 of 400 before
      levels, 50 more a level, the whole bar at 5; data sharpView and each weapon's sharpStart) for weapons of all
      three bars, the colours that shows, and that every melee Tower weapon has a bar and a start level;
@@ -19,7 +21,8 @@
    - in headless Chromium (when playwright is found) at 1280 and 390 px: a build from the address
      (?w=12685&lv=100) shows 300 of 300 points and attack 889, "All into Attack" and the status sigil switch,
      the list's 63 rows, a list name opening the planner, no sideways scrolling, no script errors; the sharpness
-     bars before and with levels; the Sharpness row's control drawn as the bar (role=slider and its aria values, a
+     bars before and with levels; element and status shown and true in the Adds column and the stats (Virus Fire 50
+     and Poison 30; Warship Chaos' 4,000 fits its cell, SHOTS saves tower-weapons-elem-<width>.png); the Sharpness row's control drawn as the bar (role=slider and its aria values, a
      step clicked, dragged or tapped at 390 px, the arrow / Home / End keys, the number box in sync, a step over
      the budget refused, a Zenith weapon's two steps); and that no slider moves (x, y or width by more than 0.5 px) while one is dragged
      with the mouse, after a number typed, the extremes, All into Attack, Reset, a sigil switch or a weapon of the
@@ -135,6 +138,25 @@ function calcChecks() {
   check(virus.lines.every((_l, i) => i === 0 || tw.maxAllowed(virus, lv, i, "Poison") === 0), "calc: a line fits beside Virus Attack 100");
   check(tw.maxAllowed(virus, levelsFor(virus, { Sharpness: 5 }), 0, "Poison") === 76, "calc: Virus with Sharpness 5 does not allow Attack 76");
   check(tw.maxAttack(byName("Wish Master")).level === 50, "calc: Wish Master's Attack at most is not 50");
+  elementChecks();
+}
+
+/* Element and status as the game shows them: true x 10 (mhfo-hd.dll 0x1098d620 prints the value with a 0 after it;
+   js/weapons.js elemText). The pairs [shown, true] are tenrouz.github.io's simulator figures (it stores the true
+   value per level and shows 10 x it) for Virus and Sacred Worlds at these levels. The weapon's own element and
+   status are 0 on every Tower weapon, so the levels are the whole value. */
+function elementChecks() {
+  for (const w of data.weapons) {
+    check(!w.base.elementValue && !w.base.statusValue, "element: " + w.name + " has its own element or status value; the page shows only the levels'");
+  }
+  const cases = [["Virus", "Element", 25, "Poison", 750, 75], ["Virus", "Element", 50, "Poison", 1500, 150], ["Virus", "Element", 100, "Poison", 2800, 280],
+    ["Virus", "Status", 20, "Poison", 400, 40], ["Virus", "Status", 40, "Paralysis", 500, 50], ["Virus", "Status", 4, "Sleep", 80, 8],
+    ["Sacred Worlds", "Element", 5, "Poison", 2000, 200], ["Sacred Worlds", "Element", 10, "Poison", 3600, 360],
+    ["Sacred Worlds", "Status", 3, "Poison", 450, 45], ["Sacred Worlds", "Status", 8, "Sleep", 560, 56], ["Warship Chaos", "Element", 10, "Poison", 4000, 400]];
+  for (const [name, stat, lv, st, shown, truth] of cases) {
+    const w = byName(name), g = tw.build(w, levelsFor(w, { [stat]: lv }), st).gains[stat];
+    check(g === truth && tw.shownElement(g) === shown, "element: " + name + " " + stat + " " + lv + " (" + st + ") is " + tw.shownElement(g) + " (true " + g + "), not " + shown + " (true " + truth + ")");
+  }
 }
 
 /* The sharpness shown per Sharpness level. tenrouz.github.io's pictures of the same bars (KIRE_37 for Virus' bar,
@@ -356,9 +378,10 @@ async function browserChecks() {
     await page.click("#tw-reset");
     await page.fill("#tw-lines tr:nth-child(5) .tw-num", "50");
     await page.dispatchEvent("#tw-lines tr:nth-child(5) .tw-num", "change");
-    check((await text("#tw-stats")).includes("Poison 80"), tag + ": Poison 50 levels is not 80");
+    check((await text("#tw-stats")).includes("Poison 800 (true 80)"), tag + ": Poison 50 levels is not 800 (true 80): " + await text("#tw-stats"));
+    check((await text("#tw-lines tr:nth-child(5) .tw-adds")) === "+800 (true +80)", tag + ": Poison 50 adds " + await text("#tw-lines tr:nth-child(5) .tw-adds"));
     await page.selectOption("#tw-status", "Sleep");
-    check((await text("#tw-stats")).includes("Sleep 50"), tag + ": Sleep after the switch is not 50");
+    check((await text("#tw-stats")).includes("Sleep 500 (true 50)"), tag + ": Sleep after the switch is not 500 (true 50)");
     const q = new URL(page.url()).searchParams;
     check(q.get("st") === "Sleep" && q.get("lv") === "0,0,0,0,40", tag + ": the address is " + page.url());
     check(await page.$eval("#tw-warn", (n) => n.hidden), tag + ": the sigil warning shows for one sigil line");
@@ -392,6 +415,25 @@ async function browserChecks() {
     await page.goto(base + "/tower-weapons.html?w=2917");
     await page.waitForSelector("#tw-lines tr");
     check(!(await page.$("#tw-stats .tw-sharp")), tag + ": a bowgun shows a sharpness bar");
+    // element and status as the game shows them, then true: Virus with Fire 50 and Poison 30 levels (295 points)
+    await page.goto(base + "/tower-weapons.html?w=12685&lv=75,2,0,50,30");
+    await page.waitForSelector("#tw-stats .tw-sharp");
+    const stats = await text("#tw-stats");
+    check(stats.includes("Fire 1,500 (true 150)") && stats.includes("Poison 600 (true 60)"), tag + ": Virus Fire 50 / Poison 30 stats " + stats);
+    check((await text("#tw-lines tr:nth-child(4) .tw-adds")) === "+1,500 (true +150)" && (await text("#tw-lines tr:nth-child(5) .tw-adds")) === "+600 (true +60)",
+      tag + ": Virus Fire 50 / Poison 30 adds " + await text("#tw-lines tr:nth-child(4) .tw-adds") + " / " + await text("#tw-lines tr:nth-child(5) .tw-adds"));
+    if (shots) await (await page.$("#planner")).screenshot({ path: path.join(shots, "tower-weapons-elem-" + width + ".png") });
+    // the longest texts (Warship Chaos: Element 4,000, Poison 1,200) fit their cells, nothing cut
+    await page.goto(base + "/tower-weapons.html?w=16873&lv=0,0,0,10,6");
+    await page.waitForSelector("#tw-lines tr");
+    check((await text("#tw-lines tr:nth-child(4) .tw-adds")) === "+4,000 (true +400)" && (await text("#tw-stats")).includes("Poison 1,200 (true 120)"),
+      tag + ": Warship Chaos Element 10 / Poison 6: " + await text("#tw-lines tr:nth-child(4) .tw-adds") + " / " + await text("#tw-stats"));
+    const cut = await page.$$eval("#tw-lines .tw-adds, #tw-stats dd", (l) => l.filter((n) => {
+      const r = document.createRange();
+      r.selectNodeContents(n);
+      return n.scrollWidth > n.clientWidth + 0.5 || (n.classList.contains("tw-adds") && r.getClientRects().length > 1);
+    }).map((n) => n.textContent));
+    check(cut.length === 0, tag + ": text cut or wrapped in its cell: " + cut.join(" | "));
     await sharpControlChecks(page, base, tag, width === 390);
     await sliderChecks(page, base, tag);
     check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), tag + ": the page scrolls sideways after the slider checks");

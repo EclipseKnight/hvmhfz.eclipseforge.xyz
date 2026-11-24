@@ -72,6 +72,14 @@
     return Math.floor(attack * factor / 100);
   }
 
+  /* Element or status as the game shows it: true value x 10. The weapon panel (mhfo-hd.dll 0x1098d620) adds the
+     Tower Element / Status bonus to the weapon's own value (0 on every Tower weapon) and prints it with a 0 after it
+     (mhfpac 0x97c entries 0xc / 0xd "%3d0"; hvmhfz_re docs/qol-options.md part 80), the rule js/weapons.js elemText
+     uses; tenrouz.github.io's simulator shows its stored values x 10 too (Virus Element 100: 280, shown 2800). */
+  function shownElement(value) {
+    return value * 10;
+  }
+
   // The whole budget into Attack: its level and gain.
   function maxAttack(weapon) {
     var line = weapon.lines[0], used = 0, lv = 0;
@@ -141,7 +149,7 @@
   }
 
   var api = { build: build, maxAllowed: maxAllowed, maxLevel: maxLevel, lineMaterials: lineMaterials,
-    shownAttack: shownAttack, maxAttack: maxAttack, shopCost: shopCost, skyClears: skyClears,
+    shownAttack: shownAttack, shownElement: shownElement, maxAttack: maxAttack, shopCost: shopCost, skyClears: skyClears,
     sharpShown: sharpShown, sharpSegments: sharpSegments, lineItems: lineItems };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   root.HvTowerWeapons = api;
@@ -561,6 +569,7 @@
     if (line.stat === "Shelling Level" || line.stat === "Sharpness" || /^(Charge|Reload|Recoil)/.test(line.stat))
       return "+" + (line.stat === "Shelling Level" ? g / 3 : g) + " level" + ((line.stat === "Shelling Level" ? g / 3 : g) === 1 ? "" : "s");
     if (line.stat === "Attack") return "+" + fmt(api.shownAttack(g, types[weapon.type].displayFactor)) + " (true +" + g + ")";
+    if (line.stat === "Element" || line.stat === "Status") return "+" + fmt(api.shownElement(g)) + " (true +" + g + ")";
     return "+" + fmt(g);
   }
 
@@ -576,8 +585,10 @@
     var atk = base.attack + (b.gains.Attack || 0);
     stat("Attack", fmt(api.shownAttack(atk, t.displayFactor)) + " (true " + fmt(atk) + ")");
     stat("Affinity", (base.affinity + (b.gains.Affinity || 0)) + "%");
-    if ("Element" in b.gains) stat("Element", b.gains.Element ? sigilName(data.sigils.element[element]) + " " + fmt(b.gains.Element) : "None");
-    if ("Status" in b.gains) stat("Status", b.gains.Status ? status + " " + fmt(b.gains.Status) : "None");
+    // the weapon's own element and status are 0 (data: base.elementValue, base.statusValue), so the levels are all of it
+    var both = function (v) { return fmt(api.shownElement(v)) + " (true " + fmt(v) + ")"; };
+    if ("Element" in b.gains) stat("Element", b.gains.Element ? sigilName(data.sigils.element[element]) + " " + both(b.gains.Element) : "None");
+    if ("Status" in b.gains) stat("Status", b.gains.Status ? status + " " + both(b.gains.Status) : "None");
     if (weapon.sharpness && api.sharpShown(weapon, 0, data.sharpView) !== null) stat("Sharpness", sharpBox(b.gains.Sharpness || 0));
     if ("Shelling Level" in b.gains) {
       var shells = data.shells, i = shells.indexOf(base.special);
