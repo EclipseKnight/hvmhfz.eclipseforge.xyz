@@ -12,6 +12,13 @@ The numbers are the game's own tables, read with the hvmhfz_re tools (private re
   - hvmhfz_re data/tower_gem_payout.tsv: the Courage / Glittering / Divine Gems a tower clear pays on average in
     the 1st and 2nd District (part 139, live since 13 Nov 2026).
 
+  - the sharpness the weapon panel shows (mhfo-hd.dll 0x1098f740, read in Ghidra): it draws the weapon's whole
+    bar row, then covers it in black from 150 + 50 x L to the end (0x119b5f98 = 150.0 on the 0-400 scale), where L
+    is the weapon record's byte +0x09 plus, for a Tower weapon, its Sharpness bonus (plate record +0x0a, getter
+    0x10b761d0 with stat 1): nothing is covered at L >= 5. Every Tower weapon's +0x09 is 0, so its bar shows 150
+    of 400 before levels and 50 more a Sharpness level. tenrouz.github.io's pictures (KIRE_37, 47, 82) show the
+    same steps.
+
 And this site's own data: data/weapons/ (type, rarity, true attack, the shown-attack factor, sharpness bar,
 elements), data/equipment/ (each weapon's Tower smithy recipe), data/items/ (names; the shop rows of every
 material, which are the live server's) and data/sources/index.json (the shops' currencies).
@@ -42,6 +49,8 @@ DEFAULT_VERSION = "1.30"
 # The shops whose rows the page prices a build in (data/sources ids; the Road shop's tabs are road-shop-N).
 SHOPS = ("road-shop-", "gcp-item-shop")
 GEMS = (11159, 11160, 11161)        # Courage gem, Glittering Gem, Divine Gem
+# The weapon panel's sharpness cover (mhfo-hd.dll 0x1098f740, see above): shown end = BASE + STEP x min(FULL, L).
+SHARP_VIEW = {"base": 150, "step": 50, "full": 5, "scale": 400}
 # data/weapons fields copied into a weapon's "base"
 BASE_FIELDS = ("attack", "shown", "affinity", "element", "elementValue", "status", "statusValue", "special",
                "recoil", "reload", "charge", "arcShot")
@@ -129,6 +138,7 @@ def main(argv):
     items = set(GEMS) | {TU.AFFINITY_SIGIL, *TU.STATUS_SIGIL.values(), *range(TU.ELEMENT_SIGIL, TU.ELEMENT_SIGIL + 5)}
     status_names = {7: "Poison", 5: "Paralysis", 6: "Sleep"}
 
+    melee_records = TU.u32(dat, 0x7C)
     out_weapons = []
     for w in TU.tower_weapons(dat):
         slug, row, bars = weapons[(w["kind"], w["id"])]
@@ -177,10 +187,15 @@ def main(argv):
             # the weapon's own values before any level, as the Weapons page has them
             "base": {k: v for k, v in row.items() if k in BASE_FIELDS and v not in ("", None)},
             "sharpness": bars.get(str(row["sharpness"])) if "sharpness" in row else None,
+            # the record's byte +0x09: the panel's sharpness level before any Tower level (SHARP_VIEW)
+            "sharpStart": dat[melee_records + w["id"] * 0x34 + 9] if w["kind"] == "melee" else None,
             "sigils": w["slots"], "decos": max(0, 3 - w["slots"]), "budget": w["cap"],
             "craft": craft, "lines": lines})
     if len(out_weapons) != 63:
         problems.append("%d Tower weapons, expected 63" % len(out_weapons))
+    for w in out_weapons:
+        if (w["sharpness"] is None) != (w["sharpStart"] is None) or (w["sharpStart"] or 0) > SHARP_VIEW["full"]:
+            problems.append("%s: sharpness bar %r with start level %r" % (w["name"], w["sharpness"], w["sharpStart"]))
     if problems:
         sys.exit("the tables disagree with hvmhfz_re:\n  " + "\n  ".join(problems))
 
@@ -201,7 +216,10 @@ def main(argv):
                   "pay for each level in that range. Status has a column per status sigil; a Shelling Level gain "
                   "of 3 is one step along shells (the Gunlance shell names). budget = the most "
                   "points a weapon takes. shops: the live shop rows of each material [source, currency, price, "
-                  "qty, rank gate]. skyGems: Courage, Glittering and Divine Gems a tower clear pays on average "
+                  "qty, rank gate]. sharpView: the weapon panel shows a melee weapon's sharpness bar only up "
+                  "to base + step x min(full, sharpStart + the Sharpness levels' gain) on the 0-400 scale and "
+                  "covers the rest in black (mhfo-hd.dll 0x1098f740); sharpStart is the weapon record's byte "
+                  "+0x09. skyGems: Courage, Glittering and Divine Gems a tower clear pays on average "
                   "per District (hvmhfz_re data/tower_gem_payout.tsv).",
         "source": {"patch": "v" + args.version, "zip": pathlib.Path(args.zip).name,
                    "mhfdatSha256": hashlib.sha256(dat).hexdigest(),
@@ -211,6 +229,7 @@ def main(argv):
                   for t in index["types"] if any(w["type"] == t["slug"] for w in out_weapons)],
         "colourRgb": index["colourRgb"],
         "shells": index["codes"]["shell"],
+        "sharpView": SHARP_VIEW,
         "sigils": {"affinity": TU.AFFINITY_SIGIL, "element": list(range(TU.ELEMENT_SIGIL, TU.ELEMENT_SIGIL + 5)),
                    "status": {status_names[k]: v for k, v in sorted(TU.STATUS_SIGIL.items())}},
         "gems": list(GEMS),

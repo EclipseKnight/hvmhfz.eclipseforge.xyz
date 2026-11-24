@@ -24,8 +24,8 @@
     <script src="/js/nav.js" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
-    <link rel="stylesheet" href="/css/tower-weapons.css?v=1" />
-    <script src="/js/tower-weapons.js?v=1" defer></script>
+    <link rel="stylesheet" href="/css/tower-weapons.css?v=3" />
+    <script src="/js/tower-weapons.js?v=3" defer></script>
   </head>
 
   <body class="public-page">
@@ -147,18 +147,20 @@
             <button type="button" class="ghost-btn small" id="tw-max-attack">All into Attack</button>
             <button type="button" class="ghost-btn small" id="tw-reset">Reset levels</button>
           </div>
-          <div id="tw-head" class="tw-head"></div>
+          <h2 class="tw-name" id="tw-name"></h2>
           <div class="tw-points">
             <div class="tw-points-track"><span id="tw-points-bar"></span></div>
             <p id="tw-points" aria-live="polite"></p>
           </div>
-          <p class="note-text bui-notice" id="tw-warn" hidden></p>
           <div class="table-wrap">
             <table class="data-table tw-lines">
+              <colgroup><col class="tw-c-stat"><col class="tw-c-level"><col class="tw-c-adds"><col class="tw-c-pts"><col class="tw-c-mats"></colgroup>
               <thead><tr><th scope="col">Stat</th><th scope="col">Level</th><th scope="col" class="num">Adds</th><th scope="col" class="num">Points</th><th scope="col">Materials</th></tr></thead>
               <tbody id="tw-lines"></tbody>
             </table>
           </div>
+          <p class="note-text bui-notice" id="tw-warn" hidden></p>
+          <div id="tw-head" class="tw-head"></div>
           <div class="tw-result">
             <section aria-labelledby="tw-stats-h">
               <h3 class="tw-h3" id="tw-stats-h">The weapon with these levels</h3>
@@ -193,7 +195,7 @@
         <div class="bui-notice tw-test" id="test-land">
           <p><strong>Testers only, not on the live server:</strong> on the Test land with the pre-release patch v1.32-pre12 or later, Courage, Glittering and Divine Gems come only from the Sky Corridor (no Hunting Road or Diva rows), a clear draws about 20 rewards with a Duremudira kill and 13 to 17 without, the 2nd to 4th Districts also drop the Tower crafting materials, and those materials cost 25,000 to 65,000 RdP in the Hunting Road shop. The 2nd, 3rd and 4th District need Tower Rank 51, 100 and 200 there. The levels, points and materials per level above are the same on both.</p>
         </div>
-        <p class="note-text">Numbers from the game's own tables (<span id="tw-source">the client patch</span>: the Tower smithy's weapon list, growth and cost tables), checked level by level against the game's code; shop prices from this server's shop lists. More in the Frontier guide: <a href="/guide-frontier-hunters-road.html#tower-weapons">Tower weapons</a>, and on the <a href="/sky-corridor.html">Sky Corridor</a> page.</p>
+        <p class="note-text">Numbers from the game's own tables (<span id="tw-source">the client patch</span>: the Tower smithy's weapon list, growth and cost tables; the sharpness as the game's weapon panel shows it: 150 of the bar's 400 before levels, 50 more a Sharpness level), checked level by level against the game's code; shop prices from this server's shop lists. More in the Frontier guide: <a href="/guide-frontier-hunters-road.html#tower-weapons">Tower weapons</a>, and on the <a href="/sky-corridor.html">Sky Corridor</a> page.</p>
       </section>
     </main>
     <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->

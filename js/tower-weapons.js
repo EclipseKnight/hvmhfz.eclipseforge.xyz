@@ -110,8 +110,39 @@
     return Math.ceil(most);
   }
 
+  /* The sharpness the game's weapon panel shows (mhfo-hd.dll 0x1098f740): the whole bar, covered in black from
+     view.base + view.step x the level, the level being the weapon's sharpStart plus its Sharpness levels' gain;
+     nothing covered from view.full up. Returns the shown end on the bar's 0-view.scale scale, null for a weapon
+     without sharpness. */
+  function sharpShown(weapon, gain, view) {
+    if (!weapon.sharpness || weapon.sharpStart === null || weapon.sharpStart === undefined) return null;
+    var level = Math.min(view.full, weapon.sharpStart + (gain || 0));
+    return Math.min(view.scale, view.base + view.step * level);
+  }
+
+  // The bar's colour lengths up to `shown`: [{colour index, length}], empty colours left out.
+  function sharpSegments(ends, shown) {
+    var out = [], prev = 0;
+    ends.forEach(function (end, i) {
+      var to = Math.min(end, shown);
+      if (to > prev) out.push({ colour: i, length: to - prev });
+      prev = Math.max(prev, to);
+    });
+    return out;
+  }
+
+  // All materials a line can cost, in the order of its cost rows: [item id].
+  function lineItems(line) {
+    var out = [];
+    line.cost.forEach(function (row) {
+      row[2].forEach(function (m) { if (out.indexOf(m[0]) < 0) out.push(m[0]); });
+    });
+    return out;
+  }
+
   var api = { build: build, maxAllowed: maxAllowed, maxLevel: maxLevel, lineMaterials: lineMaterials,
-    shownAttack: shownAttack, maxAttack: maxAttack, shopCost: shopCost, skyClears: skyClears };
+    shownAttack: shownAttack, maxAttack: maxAttack, shopCost: shopCost, skyClears: skyClears,
+    sharpShown: sharpShown, sharpSegments: sharpSegments, lineItems: lineItems };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   root.HvTowerWeapons = api;
   if (typeof document === "undefined") return;
@@ -123,6 +154,7 @@
   var STATUSES = ["Poison", "Paralysis", "Sleep"];
   var $ = function (id) { return document.getElementById(id); };
   var data, types = {}, weapon = null, levels = [], status = "Poison", element = 0, typeSlug = "";
+  var rows = [];   // the planner's rows: {line, range, num, of, full, adds, pts, qty: {item: span}} (drawPlanner)
 
   function el(tag, cls, text) {
     var node = document.createElement(tag);
@@ -139,24 +171,67 @@
     return a;
   }
 
-  function sharpBar(ends) {
-    var bar = el("span", "sharp-bar big");
+  var SHARP_NAMES = ["Red", "Orange", "Yellow", "Green", "Blue", "White", "Purple", "Sky"];
+
+  /* One sharpness bar as the game's weapon panel draws it: the colours up to `shown`, the rest of the 0-400 bar
+     covered (dark, with a tick at each step a level uncovers). `from` > 0 outlines the part uncovered since it. */
+  function sharpBar(ends, shown, from, label) {
+    var view = data.sharpView, scale = view.scale;
+    var bar = el("span", "sharp-bar big tw-sharp-bar");
     bar.setAttribute("role", "img");
-    var parts = [], prev = 0, names = ["Red", "Orange", "Yellow", "Green", "Blue", "White", "Purple", "Sky"];
-    ends.forEach(function (end, i) {
-      var w = end - prev;
-      if (w > 0) {
-        var seg = el("span", "sharp-seg");
-        seg.style.width = (w / 4) + "%";
-        seg.style.background = data.colourRgb[i];
-        seg.title = names[i] + ": " + w;
-        bar.appendChild(seg);
-        parts.push(names[i] + " " + w);
-      }
-      prev = Math.max(prev, end);
+    var parts = [];
+    api.sharpSegments(ends, shown).forEach(function (s) {
+      var seg = el("span", "sharp-seg");
+      seg.style.width = (s.length / scale * 100) + "%";
+      seg.style.background = data.colourRgb[s.colour];
+      seg.title = SHARP_NAMES[s.colour] + ": " + s.length;
+      bar.appendChild(seg);
+      parts.push(SHARP_NAMES[s.colour] + " " + s.length);
     });
-    bar.setAttribute("aria-label", "Sharpness before levels: " + parts.join(", "));
+    if (shown < scale) {
+      var cover = el("span", "tw-sharp-cover");
+      cover.style.width = ((scale - shown) / scale * 100) + "%";
+      cover.style.setProperty("--tw-step", (view.step / (scale - shown) * 100) + "%");
+      cover.title = "Not shown yet: " + (scale - shown);
+      bar.appendChild(cover);
+    }
+    if (from && from < shown) {
+      var gained = el("span", "tw-sharp-gained");
+      gained.style.left = (from / scale * 100) + "%";
+      gained.style.width = ((shown - from) / scale * 100) + "%";
+      bar.appendChild(gained);
+    }
+    bar.setAttribute("aria-label", label + ": " + parts.join(", ") + (shown < scale ? ", " + (scale - shown) + " not shown" : ""));
     return bar;
+  }
+
+  // The colour the shown part ends in.
+  function topColour(ends, shown) {
+    var segs = api.sharpSegments(ends, shown);
+    return segs.length ? SHARP_NAMES[segs[segs.length - 1].colour] : "none";
+  }
+
+  // Before and after the Sharpness levels, with what each shows.
+  function sharpBox(gain) {
+    var w = weapon, view = data.sharpView;
+    var before = api.sharpShown(w, 0, view), after = api.sharpShown(w, gain, view);
+    var box = el("div", "tw-sharp");
+    function row(name, shown, from) {
+      var r = el("div", "tw-sharp-row");
+      r.appendChild(el("span", "tw-sharp-name", name));
+      r.appendChild(sharpBar(w.sharpness, shown, from, name));
+      r.appendChild(el("span", "tw-sharp-text", shown + " of " + view.scale + ", to " + topColour(w.sharpness, shown)));
+      box.appendChild(r);
+    }
+    row("Before levels", before, 0);
+    row(gain ? "Sharpness +" + gain : "With levels", after, before);
+    var lines = w.lines.filter(function (l) { return l.stat === "Sharpness"; })[0];
+    var most = lines ? api.sharpShown(w, api.maxLevel(lines, status), view) : before;
+    box.appendChild(el("p", "tw-small", "The game shows " + view.base + " of the bar's " + view.scale +
+      " before levels and covers the rest; each Sharpness level shows " + view.step + " more" +
+      (most < view.scale ? ", up to " + most + " for this weapon." : ", the whole bar at " +
+      Math.max(0, view.full - w.sharpStart) + " levels.")));
+    return box;
   }
 
   function sigilName(id) { return (data.items[id] || "").replace(/ Sigil$/, ""); }
@@ -239,20 +314,220 @@
 
   function setLevel(i, value) {
     levels[i] = Math.max(0, Math.min(value, api.maxAllowed(weapon, levels, i, status)));
-    drawPlanner();
+    updatePlanner();
     writeAddress();
   }
 
+  /* The Sharpness row's control: a slider (role=slider) drawn as the weapon's sharpness bar on the game panel's
+     0-400 scale, split into the panel's steps (the part shown before levels, then one step of view.step a level
+     up to view.full). The part the chosen level shows is in colour, the rest covered dark; steps past this
+     weapon's last level are hatched. A click, a drag (mouse, pen or touch) or the arrow / Page / Home / End keys
+     set the level through setLevel, which refuses what the budget does not allow, as the other rows do. The steps
+     are always all drawn, so the control's size never changes. Returns {node, update(level, max, allowed)}. */
+  function sharpControl(i, line) {
+    var w = weapon, view = data.sharpView, scale = view.scale;
+    var gainTo = function (lv) { return line.gain.slice(0, lv).reduce(function (a, g) { return a + g; }, 0); };
+    var shownAt = function (lv) { return api.sharpShown(w, gainTo(lv), view); };
+    // the steps: [{from, to, level}], level null for a step this weapon's levels never reach
+    var steps = [];
+    for (var k = 0; k <= view.full; k++) {
+      var to = Math.min(scale, view.base + view.step * k), from = k ? steps[k - 1].to : 0, lv = null;
+      for (var l = 0; l <= line.gain.length; l++) if (shownAt(l) >= to) { lv = l; break; }
+      steps.push({ from: from, to: to, level: lv });
+    }
+    var node = el("div", "tw-sc");
+    node.tabIndex = 0;
+    node.setAttribute("role", "slider");
+    node.setAttribute("aria-label", lineLabel(line) + " level");
+    node.setAttribute("aria-valuemin", "0");
+    var bar = el("span", "sharp-bar big tw-sc-bar");
+    bar.setAttribute("aria-hidden", "true");
+    api.sharpSegments(w.sharpness, scale).forEach(function (s) {
+      var seg = el("span", "sharp-seg");
+      seg.style.width = (s.length / scale * 100) + "%";
+      seg.style.background = data.colourRgb[s.colour];
+      bar.appendChild(seg);
+    });
+    var cells = steps.map(function (s, k) {
+      var c = el("span", "tw-sc-step", k ? "+" + (s.level === null ? k : s.level) : "");
+      c.style.left = (s.from / scale * 100) + "%";
+      c.style.width = ((s.to - s.from) / scale * 100) + "%";
+      bar.appendChild(c);
+      return c;
+    });
+    node.appendChild(bar);
+    var cur = 0, most = 0;
+    // the level a point on the bar (clientX) picks: its step's level, the last level past the weapon's steps
+    function levelAt(x) {
+      var r = bar.getBoundingClientRect();
+      var at = Math.max(0, Math.min(1, (x - r.left) / r.width)) * scale;
+      for (var k = 0; k < steps.length; k++) if (at <= steps[k].to || k === steps.length - 1) return steps[k].level === null ? most : steps[k].level;
+      return most;
+    }
+    function set(lv) { if (lv !== cur) setLevel(i, lv); }
+    var dragging = false;
+    node.addEventListener("pointerdown", function (e) {
+      if (e.button) return;
+      dragging = true;
+      node.focus();
+      if (node.setPointerCapture) node.setPointerCapture(e.pointerId);
+      set(levelAt(e.clientX));
+      e.preventDefault();
+    });
+    node.addEventListener("pointermove", function (e) { if (dragging) set(levelAt(e.clientX)); });
+    var stop = function () { dragging = false; };
+    node.addEventListener("pointerup", stop);
+    node.addEventListener("pointercancel", stop);
+    node.addEventListener("keydown", function (e) {
+      var to = { ArrowRight: cur + 1, ArrowUp: cur + 1, PageUp: cur + 1, ArrowLeft: cur - 1, ArrowDown: cur - 1,
+        PageDown: cur - 1, Home: 0, End: most }[e.key];
+      if (to === undefined) return;
+      e.preventDefault();
+      set(Math.max(0, Math.min(most, to)));
+    });
+    function update(level, max, allowed) {
+      cur = level;
+      most = max;
+      var shown = shownAt(level);
+      node.setAttribute("aria-valuemax", String(max));
+      node.setAttribute("aria-valuenow", String(level));
+      node.setAttribute("aria-valuetext", "Sharpness +" + level + ", shows " + shown + " of " + scale);
+      node.title = "Sharpness +" + level + ": shows " + shown + " of " + scale + (allowed < max ? "; the budget allows +" + allowed : "");
+      steps.forEach(function (s, k) {
+        var c = cells[k];
+        c.classList.toggle("tw-sc-off", s.to > shown);
+        c.classList.toggle("tw-sc-none", s.level === null || s.level > max);
+        c.classList.toggle("tw-sc-budget", s.level !== null && s.level <= max && s.level > allowed);
+      });
+    }
+    return { node: node, update: update };
+  }
+
+  /* The most materials any line at this place costs among the weapons of this type: every row keeps that many
+     material lines, so switching weapons of a type keeps each row's height (and the sliders where they are). */
+  function materialLines(i) {
+    var n = 1;
+    data.weapons.forEach(function (w) {
+      if (w.type === weapon.type && w.lines[i]) n = Math.max(n, api.lineItems(w.lines[i]).length);
+    });
+    return n;
+  }
+
+  /* Draws the planner for a weapon, element or status: the head, the rows (built here once; a level change only
+     updates their values, updatePlanner, so a slider being dragged stays the same element in the same place). */
   function drawPlanner() {
+    var w = weapon;
+    drawHead();
+    var tbody = $("tw-lines");
+    tbody.textContent = "";
+    rows = w.lines.map(function (line, i) {
+      var tr = el("tr");
+      var th = el("th");
+      th.scope = "row";
+      th.appendChild(el("span", "tw-stat", line.stat));
+      var sig = sigilItem(line);
+      if (sig) {
+        var note = el("span", "tw-needs");
+        note.appendChild(document.createTextNode("needs "));
+        note.appendChild(itemLink(sig));
+        th.appendChild(note);
+      }
+      tr.appendChild(th);
+      var td = el("td");
+      var box = el("div", "tw-level");
+      td.appendChild(box);
+      var sharp = line.stat === "Sharpness" && api.sharpShown(w, 0, data.sharpView) !== null ? sharpControl(i, line) : null;
+      var range = sharp ? sharp.node : el("input");
+      if (!sharp) {
+        range.type = "range";
+        range.min = 0;
+        range.setAttribute("aria-label", lineLabel(line) + " level");
+        range.addEventListener("input", function () { setLevel(i, +range.value); });
+      }
+      var num = el("input", "tw-num");
+      num.type = "number";
+      num.min = 0;
+      num.setAttribute("aria-label", lineLabel(line) + " level, number");
+      num.addEventListener("change", function () { setLevel(i, parseInt(num.value, 10) || 0); });
+      var of = el("span", "tw-of");
+      var full = el("span", "tw-full", "budget full");
+      box.appendChild(range);
+      box.appendChild(num);
+      box.appendChild(of);
+      box.appendChild(full);
+      tr.appendChild(td);
+      var adds = el("td", "num tw-adds");
+      var pts = el("td", "num tw-pts");
+      tr.appendChild(adds);
+      tr.appendChild(pts);
+      var mt = el("td");
+      var mbox = el("div", "tw-mats");
+      mt.appendChild(mbox);
+      var items = api.lineItems(line), qty = {};
+      mbox.style.setProperty("--tw-mat-lines", materialLines(i));
+      items.forEach(function (id) {
+        var m = el("span", "tw-mat");
+        qty[id] = el("span", "tw-q");
+        m.appendChild(qty[id]);
+        m.appendChild(document.createTextNode(" × "));
+        var a = itemLink(id);
+        a.title = data.items[id] || "";
+        m.appendChild(a);
+        mbox.appendChild(m);
+      });
+      tr.appendChild(mt);
+      tbody.appendChild(tr);
+      if (sharp) box.classList.add("tw-level-sharp");
+      return { line: line, range: range, sharp: sharp, num: num, of: of, full: full, adds: adds, pts: pts, qty: qty };
+    });
+    updatePlanner();
+  }
+
+  // The values of a build: every row's level, max, gain, points and materials, the points, the stats and costs.
+  function updatePlanner() {
     var w = weapon, t = types[w.type];
     var b = api.build(w, levels, status);
-    var base = w.base;
+    rows.forEach(function (r, i) {
+      var line = r.line, max = api.maxLevel(line, status);
+      var allowed = api.maxAllowed(w, levels, i, status);
+      r.num.max = max;
+      if (r.sharp) r.sharp.update(levels[i], max, allowed);
+      else { r.range.max = max; r.range.value = levels[i]; }
+      if (document.activeElement !== r.num || +r.num.value !== levels[i]) r.num.value = levels[i];
+      r.of.textContent = "/ " + max;
+      r.full.style.visibility = allowed < max && allowed === levels[i] ? "visible" : "hidden";
+      r.adds.textContent = gainText(line, b.gains[line.stat]);
+      var col = line.status ? line.status[status] : line;
+      var pts = 0;
+      for (var k = 0; k < levels[i] && k < col.points.length; k++) pts += col.points[k];
+      r.pts.textContent = fmt(pts);
+      var mats = api.lineMaterials(line, Math.min(levels[i], max));
+      Object.keys(r.qty).forEach(function (id) {
+        r.qty[id].textContent = fmt(mats[id] || 0);
+        r.qty[id].parentNode.classList.toggle("tw-zero", !mats[id]);
+      });
+    });
 
-    // the weapon
+    // points
+    var pct = Math.min(100, Math.round(b.points / b.budget * 100));
+    $("tw-points-bar").style.width = pct + "%";
+    $("tw-points").textContent = fmt(b.points) + " of " + fmt(b.budget) + " points used" +
+      (b.points < b.budget ? " (" + fmt(b.budget - b.points) + " left)" : "");
+    var warn = $("tw-warn");
+    warn.hidden = b.sigilLines <= w.sigils;
+    warn.textContent = "This build needs " + b.sigilLines + " Tower Sigils (Affinity, Element and Status each need " +
+      "their own), but " + w.name + " has " + w.sigils + " sigil slot" + (w.sigils === 1 ? "" : "s") + ".";
+
+    drawStats(b, w.base, t);
+    drawCost(b);
+  }
+
+  // The weapon's name and facts, above the stats (below the sliders, so a weapon's longer text moves no slider).
+  function drawHead() {
+    var w = weapon, t = types[w.type];
+    $("tw-name").textContent = w.name;
     var head = $("tw-head");
     head.textContent = "";
-    var h = el("h2", null, w.name);
-    head.appendChild(h);
     var facts = el("p", "tw-facts");
     var wl = el("a", null, t.name);
     wl.href = "/weapons.html?type=" + w.type + "&w=" + w.id;
@@ -276,76 +551,13 @@
     });
     made.appendChild(document.createTextNode("."));
     head.appendChild(made);
-
-    // the lines
-    var tbody = $("tw-lines");
-    tbody.textContent = "";
-    w.lines.forEach(function (line, i) {
-      var tr = el("tr");
-      var th = el("th", null, lineLabel(line));
-      th.scope = "row";
-      var sig = sigilItem(line);
-      if (sig) {
-        var note = el("span", "tw-needs");
-        note.appendChild(document.createTextNode("needs "));
-        note.appendChild(itemLink(sig));
-        th.appendChild(note);
-      }
-      tr.appendChild(th);
-      var max = api.maxLevel(line, status);
-      var allowed = api.maxAllowed(w, levels, i, status);
-      var td = el("td", "tw-level");
-      var range = el("input");
-      range.type = "range";
-      range.min = 0;
-      range.max = max;
-      range.value = levels[i];
-      range.setAttribute("aria-label", lineLabel(line) + " level");
-      range.addEventListener("input", function () { setLevel(i, +range.value); });
-      var num = el("input", "tw-num");
-      num.type = "number";
-      num.min = 0;
-      num.max = max;
-      num.value = levels[i];
-      num.setAttribute("aria-label", lineLabel(line) + " level, number");
-      num.addEventListener("change", function () { setLevel(i, parseInt(num.value, 10) || 0); });
-      td.appendChild(range);
-      td.appendChild(num);
-      td.appendChild(el("span", "tw-of", "/ " + max + (allowed < max && allowed === levels[i] ? " (budget full)" : "")));
-      tr.appendChild(td);
-      tr.appendChild(el("td", "num", gainText(line, b.gains[line.stat])));
-      var col = line.status ? line.status[status] : line;
-      var pts = 0;
-      for (var k = 0; k < levels[i] && k < col.points.length; k++) pts += col.points[k];
-      tr.appendChild(el("td", "num", fmt(pts)));
-      var mats = api.lineMaterials(line, Math.min(levels[i], max));
-      var mt = el("td", "tw-mats");
-      Object.keys(mats).forEach(function (id, j) {
-        if (j) mt.appendChild(document.createTextNode(", "));
-        mt.appendChild(itemLink(id, mats[id]));
-      });
-      if (!Object.keys(mats).length) mt.textContent = "-";
-      tr.appendChild(mt);
-      tbody.appendChild(tr);
-    });
-
-    // points
-    var pct = Math.min(100, Math.round(b.points / b.budget * 100));
-    $("tw-points-bar").style.width = pct + "%";
-    $("tw-points").textContent = fmt(b.points) + " of " + fmt(b.budget) + " points used" +
-      (b.points < b.budget ? " (" + fmt(b.budget - b.points) + " left)" : "");
-    var warn = $("tw-warn");
-    warn.hidden = b.sigilLines <= w.sigils;
-    warn.textContent = "This build needs " + b.sigilLines + " Tower Sigils (Affinity, Element and Status each need " +
-      "their own), but " + w.name + " has " + w.sigils + " sigil slot" + (w.sigils === 1 ? "" : "s") + ".";
-
-    drawStats(b, base, t);
-    drawCost(b);
   }
 
   function gainText(line, g) {
     if (!g) return "-";
     if (line.stat === "Affinity") return "+" + g + "%";
+    if (line.stat === "Sharpness" && api.sharpShown(weapon, g, data.sharpView) !== null)
+      return "+" + g + " (shows " + api.sharpShown(weapon, g, data.sharpView) + ")";
     if (line.stat === "Shelling Level" || line.stat === "Sharpness" || /^(Charge|Reload|Recoil)/.test(line.stat))
       return "+" + (line.stat === "Shelling Level" ? g / 3 : g) + " level" + ((line.stat === "Shelling Level" ? g / 3 : g) === 1 ? "" : "s");
     if (line.stat === "Attack") return "+" + fmt(api.shownAttack(g, types[weapon.type].displayFactor)) + " (true +" + g + ")";
@@ -366,13 +578,7 @@
     stat("Affinity", (base.affinity + (b.gains.Affinity || 0)) + "%");
     if ("Element" in b.gains) stat("Element", b.gains.Element ? sigilName(data.sigils.element[element]) + " " + fmt(b.gains.Element) : "None");
     if ("Status" in b.gains) stat("Status", b.gains.Status ? status + " " + fmt(b.gains.Status) : "None");
-    if (weapon.sharpness) {
-      var box = el("span");
-      box.appendChild(sharpBar(weapon.sharpness));
-      box.appendChild(el("span", "tw-small", b.gains.Sharpness ? "Sharpness level +" + b.gains.Sharpness +
-        ": the game lengthens this bar with each level (the bar shown is before levels)." : "Before levels."));
-      stat("Sharpness", box);
-    }
+    if (weapon.sharpness && api.sharpShown(weapon, 0, data.sharpView) !== null) stat("Sharpness", sharpBox(b.gains.Sharpness || 0));
     if ("Shelling Level" in b.gains) {
       var shells = data.shells, i = shells.indexOf(base.special);
       var lv = (b.gains["Shelling Level"] || 0);
@@ -478,13 +684,13 @@
     });
     $("tw-reset").addEventListener("click", function () {
       levels = weapon.lines.map(function () { return 0; });
-      drawPlanner();
+      updatePlanner();
       writeAddress();
     });
     $("tw-max-attack").addEventListener("click", function () {
       levels = weapon.lines.map(function () { return 0; });
       levels[0] = api.maxAttack(weapon).level;
-      drawPlanner();
+      updatePlanner();
       writeAddress();
     });
     var es = $("tw-element"), ss = $("tw-status");
@@ -503,7 +709,7 @@
       status = ss.value;
       // a different status sigil has its own column: keep the levels within it and the budget
       weapon.lines.forEach(function (_l, i) { levels[i] = Math.min(levels[i], api.maxAllowed(weapon, levels, i, status)); });
-      drawPlanner();
+      drawPlanner();   // the labels and sigil links change
       writeAddress();
     });
     readAddress();
@@ -513,7 +719,7 @@
     $("tw-source").textContent = "Client patch " + data.source.patch;
   }
 
-  fetch("/data/tower-weapons.json?v=1").then(function (r) {
+  fetch("/data/tower-weapons.json?v=2").then(function (r) {
     if (!r.ok) throw new Error(r.status);
     return r.json();
   }).then(function (d) {
