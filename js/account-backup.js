@@ -52,8 +52,16 @@
     scenariodata: "Story progress",
     savefavoritequest: "Favourite quests",
     mezfes: "MezFes",
-    minidata: "Mini data"
+    minidata: "Mini data",
+    goocoo0: "Gu-ku 1",
+    goocoo1: "Gu-ku 2",
+    goocoo2: "Gu-ku 3",
+    goocoo3: "Gu-ku 4",
+    goocoo4: "Gu-ku 5"
   };
+
+  /* A part's action in a preview: "clear" is a Gu-ku the file doesn't have (a file with any Gu-ku replaces all five). */
+  var ACTIONS = { same: "no change", "new": "new", clear: "emptied" };
 
   var SOURCES = {
     "ours-verified": "Our backup of this character, unchanged.",
@@ -437,7 +445,7 @@
       tr.appendChild(el("td", null, partLabel(p.part)));
       tr.appendChild(el("td", "num", bytes(p.oldSize)));
       tr.appendChild(el("td", "num", bytes(p.newSize)));
-      tr.appendChild(el("td", "muted", p.action === "same" ? "no change" : p.action === "new" ? "new" : "replaced"));
+      tr.appendChild(el("td", "muted", ACTIONS[p.action] || "replaced"));
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);

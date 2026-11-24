@@ -13,18 +13,21 @@
 (function (root) {
   "use strict";
 
-  /* The characters columns an import writes, in the order a file name is matched against them (the first
-     name it contains wins). The old bot wrote skinhist. Same list as the API's SavePart. */
+  /* The parts an import writes, in the order a file name is matched against them (a name that is exactly a part,
+     as in our zips, is that part; else the first part the name contains wins). The old bot wrote skinhist. Same
+     list as the API's SavePart: the characters columns, then goocoo0-goocoo4, the Gu-ku (Erupe's table goocoo,
+     one record per index; in our backups from 25 Nov 2026). No name here contains another, and the Gu-ku come
+     last, so a hunter name such as "Goocoo1" in front of an old bot file name doesn't change its part. */
   var PARTS = ["savedata", "decomyset", "hunternavi", "otomoairou", "partner", "platebox", "platedata",
     "platemyset", "rengokudata", "savemercenary", "skin_hist", "scenariodata", "savefavoritequest", "mezfes",
-    "minidata"];
+    "minidata", "goocoo0", "goocoo1", "goocoo2", "goocoo3", "goocoo4"];
   var ALIASES = { skinhist: "skin_hist" };
   var MANIFEST = "manifest.json";
   var SIGNATURE = "manifest.sig";
   var EXPORT = "character.json";
   var MAX_BIN_BYTES = 1024 * 1024;      // largest part (the API's largest, platedata, is about 432 KB)
   var MAX_JSON_BYTES = 4 * 1024 * 1024; // an export carries every part in base64
-  var MAX_FILES = 20;                   // a backup has at most 15 parts and 3 other files
+  var MAX_FILES = 25;                   // a backup has at most 20 parts and 3 other files
   /* Every save Erupe stores starts with this (nullcomp's header, "cmp 20110113" padded to 16 bytes). */
   var NULLCOMP = [0x63, 0x6d, 0x70, 0x20, 0x32, 0x30, 0x31, 0x31, 0x30, 0x31, 0x31, 0x33, 0x20, 0x20, 0x20, 0x00];
 
@@ -235,6 +238,8 @@
   /* The import column a file name stands for, or null. */
   function partFor(fileName) {
     var lower = fileName.toLowerCase();
+    var stem = lower.replace(/\.bin$/, "");
+    if (PARTS.indexOf(stem) !== -1) return stem;
     for (var i = 0; i < PARTS.length; i++) {
       if (lower.indexOf(PARTS[i]) !== -1) return PARTS[i];
     }

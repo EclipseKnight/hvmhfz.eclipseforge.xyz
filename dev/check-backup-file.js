@@ -7,6 +7,8 @@
    - deflated zips made by Python: the old bot's names (<time>_savedata.bin, skinhist, empty parts), folders,
      macOS junk, a second savedata; a zip holding only character.json; a bare export JSON;
    - a bare save file (savedata.bin, or any file starting with nullcomp's header), outside a zip;
+   - Gu-ku (goocoo0-goocoo4): a backup with some keeps exactly those, one without has none, a full backup
+     (20 parts, 23 files) reads back, and an older 18-file backup of ours still reads;
    - refusals in plain words: not a zip, no save files, too many files, a part over 1 MB.
 
      node dev/check-backup-file.js
@@ -38,7 +40,8 @@ function pyZip(files) {
 function pyRead(bytes) {
   const script = "import base64,io,json,sys,zipfile\n" +
     "z=zipfile.ZipFile(io.BytesIO(base64.b64decode(sys.stdin.read())))\n" +
-    "print(json.dumps({'bad': z.testzip(), 'names': z.namelist(), 'manifest': z.read('manifest.json').decode()}))\n";
+    "print(json.dumps({'bad': z.testzip(), 'names': z.namelist(), 'manifest': z.read('manifest.json').decode(),\n" +
+    "  'export': json.loads(z.read('character.json'))}))\n";
   return JSON.parse(execFileSync("python3", ["-I", "-c", script], { input: Buffer.from(bytes).toString("base64") }).toString());
 }
 
@@ -80,6 +83,35 @@ async function rejects(label, promise, pattern) {
   const cj = (await F.readImportFile("x.zip", F.zip([{ name: "character.json",
     data: new TextEncoder().encode(JSON.stringify({ Character: { id: 10, name: "Hunter", savedata: parts.savedata } })) }])));
   check("our character.json alone: export", cj.kind === "export" && cj.body.erupeExport.Character.savedata === parts.savedata);
+
+  // ---- Gu-ku: a backup with goocoo parts keeps them; one without them has none; a full backup fits
+  const guku = (index, name) => Buffer.concat([Buffer.from([0, 0, 0, index]), Buffer.alloc(52), Buffer.from([name.length + 1]),
+    Buffer.from(name + "\x00", "binary")]).toString("base64");
+  const gukuParts = Object.assign({}, parts, { goocoo0: guku(0, "Pochi"), goocoo3: guku(3, "Tama") });
+  const withGuku = F.makeBackupZip({ manifest, signature: "9f2c", parts: gukuParts }, new Date(Date.UTC(2026, 10, 25)));
+  check("guku backup: part count", withGuku.parts === 5, String(withGuku.parts));
+  const gpy = pyRead(withGuku.bytes);
+  check("guku backup: names", eq(gpy.names, ["savedata.bin", "rengokudata.bin", "skin_hist.bin", "goocoo0.bin", "goocoo3.bin",
+    "manifest.json", "manifest.sig", "character.json"]), gpy.names.join(","));
+  const gback = await F.readImportFile(withGuku.fileName, withGuku.bytes);
+  check("guku backup: parts back", gback.kind === "backup" && eq(gback.body.parts, { savedata: parts.savedata,
+    rengokudata: parts.rengokudata, skin_hist: parts.skin_hist, goocoo0: gukuParts.goocoo0, goocoo3: gukuParts.goocoo3 }),
+    JSON.stringify(Object.keys(gback.body.parts)));
+  check("guku backup: character.json has them", gpy.export.Character.goocoo3 === gukuParts.goocoo3 &&
+    gpy.export.Character.goocoo1 === undefined, JSON.stringify(Object.keys(gpy.export.Character)));
+  check("no guku backup: no goocoo part", Object.keys(back.body.parts).every((k) => !/^goocoo/.test(k)));
+  const full = {};
+  F.PARTS.forEach((p, i) => { full[p] = /^goocoo/.test(p) ? guku(Number(p.slice(6)), "G" + i) : b64("part " + i); });
+  const fullZip = F.makeBackupZip({ manifest, signature: "9f2c", parts: full });
+  check("full backup: 20 parts", fullZip.parts === 20 && F.PARTS.length === 20, String(fullZip.parts));
+  const fullBack = await F.readImportFile(fullZip.fileName, fullZip.bytes);
+  check("full backup: 23 files read back", fullBack.files.length === 23 && eq(fullBack.body.parts, full),
+    String(fullBack.files.length));
+  const oldOurs = [["manifest.json", b64(manifest)], ["manifest.sig", b64("9f2c")], ["character.json", b64("{}")]];
+  F.PARTS.slice(0, 15).forEach((p, i) => oldOurs.push([p + ".bin", b64("part " + i)]));
+  const o18 = await F.readImportFile("old-ours.zip", pyZip(oldOurs));
+  check("old 18-file backup: reads, no Gu-ku", o18.kind === "backup" && o18.files.length === 18 &&
+    Object.keys(o18.body.parts).length === 15 && o18.body.parts.goocoo0 === undefined, JSON.stringify(Object.keys(o18.body.parts)));
 
   // ---- old bot zip, deflated, with junk
   const old = pyZip([
@@ -123,8 +155,8 @@ async function rejects(label, promise, pattern) {
   await rejects("not a zip", F.readImportFile("save.zip", new Uint8Array([1, 2, 3, 4])), /not a zip/);
   await rejects("no save files", F.readImportFile("x.zip", pyZip([["notes.txt", b64("hello")]])), /no save files/);
   const many = [];
-  for (let i = 0; i < 21; i++) many.push(["f" + i + ".txt", b64("x")]);
-  await rejects("too many files", F.readImportFile("x.zip", pyZip(many)), /more than 20 files/);
+  for (let i = 0; i < 26; i++) many.push(["f" + i + ".txt", b64("x")]);
+  await rejects("too many files", F.readImportFile("x.zip", pyZip(many)), /more than 25 files/);
   await rejects("part over 1 MB", F.readImportFile("x.zip", pyZip([["savedata.bin", Buffer.alloc(1024 * 1024 + 1).toString("base64")]])), /over 1 MB/);
   try {
     F.makeBackupZip({ manifest: "{}", signature: "", parts: {} });
@@ -136,6 +168,12 @@ async function rejects(label, promise, pattern) {
   // ---- names
   check("partFor skinhist", F.partFor("2026_SKINHIST.bin") === "skin_hist");
   check("partFor savedata first", F.partFor("savedata_platedata.bin") === "savedata");
+  check("no part name inside another", F.PARTS.every((a) => F.PARTS.every((b) => a === b || b.indexOf(a) === -1)));
+  check("partFor goocoo", F.PARTS.slice(15).every((p, i) => F.partFor(p + ".bin") === "goocoo" + i &&
+    F.partFor("2026-11-25_" + p.toUpperCase() + ".bin") === p));
+  check("partFor: a Gu-ku-like hunter name doesn't win", F.partFor("Goocoo1_partner.bin") === "partner" &&
+    F.partFor("Goocoo1_savedata.bin") === "savedata" && F.partFor("goocoo.bin") === null);
+  check("partFor: an exact name wins", F.partFor("goocoo2.bin") === "goocoo2" && F.partFor("skinhist.bin") === "skin_hist");
   check("safeName", F.safeName("ハンター") === "character" && F.safeName("Al-ex_1!") === "Al-ex_1");
   check("crc32", F.crc32(new TextEncoder().encode("123456789")) === 0xcbf43926);
 

@@ -11,7 +11,7 @@
      history shows the import;
    - an older zip: a red alert first ("N hours less play than your character now", and the Road skill
      levels cleared), play time and monsters hunted before/after, Confirm kept; no alert for a file with
-     the same play; an export JSON;
+     the same play; a zip with one Gu-ku (it is "Gu-ku 2", replaced; the other four "emptied"); an export JSON;
    - refusals in plain words: online, deleted, never played, a part that fails the checks (each problem
      listed), not a zip; and a 404 in the middle of a preview switches to "coming soon".
 
@@ -68,7 +68,10 @@ function plan(body, applied) {
     characterId: ch.id, characterName: ch.name, accountId: 2,
     source: body.erupeExport ? "erupe-export" : ours ? "ours-verified" : "foreign", sourceNote: "note",
     manifest: ours ? { format: "hvmhfz-backup/1", server: "hunsterverse", characterId: 10, name: "Aldra", exportedAt: "2026-11-03T20:00:00Z" } : null,
-    parts: partNames.map((p) => ({ part: p, action: "replace", oldSize: 20480, oldSha256: "a", newSize: 20482, newSha256: "b", fileSha256: "b" })),
+    // a file with any Gu-ku replaces all five: the API lists the ones it lacks as "clear" (newSize 0, no hashes)
+    parts: partNames.map((p) => ({ part: p, action: "replace", oldSize: 20480, oldSha256: "a", newSize: 20482, newSha256: "b", fileSha256: "b" }))
+      .concat(partNames.some((p) => /^goocoo/.test(p)) ? [0, 1, 2, 3, 4].map((i) => "goocoo" + i).filter((p) => !partNames.includes(p))
+        .map((p) => ({ part: p, action: "clear", oldSize: 62, oldSha256: "c", newSize: 0, newSha256: null, fileSha256: null })) : []),
     ignored: body.erupeExport ? [{ part: "gacha_items", reason: "gacha prizes the server holds" }] : [],
     save: { before: { name: "Aldra", female: false, zenny: 1000, hr: 999, grp: 5, roadSp: 40, equippedRoadSkills: 3, migrationFlagSet: true,
                       playtimeSeconds: 4707602, huntCount: 14312 },
@@ -251,6 +254,16 @@ async function flows(browser, base, shots) {
   check("old zip: alert is above the other warnings", await page.$eval("#import-preview .backup-alert + .backup-warnings", () => true).catch(() => false));
   check("old zip: play time shown", /Play time 1,307 h 40 min 1,300 h 39 min/.test(old) && /Monsters hunted 14,312 14,266/.test(old), old);
   check("old zip: Confirm is still there", await visible(page, "#import-confirm"));
+
+  // a backup with Gu-ku: the file's one replaced, the others emptied, labelled Gu-ku 1..5
+  const gukuZip = Files.zip([{ name: "savedata.bin", data: new TextEncoder().encode("save") },
+    { name: "goocoo1.bin", data: new Uint8Array(62) }]);
+  await choose(page, "guku.zip", gukuZip);
+  await previewInto(page, 10);
+  const gukuRows = await page.$$eval(".backup-parts tbody tr", (t) => t.map((x) => x.innerText.replace(/\s+/g, " ").trim()));
+  check("guku: parts and actions", gukuRows.length === 6 && /^Gu-ku 2 .* replaced$/.test(gukuRows[1])
+    && ["Gu-ku 1", "Gu-ku 3", "Gu-ku 4", "Gu-ku 5"].every((l, i) => new RegExp("^" + l + " 62 bytes 0 bytes emptied$").test(gukuRows[i + 2])),
+    JSON.stringify(gukuRows));
 
   // export JSON
   await choose(page, "export.json", Buffer.from(JSON.stringify({ Character: { savedata: b64("x") } })), "application/json");
