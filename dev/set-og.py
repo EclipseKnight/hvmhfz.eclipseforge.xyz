@@ -17,7 +17,7 @@ PAGE_CARD = {
     "road-history.html": "road-vote", "items.html": "items", "currencies.html": "currencies", "food.html": "food", "catalog.html": "items", "database.html": "database", "set-builder.html": "set-builder", "community-sets.html": "set-builder",
     "changelog.html": "changelog", "api.html": "api",
     "play.html": "play", "weapons.html": "weapons", "balance.html": "balance", "tournaments.html": "tournaments",
-    "sky-corridor.html": "sky-corridor", "road-data.html": "road-data", "road-history.html": "road-history",
+    "sky-corridor.html": "sky-corridor", "tower-weapons.html": "tower-weapons", "road-data.html": "road-data", "road-history.html": "road-history",
     "road.html": "road", "report.html": "report", "diagnostics-data.html": "diagnostics-data", "guide-roads.html": "guide-roads",
     "guide-frontier.html": "guide-frontier",
 }

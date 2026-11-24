@@ -76,6 +76,7 @@ PAGES = {
     "balance": ("Balance changes", "What the server changed in weapons and moves, and why"),
     "tournaments": ("Tournaments", "Speedrun Cup standings and the VS Bracket"),
     "sky-corridor": ("Sky Corridor", "Duremudira progress, Tower boards and guild missions"),
+    "tower-weapons": ("Tower weapons", "Plan a Tower weapon's upgrades: stats, points and materials"),
     "road-data": ("Hunting Road data", "Every Road the server has run, floor by floor"),
     "road-history": ("Past Road winners", "The Roads players voted in, with their authors"),
     "road": ("Road builder", "Build a Hunting Road for the next rotation"),

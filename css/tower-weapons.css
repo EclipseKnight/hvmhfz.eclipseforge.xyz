@@ -1,0 +1,33 @@
+/* Tower weapons: /tower-weapons.html (js/tower-weapons.js). */
+.tw-credit{margin-top:6px;font-size:.8rem}
+.tw-pickers{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin:0 0 14px}
+.tw-pickers .select-wrap{min-width:200px}
+.tw-head h2{margin:0 0 4px}
+.tw-facts{margin:0 0 6px;color:var(--ink-soft);font-size:.9rem}
+.tw-points{margin:12px 0}
+.tw-points-track{height:12px;max-width:520px;border:1px solid var(--line);border-radius:2px;background:rgba(27,19,13,.12);overflow:hidden}
+.tw-points-track span{display:block;height:100%;width:0;background:linear-gradient(90deg,#8a6a24,#d4a73a)}
+.tw-points p{margin:6px 0 0;font-size:.9rem}
+.tw-lines tbody th[scope="row"]{background:none;color:var(--ink);font-weight:600;white-space:normal;text-transform:none;letter-spacing:0;font-family:inherit;font-size:.9rem;border-top:1px solid rgba(189,166,122,.45)}
+.tw-needs{display:block;font-weight:400;font-size:.78rem;color:var(--ink-soft)}
+.tw-level{display:flex;align-items:center;gap:8px}
+.tw-level input[type="range"]{width:180px}
+.tw-num{width:4.5em}
+.tw-of{color:var(--ink-soft);font-size:.82rem}
+.tw-mats{white-space:normal!important;min-width:220px}
+.tw-result{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:16px}
+.tw-h3{margin:0 0 8px;font-size:1rem}
+.tw-stats{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0}
+.tw-stats dt{font-weight:600}
+.tw-stats dd{margin:0}
+.tw-small{display:block;color:var(--ink-soft);font-size:.8rem}
+.tw-mat-list,.tw-buy,.tw-notes{margin:0 0 12px;padding-left:1.2em}
+.tw-mat-list li,.tw-buy li,.tw-notes li{margin:0 0 4px}
+.tw-mat-list .tw-small{display:inline}
+.tw-test{margin:12px 0}
+.tw-test p{margin:0}
+.tw-list .link-btn{background:none;border:0;padding:0;color:var(--link);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline}
+@media (max-width:640px){
+  .tw-level input[type="range"]{width:110px}
+  .tw-pickers .select-wrap{min-width:0;flex:1 1 100%}
+}
