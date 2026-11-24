@@ -53,7 +53,7 @@ const GROUPS = [
 const RANKS = GROUPS.flatMap((g) => g[1].map((label) => label.replace(/ \(HR [\d-]+\)$/, "")));
 const FORMS = ["Zenith", "Supremacy", "Hardcore", "Musou"];
 
-/* Read by hand from the quest files (hunsterverse, 2026-11-17; class header+0x5c, body+0x04, body+0x4e, condition
+/* Read by hand from the quest files (hunsterverse, 2026-11-17, the GRP quests 2026-11-24; class header+0x5c, body+0x04, body+0x4e, condition
    note body+0x2c, variants body+0x91..): id -> [rank, rankNeed, form]. */
 const SPOT = {
   22013: ["HR1", "HR 1", undefined],          // Key HR1: class 0, need 1
@@ -74,10 +74,12 @@ const SPOT = {
   23493: ["G★8", "GR 100", undefined],        // class 7, body+0x04 8
   55935: ["G★7", "GR 1", "Musou"],            // class 7, variant 11
   54925: ["G★8", "GR 500", "Musou"],          // class 7, variant 11
-  40236: ["Zenith★1", "GR 200", "Zenith"],    // class 9, variant 16
-  23469: ["Zenith★2", "GR 400", "Zenith"],
-  23470: ["Zenith★3", "GR 600", "Zenith"],
-  23471: ["Zenith★4", "GR 800", "Zenith"],
+  40236: ["Zenith★1", "GR 900", "Zenith"],    // class 9, variant 16; a GRP quest: GR 900 (24 Nov, hvmhfz_re part 263)
+  23469: ["Zenith★2", "GR 500", "Zenith"],    // GR 300/500/700/900 since 17 Nov (part 224)
+  23470: ["Zenith★3", "GR 700", "Zenith"],
+  23471: ["Zenith★4", "GR 900", "Zenith"],
+  23352: ["G★1", "GR 900", undefined],        // GRP quests need GR 900 (24 Nov, part 263): built-in "GRP Bonanza ★1"
+  55002: ["G★3", "GR 900", undefined],        // event list "Mega GRP: Gogomoa", was GR 1
   101: ["Practice", undefined, undefined],    // class 2, need 0
   50748: ["Greetings", "HR 100", undefined],  // class 5
   21729: ["Hunting Road", "HR 1", undefined], // class 8
@@ -179,7 +181,7 @@ async function main() {
     await catalog("/quests.html?q=22039");
     check(await page.textContent("#quest-body .quest-rank") === "HR3 · needs HR 41", tag + ": quest 22039's row: " + await page.textContent("#quest-body .quest-rank"));
     await catalog("/quests.html?q=40236");
-    check(await page.textContent("#quest-body .quest-rank") === "Zenith★1 · needs GR 200", tag + ": quest 40236's row");
+    check(await page.textContent("#quest-body .quest-rank") === "Zenith★1 · needs GR 900", tag + ": quest 40236's row: " + await page.textContent("#quest-body .quest-rank"));
     await noSideways("the catalog");
 
     // ---- the quest page

@@ -129,7 +129,7 @@
 <!-- /site-shell:crumbs -->
 <h1>Server changelog</h1>
 <p class="lead">Every update to Hunsterverse, newest first, by month and day. Each day groups its changes by topic, and each change shows when it went live.</p>
-<p class="meta">Last update listed: 17 November 2026. Page updated 17 November 2026. Found a problem that isn't listed? <a href="/report.html">Report it</a>.</p>
+<p class="meta">Last update listed: 24 November 2026. Page updated 24 November 2026. Found a problem that isn't listed? <a href="/report.html">Report it</a>.</p>
 
 <nav class="toc cl-toc" aria-label="Changelog contents">
 <strong>Contents</strong>
@@ -172,7 +172,7 @@
 <summary>Tuesday 24 November 2026</summary>
 <section class="cl-day" id="d-2026-11-24" aria-labelledby="d-2026-11-24-h">
 <h4 class="cl-day-title visually-hidden" id="d-2026-11-24-h"><a class="cl-anchor" href="#d-2026-11-24">Tuesday 24 November 2026</a></h4>
-<p class="cl-topics"><a href="#d-2026-11-24-client-patch">Client patch</a> · <a href="#d-2026-11-24-launcher">Launcher</a> · <a href="#d-2026-11-24-sky-corridor">Sky Corridor</a></p>
+<p class="cl-topics"><a href="#d-2026-11-24-client-patch">Client patch</a> · <a href="#d-2026-11-24-launcher">Launcher</a> · <a href="#d-2026-11-24-quests">Quests</a> · <a href="#d-2026-11-24-sky-corridor">Sky Corridor</a></p>
 <section class="cl-topic" id="d-2026-11-24-client-patch" aria-labelledby="d-2026-11-24-client-patch-h">
 <h5 class="cl-topic-title" id="d-2026-11-24-client-patch-h"><a class="cl-anchor" href="#d-2026-11-24-client-patch">Client patch</a></h5>
 <ul>
@@ -183,8 +183,16 @@
 <section class="cl-topic" id="d-2026-11-24-launcher" aria-labelledby="d-2026-11-24-launcher-h">
 <h5 class="cl-topic-title" id="d-2026-11-24-launcher-h"><a class="cl-anchor" href="#d-2026-11-24-launcher">Launcher</a></h5>
 <ul>
+<li><time class="cl-when" datetime="2026-11-24T18:50Z">24 Nov 2026, 18:50 UTC</time> <b>Launcher 1.5.4-hv8: "Update and restart" fixed on Windows.</b> For Windows and Linux. On some Windows PCs "Update and restart" showed "The request is not supported" or the launcher just closed; it now reopens the launcher reliably. If it still cannot reopen itself, it says the update is installed and asks you to open it again. If updating to this version shows "could not restart the launcher" or the launcher just closes, the update is installed: open the launcher again. It includes hv7's Steam Deck fix (the game no longer closes right after you press Start), and the launcher log now says how the restart after an update went, for problem reports. The launcher updates itself.</li>
 <li><time class="cl-when" datetime="2026-11-24T17:40Z">24 Nov 2026, 17:40 UTC</time> <b>Launcher 1.5.4-hv7: Steam Deck fix.</b> On the Steam Deck the game closed right after you pressed Start (exit code 5): Proton did not pass the launcher's start data on to the game. The launcher now starts the game in a way that does. The first start after this update can take a little longer while Proton checks its files. Linux and Steam Deck only; Windows stays on 1.5.4-hv6. The launcher updates itself.</li>
 <li><time class="cl-when" datetime="2026-11-24T16:20Z">24 Nov 2026, 16:20 UTC</time> <b>Launcher 1.5.4-hv6: problem reports.</b> If the game closes or crashes right after it starts, the launcher now says so the next time you open it and offers "Save report": attach that file to your help post on Discord. You can also make one any time in Settings, Advanced, Problem report ("Save report" or "Copy report"). The launcher keeps log files in <code>Mezeporta/logs</code> (this run and the four before) with the game's exit code; on Linux and the Steam Deck also the game's own output, and "Debug the next game start" adds Wine's debug output. Passwords, session tokens and keys are never in them, and your home folder shows as ~. Also in this version: a self-update that needs administrator rights on Windows now asks for them instead of failing with "access is denied". The launcher updates itself.</li>
+</ul>
+</section>
+<section class="cl-topic" id="d-2026-11-24-quests" aria-labelledby="d-2026-11-24-quests-h">
+<h5 class="cl-topic-title" id="d-2026-11-24-quests-h"><a class="cl-anchor" href="#d-2026-11-24-quests">Quests</a></h5>
+<ul>
+<li><time class="cl-when" datetime="2026-11-24T18:44Z">24 Nov 2026, 18:44 UTC</time> <b>GRP quests need GR 900.</b> The 30 <a href="/quests.html?q=GRP">GRP quests</a> (Massive GRP!, Gz &amp; GRP Bonanza and the like) now need <strong>GR 900</strong>, so they can no longer be farmed to skip straight to GR 900. From GR 900 they work as before, so you can still use them to level your weapons' GSR. The four built into the game (GRP Bonanza ★1, ★3 and ★7 and Lots of GRP) also need the next client patch: until you have it, the game still offers them at any GR.</li>
+<li><time class="cl-when" datetime="2026-11-24T18:44Z">24 Nov 2026, 18:44 UTC</time> <b>Raviente quests say "Berserk Raviente".</b> The descriptions of the Great Slaying survey quests (<a href="/quest.html?id=54761">54761</a>, <a href="/quest.html?id=55607">55607</a> and <a href="/quest.html?id=55807">55807</a>) now call it Berserk Raviente, the game's own name for it, instead of "the black Raviente".</li>
 </ul>
 </section>
 <section class="cl-topic" id="d-2026-11-24-sky-corridor" aria-labelledby="d-2026-11-24-sky-corridor-h">
