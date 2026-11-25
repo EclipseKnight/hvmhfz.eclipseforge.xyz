@@ -117,7 +117,7 @@ Felyne Store Opens!	npc	ネコの雑貨屋・開店！	hvmhfz_re shipped/mhfpac.
 Smithy Guide	npc	加工屋の利用法	hvmhfz_re shipped/mhfpac.tsv dde30 (misc)	Smithy	medium	加工屋 = Smithy in the client (also 'Smithy Pick-up Box', 'What are Smithy Tickets?' pac 0x1f0985, 0x1f0897).
 Armory Guide	npc	武具屋の利用法	hvmhfz_re shipped/mhfpac.tsv ddca5 (misc)		medium	武具屋 = Armory.
 Smithy Master	npc		hvmhfz_re data/translations/stage/road-counter.tsv header comment	Smithy Master	medium	Name used in the Road counter lines.
-Hunting Road Counter	counter	狩煉道受付	hvmhfz_re docs/tower-npc.md 1 (NPC kind 0x26); shipped/mhfpac.tsv 3f1c2 'Road Reception (Points)'	H.Road/Sky Corridor counter	medium	Counter menu has Tower and Hunting Road entries. 狩煉道 = Hunting Road in the stage lines, 'H.Road' / 'Road' in the pac short labels.
+H.Road/Sky Corridor	counter	狩煉道受付	hvmhfz_re docs/tower-npc.md 1 (NPC kind 0x26; our patch's dll_text.py writes 'H.Road/Sky Corridor' over the old 'Hunting Road Counter' label, owner 2026-11); shipped/mhfpac.tsv 3f1c2 'Road Reception (Points)'	Hunting Road Counter|Hunting Road counter	high	Counter menu has Tower and Hunting Road entries. 狩煉道 = Hunting Road in the stage lines, 'H.Road' / 'Road' in the pac short labels.
 Road Reception (Points)	menu	狩煉道受付（ポイント関連）	hvmhfz_re shipped/mhfpac.tsv 3f1c2 (ui)		high	
 Road Points Exchange	menu		decoded mhfpac.bin 0x1ee94e (buying options)	Road shop	medium	
 Route Quest Counter	counter		hvmhfz_re docs/tower-npc.md 1 (NPC kind 0x4f, area 210)		medium	
@@ -147,7 +147,7 @@ Hunter Dojo Quest Score	menu	狩人道場 クエストスコア	hvmhfz_re shippe
 Rank-Up Match	menu	狩猟技昇段試合	hvmhfz_re shipped/mhfpac.tsv f475c (ui-c1)	Arena Training|鬥技演習	low	Different Hunting Skill rank-up; guide's 鬥技演習 is not matched by a client string.
 Hunt Art Quests?	menu	狩猟技クエストとは？	hvmhfz_re shipped/mhfpac.tsv 511cf (ui-c1)		medium	Hunting Skill Quests help.
 My Tore	place	マイトレ	hvmhfz_re shipped/mhfpac.tsv 55842 (npc), 5ff9e (rasta)	My Tore	high	
-Rasta	npc		hvmhfz_re docs/rasta-npcs.md	Rasta|AI Companions	medium	
+Rasta	npc		hvmhfz_re docs/rasta-npcs.md	Rasta	medium	
 Clan Rank	menu	猟団の順位	hvmhfz_re shipped/mhfpac.tsv 19f8b (ui-c1)	Guild Rank	medium	The client says Clan for 猟団 in many short labels; the guide and the bot say Guild. Owner rule: use the game's terms.
 Daily Quest Right [x%d]	menu	デイリークエスト権【%d回】	hvmhfz_re shipped/mhfpac.tsv 14d4e (ui-c1)		high	
 Emerg. Hunt	menu	緊急討伐依頼	hvmhfz_re shipped/mhfpac.tsv b9af (ui)	Urgent Quests	medium	Short label; the quest list is 'Urgent Quests'. Set row 110fa8 is 'Urgent Slay Set'.
@@ -161,3 +161,127 @@ My House	place	マイハウス	hvmhfz_re shipped/mhfpac.tsv 138080 (ui-c2, 'To M
 Hunting Medals	currency		decoded mhfpac.bin near 0x1d135b ('receive (%d) Hunting Medals')		medium	
 Hunting Road	place	狩煉道	stage/road-counter.tsv header	H.Road|Hunters Road	medium	
 Tower	place	天廊	stage/road-counter.tsv header	Tower|Sky Corridor	medium	Tower (天廊), Tower Expedition (天廊遠征録); site calls it Sky Corridor (sky-corridor.html).
+General Quest Counter	counter		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0x28 (Mezeporta); dev/make-quest-where.py	Quest Counter|HR counter	high	The HR quest counter; quest paths in dev/quest-where.md start here.
+Free Quest Counter	counter		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0x38/0x4f		medium	dev/quest-where.md: also opens the General Quest Counter rows.
+Series Quest Counter	counter		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0xeb (area 200)		medium	Story series quests and the series item exchange.
+Mama Grocer	npc	食材屋	mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0x2d/0x79 (areas 200, 260); hvmhfz_re docs/food-recipes.md food_shop	Lunchbox NPC|food store|food NPC	high	The food store: bento ingredients, packs bentos.
+Combo Shop Master	npc		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0x2c/0x7a (areas 200, 260)	Combining Store	high	Sells and combines items, beside the General Store and Mama Grocer.
+Treasure Felyne	npc		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0x24; hvmhfz_re docs/gacha-cat.md 1.2		high	Guild Hall: guild treasure hunts.
+Adventure Felyne	npc		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0xfb; hvmhfz_re docs/gacha-cat.md 1.2	Adventure Boat cat	high	Guild Hall: adventures.
+Felyne Chef	npc		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0xfc; hvmhfz_re docs/gacha-cat.md 1.2, guild-hall.md (cooking)	cooking cat	high	Guild Hall: guild cooking.
+Clan Poogie	npc		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0x9a/0xa7/0xa9 'Clan Poogie!!'; hvmhfz_re docs/gacha-cat.md 1.2	Guild Pugi|Guild Poogie	high	The Guild Hall Poogies whose outfits give buffs.
+Agency Felyne	npc		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0x25		medium	Also in My Tore (area 205); its job there needs play.
+Guild Secretary	npc		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0x8d (area 205)		medium	My Tore; its job there needs play.
+Lost & Found Felyne	npc		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0xa3 (area 265)		high	Gives back items and gifts.
+Eldest Sister	npc		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0x8a (My Tore)		high	One of the three My Tore managers.
+Middle Sister	npc		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0x8b (My Tore)		high	One of the three My Tore managers.
+Youngest Sister	npc		mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0x8c (My Tore)		high	One of the three My Tore managers.
+Partnya	npc	パートニャー	mhfo-hd.dll town NPC table 0x11a7d0ec (hvmhfz_re docs/tower-npc.md; gacha-cat.md 1.1), kind 0xf9; shipped/mhfpac.tsv	Partnyaa|Airou companion	high	The hunter's cat companion.
+Kieru	npc		shipped/mhfpac.tsv 5de24 "Kieru Talk"		medium	Raviente NPC.
+Felyne Square	place		hvmhfz_re docs/my-tore.md:15; decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) My Tore manager menu, last entry	Airou Plaza|Extend Plaza	high	The cat stores area of My Tore.
+Departure Facility	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "Departure Facility" (My Tore)		high	Lets a Poogie join quests.
+G Rank License	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "G Rank License"; "G Rank Poogie can now be used. Talk to the My Tore Caretaker"	G Rank Pugi Cuff License|G Rank Cuff License|G Cuff License	high	My Tore: lets the Poogie wear G Rank Skill Cuffs.
+Save Item Set	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1eab0a run ('Saved Item Set %d', 'Use Item Set', 'Save Item Set')	Save Preset	high	Item Box > Item Presets.
+Use Item Set	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1eab0a run	Load Preset	high	Item Box > Item Presets.
+Register Set	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1eab0a run (Store Items, Item Presets, Organize Items, Sell Items, Change Equipment, Register Set)		high	Equipment Box menu.
+Edit Set	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1eab0a run		high	Equipment Box menu.
+Equip Set	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1eab0a run		high	Equipment Box menu.
+Town Set	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1eaabc run ('Town Set', 'Town Set Toggle')		high	Equipment Box menu.
+Town Set Toggle	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1eaabc run		high	Equipment Box menu.
+Quest Set	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1eaab2 run		high	Equipment set kinds.
+Rasta Set	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1eaab2 run; shipped/mhfpac.tsv:12459		high	Equipment set kinds.
+Sigil Production	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "Sigil Production will be available to the options of the Blacksmith Cat"		high	Blacksmith Cat, from G Rank.
+Brand Sigil	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "Brand Sigil", "You can also take back a sigil that has been branded."		high	Blacksmith Cat, from G Rank.
+Gou Weapons	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "Gou Weapons", "Gou weapons can be produced on the [Gou Weapons]"	Gou Weapon	high	Blacksmith menu for the Gou (Goushu) weapon family; quests and monsters are Hardcore in our quest data.
+Gou Armor	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "Gou Armor", "Gou armors can be made at the [Gou Armor]"		high	Blacksmith menu for the Gou (Goushu) armour family.
+My Missions	menu		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "My Missions"		high	Book of Secrets missions.
+SR Skill	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "SR Skill"	SR Skills	medium	Style Rank skills.
+Extreme Style	system		hvmhfz_re docs/quiz-questions.csv (client quiz text)		medium	A weapon style.
+Power Coating Up	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "Power Coating Up", "Critical Distance UP"		high	Gou/Origin gear effect label.
+Heat Cannon Add	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "Heat Cannon Add"		high	Gear effect label.
+Attack Ceiling	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "Attack Ceiling"		high	
+VS. Quests	tab		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) "VS. Quests"; dev/quest-where.md General Quest Counter tree	VS Quests	high	General Quest Counter row: Quest Orders, Tournament Board, Tournament Quests.
+Weapon Art (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Weapon Art (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Weapon Art (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Lander	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Vine Superhero	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Mining Expert	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Insect Expert	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Vine Master	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Hot Master	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Cold Master	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Bonus Art	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Combo Tech (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Combo Tech (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Combo Tech (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Riser (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Riser (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Riser (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Natural Recovery (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Natural Recovery (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Natural Recovery (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Master Carver (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Master Carver (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Master Carver (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Healing Technique (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Healing Technique (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Healing Technique (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Negotiation (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Negotiation (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Negotiation (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Gallery Celebrity (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Gallery Celebrity (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Gallery Celebrity (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Garden Celebrity (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Garden Celebrity (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Garden Celebrity (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Last Minute Ace (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Last Minute Ace (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Last Minute Ace (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Goddess of Luck (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Goddess of Luck (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Goddess of Luck (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Recovery Items Up	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Blunt Striker	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+KO Technique	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Shooting Rampage	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Art of Dancing	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Unstable Defender (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Unstable Defender (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Unstable Defender (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Rousing Attacker (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Rousing Attacker (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Rousing Attacker (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Perfect Defense (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Perfect Defense (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Perfect Defense (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Revenge! (Sm)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Revenge! (Med)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Revenge! (Lg)	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Combination Celebrity	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Cafeteria Regular	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Wild Awakening	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Decisive Hunter	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Instant Guard Stance	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Self-Defense	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Prepared Stance	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Shield Angel	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Spear Angel	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Elite Flame	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		high	Caravan skill.
+Weapon Art	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Combo Tech	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Riser	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Natural Recovery	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Master Carver	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Healing Technique	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Negotiation	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Gallery Celebrity	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Garden Celebrity	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Last Minute Ace	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Goddess of Luck	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Unstable Defender	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Rousing Attacker	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Perfect Defense	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+Revenge!	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client lists it as (Sm), (Med) and (Lg).
+My Tore Celebrity	system		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) Caravan skill list (run 'Weapon Art (Sm)' .. 'Elite Flame')		medium	Caravan skill family: the client cuts the name to 'My Tore Celeb? (Sm)', (Med), (Lg).

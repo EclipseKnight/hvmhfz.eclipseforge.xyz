@@ -1,5 +1,5 @@
 line	claim	kind	verdict	evidence	action
-6	Page title 'English Guild and Guild Hall'	name	DIFFERENT	the original guide author's own guild on the official servers; title is shell-managed (dev/shell/pages.json:21 and every guide sidebar)	note added (hv-guild-chat); site-wide rename left to the lead (outside this batch)
+6	Page title 'English Guild and Guild Hall'	name	DIFFERENT	the original guide author's own guild on the official servers; title is shell-managed (dev/shell/pages.json:21 and every guide sidebar)	note added (hv-guild-chat); renamed site-wide to 'Guild and Guild Hall' (final sweep: pages.json, sidebars, title, h1)
 183	Hall offers a shop, Clan Poogies, a Legendary Rasta, Special Cooking, Treasure Hunters, Adventure Boat	other	TRUE	hvmhfz_re docs/gacha-cat.md 1.2 guild hall NPCs: store cat, Clan Poogie, Felyne Chef, Adventure Felyne, Treasure Felyne	rewritten (Guild Pugis -> Clan Poogies)
 186	Guild chat mode is green with a pink flag next to the input box	rule	CANT-VERIFY	client UI, not in docs; in game: open chat, cycle modes and look at the icon and text colour for Clan chat	kept (note says not checked)
 186	Local chat only reaches players in the same area	rule	CANT-VERIFY	client behaviour; in game: two characters in different town areas, say a line in local chat	kept

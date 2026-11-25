@@ -5,33 +5,20 @@
 # the game's own words on the page, not here.
 page	text	reason
 *	Fist	the original guide's author, credited by name
-*	H.Road/Sky Corridor counter	our client patch labels the counter so (hvmhfz_re docs/tower-npc.md); guide-terms' 'Hunting Road Counter' is the older name
-guide-frontier-g-rank-start.html	Stamina Rec	our skill name is 'Stamina Rec (Small)'; the checker cuts the name at ' ('
+*	H.Road/Sky Corridor counter	our counter's name (dev/guide-terms.tsv, hvmhfz_re docs/tower-npc.md) with the word counter after it
 guide-frontier-hunter-rank.html	Fire Res+N	the client's SR label 'Fire Res+%d' (decoded mhfpac.bin), N = the level
 guide-frontier-hunter-rank.html	Water Res+N	the client's SR label (decoded mhfpac.bin), N = the level
 guide-frontier-hunter-rank.html	Ice Res+N	the client's SR label (decoded mhfpac.bin), N = the level
 guide-frontier-hunter-rank.html	All Res+N	the client's SR label (decoded mhfpac.bin), N = the level
 guide-frontier-hunter-rank.html	Exotic weapons	plain words for the HR5 Exotic gear, not the smith's 'Exotic Weapon' menu
-guide-frontier-progression.html	Hunt the Boar Chief!	exactly our quest name (id 22011); the checker reports a capitals difference it cannot show
-guide-frontier-progression.html	guild	plain word in prose ('the game says Clan')
 guide-frontier-basics.html	Legendary Rasta	singular of our 'Legendary Rastas'
 guide-frontier-basics.html	N Armor materials	an N Points shop row label, not an item name
 guide-frontier-basics.html	Triple Strike 1	Magnet Spike move name (data/weapons/magnet-spike.json 'Triple Strike, hit 1')
 guide-frontier-basics.html	Triple Strike 2	Magnet Spike move name (data/weapons/magnet-spike.json)
 guide-frontier-basics.html	Triple Strike 3	Magnet Spike move name (data/weapons/magnet-spike.json)
-guide-frontier-g-rank.html	Vitality +2	skill points on the Vitality tree in a decoration table, not the skill Vitality+2
-guide-frontier-g-rank.html	Issen +2	skill points on the Issen tree in decoration tables, not the skill Issen+2
-guide-frontier-g-rank.html	Strong Attack +2	skill points on the Strong Attack tree in a decoration table
-guide-frontier-g-rank.html	Strong Attack +3	skill points on the Strong Attack tree in a decoration table
-guide-frontier-g-rank.html	Strong Attack +5	skill points on the Strong Attack tree in the Shiusu armour table
-guide-frontier-g-rank.html	Fencing +2	skill points on the Fencing tree in a decoration table, not the skill Fencing+2
-guide-frontier-hunters-road.html	Defense +30	the Defense Road skill's effect (+30 defence) in the skill table, not the armour skill Defense+30
-guide-frontier-hunters-road.html	Virus Res.	the client's Road skill name with its dot; the checker reads the dot as punctuation
-guide-frontier-hunters-road.html	Frost Res.	the client's Road skill name with its dot; the checker reads the dot as punctuation
 guide-frontier-tools.html	Premium	the Premium armour family (HR5) in the armour path table, not the Premium Quests tab
 guide-frontier-transcend.html	Power Ritual	the family name of the three Power Ritual books (Red, Blue, Dark), all listed below it
 guide-frontier-transcend.html	Purity Ritual	the family name of the three Purity Ritual books (Red, Blue, Dark), all listed below it
-guide-frontier-events.html	g	Raviente weapon points (g and Gg), not G (zenny)
-guide-frontier-events.html	256,540 g	Raviente weapon points, not G (zenny)
-guide-frontier-events.html	1,496,150 g	Raviente weapon points, not G (zenny)
-guide-frontier-events.html	1,752,690 g	Raviente weapon points, not G (zenny)
+*	Gou armour	the Gou armour family in British prose; the Blacksmith menu itself is "Gou Armor"
+guide-frontier-monsters.html	UNKNOWN	the invasion banner's own capitals, quoted
+*	Ranking points	plain words for the points quests give (HRP, GRP, SRP and so on), not the skill Breaking Point

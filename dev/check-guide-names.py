@@ -108,7 +108,7 @@ SKIP_RE = re.compile(
 GENERIC = re.compile(r"^(?:(?:light |dark |pale )?(?:red|blue|green|yellow|white|black|purple|pink|orange|grey|gray|"
                      r"brown|gold|silver)(?:(?:,| and| or|/| /) (?:light |dark )?(?:red|blue|green|yellow|white|black|"
                      r"purple|pink|orange|grey|gray|brown|gold|silver))*|.*\d+\s*%.*)$", re.I)   # colours, percentages
-NAME_SPLIT = re.compile(r"\s*(?::|\s\(|\s[-–—]\s|;)\s*")
+NAME_SPLIT = re.compile(r"\s*(?::|\s\((?!(?:Large|Small|Medium|Lg|Sm|Med|XL)\))|\s[-–—]\s|;)\s*")   # not "Stamina Rec (Large)"
 QTY_RE = re.compile(r"^(?:\d[\d,]*\s*[x×]?\s+(?=[A-Za-z])|[x×]\s*\d+\s+)|\s+(?:[x×]\s*\d+|\(\d+\s*x?\))$", re.I)
 SLOT_WORDS = {"helm", "cap", "head", "headgear", "hat", "mask", "crown", "mail", "vest", "chest", "jacket", "body",
               "braces", "guards", "arms", "gloves", "vambraces", "sleeves", "tasset", "coil", "waist", "belt", "faulds",
@@ -411,13 +411,20 @@ def conf_of(ratio):
 
 def classify(pool, text, source="bold"):
     """(status, kind, our name, confidence, note) for one name, or None when it is not a name we check."""
-    text = QTY_RE.sub("", text.strip()).strip(" .,;!?")
+    raw = QTY_RE.sub("", text.strip()).strip(" ,;")
+    text = raw.strip(" .,;!?")
     if not text:
         return None
     if source == "cjk":
         return classify_cjk(pool, text)
-    if text in pool.exact:
-        return ("matched", pool.kind_of(text), text, "high", "")
+    for name in (raw, text):     # "Capture Pro.", "Hunt the Boar Chief!": the game's own dot or mark
+        if name in pool.exact:
+            return ("matched", pool.kind_of(name), name, "high", "")
+    if not re.search(r"[A-Z0-9" + CJK + "]", text):
+        return None     # lower-case prose ("unknown" in a table) is not a name
+    points = re.match(r"^(.*?)\s+([+-]\d+)$", text)
+    if points and points.group(1) in pool.exact and pool.kind_of(points.group(1)) == "skill":
+        return ("matched", "skill", points.group(1), "high", f"a skill tree with points ({points.group(2)})")
     if key(text) in pool.alias:
         en, kind, conf, note = pool.alias[key(text)]
         return ("mismatched", kind, en, conf, "the guide's name; " + note) if en else \
@@ -425,7 +432,8 @@ def classify(pool, text, source="bold"):
     same = pool.by_key.get(key(text))
     if same:
         name = sorted(same)[0]
-        if unicodedata.normalize("NFKC", name) == unicodedata.normalize("NFKC", text):
+        if unicodedata.normalize("NFKC", name) in (unicodedata.normalize("NFKC", text),
+                                                    unicodedata.normalize("NFKC", raw)):
             return ("matched", pool.kind_of(name), name, "high", "the game writes full-width letters")
         return ("mismatched", pool.kind_of(name), name, "high", "capitals, spaces or punctuation differ")
     for cut in ("es", "s"):
@@ -602,15 +610,15 @@ def path_parts(text):
         pieces = re.split(r"\s+>\s+", s)
         if len(pieces) < 2:
             continue
-        lead = re.search(r"((?:(?:[A-Z★0-9][\w'’&/★.-]*|of|the|and|for|in)\s+)*[A-Z★0-9][\w'’&/★.-]*)\s*$", pieces[0])
-        tail = re.match(r"\s*((?:[A-Z★0-9][\w'’&/★.-]*)(?:\s+(?:[A-Z★0-9][\w'’&/★.-]*|of|the|and|for|in)(?=\s+[A-Z★0-9]|$))*"
-                        r"(?:\s+[A-Z★0-9][\w'’&/★.-]*)*)", pieces[-1])
+        lead = re.search(r"((?:(?:[A-Z★0-9][\w'’&/★・.-]*|of|the|and|for|in)\s+)*[A-Z★0-9][\w'’&/★・.-]*)\s*$", pieces[0])
+        tail = re.match(r"\s*((?:[A-Z★0-9][\w'’&/★・.-]*)(?:\s+(?:[A-Z★0-9][\w'’&/★・.-]*|of|the|and|for|in)(?=\s+[A-Z★0-9]|$))*"
+                        r"(?:\s+[A-Z★0-9][\w'’&/★・.-]*)*)", pieces[-1])
         if not lead or not tail:
             continue
         parts = [lead.group(1).strip()] + [p.strip() for p in pieces[1:-1]] + [tail.group(1).strip()]
         parts = [re.sub(r"^(?:the|a|in|on|at|from|then|open|use|pick|choose|select|go to)\s+", "", p, flags=re.I)
                  for p in parts]
-        if any(re.search(r"[,()]|^\d+$|[" + CJK + "]", p) for p in parts):
+        if any(re.search(r"[,()]|^\d+$|[" + CJK + "]", p.replace("・", "")) for p in parts):
             continue     # "Great Sword 1 > 8 > 17" (levels), "GS > SnS, Lance" (orders), Chinese menu text
         if all(parts) and all(len(p) <= 50 for p in parts):
             found = " > ".join(parts)
@@ -713,7 +721,8 @@ def report(rows, pool, top=25):
     print("by where found: " + ", ".join(f"{s} {c['matched']}/{c['mismatched']}/{c['unknown']}" for s, c in
                                           sorted(src.items())))
     spacing = [r for r in rows if r[4] == "mismatched" and r[8].startswith("capitals, spaces")]
-    print(f"of the mismatches, {len(spacing)} differ only in capitals, spaces or punctuation (e.g. Issen +2 / Issen+2)")
+    eg = f" (e.g. {spacing[0][2]} / {spacing[0][6]})" if spacing else ""
+    print(f"of the mismatches, {len(spacing)} differ only in capitals, spaces or punctuation{eg}")
     miss = Counter((r[2], r[6], r[5], r[7]) for r in rows if r[4] == "mismatched" and r not in spacing)
     if miss:
         print(f"top mismatches (guide name -> ours, kind, confidence, times):")
@@ -978,6 +987,25 @@ def self_test():
     sc = lambda i, s: -4.0 if "dummy" in eng[i] else 2.0
     expect("the alignment skips a dummy item", {i: k for i, (k, _) in _align(ids, ks, strs, sc).items()},
            {10: 0, 11: 1, 13: 2, 14: 3, 15: 4})
+    for name, kind in (("Hunt the Boar Chief!", "quest"), ("Capture Pro.", "skill"), ("Virus Res.", "skill"),
+                       ("Issen", "skill"), ("Issen+2", "skill"), ("Stamina Rec (Large)", "skill"),
+                       ("Unknown", "monster"), ("G Rank Quest Counter", "counter"),
+                       ("Conquest・Shiten Quests", "tab")):
+        pool.add(name, kind)
+    expect("a name ending in ! matches exactly", classify(pool, "Hunt the Boar Chief!", "quote")[:3],
+           ("matched", "quest", "Hunt the Boar Chief!"))
+    expect("a name ending in a dot matches exactly", [classify(pool, n, "cell")[:3] for n in ("Capture Pro.", "Virus Res.")],
+           [("matched", "skill", "Capture Pro."), ("matched", "skill", "Virus Res.")])
+    expect("skill tree points are not the skill of that level", classify(pool, "Issen +2", "cell")[:3],
+           ("matched", "skill", "Issen"))
+    expect("the skill itself still matches", classify(pool, "Issen+2", "cell")[:3], ("matched", "skill", "Issen+2"))
+    expect("a lower-case word in a table is prose", classify(pool, "unknown", "cell"), None)
+    expect("a path keeps ・ inside a menu name",
+           path_parts("It is at G Rank Quest Counter > Conquest・Shiten Quests: a list."),
+           [(9, "G Rank Quest Counter > Conquest・Shiten Quests", ["G Rank Quest Counter", "Conquest・Shiten Quests"])])
+    expect("a cell keeps a size in brackets",
+           {c[1] for c in candidates("<main><table><tr><td>Stamina Rec (Large)</td><td>Issen (any)</td></tr></table></main>")},
+           {"Stamina Rec (Large)", "Issen"})
     print(f"{sum(cases)} of {len(cases)} cases pass")
     return 0 if all(cases) else 1
 
