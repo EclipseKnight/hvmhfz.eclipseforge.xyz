@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Game systems · Frontier guide · Hunsterverse</title>
+<meta name="description" content="Every Frontier Z system on one page: Hunter Navi, Partner, Halk, Poogie, Rastas, guild, Caravan, Diva, Raviente, Hunting Road, Sky Corridor and more, with when each one opens and what differs on Hunsterverse." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hunsterverse" />
+    <meta property="og:title" content="Game systems · Frontier guide" />
+    <meta property="og:description" content="Every Frontier Z system on one page: Hunter Navi, Partner, Halk, Poogie, Rastas, guild, Caravan, Diva, Raviente, Hunting Road, Sky Corridor and more, with when each one opens and what differs on Hunsterverse." />
+    <meta property="og:url" content="https://frontier.hunsterverse.net/guide-frontier-systems.html" />
+    <meta property="og:image" content="https://frontier.hunsterverse.net/assets/og/guide-frontier-systems.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Game systems · Frontier guide" />
+    <meta name="twitter:description" content="Every Frontier Z system on one page: Hunter Navi, Partner, Halk, Poogie, Rastas, guild, Caravan, Diva, Raviente, Hunting Road, Sky Corridor and more, with when each one opens and what differs on Hunsterverse." />
+    <meta name="twitter:image" content="https://frontier.hunsterverse.net/assets/og/guide-frontier-systems.png" />
+<meta name="theme-color" content="#150e09" />
+<link rel="icon" href="/assets/favicon.png?v=2" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
+<link rel="stylesheet" href="/css/styles.css?v=27" />
+<link rel="stylesheet" href="/css/guide-frontier.css" />
+<script src="/js/nav.js" defer></script>
+<script src="/js/background.js" defer></script>
+<script src="/js/consent.js" defer></script>
+<script src="/js/search.js?v=8" defer></script>
+<script src="/js/guide-frontier.js" defer></script>
+</head>
+<body class="guide guide-frontier">
+    <!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Hunsterverse Z home"><img class="brand-logo" src="/assets/brand/hunsterverse.gif" alt="Hunsterverse Z" /></a>
+        <div class="nav-status" data-state="loading">
+          <button type="button" class="nav-status-toggle" aria-expanded="false" aria-controls="nav-status-panel">
+            <span class="nav-status-dot" aria-hidden="true"></span><span class="nav-status-label">Server</span>
+          </button>
+          <div class="nav-status-panel" id="nav-status-panel" role="region" aria-label="Server status and how to connect" hidden>
+            <p class="nav-status-head"><span class="nav-status-dot" aria-hidden="true"></span><strong class="nav-status-title">Checking the server</strong></p>
+            <p class="nav-status-sub">Hunters online and which ports answer, checked every minute.</p>
+            <ul class="nav-status-ports"></ul>
+            <h3 class="nav-status-h">Connect in the launcher</h3>
+            <table class="nav-status-connect">
+              <tbody>
+                <tr><th scope="row">Host</th><td><code data-connect="host">129.213.54.221</code></td><td><button type="button" class="nav-copy" data-nav-copy="host">Copy</button></td></tr>
+                <tr><th scope="row">Launcher port</th><td><code data-connect="launcherPort">8080</code></td><td><button type="button" class="nav-copy" data-nav-copy="launcherPort">Copy</button></td></tr>
+                <tr><th scope="row">Game port</th><td><code data-connect="gamePort">53310</code></td><td><button type="button" class="nav-copy" data-nav-copy="gamePort">Copy</button></td></tr>
+                <tr><th scope="row">Server mode</th><td><code data-connect="mode">API</code></td><td></td></tr>
+                <tr><th scope="row">Version</th><td><code data-connect="version">ZZ</code></td><td></td></tr>
+              </tbody>
+            </table>
+            <p class="nav-status-note">API mode will not log in? Use launcher port <code data-connect="signPort">53312</code> with mode <code data-connect="fallbackMode">SignV1</code>.</p>
+            <p class="nav-status-links"><a href="/play.html">Setup guide</a><a href="/worlds.html">Worlds</a><a href="https://discord.gg/NQrvRdRwU8">Discord</a></p>
+          </div>
+        </div>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" hidden>Menu</button>
+        <nav id="site-menu" aria-label="Main">
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle is-current" aria-expanded="false" aria-controls="nav-guides">Guides</button>
+            <div class="nav-menu" id="nav-guides">
+              <a class="navlink" href="/play.html">Play</a>
+              <a class="navlink" href="/guide-frontier.html" aria-current="page">Frontier guide</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-database">Database</button>
+            <div class="nav-menu" id="nav-database">
+              <a class="navlink" href="/database.html">Search everything</a>
+              <a class="navlink" href="/monsters.html">Monsters</a>
+              <a class="navlink" href="/quests.html">Quests</a>
+              <a class="navlink" href="/items.html">Items</a>
+              <a class="navlink" href="/sources.html">Sources</a>
+              <a class="navlink" href="/currencies.html">Currencies</a>
+              <a class="navlink" href="/skills.html">Skills</a>
+              <a class="navlink" href="/food.html">Food and Bentos</a>
+              <a class="navlink" href="/weapons.html">Weapons</a>
+              <a class="navlink" href="/balance.html">Balance changes</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-tools">Tools</button>
+            <div class="nav-menu" id="nav-tools">
+              <a class="navlink" href="/set-builder.html">Set builder</a>
+              <a class="navlink" href="/community-sets.html">Community sets</a>
+              <a class="navlink" href="/quest-editor.html">Quest builder</a>
+              <a class="navlink" href="/weapons.html#calc">Damage calculator</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-road">Hunting Road</button>
+            <div class="nav-menu" id="nav-road">
+              <a class="navlink" href="/road-vote.html">Rotation and vote</a>
+              <a class="navlink" href="/road.html">Road builder</a>
+              <a class="navlink" href="/road-history.html">Past winners</a>
+              <a class="navlink" href="/road-data.html">Road data</a>
+              <a class="navlink" href="/guide-roads.html">Roads in game</a>
+              <a class="navlink" href="/sky-corridor.html">Sky Corridor</a>
+              <a class="navlink" href="/tower-weapons.html">Tower weapons</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-community">Community</button>
+            <div class="nav-menu" id="nav-community">
+              <a class="navlink" href="/hunters.html">Hunters</a>
+              <a class="navlink" href="/guilds.html">Guilds</a>
+              <a class="navlink" href="/leaderboards.html">Leaderboards</a>
+              <a class="navlink" href="https://discord.gg/NQrvRdRwU8">Discord</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <button type="button" class="navlink nav-group-toggle" aria-expanded="false" aria-controls="nav-server">Server</button>
+            <div class="nav-menu" id="nav-server">
+              <a class="navlink" href="/worlds.html">Worlds</a>
+              <a class="navlink" href="/events.html">Events</a>
+              <a class="navlink" href="/tournaments.html">Tournaments</a>
+              <a class="navlink" href="/changelog.html">Changelog</a>
+              <a class="navlink" href="/report.html">Report a problem</a>
+              <a class="navlink" href="/diagnostics-data.html">Live diagnostics data</a>
+            </div>
+          </div>
+          <a class="navlink nav-cta nav-account" href="/account.html">Sign in</a>
+        </nav>
+      </div>
+    </header>
+    <!-- /site-shell:header -->
+
+<div class="hb-layout">
+<!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
+<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Guides</li><li><a href="/guide-frontier.html">Frontier guide</a></li><li><a href="/guide-frontier.html#start">Getting started</a></li><li aria-current="page">Game systems</li></ol></nav>
+<!-- /site-shell:crumbs -->
+<aside class="hb-side" aria-label="Guide contents">
+<details class="hb-panel hb-toc"><summary>On this page</summary>
+<ol>
+<li><a href="#at-a-glance">Systems at a glance</a></li>
+<li><a href="#hunter-navi">Hunter Navi</a></li>
+<li><a href="#halk">Halk</a></li>
+<li><a href="#partner">Partner</a></li>
+<li><a href="#partnya">Partnya (Felyne companion)</a></li>
+<li><a href="#rasta">Rastas, Fostas and Legendary Rastas</a></li>
+<li><a href="#poogie">Poogie (My Tore)</a></li>
+<li><a href="#gu-ku">Gu-ku (My Garden)</a></li>
+<li><a href="#my-house">My House</a></li>
+<li><a href="#kitchen">Kitchen and food</a></li>
+<li><a href="#courses">Courses, Net Cafe and Hunter Life</a></li>
+<li><a href="#daily-rewards">Daily and weekly rewards</a></li>
+<li><a href="#gifts">Gifts (Claim Items)</a></li>
+<li><a href="#gacha">Gacha</a></li>
+<li><a href="#restyle">Transmog and Restyle</a></li>
+<li><a href="#guild">Guild (Clan)</a></li>
+<li><a href="#treasure-hunt">Treasure hunts</a></li>
+<li><a href="#caravan">Caravan</a></li>
+<li><a href="#diva">The Diva and Diva Defense</a></li>
+<li><a href="#raviente">Raviente</a></li>
+<li><a href="#mezfes">MezFes</a></li>
+<li><a href="#hunter-festival">Hunter Festival</a></li>
+<li><a href="#tournaments">Speedrun Cup and VS Bracket</a></li>
+<li><a href="#campaigns">Event quests and campaigns</a></li>
+<li><a href="#conquests">Conquests</a></li>
+<li><a href="#hunting-road">Hunting Road</a></li>
+<li><a href="#sky-corridor">Sky Corridor (Tower)</a></li>
+<li><a href="#sigils">Sigils</a></li>
+<li><a href="#hiden">Style Rank and Hiden</a></li>
+<li><a href="#gsr">GSR (G Rank Style Rank)</a></li>
+<li><a href="#zenith">Zenith and Zenith skills</a></li>
+<li><a href="#transcend">Transcend</a></li>
+<li><a href="#musou">Musou</a></li>
+<li><a href="#exotic">Exotic gear</a></li>
+<li><a href="#site-tools">Our website tools</a></li>
+</ol>
+</details>
+<details class="hb-panel hb-all"><summary>All sections</summary>
+<ul>
+<li><a href="/guide-frontier.html">Frontier guide home</a></li>
+<li class="hb-group">Getting started</li>
+<li><a href="/guide-frontier-basics.html">Basics and Getting Started</a></li>
+<li><a href="/guide-frontier-guild.html">English Guild and Guild Hall</a></li>
+<li><a href="/guide-frontier-house.html">House and AI Companions</a></li>
+<li><a href="/guide-frontier-menus.html">Menus and Town NPCs</a></li>
+<li><a href="/guide-frontier-systems.html" aria-current="page">Game systems</a></li>
+<li class="hb-group">Gear and items</li>
+<li><a href="/guide-frontier-items.html">Items and Materials</a></li>
+<li><a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a></li>
+<li><a href="/guide-frontier-weapons.html">Weapons and Sigils</a></li>
+<li><a href="/guide-frontier-armour.html">Armour, Decorations and Skills</a></li>
+<li><a href="/guide-frontier-transcend.html">Transcend</a></li>
+<li class="hb-group">Monsters and references</li>
+<li><a href="/guide-frontier-monsters.html">Monsters</a></li>
+<li><a href="/guide-frontier-tools.html">Tools and References</a></li>
+<li class="hb-group">Progression</li>
+<li><a href="/guide-frontier-progression.html">Progression: HR1 to Zenith</a></li>
+<li><a href="/guide-frontier-hunter-rank.html">Hunter Rank and Style Rank</a></li>
+<li><a href="/guide-frontier-g-rank-start.html">Starting G Rank</a></li>
+<li><a href="/guide-frontier-g-rank.html">G Rank</a></li>
+<li><a href="/guide-frontier-zenith.html">Zenith (GR200+)</a></li>
+<li class="hb-group">Things to do</li>
+<li><a href="/guide-frontier-quests-food.html">Quests, Food Buffs and Bentos</a></li>
+<li><a href="/guide-frontier-events.html">Regular Events</a></li>
+<li><a href="/guide-frontier-hunters-road.html">Hunter&#x27;s Road</a></li>
+</ul>
+</details>
+</aside>
+<main id="content" class="sheet hb-sheet">
+<p class="kicker">Frontier guide · Getting started · Hunsterverse guide</p>
+<h1>Game systems</h1>
+<p class="lead">Every system in Frontier Z on one page: what it is, how to open it, what it gives you and when it matters, from your first login to the end game. Each section is short and links to the guide page that has the details.</p>
+<div class="box tip"><p><strong>New here?</strong> You do not need everything at once. Start with the <a href="#hunter-navi">Hunter Navi</a>, your <a href="#halk">Halk</a> and a <a href="#partner">Partner</a>, join a <a href="#guild">guild</a>, and look at the table below when a new menu appears. The path through the ranks is on <a href="/guide-frontier-progression.html">Progression</a>. Your own next step is on the <a href="/account.html#characters">Account page</a> (or <code>/next</code> in our Discord).</p></div>
+<p>Names are the ones our English client uses. Older pages of this guide sometimes use the Taiwanese client's words: the game says <strong>Hunter Navi</strong> (the guide's "Hunter Guide"), <strong>My Tore</strong> (the guide's "Pugi Farm"), <strong>Poogie</strong> (the guide's "Pugi"), <strong>Partnya</strong> (the guide's "Partnyaa") and <strong>Clan</strong> for a guild.</p>
+
+<section id="at-a-glance">
+<h2>Systems at a glance</h2>
+<div class="hb-table"><table>
+<thead><tr><th>System</th><th>Opens</th><th>Matters most</th></tr></thead>
+<tbody>
+<tr><td><a href="#hunter-navi">Hunter Navi</a></td><td>First login</td><td>HR1 to early G Rank</td></tr>
+<tr><td><a href="#halk">Halk</a></td><td>First login</td><td>Always; more skills at G Rank and GR150</td></tr>
+<tr><td><a href="#my-house">My House</a>, <a href="#kitchen">House Cook</a></td><td>First login; bigger house with HR</td><td>Always</td></tr>
+<tr><td><a href="#courses">Courses and Net Cafe</a>, <a href="#daily-rewards">daily rewards</a>, <a href="#gifts">gifts</a>, <a href="#gacha">gacha</a></td><td>First login</td><td>Every day</td></tr>
+<tr><td><a href="#guild">Guild (Clan)</a>, <a href="#treasure-hunt">treasure hunts</a></td><td>After the first tutorial quests</td><td>HR2 to end game</td></tr>
+<tr><td><a href="#partner">Partner</a>, <a href="#rasta">Rastas</a>, <a href="#partnya">Partnya</a></td><td>HR2</td><td>HR2 to end game</td></tr>
+<tr><td><a href="#gu-ku">Gu-ku</a></td><td>HR2</td><td>Side activity</td></tr>
+<tr><td><a href="#caravan">Caravan</a>, <a href="#raviente">Raviente</a></td><td>HR 17</td><td>HR2 to G Rank</td></tr>
+<tr><td><a href="#transcend">Transcend</a></td><td>HR3 (HR 31)</td><td>High Rank to end game</td></tr>
+<tr><td><a href="#poogie">Poogie (My Tore)</a></td><td>HR3 or HR4</td><td>HR5 to end game (cuffs)</td></tr>
+<tr><td><a href="#sky-corridor">Sky Corridor (Tower)</a></td><td>About HR 31</td><td>G Rank to end game</td></tr>
+<tr><td><a href="#hiden">Style Rank and Hiden</a>, <a href="#exotic">HR Exotic</a></td><td>HR5 (HR 100)</td><td>HR5 to end game</td></tr>
+<tr><td><a href="#hunting-road">Hunting Road</a></td><td>The H.Road/Sky Corridor counter</td><td>G Rank to end game</td></tr>
+<tr><td><a href="#sigils">Sigils</a>, <a href="#gsr">GSR</a>, <a href="#diva">Diva Defense</a></td><td>G Rank</td><td>G Rank to end game</td></tr>
+<tr><td><a href="#exotic">G Exotic</a>, <a href="#musou">Musou</a></td><td>GR 1 to GR 100 (Musou), GR 100 (G Exotic)</td><td>Late G Rank to end game</td></tr>
+<tr><td><a href="#zenith">Zenith ★1 to ★4</a></td><td>GR 300, 500, 700, 900</td><td>End game</td></tr>
+<tr><td><a href="#hunter-festival">Hunter Festival</a>, <a href="#tournaments">Speedrun Cup and VS Bracket</a>, <a href="#mezfes">MezFes</a>, <a href="#campaigns">campaigns and event quests</a></td><td>Always running</td><td>Any rank</td></tr>
+</tbody>
+</table></div>
+<aside class="box hv-note hv-diff" id="hv-at-a-glance"><p><strong class="hv-verdict">Different.</strong> The ranks above are the game's own. Our server changed a few: Zenith ★1 to ★4 need GR 300, 500, 700 and 900 (since 17 Nov), G Exotic quests open at GR 100, and the 30 GRP quests need GR 900 (since 24 Nov). Each section's note says what else differs here. Everything on this page is what every player has now (client patch v1.30); things that only exist on the Test land are marked so.</p></aside>
+</section>
+
+<section id="hunter-navi">
+<h2>Hunter Navi</h2>
+<p>The Hunter Navi (ハンターナビ) is the game's own list of goals. Each goal teaches one thing (a quest, a menu, a piece of gear) and pays items when you finish it. Some goals only ask you to read them: they complete at once and pay out.</p>
+<dl>
+<dt>How to open it</dt><dd>Press <kbd>Shift</kbd>+<kbd>C</kbd> on the keyboard or <kbd>R1</kbd>+<kbd>R2</kbd> on a pad. The window has HR, GR and Other panels. Pick a goal and confirm to track it; the quest counter then offers the matching quest (the "Navi Recommended Quests" row).</dd>
+<dt>What you get</dt><dd>Cheques you sell for money, GZeny cheques at G Rank, tickets, materials and whole armour sets (the G Newbie set, then the Gurenzeburu decorations). Finishing many goals also earns a trophy in Hunter Experience.</dd>
+<dt>When it matters</dt><dd>From HR1 to your first G Rank sets. The GR panel opens when you reach G Rank and is the best start there. It never runs out of use: open it whenever you rank up.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-basics.html#hunter-guide-tasks">Hunter Navi at HR1</a> and <a href="/guide-frontier-g-rank-start.html#hunter-navigation">the G Rank goals step by step</a>.</p>
+<aside class="box hv-note hv-same" id="hv-hunter-navi"><p><strong class="hv-verdict">Works the same.</strong> The Hunter Navi is on and our server stores its progress (older characters' Navi saves were fixed on 2 Nov, and backups include it). The rewards come from the game itself. We have not played every goal through on our server, and a few goals point at shops that are thin here (see <a href="#courses">Net Cafe</a> and <a href="#diva">Diva</a>). The GR goals that mention Zenith were written for GR 200; Zenith ★1 needs GR 300 here.</p></aside>
+</section>
+
+<section id="halk">
+<h2>Halk</h2>
+<p>The Halk (ハルク) is a small flying dragon that is yours from the first login. It follows you on quests, attacks, heals and supports on its own, and it grows with training and food.</p>
+<dl>
+<dt>How to open it</dt><dd>From the start. Manage it at My Support in your house: the My Support Manager handles training and gear, the Halk Instructor its Skill Books.</dd>
+<dt>What you get</dt><dd>Damage and support in every quest that allows it, and Halk Feathers after quests with monster targets. Feeding (Halk Raw, Fire, Ice and Dragn Feed and the like) changes its element and stats; growth only counts when you clear the quest.</dd>
+<dt>When it matters</dt><dd>All game. At G Rank it can hold more Skill Books, and at GR150 one more. Some quests (the Hunting Road, many event quests) do not allow it.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-house.html#halks">Halks</a> and <a href="/guide-frontier-house.html#halk-skills">Halk skills</a>.</p>
+<aside class="box hv-note hv-same" id="hv-halk"><p><strong class="hv-verdict">Works the same.</strong> The Halk lives in your character's save, which our server stores as the game sends it. Not tested in detail. Daily timers on our server turn over at midnight Japan time (15:00 UTC).</p></aside>
+</section>
+
+<section id="partner">
+<h2>Partner</h2>
+<p>The Partner (パートナー) is your own AI hunter. It lives in your house, joins your quests when a party slot is free, and wears gear you give it. Late in the game a well-built Partner is about as strong as a Legendary Rasta.</p>
+<dl>
+<dt>How to open it</dt><dd>At HR2. First upgrade your house (the House icon, 10,000z), then go to the Rasta bar up the stairs in town and talk to a Legend Rasta who uses the weapon you want: choose Take Partner. Its gender and personality cannot be changed later.</dd>
+<dt>What you get</dt><dd>A fourth hunter for solo play. The Partner menu has Talk, Status, Equipment, Skills and Items. It ranks up as it hunts. Skills are learned with Guild Contribution Points (GCP), not from armour.</dd>
+<dt>When it matters</dt><dd>From HR2 to the end game. Give it gear as you outgrow yours, but note that gear you hand over is gone from your box.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-house.html#partner">Partners</a>, <a href="/guide-frontier-house.html#partner-skill-list">Partner skill list</a> and <a href="/guide-frontier-basics.html#partner">getting your Partner at HR2</a>.</p>
+<aside class="box hv-note hv-unknown" id="hv-partner"><p><strong class="hv-verdict">Unknown, not checked.</strong> Our server stores the Partner and includes it in backups, but we have not tested making or equipping one. GCP comes from quests and <a href="#diva">Diva Defense</a> (see <a href="/currencies.html#gcp">GCP</a>).</p></aside>
+</section>
+
+<section id="partnya">
+<h2>Partnya (Felyne companion)</h2>
+<p>A Partnya (パートニャー; this guide also writes Partnyaa) is a Felyne you hire and train. It comes on quests, works in My Tore's cat facilities and goes on guild treasure hunts.</p>
+<dl>
+<dt>How to open it</dt><dd>At HR2. Hire one from the My Support Manager in your house; the Partnyaa Manager in My Tore picks where it works.</dd>
+<dt>What you get</dt><dd>A small companion with its own skills, gear from the Cat Smith, and the cats you send on <a href="#treasure-hunt">treasure hunts</a>.</dd>
+<dt>When it matters</dt><dd>Early on as a quest helper; later mainly for treasure hunts and My Tore.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-house.html#partnyaa">Felyne Partnyaas</a>.</p>
+<aside class="box hv-note hv-unknown" id="hv-partnya"><p><strong class="hv-verdict">Unknown, not checked.</strong> Partnyas are game content. Hiring and training were not checked here; treasure hunts, which use them, work and are free to send (see <a href="#treasure-hunt">Treasure hunts</a>).</p></aside>
+</section>
+
+<section id="rasta">
+<h2>Rastas, Fostas and Legendary Rastas</h2>
+<p>The Rasta bar is up the stairs in town. A <strong>Rasta</strong> is a copy of a hunter (yours or another player's) that joins quests as an AI. <strong>Fostas</strong> are free stand-ins. <strong>Legendary Rastas</strong> (Legend Rasta) are the game's own NPC hunters; they also give you your <a href="#partner">Partner</a>.</p>
+<dl>
+<dt>How to open it</dt><dd>At HR2: you need HR2 to make your own Rasta or contract someone else's. Talk to the waiter at the bar counter.</dd>
+<dt>What you get</dt><dd>An extra hunter in your party. Contracting a Rasta earns you GCP over time, and other players earn GCP when they use yours. A Rasta's strength depends on your guild loyalty and on its owner's gear.</dd>
+<dt>When it matters</dt><dd>HR2 onward, mostly for solo play. Set which companion comes first in Options &gt; NPC Options.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-house.html#rastas">Fostas and Rastas</a>, <a href="/guide-frontier-house.html#legendary-rastas">Legendary Rastas</a> and <a href="/guide-frontier-g-rank-start.html#g-rastas">Rastas at G Rank</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-rasta"><p><strong class="hv-verdict">Different.</strong> Ordinary Rastas are stored on our server; contracts and borrowing were fixed on 2 Nov. Since client patch v1.29 (15 Nov) the bar also shows three collaboration NPCs (Kaiji Ito, the Man in Coat and the YoRHa Member), who speak English. No account has the Assist (Legend Rasta) course, and our server answers the guild's daily Legendary Rasta request with placeholder data, so contracting a Legendary Rasta probably does not work here (not tested in game). Rastas cannot be made on the Test land.</p></aside>
+</section>
+
+<section id="poogie">
+<h2>Poogie (My Tore)</h2>
+<p>Your Poogies (the pigs; this guide also writes Pugi) live in <strong>My Tore</strong> (マイトレ, the guide's "Pugi Farm"), a part of your house with a manager, daily points and cat shops in the Airou Plaza. A Poogie in an outfit with a <strong>Pugi cuff</strong> adds skill points to your armour, like a charm.</p>
+<dl>
+<dt>How to open it</dt><dd>At HR3 or HR4 (the old guide gives both). Enter from the house door with the pig icon; the first NPC asks three questions that pick your manager (one of three sisters).</dd>
+<dt>What you get</dt><dd>My Tore Points every day (1 or 2, up to 99), spent on facilities, the cat shop, combiner and adventurer; carving and gathering help from the Poogie; skill points from cuffs. G Rank cuffs need the <strong>G Rank Pugi Cuff Licence</strong> at GR 50; at GR 100 and GR 600 more cuffs and My Tore facilities open.</dd>
+<dt>When it matters</dt><dd>From HR5, when sets start to need extra skill points, to the end game (Zenith and PZ cuffs).</dd>
+</dl>
+<p>The <strong>Guild Poogie</strong> is a different pig: the guild's own, fed in the Guild Hall for a buff (see <a href="#guild">Guild</a>).</p>
+<p>More: <a href="/guide-frontier-house.html#pugi-farm">Pugi Farm (My Tore)</a>, <a href="/guide-frontier-house.html#pugi-cuffs">Pugi cuffs</a>, <a href="/guide-frontier-g-rank.html#g-pugi-cuffs">G Rank Pugi cuffs</a> and <a href="/guide-frontier-zenith.html#zenith-cuffs">Zenith cuffs</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-poogie"><p><strong class="hv-verdict">Different.</strong> My Tore works from your save, which our server stores. Outfits bought with real money do not exist here; the "Poogie Dressup!" gift gives outfits 1 to 30 (fixed 23 Oct). Since patch v1.21 the Tore Poogie's item lasts through a crash or relog for 12 hours. Every account has the Premium course, so its My Tore perks should apply (not tested in game). The daily points turn over at midnight Japan time (15:00 UTC); not checked in game.</p></aside>
+</section>
+
+<section id="gu-ku">
+<h2>Gu-ku (My Garden)</h2>
+<p>Gu-ku (グーク) are small pets that live in My Garden, the Gu-ku Farm of your house. You hatch them, dress them, cook with them and send them to dig for items.</p>
+<dl>
+<dt>How to open it</dt><dd>From HR2. Your first Gu-ku comes from a quest line given by the Guild Mistress; more eggs come from Gu-ku quests. Talk to the Gu-ku Manager in the garden. You can keep up to five.</dd>
+<dt>What you get</dt><dd>Gu-ku Cooking, house-sitting finds (the Straw Felyne hands you the results after each quest), outfits and a few exclusive items.</dd>
+<dt>When it matters</dt><dd>A side activity at any rank.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-house.html#guku-farm">Gu-ku Farm</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-gu-ku"><p><strong class="hv-verdict">Different.</strong> Our server stores your Gu-ku. Since 24 Nov a released Gu-ku keeps its place, so hatching a new one no longer overwrites one you kept (Gu-ku lost before the fix cannot be brought back), and character backups now include your Gu-ku. The Gu-ku that wander in town in some guides do not exist in this client. Gu-ku Cooking was not checked in detail.</p></aside>
+</section>
+
+<section id="my-house">
+<h2>My House</h2>
+<p>My House (マイハウス) is your home. It holds your item box, a dining table for the House Cook, a bookshelf, a display gallery and the doors to My Garden (<a href="#gu-ku">Gu-ku</a>), My Support (<a href="#halk">Halk</a> and <a href="#partnya">Partnyas</a>), <a href="#poogie">My Tore</a>, the Airou Plaza and the SR Challenge Room. Your <a href="#partner">Partner</a> lives here too. Friends and guild mates can visit.</p>
+<dl>
+<dt>How to open it</dt><dd>From the first login; the house grows with your HR and with the House icon upgrades (HR2 for the Partner).</dd>
+<dt>What you get</dt><dd>Storage (item box, equipment box, presets), meals from the House Cook, and the <strong>Mail Cat</strong>, who moves items between characters on your account.</dd>
+<dt>When it matters</dt><dd>All game. Grow your box early: see <a href="/guide-frontier-item-box.html#box-capacity">Getting more box space</a>.</dd>
+</dl>
+<p><strong>Mail</strong> is in Community &gt; Mail: up to 40 mails, some carrying items. More: <a href="/guide-frontier-house.html#house">House</a>, <a href="/guide-frontier-menus.html#house-npcs">House facility NPCs</a> and <a href="/guide-frontier-item-box.html">Equipment and Item Boxes</a>.</p>
+<aside class="box hv-note hv-same" id="hv-my-house"><p><strong class="hv-verdict">Works the same.</strong> House interiors and the bookshelf for visitors were fixed on 2 Nov. Moving items between characters needs the Extra course, which every account has. Character backups hold the house layout, Partner and Felynes, but not your mail, warehouse or shared item box (those stay on the server).</p></aside>
+</section>
+
+<section id="kitchen">
+<h2>Kitchen and food</h2>
+<p>Food gives buffs before a quest. There are three kinds.</p>
+<dl>
+<dt>Bentos</dt><dd>Two ingredients packed at the Lunchbox NPC and posted with a quest, so the whole party eats. See <a href="/food.html">Food and Bentos</a> for every pair and <a href="/guide-frontier-quests-food.html#bentos">Bentos</a>.</dd>
+<dt>House Cook</dt><dd>Sit at a dining table in your house for a meal that skips the bento posted with the quest; handy for food that lowers HP.</dd>
+<dt>Guild cooking</dt><dd>The guild's Special Cooking in the Guild Hall, with stronger skills such as resistances (see <a href="#guild">Guild</a>).</dd>
+</dl>
+<aside class="box hv-note hv-same" id="hv-kitchen"><p><strong class="hv-verdict">Works the same.</strong> Bentos and the House Cook are game content. The bento ingredients and where to buy them here are on <a href="/food.html#ingredients">Food and Bentos</a>. Guild meals differ: see <a href="#hv-guild">Guild</a>.</p></aside>
+</section>
+
+<section id="courses">
+<h2>Courses, Net Cafe and Hunter Life</h2>
+<p>On the old official servers you paid for courses: Hunter Life (HL), Extra (EX), Premium and the Net Cafe course. They opened services (mail, guild creation, better shops) and gave daily bonuses.</p>
+<dl>
+<dt>Net Cafe</dt><dd>A daily check-in pays 5 N Points and refills the day's daily quests (10) and bonus quests (3). Time logged in during the week pays more N Points (250 at 30 minutes up to 100,000 at 167 hours). There is also a 2-hour Boost Time each day.</dd>
+<dt>Your courses</dt><dd>Shown on the Guild Card's Subscription page.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-basics.html#courses">Courses on the official servers</a>, <a href="/guide-frontier-hunsterverse.html#courses">course perks here</a> and <a href="/currencies.html#n-points">N Points</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-courses"><p><strong class="hv-verdict">Different.</strong> Nothing is paid for here. Every account has Trial, Hunter Life, Extra, Premium and the Net Cafe courses, free and never running out (the server sends an expiry of 1 January 2030 at every login). No account has the Assist (Legend Rasta), Hiden or Hunter Support courses, and the monthly course items are not sent. The Net Cafe day starts at 03:00 UTC. What the Net Cafe (N Points) shop holds here was not checked.</p></aside>
+</section>
+
+<section id="daily-rewards">
+<h2>Daily and weekly rewards</h2>
+<p>A short routine pays well. Things that refill every day or week:</p>
+<ul>
+<li><strong>Log In Bonus</strong> (start menu) and the <strong>Log In Boost</strong>; quest stamp and daily bonus items wait at the Warehouse NPC. See <a href="/guide-frontier-basics.html#daily-routine">Daily routine</a>.</li>
+<li><strong>Daily Free Draw</strong> at the Gacha Felyne: 3 draws a day (resets 03:00 UTC). See <a href="#gacha">Gacha</a>.</li>
+<li><strong>Net Cafe</strong> check-in: 5 N Points and your daily quests (see <a href="#courses">Courses</a>).</li>
+<li><strong>Sky Corridor Daily Rewards</strong>: 5 Tower Medals a day, plus six daily tasks (2 or 3 medals each, 5 for the day's Guardian), at the H.Road/Sky Corridor counter, Tower &gt; Daily Rewards. See <a href="#sky-corridor">Sky Corridor</a>.</li>
+<li><strong>My Tore</strong> points from your manager (see <a href="#poogie">Poogie</a>).</li>
+<li>Weekly: 10 <strong>Trial Coin G</strong> (gift, Mondays), the <strong>Weekly Supply Drop</strong> campaign, 1 HL and 1 EX <strong>stamp</strong> (traded at the Purple Guild Sweetheart's Ticket Exchange), and your <strong>MezFes</strong> tickets.</li>
+</ul>
+<aside class="box hv-note hv-diff" id="hv-daily-rewards"><p><strong class="hv-verdict">Different.</strong> The login boost is on. The Daily Free Draw, weekly coins, Weekly Supply Drop and Sky Corridor daily rewards are our own. Daily timers mostly turn over at midnight Japan time (15:00 UTC); the gacha and Net Cafe at 03:00 UTC. All amounts: <a href="/currencies.html">Currencies</a>.</p></aside>
+</section>
+
+<section id="gifts">
+<h2>Gifts (Claim Items)</h2>
+<p>Gifts from the server wait in a list until you claim them. Use <strong>Claim Items</strong> at the Gacha Felyne or at the Guide at the plaza entrance; the Purple Guild Sweetheart's Receive Items menu holds event and compensation items.</p>
+<p>Gifts on our server come from: the weekly Trial Coin G, the gift after every Hunter Festival, Diva Defense, Speedrun Cup week and VS Bracket (5 GW Lottery Tickets and 5 Trial Coin G, claim within 28 days), Speedrun Cup and VS Bracket prizes, Hunting Road board prizes (claimed on the <a href="/account.html">Account page</a>, then delivered here) and the campaigns. The Mezeporta launcher also shows your unclaimed gifts.</p>
+<aside class="box hv-note hv-diff" id="hv-gifts"><p><strong class="hv-verdict">Different.</strong> The gifts are our own (the old web gift box and course bonus items do not exist). Each gift can be claimed only as often as it allows. Weekly Conquest gifts are not given, because Conquest is off. See <a href="/currencies.html">Currencies</a> and <a href="/events.html">Events</a>.</p></aside>
+</section>
+
+<section id="gacha">
+<h2>Gacha</h2>
+<p>The Gacha Felyne (our changelog says Gacha Cat) runs the lotteries. Five kinds are live since 5 Nov:</p>
+<dl>
+<dt>Daily Free Draw</dt><dd>3 draws once a day.</dd>
+<dt>Materials Gacha 1, 2 and 3</dt><dd>Pay with common materials (such as 10 Iron Ore) or 5,000 zenny; 3 draws a play, no limit.</dd>
+<dt>Coin Step-Up and Coin Lucky Box</dt><dd>Pay with gacha coins. The Step-Up also gives Frontier Points on steps 2 and 3.</dd>
+<dt>Event Ticket Box</dt><dd>1 GW Lottery Ticket a draw; 20 empty the box.</dd>
+</dl>
+<p>Prizes are potions and drugs, sigil materials and tickets, Tower Medals, Divine Power Gems, Guild Point Tkts, Goushu Tickets, Cost Books and Road Respecs. Each gacha's full list is on <a href="/sources.html">Sources</a>. Coins: <a href="/currencies.html#trial-coin">Trial Coin G</a> (10 free a week) and <a href="/currencies.html#golden-coin">Golden Coin G</a> (Hunting Road prizes); a draw uses trial coins first. Point Redemption (Frontier Points) is also at the Gacha Felyne.</p>
+<aside class="box hv-note hv-diff" id="hv-gacha"><p><strong class="hv-verdict">Different.</strong> The gachas and their prizes are our own, and there are no paid coins. The old lottery-only gear (PZ cuffs, Premium and Lottery ZP armour, Skill Fruits, Hiden Stones) is not in them. Gachas are off on the Test land.</p></aside>
+</section>
+
+<section id="restyle">
+<h2>Transmog and Restyle</h2>
+<p><strong>Transmog</strong> at the Blacksmith changes how your armour looks without changing its stats. <strong>Restyle</strong> changes your character's look (face, hair, voice), which on the old servers cost paid Restyle Points.</p>
+<p>More: <a href="/guide-frontier-armour.html#transmog">Transmog</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-restyle"><p><strong class="hv-verdict">Different.</strong> Transmog works as in the game. Restyle Points are not sold here; they come only from gifts (some "ReStyle your Chara!" gifts exist). Not tested in game.</p></aside>
+</section>
+
+<section id="guild">
+<h2>Guild (Clan)</h2>
+<p>A guild (猟団; the game's English says Clan) is a group of up to 60 hunters with its own chat and Guild Hall. Join one early: guild food, the Guild Poogie and treasure hunts help at every rank.</p>
+<dl>
+<dt>How to open it</dt><dd>After the first tutorial quests, at the Guild Manager in town. Leave the newbie guild, search for a guild by name and apply; the guild approves you. Find one on our <a href="/guilds.html">Guilds</a> page or in Discord.</dd>
+<dt>Guild Hall</dt><dd>Quest givers and guild ticket quests, the guild store and item box, <strong>Special Cooking</strong> (four ingredients, up to four cooks, a buff meal), the <strong>Guild Poogie</strong> (feed it for a buff such as more rewards), <a href="#treasure-hunt">Felyne Treasure Hunters</a> and the <strong>Felyne Adventure Boat</strong> (the boat goes out for ingredients and treasure).</dd>
+<dt>Guild rank and RP</dt><dd>Members earn RP (Clan Points) while logged in and donate it: it raises guild rank (more members and Hall features) and pays for the boat and the Sky Corridor guild missions.</dd>
+<dt>Sky Corridor guild missions</dt><dd>Pages of three missions that members complete together by clearing tower quests. See <a href="/sky-corridor.html#missions">Sky Corridor</a>.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-guild.html">English Guild and Guild Hall</a> and <a href="/currencies.html#clan-points">Clan Points</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-guild"><p><strong class="hv-verdict">Different.</strong> Members earn 1 RP for every 15 minutes logged in (added at logout, up to 65,535). A guild meal can be eaten for 7 days after it is cooked (since 3 Nov), and since patch v1.21 its buff lasts its 90 minutes through a crash or relog; the Guild Poogie buff lasts 12 hours the same way. Member limits are 30 up to guild rank 2, 40 up to 6, 50 up to 9 and 60 from 10. Leaders and sub-leaders can also handle applications on the <a href="/account.html">Account page</a> (since 15 Nov). Graduating from a rookie guild is not built. The Adventure Boat was not checked.</p></aside>
+</section>
+
+<section id="treasure-hunt">
+<h2>Treasure hunts</h2>
+<p>Felyne Treasure Hunters: at the Guild Hall's hunt counter you send up to five Partnyas to a destination. They come back with items, and sometimes a treasure that becomes a short quest for guild members. This is where many Pugi cuff materials come from.</p>
+<p>More: <a href="/guide-frontier-guild.html#treasure-hunters">Felyne Treasure Hunters</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-treasure-hunt"><p><strong class="hv-verdict">Different.</strong> Sending cats is free here, with no cooldown, and a hunt is kept for 7 days. The daily souvenirs are off. Leaving a hunt and the cats' names were fixed on 2 Nov.</p></aside>
+</section>
+
+<section id="caravan">
+<h2>Caravan</h2>
+<p>The Caravan Area (Pallone) is next to the town entrance. It holds Caravan Quests, the Caravan Gem and Raviente.</p>
+<dl>
+<dt>How to open it</dt><dd>At HR 17. Talk to Kashira by the bonfire to get your <strong>Caravan Gem</strong> (a coloured icon by your name).</dd>
+<dt>What you get</dt><dd>Caravan skills from the gem (Equip menu, Caravan Skills; the first is Recovery Items Up), Caravan Quests (a chain with set gear) and the Caravan shops.</dd>
+<dt>When it matters</dt><dd>Low and High Rank. Weekly <strong>caravan rankings</strong> by Merit (earned by HR 999 hunters) run all the time.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-events.html#caravan">Caravan</a>, <a href="/guide-frontier-events.html#caravan-gems">Caravan Gems</a> and <a href="/guide-frontier-item-box.html#caravan-gem-skills">Caravan gem skills</a>.</p>
+<aside class="box hv-note hv-missing" id="hv-caravan"><p><strong class="hv-verdict">Not available here yet.</strong> Caravan Quests and the gem are game content, and caravan scores and the weekly rankings work (no weekly gifts). But the server side of the Pallone Caravan is not built: the rewards it sends, the Caravan shop boxes and Pioneering gathering have no source here, so items that only come from them cannot be had yet (from our item source research; not tested in game).</p></aside>
+</section>
+
+<section id="diva">
+<h2>The Diva and Diva Defense</h2>
+<p>The Diva (歌姫) has a story questline, the Diva Song buff and Prayer weapons. <strong>Diva Defense</strong> is a three-week event: in week 1 you pick a Prayer Gem each day and hunt Diva quests for points; week 2 is the guild week (Song of War, Guild Interception); week 3 pays the reward lists and opens the Diva coin shop.</p>
+<dl>
+<dt>How to open it</dt><dd>G Rank for most of it; the Diva menu in town and the Prayer Fountain. The guild week needs a guild.</dd>
+<dt>What you get</dt><dd>GCP (up to 102,000 a run from the personal list), Diva coins, tickets, Prayer materials and Stones for Prayer weapons, and GX and D tickets from the GCP shop.</dd>
+<dt>When it matters</dt><dd>G Rank and Zenith; GCP also pays for <a href="#partner">Partner</a> skills.</dd>
+</dl>
+<p>The <strong>Interceptor's Base</strong> is the map of Guild Interception's huntathon quests. More: <a href="/guide-frontier-events.html#diva-defense">Diva Defense</a>, <a href="/guide-frontier-events.html#guild-interception">Prayer Weapons and Guild Interception</a>, <a href="/guide-frontier-g-rank.html#diva">The Diva</a> and <a href="/currencies.html#gcp">GCP</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-diva"><p><strong class="hv-verdict">Different.</strong> Diva Defense is ours (since 4 Nov), in English, and takes turns with the Hunter Festival (dates on <a href="/events.html">Events</a>). A missed Prayer Gem day is filled in. The reward lists are our own, with thresholds scaled down. The GCP shop holds 135 Diva items. The reward songs' effect and the GCP skills were not tested, and we have not checked whether Interceptor's Base quests are offered.</p></aside>
+</section>
+
+<section id="raviente">
+<h2>Raviente</h2>
+<p>Raviente is a giant serpent fought by the whole server at once, in parties of four, over several phases. It drops materials for Raviente weapons and armour and for top decorations.</p>
+<dl>
+<dt>How to open it</dt><dd>Talk to Kieru in the Caravan Area (Join / Start / Quit Raviente, Claim Rewards). Regular Raviente needs HR 17, Violent HR 100, and Berserk, Extreme Berserk and Small Berserk are G Rank.</dd>
+<dt>What you get</dt><dd>Points for damage, support and phases, then a reward claim; Raviente weapons, armour and gems.</dd>
+<dt>When it matters</dt><dd>A long grind that pays off late: Berserk gear is end-game gear.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-events.html#raviente">Raviente</a>, <a href="/guide-frontier-events.html#berserk-raviente">Berserk Raviente</a> and <a href="/guide-frontier-events.html#raviente-gear">Raviente weapons and armour</a>. In game, <code>!ravi</code> helps with sieges.</p>
+<aside class="box hv-note hv-diff" id="hv-raviente"><p><strong class="hv-verdict">Different.</strong> Raviente runs, with 8 players for Regular, Violent and Small Berserk and 32 for Berserk and Extreme. The game only starts a Berserk or Extreme siege once 24 hunters hold it, more than our server has online, so in practice Regular, Violent and Small Berserk (4 to start) are the ones you can play. On the Test land only (pre-release patch, nothing saved), any siege can start alone, Extreme Berserk needs GR 900, the carve quests pay Divine Power Gems and Raviente weapon levels cost a fiftieth.</p></aside>
+</section>
+
+<section id="mezfes">
+<h2>MezFes</h2>
+<p>MezFes (Mezeporta Festival) is a set of minigames in Mezeporta Square. Each week you get 5 solo tickets and 1 group ticket to play them for prizes.</p>
+<aside class="box hv-note hv-diff" id="hv-mezfes"><p><strong class="hv-verdict">Different.</strong> MezFes is open every day here (it was weekends only). Tickets refill on Monday 00:00 Japan time (Sunday 15:00 UTC); if you are online then, log in again. The minigames' prizes were not checked. See <a href="/currencies.html#mezfes-tickets">MezFes tickets</a>.</p></aside>
+</section>
+
+<section id="hunter-festival">
+<h2>Hunter Festival</h2>
+<p>Guilds join one of two teams, hunt for souls and win prizes by their own and their guild's souls. The winning team gets extra quests.</p>
+<p>More: <a href="/guide-frontier-events.html#hunter-festival">Hunter Festival</a>, the prize table on <a href="/events.html">Events</a> and <a href="/currencies.html#souls">Souls</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-hunter-festival-system"><p><strong class="hv-verdict">Different.</strong> Festivals here take turns with Diva Defense, back to back; the current dates are on <a href="/events.html">Events</a>. Since 17 Nov the prizes are our own lists (36 personal, 24 guild). Everyone who takes part gets the after-event gift (see <a href="#gifts">Gifts</a>). The festival point exchange has no stock.</p></aside>
+</section>
+
+<section id="tournaments">
+<h2>Speedrun Cup and VS Bracket</h2>
+<dl>
+<dt>Speedrun Cup</dt><dd>Weekly. Clear the week's Cup quest from the Event quest list, solo or in a party of four; your fastest clear counts. Every hunter with a time gets prizes.</dd>
+<dt>VS Bracket</dt><dd>Every 14 days. Sign up with <code>!vs join</code> or the VS Tournament screen (up to 32 hunters); each round lasts 2 days and you and your opponent each clear the round's quest alone, whenever you like. The faster clear goes on.</dd>
+</dl>
+<p>Boards and this week's quest: <a href="/tournaments.html">Tournaments</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-tournaments"><p><strong class="hv-verdict">Different.</strong> Both are our own events, running since 5 Nov and taking turns in the second event lane. A clear made with the iframe viewer or damage meter showing is not recorded. The Grand Fish Cup is not built.</p></aside>
+</section>
+
+<section id="campaigns">
+<h2>Event quests and campaigns</h2>
+<p>The <strong>Event quest list</strong> holds every working event quest all year, not on a schedule. The <strong>Event Campaigns</strong> screen in town gives the New &amp; Returning Hunter Pack (once per character: potions, tickets, Tower Medals) and the Weekly Supply Drop (every Monday).</p>
+<p>The <strong>event calendar</strong> runs two lanes at once: the Hunter Festival and Diva Defense take turns, and so do the Speedrun Cup and VS Bracket. MezFes, Raviente, the Sky Corridor, the Hunting Road vote and the caravan rankings are always on. See <a href="/events.html">Events</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-campaigns"><p><strong class="hv-verdict">Different.</strong> The campaigns and the always-open quest list are ours. The game can list up to 2,048 event quests with our patch. See <a href="/guide-frontier-events.html#event-roster">Event roster</a> and <a href="/quests.html">Quests</a>.</p></aside>
+</section>
+
+<section id="conquests">
+<h2>Conquests</h2>
+<p>Conquests (the Conquest War) are weekly guild hunts of four big monsters (Shantien, Disufiroa, Fatalis and Crimson Fatalis) that once unlocked higher levels.</p>
+<p>More: <a href="/guide-frontier-g-rank.html#conquests">Conquests</a>.</p>
+<aside class="box hv-note hv-missing" id="hv-conquests"><p><strong class="hv-verdict">Not available here yet.</strong> Conquest ran for a few hours on 4 Nov and is off: the ZZ client already unlocks every level without it. There are no weekly Conquest gifts, and items that need Conquest materials may have no source here (not checked one by one).</p></aside>
+</section>
+
+<section id="hunting-road">
+<h2>Hunting Road</h2>
+<p>The Hunting Road (狩煉道) is a floor-by-floor run of hunts where you choose a branch after each floor. You cannot bring items. It pays Road Points (RdP) for the Road shop: gems, books, Tower and Zenith materials and much more.</p>
+<dl>
+<dt>How to open it</dt><dd>At the H.Road/Sky Corridor counter (Hunting Road). There is an open Road for parties and a solo Road.</dd>
+<dt>What you get</dt><dd>RdP, Road skills (set at the counter) and the Road shop's stock; Tower Medals from bonus floors.</dd>
+<dt>When it matters</dt><dd>G Rank to end game.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-hunters-road.html">Hunter's Road</a>, <a href="/guide-roads.html">Roads in game</a>, <a href="/road-vote.html">Rotation and vote</a>, <a href="/road-data.html">Road data</a> and <a href="/currencies.html#road-points">RdP</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-hunting-road"><p><strong class="hv-verdict">Different.</strong> Players design Roads in the <a href="/road.html">Road builder</a> and vote every two weeks; the winner goes live, and a party picks any installed Road with <code>!road</code> (the solo Road with <code>!road solo</code>, including a Zenith Road). Each Road pays prizes by place (zenny, Frontier Points and Golden Coin G, claimed on the Account page). The Road shop's Zenith materials need GR 300.</p></aside>
+</section>
+
+<section id="sky-corridor">
+<h2>Sky Corridor (Tower)</h2>
+<p>The Sky Corridor (天廊, the Tower) is a tower of floors with chests, monsters and the boss Duremudira, in four Districts. It is the main source of <strong>Tower weapons</strong> and their upgrade gems (Courage, Glittering and Divine Gems), Tower sigils and Tower Medals.</p>
+<dl>
+<dt>How to open it</dt><dd>From about HR 31 a town event introduces it. Use the H.Road/Sky Corridor counter: Tower has Tower Info, Contribution Rewards, Daily Rewards and the medal exchange.</dd>
+<dt>What you get</dt><dd>Tower points and <strong>Tower Rank</strong>, Tower skills (each has a cost; Cost Books raise your limit), gems and Tower crafting materials, Tower Medals (daily rewards, daily tasks and a one-time present box) and Duremudira gear.</dd>
+<dt>When it matters</dt><dd>G Rank to end game. The 3rd and 4th Districts are Zenith-strength (★2 to ★4), so go there late.</dd>
+</dl>
+<p>More: <a href="/sky-corridor.html">Sky Corridor</a> (progress, boards, guild missions), <a href="/tower-weapons.html">Tower weapons</a> (plan the upgrades), <a href="/guide-frontier-hunters-road.html#tower-weapons">Tower weapons</a> and <a href="/guide-frontier-hunters-road.html#duremudira">Duremudira</a> in this guide.</p>
+<aside class="box hv-note hv-diff" id="hv-sky-corridor"><p><strong class="hv-verdict">Different.</strong> Open since 3 Nov, with our own 3rd and 4th Districts (5 Nov, much tougher since 13 Nov, with better clear rewards since 15 Nov). Clears count without a guild, Duremudira kills and floors go on the boards, and daily rewards, daily tasks and the present box are ours. On the Test land only, Full Map quests become an endless climb, Districts 2 to 4 need Tower Rank 51, 100 and 200, and upgrade gems come only from the Sky Corridor; none of that is live yet.</p></aside>
+</section>
+
+<section id="sigils">
+<h2>Sigils</h2>
+<p>Sigils (シジル) are G Rank add-ons for weapons: each gives skills such as attack, element or length. You make them from sigil materials and set up to three in a weapon.</p>
+<dl>
+<dt>How to open it</dt><dd>G Rank, at the Cat Smith; Zenith sigils later. Tower weapons take their own Tower sigils.</dd>
+<dt>When it matters</dt><dd>All of G Rank and the end game.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-weapons.html#sigils">Sigils</a> and <a href="/guide-frontier-g-rank.html#sigils">Making and using Sigils</a>. Sigil materials and tickets are also gacha prizes (see <a href="#gacha">Gacha</a>).</p>
+<aside class="box hv-note hv-same" id="hv-sigils-system"><p><strong class="hv-verdict">Works the same.</strong> Sigils are client crafting. Premium Sigil tickets, sold in the old Item Mall, are gacha prizes here.</p></aside>
+</section>
+
+<section id="hiden">
+<h2>Style Rank and Hiden</h2>
+<p><strong>Style Rank</strong> (SR) starts at HR5: each weapon type levels on its own with SR points, opens SR skills and a Book of Secrets. <strong>Hiden</strong> (秘伝, the "secret" or Origin skills) is the top of that: Hiden armour, Hiden decorations and Hiden cuffs give a weapon type's Hiden skill. They need Weapon Souls, Ribbons (from GSR) and Merits.</p>
+<dl>
+<dt>How to open it</dt><dd>SR at HR5 (HR 100). Hiden gear is a long grind through G Rank.</dd>
+<dt>When it matters</dt><dd>HR5 for SR skills; Hiden from late G Rank to the end game.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-hunter-rank.html#style-rank">Style Rank</a>, <a href="/guide-frontier-hunter-rank.html#hiden">Hiden</a>, <a href="/guide-frontier-g-rank.html#hiden-decorations">Hiden decorations</a> and <a href="/guide-frontier-armour.html#skills-hiden">Hiden skills</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-hiden"><p><strong class="hv-verdict">Different.</strong> The Souls, Ribbons and Merits grind works as in the game. The five "HL Hiden" tickets the Hunter Life course once sent are not given, and Hiden Stones are not gacha prizes here. A few event quests reward Hiden items; see <a href="/items.html">Items</a> for where each comes from.</p></aside>
+</section>
+
+<section id="gsr">
+<h2>GSR (G Rank Style Rank)</h2>
+<p>GSR is the Style Rank of G Rank: each weapon type gains GSR points in G Rank quests and levels up to GSR 999. GSR opens Extreme Style, raises the weapon's attack and strengthens G Hiden skills; it also earns the Ribbons for Hiden gear.</p>
+<dl>
+<dt>How to open it</dt><dd>When you reach G Rank: the Guild Master moves your weapon types to GSR.</dd>
+<dt>When it matters</dt><dd>From G Rank to the very end. Play the weapon you want to level.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-g-rank-start.html#first-steps">First steps in G Rank</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-gsr"><p><strong class="hv-verdict">Different.</strong> Since 24 Nov the 30 GRP quests (Massive GRP!, Gz &amp; GRP Bonanza and the like) need GR 900, so they no longer skip G Rank; from GR 900 you can still use them to level GSR. The four built into the game also need the next client patch. Weapon progression tied to GSR exists only on the Test land.</p></aside>
+</section>
+
+<section id="zenith">
+<h2>Zenith and Zenith skills</h2>
+<p>Zenith (辿異) monsters are the hardest standard fights, in four tiers, Zenith ★1 to ★4. Their gear brings <strong>Zenith skills</strong>, a separate skill layer (including Skill Slots Up), and Zenith weapons and cuffs.</p>
+<dl>
+<dt>How to open it</dt><dd>Zenith ★1 at GR 300, ★2 at GR 500, ★3 at GR 700 and ★4 at GR 900.</dd>
+<dt>When it matters</dt><dd>The end game.</dd>
+</dl>
+<p>More: <a href="/guide-frontier-zenith.html">Zenith</a>, <a href="/guide-frontier-armour.html#zenith-skills">Zenith skills</a> and <a href="/guide-frontier-progression.html#g-rank">G Rank milestones</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-zenith"><p><strong class="hv-verdict">Different.</strong> Zenith quests need GR 300, 500, 700 and 900 here (were 200, 400, 600 and 800 until 17 Nov); the Zenith materials in the Road shop need GR 300. The older Zenith quests at the quest counter still show the old GR until the next client patch.</p></aside>
+</section>
+
+<section id="transcend">
+<h2>Transcend</h2>
+<p>Transcend is a timed buff you charge during a quest and then set off for strong attack or defence effects. It opens at HR3 and you upgrade it over the whole game.</p>
+<p>Everything about it: <a href="/guide-frontier-transcend.html">Transcend</a>.</p>
+<aside class="box hv-note hv-same" id="hv-transcend"><p><strong class="hv-verdict">Works the same.</strong> Transcend is client content. See the Transcend page's own notes for its upgrade sources here.</p></aside>
+</section>
+
+<section id="musou">
+<h2>Musou</h2>
+<p>Musou quests are hard G Rank fights (G★7 and G★8) against strengthened monsters, such as Musou Zinogre. They give Musou materials and the Musou Armor Boost series. The quest files ask for GR 1 or GR 100 for most of them, and GR 800 for the hardest.</p>
+<p>Find them on <a href="/quests.html?form=Musou">Quests</a> (Form: Musou).</p>
+<aside class="box hv-note hv-diff" id="hv-musou"><p><strong class="hv-verdict">Different.</strong> Musou and Upper Shiten clears here have a small (2 %) chance of a Prayer Stone, and Musou fights often appear as the weekly <a href="#tournaments">Speedrun Cup</a> quest.</p></aside>
+</section>
+
+<section id="exotic">
+<h2>Exotic gear</h2>
+<p>Exotic monsters are strong High Rank and G Rank versions with their own weapons and armour. HR Exotic quests open at HR 100; G Exotic quests (G★8) are the source of G Finesse upgrades.</p>
+<p>More: <a href="/guide-frontier-hunter-rank.html#exotic-and-supremacy">Exotic gear and Supremacy quests</a>, <a href="/guide-frontier-g-rank.html#exotic-and-finesse">Exotic equipment and G Finesse</a> and <a href="/guide-frontier-armour.html#exotic-armour">Exotic armour</a>.</p>
+<aside class="box hv-note hv-diff" id="hv-exotic"><p><strong class="hv-verdict">Different.</strong> G Exotic quests open at GR 100 here (G counter, G Hunter Quests, G Exotic Quests), not GR 500, and there is no GR 800 gate for G Finesse. Since 17 Nov each G Exotic clear gives 1 to 4 Exotic Gem, Exotic Bone or Exotic Shl, by monster. Details: <a href="/guide-frontier-progression.html#g-rank">G Rank milestones</a>.</p></aside>
+</section>
+
+<section id="site-tools">
+<h2>Our website tools</h2>
+<p>Hunsterverse adds tools of its own on this site:</p>
+<ul>
+<li><a href="/quest-editor.html">Quest builder</a>: make your own quests; approved custom quests go on the server for everyone.</li>
+<li><a href="/set-builder.html">Set builder</a> and <a href="/community-sets.html">Community sets</a>: plan a set with the game's own skill rules, load what you own, see what is missing.</li>
+<li><a href="/tower-weapons.html">Tower weapons</a>: plan a Tower weapon's upgrades and costs.</li>
+<li><a href="/road.html">Road builder</a> and <a href="/road-vote.html">Road vote</a>: design and vote on the next Hunting Road.</li>
+<li><a href="/account.html">Account page</a>: your next step, character details, backups, Road prize claims, guild management and game options.</li>
+<li>Look things up: <a href="/monsters.html">Monsters</a>, <a href="/quests.html">Quests</a>, <a href="/items.html">Items</a>, <a href="/sources.html">Sources</a>, <a href="/currencies.html">Currencies</a>, <a href="/skills.html">Skills</a>, <a href="/food.html">Food and Bentos</a> and <a href="/weapons.html">Weapons</a>.</li>
+</ul>
+<aside class="box hv-note hv-diff" id="hv-site-tools"><p><strong class="hv-verdict">Different.</strong> These are ours and replace the old fan sites the original guide pointed to. What changed lately is on the <a href="/changelog.html">Changelog</a>.</p></aside>
+</section>
+<div class="hb-credit">
+<p>Our own page, from our server's code and settings, our research notes, the changelog and the guide's other pages. Things we could not check in game say so. Spotted a mistake? <a href="/report.html">Report it</a> or say so in our <a href="https://discord.gg/NQrvRdRwU8">Discord</a>.</p>
+</div>
+</main>
+</div>
+    <!-- site-shell:footer: edit dev/shell/footer.html, then run python3 dev/site-shell.py -->
+    <footer class="site-foot">
+      <div class="wrap">
+        <nav class="foot-links" aria-label="Footer">
+          <div class="foot-col">
+            <h2 class="foot-head">Guides</h2>
+            <a href="/play.html">Play</a>
+            <a href="/guide-frontier.html">Frontier guide</a>
+            <a href="/guide-roads.html">Roads in game</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Explore</h2>
+            <a href="/database.html">Database</a>
+            <a href="/monsters.html">Monsters</a>
+            <a href="/quests.html">Quests</a>
+            <a href="/items.html">Items</a>
+            <a href="/leaderboards.html">Leaderboards</a>
+            <a href="/road-vote.html">Hunting Road</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">Server</h2>
+            <a href="/changelog.html">Changelog</a>
+            <a href="/worlds.html">Worlds</a>
+            <a href="/report.html">Report a problem</a>
+            <a href="/api.html">API</a>
+          </div>
+          <div class="foot-col">
+            <h2 class="foot-head">About</h2>
+            <a href="/privacy.html">Privacy</a>
+            <a href="/diagnostics-data.html">Live diagnostics data</a>
+                <a href="/bot-terms.html">Bot terms</a>
+            <a href="https://discord.gg/NQrvRdRwU8">Discord</a>
+            <a href="https://hunstermonter.net">hunstermonter.net</a>
+          </div>
+        </nav>
+        <p>Hunsterverse, a Monster Hunter Frontier Z private server. Not affiliated with Capcom.</p>
+      </div>
+    </footer>
+    <!-- /site-shell:footer -->
+  </body>
+</html>
