@@ -216,6 +216,34 @@
     if (!target) return;
     if (window.location.hash === "#" + id) target.scrollIntoView({ block: "start" });
     else window.location.hash = id;
+    land(target);
+  }
+
+  // Once the (smooth) scroll to a section has stopped, puts it right below the bars if it is not there: something
+  // that grew on the way (a picture loading) makes the browser's scroll anchoring push the scroll past the heading.
+  // A wheel, touch or key from the reader in the meantime leaves the page where they take it.
+  function land(target) {
+    var last = null, still = 0, frames = 0, stop = false;
+    function cancel() { stop = true; }
+    var events = ["wheel", "touchstart", "keydown", "mousedown"];
+    events.forEach(function (e) { window.addEventListener(e, cancel, { passive: true }); });
+    function done() {
+      events.forEach(function (e) { window.removeEventListener(e, cancel, { passive: true }); });
+    }
+    function tick() {
+      if (stop) return done();
+      var y = window.pageYOffset;
+      still = y === last ? still + 1 : 0;
+      last = y;
+      if (still < 6 && ++frames < 600) return window.requestAnimationFrame(tick);
+      done();
+      var want = (parseFloat(window.getComputedStyle(root).scrollPaddingTop) || 0) +
+        (parseFloat(window.getComputedStyle(target).scrollMarginTop) || 0);
+      var top = target.getBoundingClientRect().top;
+      var end = window.innerHeight + y >= root.scrollHeight - 2;
+      if (Math.abs(top - want) > 2 && !(end && top > want)) target.scrollIntoView({ block: "start", behavior: "instant" });
+    }
+    window.requestAnimationFrame(tick);
   }
 
   function update() {

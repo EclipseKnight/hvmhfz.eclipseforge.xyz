@@ -33,7 +33,10 @@ main.sheet .hb-source{font-size:.85rem;color:var(--ink-soft);margin:-.4em 0 1.6e
 
 /* pictures: full width, beside the text, or in a row */
 main.sheet figure.hb-fig{margin:1.2em 0;padding:6px;max-width:100%;width:fit-content}
-main.sheet figure.hb-fig img{width:auto;max-width:100%;height:auto;margin:0 auto}
+/* the picture's own size from its width and height attributes (its file's size), so the room is kept before a lazy
+   picture loads: with width:auto it was 0 px high until then, and the page grew under a "Jump to" scroll
+   (js/page-nav.js) and sent it past the heading. content-box: the 1px border goes around that size, as before. */
+main.sheet figure.hb-fig img{box-sizing:content-box;max-width:calc(100% - 2px);height:auto;margin:0 auto}
 main.sheet figure.hb-fig figcaption{margin-top:.5em}
 main.sheet .hb-gallery{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin:1.2em 0}
 main.sheet .hb-gallery figure.hb-fig{margin:0;flex:0 1 auto}

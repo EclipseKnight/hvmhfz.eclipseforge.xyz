@@ -9,7 +9,10 @@
      at the bottom, the last section);
    - the page is never wider than the screen;
    - a #hash load (also from another page, as the account page's next-step links do) puts the target below both
-     bars, in the upper half of the screen (unless the page ends first), once the scroll has settled; the phone's Jump to select does the same;
+     bars, in the upper half of the screen (unless the page ends first), once the scroll has settled; the phone's Jump to select does the same,
+     also when the scroll is knocked off course on the way (js/page-nav.js puts the section back below the bars);
+   - the Frontier guide's pictures hold their room (from their width and height attributes) before they load, so the
+     page does not grow under a Jump to scroll;
    - the guide's Guide select lists the guide pages with this one chosen;
    - no page errors.
 
@@ -158,6 +161,16 @@ async function landed(label, page, id, sel) {
         const sel = navSelector(p.page, width);
         const { ctx, page, errors } = await open(browser, port, width, p.page);
         const top = await state(page, sel);
+        if (/^guide-frontier/.test(p.page)) {
+          // the guide's pictures keep their room (width and height attributes) before they load, so nothing shifts
+          const pics = await page.evaluate(() => Array.prototype.map.call(document.querySelectorAll("figure.hb-fig img"), (img) => ({
+            src: img.getAttribute("src"), done: img.complete && img.naturalWidth > 0, w: img.clientWidth, h: img.clientHeight,
+            want: img.clientWidth * (+img.getAttribute("height")) / (+img.getAttribute("width"))
+          })));
+          const off = pics.filter((x) => !(x.w > 0 && Math.abs(x.h - x.want) <= 1.5));
+          check(label + ": guide pictures hold their room before they load (" + pics.filter((x) => !x.done).length + " not loaded)",
+            !off.length, JSON.stringify(off.slice(0, 3)));
+        }
         if (p.list && sel === "nav.page-nav") check(label + ": no page nav bar at the top (the contents list is in place)", !top.shown);
         if (SHOTS && p.shot) await page.screenshot({ path: path.join(SHOTS, p.shot + "-" + width + "-top.png") });
         await scrollTo(page, 0.5);
@@ -196,6 +209,20 @@ async function landed(label, page, id, sel) {
           });
           check(label + ": Jump to select shown on a phone", !!first);
           if (first) await landed(label + " Jump to #" + first, page, first, sel);
+          if (first && p.page === "guide-frontier-armour.html") {
+            // again from the bottom, with the scroll knocked 700 px off course on the way (as a picture that loads
+            // while the smooth scroll runs does, through the browser's scroll anchoring): it still lands below the bars
+            await scrollTo(page, "bottom");
+            const second = await page.evaluate(async () => {
+              const s = document.querySelector(".page-nav-jump select");
+              s.value = s.options[2].value;
+              s.dispatchEvent(new Event("change"));
+              await new Promise((r) => setTimeout(r, 150));
+              window.scrollBy({ top: 700, behavior: "instant" });
+              return s.options[2].value;
+            });
+            await landed(label + " Jump to #" + second + " knocked off course", page, second, sel);
+          }
         }
         check(label + ": no page errors", !errors.length, errors.join(" | "));
         await ctx.close();
