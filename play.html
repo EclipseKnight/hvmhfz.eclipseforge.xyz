@@ -20,8 +20,8 @@
     <meta name="theme-color" content="#150e09" />
     <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-    <link rel="stylesheet" href="/css/styles.css?v=27" />
-    <script src="/js/nav.js" defer></script>
+    <link rel="stylesheet" href="/css/styles.css?v=28" />
+    <script src="/js/nav.js?v=2" defer></script>
     <script src="/js/background.js" defer></script>
     <script src="/js/consent.js" defer></script>
     <script src="/js/time.js?v=1" defer></script>
@@ -136,7 +136,7 @@
         <p class="page-sub">Pick your path. Each one is a checklist: tick a step when it is done and this browser remembers it. Every step has one download, and the server settings have a copy button.</p>
       </header>
 
-      <nav class="route-tiles play-paths" aria-label="Your path">
+      <nav class="route-tiles play-paths" aria-label="Your path" data-page-nav data-page-nav-label="Your path">
         <a class="tile route-tile" href="#windows"><span><strong>New on Windows</strong><span class="tile-meta">Client, patch, launcher, server and your first login.</span></span></a>
         <a class="tile route-tile" href="#linux"><span><strong>Linux / Steam Deck</strong><span class="tile-meta">With Wine, or our installer on the Steam Deck.</span></span></a>
         <a class="tile route-tile" href="#android"><span><strong>Android</strong><span class="tile-meta">With Winlator. Not tested by us yet.</span></span></a>
@@ -742,5 +742,6 @@ chmod +x ~/Games/MHFZ/run-mezeporta-x11.sh
     </footer>
     <!-- /site-shell:footer -->
       <script src="/js/search.js?v=8" defer></script>
+      <script src="/js/page-nav.js?v=1" defer></script>
   </body>
 </html>

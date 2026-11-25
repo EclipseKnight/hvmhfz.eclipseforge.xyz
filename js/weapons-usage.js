@@ -115,7 +115,11 @@
       e.preventDefault();
       // Keeps ?type=&w= of the Database tab; #usage makes the Usage tab a link of its own.
       history.replaceState(null, "", location.pathname + location.search + (t === "usage" ? "#usage" : ""));
+      // The tab row sticks under the site bar: a change made from far down the page starts the new tab at its top.
+      var bar = tab.closest(".subtabs-bar");
+      var stuck = bar && bar.getBoundingClientRect().top <= parseFloat(getComputedStyle(bar).top) + 1;
       showTab(t, false);
+      if (stuck) window.scrollBy({ top: $("panel-" + t).getBoundingClientRect().top - bar.getBoundingClientRect().bottom, left: 0, behavior: "instant" });
     });
     tab.addEventListener("keydown", function (e) {
       var step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;

@@ -20,8 +20,8 @@
 <meta name="theme-color" content="#150e09" />
 <link rel="icon" href="/assets/favicon.png?v=2" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-<link rel="stylesheet" href="/css/styles.css?v=27" />
-<script src="/js/nav.js" defer></script>
+<link rel="stylesheet" href="/css/styles.css?v=28" />
+<script src="/js/nav.js?v=2" defer></script>
 <script src="/js/background.js" defer></script>
 <script src="/js/consent.js" defer></script>
 </head>
@@ -132,7 +132,7 @@
 <p class="lead">Every update to Hunsterverse, newest first, by month and day. Each day groups its changes by topic, and each change shows when it went live.</p>
 <p class="meta">Last update listed: 25 November 2026. Page updated 25 November 2026. Found a problem that isn't listed? <a href="/report.html">Report it</a>.</p>
 
-<nav class="toc cl-toc" aria-label="Changelog contents">
+<nav class="toc cl-toc" aria-label="Changelog contents" data-page-nav data-page-nav-label="Changelog contents">
 <strong>Contents</strong>
 <ol>
 <li><a href="#next">Coming next (not live yet)</a></li>
@@ -194,6 +194,7 @@
 <section class="cl-topic" id="d-2026-11-25-website" aria-labelledby="d-2026-11-25-website-h">
 <h5 class="cl-topic-title" id="d-2026-11-25-website-h"><a class="cl-anchor" href="#d-2026-11-25-website">Website</a></h5>
 <ul>
+<li><time class="cl-when" datetime="2026-11-25T08:25Z">25 Nov 2026, 08:25 UTC</time> <b>Page menus stay on screen.</b> On long pages the page's own menu now stays pinned under the main bar while you scroll: the Frontier guide's sections and guide pages (a sidebar on wide screens, two "Jump to" menus on smaller ones), the changelog, Currencies, Play, the API page and more, with the current section marked. Links to a section land with its heading in view below both bars.</li>
 <li><time class="cl-when" datetime="2026-11-25T06:30Z">25 Nov 2026, 06:30 UTC</time> <b>Frontier guide: the best route on Hunsterverse.</b> The <a href="/guide-frontier-progression.html">progression path</a> now follows how our server works: no more selling 150 cheques (keep them and sell one when you need zenny), take the New &amp; Returning Hunter Pack, the Weekly Supply Drop, your gifts and the Daily Free Draw first, join a guild early (meals last 7 days), keep one armour set and upgrade it with Armor Spheres, and start the Hunting Road at GR 50: its shop sells decorations, Raviente materials, Tower gems and the Hiden decorations. 21 more out-of-date notes fixed on 10 guide pages (Zenith gates, Road shop prices, GCP shop, Secret Proofs).</li>
 <li><time class="cl-when" datetime="2026-11-25T06:05Z">25 Nov 2026, 06:05 UTC</time> <b>Frontier guide: a full path to the end game, and a new Game systems page.</b> <a href="/guide-frontier-progression.html">Progression: HR1 to end game</a> now takes you from your first login to GR 999 and the end game in stages, each with its goal, what to do, the gear to aim for, where to go and when you are done. The new <a href="/guide-frontier-systems.html">Game systems</a> page explains every system (Hunter Navi, Halk, Partner, Rastas, Poogie, guild, Caravan, Diva, Raviente, Hunting Road, Sky Corridor, Sigils, Hiden, GSR, Zenith, Musou, Exotic and more): how to open it, what it gives and when it matters. Old notes across the guide were brought up to date (gachas, events, guild meals, Zenith from GR 300, and how to start Berserk and Extreme Raviente here with <code>!ravi start</code>).</li>
 </ul>
@@ -1246,5 +1247,6 @@
 <script src="/js/changelog-folds.js" defer></script>
 <script src="/js/share.js?v=4" defer></script>
 <script src="/js/search.js?v=8" defer></script>
+<script src="/js/page-nav.js?v=1" defer></script>
   </body>
 </html>

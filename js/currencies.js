@@ -85,6 +85,8 @@
 
     var toc = el("nav", "panel cur-toc");
     toc.setAttribute("aria-label", "Currencies on this page");
+    toc.setAttribute("data-page-nav", "");
+    toc.setAttribute("data-page-nav-label", "Currencies on this page");
     var panels = [];
     (data.groups || []).forEach(function (g) {
       var mine = list.filter(function (c) { return c.group === g[0]; });
@@ -127,6 +129,8 @@
       view.appendChild(el("p", "note-text", "Checked against the server's code and settings on " + data.checked +
         ". Shop and prize lists change on their own pages, linked above."));
     }
+    // the list's links stay on screen under the site bar once it has scrolled away (js/page-nav.js)
+    if (window.HvPageNav) window.HvPageNav.add(toc);
 
     function filter() {
       var q = input.value.trim().toLowerCase();

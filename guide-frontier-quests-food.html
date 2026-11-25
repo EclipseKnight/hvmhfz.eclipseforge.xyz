@@ -20,13 +20,14 @@
 <meta name="theme-color" content="#150e09" />
 <link rel="icon" href="/assets/favicon.png?v=2" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" />
-<link rel="stylesheet" href="/css/styles.css?v=27" />
-<link rel="stylesheet" href="/css/guide-frontier.css" />
-<script src="/js/nav.js" defer></script>
+<link rel="stylesheet" href="/css/styles.css?v=28" />
+<link rel="stylesheet" href="/css/guide-frontier.css?v=2" />
+<script src="/js/nav.js?v=2" defer></script>
 <script src="/js/background.js" defer></script>
 <script src="/js/consent.js" defer></script>
 <script src="/js/search.js?v=8" defer></script>
-<script src="/js/guide-frontier.js" defer></script>
+<script src="/js/guide-frontier.js?v=2" defer></script>
+<script src="/js/page-nav.js?v=1" defer></script>
 </head>
 <body class="guide guide-frontier">
     <!-- site-shell:header: edit dev/shell/nav.html, then run python3 dev/site-shell.py -->
@@ -131,7 +132,7 @@
 <!-- site-shell:crumbs: from dev/shell/pages.json, run python3 dev/site-shell.py -->
 <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Guides</li><li><a href="/guide-frontier.html">Frontier guide</a></li><li><a href="/guide-frontier.html#activities">Things to do</a></li><li aria-current="page">Quests, Food Buffs and Bentos</li></ol></nav>
 <!-- /site-shell:crumbs -->
-<aside class="hb-side" aria-label="Guide contents">
+<aside class="hb-side" aria-label="Guide contents" data-page-nav data-page-nav-below="1100">
 <details class="hb-panel hb-toc"><summary>On this page</summary>
 <ol>
 <li><a href="#bentos">Bentos (party buffs)</a></li>
@@ -148,7 +149,7 @@
 </ol>
 </details>
 <details class="hb-panel hb-all"><summary>All sections</summary>
-<ul>
+<ul data-page-nav-pages="Guide">
 <li><a href="/guide-frontier.html">Frontier guide home</a></li>
 <li class="hb-group">Getting started</li>
 <li><a href="/guide-frontier-basics.html">Basics and Getting Started</a></li>

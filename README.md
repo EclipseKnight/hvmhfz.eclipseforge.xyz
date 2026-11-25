@@ -268,6 +268,7 @@ dev/check-report-signin.js checks in headless Chromium, against a fake API, repo
 dev/check-backup-file.js checks js/backup-file.js on made-up zips and JSON, with Python's zipfile (node dev/check-backup-file.js)
 dev/check-account-transfer.js checks the account page's Transfer tab (the transfer wizard) in headless Chromium against a fake API: coming soon on 404, the signed-out return, a new character from our zip, an older zip into an existing character with its warning, bare save and export files, a full account, a file without a save, part checks, 375 px (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-account-transfer.js)
 dev/check-subtabs.js  checks the sub-tabs (js/subtabs.js) on the account page in headless Chromium against a fake API: roles, deep links and every old hash, nested anchors (opens folds, scrolls below the bar), Back/Forward, the remembered tab, keyboard, the sticky bar, lazy panels, the phone's Jump to select; SHOTS=<folder> saves screenshots of every tab (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-subtabs.js)
+dev/check-sticky-nav.js checks that long pages keep their own navigation on screen (js/page-nav.js, the Frontier guide's side column, the sticky tab rows) in headless Chromium at 1280, 1024 and 375 px: half way and at the bottom the nav sits right under the site bar, the section in view is marked, nothing is wider than the screen, #hash loads and the phone's Jump to land below both bars; SHOTS=<folder> saves screenshots, top and scrolled (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-sticky-nav.js)
 dev/check-account-guild.js checks guild management in headless Chromium against a fake API: the account roster (Sub-leader, HR, GR, weapon, online dot, "N of LIMIT members"), the Manage part per role (recruiting PUT, comment byte count and PUT, Accept/Deny with a confirmation, "Deny old applications", the API's message and refusals), no Manage part for members or an older API, "My applications" with Withdraw, the directory's Active filter and sort, the public roster, 375px (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-account-guild.js).
 dev/check-account-qol.js checks the account page's Game options card in headless Chromium against a fake API: one switch per feature the API lists (off by default, description, needed patch, hidden-information note), PUT of only the toggled id, a refused save, the "Being tested: pre-release only" section (features with `preReleaseOnly`, greyed out with the API's `lockedMessage` while the account is on Stable, moving into the normal list when stable reaches them, reload on the `hvmhfz:patch-channel` event), the Controller buttons line (PlayStation / Xbox, `PUT /api/account/qol/controller`), 375px width (NODE_PATH=/root/work/pw-tools/node_modules node dev/check-account-qol.js). dev/check-account-patch-channel.js checks the Client patch box, including its 20 second refresh, the switched-back notice and the hidden-tab pause (fake clock).
 
@@ -321,6 +322,21 @@ uses it, and `docs/subtabs-audit.md` lists the pages that could use it next. Mar
   without sub-tabs). The account page loads Game options and Client patch this way. Every change fires `hv:subtab` on
   `document`.
 - Folds for rarely used groups: `details.fold > summary > h3 + span.fold-hint`.
+
+## Page nav
+
+`js/page-nav.js` (with the "Page nav" rules in `css/styles.css`) keeps a long page's own navigation on screen: once
+the page's contents list has scrolled away, a bar with the same links stays pinned under the site bar, the section in
+view marked. Wide screens get a row that scrolls sideways; phones (720px and below) get a "Jump to" select, as the
+sub-tabs do. Markup: `data-page-nav` on the element holding the contents links (`data-page-nav="auto"` on `<main>`:
+its `section[id]` with their `<h2>`), optional `data-page-nav-label`, `data-page-nav-below="1100"` (only below that
+width) and, on a list of links to other pages inside it, `data-page-nav-pages="Guide"` (a select of its own). A list a
+script fills in later calls `HvPageNav.add(element)` (`js/currencies.js`). Used by the Frontier guide (below 1100px;
+above it the side column sticks, and shortens near the footer, `js/guide-frontier.js`), its hub and Hunsterverse
+page, the changelog, Currencies, Play, API, privacy, bot terms, Roads in game and Live diagnostics data. `js/nav.js`
+puts the site bar's real height in `--site-nav-h`; `js/page-nav.js` puts the bar's in `--page-nav-h`; html's
+`scroll-padding-top` adds both, so #links land below the bars. A plain tab row can stick too: wrap it in
+`div.subtabs-bar.page-tabs` (weapons.html).
 
 ## Game icons
 

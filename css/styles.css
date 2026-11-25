@@ -37,7 +37,10 @@
 *,*::before,*::after{box-sizing:border-box}
 /* The hidden attribute always wins, even over display rules below (pagers, status boxes). */
 [hidden]{display:none !important}
-html{background:var(--bg-0);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 16px);-webkit-text-size-adjust:100%}
+/* --site-nav-h: the site bar's real height (js/nav.js measures it); --page-nav-h: the page nav bar's (js/page-nav.js),
+   so #links land below both bars. A page with a page nav reserves room for it before the script runs. */
+html{background:var(--bg-0);scroll-behavior:smooth;
+  scroll-padding-top:calc(var(--site-nav-h, var(--nav-h)) + var(--page-nav-h, 0px) + 16px);-webkit-text-size-adjust:100%}
 body{
   margin:0;min-height:100vh;display:flex;flex-direction:column;color:var(--text-light);
   background:
@@ -246,7 +249,7 @@ a.badge:hover{border-color:var(--gold)}
 .tab-count{font-weight:400;opacity:.75;letter-spacing:.04em}
 /* Sub-tabs (js/subtabs.js): the tab row sticks under the site bar while the page scrolls; with more than 5 tabs phones get
    a "Jump to" select in its place. Folds (details.fold) hold the rarely used groups inside a long tab. */
-.subtabs-bar{position:sticky;top:var(--nav-h);z-index:20;margin:0 0 28px;background:var(--bg-0);
+.subtabs-bar{position:sticky;top:var(--site-nav-h, var(--nav-h));z-index:20;margin:0 0 28px;background:var(--bg-0);
   box-shadow:0 8px 12px -10px rgba(0,0,0,.6)}
 .subtabs-bar .tabs{margin:0}
 .subtabs-jump{display:none}
@@ -262,6 +265,32 @@ a.badge:hover{border-color:var(--gold)}
     box-shadow:inset 0 -2px 0 var(--frame-2)}
   .subtabs-jump select{flex:1;max-width:none;min-width:0;text-transform:none;letter-spacing:normal}
 }
+/* Page nav (js/page-nav.js): once a page's contents list has scrolled away, a bar with the same links stays under the
+   site bar, the section in view marked; a row that scrolls sideways, or on phones a "Jump to" select (as the sub-tabs). */
+html:has([data-page-nav]){--page-nav-h:46px}
+html:has(.subtabs-bar.page-tabs){--page-nav-h:44px}  /* a page's own tab row that sticks without js/subtabs.js (weapons.html) */
+@media (min-width:1100px){html:has(.hb-side[data-page-nav]){--page-nav-h:0px}}
+@media (max-width:720px){html:has([data-page-nav]){--page-nav-h:57px}}
+.page-nav{position:fixed;left:0;right:0;top:var(--site-nav-h, var(--nav-h));z-index:40;background:var(--bg-0);
+  border-bottom:1px solid var(--frame-2);box-shadow:0 8px 12px -10px rgba(0,0,0,.6)}
+.page-nav-in{max-width:var(--wrap);margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:12px}
+.page-nav .tabs{flex:1;min-width:0;margin:0;box-shadow:none;scrollbar-width:none}
+.page-nav .tabs::-webkit-scrollbar{display:none}
+.page-nav .tab{padding:13px 14px;white-space:nowrap}
+.page-nav .tab.is-here{color:var(--gold-bright);box-shadow:inset 0 -2px 0 var(--gold)}
+.page-nav-jump,.page-nav-pages{display:flex;align-items:center;gap:8px;flex:none;
+  font:700 .7rem/1 var(--font-ui);letter-spacing:.13em;text-transform:uppercase;color:var(--text-dim)}
+.page-nav select{min-height:36px;min-width:0;text-transform:none;letter-spacing:normal}
+.page-nav-jump{display:none}
+@media (max-width:720px){
+  .page-nav-in{padding:6px 14px;gap:8px}
+  .page-nav .page-nav-row{display:none}
+  .page-nav-jump{display:flex;flex:1 1 0;min-width:0}
+  .page-nav-pages{flex:1 1 0;min-width:0}
+  .page-nav select{flex:1;width:100%;max-width:none;min-height:44px}
+  .page-nav-in:has(.page-nav-pages) span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}
+@media print{.page-nav{display:none}}
 details.fold{margin-top:16px;padding-top:4px;border-top:1px solid var(--frame)}
 details.fold>summary{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;min-height:44px;padding:10px 0;cursor:pointer;list-style:none}
 details.fold>summary::-webkit-details-marker{display:none}

@@ -104,7 +104,7 @@ main.sheet .box > :first-child{margin-top:0}
   .hb-layout{grid-template-columns:250px minmax(0,1fr);column-gap:28px;align-items:start}
   .hb-layout > .breadcrumbs{grid-column:1 / -1}
   .hb-layout.hb-wide{grid-template-columns:minmax(0,1fr);max-width:1100px}
-  .hb-side{position:sticky;top:calc(var(--nav-h) + 14px);max-height:calc(100vh - var(--nav-h) - 28px);overflow-y:auto;
+  .hb-side{position:sticky;top:calc(var(--site-nav-h, var(--nav-h)) + 14px);max-height:calc(100vh - var(--site-nav-h, var(--nav-h)) - 28px);overflow-y:auto;
     scrollbar-width:thin}
   main.sheet figure.hb-fig.side{float:right;clear:right;max-width:min(42%,360px);margin:.3em 0 1em 1.4em}
 }

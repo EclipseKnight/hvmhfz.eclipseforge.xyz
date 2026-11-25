@@ -1,7 +1,7 @@
 /* Frontier handbook pages: the side column's two lists ("On this page", "All sections") are <details>.
    On a wide screen they start open, beside the text; on a phone they start folded above it. Without
    JavaScript both stay folded and still work by tapping. While reading, the "On this page" entry of the
-   section in view is marked. */
+   section in view is marked, and on a wide screen the sticky side column stays below the site bar to the end. */
 (function () {
   "use strict";
 
@@ -22,6 +22,27 @@
       if (box) box.open = false;
     }
   });
+
+  // Wide screens: the side column sticks under the site bar. Near the end of the page it gets shorter (its lists
+  // scroll) rather than sliding up under the bar as the footer comes in.
+  var side = document.querySelector(".hb-side");
+  var layout = side && side.closest(".hb-layout");
+  if (side && layout) {
+    var queued = false;
+    var fitSide = function () {
+      queued = false;
+      if (!wide.matches) { side.style.maxHeight = ""; return; }
+      var top = parseFloat(window.getComputedStyle(side).top) || 0;
+      var room = layout.getBoundingClientRect().bottom - top;
+      side.style.maxHeight = room < window.innerHeight - top - 14 ? Math.max(160, room) + "px" : "";
+    };
+    window.addEventListener("scroll", function () {
+      if (!queued) { queued = true; window.requestAnimationFrame(fitSide); }
+    }, { passive: true });
+    window.addEventListener("resize", fitSide);
+    if (wide.addEventListener) wide.addEventListener("change", fitSide);
+    fitSide();
+  }
 
   var toc = document.querySelector(".hb-toc");
   if (!toc || !("IntersectionObserver" in window)) return;

@@ -276,3 +276,20 @@ window.HvCrumbs = {
     last.textContent = name;
   }
 };
+
+/* The site bar's real height as --site-nav-h (its border, or a bar that wraps), for everything that sticks under it:
+   the sub-tabs, the Frontier guide's side column, the page nav (js/page-nav.js) and html's scroll-padding-top. */
+(function () {
+  "use strict";
+
+  var header = document.querySelector("header.site-nav");
+  if (!header) return;
+  var root = document.documentElement;
+  function measure() {
+    var h = header.getBoundingClientRect().height;
+    if (h && root.style.getPropertyValue("--site-nav-h") !== h + "px") root.style.setProperty("--site-nav-h", h + "px");
+  }
+  measure();
+  if (window.ResizeObserver) new ResizeObserver(measure).observe(header);
+  else window.addEventListener("resize", measure);
+})();
