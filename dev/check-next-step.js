@@ -4,12 +4,16 @@
 
    - the helpers under node: only site paths become links; the answer's parts as lists;
    - dev/make-progression-guide.py --check (the guide's quest lists match data/quest-gates.json);
-   - the panel for the API's own answers (dev/next-step-fixtures.json: HR1, HR4, GR 37, GR 650): summary,
-     "Recommended", every detail line, the coming game update note (G Rank), every link with its path; it
-     follows the character picker and a list row's View; nothing loads before the Characters tab is shown;
+   - the panel for the API's own answers (dev/next-step-fixtures.json: HR1, HR4, GR 37, GR 650, HR7, GR 912 and
+     GR 999, the end game): summary, "Recommended", every detail line, every link with its path (the guide's stage
+     sections #hr1..#hr7, #gr1, #gr50, #gr100, #zenith, #gr900, #end-game and the Game systems sections, each one
+     an anchor that exists on its page; ★ shown as is), the "Also in game" line with its Game options link (it
+     opens that tab); an answer of the API before the guide window (no "overlay") with a coming game update note:
+     the note, no "Also in game" line; it follows the character picker and a list row's View; nothing loads
+     before the Characters tab is shown;
      a link that is not a site path is dropped and markup shows as text; a 404 hides the panel; a 500 says so
      with Try again, which loads it again;
-   - the guide page: #hr1..#hr7 and #g-rank (the API's links), each band's Key Quests and Urgent Quest
+   - the guide page: #hr1..#hr7, #g-rank and the G Rank stages (the API's links), each band's Key Quests and Urgent Quest
      linked by id, the new Zenith GR and the coming update stated, links from the Frontier guide home;
    - both at 375 and 1280 px: no sideways scroll and no page errors.
 
@@ -47,8 +51,10 @@ const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers
 const failures = [];
 const check = (label, ok, detail) => { if (!ok) failures.push(label + (detail ? ": " + detail : "")); };
 
-// id -> the fixture it answers; 14 answers a 500 the first time, 15 a 404, 16 a link that is not a site path
-const BY_ID = { 10: "hr1", 11: "hr4", 12: "gr37", 13: "gr650" };
+// id -> the fixture it answers; 14 answers a 500 the first time, 15 a 404, 16 a link that is not a site path,
+// 20 the API before the guide window (no "overlay") with a coming update note
+const BY_ID = { 10: "hr1", 11: "hr4", 12: "gr37", 13: "gr650", 17: "hr7", 18: "gr912", 19: "gr999" };
+const STAGES = ["hr1", "hr4", "gr37", "gr650", "hr7", "gr912", "gr999"];
 const CHARACTERS = [
   { id: 10, name: "Aldra", hr: 1, gr: 0, weaponType: "Long Sword", female: true, lastLogin: "2026-11-16T10:00:00Z" },
   { id: 11, name: "Bexo", hr: 75, gr: 0, weaponType: "Great Sword", female: false, lastLogin: "2026-11-15T10:00:00Z" },
@@ -56,7 +62,11 @@ const CHARACTERS = [
   { id: 13, name: "Dovan", hr: 999, gr: 650, weaponType: "Bow", female: false, lastLogin: "2026-11-13T10:00:00Z" },
   { id: 14, name: "Errant", hr: 1, gr: 0, weaponType: "Sword and Shield", female: false, lastLogin: null },
   { id: 15, name: "Faro", hr: 1, gr: 0, weaponType: "Hammer", female: false, lastLogin: null },
-  { id: 16, name: "Gyre", hr: 1, gr: 0, weaponType: "Tonfa", female: true, lastLogin: null }
+  { id: 16, name: "Gyre", hr: 1, gr: 0, weaponType: "Tonfa", female: true, lastLogin: null },
+  { id: 17, name: "Hale", hr: 999, gr: 0, weaponType: "Gunlance", female: false, lastLogin: null },
+  { id: 18, name: "Ivo", hr: 999, gr: 912, weaponType: "Switch Axe F", female: false, lastLogin: null },
+  { id: 19, name: "Juna", hr: 999, gr: 999, weaponType: "Magnet Spike", female: true, lastLogin: null },
+  { id: 20, name: "Kel", hr: 999, gr: 37, weaponType: "Heavy Bowgun", female: false, lastLogin: null }
 ];
 const details = (id) => ({ characterId: id, name: CHARACTERS.find((c) => c.id === id).name, ownCharacter: true, hasSave: false,
   equipment: [], loadouts: { sets: [], notDecoded: null },
@@ -67,6 +77,9 @@ const storage = (id) => ({ characterId: id, name: "", zenny: 0, gzenny: 0, cp: 0
 const HOSTILE = Object.assign({}, FIX.hr1, { characterId: 16, characterName: "Gyre", summary: "<b>bold</b> summary",
   links: [{ label: "Bad", href: "javascript:alert(1)" }, { label: "Other site", href: "//example.com/x" },
     { label: "Guide", href: "/guide-frontier-progression.html#hr1" }] });
+const OLD_NOTE = "A game update moves the Zenith ranks to GR 300, 500, 700 and 900.";
+const OLD_API = Object.assign({}, FIX.gr37, { characterId: 20, characterName: "Kel", notes: [OLD_NOTE] });
+delete OLD_API.overlay;
 
 async function openAccount(browser, width) {
   const ctx = await browser.newContext({ viewport: { width, height: 900 } });
@@ -94,6 +107,7 @@ async function openAccount(browser, width) {
       if (id === 14 && !failedOnce) { failedOnce = true; return reply(500, { message: "boom" }); }
       if (id === 14) return reply(200, Object.assign({}, FIX.hr1, { characterId: 14, characterName: "Errant" }));
       if (id === 16) return reply(200, HOSTILE);
+      if (id === 20) return reply(200, OLD_API);
       return reply(404, { status: 404, error: "Not Found", path: p });
     }
     if ((m = p.match(/^\/api\/account\/characters\/(\d+)\/details$/))) return reply(200, details(Number(m[1])));
@@ -141,6 +155,8 @@ const panelText = (page) => page.evaluate(() => {
     notes: all(".next-step-note"),
     links: Array.from(body.querySelectorAll(".next-step-links a")).map((a) => [a.textContent, a.getAttribute("href")]),
     alert: all(".form-alert")[0] || "",
+    inGame: all(".next-step-ingame")[0] || "",
+    inGameLink: (body.querySelector(".next-step-ingame a") || { getAttribute: () => "" }).getAttribute("href"),
     html: body.innerHTML
   };
 });
@@ -157,6 +173,9 @@ function samePanel(label, shown, answer) {
   check(label + ": notes", JSON.stringify(shown.notes) === JSON.stringify(answer.notes), JSON.stringify(shown.notes));
   check(label + ": links", JSON.stringify(shown.links) === JSON.stringify(answer.links.map((l) => [l.label, l.href])),
     JSON.stringify(shown.links));
+  const IN_GAME = "Also in game: the Guide window shows your next step in town. Set it in Game options or with Ctrl+F10.";
+  check(label + ": Also in game line", answer.overlay ? shown.inGame === IN_GAME && shown.inGameLink === "#game-options" : shown.inGame === "",
+    shown.inGame + " " + shown.inGameLink);
 }
 
 async function run() {
@@ -165,11 +184,24 @@ async function run() {
   check("no other site", Helpers.sitePath("//example.com") === null && Helpers.sitePath("https://x.y/") === null);
   check("no script link", Helpers.sitePath("javascript:alert(1)") === null && Helpers.sitePath("/a b") === null);
   const v = Helpers.view(FIX.gr650);
-  check("view keeps every part", v.details.length === FIX.gr650.details.length && v.notes.length === 1 && v.links.length === 2);
-  check("view of nothing", Helpers.view(null).links.length === 0 && Helpers.view({}).summary === "");
-  check("the API links the guide's anchors", ["hr1", "hr4", "gr37", "gr650"].every((k) =>
-    FIX[k].links.some((l) => /^\/guide-frontier-progression\.html#(hr[1-7]|g-rank)$/.test(l.href))));
-  check("G Rank answers carry the coming update", FIX.gr37.notes.length === 1 && /GR 300, 500, 700 and 900/.test(FIX.gr37.notes[0]));
+  check("view keeps every part", v.details.length === FIX.gr650.details.length && v.notes.length === FIX.gr650.notes.length
+    && v.links.length === 2 && v.inGame === true);
+  check("view of nothing", Helpers.view(null).links.length === 0 && Helpers.view({}).summary === "" && Helpers.view({}).inGame === false);
+  check("view of the API before the guide window: no in-game line", Helpers.view(OLD_API).inGame === false && Helpers.view(OLD_API).notes.length === 1);
+  check("every answer links its stage's guide section", STAGES.every((k) =>
+    FIX[k].links.some((l) => /^\/guide-frontier-progression\.html#(hr[1-7]|gr1|gr50|gr100|zenith|gr900|end-game)$/.test(l.href))
+    && FIX[k].links.some((l) => l.href === FIX[k].overlay.guidePath)));
+  check("the end game answer", FIX.gr999.overlay.stageId === "end-game" && FIX.gr999.links[0].href === "/guide-frontier-progression.html#end-game"
+    && FIX.gr999.links.filter((l) => l.href.startsWith("/guide-frontier-systems.html#")).length === 5);
+  // every link of the answers is a page of this site, and its #anchor is an id on that page
+  for (const k of STAGES) {
+    for (const l of FIX[k].links) {
+      const [file, anchor] = l.href.split("?")[0].split("#");
+      const page = path.join(root, file);
+      if (!fs.existsSync(page)) { check(k + ": link to a missing page", false, l.href); continue; }
+      if (anchor) check(k + ": link to a missing anchor", fs.readFileSync(page, "utf8").includes('id="' + anchor + '"'), l.href);
+    }
+  }
 
   // the guide's lists match the data
   try {
@@ -194,11 +226,12 @@ async function run() {
       check(width + " px: HR1 has no update note", (await panelText(s.page)).notes.length === 0);
       await shotOf(s.page, "#next-step-panel", "panel-hr1-" + width + ".png");
 
-      for (const [id, key, name] of [[11, "hr4", "Bexo"], [12, "gr37", "Cirra"], [13, "gr650", "Dovan"]]) {
+      for (const [id, key, name] of [[11, "hr4", "Bexo"], [12, "gr37", "Cirra"], [13, "gr650", "Dovan"], [17, "hr7", "Hale"],
+        [18, "gr912", "Ivo"], [19, "gr999", "Juna"], [20, "old", "Kel"]]) {
         await s.page.selectOption("#details-character", String(id));
         await waitPanel(s.page, name);
         const shown = await panelText(s.page);
-        samePanel(width + " px " + key, shown, FIX[key]);
+        samePanel(width + " px " + key, shown, key === "old" ? OLD_API : FIX[key]);
         await shotOf(s.page, "#next-step-panel", "panel-" + key + "-" + width + ".png");
         check(width + " px " + key + ": no sideways scroll", (await sideways(s.page)) <= 0, String(await sideways(s.page)));
         check(width + " px " + key + ": panel fits", (await rightEdge(s.page, "#next-step-panel")) <= width,
@@ -232,6 +265,13 @@ async function run() {
         JSON.stringify(hostile.links));
       check(width + " px: markup shows as text", hostile.summary === "<b>bold</b> summary" && !/<b>/.test(hostile.html));
 
+      // "Also in game": its link opens the Game options tab
+      await s.page.selectOption("#details-character", "19");
+      await waitPanel(s.page, "Juna");
+      await s.page.click("#next-step-body .next-step-ingame a");
+      await s.page.waitForFunction(() => !document.getElementById("panel-game-options").hidden, null, { timeout: 5000 }).catch(() => {});
+      check(width + " px: the Game options link opens that tab", await s.page.evaluate(() => !document.getElementById("panel-game-options").hidden));
+
       check(width + " px: account page has no page errors", s.errors.length === 0, s.errors.join("; "));
       await s.ctx.close();
     }
@@ -244,7 +284,7 @@ async function run() {
       page.on("pageerror", (e) => errors.push(e.message));
       await page.addInitScript(() => localStorage.setItem("hvmhfz.consent", JSON.stringify({ choice: "declined", at: new Date().toISOString() })));
       await page.goto("http://localhost:" + server.address().port + "/guide-frontier-progression.html");
-      for (const id of ["hr1", "hr2", "hr3", "hr4", "hr5", "hr6", "hr7", "g-rank"]) {
+      for (const id of ["hr1", "hr2", "hr3", "hr4", "hr5", "hr6", "hr7", "g-rank", "gr1", "gr50", "gr100", "zenith", "gr900", "end-game"]) {
         check(width + " px guide: #" + id, (await page.locator("section#" + id).count()) === 1);
       }
       for (const band of GATES.bands) {

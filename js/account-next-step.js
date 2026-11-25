@@ -6,6 +6,9 @@
    game update) and links (website paths). This script only lays them out; it never words anything itself,
    so the panel and the bot always say the same.
 
+   An answer with "overlay" (the API that also feeds the in-game guide window) ends with one line of the site's
+   own, "Also in game: ..." (above the links), pointing at the Guide window option (Game options tab or Ctrl+F10).
+
    A 404 hides the panel (an API without the endpoint, or a character this account cannot see); other
    failures say so with Try again. The helpers at the top also run under node (dev/check-next-step.js). */
 (function (root) {
@@ -29,7 +32,8 @@
       notes: list(a.notes).map(String),
       links: list(a.links).map(function (link) {
         return { label: String(link.label || link.href || ""), href: sitePath(link.href) };
-      }).filter(function (link) { return link.href && link.label; })
+      }).filter(function (link) { return link.href && link.label; }),
+      inGame: !!(a.overlay && typeof a.overlay === "object")
     };
   }
 
@@ -78,6 +82,14 @@
       body.appendChild(ul);
     }
     v.notes.forEach(function (line) { body.appendChild(el("p", "next-step-note", line)); });
+    if (v.inGame) {
+      var game = el("p", "note-text next-step-ingame", "Also in game: the Guide window shows your next step in town. Set it in ");
+      var options = el("a", null, "Game options");
+      options.href = "#game-options";
+      game.appendChild(options);
+      game.appendChild(document.createTextNode(" or with Ctrl+F10."));
+      body.appendChild(game);
+    }
     if (v.links.length) {
       var links = el("ul", "next-step-links");
       v.links.forEach(function (link) {

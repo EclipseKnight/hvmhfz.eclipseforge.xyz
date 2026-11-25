@@ -1,5 +1,5 @@
 {
- "_about": "Answers of GET /api/account/characters/{id}/next-step for made-up saves, from the API's NextStepPlanner (hvmhfz_rest_api branch next-step-api, 5f8dd18): HR1 with one Key Quest cleared, HR4 with three, GR 37, GR 650. Used by dev/check-next-step.js; regenerate when the API's words change.",
+ "_about": "Answers of GET /api/account/characters/{id}/next-step for made-up saves, from the API's NextStepPlanner (hvmhfz_rest_api 829a6ef, guide window): HR1 with one Key Quest cleared, HR4 with three, GR 37, GR 650, HR7 before G Rank, GR 912 and GR 999 (end game). Every answer has 'overlay' (the in-game guide window) and every milestone a 'guide' link. Used by dev/check-next-step.js; regenerate when the API's words change.",
  "hr1": {
   "characterId": 10,
   "characterName": "Aldra",
@@ -10,6 +10,7 @@
   "details": [
    "Key Quests left: \"Hunt the Boar Chief!\", \"Chasing the Yian Kut-Ku's Cry\", \"Congalala's Territory\", \"Daimyo at the Water's Edge\", \"Great Forest Hypnocatrice\".",
    "Key Quests cleared: \"Habitat of the Azure Hunter\".",
+   "Open the Hunter Navi (Shift+C) for the free starter items, and meet your Halk in your house's Helper Area.",
    "Urgent Quest \"[Urgent] Unknown Species, Fierce Wyvern\": appears in Quest Counter > Hunter Quests > Urgent Quests once every Key Quest is cleared. Clearing it raises your HR cap to 30 (HR2)."
   ],
   "links": [
@@ -28,6 +29,14 @@
    {
     "label": "Progression guide: HR1",
     "href": "/guide-frontier-progression.html#hr1"
+   },
+   {
+    "label": "Game systems: Hunter Navi",
+    "href": "/guide-frontier-systems.html#hunter-navi"
+   },
+   {
+    "label": "Game systems: Halk",
+    "href": "/guide-frontier-systems.html#halk"
    }
   ],
   "notes": [],
@@ -89,7 +98,16 @@
    },
    "catalogLink": "/quests.html?gate=HR1"
   },
-  "g": null
+  "g": null,
+  "overlay": {
+   "stageId": "hr1-keys",
+   "line": "Next: Key Quest \"Hunt the Boar Chief!\"",
+   "where": "Quest Counter > Hunter Quests > ★1",
+   "done": 1,
+   "total": 6,
+   "guidePath": "/guide-frontier-progression.html#hr1",
+   "newPlayer": true
+  }
  },
  "hr4": {
   "characterId": 11,
@@ -101,6 +119,7 @@
   "details": [
    "Key Quests left: \"Bolt from the Blue\", \"Pale Hypnocatrice Sighting Report\", \"Unleashed Dark Thunder\", \"All-Out Strike\", \"White Wreathed in Flame\".",
    "Key Quests cleared: \"Proud Male Orugaron\", \"Flash! Highlands Kuarlusepusu\", \"Lawless Black-Purple\".",
+   "My Tore opens: take your Poogie on quests (an Outfit and a Pugi Cuff add skill points).",
    "Urgent Quest \"[Urgent] Desert Crystal Scorpion\": appears in Quest Counter > Hunter Quests > Urgent Quests once every Key Quest is cleared and you are HR 99. Clearing it raises your HR cap to 299 (HR5)."
   ],
   "links": [
@@ -119,6 +138,10 @@
    {
     "label": "Progression guide: HR4",
     "href": "/guide-frontier-progression.html#hr4"
+   },
+   {
+    "label": "Game systems: Poogie (My Tore)",
+    "href": "/guide-frontier-systems.html#poogie"
    }
   ],
   "notes": [],
@@ -192,7 +215,16 @@
    },
    "catalogLink": "/quests.html?gate=HR4"
   },
-  "g": null
+  "g": null,
+  "overlay": {
+   "stageId": "hr4-keys",
+   "line": "Next: Key Quest \"Bolt from the Blue\"",
+   "where": "Quest Counter > Hunter Quests > ★4",
+   "done": 3,
+   "total": 8,
+   "guidePath": "/guide-frontier-progression.html#hr4",
+   "newPlayer": true
+  }
  },
  "gr37": {
   "characterId": 12,
@@ -204,12 +236,12 @@
   "details": [
    "GR points: 113,500. To GR 38: 4,900. To GR50: 87,400.",
    "GR50: buy the G Rank Pugi Cuff Licence from the Pugi Farm Manager (60P) to wear G Rank cuffs.",
-   "GR300: ★1 Zenith monsters (Zenith Monster Quests on the G counter) and Zenith armour and weapons. Until the coming game update it opens at GR200.",
-   "GR500: G Exotic quests (★8), for Exotic weapon upgrades.",
-   "GR500: ★2 Zenith monsters. Until the coming game update it opens at GR400.",
-   "GR700: ★3 Zenith monsters. Until the coming game update it opens at GR600.",
-   "GR800: G Finesse upgrades: G Exotic monsters hunted from GR800 give their materials.",
-   "GR900: ★4 Zenith monsters, the hardest standard fights in the game. Until the coming game update it opens at GR800."
+   "GR100: G Exotic quests (G counter > G Hunter Quests > G Exotic Quests; every clear gives 1 to 4 Exotic Gem, Exotic Bone or Exotic Shl) and the Musou Zinogre, Nargacuga and Deviljho quests, which ask for GR 100.",
+   "GR300: ★1 Zenith monsters (Zenith Monster Quests on the G counter) and Zenith armour and weapons.",
+   "GR500: ★2 Zenith monsters.",
+   "GR700: ★3 Zenith monsters.",
+   "GR900: ★4 Zenith monsters, the hardest standard fights in the game, and the 30 GRP quests (G Event Quests), which need GR 900.",
+   "GR999: Unlimited (UL) mode on quests with a blue flame, the Hiden Stamps in the Hunting Road shop and SR food in the food shop."
   ],
   "links": [
    {
@@ -217,13 +249,15 @@
     "href": "/guide-frontier-g-rank.html"
    },
    {
-    "label": "Progression guide: G Rank",
-    "href": "/guide-frontier-progression.html#g-rank"
+    "label": "Progression guide: on to GR50",
+    "href": "/guide-frontier-progression.html#gr1"
+   },
+   {
+    "label": "Game systems: Hunter Navi",
+    "href": "/guide-frontier-systems.html#hunter-navi"
    }
   ],
-  "notes": [
-   "Coming game update: Zenith ★1, Zenith ★2, Zenith ★3 and Zenith ★4 move to GR 300, 500, 700 and 900 (GR 200, 400, 600 and 800 in the game now). The GR shown here are the new ones."
-  ],
+  "notes": [],
   "hr": {
    "band": 7,
    "bandLabel": "HR7",
@@ -255,7 +289,8 @@
      "reached": false,
      "pendingGameChange": false,
      "grToday": null,
-     "openInGameNow": false
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#gr50"
     }
    ],
    "milestones": [
@@ -268,7 +303,20 @@
      "reached": false,
      "pendingGameChange": false,
      "grToday": null,
-     "openInGameNow": false
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#gr50"
+    },
+    {
+     "gr": 100,
+     "id": "g-exotic",
+     "name": "G Exotic quests",
+     "opens": "G Exotic quests (G counter > G Hunter Quests > G Exotic Quests; every clear gives 1 to 4 Exotic Gem, Exotic Bone or Exotic Shl) and the Musou Zinogre, Nargacuga and Deviljho quests, which ask for GR 100",
+     "link": "/quests.html?rank=G%E2%98%858",
+     "reached": false,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#gr100"
     },
     {
      "gr": 300,
@@ -277,20 +325,10 @@
      "opens": "★1 Zenith monsters (Zenith Monster Quests on the G counter) and Zenith armour and weapons",
      "link": "/quests.html?rank=Zenith%E2%98%851",
      "reached": false,
-     "pendingGameChange": true,
-     "grToday": 200,
-     "openInGameNow": false
-    },
-    {
-     "gr": 500,
-     "id": "g-exotic",
-     "name": "G Exotic quests (★8)",
-     "opens": "G Exotic quests (★8), for Exotic weapon upgrades",
-     "link": "/quests.html?rank=G%E2%98%858",
-     "reached": false,
      "pendingGameChange": false,
      "grToday": null,
-     "openInGameNow": false
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#zenith"
     },
     {
      "gr": 500,
@@ -299,9 +337,10 @@
      "opens": "★2 Zenith monsters",
      "link": "/quests.html?rank=Zenith%E2%98%852",
      "reached": false,
-     "pendingGameChange": true,
-     "grToday": 400,
-     "openInGameNow": false
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#zenith"
     },
     {
      "gr": 700,
@@ -310,33 +349,45 @@
      "opens": "★3 Zenith monsters",
      "link": "/quests.html?rank=Zenith%E2%98%853",
      "reached": false,
-     "pendingGameChange": true,
-     "grToday": 600,
-     "openInGameNow": false
-    },
-    {
-     "gr": 800,
-     "id": "g-finesse",
-     "name": "G Finesse upgrades",
-     "opens": "G Finesse upgrades: G Exotic monsters hunted from GR800 give their materials",
-     "link": "/guide-frontier-g-rank.html",
-     "reached": false,
      "pendingGameChange": false,
      "grToday": null,
-     "openInGameNow": false
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#zenith"
     },
     {
      "gr": 900,
      "id": "zenith-4",
      "name": "Zenith ★4",
-     "opens": "★4 Zenith monsters, the hardest standard fights in the game",
+     "opens": "★4 Zenith monsters, the hardest standard fights in the game, and the 30 GRP quests (G Event Quests), which need GR 900",
      "link": "/quests.html?rank=Zenith%E2%98%854",
      "reached": false,
-     "pendingGameChange": true,
-     "grToday": 800,
-     "openInGameNow": false
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#gr900"
+    },
+    {
+     "gr": 999,
+     "id": "gr999",
+     "name": "Unlimited mode",
+     "opens": "Unlimited (UL) mode on quests with a blue flame, the Hiden Stamps in the Hunting Road shop and SR food in the food shop",
+     "link": "/guide-frontier-basics.html#gr999",
+     "reached": false,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#end-game"
     }
    ]
+  },
+  "overlay": {
+   "stageId": "g-rank-gr50",
+   "line": "Next: GR 50, G Rank Pugi Cuff Licence",
+   "where": "G counter > G Hunter Quests > G★1-3",
+   "done": null,
+   "total": null,
+   "guidePath": "/guide-frontier-progression.html#gr1",
+   "newPlayer": false
   }
  },
  "gr650": {
@@ -345,13 +396,13 @@
   "hasSave": true,
   "stage": "g-rank",
   "summary": "GR 650: all of G★1-7 is open. Next milestone: Zenith ★3 at GR700 (50 GR to go).",
-  "recommended": "Hunt G Exotic (★8) and ★2 Zenith monsters, and upgrade your Zenith gear.",
+  "recommended": "Hunt ★2 Zenith monsters and upgrade your Zenith armour and weapons.",
   "details": [
    "GR points: 6,633,400. To GR 651: 15,650. To GR700: 782,500.",
-   "GR700: ★3 Zenith monsters. Open for you now: the game opens it at GR600 until the coming update.",
-   "GR800: G Finesse upgrades: G Exotic monsters hunted from GR800 give their materials.",
-   "GR900: ★4 Zenith monsters, the hardest standard fights in the game. Until the coming game update it opens at GR800.",
-   "Reached: GR50 G Rank Pugi Cuff Licence, GR300 Zenith ★1, GR500 G Exotic quests (★8) and GR500 Zenith ★2."
+   "GR700: ★3 Zenith monsters.",
+   "GR900: ★4 Zenith monsters, the hardest standard fights in the game, and the 30 GRP quests (G Event Quests), which need GR 900.",
+   "GR999: Unlimited (UL) mode on quests with a blue flame, the Hiden Stamps in the Hunting Road shop and SR food in the food shop.",
+   "Reached: GR50 G Rank Pugi Cuff Licence, GR100 G Exotic quests, GR300 Zenith ★1 and GR500 Zenith ★2."
   ],
   "links": [
    {
@@ -359,13 +410,11 @@
     "href": "/quests.html?rank=Zenith%E2%98%853"
    },
    {
-    "label": "Progression guide: G Rank",
-    "href": "/guide-frontier-progression.html#g-rank"
+    "label": "Progression guide: on to GR700",
+    "href": "/guide-frontier-progression.html#zenith"
    }
   ],
-  "notes": [
-   "Coming game update: Zenith ★1, Zenith ★2, Zenith ★3 and Zenith ★4 move to GR 300, 500, 700 and 900 (GR 200, 400, 600 and 800 in the game now). The GR shown here are the new ones."
-  ],
+  "notes": [],
   "hr": {
    "band": 7,
    "bandLabel": "HR7",
@@ -395,9 +444,10 @@
      "opens": "★3 Zenith monsters",
      "link": "/quests.html?rank=Zenith%E2%98%853",
      "reached": false,
-     "pendingGameChange": true,
-     "grToday": 600,
-     "openInGameNow": true
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#zenith"
     }
    ],
    "milestones": [
@@ -410,7 +460,20 @@
      "reached": true,
      "pendingGameChange": false,
      "grToday": null,
-     "openInGameNow": true
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#gr50"
+    },
+    {
+     "gr": 100,
+     "id": "g-exotic",
+     "name": "G Exotic quests",
+     "opens": "G Exotic quests (G counter > G Hunter Quests > G Exotic Quests; every clear gives 1 to 4 Exotic Gem, Exotic Bone or Exotic Shl) and the Musou Zinogre, Nargacuga and Deviljho quests, which ask for GR 100",
+     "link": "/quests.html?rank=G%E2%98%858",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#gr100"
     },
     {
      "gr": 300,
@@ -419,20 +482,10 @@
      "opens": "★1 Zenith monsters (Zenith Monster Quests on the G counter) and Zenith armour and weapons",
      "link": "/quests.html?rank=Zenith%E2%98%851",
      "reached": true,
-     "pendingGameChange": true,
-     "grToday": 200,
-     "openInGameNow": true
-    },
-    {
-     "gr": 500,
-     "id": "g-exotic",
-     "name": "G Exotic quests (★8)",
-     "opens": "G Exotic quests (★8), for Exotic weapon upgrades",
-     "link": "/quests.html?rank=G%E2%98%858",
-     "reached": true,
      "pendingGameChange": false,
      "grToday": null,
-     "openInGameNow": true
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#zenith"
     },
     {
      "gr": 500,
@@ -441,9 +494,10 @@
      "opens": "★2 Zenith monsters",
      "link": "/quests.html?rank=Zenith%E2%98%852",
      "reached": true,
-     "pendingGameChange": true,
-     "grToday": 400,
-     "openInGameNow": true
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#zenith"
     },
     {
      "gr": 700,
@@ -452,33 +506,409 @@
      "opens": "★3 Zenith monsters",
      "link": "/quests.html?rank=Zenith%E2%98%853",
      "reached": false,
-     "pendingGameChange": true,
-     "grToday": 600,
-     "openInGameNow": true
-    },
-    {
-     "gr": 800,
-     "id": "g-finesse",
-     "name": "G Finesse upgrades",
-     "opens": "G Finesse upgrades: G Exotic monsters hunted from GR800 give their materials",
-     "link": "/guide-frontier-g-rank.html",
-     "reached": false,
      "pendingGameChange": false,
      "grToday": null,
-     "openInGameNow": false
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#zenith"
     },
     {
      "gr": 900,
      "id": "zenith-4",
      "name": "Zenith ★4",
-     "opens": "★4 Zenith monsters, the hardest standard fights in the game",
+     "opens": "★4 Zenith monsters, the hardest standard fights in the game, and the 30 GRP quests (G Event Quests), which need GR 900",
      "link": "/quests.html?rank=Zenith%E2%98%854",
      "reached": false,
-     "pendingGameChange": true,
-     "grToday": 800,
-     "openInGameNow": false
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#gr900"
+    },
+    {
+     "gr": 999,
+     "id": "gr999",
+     "name": "Unlimited mode",
+     "opens": "Unlimited (UL) mode on quests with a blue flame, the Hiden Stamps in the Hunting Road shop and SR food in the food shop",
+     "link": "/guide-frontier-basics.html#gr999",
+     "reached": false,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#end-game"
     }
    ]
+  },
+  "overlay": {
+   "stageId": "g-rank-gr700",
+   "line": "Next: GR 700, Zenith ★3 (now GR 650)",
+   "where": "G counter > Zenith Monster Quests",
+   "done": null,
+   "total": null,
+   "guidePath": "/guide-frontier-progression.html#zenith",
+   "newPlayer": false
+  }
+ },
+ "hr7": {
+  "characterId": 17,
+  "characterName": "Hale",
+  "hasSave": true,
+  "stage": "g-entry",
+  "summary": "HR7 (HR 999): next is G Rank.",
+  "recommended": "Clear the HR7 Urgent Quest, a Shantien repel on an airship: talk to the G Rank guildie (the girl with the umbrella) to post it. Then talk to the Guild Master to start G Rank.",
+  "details": [
+   "In G Rank all of G★1-7 is open from GR1. The first milestone is the G Rank Pugi Cuff Licence at GR50."
+  ],
+  "links": [
+   {
+    "label": "Starting G Rank",
+    "href": "/guide-frontier-g-rank-start.html"
+   },
+   {
+    "label": "Progression guide: HR7",
+    "href": "/guide-frontier-progression.html#hr7"
+   }
+  ],
+  "notes": [],
+  "hr": {
+   "band": 7,
+   "bandLabel": "HR7",
+   "bandRange": "HR 999",
+   "cap": 999,
+   "shown": 999,
+   "unlocksHr": null,
+   "keysCleared": 0,
+   "keysTotal": 0,
+   "keys": [],
+   "urgent": null,
+   "catalogLink": "/quests.html?gate=HR7"
+  },
+  "g": null,
+  "overlay": {
+   "stageId": "g-entry",
+   "line": "Next: HR7 Urgent Quest, the Shantien repel",
+   "where": "Talk to the G Rank guildie (umbrella girl)",
+   "done": null,
+   "total": null,
+   "guidePath": "/guide-frontier-progression.html#hr7",
+   "newPlayer": true
+  }
+ },
+ "gr912": {
+  "characterId": 18,
+  "characterName": "Ivo",
+  "hasSave": true,
+  "stage": "g-rank",
+  "summary": "GR 912: all of G★1-7 is open. Next milestone: Unlimited mode at GR999 (87 GR to go).",
+  "recommended": "Clear the 30 GRP quests (G Event Quests) to reach GR 999; they also raise your weapon's GSR. Fight Zenith ★4 only for the parts your set still needs.",
+  "details": [
+   "GR points: 11,633,300. To GR 913: 23,950. To GR999: 2,083,650.",
+   "GR999: Unlimited (UL) mode on quests with a blue flame, the Hiden Stamps in the Hunting Road shop and SR food in the food shop.",
+   "Reached: GR50 G Rank Pugi Cuff Licence, GR100 G Exotic quests, GR300 Zenith ★1, GR500 Zenith ★2, GR700 Zenith ★3 and GR900 Zenith ★4.",
+   "The 30 GRP quests (G Event Quests, GR 900 and up) also raise your weapon's GSR, up to 999 for each weapon type."
+  ],
+  "links": [
+   {
+    "label": "Unlimited mode",
+    "href": "/guide-frontier-basics.html#gr999"
+   },
+   {
+    "label": "Progression guide: on to GR999",
+    "href": "/guide-frontier-progression.html#gr900"
+   },
+   {
+    "label": "Game systems: GSR",
+    "href": "/guide-frontier-systems.html#gsr"
+   }
+  ],
+  "notes": [],
+  "hr": {
+   "band": 7,
+   "bandLabel": "HR7",
+   "bandRange": "HR 999",
+   "cap": 999,
+   "shown": 999,
+   "unlocksHr": null,
+   "keysCleared": 0,
+   "keysTotal": 0,
+   "keys": [],
+   "urgent": null,
+   "catalogLink": "/quests.html?gate=HR7"
+  },
+  "g": {
+   "gr": 912,
+   "points": 11633300,
+   "nextGr": 913,
+   "pointsToNextGr": 23950,
+   "nextMilestoneGr": 999,
+   "grToNextMilestone": 87,
+   "pointsToNextMilestone": 2083650,
+   "next": [
+    {
+     "gr": 999,
+     "id": "gr999",
+     "name": "Unlimited mode",
+     "opens": "Unlimited (UL) mode on quests with a blue flame, the Hiden Stamps in the Hunting Road shop and SR food in the food shop",
+     "link": "/guide-frontier-basics.html#gr999",
+     "reached": false,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#end-game"
+    }
+   ],
+   "milestones": [
+    {
+     "gr": 50,
+     "id": "cuff-licence",
+     "name": "G Rank Pugi Cuff Licence",
+     "opens": "buy the G Rank Pugi Cuff Licence from the Pugi Farm Manager (60P) to wear G Rank cuffs",
+     "link": "/guide-frontier-g-rank.html",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#gr50"
+    },
+    {
+     "gr": 100,
+     "id": "g-exotic",
+     "name": "G Exotic quests",
+     "opens": "G Exotic quests (G counter > G Hunter Quests > G Exotic Quests; every clear gives 1 to 4 Exotic Gem, Exotic Bone or Exotic Shl) and the Musou Zinogre, Nargacuga and Deviljho quests, which ask for GR 100",
+     "link": "/quests.html?rank=G%E2%98%858",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#gr100"
+    },
+    {
+     "gr": 300,
+     "id": "zenith-1",
+     "name": "Zenith ★1",
+     "opens": "★1 Zenith monsters (Zenith Monster Quests on the G counter) and Zenith armour and weapons",
+     "link": "/quests.html?rank=Zenith%E2%98%851",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#zenith"
+    },
+    {
+     "gr": 500,
+     "id": "zenith-2",
+     "name": "Zenith ★2",
+     "opens": "★2 Zenith monsters",
+     "link": "/quests.html?rank=Zenith%E2%98%852",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#zenith"
+    },
+    {
+     "gr": 700,
+     "id": "zenith-3",
+     "name": "Zenith ★3",
+     "opens": "★3 Zenith monsters",
+     "link": "/quests.html?rank=Zenith%E2%98%853",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#zenith"
+    },
+    {
+     "gr": 900,
+     "id": "zenith-4",
+     "name": "Zenith ★4",
+     "opens": "★4 Zenith monsters, the hardest standard fights in the game, and the 30 GRP quests (G Event Quests), which need GR 900",
+     "link": "/quests.html?rank=Zenith%E2%98%854",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#gr900"
+    },
+    {
+     "gr": 999,
+     "id": "gr999",
+     "name": "Unlimited mode",
+     "opens": "Unlimited (UL) mode on quests with a blue flame, the Hiden Stamps in the Hunting Road shop and SR food in the food shop",
+     "link": "/guide-frontier-basics.html#gr999",
+     "reached": false,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": false,
+     "guide": "/guide-frontier-progression.html#end-game"
+    }
+   ]
+  },
+  "overlay": {
+   "stageId": "g-rank-gr999",
+   "line": "Next: GR 999, Unlimited mode (now GR 912)",
+   "where": "G counter > G Event Quests (GRP quests)",
+   "done": null,
+   "total": null,
+   "guidePath": "/guide-frontier-progression.html#gr900",
+   "newPlayer": false
+  }
+ },
+ "gr999": {
+  "characterId": 19,
+  "characterName": "Juna",
+  "hasSave": true,
+  "stage": "g-rank",
+  "summary": "GR 999: every G Rank milestone is reached.",
+  "recommended": "End game: pick your long goals: the Hunting Road, the Sky Corridor, Raviente and Hiden. Most players do several at once.",
+  "details": [
+   "GR points: 13,716,950.",
+   "Reached: GR50 G Rank Pugi Cuff Licence, GR100 G Exotic quests, GR300 Zenith ★1, GR500 Zenith ★2, GR700 Zenith ★3, GR900 Zenith ★4 and GR999 Unlimited mode.",
+   "The 30 GRP quests (G Event Quests, GR 900 and up) also raise your weapon's GSR, up to 999 for each weapon type.",
+   "End game: the Hunting Road and the Sky Corridor (H.Road/Sky Corridor counter), Raviente (Kieru in the Caravan Area) and Hiden (Hiden armour made into decorations)."
+  ],
+  "links": [
+   {
+    "label": "Progression guide: End game",
+    "href": "/guide-frontier-progression.html#end-game"
+   },
+   {
+    "label": "Game systems: GSR",
+    "href": "/guide-frontier-systems.html#gsr"
+   },
+   {
+    "label": "Game systems: Hunting Road",
+    "href": "/guide-frontier-systems.html#hunting-road"
+   },
+   {
+    "label": "Game systems: Sky Corridor",
+    "href": "/guide-frontier-systems.html#sky-corridor"
+   },
+   {
+    "label": "Game systems: Raviente",
+    "href": "/guide-frontier-systems.html#raviente"
+   },
+   {
+    "label": "Game systems: Hiden",
+    "href": "/guide-frontier-systems.html#hiden"
+   }
+  ],
+  "notes": [],
+  "hr": {
+   "band": 7,
+   "bandLabel": "HR7",
+   "bandRange": "HR 999",
+   "cap": 999,
+   "shown": 999,
+   "unlocksHr": null,
+   "keysCleared": 0,
+   "keysTotal": 0,
+   "keys": [],
+   "urgent": null,
+   "catalogLink": "/quests.html?gate=HR7"
+  },
+  "g": {
+   "gr": 999,
+   "points": 13716950,
+   "nextGr": null,
+   "pointsToNextGr": null,
+   "nextMilestoneGr": null,
+   "grToNextMilestone": null,
+   "pointsToNextMilestone": null,
+   "next": [],
+   "milestones": [
+    {
+     "gr": 50,
+     "id": "cuff-licence",
+     "name": "G Rank Pugi Cuff Licence",
+     "opens": "buy the G Rank Pugi Cuff Licence from the Pugi Farm Manager (60P) to wear G Rank cuffs",
+     "link": "/guide-frontier-g-rank.html",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#gr50"
+    },
+    {
+     "gr": 100,
+     "id": "g-exotic",
+     "name": "G Exotic quests",
+     "opens": "G Exotic quests (G counter > G Hunter Quests > G Exotic Quests; every clear gives 1 to 4 Exotic Gem, Exotic Bone or Exotic Shl) and the Musou Zinogre, Nargacuga and Deviljho quests, which ask for GR 100",
+     "link": "/quests.html?rank=G%E2%98%858",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#gr100"
+    },
+    {
+     "gr": 300,
+     "id": "zenith-1",
+     "name": "Zenith ★1",
+     "opens": "★1 Zenith monsters (Zenith Monster Quests on the G counter) and Zenith armour and weapons",
+     "link": "/quests.html?rank=Zenith%E2%98%851",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#zenith"
+    },
+    {
+     "gr": 500,
+     "id": "zenith-2",
+     "name": "Zenith ★2",
+     "opens": "★2 Zenith monsters",
+     "link": "/quests.html?rank=Zenith%E2%98%852",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#zenith"
+    },
+    {
+     "gr": 700,
+     "id": "zenith-3",
+     "name": "Zenith ★3",
+     "opens": "★3 Zenith monsters",
+     "link": "/quests.html?rank=Zenith%E2%98%853",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#zenith"
+    },
+    {
+     "gr": 900,
+     "id": "zenith-4",
+     "name": "Zenith ★4",
+     "opens": "★4 Zenith monsters, the hardest standard fights in the game, and the 30 GRP quests (G Event Quests), which need GR 900",
+     "link": "/quests.html?rank=Zenith%E2%98%854",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#gr900"
+    },
+    {
+     "gr": 999,
+     "id": "gr999",
+     "name": "Unlimited mode",
+     "opens": "Unlimited (UL) mode on quests with a blue flame, the Hiden Stamps in the Hunting Road shop and SR food in the food shop",
+     "link": "/guide-frontier-basics.html#gr999",
+     "reached": true,
+     "pendingGameChange": false,
+     "grToday": null,
+     "openInGameNow": true,
+     "guide": "/guide-frontier-progression.html#end-game"
+    }
+   ]
+  },
+  "overlay": {
+   "stageId": "end-game",
+   "line": "Next: end game: Road, Tower, Raviente, Hiden",
+   "where": "H.Road/Sky Corridor counter; Kieru (Raviente)",
+   "done": null,
+   "total": null,
+   "guidePath": "/guide-frontier-progression.html#end-game",
+   "newPlayer": false
   }
  }
 }

@@ -59,6 +59,10 @@
    - a fourth section "Controller and key rebinds" (users.qol_rebind): three rows, each a pad select and a key-or-mouse select
      with the real ids and labels, the note, the per-PC note while rebindStored is false; a change sends all three rows with
      both parts to PUT /api/account/qol/rebind, the selects redraw from the answer; hidden without "rebind" in the answer;
+   - a last section "Guide window" (users.qol_guide, the in-game guide window): "Guide window" Auto / On / Off with the
+     in-game help and "Guide size" Normal / Small / Large, the answer's values shown; each change sends only its key to
+     PUT /api/account/qol/guide and the selects redraw from the answer; a refused save shows the API's message and puts
+     the select back; hidden when the answer has no "guide" (the API live before it), shown alone without "chatBubbles";
    - at 375px the card and the page content stay inside the screen;
    - no page errors.
 
@@ -124,6 +128,11 @@ let sendRebind = true;   // false: an API without rebind (users.qol_rebind)
 let rebindStored = false;
 let rebindState = { select: { pad: "default", key: "none" }, l3: { pad: "default", key: "none" }, r3: { pad: "default", key: "none" } };
 const rebindPuts = [];
+let sendGuide = true;   // false: an API without guide (users.qol_guide)
+let guideState = { mode: "auto", size: "normal" };
+const guidePuts = [];
+let refuseGuide = false;
+const GUIDE_HELP = "Your next step in a small window in town. Auto: while you are new (before G Rank, or a new character).";
 let panelState = { openKey: "Ctrl+F10", controllerCombo: true };
 let keysState = { retireKey: "Ctrl+R", retireOnDeath: "off", retireCarts: 1, skipWaitKey: null, talkKeys: [null, null, null, null, null] };
 function state(flags) {
@@ -153,6 +162,7 @@ function state(flags) {
   }
   if (sendExtra) Object.assign(out, { chatBubbles: chatState, telemetry: telemetryState, panel: panelState, extraStored });
   if (sendExtra && sendRebind) Object.assign(out, { rebind: rebindState, rebindStored });
+  if (sendGuide) Object.assign(out, { guide: guideState, guideStored: false });
   if (sendViewer) out.viewer = viewerState;
   if (sendOverlays) {
     out.damageNumbers = sendStar ? numbersState : Object.fromEntries(Object.entries(numbersState).filter(([k]) => k !== "weakSpotStar" && k !== "elementsApart"));
@@ -213,6 +223,13 @@ async function run(browser, base) {
       if (refuseOverlay) return reply(400, { error: "Option \"size\" must be one of [normal, small, large, huge]" });
       if (p.endsWith("numbers")) numbersState = Object.assign({}, numbersState, body);
       else meterState = Object.assign({}, meterState, body);
+      return reply(200, state(flags));
+    }
+    if (p === "/api/account/qol/guide" && req.method() === "PUT") {
+      const body = JSON.parse(req.postData());
+      guidePuts.push(body);
+      if (refuseGuide) return reply(400, { error: "Option \"size\" must be one of [normal, small, large]" });
+      guideState = Object.assign({}, guideState, body);
       return reply(200, state(flags));
     }
     if (p === "/api/account/qol/rebind" && req.method() === "PUT") {
@@ -646,7 +663,7 @@ async function run(browser, base) {
   };
   const extraSaved = () => page.waitForFunction(() => /options saved/.test(document.getElementById("qol-note").textContent), null, { timeout: 5000 }).catch(() => {});
   const sectionTitles = await page.$$eval("#qol-extra h3", (n) => n.map((h) => h.textContent));
-  check("four sections in order", JSON.stringify(sectionTitles) === JSON.stringify(["Chat bubbles", "Game options panel", "Crash and usage data", "Controller and key rebinds"]), JSON.stringify(sectionTitles));
+  check("five sections in order", JSON.stringify(sectionTitles) === JSON.stringify(["Chat bubbles", "Game options panel", "Crash and usage data", "Controller and key rebinds", "Guide window"]), JSON.stringify(sectionTitles));
   let xt = await xtext();
   check("chat bubbles switch with help, on by default", (await page.isChecked("#qol-cb-on")) && xt.includes("Chat lines over the hunters' heads, in town and in quests."), xt);
   const chatSel = (id) => page.$$eval("#" + id + " option", (n) => n.map((o) => o.textContent)).then(JSON.stringify);
@@ -663,7 +680,7 @@ async function run(browser, base) {
   check("telemetry switch on, help, link, not-chosen note", (await page.isChecked("#qol-telemetry")) && xt.includes("On by default. Sends crash reports and a short health report every few minutes so we can fix bugs; local logs are always written.")
     && (await page.getAttribute("#qol-extra a[href='/diagnostics-data.html']", "href")) === "/diagnostics-data.html" && xt.includes("What is sent") && xt.includes("Not chosen yet: on, and the game asks once."), xt);
   check("stored note shown while extraStored is false, takes-effect line in each section", xt.includes("Until you change these here or in the game, each PC keeps its own choice.")
-    && xt.split("Takes effect at your next login; changes made in the game are saved here.").length === 5, xt);
+    && xt.split("Takes effect at your next login; changes made in the game are saved here.").length === 6, xt);
   check("no hidden-info mark and no lock on the new sections", !xt.includes("normally hides") && (await page.$$eval("#qol-extra input, #qol-extra select, #qol-extra button", (n) => n.every((i) => !i.disabled))));
 
   // Controller and key rebinds (users.qol_rebind).
@@ -693,6 +710,29 @@ async function run(browser, base) {
     && !(await page.evaluate(() => document.querySelector("#qol-rb-options").closest(".qol-keys").textContent)).includes("each PC keeps its own choice"));
   rebindState = { select: { pad: "default", key: "none" }, l3: { pad: "default", key: "none" }, r3: { pad: "default", key: "none" } };
   rebindStored = true;   // the extraStored checks below read the whole #qol-extra text
+
+  // Guide window (users.qol_guide).
+  const gPart = await page.evaluate(() => document.querySelector("#qol-guide-options").closest(".qol-keys").textContent.replace(/\s+/g, " "));
+  check("guide section: labels and the in-game help", gPart.includes("Guide window") && gPart.includes("Guide size") && gPart.includes(GUIDE_HELP), gPart);
+  check("guide selects list their options, the answer's values shown", (await rbSel("qol-guide-mode")) === JSON.stringify([["auto", "Auto"], ["on", "On"], ["off", "Off"]])
+    && (await rbSel("qol-guide-size")) === JSON.stringify([["normal", "Normal"], ["small", "Small"], ["large", "Large"]])
+    && (await page.inputValue("#qol-guide-mode")) === "auto" && (await page.inputValue("#qol-guide-size")) === "normal");
+  const gWait = async (n) => { for (let i = 0; i < 100 && guidePuts.length < n; i++) await page.waitForTimeout(50); };
+  const gSaved = () => page.waitForFunction(() => /Guide window options saved/.test(document.getElementById("qol-note").textContent)
+    && !document.getElementById("qol-guide-mode").disabled && !document.getElementById("qol-guide-size").disabled, null, { timeout: 5000 }).catch(() => {});
+  await page.selectOption("#qol-guide-mode", "off"); await gWait(1); await gSaved();
+  check("guide mode PUT sends only mode", JSON.stringify(guidePuts[0]) === JSON.stringify({ mode: "off" }), JSON.stringify(guidePuts));
+  await page.selectOption("#qol-guide-size", "large"); await gWait(2); await gSaved();
+  check("guide size PUT sends only size", JSON.stringify(guidePuts[1]) === JSON.stringify({ size: "large" }), JSON.stringify(guidePuts));
+  check("guide selects redraw from the answer, saved message", (await page.inputValue("#qol-guide-mode")) === "off" && (await page.inputValue("#qol-guide-size")) === "large"
+    && /Guide window options saved/.test(await page.textContent("#qol-note")), await page.textContent("#qol-note"));
+  refuseGuide = true;
+  await page.selectOption("#qol-guide-size", "small"); await gWait(3);
+  await page.waitForSelector("#qol-alert:not([hidden])", { timeout: 5000 }).catch(() => {});
+  await page.waitForFunction(() => document.getElementById("qol-guide-size").value === "large", null, { timeout: 5000 }).catch(() => {});
+  check("refused guide save: message shown, select back", /must be one of \[normal, small, large\]/.test(await alertText()) && (await page.inputValue("#qol-guide-size")) === "large", await alertText());
+  refuseGuide = false;
+  guideState = { mode: "auto", size: "normal" };
 
   await page.click("#qol-cb-on"); await extraSaved();
   check("chat switch PUT", (await extraPut(JSON.stringify(["chat", { on: false }]))) === JSON.stringify(["chat", { on: false }]), lastExtra());
@@ -775,9 +815,16 @@ async function run(browser, base) {
   sendRebind = false;
   await page.reload(); await openFolds();
   await page.waitForSelector("#qol-extra input", { timeout: 5000 });
-  check("rebind section hidden without rebind, the other three stay", !(await page.$("#qol-rb-options"))
-    && JSON.stringify(await page.$$eval("#qol-extra h3", (n) => n.map((h) => h.textContent))) === JSON.stringify(["Chat bubbles", "Game options panel", "Crash and usage data"]));
+  check("rebind section hidden without rebind, the other four stay", !(await page.$("#qol-rb-options"))
+    && JSON.stringify(await page.$$eval("#qol-extra h3", (n) => n.map((h) => h.textContent))) === JSON.stringify(["Chat bubbles", "Game options panel", "Crash and usage data", "Guide window"]));
   sendRebind = true;
+
+  // The API live before the guide window (no "guide" in the answer): only the guide section is hidden.
+  sendGuide = false;
+  await page.reload(); await openFolds();
+  await page.waitForSelector("#qol-extra input", { timeout: 5000 });
+  check("guide section hidden without guide, the other four stay", !(await page.$("#qol-guide-mode")) && !(await page.$("#qol-guide-size"))
+    && JSON.stringify(await page.$$eval("#qol-extra h3", (n) => n.map((h) => h.textContent))) === JSON.stringify(["Chat bubbles", "Game options panel", "Crash and usage data", "Controller and key rebinds"]));
 
   // An older API (no "viewer" in the answer): the part is hidden, the switch stays.
   sendViewer = false;
@@ -786,6 +833,11 @@ async function run(browser, base) {
   await page.reload(); await openFolds();
   await page.waitForSelector("#qol-list input", { timeout: 5000 });
   check("no account-option sections without chatBubbles", !(await page.isVisible("#qol-extra")) && !(await page.$("#qol-cb-on")) && !(await page.$("#qol-telemetry")) && !(await page.$("#qol-panel-combo")) && !(await page.$("#qol-rb-options")));
+  sendGuide = true;
+  await page.reload(); await openFolds();
+  await page.waitForSelector("#qol-guide-mode", { timeout: 5000 }).catch(() => {});
+  check("guide section alone without chatBubbles", (await page.isVisible("#qol-extra"))
+    && JSON.stringify(await page.$$eval("#qol-extra h3", (n) => n.map((h) => h.textContent))) === JSON.stringify(["Guide window"]) && !(await page.$("#qol-cb-on")));
   await page.waitForSelector("#qol-keys:not([hidden])", { timeout: 5000 }).catch(() => {});
   check("viewer part hidden without viewer", !(await page.isVisible("#qol-viewer")) && !(await page.$("#qol-viewer-save")));
   check("iframe viewer switch still listed without viewer", !!(await page.$("#qol-iframeViewer")));

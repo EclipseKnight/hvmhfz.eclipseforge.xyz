@@ -33,7 +33,10 @@
    An answer without "chatBubbles" (an older API) hides all three.
    A fourth section, "Controller and key rebinds" (users.qol_rebind), follows when the answer has "rebind": three rows (Select, L3
    and R3 button actions), each a pad select and a key-or-mouse select; a change sends all three rows with both parts to
-   PUT .../rebind and the card redraws from the answer. "rebindStored" false shows the per-PC note. Without "rebind" it is hidden. */
+   PUT .../rebind and the card redraws from the answer. "rebindStored" false shows the per-PC note. Without "rebind" it is hidden.
+   A "Guide window" section comes last when the answer has "guide" (users.qol_guide, the in-game guide window; the API
+   from 829a6ef on): "Guide window" Auto / On / Off and "Guide size" Normal / Small / Large, each change sends only its key
+   to PUT .../guide ({mode} or {size}). Without "guide" (an older API) it is hidden; it does not need "chatBubbles". */
 (function () {
   "use strict";
   var API = "https://api.hvmhfz.eclipseforge.xyz";
@@ -344,9 +347,13 @@
   function renderExtra(data) {
     extraBox.innerHTML = "";
     var chat = data.chatBubbles;
-    if (!chat || typeof chat !== "object") { extraBox.hidden = true; return; }   // an older API
-    extraBox.hidden = false;
     var takes = "Takes effect at your next login; changes made in the game are saved here.";
+    if (!chat || typeof chat !== "object") {   // an older API: only the guide window, when the answer has it
+      guidePart(data, takes);
+      extraBox.hidden = !extraBox.firstChild;
+      return;
+    }
+    extraBox.hidden = false;
 
     if (data.extraStored === false) extraBox.appendChild(el("p", "note-text qol-extra-note", "Until you change these here or in the game, each PC keeps its own choice."));
     var part = extraPart("Chat bubbles");
@@ -383,6 +390,21 @@
     if (tel.chosen === false) row.appendChild(el("p", "note-text qol-telemetry-note", "Not chosen yet: on, and the game asks once."));
     part.appendChild(el("p", "note-text", takes));
     rebindPart(data, takes);
+    guidePart(data, takes);
+  }
+
+  // The in-game guide window (users.qol_guide): mode and size, each change sends only its key to PUT .../guide.
+  var GUIDE = { key: "guide", path: "guide", prefix: "qol-guide-", name: "Guide window", fields: [
+    { id: "mode", type: "select", label: "Guide window", options: [["auto", "Auto"], ["on", "On"], ["off", "Off"]], fallback: "auto",
+      hint: "Your next step in a small window in town. Auto: while you are new (before G Rank, or a new character)." },
+    { id: "size", type: "select", label: "Guide size", options: [["normal", "Normal"], ["small", "Small"], ["large", "Large"]], fallback: "normal" }
+  ] };
+  function guidePart(data, takes) {
+    var g = data.guide;
+    if (!g || typeof g !== "object") return;   // an API before the guide window (no "guide" in the answer)
+    var part = extraPart("Guide window");
+    part.appendChild(subOptions({}, GUIDE, g));
+    part.appendChild(el("p", "note-text", takes));
   }
 
   /* ---- Keys ---- */
