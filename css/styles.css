@@ -37,10 +37,10 @@
 *,*::before,*::after{box-sizing:border-box}
 /* The hidden attribute always wins, even over display rules below (pagers, status boxes). */
 [hidden]{display:none !important}
-/* --site-nav-h: the site bar's real height (js/nav.js measures it); --page-nav-h: the page nav bar's (js/page-nav.js),
+/* --site-nav-h: the site bar's real height (js/nav.js measures it); --page-nav-h: the page nav bar's (js/page-nav.js), --subtabs-h: the sub-tabs bar's (js/subtabs.js),
    so #links land below both bars. A page with a page nav reserves room for it before the script runs. */
 html{background:var(--bg-0);scroll-behavior:smooth;
-  scroll-padding-top:calc(var(--site-nav-h, var(--nav-h)) + var(--page-nav-h, 0px) + 16px);-webkit-text-size-adjust:100%}
+  scroll-padding-top:calc(var(--site-nav-h, var(--nav-h)) + var(--page-nav-h, 0px) + var(--subtabs-h, 0px) + 16px);-webkit-text-size-adjust:100%}
 body{
   margin:0;min-height:100vh;display:flex;flex-direction:column;color:var(--text-light);
   background:

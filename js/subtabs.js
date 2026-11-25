@@ -17,7 +17,7 @@
    - Without a hash the page opens the tab last used on it (localStorage "hv.subtabs.<data-subtabs>"), else the tab
      marked aria-selected="true", else the first.
    - Keyboard: arrows, Home and End move between tabs and open them (roving tabindex); roles tablist/tab/tabpanel.
-   - The bar is sticky under the site bar. With more than 5 tabs, phones get a "Jump to" select instead of the row.
+   - The bar is sticky under the site bar; its height goes into --subtabs-h, which html's scroll-padding-top adds. With more than 5 tabs, phones get a "Jump to" select instead of the row.
    - Lazy panels: HvSubtabs.whenOpen(elementOrName, fn) runs fn once, when the panel holding it (or the tab with that
      name) is first shown; at once when it already is, or when the element is not in a sub-tab panel (other pages).
      Each change also fires "hv:subtab" on document ({detail: {name, panel}}).
@@ -140,8 +140,20 @@
       }
       return;
     }
-    var bar = this.wrap.getBoundingClientRect().height;
-    jump(window.pageYOffset + node.getBoundingClientRect().top - this.stickTop() - bar - 12);
+    // the same room the browser leaves for a #link (html's scroll-padding-top: site bar + this bar + 16px), so the
+    // browser's own scroll after the load lands on the same spot
+    this.measure();
+    var pad = parseFloat(window.getComputedStyle(document.documentElement).scrollPaddingTop);
+    if (isNaN(pad)) pad = this.stickTop() + this.wrap.getBoundingClientRect().height + 12;
+    jump(window.pageYOffset + node.getBoundingClientRect().top - pad - (parseFloat(window.getComputedStyle(node).scrollMarginTop) || 0));
+  };
+
+  // The bar's height as --subtabs-h on <html>: css/styles.css adds it to scroll-padding-top, so a #link (on load, or
+  // clicked in the page) lands below the sticky bar as well as the site bar.
+  Bar.prototype.measure = function () {
+    var h = this.wrap.getBoundingClientRect().height;
+    var root = document.documentElement;
+    if (h && root.style.getPropertyValue("--subtabs-h") !== h + "px") root.style.setProperty("--subtabs-h", h + "px");
   };
 
   // From the address: true when the hash belonged to this bar.
@@ -195,6 +207,9 @@
     this.anchor.setAttribute("aria-hidden", "true");
     this.wrap.parentNode.insertBefore(this.anchor, this.wrap);
     list.setAttribute("role", "tablist");
+    this.measure();
+    if (window.ResizeObserver) new ResizeObserver(function () { self.measure(); }).observe(this.wrap);
+    else window.addEventListener("resize", function () { self.measure(); });
 
     this.tabs.forEach(function (tab) {
       tab.subtabPanel.setAttribute("role", "tabpanel");
