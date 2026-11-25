@@ -28,6 +28,46 @@
     return tr;
   }
 
+  // Where to take the quest on our server (data/quest-where.json through the piece; dev/make-quest-where.py, method
+  // in dev/quest-where.md): one line per counter menu path, in the game's own menu words.
+  var WHERE_PATCH = { stable: "stable patch only", pre: "pre-release patch (Test land) only" };
+
+  function wherePlaceText(p) {
+    var more = [];
+    if (p.need) more.push("needs " + p.need);
+    if (WHERE_PATCH[p.patch]) more.push(WHERE_PATCH[p.patch]);
+    if (p.note) more.push(p.note);
+    return p.path + (more.length ? " (" + more.join("; ") + ")" : "");
+  }
+
+  function whereRow(where) {
+    var tr = row("Where to take it on Hunsterverse", "");
+    var cell = tr.lastChild;
+    cell.className = "quest-where";
+    // .data-table cells do not wrap; this row's menu paths must, or a phone scrolls sideways.
+    tr.firstChild.style.whiteSpace = cell.style.whiteSpace = "normal";
+    cell.style.overflowWrap = "anywhere";
+    if (!where) {
+      cell.textContent = "Not checked yet";
+      return tr;
+    }
+    var sure = (where.places || []).filter(function (p) { return p.sure !== false; });
+    var unsure = (where.places || []).filter(function (p) { return p.sure === false; });
+    if (where.status === "not-offered") {
+      cell.appendChild(el("div", "quest-where-none", "Not offered on Hunsterverse"));
+      if (where.hidden && where.hidden.length) {
+        cell.appendChild(el("div", "cell-sub muted", "The game has it only in " + where.hidden.join(", ") +
+          ", which players on this server never see."));
+      }
+      return tr;
+    }
+    sure.forEach(function (p) { cell.appendChild(el("div", "quest-where-place", wherePlaceText(p))); });
+    unsure.forEach(function (p) {
+      cell.appendChild(el("div", "cell-sub muted", "Unconfirmed: " + wherePlaceText(p)));
+    });
+    return tr;
+  }
+
   function section(title, note) {
     var panel = el("section", "panel");
     var head = el("div", "panel-head");
@@ -159,8 +199,12 @@
               : "the guild quest, up to " + (mine.maxPlayers || 4) + " hunters, one board for the group";
             cupBox.appendChild(el("p", "cup-enter-where", (cur.quest || "This week's Speedrun Cup") + ": " + kind + "."
               + (cur.phase === "open" ? (closes ? " Clears count until " + closes + "." : "") : " It opens soon.")));
-            cupBox.appendChild(el("p", "cup-enter-where", "In game: Quest counter > Limited-Time Quests > Event Quests, listed as "
-              + quest.name + "."));
+            // The counter row of the cup's quest type (data/quest-where.json); the HR counter's Event Quests otherwise.
+            var cupPlace = ((quest.where && quest.where.places) || []).filter(function (p) {
+              return p.sure !== false && /Speedrun Cup/.test(p.note || "");
+            })[0];
+            cupBox.appendChild(el("p", "cup-enter-where", "In game: " +
+              (cupPlace ? cupPlace.path : "General Quest Counter > Event Quests") + ", listed as " + quest.name + "."));
           } else {
             cupBox.appendChild(el("p", "cup-enter-where", "It is only listed in game during a week it is the cup's quest"
               + (cur && cur.quest ? "; this week's cup is " + cur.quest + "." : ".")));
@@ -186,8 +230,9 @@
       if (rankMore) rankRow.lastChild.appendChild(document.createTextNode(rankMore));
       body.appendChild(rankRow);
     }
+    body.appendChild(whereRow(quest.where));
     body.appendChild(row("Area", quest.area || "-"));
-    var objective = (details && details.objectiveEn) || quest.objective || quest.objectiveJp || "-";
+    var objective =(details && details.objectiveEn) || quest.objective || quest.objectiveJp || "-";
     var objectiveRow = row("Objective", objective);
     if (details && details.objectiveEn && details.objectiveJp) {
       var sub = document.createElement("div");

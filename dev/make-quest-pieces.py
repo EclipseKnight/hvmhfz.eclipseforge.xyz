@@ -7,10 +7,13 @@ Each piece: {"quests": {"<id>": {quest fields, "details": {detail fields}}}}, id
 data/quests.json in that range:
 - quest fields (data/quests.json): id, name, nameJp, category, area, objective, objectiveJp, monsters, variants;
 - details (data/quest-details.json, left out when the quest has none): the detail fields the page reads; "description"
-  only when there is no "descriptionEn" (the page shows descriptionEn first, so the other text is never seen).
+  only when there is no "descriptionEn" (the page shows descriptionEn first, so the other text is never seen);
+- where (data/quest-where.json, dev/make-quest-where.py; left out when that file has no entry): where to take it on
+  Hunsterverse, its "status", "places" and "hidden" (the quest's rankNeed is already among the quest fields).
 The two big files stay the source (the list page, share pages, item data and the checks read them); the pieces are a
 copy of them, so run this after any change to either file (make-quest-monsters.py, fix-quest-objectives.py,
-fix-quest-text-names.py, fix-quest-monster-names.py):  python3 dev/make-quest-pieces.py
+fix-quest-text-names.py, fix-quest-monster-names.py) or to data/quest-where.json (make-quest-where.py):
+python3 dev/make-quest-pieces.py
 (--check: change nothing, exit 1 when data/quests/pieces/ is not what it would write; run by dev/check-catalog-monsters.js)
 """
 import json
@@ -20,6 +23,8 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 QUESTS = ROOT / "data" / "quests.json"
 DETAILS = ROOT / "data" / "quest-details.json"
+WHERE = ROOT / "data" / "quest-where.json"
+WHERE_FIELDS = ["status", "places", "hidden"]
 OUT = ROOT / "data" / "quests" / "pieces"
 
 QUEST_FIELDS = ["id", "name", "nameJp", "category", "area", "objective", "objectiveJp", "monsters", "variants", "rank",
@@ -32,6 +37,7 @@ DETAIL_FIELDS = ["objectiveEn", "objectiveJp", "subAEn", "subAJp", "subBEn", "su
 def build():
     quests = json.loads(QUESTS.read_text(encoding="utf-8"))["quests"]
     details = json.loads(DETAILS.read_text(encoding="utf-8"))
+    where = json.loads(WHERE.read_text(encoding="utf-8"))["quests"] if WHERE.exists() else {}
     pieces = {}
     for quest in sorted(quests, key=lambda q: q["id"]):
         entry = {k: quest[k] for k in QUEST_FIELDS if k in quest}
@@ -41,6 +47,9 @@ def build():
             if "descriptionEn" in keep:
                 keep.pop("description", None)
             entry["details"] = keep
+        w = where.get(str(quest["id"]))
+        if w is not None:
+            entry["where"] = {k: w[k] for k in WHERE_FIELDS if w.get(k)}
         pieces.setdefault(quest["id"] // 1000, {})[str(quest["id"])] = entry
     return {"%d.json" % n: json.dumps({"quests": qs}, ensure_ascii=False, separators=(",", ":"))
             for n, qs in pieces.items()}
