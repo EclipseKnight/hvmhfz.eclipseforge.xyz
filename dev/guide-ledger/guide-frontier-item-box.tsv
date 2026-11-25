@@ -1,0 +1,47 @@
+line	claim	kind	verdict	evidence	action
+181	Lead: the box changes gear, stores items, saves loadouts, sorts equipment	other	TRUE	decoded /root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eab0a run: Store Items, Item Presets, Organize Items, Sell Items, Change Equipment, Register Set	kept
+184	Box main menu picture: Deposit, Take, Equip, Pugi Cuff, Manual Sort, Sell, Item Presets, Send to 2nd Box, Combine	menu	CANT-VERIFY	picture of the original client; our labels in /root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eab0a (Store Items, Item Presets, Organize Items, Sell Items ...) differ in wording	kept (alt text describes the picture); aside says pictures are the original client's
+185	Box changes weapons, armour, Pugi cuffs and presets; decorations are slotted at the Blacksmith	rule	CANT-VERIFY	client behaviour; /root/mhfz/hvmhfz_re/data/translations/shipped/mhfpac.tsv:11473 (Hiden Book set from the Item Box where you can change gear)	kept
+188	Full box at the Blacksmith	npc	CANT-VERIFY	client stage layout; needs play	kept
+189	Full box in your House	npc	TRUE	/root/mhfz/hvmhfz_re/data/translations/shipped/mhfpac.tsv:1904 (My House tutorial: the item box lets you store, sort, register item sets)	kept
+190	Full box in the Caravan's equipment tent	npc	CANT-VERIFY	needs play	kept
+191	Full box in the Guild Hall changing room	npc	CANT-VERIFY	needs play (hvmhfz_re docs/guild-hall.md does not list it)	kept
+193	Smaller boxes elsewhere hold items only	rule	CANT-VERIFY	needs play	kept
+195	Equip menu picture: Equip, Edit Preset, Equip Preset, Register Preset, Use Town Set, Icon Colour, Caravan Skills, SR Book	menu	DIFFERENT	our labels: Change Equipment, Edit Set, Equip Set, Register Set, Town Set Toggle, Color, Caravan Skills (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eab0a run)	kept picture; aside 211 gives our labels
+196	Sell menu: Equips, Gems, Sigils	menu	CANT-VERIFY	picture only; our row reads Sell Items (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eab0a)	kept
+197	Combine menu: 2 Items, 3 Items, List	menu	CANT-VERIFY	picture only	kept
+199	Aside: box menus are client content and work the same	rule	TRUE	box is client save data (Erupe 4495146 docs/authz-survey.md:47 'The item box is client save data')	kept
+205	Equip, then Equip again; the game asks which set, then opens the equipment box	menu	DIFFERENT	our label for the second step: Change Equipment (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eab0a; /root/mhfz/hvmhfz_re/data/translations/shipped/mhfpac.tsv:11473 'Change Equipment'); the set prompt words Quest Set / Town Set / Rasta Set at /root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eaab2	rewritten (equipment menu > Change Equipment)
+207	Quest Set is what you take on quests	name	TRUE	/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eaab2 'Quest Set'	kept
+208	Town Set worn around town if turned on	name	TRUE	/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eaabc 'Town Set', 'Town Set Toggle' in the equipment menu run	kept; Town Set Toggle named
+209	Rasta Set is what your lent Rasta wears	name	TRUE	/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eaab2 run 'Rasta Set'; /root/mhfz/hvmhfz_re/data/translations/shipped/mhfpac.tsv:12459 'My Set includes Rasta gear'	kept
+211	Aside: menu names can differ; Quest/Town/Rasta Set not in client text	menu	FALSE	the earlier run missed them: all three are at /root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eaab2	rewritten: lists our real labels
+216	Box grows by buying shop items and ranking up	shop	DIFFERENT	data/items/index.json: Storage Guide (621), Storage Guide+ (622), Storage Guide・Extreme (14064), Storage Guide・Illusion (15266) all have 0 sources; live DB: select ... from shop_items where item_id in (621,622,14064,15266) -> 0 rows	rewritten: ranking up; books were the old servers'
+216	41 pages at most	rule	CANT-VERIFY	no client table found	kept (aside says unchecked)
+216	More Storage! gift: claim once at the Gacha Felyne, Claim Items; gives Item Box and Equipment Box pages	source	TRUE	live DB distribution id 3: type 1, '~C06More Storage!', times_acceptable 1, no deadline; distribution_items: item_type 30 x20, 31 x20; Erupe 4495146 schemas/bundled-schema/DistributionDemo.sql:3,7 (type 30 = Item Box extra page, 31 = Equipment Box extra page); type 1 = Claim Items at the Gacha Felyne (hvmhfz_re docs/gacha-cat.md:42-45, miyashita-chain.md:91)	rewritten (earlier text said 'from the game's gift box', then 'NPC at the town entrance': both wrong place)
+220	Four box expansion items, two need HR2/HR3, +1 page each	shop	DIFFERENT	four Storage Guide books in data/item-ids.json; no seller (row above); HR needs CANT-VERIFY	rewritten with our four names, 'No shop sells them here'
+221	Give up Item Sets 5-24 for 4 Extra Item Box pages	rule	TRUE	/root/mhfz/hvmhfz_re/data/translations/shipped/mhfpac.tsv:11762-11767 ('Added 4 pages to the Extra Item Box. (Item Sets 5-24 deleted)'; empty it first to swap back)	added
+222	Hunter Rank 1-7 give +20 pages	rule	CANT-VERIFY	no client table found	kept
+223	G Rank 1 and GR500 give +3 each	rule	CANT-VERIFY	no client table found	kept
+224	Caravan Rank point thresholds give +10 pages	rule	CANT-VERIFY	Caravan server side not built (hunsterverse page #caravan); thresholds not found	kept (aside)
+226	Equipment box grows to 20 pages, no Caravan/G Rank pages	rule	CANT-VERIFY	no client table found	kept
+227	Aside: 6,000 storage slots on the website; Caravan pages need server side; More Storage! gift	rule	TRUE	site storage figure kept as written by earlier batch; gift: distribution 3 (row 216)	rewritten gift part
+232	Item presets save the pouch	name	TRUE	our name Item Set: /root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eab0a run 'Saved Item Set %d', 'Item Set 1'..'Item Set 24', 'Use Item Set', 'Save Item Set'	rewritten to Item Set
+235	Item Presets > Register Preset	menu	DIFFERENT	our labels: Item Presets (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eab0a, dev/guide-terms.tsv:94) > Save Item Set (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eab0a run)	rewritten
+236	Pick a slot and name it	rule	TRUE	/root/mhfz/hvmhfz_re/data/translations/shipped/mhfpac.tsv:7626 'Registered. Rename the Item Set?'	kept
+238	Slots 1-4 shortcuts L1/L2/R1/R2 or F/Ctrl/C/Shift	other	CANT-VERIFY	key bindings need play	kept; added Use Item Set for other sets
+239	20 more slots (5-24) with a subscription	rule	DIFFERENT	no subscriptions: every account has all courses (Erupe 4495146 common/mhfcourse/mhfcourse.go:102); 24 Item Set labels at /root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eab0a	rewritten (courses); Extra Item Box trade added (/root/mhfz/hvmhfz_re/data/translations/shipped/mhfpac.tsv:11762-11767)
+240	Aside: courses free, so 20 extra slots should be there	rule	TRUE	mhfcourse.go:102; link guide-frontier-hunsterverse.html#courses exists	kept
+245	Sort by hand; auto-sort makes gem conversion hard	other	OPINION	author's advice	kept
+246	Author's page layout	other	OPINION	attributed 'The guide's author'	kept
+251	Aside: sorting works the same	rule	TRUE	client feature	kept
+257	Gear presets save everything worn	name	TRUE	client calls them My Set: /root/mhfz/hvmhfz_re/data/translations/shipped/mhfpac.tsv:7628 'Registers your current gear and Decorations, and Skill Cuffs, as a My Set'	rewritten (My Set)
+260	Equip menu > Register Preset	menu	DIFFERENT	our label Register Set (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eab0a run)	rewritten
+263	Equip Preset; game lists gear, decorations/sigils, skills	menu	DIFFERENT	our labels Equip Set, Edit Set (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin 0x1eab0a run); preview CANT-VERIFY	rewritten
+264	Since G10 cuffs are saved with the set	rule	TRUE	/root/mhfz/hvmhfz_re/data/translations/shipped/mhfpac.tsv:7628 (gear, Decorations and Skill Cuffs as a My Set)	kept; added the client's warning
+264	My Set does not keep decorations of Zenith or Sen'yu weapons	rule	TRUE	/root/mhfz/hvmhfz_re/data/translations/shipped/mhfpac.tsv:12461, 12468, 12470	added
+265	Aside: gear presets work the same	rule	TRUE	client feature	kept
+270	Caravan gem skills from HR2 with the Caravan Gem; orb by your name; up to three skills (5% true raw, KO, no flinch at monster sight)	rule	CANT-VERIFY	client content; details on guide-frontier-events.html#caravan (other batch)	kept
+271	Link to Regular Events: Caravan	other	TRUE	guide-frontier-events.html has id="caravan"	kept
+272	Caravan scores post at the end of a quest (fixed 2 Nov)	rule	TRUE	changelog.html:882 (2 Nov 19:19 UTC)	kept
+279	Credit to Fist	other	TRUE	kept as is	kept

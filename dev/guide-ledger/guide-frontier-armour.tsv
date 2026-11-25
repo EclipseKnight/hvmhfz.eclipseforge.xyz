@@ -1,0 +1,104 @@
+line	claim	kind	verdict	evidence	action
+186	Blacksmith asks whether you craft for your Partner or yourself	npc	CANT-VERIFY	no data; Partner dialogue is client script	kept; check: talk to the Blacksmith with a Partner
+187	Blacksmith > Armour section; main menu Weapons, Armour, Decorations, Pugi Cuffs	menu	CANT-VERIFY	dev/guide-terms.tsv:135-139 (client smithy list: Create/Upgrade Weapon, Create/Upgrade Armor, Create Deco, Insert Deco, Create Cuff); no 'Armour' parent string found	kept with the page's own 'menu names may differ' line; check: open the Blacksmith menu
+191	Armour Crafting entries (Standard, Upgrade, Transmog, Gou, G Rank, Convert G Armour to Deco, Exotic, Zenith, Special, Premium and GCP)	menu	CANT-VERIFY	guide-terms.tsv:138-140: 'Convert G Armour' not found in client strings; others unmatched	kept; check: open Blacksmith > Armour and read the list
+192	Special Armours submenu (Guild and Festival, Event, SP, SR and Hiden)	menu	CANT-VERIFY	no client string match (names.py: nearest 'Special Armor Tkt')	kept; check in game
+193	Premium Armours submenu (Prem Kit 1/2, Lottery, NetCafe, HL/EX, GCP, Event/Promo, Exotic)	menu	CANT-VERIFY	no client string match (no Item Mall or lottery here, see line 353 note)	kept; check in game
+194	Armour pieces: Helmet, Chest, Arms, Waist, Legs	menu	TRUE	data/armor/{head,chest,arms,waist,legs}.json	kept
+199	Armour made before G Rank: craft base then upgrade with Armor Spheres; level 7 second tier; levels 2-6 use spheres	rule	TRUE	changelog.html v1.19 (9 Nov): Low and High Rank upgrade levels cost one Armor Sphere; hvmhfz_re docs/armor-sphere-patch.md:12-17	rewrote spelling to Armor Sphere; added shop source
+201	Sphere table: GCP / NP / Festival Point prices	shop	DIFFERENT	no GCP, N Point or Festival sphere shop here (brief; hv note line 221); data/sources/road-shop-1.json rows 13057-13064: 10,20,30,40,50,60,70,80 RdP	column replaced by Hunting Road shop (RdP): 10 to 80
+203	Sphere names (Armour Sphere ... Divine Armour Sphere; 'Heavy' = Heaven)	name	DIFFERENT	data/item-ids.json 13057-13064: Armor Sphere, Armor Sphere+, Adv Armor Sphere, Hard Armor Sphere, Heaven Armor Sphere, True Armor Sphere, Strong Armor Sphere, Divine Armor Sphere	rewritten to our exact names (8 rows)
+203	Mining columns: HR1-2, HR3-4, HR5/G Rank; Strong and Divine rewards only	source	TRUE	data/items/13057..13064.json 'gather' lists: tiers 1-6 have gathering quests, Strong/Divine (13063,13064) have none	kept
+203	Quest rewards columns (HR1-2 .. HR6 Supremacy)	source	TRUE	data/items/13057..13064.json rewards of offered quests: Armor Sphere/+ LR+HR, Adv/Hard LR+HR, Heaven/True HR100+/Hardcore, Strong 17 and Divine 16 HR100+/Hardcore quests	kept (guide HR numbers = our rank bands)
+213	G Rank armour uses materials for every upgrade, no spheres	rule	TRUE	changelog.html v1.19: G Rank unchanged; armor-sphere-patch.md:17	kept
+219	Press Square or Z, change pages with L1/R1 or F/C; skills on third page; slots on second page	other	CANT-VERIFY	client UI, no data	kept; check in the smithy
+220	Skill Hunter tool made by the original guide's author, not linked	other	TRUE	no link on page	kept
+221	Note: v1.19 (9 Nov) one Armor Sphere per level, Secret Proof at a few levels	rule	TRUE	changelog.html:584; armor-sphere-patch.md:12-17	kept
+221	Making the next piece needs 'about a fifth fewer' materials	rule	FALSE	armor-sphere-patch.md:16 'about a third less (6,362 -> 4,040)'; armor-sphere-patch.md:94 column 0 6,362 -> 4,040 (36% fewer) for the shipped lists	rewritten to 'about a third fewer'. changelog.html:584 v1.19 still says 'a fifth' (not touched, report)
+221	Spheres come from mining, quests and Road shop 10 to 90 RdP, not GCP/N Point/Festival	shop	TRUE	data/sources/road-shop-1.json: 13057-13064 at 10-80, row 14858 (Absolute Armor Sphere) at 90 with gate 6	kept
+221	Road Limited tab sells about 270 tickets (Lien, Rage, Gauss, Cielo, 2011 Kit 1-3) at 3,000 or 10,000 RdP from GR 1	shop	TRUE	data/sources/road-shop-7.json: 156 rows at 3000 and 133 at 10000, all gate GR1; Lien Head Tkt 3000, Rage Tkt 10000, Gauss 10000, Cielo Ticket 3000, 2011 Kit 1-3 10000	kept
+221	Item 'Secret Proof' (HC and some sets at a few levels)	name	CANT-VERIFY	armor-sphere-patch.md:14 uses 'Secret Proof (Low/Mid/High)'; no item of that exact name in data/item-ids.json	kept; check: open an HC armour upgrade list at the Blacksmith
+227	Standard armour crafted and upgraded with materials instead of Armour Stones	rule	TRUE	v1.19 patch changes Low/High Rank upgrade costs (armor-sphere-patch.md)	kept
+231	SP armour: HR5 craft, single decoration slot, needs SP gems, materials only from HR5 quests	rule	CANT-VERIFY	no data row checked	kept; check: SP armour piece info screen
+232	SP gems such as +10 Hearing and +15 Psychic switch on Autotracker and Earplugs	name	DIFFERENT	data/skills/index.json trees Hearing (10 Earplugs) and Psychic (15 Autotracker)	rewrote 'Hearing Protection' to 'Hearing'
+234	Colours cosmetic, coloured grasses, trade to the Veggie Elder in the Gorge	npc	CANT-VERIFY	dev/guide-terms.tsv has no Veggie Elder row	kept; check: find the Veggie Elder in the Gorge
+237	HC armour: regenerates health above 50% on any HC quest; stamina and regen table	rule	CANT-VERIFY	client rule; Hardcore quests exist ([Hardcore] names in data/quests.json) but the numbers are not in our data	kept; check: wear HC pieces on a Hardcore quest and watch health
+250	HS armour: HC effects plus defensive buffs with an HC weapon or Heavenly Storm or higher; table	rule	CANT-VERIFY	client rule, not in our data	kept; check: HS piece on a Hardcore quest, Defense on the status screen
+264	G Rank armour: attack +30 true raw with 3+ pieces; skill limit 10/11/12 by pieces	rule	TRUE	hvmhfz_re docs/armor-builder.md:159 (limit 10, +1/+2 for 3/5 G-rank pieces)	kept
+273	G, GF, GX level 7 piece converts to a decoration	rule	TRUE	docs/armor-builder.md; data/armor/index.json decorations with GX1..GX5 names	kept
+276	GS/GP is the G Rank upgrade of Premium armour; keeps HS advantages	rule	TRUE	data/armor/chest.json: 'Demon GS Dress', 'Demon GP Dress' rarity 9/10, limitKind 1 (counts as G Rank piece)	kept
+277	GP slightly worse than GX in defense, wider skill choice	other	OPINION	the guide's author's judgement	kept
+281	Gou armour opens at HR5	rule	TRUE	data/armor/head.json: Gougarf FX Helm craft ['hr',100,5]	kept
+281	Elder Dragon Gem (guide: Gou Elder Dragon Gem, Chinese name)	name	DIFFERENT	data/item-ids.json 3995 Elder Dragon Gem	rewritten; Chinese removed
+281	Gem from Rukodiora wing/horn breaks and tail carves at 10%	source	TRUE	data/items/3995.json drops: Rukodiora (Elite) Wing Twice 10%, Horn Twice 10%, Tail Carve 10%, Shiny 5%	rewritten with our numbers (wing and shiny added)
+281	Quest that gives the gem 100%: Carving Acme: Elder Dragon Gem	quest	TRUE	q.py: 22143 offered at General Quest Counter > Daily Quests (63031 is the not-offered copy); data/items/3995.json rewards 100% 'extra condition'	linked 22143, path added
+281	3 gems when you make your first Gou weapon	rule	CANT-VERIFY	no data	kept; check: make a first Gou weapon, look in the item box
+282	Boost (Muscle) raises a skill one level; Attack Up (Very Large) becomes Absolute = 30 free points	rule	TRUE	data/skills/index.json Attack tree 50 pts Attack Up Very Large, 80 Absolute (30 points apart)	rewrote skill names to ours
+283	Boost needs health % by piece count and 26 stamina; table	rule	CANT-VERIFY	client rule, not in our data	kept; check: Gou piece on a Gou quest
+296	Heavenly Storm opens at SR100, Supremacy SR300, G Supremacy GR1, Burst GR1, Origin GR1	rule	CANT-VERIFY	data/armor/head.json Gougarf G/GF/GX craft ['gr',1,7] supports GR1 for the G tier; SR numbers unchecked	kept
+303	Extra buffs only on Gou HC, Supremacy and G Rank quests with a Gou or higher weapon; tables	rule	CANT-VERIFY	client rule, not in our data	kept
+321	G Supremacy, Burst, Origin are not G Rank pieces for skill limit or +30 raw	rule	TRUE	data/armor/*.json limitKind bit 0 only on G Rank pieces (e.g. Gougarf GX); docs/armor-builder.md:140	kept
+324	Tenrou (Tower) armour, upgrades to GX, Tower decoration table (10 rows)	rule	CANT-VERIFY	our client names for these Tower decorations not found in data/armor/index.json (type g/c are gems and cuffs)	kept; check: open a Tenrou piece's decoration list
+340	Tenrou pieces count as real G Rank only with the G Rank Armour Tower decoration	rule	CANT-VERIFY	docs/armor-builder.md (Tower plate values) not a direct match	kept
+344	Exotic upgrade to G needs GR500	rule	DIFFERENT	data/armor/head.json 'Zinogre G Helm' craft ['hr',100,5]; hv note: G Exotic quests open at GR 100	rewritten: guide says GR500, here smithy offers it from HR 100
+344	Exotic pieces have a built-in always-active skill, count as G Rank when upgraded	rule	TRUE	data/armor/head.json 'auto' field; limitKind in index	kept
+349	Standard Zenith: four tiers Z/ZF/ZY/ZX, 7 upgrades; GR200/400/600/800	rule	DIFFERENT	hv note line 353: our tiers GR300/500/700/900; data/armor/head.json Baruragaru Z..ZX craft ['gr',200,7]	kept with the existing note
+350	Premium Zenith (ZP) from Premium pieces past GP, Zenith Hypnoc parts, 2 extra lottery tickets	rule	CANT-VERIFY	data/armor/chest.json has ZP pieces (Masaha Dress ZP); materials not in our data	kept
+353	Note: Diva GCP item shop sells Katante..Utaei Mat, 200 GCP	shop	TRUE	earlier batch note; source gcp-item-shop	kept
+358	Transmog: give the exterior's items at the Blacksmith	menu	CANT-VERIFY	no data	kept
+359	Billing exterior list, Nier 2B exterior limited	rule	TRUE	no Item Mall here (changelog and AGENTS)	kept with note
+363	Transmog menu entries	menu	CANT-VERIFY	no client string found	kept
+367	Green medal symbol on transmogged armour	other	CANT-VERIFY	client UI	kept
+374	Colours other than Green, Red, White need HR3	rule	CANT-VERIFY	client rule	kept
+375	Hunter T Shirt sold by the NPC with glasses in the Blacksmith	npc	CANT-VERIFY	data/armor/chest.json id 234 'Hunter T Shirt' (craft hr 22); NPC position not in data	rewritten name; check: look for the NPC with glasses inside the Blacksmith
+379	Green/Red/White: Delivery, Slaying, capture counts (100 points)	rule	CANT-VERIFY	client rule	kept
+382	Blue: 50 friends	rule	CANT-VERIFY	client rule	kept
+383	Dark Blue: 20 Rare-7 weapons of each type	rule	CANT-VERIFY	client rule	kept
+384	Light Green: 35 armour pieces for the Well Dressed title	rule	CANT-VERIFY	title not in our data	kept
+385	Purple: win a PVP match with pets	rule	CANT-VERIFY	client rule; hv note says untested	kept
+386	Orange: Hunter Guide challenges; Yellow: 15 Large Gold Crowns; Grey/Black: eat 100 times	rule	CANT-VERIFY	client rule	kept
+389	Pink: 5000 Souls during the festival	rule	TRUE	Hunter Festival runs here (changelog.html 17 Nov 2026); 5000 amount is the client's	kept; removed the NPC nickname Cappuccino
+394	2x Capture G from the Road store give Capture Guru	shop	TRUE	road-shop-4.json item 1133 Capture G 500 RdP; data/armor/index.json Capture G = Capture Pro. +10 (two = 20 = Capture Guru)	rewritten with our names and price
+394	3x Psychic 2 G give Autotracker	shop	TRUE	road-shop-4.json item 6250 500 RdP; Psychic 2 G = Psychic +5 (three = 15 = Autotracker)	rewritten, Chinese removed
+394	Green by delivering 3 iron ore in the Caravan; White hard (monsters can't be captured)	other	OPINION	the guide's author's advice	kept
+395	Blue: add 50 players and delete them	other	OPINION	the guide's author's tip	kept
+397	Light Green: Chef chest piece, 35 times, from raw meat and Pugi Farm store items	rule	CANT-VERIFY	no 'Chef' armour piece found in data/armor/chest.json; JA names map the guide's items to Well-done Steak 48, Hot Pepper 192, Raw Meat 40, Spiced Meat 42	rewritten item names; added 'check the recipe first'; check: find the chef piece at the Blacksmith
+401	Pugi Farm store sells the meat and pepper (level 3)	shop	CANT-VERIFY	no data	kept
+407	Purple: Hunter Dojo > Select Training > Arena Training, first 3 Arena Exercise quests	menu	DIFFERENT	q.py 10101 Face the Azure Hunter!, 10102 Face the Gypceros!, 10103 Face the Land Queen! all not-offered; guide-terms.tsv:159 menu not found in client	rewritten: not offered, route may not work; Chinese removed
+407	Quest 10101, 10102, 10103 Arena Exercise	quest	DIFFERENT	q.py: all not-offered (201, 202, 203 are unconfirmed older copies)	linked, said not offered
+408	Pet capture slots and rates	rule	CANT-VERIFY	client rule; figure image	kept
+410	Arena Tournament at the same NPC	menu	CANT-VERIFY	no client string found	kept with 'could not check'; Chinese removed
+420	Blacksmith decoration menu: Create, Insert, Remove Decorations	menu	CANT-VERIFY	guide-terms.tsv:135 smithy list has Create Deco, Insert Deco	kept
+423	Artisan Deco gives Artisan +2, Auto-Reload +2, Adrenaline -1	name	TRUE	data/armor/index.json 827 Artisan Deco [[32,2],[62,2],[65,-1]] = Artisan, Auto-Reload, Adrenaline	kept, Chinese removed
+424	Artisan Deco recipes	source	DIFFERENT	data/items/827.json smithy-decorations: Bloodrun Jewel 1, Gold Rajang Pelt 1, Blood Red Horn 3; or Bloodrun Jewel 1, Lunastra Horn 2, W.Monoblos Horn 3 (item names from data/item-ids.json 796,526,470,579,474)	rewritten with our materials
+431	G deco Expert Deco (Expert +4, Attack +1)	name	DIFFERENT	data/armor/index.json 'Expert 2 Deco' [[Expert,4],[Attack,1]]; data/items mats Bloodrun Jewel, Sharpened Beak, Twisted Horn x2	rewritten name and materials
+432	G deco Expert G Deco	name	DIFFERENT	data 'Hermit G' (item 1118): mats Expert 2 Deco 3, Piscine Blood+ 15, Carapaceon Cpc 15, F.Wyvern Carapace 15; Road shop Decorations tab 500 RdP	rewritten name and materials
+433	G deco Dodging Sword G Deco	name	DIFFERENT	data 'Evasive Blade G' (13067): Mosaic Jewel 15, Toa Ice Scale 5, Toa Shl 5; Road shop 500 RdP	rewritten
+436	Special jewel comes from an HR5 Kushala Daora quest, 2 to 8 each	quest	DIFFERENT	q.py 22076 Evade Jewel G & Kushala Daora [Hardcore] not-offered; data/items/13055.json reward 2-4	rewritten with link, not offered, 2 to 4
+436	Jewel appears in crafting list at 15 and has no other use	rule	CANT-VERIFY	no data	kept as 'the guide says (we did not check)'
+439	G Rank decorations available from Road, Festival or GCP stores	shop	DIFFERENT	hv note line 483: festival exchange empty, GCP shop = Diva only	rewritten to Hunting Road shop
+440	G decoration crafting menu sections (Direct Crafting, Show All, Monsters, Hunter Festival ...)	menu	CANT-VERIFY	no client string found	kept
+444	Refining level 7 G armour gives one gem; G/GF/GX1-5 by slot	rule	TRUE	data/armor/index.json decoration names GX1..GX5 (e.g. Garuga BM GX1); docs/armor-builder.md	kept
+452	Silver Rathalos gem table (skills per gem)	name	TRUE	skills use tree names; Exploit Weakness is tree Tenderizer in data/skills/index.json	rewrote to Tenderizer; other tree names verified (Edgemaster, Expert, Vitality, Evade Distance, Rage, Movement Speed, Issen)
+468	G Class decorations from Elder Dragon / Exotic materials	rule	TRUE	data/armor/index.json 'G Rage・Issen' etc; data/items/<id>.json smithy-decorations	kept
+473	G Class table: four decorations	name	DIFFERENT	data: G Rage・Issen (Azure Jewel 15, GR1 Gem, Grease Stone), G Rage・Attack (Dark Green Jewel 15, GR1 Gem, Eternal Ice Cubes), G Protect・Exploit (Teostra Dragon Scl 5, Teostra Cortex 5, GR1 Gem), G Issen・Vigor (S.Zin Cortex 5, S.Zin Riptalon 5, GR1 Gem)	rewritten: names, skills (trees) and materials from our data; Chinese removed
+468	Jewels from two Hypnoc quests under 1 star	quest	DIFFERENT	q.py 23411 Recommended: G Rank Rage Hard Jewel and 23412 Recommended: G Rank Guard Flash Jewel, both offered at G Rank Quest Counter > Gear Acquisition Quests (54854/54855 are not-offered copies)	rewritten with links and path
+482	Gallery gems from layout, Furniture NPC at the Combiner	npc	CANT-VERIFY	no data	kept; check: Combiner / furniture NPC
+483	Note: Hunter Festival exchange empty, GCP shop Diva only (135)	shop	TRUE	earlier batch; brief	kept
+490	Old guide sets; Horn set with Encourage+2 and Horn Maestro	name	DIFFERENT	data/skills/index.json tree Flute Expert (10 pts, Flute Expert)	rewrote to Flute Expert
+498	Default 10 active skills, 11 or 12 in G Rank	rule	TRUE	docs/armor-builder.md:159 (10, +1/+2 for 3/5 G-rank pieces)	kept
+499	Skill priority decides activation; Focus lowest priority	rule	TRUE	docs/armor-builder.md (over the limit, later activation rows drop first)	kept; set generator link now our armour set builder; removed 'Quick Charge' alias
+502	Hybrid skills table (Sword God+2, Gentle Shot+3, Blazing Majesty+2)	name	TRUE	data/skills/index.json trees Sword God, Gentle Shot, Blazing Grace (Blazing Majesty+2)	names set to ours; effect names too
+511	Grey skill in town but active on quests with boost	rule	CANT-VERIFY	client rule	kept
+514	Exotic, Tower, Burst and Origin skills not on the Guild Card, new Hunter Status section	rule	CANT-VERIFY	client UI	kept
+522	Skill Fruits: bought with Lottery G Coins, 30 fruits for 3 coins	shop	DIFFERENT	hv note line 536: coin shop empty; data/sources/road-shop-8.json Fire/Water/Dragon/Thunder/Ice Res Fruit 1 RdP, Shiriagari Fruit 50 RdP (GR1)	rewritten, shop NPC nickname removed
+525	Guild Cooking opens at a guild level; link to guild page	rule	CANT-VERIFY	see guide-frontier-guild.html	kept
+540	Skill reference: tree and skill names (about 240 rows), health, offensive, defensive, blademaster, gunner, resistances, statuses, protection, items, map, gathering, rewards, other	name	DIFFERENT	script check of every Skill tree and Skill cell against data/skills/index.json trees; points checked	239 cells changed: e.g. Recovery Speed -> Recover Speed, Stamina Recovery Up (Large) -> Stamina Rec (Large), Attack Up (Large) -> Attack Up Large, Terrain Damage Decreased -> Hazard Res, Drunk/Heavy Drinker -> Sobriety/Drunkard, Health +50 -> Health+50, Paralysis Halved -> Para Halved, Exploit Weakness -> Tenderizer/Weakness Exploit, Capture Proficiency -> Capture Pro.; swapped tree/skill rows fixed (Dissolver/Elemental Exploit, Lavish Attack/Consumption Slayer)
+753	Sword God +3 needs 20 points	rule	FALSE	data/skills/index.json Sword God: 25 for Sword God+3	points changed to 25
+540	Effect texts name other skills (Stamina Recovery Up, Super High-Grade Earplugs, Weapon Handling ...)	name	DIFFERENT	same data; global rename of names in effect text by script (96 lines)	renamed to ours (+N spacing, Hazard Res, Super Earplugs, Bomber, Crit Conversion, Recovery Items Down ...)
+547	Medical Sage, Vampirism notes, Lone Wolf and other skill effect numbers	rule	CANT-VERIFY	client rules, not in our data	kept
+815	Hiden skills table; Tech tree names with weapon names	name	DIFFERENT	data/skills/index.json GL Tech (Cannon Ruler); others match (Sword Saint, Dual Dragon, Sword King, Katana God, B. Beast, F. Emperor, H. Spear, E. Marshal, P. Phoenix, M. Star, Gun Sage, Gun Prodigy, Bow Demon)	Cannon Emperor -> Cannon Ruler; long forms of the abbreviated ones kept
+1063	Zenith basics: skills buff existing skills, only Skill Slots Up has own effect	rule	TRUE	data/armor/rules.json zenith.skills (names and levels); docs/armor-builder.md:159	kept
+1069	Skill Slots Up +1 to +7, up to 28 skills limit	rule	TRUE	data/armor/rules.json zenith skills Skill Slots Up+1..+7; docs/armor-builder.md:16	kept
+1082	Zenith skill list (43 rows, 7 update tables)	name	DIFFERENT	data/armor/rules.json zenith.skills names and data/armor/index.json cuff names; script check	renamed: Flash Conversion Up -> C. Conversion Up+N, Stylish Assault Up -> S. Assault Up+N, Hearing Protection Up -> Earplugs Up+N, Paralysis Res Up -> Para Res Up+N; levels added to all multi-level names (Guard Up+2, Wind Res Up+4 ...); skill-buffed column set to tree names (Crit Conversion, Hearing, Poison, Paralysis, Sleep, Reinforcement)
+1082	Zenith effect numbers	rule	CANT-VERIFY	client rules not in our data (docs/armor-builder.md decodes tables only)	kept

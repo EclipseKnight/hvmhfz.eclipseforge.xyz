@@ -1,0 +1,102 @@
+line	claim	kind	verdict	evidence	action
+189	Taiwanese launcher: login window, character list, config window with graphics/sound/proxy tabs	other	DIFFERENT	AGENTS.md: players use the Mezeporta launcher (play.html#windows-launcher); rule 3 other servers	rewritten (launcher logs you in, lists characters; settings in game)
+189	Launcher options used once; other settings changed in game	other	OPINION	guide author advice; in-game Options exist (client Options menu)	kept, reworded
+190	Log in with the Mezeporta launcher; REGISTER creates the account; case-sensitive	rule	TRUE	play.html steps (Windows/Linux account step: REGISTER in the launcher)	kept
+195	Start menu entries (picture: Items, Combine, Quest Status, Hunter Status, Community, Guild, F Key Binds, Hunter Challenge, Options, Log In Bonus, Quit/Restart)	menu	CANT-VERIFY	labels are in the client DLL as images/strings not in data/translations; picture is the original client	kept; note says labels may differ
+196	Item menu: Discard, Give to Player, Move in Bag, Give Partnyaa, F Key Bind; Combination: 2 Items, 3 Items, From List	menu	CANT-VERIFY	picture of the original client; not in shipped mhfpac.tsv	kept
+198	Start menu is client content; names can differ in our patch	other	TRUE	client is JP with English patch (hvmhfz_re docs/translation.md)	rewritten
+204	Guild Card shows active subscriptions	menu	DIFFERENT	no subscriptions: every account has all courses, Erupe 4495146 common/mhfcourse/mhfcourse.go:102 expiry 2030-01-01	rewritten to "your courses"
+206	Personal Status sets icons that flash for others with the same icons	menu	CANT-VERIFY	client behaviour, needs play	kept
+208	Equipment Details: town and quest sets, piece details	menu	CANT-VERIFY	client screen	kept
+209	Tower Card shows Tower/Sky Corridor info; "see the Tower section of the guide"	menu	TRUE	Tower is our Sky Corridor (guide-terms.tsv "Tower" row); the old link target did not exist	rewritten, linked guide-frontier-systems.html#sky-corridor
+210	SR Books shows SR weapons, settings not changeable	menu	CANT-VERIFY	client screen	kept
+211	Hunter Experience trophies mean nothing	other	OPINION	author judgement	kept
+212	Story Progress shows story questline step (from the Yellow Guild Sweetheart)	npc	TRUE	story series are at the Series Quest Counter: dev/quest-where.md (Series Quest Counter: Beginners/Veteran); nickname dropped (rule 2)	rewritten
+214	Monster Info needs the monster books bought from the Shop NPC	shop	CANT-VERIFY	books not in data/sources/town-shop.json (16 rows, none Book of ...); needs play	rewritten as the guide's claim
+215	Ancient Treasures shows Tower treasures; picture calls it Tower Treasures	menu	CANT-VERIFY	client screen	kept
+217	Diva Defense Card, Style Rank Settings, Transcend Card exist	menu	CANT-VERIFY	picture only	kept
+218	Diva Defense Card shows points, gem, songs since 4 Nov; daily and norma lists empty	rule	TRUE	changelog.html 4 Nov events; hvmhfz_re docs/diva-defense.md	kept
+225	Friends list one way; Joinable toggle	menu	CANT-VERIFY	client behaviour	kept
+226	Mail list shows up to 40 mails	rule	TRUE	Erupe 4495146 server/channelserver/handlers_mail.go:105 LIMIT 40	kept
+231	Options pages: Display, Common, Rendering (High Grade only), Control, NPC, Chat, Sound	menu	CANT-VERIFY	picture of the original client; guide-terms.tsv maps Display/Common/Rendering/Control/NPC Options to our Display (Town)/Display (Gen, Quests)/Display (High Grade)/Input Options/NPC Settings at low-medium confidence	kept; picture labels only
+244	NPC Options sets AI companion priority; Chat Options sets companion chat	menu	TRUE	guide-terms.tsv NPC Settings (high)	kept
+246	Taiwanese client has three Lock On modes; TW Lock On (R2/L1, quirks)	menu	DIFFERENT	our client is the JP one: decoded mhfpac.bin has "Lock On Mode" (grep -a "Lock On" /root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin), no TW Lock On	removed TW Lock On
+249	JP Lock On Type 1 / Type 2, R1 to change target	menu	CANT-VERIFY	which types the Lock On Mode setting offers needs play	kept, heading now "Lock On Mode"
+251	Lock On modes not checked	other	TRUE	as above	note rewritten
+257	Control Bindings in Control Options; PSP-style controls second option	menu	CANT-VERIFY	client screen	kept
+266	Insert or L2+R2 opens chat; Shift+arrows change modes; Square to whisper; # + F key gestures; F6 page 2	other	CANT-VERIFY	client controls	kept
+277	@here, @re, @dice, @a/@f/@p/@g/@u, @clr1/@clr2/@clrall/@clrpast, @help	menu	TRUE	strings in bin/patch/mhfo-hd.dll and the help text in decoded mhfpac.bin (grep -a "@dice")	kept
+283	<act1>-<act24> gestures; <act25>-<act48> legendary gestures bought with Tower Medals	other	CANT-VERIFY	client; Tower Medals shop not checked	kept
+287	Server commands start with !; !help lists them	rule	TRUE	live config.json CommandPrefix "!" and Commands Help enabled (ssh hunsterverse read-only)	kept
+293	Guild Mistress (picture)	npc	CANT-VERIFY	no matching record in area 200 NPC table: /tmp/gsc/npcs.py (hvmhfz_re tower-npc.md table 0x11a7d0ec in bin/patch/mhfo-hd.dll; area 200 = Mezeporta per Erupe 4495146 sys_channel_server.go:242); the client Guild Master is an old Wyverian (hvmhfz_re docs/guku-wander.md:40), the picture shows a young woman	caption rewritten "Guild officer (original guide)"
+294	Combiner (picture)	name	TRUE	area 200 type 0x7a "Combo Shop Master" /tmp/gsc/npcs.py (hvmhfz_re tower-npc.md table 0x11a7d0ec in bin/patch/mhfo-hd.dll; area 200 = Mezeporta per Erupe 4495146 sys_channel_server.go:242)	renamed Combo Shop Master
+295	Store Sweetheart (picture)	name	TRUE	area 200 type 0x7c "General Store" (Buy, Sell, Buy to Box, Gacha Coin Store, Farm and Furniture: hvmhfz_re docs/gacha-cat.md 1.2)	renamed General Store
+298	Story and Item Trading Guild Sweetheart gives tutorial and story quests, trades items	npc	TRUE	Series Quest Counter (area 200 type 0xeb); data/sources/series-exchange.json "Series Quests panel, Item exchange"; tutorial quests at Rookie counter "Accepting the first quest" (dev/quest-where.md)	renamed Series Quest Counter, rewritten
+299	Guild Mistress (woman with two swords) gives quests after tutorials, Gu-ku quests, SR books, moveset urgents	quest	DIFFERENT	town NPC table 0x11a7d0ec: type 0x40 "Guild Master" in areas 134, 200, 210, 282 (dev/guide-terms.tsv:106); menu list SR/Transcend/Trial/Guuku/GSR/Hunting Menu at decoded mhfpac.bin 0x1d4705 (guide-terms.tsv:84, medium); quests are taken only at the counters (quest-where.md); Gu-ku daily quests 22159-22161 offered at General Quest Counter > Daily Quests (data/quest-where.json)	rewritten: named Guild Master, client menu given as probable, 22161 linked
+299	Monster kills for medals -> Talismans	shop	CANT-VERIFY	needs play	kept as guide claim, linked items#medal-charms
+300	Main Quest Guild Sweetheart gives all non-G Rank quests	npc	TRUE	General Quest Counter rows (dev/quest-where.md tree)	renamed General Quest Counter, rows listed
+301	Caravan Sweetheart gives Caravan quests outside the Caravan area	npc	TRUE	General Quest Counter > Caravan Quests (dev/quest-where.md); in Pallone area 260 type 0xb6 "Caravan Quest Counter"	rewritten with real menu path
+301	Caravan Festival missions and weekly rewards	rule	CANT-VERIFY	no data found	kept as guide claim
+302	Combiner: batches, special combining (Halk feather pots), gallery tickets, luck medals, kill medals, sells combination items	shop	TRUE	special combining: data/sources/combiner.json (900 rows); the rest CANT-VERIFY	rewritten, unverified parts attributed
+303	Lunchbox / Ingredients NPC packs lunchboxes and sells ingredients	npc	TRUE	food_shop = 食材屋 (hvmhfz_re docs/food-recipes.md:115); area 200 type 0x79 "Mama Grocer"	renamed Mama Grocer
+304	Purple Guild Sweetheart: updates subscriptions, gives purchases/event/compensation items, title quests, stamp exchange for HL/EX tickets	npc	DIFFERENT	Guide (area 200 type 0x7e, by the plaza entrance: hvmhfz_re docs/gacha-cat.md 1.2, distribution hub, docs/mail.md); subscriptions do not exist (mhfcourse.go:102); stamp exchange data/sources/stamp-exchange.json	renamed Guide; subscriptions removed; titles/stamps attributed
+305	Hunter Festival Manager: festival points, monster table, rankings, point exchange	npc	TRUE	area 200 type 0xb3 "Festival/Tournament Counter"; Festival runs (events page)	renamed Festival/Tournament Counter
+306	Hunter Festival Winners NPC gives quests to the winning colour, entry by medals	quest	TRUE	area 200 type 0x77 "Winner Quest Counter"; dev/quest-where.md "Winner Quest Counter: Winners Quests"; medals CANT-VERIFY	renamed, menu path added
+307	Furniture and Gallery NPC sells/makes furniture, stamps for farm upgrades, farm tools, gallery evaluation	npc	CANT-VERIFY	General Store menu has Farm and Furniture (docs/gacha-cat.md 1.2); no furniture NPC in the area 200 table	rewritten: General Store menu; the rest attributed
+308	G Rank NPC gives G Rank quests incl. Event and Conquests	quest	TRUE	dev/quest-where.md: G Rank Quest Counter > Event Quests, Conquest・Shiten Quests; area 200 type 0xf3	renamed G Rank Quest Counter
+309	Guild Manager creates/joins guilds; creating needs a subscription	npc	DIFFERENT	area 200 type 0x7d "Clan Counter Officer" = guild counter (hvmhfz_re docs/guilds.md 2); no course check in Erupe handleMsgMhfCreateGuild (handlers_guild.go)	renamed Clan Counter Officer; subscription removed
+310	Store Sweetheart sells consumables, honey, books; stock better when subscribed	shop	DIFFERENT	General Store menu (docs/gacha-cat.md 1.2); courses on for all; stock not checked	rewritten; subscription removed; stock CANT-VERIFY
+311	Tower NPC gives Tower quests and rewards	npc	TRUE	area 200 type 0x26 "Hunting Road Counter"; dev/quest-where.md H.Road/Sky Corridor menu	renamed Hunting Road Counter
+319	Warm: Fist Rice + Demon Mushrooms (Spirit Mushrooms) +50/+50	name	TRUE	data/food-recipes.json pair 6825+273 Hoku-hoku Hot Pot warm 50/50; item 273 "Demon Mushroom"	"Spirit Mushrooms" note removed; singular item name
+320	Cold: Fist Rice + Fatty Tomatoes (Frost Tomatoes) +50/+50	name	TRUE	data/food-recipes.json pair 6825+272 Gura-Gratin cold 50/50; item 272 "Fatty Tomato" aka Frost Tomato	note removed; item name
+321	Breeding: Fist Rice + Power Lard +50/+25	other	TRUE	pair 6825+291 Jumbo Pizza breeding 50/25	kept
+327	Demon Mushrooms 980z, Guild Cat Store	shop	TRUE	food-recipes.json 273 list_price 980, seller guild_store_cat when guild_rank_4	rewritten "Guild hall store cat (guild rank 4 or more)"
+328	Fatty Tomatoes 450z, Guild Cat Store	shop	TRUE	food-recipes.json 272 list_price 450, guild_store_cat guild_rank_4	rewritten
+329	Fist Rice 550z, Lunchbox NPC	shop	TRUE	food-recipes.json 6825 list_price 550, food_shop always	seller renamed Mama Grocer
+330	Power Lard 400z, Lunchbox NPC	shop	TRUE	food-recipes.json 291 list_price 400, food_shop always	seller renamed Mama Grocer
+333	Purple Guild Sweetheart menu: Manual, Title Quests, Ticket Exchange, Receive Items, Update Subs	menu	DIFFERENT	subscription menu of the original server; picture only	removed (figure and paragraph)
+336	Receive Items: Event, Purchased, Compensation, Promotional Items	menu	TRUE	distribution screen types (hvmhfz_re docs/gacha-cat.md 1.1 item 5, docs/mail.md 5); nothing bought with money here	kept, attributed to the Guide
+337	All courses, expiry 1 Jan 2030	rule	TRUE	Erupe 4495146 common/mhfcourse/mhfcourse.go:102	kept; guild creation sentence rewritten
+337	Hunter Festival, Diva Defense, campaigns run; Conquest War off	rule	TRUE	AGENTS.md What's live (event release); events.html	kept
+343	Blacksmith (picture/entry)	name	TRUE	area 257/133 type 0x55 "Master Blacksmith" /tmp/gsc/npcs.py (hvmhfz_re tower-npc.md table 0x11a7d0ec in bin/patch/mhfo-hd.dll; area 200 = Mezeporta per Erupe 4495146 sys_channel_server.go:242)	renamed
+344	Lottery Cat	name	TRUE	type 0xf4 "Gacha Felyne" (docs/gacha-cat.md)	renamed
+345	Tower Weapons Cat	name	TRUE	type 0x27 "Tower Gear Felyne" (docs/tower-npc.md 1)	renamed; linked tower-weapons.html
+346	Legendary Blacksmith does not appear; used to upgrade G Rank weapons	npc	TRUE	no such record in the Smithy areas 133/207/257 /tmp/gsc/npcs.py (hvmhfz_re tower-npc.md table 0x11a7d0ec in bin/patch/mhfo-hd.dll; area 200 = Mezeporta per Erupe 4495146 sys_channel_server.go:242); 伝説の職人 only in area 137 (Jumbo Village)	renamed "legendary craftsman"; history attributed
+349	Blacksmith crafts and upgrades; opens equipment box	npc	TRUE	Smithy text mhfpac.tsv 10912 (Create/Upgrade at the Smithy)	kept
+350	Cat Smith: Partnyaa gear, Gou Weapons, Sigils	npc	CANT-VERIFY	client names Master Felyne/Apprentice Felyne (type 0xe1-0xe4); which does what needs play	renamed Master Felyne; claims attributed
+351	Lottery mostly real money, poor odds, time limited	other	DIFFERENT	official service; our gachas paid with zenny/materials/coins (changelog 5 Nov; guide-frontier-systems.html#gacha)	removed
+352	Warehouse Manager holds daily rewards and HRP tickets; warehouse	npc	TRUE	st133 0xaa "Smithy's Assistant" = gift box desk (hvmhfz_re docs/item-sources.md:823)	renamed Smithy's Assistant
+359	Warehouses 5 times every 12 hours (original); no limit here	rule	TRUE	Erupe 4495146 handlers_house.go:470 handleMsgMhfOperateWarehouse has no count	kept
+359	10 pages of each box, renamable	rule	TRUE	handlers_house.go:480-517 item0..9/equip0..9 names	kept
+360	Transfer by moving out of the active box	other	CANT-VERIFY	client UI	kept
+361	Our gachas since 5 Nov: Daily Free Draw, three Materials, Coin Step-Up, Coin Lucky Box, Event Ticket Box	shop	TRUE	data/sources/gacha-101..107.json; AGENTS.md 5 Nov	kept
+367	Kashira gives a level 0 gem; sets up Raviente hunts	npc	CANT-VERIFY	no "Kashira" in area 260 table (/tmp/gsc/npcs.py (hvmhfz_re tower-npc.md table 0x11a7d0ec in bin/patch/mhfo-hd.dll; area 200 = Mezeporta per Erupe 4495146 sys_channel_server.go:242): Kiel, Auriol, Caravan Quest Counter, ...); Kiel 0xb4 = Raviente claim (docs/item-sources.md:822); Raviente quests at Caravan Quest Counter > Great Slaying Quests (quest-where.md)	rewritten by job; Raviente path given
+368	Caravan Sweetheart gives Caravan quests in Pallone	npc	TRUE	area 260 type 0xb6 "Caravan Quest Counter"; rows per dev/quest-where.md	renamed; rows listed
+369	Caravan Combiner	name	TRUE	area 260 type 0x7a "Combo Shop Master"	renamed
+378	Store NPC sells standard items	npc	CANT-VERIFY	area 260 has Felyne Shopkeeper (0xb7, also the gift box desk per docs/item-sources.md:823) and Lounge Store Mama; which sells needs play	renamed "Store"
+379	Food NPC sells food, packs lunchboxes	npc	TRUE	area 260 type 0x79 "Mama Grocer" (food_shop copies: docs/food-recipes.md:115)	renamed
+380	Upper Food NPC packs 4-item Raviente lunchboxes	npc	CANT-VERIFY	candidate Lounge Store Mama (0xbc, upper level z 772); needs play	renamed by job
+381	Caravan Gathering Spots (Pioneering) need CP, materials, time	rule	DIFFERENT	no server side here: guide-frontier-events.html#hv-pioneering	kept; note already says so
+382	CP Store trades CP for Whetstones (+10% Affinity) and Caravan weapon materials	shop	CANT-VERIFY	candidate area 262 "Special Item Store" (0xc3); no CP shop in data/sources	kept
+383	Caravan Gem Smith upgrades gem, rolls colour, rainbow gem	npc	CANT-VERIFY	candidate area 262 "Special Workshop Master" (0xc4); gem not checked	renamed by job
+384	Caravan Leader 2 hour buff for 200k CP	shop	CANT-VERIFY	needs play	attributed
+386	Caravan scores post; rankings real, no weekly gifts; Pioneering no server side; Raviente runs	rule	TRUE	changelog.html#d-2026-11-04-events; events page notes	kept
+399	House Cook cooks meals, bypasses posted bentos	npc	CANT-VERIFY	no house-kitchen NPC record found; needs play	kept
+403	Gu-ku Manager collects shinies, Gu-ku Cooking, decorations	npc	TRUE	area 265 (Gu-ku farm: Goocoo Egg) type 0xea "Felyne Caretaker" (garden Felynes, docs/item-sources.md:827); jobs CANT-VERIFY	renamed Felyne Caretaker; "gu-kus" -> Gu-ku (owner naming)
+404	Farm Tools Cat once per quest	npc	CANT-VERIFY	area 265 has Straw Hat Felyne (0x94) and Garden Felyne (0xa2); which one needs play	rewritten by job
+405	Mail Cat transfers items between characters; needs subscription	npc	DIFFERENT	area 265 type 0x95 "Delivery Felyne"; courses on for all (mhfcourse.go:102)	renamed; subscription rewritten
+406	Lost Cat after normal quests, exclusive items (crowns)	npc	TRUE	area 265 type 0xa3 "Lost & Found Felyne"; mhfpac.tsv 10253 "New gifts from Lost & Found Felyne"; drop chances CANT-VERIFY	renamed
+410	My Support Manager manages Halk, hires Partnyaas	npc	CANT-VERIFY	area 283 (Halk area) type 0xec "Halk Instructor"; Partnya NPC is in the Smithy (0xf9 area 133/257)	renamed Halk Instructor; hiring attributed
+414	Pugi Farm Manager: three sisters, daily points, facilities, cat stores, missions (G Whetstones), points to GCP	npc	TRUE	My Tore = area 205 (hvmhfz_re docs/my-tore.md:16): Eldest/Middle/Youngest Sister 0x8a-0x8c; jobs CANT-VERIFY	renamed "My Tore manager"; Pugi Farm -> My Tore
+415	Pugi Farm Cat Manager: Airou Plaza cat stores, wandering cats	npc	CANT-VERIFY	area 205 also has Agency Felyne (0x25), Guild Secretary (0x8d); which one needs play	renamed by job; client names listed
+416	Pugi Farm Partnyaa Manager: Partnyaa workplace	npc	CANT-VERIFY	as above	renamed by job
+420	S NPC: vanity challenges, Book of Secrets stat quests	npc	TRUE	area 340 type 0xee "Hiden Instructor S"	renamed
+421	R NPC: vanity challenges	npc	TRUE	area 340 type 0xef "Hiden Instructor R"; mission medals (docs/item-sources.md:828)	renamed; "S and R labels" sentence removed
+424	Item transfer was subscriber option; Extra course for all; no slot limit of our own	rule	TRUE	mhfcourse.go:102; aside from earlier batches	kept
+429	Chinese labels on the Guild Card pictures	other	DIFFERENT	rule 2: no Chinese-name phrasing	rewritten: labels are the original client's
+432	Guild Card subscription page	menu	DIFFERENT	courses for all (mhfcourse.go:102)	caption "Courses"
+436	Conquests page	rule	DIFFERENT	Conquest War off (aside)	kept
+439	Square or Z opens comment/background/Rasta	other	CANT-VERIFY	client controls	kept
+442	Background unlocked after 100 kills and its book	rule	CANT-VERIFY	needs play	kept
+444	Title changed at the house bookshelf	other	CANT-VERIFY	needs play	kept
+446	Courses page shows the same courses, expiry 1 Jan 2030 sent at every login	rule	TRUE	mhfcourse.go:102	kept, page renamed courses

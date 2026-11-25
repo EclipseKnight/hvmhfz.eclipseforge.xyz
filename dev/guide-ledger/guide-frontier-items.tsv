@@ -1,0 +1,86 @@
+line	claim	kind	verdict	evidence	action
+182	Lead: material sources, basic items, spheres, combinations, special items, charms	other	TRUE	page sections	kept
+186	Press Left Stick or key 1 on a crafting list to see a material's source	other	CANT-VERIFY	client control, needs play	kept
+186	Taiwanese client showed Chinese names, players looked them up elsewhere	other	DIFFERENT	other server (rule 3)	removed
+191	Message shape "Obtainable from [HR1~99] [Kelbi]"	other	DIFFERENT	our client's source lines in decoded /root/work/re-mhfz/gachacat-tools/dec/mhfdat.bin: 'Found in [HR 1-2]' (643x), 'Obtain from' + monster, 'Gathering', 'Mining', 'Trading: Npoints' (50x), 'Trading: GCP Exchange' (18x)	rewritten with our client's wording
+191	Carves marked HC need Hardcore	rule	CANT-VERIFY	needs play; links hunter-rank#hardcore and g-rank-start exist	kept
+192	HR/SR ranges in the messages are G9's; modern ranges table	rule	TRUE	tags are HR bands: data/quests.json rank vs rankNeed: HR1 'HR 1'; HR2 'HR 2'..'HR 22'; HR3 'HR 31'..'HR 50'; HR4 'HR 51'..'HR 99'; HR5 'HR 100'..'HR 299'; HR6 'HR 300'..'HR 900'	rewritten as bands, 'SR or' dropped
+208	Words: Gathering, Mining, Bug Catching	name	DIFFERENT	/root/work/re-mhfz/gachacat-tools/dec/mhfdat.bin source lines use 'Gathering', 'Mining', 'Fishing'; no 'Bug Catching' or 'Insect' line found	rewritten (Gathering, Mining, Fishing; insect spots as the guide's)
+209	Gu-ku Farm as a source word	name	CANT-VERIFY	no 'Gu-ku' source line in /root/work/re-mhfz/gachacat-tools/dec/mhfdat.bin (two lines say 'Poogie Farm'); link house#guku-farm exists	kept
+210	Conquest Reward as a source word	name	DIFFERENT	/root/work/re-mhfz/gachacat-tools/dec/mhfdat.bin: 'Obtain by completing Conquests'; Conquest quests offered at G Rank Quest Counter > Conquest・Shiten Quests (data/quest-where.json, 20 quests)	rewritten 'Conquests' with the menu path
+211	Guild Quests as a source word	name	TRUE	/root/work/re-mhfz/gachacat-tools/dec/mhfdat.bin: 'Obtained from Guild Quests' (5x)	added
+213	Area names in messages (15 areas)	name	TRUE	all in data/map-ids.json except 'Tower' (our map name Ancient Tower)	kept; '(the Ancient Tower)' added
+213	If unhelpful, use the other lists in the guide	other	DIFFERENT	guide's own outside document, not linked	rewritten: our Items page
+214	N Point Store items	shop	DIFFERENT	live DB: select shop_type, shop_id, count(*) from shop_items group by 1,2 -> no shop_type 4 (N Points, Erupe 4495146 handlers_shop_gacha.go:282) rows	rewritten: Npoints items cannot be bought here
+214	GCP Exchange items	shop	DIFFERENT	live DB shop_type 5 shop 5 = 135 rows (Diva rows only)	rewritten: not in our GCP shop
+214	Event items: check the official site's news	other	DIFFERENT	official site (rule 3)	removed, note kept
+219	Ferias: Japanese original and Taiwanese clone, translation script	other	DIFFERENT	outside site for other servers; not linked	rewritten short
+221	Database search by English/Japanese/Chinese name, OCR tolerant	other	OPINION	describes the outside site; Chinese name part dropped (rule 2)	rewritten
+223	Type a monster name to list its materials	other	OPINION	outside site	kept
+224	Aside: use our Items page and monster guide	other	TRUE	/items.html, /monsters.html exist	kept
+229	Box space, presets and sorting moved to the item-box page	other	TRUE	guide-frontier-item-box.html ids box-capacity, item-presets, sorting	kept
+231	Up to 41 pages	rule	CANT-VERIFY	see item-box ledger	kept
+233	Item presets link text	name	TRUE	client menu label 'Item Presets' (dev/guide-terms.tsv:94)	renamed Item Presets
+235	Aside: box pages not checked	rule	CANT-VERIFY	see item-box ledger	kept
+240	Basic items list is partial; guide's document not linked	other	TRUE	-	kept
+244	Basic item names (6 rows, 57 names)	name	TRUE	script: every name is in data/item-ids.json (no misses)	kept
+246	Psychoserum listed twice by the guide	name	FALSE	the second recipe (row 18) makes Monster Fluid: data/sources/combining.json Ice Crystal + Sleep Sac -> Monster Fluid	rewritten (earlier run)
+252	Aside: items work the same	rule	TRUE	client content	kept
+257	Eight sphere grades; GCP/NP/Festi prices; mining HR bands; quest rewards	shop	DIFFERENT	GCP shop = Diva rows only, N Point shop empty (rows 214); our sources: data/sources/road-shop-1.json (Gatherables) Armor Sphere 10 .. Divine 80, Absolute 90 gate 6; gathering.json: first six spheres gathered (1,726/1,786 quests); quest-rewards.json	rewritten table (earlier run), checked
+261	Daily quests that reward the spheres	quest	TRUE	22139 Daily: Armor Sphere & Sphere+ (Armor Sphere, Armor Sphere+ 50% each), 22140 Daily: Sharp & Hard Spheres (Adv, Hard), 22141 Daily: Heavy & True Spheres (Heaven, True), 22142 Daily: Strong & Heaven Spheres (Strong, Divine): data/quests/rewards/22.json; all offered at General Quest Counter > Daily Quests (quest-where.json)	linked
+269	Absolute Armor Sphere: no daily quest	source	TRUE	quest-rewards.json lists 1 quest, not a daily	kept
+272	Aside: v1.19 sphere upgrades; next piece needs about a third fewer materials	rule	TRUE	hvmhfz_re docs/armor-sphere-patch.md:15-16 (6,362 -> 4,040 items = 36% fewer); changelog.html:584 says 'a fifth' (wrong, outside batch)	kept
+278	Two and three item combinations; Ancient Potion example	rule	TRUE	combining.json: Immunizer + Kelbi Horn -> Ancient Potion; 3-item recipes not in the 2-mat table	kept
+279	Percentages are the chance; [Alchemy]/[Mission] marks unexplained	other	CANT-VERIFY	percentages not in our data; rate class (low byte of qty) agrees with 75/65/55/100 on every row, class 1 holds both 90 and 95 rows	kept (note says percentages are the guide's)
+280	Note: rebuilt table checked against the client combining table; names mapped; dropped rows listed	other	TRUE	/root/work/gsc/combos.py over data/sources/combining.json: every two-ingredient recipe on the page is in the table for that result; yields agree with the table's yield class on every row	rewritten (dropped recipes listed)
+282	Healing table (rows 1-28)	name	TRUE	combos.py: all results and ingredients are item names; 2-item pairs present	kept; Mega Nutrients 'Energy Drink + Ripe Mushroom' and Catalyst 'Piscine Liver + Ripe Mushroom' removed (not in table, earlier run)
+302	Row 18 Monster Fluid: Ice Crystal + Sleep Sac 55%	name	TRUE	combining.json qty 4 (rate class 4 = 55%)	rewritten from '魔物體液 + ...' (earlier run)
+304	Row 20 Max Potion: Crystalized Scale for the guide's Dragon Herb	name	TRUE	combining.json Potion + Crystalized Scale -> Max Potion	rewritten
+318	Meat table	name	TRUE	combos.py; Oiled Meat 'Raw Meat + Red Oil' not in table	removed that recipe (earlier run)
+333	Boomerang and knives table	name	TRUE	combos.py	kept
+345	Bombs, traps and barrels table	name	TRUE	combos.py	kept
+373	Ammo, coatings, bait table	name	TRUE	combos.py; Lg Burst Arowana / Lg Bomb Arowana for the guide's large rumblefish / large arrowana; Dragonfell Berry for Dragon Seed	rewritten names (earlier run)
+379	Pierce S LV1-LV3 rows shifted by one recipe (known leftover)	name	TRUE	combining.json: Huskberry + Velociprey Fang -> Pierce S LV1 (qty 769); Huskberry + Pin Tuna and Huskberry + Lg Pin Tuna -> Pierce S LV2 (770, 1027); Bone Husk S + Pin Tuna, Bone Husk S + Lg Pin Tuna, Bone Husk L + Lg Pin Tuna -> Pierce S LV3 (258, 515, 769)	fixed (earlier run), verified
+414	Row 102 Arowana Bait: Cricket + Stinkhopper	name	TRUE	combining.json; was '魚龍糰子' and 'Bughopper'	rewritten
+420	Pickaxes and bug nets: Old Pickaxe Stone + Bone, Iron Pickaxe Iron Ore + Bone	name	TRUE	combining.json Stone + Bone -> Old Pickaxe; Iron Ore + Bone -> Iron Pickaxe (the guide had them shifted)	fixed (earlier run)
+433	Grill recipes 110-117, all 100%; guide's grill names	name	CANT-VERIFY	not in combining.json; Universal BBQ Kit/Set are item names (data/item-ids.json 161, 162)	kept (note says not in the table); Fish BBQ 'Large Rumblefish' recipe removed
+449	Flutes table	name	TRUE	combos.py	kept
+460	Raw ingredients table	name	TRUE	combos.py; Vibrant Pelt, Jumbo Bone for the guide's Blangonga Vivid Pelt, Giant Bone	rewritten names
+486	Mocha Pot recipes, all 100%	name	TRUE	combining.json Mocha・Green 8 inputs, Mocha・Red 2, Mocha・Yellow 12: exactly the page's rows; qty class 5 = 100%	kept; rows 151, 152, 163-165 removed (not in table)
+486	Mocha Pots bought in the shop	shop	DIFFERENT	src.py Mocha Pot: no shop row; gathering.json 1,015 quests, 1 quest reward	note added
+514	Aside: combining works the same	rule	TRUE	client table	kept
+522	Halk Potion: max 5 a day, one a day from the Halk area	rule	CANT-VERIFY	needs play; house#halks exists	kept
+522	Halk Potions and Mega Guts Tkts from event quests	source	TRUE	data/quests/rewards/40.json/53.json: 40186 Mosswine at the Edge, 53172 Miyashita P's Answers 1 reward both; both offered at General Quest Counter > Event Quests	added, linked
+528	Legendary Rasta Ticket without Premium; Hunter Guide tasks and events	name	DIFFERENT	our name Legendary Rasta Tkt (item 14063); no subscriptions; sources: diva-coin-shop 1 coin limit 99, diva-list-1 personal rewards	rewritten (earlier run), verified
+529	Guts Ticket and Great Guts Ticket	name	TRUE	our names Guts Ticket (1546), Mega Guts Tkt (4360)	renamed
+530	Poison, Paralysis, Sleep Tickets; not Zenith statuses	name	CANT-VERIFY	items Para Ticket Ⅰ-Ⅲ (1627-1629) exist, no source; effect needs play	kept, our names added
+531	4,000 GRP Ticket: daily bonus, Hunter Guide, events; GRP to companions	name	DIFFERENT	our name GRP Tkt (4k) (7979); rewards of 54358, 54359, 54701 How to Earn GRP Daily, all not offered (quest-where.json)	rewritten: not offered here (earlier run claimed a quest reward)
+532	20,000 GRP Ticket; Road shop 5,000 RdP	shop	TRUE	GRP Tkt (20k) (7981): road-shop-8 GR1 limit 20 price 5000	kept
+533	4,000 PRP Ticket from stamp cards, claimed from the guild girl in glasses	name	DIFFERENT	no PRP ticket item; HRP Tkt (4k) (5392) and HRP Tkt (800) (6164) are stamp-card prizes (data/sources/stamp-card.json); nickname dropped (rule 2)	rewritten
+534	20,000 PRP Ticket from Hunter Navigation, events, Caravan Festival	name	DIFFERENT	HRP Tkt (20k) (6176): rewards of 21874, 21898, 21899, 21901, 53092 (HRP Bonanza!/Galore!), all not offered	rewritten (earlier run said monster drop: wrong)
+537	Grouped as PRP/SRP/GRP/GSRP tickets	other	OPINION	guide's grouping	kept
+543	Sword Crystals: ammo for blademaster weapons, own skills	name	TRUE	items Power S.Crystal etc. in data/item-ids.json; link weapons#sword-crystals exists	kept
+544	Toxin: purchasable, -10 health	name	CANT-VERIFY	no item named Toxin in data/item-ids.json (only Toxin Sac)	kept with note
+545	Starvation Drug: NetCafe course or Guild Cat; Road shop 20 RdP	name	DIFFERENT	our name Starving Wolf Pot. (1548): road-shop-8 GR1 price 20; course gifts not delivered (aside)	renamed, sources kept
+546	Adrenaline Drug: NetCafe or Guild Cat	name	DIFFERENT	our name Adrenaline Potion (1547): no source	renamed
+547	Spirit Drug	name	DIFFERENT	our name Spirit Drink (1553, aka L.Sword Spirit Drug): no source	renamed
+548	Gu-ku Pickaxe, Fishing Bait, Bug Net, Gloves made from Gu-ku Farm items	source	CANT-VERIFY	items 5714-5717 exist; data lists only quest rewards (Gu-ku Pickaxe from 53149 Ultimate Goocoo Weapon, offered at General Quest Counter > Event Quests); farm recipe needs play	kept
+560	Carving Charm: extra carve	source	TRUE	item 1899: no source	kept
+561	Large Lucky Charm from the Combiner	source	TRUE	combiner.json: from Harze Ticket + Huskberry, Madoka Tkt, FG2 Tkt 1-5 ..., combo fee 100	kept
+562	Super Lucky Charm, Road shop 20 RdP	shop	TRUE	road-shop-8 GR1 price 20	kept
+570	White/Green/Red Festival Gems (20P/40P/80P), souls	name	CANT-VERIFY	only item 'Festival Gem' (7011): road-shop-8 GR1 limit 10 price 1000; festa-personal and festa-guild prizes	kept with Hunsterverse note
+576	G versions of the gems	name	CANT-VERIFY	no G gem in item-ids	kept
+579	Mysterious Stones from Pariapuria vomit or Gu-ku Cooking	name	CANT-VERIFY	no item named Mysterious Stone in data/item-ids.json	note added; link house#guku-cooking exists
+580	Aside: course and Guild Cat gifts do not apply	rule	TRUE	no subscriptions/course mail (Erupe mhfcourse.go:102 courses for all; no gift delivery)	kept
+585	Guild Master gives Hunt Medals; Combination Store exchange	npc	CANT-VERIFY	Hunting Medal (8032) exists, no source; menus not in dev/guide-terms.tsv	kept as guide's words
+586	Medal requirement maybe 10 kills	rule	OPINION	attributed to the guide's author	kept
+587	Charms not consumed; waiting charms solo only	rule	CANT-VERIFY	needs play	kept
+591	Impatience Charm	name	DIFFERENT	our names Haste C. (-5s) .. (-40s) (8033-8037)	renamed
+592	Gathering Charm min	name	DIFFERENT	Gather.C. (Min+1)..(Min+3) (8038-8040)	renamed
+593	Gathering Charm max	name	DIFFERENT	Gather.C. (Max+1), (Max+2) (8041-8042)	renamed
+594	Health Charm	name	DIFFERENT	Health C. (+10)..(+50) (8043-8047)	renamed
+595	Stamina Charm	name	DIFFERENT	Stamina C. (+10)..(+50) (8048-8052)	renamed
+596	Colour Charm doubles Caravan Gem colour points	name	CANT-VERIFY	no matching item found (8053 Two Toned Charm is a guess, not used)	kept as guide's name
+600	White Lake insect spot range 4-8 and charm results	rule	CANT-VERIFY	needs play	rewritten with our charm names
+601	Aside: no source for the charms here	source	TRUE	src.py: Hunting Medal, Haste C., Gather.C., Health C., Stamina C. have no source	kept
+608	Credit to Fist	other	TRUE	-	kept
