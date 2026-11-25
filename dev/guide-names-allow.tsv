@@ -1,0 +1,7 @@
+# Deliberate exceptions for dev/check-guide-names.py: names in the Frontier guide that are right as they are
+# although they are not one of our names (people, outside sites, the original guide's terms quoted as history).
+# page: a guide page file name, or * for every page; text: the name exactly as the checker reports it (column
+# "found" of dev/guide-names-findings.tsv); reason: why it stays. Keep it short: a name of the game belongs in
+# the game's own words on the page, not here.
+page	text	reason
+*	Fist	the original guide's author, credited by name

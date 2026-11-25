@@ -250,6 +250,11 @@ dev/make-forced-equipment.py writes data/forced-equipment.json from the same dum
 data/wiki-names.json  names only: the Monster Hunter Fandom wiki's Frontier monsters, locations and weapon types (snapshot of 2026-11-03)
 data/monster-icon-sources.json  the wiki file, URL and our SHA-1 of every wiki-style monster icon
 dev/check-wiki-names.py checks our monster, place and weapon type names against data/wiki-names.json (every difference listed with the reason, usually the game's own word), that the builders and the Road pages name and draw each monster as its guide page does, and that no wiki icon changed (python3 dev/check-wiki-names.py; --self-test)
+dev/check-guide-names.py checks that the Frontier guide (guide-frontier-*.html) names items, decorations, armour, weapons, monsters, skills, quests, NPCs and menu paths as we do (the game's English in our data, dev/guide-terms.tsv), maps the guide's Chinese through the client's Japanese names, and lists every other name with the best match and a confidence (python3 dev/check-guide-names.py [--write] [--strict] [--self-test]; report-only until the pages are rewritten, then --strict joins the site checks)
+dev/guide-names-findings.tsv  the guide's names that differ from ours (page, line, found, source, status, kind, our name, confidence, note): the rewrite worklist, written by check-guide-names.py --write
+dev/guide-terms.tsv   the in-game English of the town NPCs, counters, quest tabs and menus the guide names, with the client row each comes from and the guide's own names for it
+dev/guide-names-allow.tsv  deliberate exceptions for check-guide-names.py (the original guide's author, terms quoted as history), each with the reason
+dev/item-names-ja.json  the client's Japanese item names by id with a confidence, aligned from the patch's mhfdat.bin by check-guide-names.py --ja-from-dat <decoded mhfdat.bin>
 data/map-ids.json     every map id's own name (place plus day/night, version or district), group, quest count and confidence (docs/maps.md)
 data/quest-fields.json  every quest-file field the quest builder and the API codec touch: offset, bytes, range, value names (docs/quest-fields.md)
 data/quest-condition-notes.json  the quest restrictions the builder offers (our names, Pax's ids, the Hardcore notes); the same ids as the API's QuestCodec.CONDITION_NOTES
