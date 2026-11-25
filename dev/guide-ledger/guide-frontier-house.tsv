@@ -1,0 +1,198 @@
+line	claim	kind	verdict	evidence	action
+187	House icons at the house entrance (Gu-ku, My Tore, Halk, Partnya)	menu	CANT-VERIFY	client strings: My Series, Poogie Board, Guuku Care Board in pac; in game: stand at the house entrance and read the icons	note added
+187	Farm is 'Gu-ku Farm' / client 'My Garden'	name	TRUE	pac strings 'My Garden Info', 'Go to My Garden'; hvmhfz docs/house-pets.md	note added
+190	Bookshelf: monster kills, titles, HH melodies, visitors see it	other	TRUE	pac 0x53913 'About the Bookshelf' (kills, titles, HH melodies, book from General Shop, visitors)	rewritten
+190	Bookshelf shows Element information	other	CANT-VERIFY	not in the client text read; in game: open the bookshelf in your house	removed
+190	Bookshelf sets title above your name	other	TRUE	pac 0xdb06b 'Set it on the My House bookshelf to show it above your name'	kept
+190	Changing the house style costs GCP	rule	CANT-VERIFY	not in client text; in game: bookshelf > house style, read the price	rewritten (attributed to guide)
+191	Three dining tables feed 2/4/8	other	CANT-VERIFY	not found in data; in game: fully upgrade the house and look	kept
+191	Partner lives in the house	npc	TRUE	pac 0x16526 'you can actually meet them at My House'	rewritten
+191	Partnya lives on its own island (over the bridge)	npc	CANT-VERIFY	guide text; in game: create a Partnya and see where it appears	kept
+191	HRP Tickets to Partner/Partnya at the tables	item	CANT-VERIFY	items HRP Tkt (4k) 5392 etc. exist; in game: talk to the Partner and try Items	rewritten (attributed to guide)
+194	Display Gallery customisable room	other	TRUE	pac strings Gallery Board, Gallery Warehouse	kept
+194	Gallery Gems from Furniture NPC evaluating house	item	CANT-VERIFY	our items Gallery Atk Deco 910, Gallery Def Deco 911 only; in game: ask the furniture NPC to evaluate	rewritten (our names)
+194	Gallery prize rating outdated	other	OPINION	author's judgement	kept
+200	Gu-ku Farm cats and gu-ku home	other	TRUE	hvmhfz docs/house-pets.md (Goocoos live in the garden, 5 max)	kept
+200	Gu-ku give free items after quests	rule	TRUE	pac 'Got a Gu-ku Egg!' / 'Housekeeping cat'; guku-wander.md section 5	kept
+200	Gu-ku Cooking	other	CANT-VERIFY	pac has Guuku Pot cooking screen (Good Job/Half-Baked/Charcoal); in game: use the pot with a gu-ku	rewritten
+203	Cat on tree stump gives farm tools once per quest	npc	CANT-VERIFY	pac 'Housekeeping cat is frustrated'; in game: talk to the cat after a quest	kept
+204	Upgrade tools by making furniture, stamps	rule	CANT-VERIFY	not in data; in game: Gallery Board/furniture making, check for stamps	kept
+205	Tools list (Plants and Herbs ... Bargains)	other	CANT-VERIFY	pac strings Fish, Bugs, Junk, Bargains, Surprises differ; in game: talk to the cat and read the list	note added
+208	Mocha Pots bought in shop; stages counted in quests	item	CANT-VERIFY	item Mocha Pot 759 exists; in game: buy and place one	kept
+208	Mocha Pot recipes in Items page	other	TRUE	guide-frontier-items.html#recipes-mocha exists	kept
+209	Bargains tool gives Mega Pickaxes, Max Potions, rare ores	item	CANT-VERIFY	items Mega Pickaxe 152, Max Potion 27 exist; in game: wait for a Bargains option	kept
+215	Enter Gu-ku Farm via Gu-ku icon	menu	TRUE	pac My Garden strings; house.md	kept
+216	Manager Felyne at rocky trash heap	npc	CANT-VERIFY	guide text; in game: enter the farm and look at the back	kept
+217	Guild Master > Gu-ku Quests section	menu	DIFFERENT	dev/quest-where.md menu tree has no Gu-ku section; qfind 26590 26591 26592 26597 26598 all not-offered	rewritten
+217	Starter colours White, Yellow, Black, Brown, Blue	other	CANT-VERIFY	egg quests not offered; cannot test	kept
+219	Shiny drop then Red Box; supply box Mega Juices and Sleep Knives	rule	CANT-VERIFY	quest not offered; cannot test	rewritten (attributed)
+223	Seeking Eggs [Jungle Yian Kut-Ku] 26590	quest	TRUE	qfind 26590 not-offered; guku-wander.md section 5 egg quest list	linked
+224	Seeking Eggs [Swamp Congalala] 26591	quest	TRUE	qfind 26591 not-offered	linked
+225	Seeking Eggs [Desert Daimyo Hermitaur] 26592	quest	TRUE	qfind 26592 not-offered	linked
+226	Seeking Eggs [Volcano Basarios] 26597	quest	TRUE	qfind 26597 not-offered	linked
+227	Seeking Eggs [Snowy Tigrex] 26598 (HR4)	quest	TRUE	qfind 26598 not-offered, HR 51	linked
+223	Shiny methods per monster (Sonic Bomb, tail break, leap, wall charge)	rule	CANT-VERIFY	quests not offered; no way to test	kept
+234	The Stolen Blueprints 26594 (deliver 5)	quest	TRUE	data/quests.json 26594 objective x5; qfind not-offered	linked
+238	Stolen Blueprints Again 26595 (deliver 5)	quest	TRUE	data/quests.json 26595 objective x5; qfind not-offered	linked
+234	Blueprints come from Melynx shinies	rule	CANT-VERIFY	quest not offered	kept
+236	Egg interaction prompts; once per quest taken; about five quests	rule	CANT-VERIFY	quest not offered	kept
+240	Cutscene new pond unlocks Gu-ku Cooking	rule	CANT-VERIFY	not testable here	kept
+246	Gu-ku Search Party 26593 (Gu-ku Memories)	quest	TRUE	qfind 26593 not-offered; objective Deliver Gu-ku Memories x5	linked
+246	Daily Gu-ku quests 22159 22160 22161 offered	quest	TRUE	qfind: offered General Quest Counter > Daily Quests	linked
+250	Board changes gu-ku clothing/bed/pond; carry/feed/send away	menu	TRUE	pac Change Clothes, Carry, Feed, Goodbye strings	kept
+252	Gu-ku Tools: Pickaxe, Bug Net, Fishing Bait, Gloves double gathering	item	CANT-VERIFY	items 5714-5717 exist; in game: gather with one	linked
+255	Tool trade table (Chinese item names)	item	CANT-VERIFY	Chinese names removed; our tokens 5721-5725 exist, mapping unchecked; in game: Gu-ku exchange screen	rewritten
+258	Lost Ball row same trade as Gloves	item	FALSE	guide copy error likely (identical text); Lost Ball 5713 exists	note added
+262	Tools break like the Mega versions	rule	CANT-VERIFY	in game: use a Gu-ku Pickaxe vs Mega Pickaxe	kept
+264	Carry up to three Lost Balls, four effects	rule	CANT-VERIFY	in game: use a Lost Ball	kept
+268	Lost Ball effects 1-3 (caster, random warp, secret area with Amulet)	rule	CANT-VERIFY	in game: use a Lost Ball in a quest	kept
+270	Gu-ku Gathering Quests at Guild Master with Gu-ku Junk	quest	DIFFERENT	no such quest or menu in data/quests.json or dev/quest-where.md	rewritten
+270	Gu-ku Junk 4% gathering, 100% from giants	rule	CANT-VERIFY	item 4722 gather list exists, no rates; in game: gather	kept
+270	Gu-ku Junk found on maps	item	TRUE	data/items/4722.json gather map list	linked
+270	G Rank Sigils raise Giant Gu-ku spawn	rule	CANT-VERIFY	guide text; in game: use sigil	kept
+274	Gu-ku Amulet (guide: Gu-ku Charm), 99 Junk for 1	item	CANT-VERIFY	item 4723 Gu-ku Amulet adjacent to Junk 4722; recipe unchecked	rewritten (our name)
+275	Yase Yase Food 3 for 1 / Plump Food 10 for 1	item	CANT-VERIFY	items 4950, 4951 exist; trade unchecked	linked
+281	Mysterious Stones from 10 Mysterious Shards	item	CANT-VERIFY	no items of those names in data/item-ids.json; in game: look at the Guuku Pot list	note added
+283	GCP shop sells no stones or shards here	shop	TRUE	AGENTS.md: GCP shop = 135 Diva rows only	kept
+283	Any G Rank insect spot 5% Mysterious Shard	rule	CANT-VERIFY	in game: gather on the Jungle island	kept
+285	Hiden Souls/Ribbons/Merits by cooking HC/GHC carves and gems	item	CANT-VERIFY	hiden-items.md confirms the three material kinds; recipe unchecked	kept
+288	Lost & Found Felyne (guide: Lost Cat)	npc	TRUE	pac GR600 text 'New gifts from Lost & Found Felyne'	rewritten (our name)
+288	Lost Crown / Lost Luxury Crown (guide: Mystery Crown)	item	CANT-VERIFY	items 1229, 9125; match by name only; in game: check his gifts	rewritten (our name)
+289	Image guide to find the lost item	other	OPINION	author's method	kept
+290	hv-guku-farm note: Gu-ku stored, 24 Nov fix, backups	rule	TRUE	changelog.html 24 Nov entries; house-pets.md GK1	kept
+297	My Tore opens at HR4	rule	TRUE	pac 'You can go to My Tore if HR4 or higher'; my-tore.md Entry (HR word >= 51)	rewritten (was HR3)
+297	My Tore: Poogie, training facilities, Felyne stores	other	TRUE	my-tore.md; pac My Tore help text	kept
+297	Pig icon at house opens My Tore	menu	CANT-VERIFY	in game: read the icons at the house entrance	kept
+297	Spam Speak at G Rank for up to 100P	rule	DIFFERENT	my-tore.md: points capped 0-99	rewritten (99, attributed)
+299	NPC at HR4 asks questions, manager decided	rule	CANT-VERIFY	pac 'Decide the manager by answering the questions'; Y/N table unchecked; in game: first visit	kept
+304	Answer table to manager (YYY Middle etc.)	rule	CANT-VERIFY	in game: answer and see	kept
+316	Manager assigned at midnight next day	rule	CANT-VERIFY	my-tore.md: day changes 15:00 UTC (midnight JST) for daily points; assignment unchecked	rewritten
+319	Manager menu labels	menu	DIFFERENT	pac: Speak, Give Clothes, Give Item, Poogie, Get Points, Redeem Points, Special Requests, Felyne Square	rewritten
+321	Tutorial entry	menu	CANT-VERIFY	pac text 'Here, I will explain the functions available in My Tore' exists, no menu label Tutorial; in game: open manager menu	rewritten
+323	Give Clothes: spend points, 30P, four sets	shop	TRUE	my-tore.md Costs: manager's clothes 30, 4	rewritten
+324	Give Item raises affection, she gives item back	rule	CANT-VERIFY	pac 'conversations, gifts and points'; in game: give an item	kept
+326	Get Points 1 then 2 on alternate days	rule	TRUE	my-tore.md Points: daily claim +2/+1 alternating	kept
+327	Special Requests give Disposable HGE, G Whetstone	rule	CANT-VERIFY	pac: Special Request = defeat the named monster for a reward; items unchecked	rewritten
+328	Redeem Points: 30P for 3,000 GCP	shop	TRUE	pac 'Trade My Tore Points 30 pts for 3000 GCP'; my-tore.md	kept
+331	Batch of points after HR5-7, max 90P	rule	CANT-VERIFY	not in my-tore.md; in game: talk to manager after ranking	rewritten (attributed)
+331	Forgotten points up to 14P stored	rule	TRUE	my-tore.md Points: missed days N-1, max 15 days; once per character medium	rewritten
+333	Spend first on Poogie 30P then Departure 30P	shop	TRUE	my-tore.md Costs: a Poogie 30, Poogie Ranch facility 30	kept
+333	Standard outfit 20P	shop	TRUE	my-tore.md Costs: Poogie outfit by points 20	kept
+333	Premium Outfit option	shop	DIFFERENT	AGENTS.md / hv note: no Item Mall; Poogie Dressup gift gives outfits 1-30	rewritten
+334	G Rank License 60P at GR50	shop	TRUE	my-tore.md Costs G Rank Poogie 60, GR50+; pac 'G Rank Poogie can now be used. Talk to the My Tore Caretaker'	kept
+336	Standard outfits 2 slots, Standard cuffs only	rule	TRUE	my-tore.md: two skill cuff slots per outfit; Premium-only claim unchecked	kept
+337	Premium outfits/cuffs better	other	OPINION	author's judgement; not sold here	rewritten
+337	Cuffs with Artisan enable Razor Sharp +1	item	CANT-VERIFY	skill levels Razor Sharp +1 exist in data/skills; cuff list unchecked	rewritten (our name)
+343	Requests: 3 Sleep Herb, 5 Ice Crystal	item	CANT-VERIFY	items 187, 228 exist; request unchecked	linked
+344	Requests: 4 Sleepyfish, 3 Chilled Meat+	item	CANT-VERIFY	items 236, 54 exist; guide's Cold Meat G mapped to Chilled Meat+ by name	rewritten (our names)
+345	Requests: 2 Nutrients, 1 Cool Drink	item	CANT-VERIFY	items 9, 21 exist	rewritten (our name)
+347	Chilled Meat+ recipe via Universal BBQ Set	item	CANT-VERIFY	guide-frontier-items.html#recipes-grill maps Universal Grill Tools/Grill to our Kit/Set	rewritten (our names)
+350	Sister likes: Yian Garuga / Rajang / Gold Rathian + Silver Rathalos	rule	CANT-VERIFY	monster names exist in data/monster-ids.json; likes unchecked; in game: give materials	rewritten
+355	G Whetstone recovers 200	item	CANT-VERIFY	item 1500 exists; value unchecked	kept
+356	Hi-Speed Whetstone	item	TRUE	item 1501	rewritten (our name)
+357	Disposable Earplug	item	TRUE	item 1502	rewritten (our name)
+359	Boiled Golden/Silver Egg, Anti-Flinch Fruit	item	TRUE	items 1488, 1487, 1489	rewritten (our name)
+362	Disposable HGE	item	TRUE	item 1503	rewritten (our name)
+364	Maiden Health/Resilience/Persistence (guide Maiden's Heart)	item	CANT-VERIFY	items 1481-1483; matched by order; in game: read the item text	rewritten (our names)
+368	Maiden's Vitality/Immunity/Stamina/Soul (guide Maiden's Wish)	item	CANT-VERIFY	items 1681-1684; matched by order	rewritten (our names)
+374	Other gifts list	item	CANT-VERIFY	items Potion 7, Mega Potion 8, Max Potion 27, Mega Dash Juice (nfind) exist	rewritten (our names)
+379	Poogie menu labels	menu	DIFFERENT	pac: Check Status, Poogie Ranch Expansion, Poogie Extension, Change Clothes, Skill Cuff	rewritten
+380	Poogie Ranch Expansion 30P x5	shop	TRUE	my-tore.md Costs: Poogie Ranch facility 30, count 5	kept
+382	Poogie Extension: Poogie 30P, max 3; outfits 20P	shop	TRUE	my-tore.md Costs	kept
+384	Premium outfits yellow, Standard white	rule	CANT-VERIFY	guide text	rewritten (attributed)
+386	Hold Items (guide Carried Items) at GR350	rule	TRUE	pac GR350 text 'A new function for the G Rank Poogie: Hold Items is added'	rewritten
+388	Item must be set again each login	rule	DIFFERENT	changelog.html 10 Nov: with client v1.21 item stays set 12 h	note added
+390	If at least GR300 talk to manager to choose item	rule	FALSE	pac says GR350	rewritten (GR350)
+395	Departure Facility 30P, 1 Poogie 30P, outfit	shop	TRUE	my-tore.md Costs	kept
+395	Free Standard Outfit	rule	CANT-VERIFY	not in my-tore.md; in game: check the outfit list	rewritten (attributed)
+399	Equip cuff via manager, Blacksmith or equipment box	menu	CANT-VERIFY	pac: 'Skill cuffs can be made at the Blacksmith'; equip places unchecked	rewritten (attributed)
+401	Facility board and trampoline on lowest level	other	CANT-VERIFY	pac strings Departure, Return from Quest; in game: visit My Tore	kept
+403	Poogie Dirt Pile extra carves	rule	CANT-VERIFY	pac 'Item Drops from Halk & Poogie after Quest'; in game: return from quest	kept
+407	Stat names Intelligence, Strength, Motivation	name	TRUE	pac help text: Poogie's [Intelligence], [Strength] and [Motivation]	kept
+413	Lv = (Int+Str+Mot)/5 and stat effects	rule	CANT-VERIFY	client stat text not decoded; in game: Check Status	note added
+417	Item stat unlocked at GR350	rule	TRUE	pac GR350 text	kept
+424	Facility table: Obstacle Course, Climbing, Running, Study, Departure, Break Time	menu	TRUE	pac strings Obstacle Course, Climbing Facility, Running Facility, Study Facility, Departure, Break Time	rewritten (our names)
+424	Facility stat changes	rule	CANT-VERIFY	values not decoded; in game: train and compare	note added
+424	30P per facility	shop	TRUE	my-tore.md	kept
+435	Skill cuffs are fixed charms	rule	TRUE	pac 'Poogie can give skill points with the Skill Cuff'; cuffs are fixed items	kept
+438	Premium cuffs need paid items	shop	DIFFERENT	hv note: nothing paid here	rewritten
+441	G Rank cuffs need GR50 and 60P license	rule	TRUE	pac 'At GR50, you can use G Skill Cuffs'; my-tore.md	kept
+442	Buy Premium outfit and G premium packs	shop	DIFFERENT	not sold here	rewritten
+443	hv-pugi-farm note: Poogie Dressup 1-30, v1.21 12 h	rule	TRUE	changelog.html 23 Oct, 10 Nov	kept
+447	Felyne Square (guide Airou Plaza) last option on manager menu	menu	TRUE	pac manager menu last entry Felyne Square	rewritten
+451	Felyne Square Expansion	menu	TRUE	pac 'Felyne Square Expansion'	rewritten
+453	Staff capacity 30P per slot max 5	shop	TRUE	my-tore.md Costs: hiring slot LV1-5 30 each	kept
+454	General Store, Combiner, Bar, Clothes Store, Adventurer	shop	TRUE	my-tore.md: five shops General Store, Combiner, Clothes, Bar, Adventurer	rewritten (our names)
+461	Store levels 30P/50P/50P	shop	TRUE	my-tore.md Costs	kept
+461	GR600 Level 3 wares/recipes, GR100 Adventurer routes	rule	TRUE	pac GR600 and GR100 texts	note added
+466	Hiring labels Listen to Reputation, Scout, Check Status	menu	DIFFERENT	pac strings list	rewritten
+468	Hire with Money/Items/Charisma	menu	TRUE	pac strings	rewritten
+470	Convince with Items best; one attempt per cat	rule	OPINION	author's advice	kept (attributed)
+472	Cat Manager: Standby, Dismiss, assignments	menu	CANT-VERIFY	pac has Give Instructions, Change Assignment; Dismiss not found; in game: talk to Cat Manager	note added
+476	General Store item table (levels, notes)	shop	CANT-VERIFY	products not decoded (my-tore.md Open); names match items 116, 205, 12, 15, 18, 51, 53, 55, 71, 76, 77, 79, 131, 208	rewritten (our names)
+481	Mega Demondrug / Mega Armorskin need Style Rank	rule	CANT-VERIFY	guide only	kept
+500	Combiner item table	shop	CANT-VERIFY	recipes not decoded; names Health Drink [HP]/[Sta]/[Att]/[Def] 1526-1529, Hi-Speed Whetstone 1501, Hot Powder 1505, Cool Powder 1506, Boomerang G 1486, Maiden items	rewritten (our names)
+504	Blast Coating	item	CANT-VERIFY	no item of that name; Explosive Coating 1579 exists; left as written	kept
+517	hv-airou-plaza note	rule	CANT-VERIFY	not tested; EZ variants exist in item list	note added
+528	SR Self Challenge Room	name	TRUE	guide-frontier-hunter-rank.html#sr-self-challenge-room	linked
+528	Vanity challenges give decorations; SR300 Hiden sets viewable	rule	CANT-VERIFY	in game: enter the SR Self Challenge Room	kept
+529	Stat quests raise max attack value	rule	CANT-VERIFY	covered on Hunter Rank page	kept
+534	Companion kinds: Halk, Partnya, Fosta, Rasta, Partner	npc	TRUE	pac NPC options strings	kept
+536	Halks take no slot; highest priority number spawns	rule	TRUE	pac 'Halk does not use a Party Slot'	kept
+536	Chat options for companions	menu	CANT-VERIFY	guide picture; see Menus page	kept
+544	Halk given at start, stays in quests	npc	TRUE	pac 'the Guild gave you a Halk along with your My Support'	kept
+545	Manage Halk at house entrance icon; My Support / Halk Instructor	menu	TRUE	pac 'Go to My Support and talk to Instructor Halk'	note added
+550	Feeding raises elements; forms at 100	rule	TRUE	pac Halk text: what they eat changes element; 'when gauge reaches right end'	kept
+551	Five stats, Lv3 limit	rule	TRUE	pac 'Get the Halk to Lv3 and maximize the following stats'	kept
+552	Halk skills from eggs; GR150 third skill	rule	TRUE	pac GR150 text 'Skill Book limit on Halk unlocked'	kept
+553	Halk Potion daily, up to 5	item	CANT-VERIFY	item 4952 Halk Potion; pac Halk Pots Remaining Uses; in game: Halk rock	rewritten (our name)
+555	Halk Feathers drinks 30% affinity, 1.1x element	item	CANT-VERIFY	items 4937-4942 Halk Feathers [R][F][W][I][T][D]; effects unchecked	kept
+560	Halk skill table (Supporter, Danger Affection ...)	other	CANT-VERIFY	skill effects not decoded; in game: Halk status	kept
+570	Halk Potion resets daily	rule	CANT-VERIFY	server clock is JST; not checked for this	rewritten
+576	Make a Partnya, send to Guild Hall	npc	TRUE	pac Partnya Dispatch: Guild Hall, Get Souls, My Tore	kept
+576	Partnya created from Halk manager	menu	CANT-VERIFY	in game: talk to the Halk Instructor	kept
+578	Five creation tabs	menu	CANT-VERIFY	pac Color, Tail strings; in game: create a cat	kept
+578	1 or 2 Partnyas at start, more at PNR 300	rule	CANT-VERIFY	pac PNR strings; in game: create	kept
+581	Partnya board menu entries	menu	DIFFERENT	pac: Accompany Settings, Status, Special Training, Partnya Dispatch, Change Behavior, Present, Dismiss Partnya, About Partnyas, Gear Management	rewritten
+582	Priority needs a 20 RP book from Guild Leader	rule	CANT-VERIFY	no label found; in game: check Change Behavior and the guild NPC	note added
+584	RP every 15 minutes here	rule	CANT-VERIFY	earlier pass text; in game: watch RP in a guild	kept (attributed)
+590	Partnya gives second break roll	rule	CANT-VERIFY	guide; in game: quest with a Partnya	kept
+593	Partnya skills like hunter skills with decorations	rule	CANT-VERIFY	guide	kept
+598	Guild Hall Treasure Hunting, My Tore adds materials	rule	CANT-VERIFY	pac Guild Hall/My Tore dispatch; treasure hunts per guild page	rewritten (our names)
+603	Partnya dispatch once a day	rule	TRUE	pac 'Dispatch is once a day only'	rewritten
+605	Partnya skill tables (names, Pts, effects)	other	CANT-VERIFY	skills db levels used for names (Health+, Defense+, High-Grade Earplugs, Super Earplugs, Armor Flute); effects unchecked	rewritten (our names)
+745	Fosta rules	npc	TRUE	pac 'About Fosta' (2 max, no gear choice, no GCP, may not join)	rewritten
+748	Rasta needs HR2	rule	TRUE	pac 'You can make contracts from HR2'	rewritten
+748	Rasta needs active subscription	rule	CANT-VERIFY	every account has Premium; in game: contract with a Rasta	rewritten (attributed)
+748	Backup vs Escort contract	menu	TRUE	pac 'About Rasta'	note added
+749	Guild Loyalty / Reliability	rule	CANT-VERIFY	names not found in client strings; in game: Rasta info	kept
+756	Reliability to skills table	rule	CANT-VERIFY	guide	kept
+766	Legendary Rasta needs Premium (official)	rule	DIFFERENT	hv-rastas note: not checked	rewritten (attributed)
+770	Legendary Rasta limits 1/2/3	rule	DIFFERENT	subscription tiers official; not checked here	rewritten
+770	Legendary Rasta Tkt	item	TRUE	item 14063 exists	linked
+772	Rasta bar from stairs; in-house option for private bars	menu	CANT-VERIFY	pac strings Rasta Bar; in game: town stairs	kept
+776	Partner HR2 and house size upgrade 10,000z	rule	CANT-VERIFY	pac 'Rasta Bar introduces Partner'; in game: ask Legendary Rasta	kept
+780	Take Partner at Legendary Rasta	menu	TRUE	pac 'introduced from a Legendary Rasta at the Rasta Bar'	kept
+783	Best weapons SnS/DS etc	other	OPINION	author's advice	kept (attributed)
+785	Partner Rank 150 unlocks all weapons; Tonfa/Swaxe F/Magnet Spike need G Rank	rule	TRUE	pac Partner Rank 150 notice	note added
+792	Gender/personality choices; confirm box	menu	TRUE	pac Personality/Gender strings; 'After deciding gender and personality'	kept
+795	Cancel Partner at the cat next to bar; Restyle Points	rule	CANT-VERIFY	hv-partner note; not sold here	rewritten
+798	Partner menu labels	menu	DIFFERENT	pac: Talk, View Status, Equipment Settings, Skill Settings, Item Settings	rewritten
+801	Give Equipment permanently removes from box	rule	TRUE	pac Give Equipment string; guide warning kept	kept
+803	Partner weapon raw/element/status values and tables	other	CANT-VERIFY	client tables not decoded; in game: Partner status	kept
+822	Partner armour defence table	other	CANT-VERIFY	not decoded	kept
+836	Partner skills bought with GCP, PR gates	shop	CANT-VERIFY	pac Point Cost/Cost strings; AGENTS: GCP buys Partner skills (bounties.md note)	rewritten
+838	Skills menu options	menu	DIFFERENT	pac: Skill List, Choose Skill to learn	rewritten
+842	Skill cost cap upgrades +5 each to 260	rule	TRUE	pac 'equippable skill cost cap +5 ... +40'	kept
+842	Kaidan rank / passive skills	rule	CANT-VERIFY	word Kaidan not in client text	kept
+839	Caravan Festival GCP source	rule	CANT-VERIFY	see Events page	kept
+856	Partner skill list: names mapped to our skill names	name	TRUE	data/skills level names (Attack Up Very Large, Critical Eye +N, Weakness Exploit, Artillery God, Unaffected+N, Negate Poison etc.)	rewritten (our names)
+856	Attack Up [XXL] shown as Attack Up Absolute	name	CANT-VERIFY	guide has both XXL and Absolute; our skill has five levels; inferred	rewritten
+864	Herbal Medicine -> Medical Sage; Flash Conversion -> Crit Conversion; Sharpener -> Speed Sharpening	name	CANT-VERIFY	inferred from data/skills levels; in game: Partner skill list	rewritten
+1040	Martial Arts / Fighting King / Swordsmith / Anti-Def Down / Precision+1 / Everlasting names	name	CANT-VERIFY	no exact skill level in data/skills; in game: Partner skill list	kept
+856	GCP prices, Cost, PR, prerequisites for every Partner skill	shop	CANT-VERIFY	Partner skill table not decoded; in game: Skill Settings > Skill List	kept
+1106	One item type in use on Partners	rule	CANT-VERIFY	guide warning; in game: Item Settings	kept
+1107	Partner items: HRP/GRP Tickets, Wide Area Powders, Flutes, Knives, Traps	item	CANT-VERIFY	items HRP Tkt 5392, GRP Tkt 7979 exist; in game: Item Settings	kept
+1108	hv-partner note	rule	TRUE	AGENTS/changelog: no Assist course; Restyle gift items	kept
+7	Meta: Pugi Farm / Partnyaa	name	FALSE	client strings My Tore, Partnya	rewritten
+14	Gray (colour)	name	TRUE	plain colour word; changed to grey, checker row was a false match to an armour set	rewritten

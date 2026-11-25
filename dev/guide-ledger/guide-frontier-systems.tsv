@@ -1,0 +1,140 @@
+line	claim	kind	verdict	evidence	action
+211	Names are our client's: Hunter Navi, My Tore, Poogie, Partnya, Clan	name	TRUE	dev/guide-terms.tsv (My Tore high); batch A choices; client labels Clan Quests / Clan Rank (guide-terms)	rewritten (old guide names and the Taiwanese-client remark dropped)
+218	Hunter Navi and Halk open at first login	rule	CANT-VERIFY	client content; in game: new character, open the Hunter Navi and My Support	kept
+220	My House at first login; bigger house with HR	rule	CANT-VERIFY	client content	kept
+222	Guild opens after the first tutorial quests	rule	FALSE	hvmhfz_re docs/guilds.md:56 apply conditions: not in a guild, recruiting, not full (no quest gate)	rewritten -> Any time
+223	Partner, Rastas, Partnya at HR2	rule	CANT-VERIFY	guide pages (basics #partner); in game: at HR1 try the Rasta bar	kept
+224	Gu-ku at HR2	rule	CANT-VERIFY	house page; in game: HR2 house, My Garden door	kept
+225	Caravan HR2; Raviente HR 17	rule	TRUE	data/quests.json 62105 Shaking!Solitude rankNeed HR 17; hvmhfz_re docs/raviente.md:394 HR 17 regular	kept
+226	Transcend HR3 (HR 31)	rule	CANT-VERIFY	transcend page; in game: HR 31	kept
+227	My Tore opens at HR3 or HR4	rule	FALSE	decoded mhfpac.bin 'You can go to My Tore if HR4 or higher' (batch A ledger guide-frontier-basics.tsv row 390)	rewritten -> HR4
+228	Sky Corridor about HR 31	rule	CANT-VERIFY	page claim; in game: HR 31, watch for the town event	kept
+229	Style Rank/Hiden and HR Exotic at HR5 (HR 100)	rule	TRUE	changelog.html:368 (HR Exotic quests need HR 100)	kept
+230	Hunting Road at the H.Road/Sky Corridor counter	menu	TRUE	dev/quest-where.md H.Road/Sky Corridor (counter type 16); guide-names-allow '*' row	kept
+232	Musou GR 1 to GR 100; G Exotic GR 100	rule	TRUE	data/quests.json form Musou offered: GR 1, GR 100, GR 800; changelog.html:359,368 G Exotic GR 100	kept
+233	Zenith ★1-★4 at GR 300/500/700/900	rule	TRUE	changelog.html:360 (17 Nov); brief rule 4	kept
+234	Festival, Cup/VS, MezFes, campaigns always running	rule	TRUE	changelog.html:728 two lanes; 734 MezFes every day; 736 campaigns	kept
+237	Ranks changed: Zenith, G Exotic GR 100, 30 GRP quests GR 900; stable patch v1.30	rule	TRUE	changelog.html:243,360,368; AGENTS.md 'Stable patch still v1.30'	kept
+244	Hunter Navi: Shift+C or R1+R2; HR, GR, Other panels; Navi Recommended Quests row	menu	CANT-VERIFY	Navi Recommended Quests row TRUE (dev/quest-where.md General Quest Counter); keys/panels: in game press Shift+C	kept
+245	Navi pays cheques, GZeny cheques, tickets, materials, a first G set, Gurenzeburu decorations	other	CANT-VERIFY	guide-frontier-g-rank-start.html:217 'Gurenzeburu decorations'; 'G Newbie set' not in our armour names	rewritten ('the G Newbie set' -> 'a first G Rank set')
+249	Navi saves fixed 2 Nov; backups include it; Zenith goals written for GR 200	rule	TRUE	changelog.html:864 (2 Nov Hunter Navi saves), 792 (backup holds Hunter Navi), 360	kept
+242	Japanese text (ハンターナビ, ハルク, パートナー, パートニャー, マイトレ, グーク, マイハウス, 猟団, 歌姫, 狩煉道, 天廊, シジル, 秘伝, 辿異)	name	DIFFERENT	brief rule 2: our English only	removed (14 places)
+256	Halk managed at My Support (My Support Manager, Halk Instructor)	npc	CANT-VERIFY	no client NPC names in dev/guide-terms.tsv; in game: house > My Support, read the NPC names	kept
+257	Halk Feathers; Halk Raw/Fire/Ice/Dragn Feed	name	TRUE	data/item-ids.json 4937-4942 Halk Feathers [R..D]; 11244 Halk Raw Feed, 11245 Fire, 11249 Ice, 11248 Dragn	rewritten (full item names)
+257	Growth only counts when you clear the quest	rule	CANT-VERIFY	page claim	kept
+258	More Skill Books at G Rank and at GR150; not allowed on the Road and many event quests	rule	CANT-VERIFY	page claim; in game: Halk skill slots at GR 150	kept
+261	Halk stored in the save; daily timers at 15:00 UTC	rule	TRUE	data/currencies.json mezfes basis (JST week start); changelog daily resets	kept
+268	Partner at HR2: house upgrade 10,000z, Legend Rasta > Take Partner	rule	CANT-VERIFY	guide-frontier-basics.html #partner; in game: Rasta bar, Legend Rasta menu	kept
+269	Partner menu Talk/Status/Equipment/Skills/Items; skills learned with GCP	rule	CANT-VERIFY	page claim	kept
+273	Partner stored and in backups; GCP from quests and Diva Defense	rule	TRUE	changelog.html:792 (backup holds Partner); data/currencies.json gcp ways	kept
+278	Partnya: hire and train a Felyne	name	TRUE	batch A choice 'Partnya'	rewritten (Partnyaa remark and Japanese dropped)
+280	Partnya hired from the My Support Manager; 'Partnyaa Manager' in My Tore	npc	CANT-VERIFY	no client NPC name for either (dev/guide-terms.tsv); in game: house > My Support and My Tore, read the NPC names	rewritten ('Partnyaa Manager' -> 'a manager in My Tore')
+284	House page link text 'Felyne Partnyaas'	name	DIFFERENT	our name Partnya	rewritten -> Felyne Partnyas
+285	Treasure hunts work and are free to send	rule	TRUE	hvmhfz_re docs/guild-treasure.md:136-137 (Erupe sends 0 cost)	kept
+290	Rasta bar up the stairs; Rasta, Fostas, Legendary Rastas give the Partner	other	CANT-VERIFY	page claim; in game: town stairs	kept
+292	HR2 to make or contract a Rasta; talk to the waiter	rule	CANT-VERIFY	page claim	kept
+293	Contracting earns GCP; strength depends on guild loyalty and gear	rule	CANT-VERIFY	page claim	kept
+294	Options > NPC Options sets which companion comes first	menu	DIFFERENT	dev/guide-terms.tsv: our label 'NPC Settings' (guide name 'NPC Options', high)	rewritten -> Options > NPC Settings
+297	Rasta contracts fixed 2 Nov; v1.29 adds Kaiji Ito, Man in Coat, YoRHa Member; no Assist course; Legendary request placeholder	rule	TRUE	changelog.html:868, 423; Erupe 4495146 handlers_mercenary.go:42-52; data/sources/npc-kaiji-ito.json etc	kept
+302	Poogies live in My Tore; manager, daily points, Airou Plaza cat shops; cuffs add skill points	other	TRUE	hvmhfz_re docs/my-tore.md:15-16 (My Tore Points, manager menu, Felyne Square)	rewritten ('Pugi cuff' -> 'cuff'; Pugi Farm remark dropped)
+304	Enter from the house door; first NPC asks three questions to pick one of three sisters	other	CANT-VERIFY	page claim; my-tore.md manager's clothes (4 cases); in game: first My Tore visit	kept
+305	My Tore Points 1 or 2 a day, up to 99	rule	CANT-VERIFY	my-tore.md (points block); in game: claim points two days	kept
+305	G Rank cuffs need the G Rank Pugi Cuff Licence at GR 50	name	DIFFERENT	batch A choice 'G Rank License'	rewritten -> G Rank License
+305	More cuffs and facilities at GR 100 and GR 600	rule	CANT-VERIFY	page claim	kept
+308	Guild Poogie: the guild's own pig	name	DIFFERENT	client NPC name 'Clan Poogie' (hvmhfz_re docs/gacha-cat.md 1.2)	rewritten -> Clan Poogie
+309	Link texts 'Pugi Farm (My Tore)', 'Pugi cuffs', 'G Rank Pugi cuffs'	name	DIFFERENT	our names My Tore, Poogie	rewritten (anchors kept)
+310	Poogie Dressup! gift outfits 1-30 (23 Oct); v1.21 Tore Poogie item kept 12 h; Premium perks	rule	TRUE	changelog.html:1190 (23 Oct gift), 558 (10 Nov 12 h)	kept
+317	First Gu-ku from a quest line by the 'Guild Mistress'; more eggs from Gu-ku quests	quest	FALSE	qfind 26590, 26591, 26592, 26597, 26598 (Seeking Eggs), 26593, 26594, 26595 all not-offered; house ledger (no Gu-ku Quests section in our menus)	rewritten: egg quests not offered, first Gu-ku may not be obtainable; 1 egg quest linked
+317	Offered Gu-ku quests: Gu-ku's Room Collection, Gu-ku's Outfit Collection, Gu-ku Ecology Survey Team	quest	TRUE	qfind 22159, 22160, 22161 offered: General Quest Counter > Daily Quests	linked (3) with menu path
+317	Gu-ku Manager in the garden; keep up to five	npc	CANT-VERIFY	house page calls it the Manager Felyne; in game: My Garden, read the NPC name and count the Gu-ku slots	rewritten -> Manager Felyne
+318	Straw Felyne hands over house-sitting results after each quest	npc	TRUE	shipped mhfpac.tsv 53e34 tutorial: My Garden ≪麦わらネコ≫ (straw cat) gives the work results per quest	kept
+322	Gu-ku no longer overwritten since 24 Nov; backups include Gu-ku; no wandering Gu-ku	rule	TRUE	changelog.html:228 (24 Nov 19:10); AGENTS.md 24 Nov (GK1)	kept
+327	House doors to My Garden, My Support, My Tore, Airou Plaza, SR Challenge Room	other	CANT-VERIFY	page claim; in game: walk the house	kept
+330	Mail Cat moves items between characters	npc	CANT-VERIFY	page claim	kept
+333	Mail in Community > Mail, up to 40 mails	menu	TRUE	changelog.html:880 (up to 40 mails)	kept
+334	Interiors and bookshelf fixed 2 Nov; Extra course for moving items; backups hold house, Partner, Felynes	rule	TRUE	changelog.html:880, 792	kept
+341	Bentos packed at the Lunchbox NPC	npc	CANT-VERIFY	no client name in guide-terms; in game: find the bento NPC	kept
+343	Guild cooking with stronger skills	rule	TRUE	guide-frontier-guild.html recipes	kept
+350	Courses were paid on the official servers	other	DIFFERENT	official servers only	kept as history
+352	Net Cafe: 5 N Points a day, refills 10 daily and 3 bonus quests; 250 at 30 min to 100,000 at 167 h; 2-hour Boost Time	rule	TRUE	data/currencies.json n-points (handlers_cafe.go, cafebonus table); live config BoostTimeDuration 7200	kept
+353	Courses shown on the Guild Card's Subscription page	menu	CANT-VERIFY	page claim; in game: Guild Card pages	kept
+356	Every account has Trial, HL, Extra, Premium, Net Cafe; expiry 1 Jan 2030; no Assist/Hiden/Hunter Support; Net Cafe day 03:00 UTC	rule	TRUE	data/currencies.json n-points basis (course 30 all accounts; daily_time); batch A ledger basics row 412 (mhfcourse.go)	kept
+363	Log In Bonus, Log In Boost; stamps and bonus items at the Warehouse NPC	npc	CANT-VERIFY	login boost on (live config DisableLoginBoost False); warehouse NPC name not in guide-terms	kept
+364	Daily Free Draw 3 a day at the Gacha Felyne, resets 03:00 UTC	shop	TRUE	changelog.html:203, 688; hvmhfz_re docs/gacha-cat.md (Gacha Felyne)	kept
+366	Sky Corridor Daily Rewards: 5 Tower Medals + six tasks, at H.Road/Sky Corridor > Tower > Daily Rewards	menu	TRUE	dev/quest-where.md Tower: Daily Rewards; dev/guide-terms.tsv 'Daily Rewards' tab (Tower > Daily Rewards, high); data/currencies.json tower-medal	kept
+368	Weekly 10 Trial Coin G (Mondays), Weekly Supply Drop, HL/EX stamp at the 'Purple Guild Sweetheart'	npc	DIFFERENT	nickname not a client name; data/sources/stamp-exchange.json 'Weekly stamp exchange'; data/currencies.json trial-coin (Mondays 00:05 UTC)	rewritten (nickname -> link to the weekly stamp exchange)
+368	MezFes tickets weekly	rule	TRUE	data/currencies.json mezfes-tickets (5 solo, 1 group, Monday 00:00 JST)	kept
+370	Login boost on; resets 15:00 / 03:00 / 00:00 UTC	rule	TRUE	live config DisableLoginBoost False; data/currencies.json n-points (03:00 UTC)	kept
+375	Claim Items at the Gacha Felyne or the Guide; the 'Purple Guild Sweetheart' Receive Items	npc	DIFFERENT	Guide (0x7e) distribution hub (gacha-cat.md 1.2); nickname has no client name (batch A: 'guild receptionist at the town entrance')	rewritten (nickname -> guild receptionist at the town entrance)
+376	Gift sources: weekly coins, after-event gift (5 GW Lottery Tickets + 5 Trial Coin G, 28 days), cup/VS prizes, Road board prizes, campaigns	source	TRUE	changelog.html:392; data/currencies.json trial-coin	kept
+377	Weekly Conquest gifts not given (Conquest off)	rule	TRUE	changelog.html (Conquest off after 4 Nov); page Conquests note	kept
+382	Gacha Felyne runs the lotteries; five kinds since 5 Nov	shop	TRUE	hvmhfz_re docs/gacha-cat.md 1.1 (record 'Gacha Felyne', screen 'Gacha Cat'); AGENTS.md 5 Nov real gachas 101-107	kept
+385	Materials Gacha: 10 Iron Ore or 5,000z; 3 draws	shop	CANT-VERIFY	Iron Ore item 216 TRUE; costs from data/sources/gacha-10x.json not re-read; in game: Gacha Felyne	kept
+387	Event Ticket Box: 1 GW Lottery Ticket a draw; 20 empty the box	shop	TRUE	changelog.html:392 (1 a draw); GW Lottery Ticket item 6833	kept
+389	Prizes include Guild Point Tkt, Goushu Ticket, Cost Book, Road Respec, Divine Power Gem; Trial/Golden Coin G	name	TRUE	data/item-ids.json 13190, 1662, 14444, 14445, 12306, 8964, 8963	kept
+390	No PZ cuffs, Lottery ZP armour, Skill Fruits, Hiden Stones in gachas; gachas off on the Test land	rule	CANT-VERIFY	page claim (gacha sources lists); not re-checked row by row	kept
+397	Restyle Points only from gifts	rule	CANT-VERIFY	page claim; no changelog entry	kept
+402	A guild is up to 60 hunters	rule	TRUE	live server_settings guild member_limits max 60	kept
+404	Guild Manager in town; leave the newbie guild first	npc	FALSE	no rookie guild here (guilds.md GM12); guild page calls it the guild counter	rewritten (guild counter; leader or manage-right member accepts; no rookie guild)
+405	Hall: quest givers, store, item box, Special Cooking, Clan Poogies, Treasure Hunters, Adventure Boat	other	TRUE	hvmhfz_re docs/gacha-cat.md 1.2; guild-hall.md (item box at guild rank 2)	rewritten (Guild Poogie -> Clan Poogies)
+406	RP earned while logged in, donated for rank, boat, Sky Corridor missions	rule	TRUE	data/currencies.json clan-points 'what'	kept
+407	Sky Corridor guild missions: pages of three missions	rule	CANT-VERIFY	sky-corridor.html#missions; not re-read	kept
+409	Link text 'English Guild and Guild Hall'	name	DIFFERENT	other-server term (see guild ledger)	rewritten -> Guild and Guild Hall
+410	1 RP per 15 min, cap 65,535; meals 7 days; Poogie buff 12 h; limits 30/40/50/60; Account page applications since 15 Nov; rookie graduation not built	rule	TRUE	data/currencies.json clan-points; live server_settings guild; changelog.html:441, 558, 781; guilds.md GM12	rewritten (Guild Poogie -> Clan Poogie)
+415	Treasure hunters bring 'many Pugi cuff materials'	source	TRUE	data/sources/guild-treasure-1/2.json C.Base G items	rewritten -> C.Base G cuff materials
+417	Free sends, 7-day hunts, souvenirs off, fixes 2 Nov	rule	TRUE	guild-treasure.md:136; live server_settings treasure_hunt_expiry_seconds 604800; Erupe handlers_guild_tresure.go:299; changelog.html:870	kept
+422	Caravan Area (Pallone) next to the town entrance	other	CANT-VERIFY	page claim	kept
+424	Talk to Kashira by the bonfire for the Caravan Gem	npc	CANT-VERIFY	Kashira named in hvmhfz_re docs/raviente-fight.md; in game: Caravan Area bonfire NPC	kept
+425	First caravan skill Recovery Items Up	name	TRUE	data/skills/index.json 'Recovery Items Up'	kept
+426	Weekly caravan rankings by Merit	rule	CANT-VERIFY	changelog 4 Nov caravan rankings; Merit rule not traced	kept
+429	Pallone Caravan server side not built; shop boxes and Pioneering have no source	source	TRUE	hvmhfz_re docs/item-sources.md section 10 (caravan)	kept
+434	Diva Defense three weeks: gems, guild week, rewards and coin shop	rule	TRUE	changelog.html:733 (3-week cycles, Prayer Gem a day)	kept
+436	Diva menu in town and the Prayer Fountain; guild week needs a guild	menu	CANT-VERIFY	Prayer Fountain in hvmhfz_re docs/translation.md; in game: during Diva Defense	kept
+437	GCP up to 102,000 a run from the personal list	rule	TRUE	data/currencies.json gcp: diva_rewards list 1 sum 102000	kept
+441	Diva Defense ours 'since 4 Nov'	rule	DIFFERENT	brief rule 4: Diva Defense rotates, no dates	rewritten (date removed)
+441	Missed gem day filled in; reward lists ours; GCP shop 135 Diva items	rule	TRUE	changelog.html:733, 298	kept
+441	Interceptor's Base quests offered?	quest	TRUE	events ledger: Keoaruboru！ 58043 offered via the Diva Defense screen (Int. Quests)	kept (note says not checked; see events page)
+448	Raviente: Kieru in the Caravan Area (Join/Start/Quit, Claim Rewards)	npc	CANT-VERIFY	shipped mhfpac.tsv 'キエルさん' (Kieru) in tutorial text; menu rows hvmhfz_re docs/raviente.md:202; in game: Caravan Area	kept
+448	Regular HR 17, Violent HR 100, Berserk/Extreme/Small Berserk G Rank	quest	TRUE	qfind 62105 Shaking!Solitude HR 17 (event_quests type 16), 62101 White Solitude HR 100 (type 22), 54753 Berserk!Solitude (type 40), 55596 Extreme!Solitude (type 50), 55796 Berserk!Solitude Depths (type 51); all offered Caravan Quest Counter > Great Slaying Quests	linked (5) with menu path
+448	!ravi start starts the siege	rule	TRUE	changelog.html:204 ('!ravi start'); page note	kept
+453	8 players Regular/Violent/Small Berserk, 32 Berserk/Extreme; damage multiplier; Test land changes	rule	TRUE	hvmhfz_re docs/raviente.md:928 (live config 8/8/32/32/8); changelog.html:220 (pre12 Test land)	kept
+458	MezFes: 5 solo and 1 group ticket a week	rule	TRUE	data/currencies.json mezfes-tickets	kept
+459	MezFes every day; refill Monday 00:00 JST	rule	TRUE	changelog.html:734	kept
+464	Festival teams, souls, prizes; winners get extra quests	rule	TRUE	dev/quest-where.md Winners Quests (type 8; festival winning team only)	kept
+466	Festivals alternate with Diva Defense; prizes 36 personal / 24 guild since 17 Nov; after-event gift; point exchange empty	rule	TRUE	live DB festa_prizes personal 36, guild 24; changelog.html:392	kept
+472	Speedrun Cup weekly from the Event quest list; fastest clear; prizes	rule	TRUE	changelog.html:339-344	kept
+473	VS Bracket every 14 days, !vs join, 32 hunters, 2-day rounds	rule	CANT-VERIFY	changelog VS entries; not re-read in detail	kept
+476	Cup/VS 'running since 5 Nov'	rule	DIFFERENT	brief: no event dates	rewritten (date removed)
+476	Viewer or damage meter clears not recorded; Grand Fish Cup not built	rule	TRUE	changelog.html:556, 559, 1207	kept
+481	Event quest list all year; Event Campaigns screen packs	rule	TRUE	changelog.html:736	kept
+482	Two lanes; MezFes, Raviente, Sky Corridor, Road vote, caravan rankings always on	rule	TRUE	changelog.html:728	kept
+483	Up to 2,048 event quests	rule	TRUE	changelog.html:695, 702; AGENTS.md 5 Nov (event quest cap 2048)	kept
+488	Conquests: Shantien, Disufiroa, Fatalis, Crimson Fatalis	name	TRUE	data/monsters/index.json names	kept
+490	Conquest event off; ZZ client unlocks every level	rule	TRUE	changelog.html (4 Nov conquest), events ledger: Conquest・Shiten Quests Lv1-Lv9999 offered	kept
+495	Hunting Road: floors, branches, no items, RdP shop	rule	TRUE	data/sources/road-shop-0..8.json (RdP)	kept
+497	H.Road/Sky Corridor counter > Hunting Road; open and solo Road	menu	TRUE	dev/quest-where.md; AGENTS.md 16 Nov (solo and party Road)	kept
+502	Road builder, vote every two weeks, !road / !road solo, place prizes; Zenith materials GR 300	rule	TRUE	changelog.html:360 (Zenith materials GR 300); road pages	kept
+507	Sky Corridor: Tower weapons, Courage/Glittering/Divine Gems, sigils, medals	name	TRUE	data/item-ids.json 11159 'Courage gem', 11160 Glittering Gem, 11161 Divine Gem	kept
+509	Tower: Tower Info, Contribution Rewards, Daily Rewards, medal exchange	menu	TRUE	dev/quest-where.md Tower rows (Contribution Rewards, Daily Rewards, Guild Medal Exchange)	kept
+510	Tower medals from daily rewards, tasks, present box	source	TRUE	changelog.html:829 (present box)	kept
+514	Open since 3 Nov, districts 5/13/15 Nov; Test land endless climb, Tower Rank 51/100/200	rule	TRUE	changelog.html:829; dev/quest-where.md (pre18: 2nd-4th District need Tower Rank 51/100/200)	kept
+521	Sigils at the Cat Smith; up to three	npc	CANT-VERIFY	page claim	kept
+525	Premium Sigil tickets are gacha prizes	source	CANT-VERIFY	gacha sources not re-read row by row	kept
+530	Hiden needs Weapon Souls, Ribbons, Merits	rule	CANT-VERIFY	page claim	kept
+536	Road shop Hiden decos 25,000 / True 50,000 RdP at GR 500; cuffs Basic 10,000 GR 50, G 20,000 GR 150, top 35,000 GR 350	shop	TRUE	data/sources/road-shop-4.json (25000/50000 GR500, 35000 GR350), road-shop-8.json (Basic 10000 GR50, G 20000 GR150); brief rule 4	kept
+541	GSR to 999; Extreme Style; Ribbons	rule	CANT-VERIFY	page claim	kept
+543	Guild Master moves your weapons to GSR	npc	CANT-VERIFY	Guild Master in guide-terms (high); the move itself not traced	kept
+547	30 GRP quests need GR 900 since 24 Nov; examples	quest	TRUE	changelog.html:243; qfind 54593 Massive GRP! [Silver Rathalos] and 40241 Gz & GRP Bonanza! [Shogun Ceanataur] offered, G Rank Quest Counter > Event Quests, GR 900	linked (2) with menu path
+547	Four built-in GRP quests need the next client patch	quest	TRUE	changelog.html:243 (GRP Bonanza ★1, ★3, ★7, Lots of GRP); qfind 23328 offered (Special Quests > Superior Quests), 23352/23374/23375 unconfirmed	linked (4), 'may not be offered' added
+552	Zenith skills incl. Skill Slots Up; Zenith weapons and cuffs	name	TRUE	data/item-ids.json Skill Slots Up PZ1-PZ26 decorations	kept
+554	Zenith ★1 GR 300 ... ★4 GR 900	rule	TRUE	changelog.html:360	kept
+558	Old Zenith quests show the old GR until the next patch	rule	TRUE	changelog.html:360 (92 older Zenith quests)	kept
+563	Transcend opens at HR3	rule	CANT-VERIFY	transcend page	kept
+570	Musou: G★7/G★8, Musou Zinogre, materials, Armor Boost series, GR 1/100/800	quest	TRUE	data/quests.json form Musou: 27 offered (G★7 GR 1, G★8 GR 100, G★8 GR 800 Bogabadorumu, 2 G★1 Road quests); 56131 Deafening Thunderstorm (Zinogre, G★8 GR 100) at G Rank Quest Counter > Event Quests	linked (1), count and menu path added
+572	Musou and Upper Shiten clears: 2% Prayer Stone	rule	TRUE	hvmhfz_re docs/prayer-stones-fix.md:3,6,95 (deployed 2026-11-17 16:17 UTC; 2 % on Musou and Upper Shiten clears; 55918 gives none)	kept
+577	HR Exotic HR 100; G Exotic G★8 source of G Finesse	rule	TRUE	changelog.html:368	kept
+579	G Exotic GR 100 (G counter > G Hunter Quests > G Exotic Quests); no GR 800 gate; 1-4 Exotic Gem/Bone/Shl since 17 Nov	rule	TRUE	changelog.html:359, 368; dev/quest-where.md G Hunter Quests > ※ G Exotic Quests; items 11980, 11981, 12401	kept
+586	Site tools list (quest builder, set builder, tower weapons, road builder, account page, look-ups)	other	TRUE	the pages exist (dev/check-links.py passes)	kept
+221	At-a-glance link texts 'daily rewards', 'gifts', 'gacha'	name	DIFFERENT	check-guide-names: our system names Daily Rewards, Gifts, Gacha (capitals)	rewritten
+198	Sidebar: Zenith (GR200+), Progression: HR1 to Zenith	menu	FALSE	dev/shell/pages.json label Zenith (GR300+); every other guide page sidebar	rewritten to match
+302	'Airou Plaza' (cat shops; house doors)	name	DIFFERENT	hvmhfz_re docs/my-tore.md:15 'Felyne Square'; house ledger (client label)	rewritten -> Felyne Square (2 places)

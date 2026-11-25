@@ -1,0 +1,192 @@
+line	claim	kind	verdict	evidence	action
+189	Four events: Conquests, Hunter's Road, Festival, Diva Defense	rule	DIFFERENT	changelog 4 Nov: Conquest off; AGENTS.md calendar: main lane Festival/Diva, side lane Cup/VS	rewritten (note, no dates)
+190	Event Cycle Equipment from all four events	rule	CANT-VERIFY	materials come from Road shop/festival prizes/Combiner (existing note); series not in data	note added
+192	Weapons Law (Light), Sage (Wind), Truth (Darkness)	name	CANT-VERIFY	nfind: no weapon series Law/Sage/Truth in data/weapons; check Weapons page by search	note added
+195	Armour/decoration series Ninfa, Uiru, Anju	name	CANT-VERIFY	nfind: no match in data	note added
+192	40 of each event material per item	rule	CANT-VERIFY	recipes not looked up; in game: Blacksmith recipe of one series piece	kept
+200	Ancient Super Steel, 20x a week for 20 Road stages	name	DIFFERENT	item 11286 is Ancient Super Stl; Road shop sells it for 15 RdP (line below)	rewritten
+201	Dragon Crystal Stone drops across conquest tiers	name	DIFFERENT	item 11283 is Dragon Crystal Gem; Combiner makes it from 2 of one of the other three	rewritten
+202	Ceremony Lyrics 80x for 3,000 Souls	source	DIFFERENT	festa_prizes live: personal 5 at 25 Souls, guild 10 at 500 Souls (item 11284)	kept (note below)
+203	Mirage Powder 80x for 20,000 Score in Prayer Chapter	source	DIFFERENT	Road shop sells Mirage Powder 15 RdP; Diva rewards are our own lists (diva_rewards)	kept (note below)
+206	Road shop 15 RdP each Ancient Super Stl/Mirage Powder/Ceremony Lyrics, Special tab GR1	shop	TRUE	earlier pass (guide-frontier-hunter-rank ledger/data/sources road shop); not re-queried	kept
+206	Combiner: 2 of one of three -> Dragon Crystal Gem	source	TRUE	earlier pass; existing text says not tested in game	kept
+207	Conquests: G Rank, Lv1/200/1000/9999	menu	TRUE	quest-where: G Rank Quest Counter > Conquest・Shiten Quests > Lv1/Lv200/Lv1000/Lv9999 offered (ids 23585-23588)	linked
+208	Quest 23585 Realm Beyond the Azure Sky (Shantien Lv1)	quest	TRUE	qfind 23585 offered G Rank Quest Counter > Conquest・Shiten Quests > Lv1	linked
+208	Shiten Quests 23602, 23603	quest	TRUE	quest-where: Conquest・Shiten Quests > Shiten Quests / Adv Shiten Quests offered	linked
+209	Scheduled Quests changed weekly after maintenance (Taiwan)	rule	DIFFERENT	original-server text; ours: events.html and General Quest Counter > Event Quests (130 type-18 rows live)	rewritten
+211	Event notes: two lanes, no dates	rule	TRUE	AGENTS.md calendar two lanes; changelog 4 Nov Conquest off	rewritten (dates removed)
+216	Festival three weeks Sign Up/Soul Collection/Winners' Week, Red and Blue	rule	DIFFERENT	festa_festivals live: sign-up 2 weeks, souls 3 weeks, our run differs; teams from festa.md	rewritten (Soul Gathering)
+221	Guild leader or sub-leader signs up the guild, random colour, shown by name	rule	CANT-VERIFY	festa.md: vice-leader sign-up fixed; colour display client-side; in game: sign up a guild at the festival counter	kept
+223	Hunting Competition Fri-Mon, Official Hunting Assembly	menu	DIFFERENT	event_quests quest_type 7 has 0 rows; quest-where tree: Hunting Competition (type 7)	rewritten (not offered)
+227	Solo quest gives Pugi Cuff and Partnya Decoration materials, unique helmet tickets	source	DIFFERENT	no Hunting Competition quests here	kept (marked)
+228	Guild quest boosts team Souls, sub-objectives	rule	DIFFERENT	no Hunting Competition quests here	kept (marked)
+230	Preset armour, Origin weapon, 3 decorations	rule	DIFFERENT	no Hunting Competition quests here	kept (marked)
+233	Placing table 1st-10th 5,000/50,000 etc.	rule	DIFFERENT	no competition quests here	kept (marked original servers)
+242	Souls earned in Soul Gathering week, 500 carried at a time	rule	CANT-VERIFY	festa.md souls; in game: finish a festival quest, read the Soul message	kept
+246	Hand in Souls at the counter near the blacksmith; auto-contribution in Options > Other	menu	CANT-VERIFY	festa.md handlers exist; location/label: in game open Options > Other, look for the Soul setting	rewritten (no nickname)
+247	Cappuccino rank kick under 5,000 Souls	rule	DIFFERENT	no ranks in festa tables (festa.md)	rewritten
+250	Monsters give 1-17 Souls, capture/slay	rule	CANT-VERIFY	client festa monster table not queried; in game: hunt and read the Soul message	kept
+250	Monster Soul counts on festival website	other	DIFFERENT	no such page on our site	rewritten
+252	Soul Gems 20/40/80, one used per quest	rule	CANT-VERIFY	items 7468-7470 (20/40/80 Soul Gem), 7465-7467 G versions; in game: carry one on a festival quest	kept
+256	Road sells 5x of each gem weekly	shop	DIFFERENT	existing note: Road shop has none (data/sources road shop)	rewritten
+257	Diva gives 25x 80-Soul gems	source	DIFFERENT	diva_rewards/diva shop have none (existing note)	rewritten
+258	Festival gives 5x of each gem for 700 Souls	source	DIFFERENT	festa_prizes: 5 each at 1/100/250 Souls (items 7468-7470)	rewritten
+260	5 each of three gems at 1,100,250 Souls	source	TRUE	psql festa_prizes: personal 1 Soul 7468 x5, 100 Souls 7469 x5, 250 Souls 7470 x5	linked (source page)
+261	3,425 free Souls a festival	other	DIFFERENT	sources not all present here	kept (follows the line above)
+263	Diva Song after Chapter 3 gives +1/+2 Souls	rule	CANT-VERIFY	client; in game: finish Diva questline chapter 3, listen to a song, check Soul message	kept
+267	Soul Gathering sigil +1 Soul; White Monoblos B recipe 5%	source	CANT-VERIFY	sigil recipe not queried	kept
+270	Secret quests three a day, team windows, Chinese messages	quest	CANT-VERIFY	event_quests has no Secret group (types 8,9,13,16,18,22,24,26,28,31,38,39,40,43,46-51); in game: during Soul Gathering week look in General Quest Counter > Event Quests	rewritten (Chinese example removed)
+275	Daily quest 200 Souls for 2 Mosswine	quest	TRUE	qfind 53034 offered: General Quest Counter > Daily Quests; objective Slay 2 Mosswine	linked
+275	Purple Hunter Pass needed, 7 given after 1 Soul	source	CANT-VERIFY	no such item in data/items; our 1-Soul prize is Soul Gems; in game: take the daily quest after contributing	note added
+277	Partnya takes Souls on a quest; board in Halk and Partnya area of house	rule	CANT-VERIFY	house.md exists; in game: House > Halk and Partnya area, heart icon, Partnya board	kept (name Partnya)
+282	Personal targets give rewards	source	TRUE	festa_prizes personal: 36 rows (Soul Gems 1/100/250, Ceremony Lyrics 25, Festi Ticket/Festival Gem 50/300/650, Rituals 150-1000)	rewritten
+284	Ancient Hunting Books as festival reward	source	DIFFERENT	not in festa_prizes	rewritten
+285	Guild targets, 700 points -> items for 700 Souls	source	DIFFERENT	festa_prizes guild: 24 rows, e.g. 10 Ceremony Lyrics at 500	rewritten
+287	Personal multipliers 3.0x/2.0x/1.0x/0.5x	rule	CANT-VERIFY	final reward tier code in festa.md section on FP tier not reproduced; in game: finish a festival and read Festival Points	kept (marked)
+299	Festival Points from guild Souls, spent on a huge range	shop	DIFFERENT	existing note: Fest Pt Exchange has no entries here	rewritten
+303	120,000 Festival Points max	rule	CANT-VERIFY	client; in game: festival counter	kept
+304	Winners Quests for winning team, from Cat NPC	menu	DIFFERENT	quest-where: General Quest Counter > Winners Quests, Winner Quest Counter > Winners Quests (28 type-8 rows)	rewritten
+305	Winners quest 50534	quest	TRUE	qfind 50534 offered: General Quest Counter > Winners Quests	linked
+305	Winners quest 54425 (G★1)	quest	TRUE	qfind 54425 offered Winners Quests	linked
+305	Winners quest 55369 (G★2)	quest	TRUE	qfind 55369 offered Winners Quests	linked
+305	Winners quest 55767 (Zenith★1)	quest	TRUE	qfind 55767 offered Winners Quests	linked
+310	Festival Ticket takes you on HR1-6 Winners Quests	name	TRUE	item 1520 Festi Ticket; prizes tier1-2	rewritten (name)
+311	Festival Gem takes you on G Rank Winners Quests	name	TRUE	item 7011 Festival Gem; prizes tier 3	kept
+311	Festival Coins/Emblems from G quests	name	DIFFERENT	item 7010 Festival Emblem; no Festival Coin item	note added
+314	50 Festival Gems + 5 Emblems per decoration	shop	CANT-VERIFY	recipes not looked up; in game: Blacksmith recipe	kept (marked guide)
+315	Zenith Festival Weapons: 5 key material + 10 Festival Marks, 4 Gems per Winners Zenith quest	source	CANT-VERIFY	no item Festival Mark in data; Festa Fever Zenith quests exist (e.g. 55767)	note added
+316	Final upgrade 2 rare + 3 semi-rare + 3 GR800 breaks	rule	CANT-VERIFY	not looked up	kept
+317	Festival notes: prizes 36/24, gift after, no dates	rule	TRUE	festa_prizes counts personal 36 guild 24; AGENTS.md	rewritten (dates removed)
+322	Diva Defense: choose Prayer Gem, Song Spheres, locked until noon	rule	TRUE	diva-defense.md: gem pick phase 0, days run 12:00 JST to 12:00 JST	rewritten (Japan time)
+324	Menu entries Choose Prayer Gem ... Notices	menu	CANT-VERIFY	diva-defense.md: Diva menu has 9 rows; labels not matched; in game: open the Diva Defense menu	note added
+326	Prayer Gem table: Ringing, Elegance, Heavy Thunder ... Blunt	name	CANT-VERIFY	gem names are client/server text in English (existing note); not in data/items (the 14 Prayer Gem items are different); in game: Choose Prayer Gem screen	kept
+329	Up to 4 colours of Prayer Gem, changes each cycle	rule	TRUE	diva-defense.md section The gems: up to 4	kept
+330	Choose colour once a day at guild girl; change after 12:00	npc	CANT-VERIFY	diva-defense.md: counter row/menu; in game: find the Diva Defense NPC in town and note where she stands	rewritten (no nickname)
+349	Total prayer levels cannot exceed 7	rule	CANT-VERIFY	server code not read here; in game: Diva Defense > View Prayer Totals	kept
+353	Spheres by rank multipliers HR1-2 0.125x ... GR 2.0x	rule	CANT-VERIFY	client table; in game: post-quest Sphere screen	kept
+385	Premium doubles score	rule	CANT-VERIFY	every account has Premium here; in game: compare score	note added
+372	Prayer Jewel Ringing 200 spheres	name	TRUE	items 13405/13406/13407: Prayer Jwl (Ring)/(Music)/(Sound); sphere values not queried	rewritten (name)
+377	Break gives 20 Spheres base, +0.10x each later break	rule	CANT-VERIFY	client; in game: break parts on a Diva quest	kept
+379	Bonus tasks 1.2x-5.0x, return-time based, 4-hour windows	rule	CANT-VERIFY	diva_bonus_quests table exists; in game: View Bonus Tasks	kept
+383	Claim 33 items at a time	rule	CANT-VERIFY	client; in game: claim with more than 33 items	kept
+385	Reward menu entries	menu	CANT-VERIFY	diva-defense.md: counter reward menu (Rankings, RewardTypeMenuSelect, ExchangeList); labels not matched	note added
+390	Milestone rewards: Mirage Powder, Prayer Weapon materials, GCP	source	DIFFERENT	diva_rewards are our own lists (hv-diva-defense note)	kept (note)
+392	Daily rewards on every character, 7 rewards	rule	CANT-VERIFY	diva_rewards_taken table; in game: claim on two characters	kept
+394	Personal/Guild ranking and GCP rewards	rule	CANT-VERIFY	diva-defense.md reward lists; GCP rewards never worked per guide	kept
+401	Song of War: activate prayers, 60 minutes	rule	CANT-VERIFY	diva-defense.md week 2 is guild week; reward song effect untested (existing note)	kept
+406	Two kinds of GCP store; Pink Store NPC; Convert Items	shop	DIFFERENT	data/sources: gcp-item-shop 135, diva-shop 29, diva-limited-shop 8, diva-coin-shop 12; not Prayer-Gem-level based	rewritten
+407	GCP shop has 135 Diva rows	shop	TRUE	data/sources/gcp-item-shop.json 135 rows	linked (source page)
+407	Convert tickets to GCP	shop	DIFFERENT	existing note: only Guild Ticket and Goushu Ticket	rewritten
+408	GCP skills use no slots, one type queued, level 0 always	rule	CANT-VERIFY	client has Exchange (Skills) list; shop data has no skill rows; in game: Diva GCP skill exchange	note added
+418	GCP skill table 30/60 GCP	shop	CANT-VERIFY	no skill rows in shop_items type 8	rewritten (names: Hi-Speed Gathering, Recovery Items Up, Recovery Speed +2, Evade Distance Up)
+429	Diva note: 3-week cycles, our lists	rule	TRUE	diva-defense.md; AGENTS.md	rewritten (dates removed)
+434	Premium during Song of War gives buffs	rule	CANT-VERIFY	every account Premium here; client	kept
+436	Prayer Weapons: Level 50 G Rank-like, Chinese names with 歌	name	DIFFERENT	Chinese removed; weapon names not matched to data	rewritten
+438	Prayer Pebbles traded at Yellow NPC: Trade Items > Diva Defense	menu	DIFFERENT	shop 8/5 Pebbles 1,000 GCP; scenario_counter category 7 has 14 rows (Prayer Gem trades); Series Quest Counter > Diva tab (prayer-gems.md)	rewritten
+441	Prayer Weapon stat table (27 weapons)	other	CANT-VERIFY	not matched to data/weapons; check on Weapons pages	note added
+475	8 more weapons not tradable	other	CANT-VERIFY	as above	kept
+489	Prayer buff list: True Raw +45, doubled element etc.	rule	CANT-VERIFY	client; reward-song effects untested (existing note)	kept
+505	Active Feature per weapon table	rule	CANT-VERIFY	client; not tested	kept
+521	Guild Interception runs alongside Song of War, huntathon quests	quest	TRUE	quest-where: Diva Defense > Int. Quests / Split Route Quests / G Rank Int. Quests (types 46,47,48; 73+5+1 live rows)	linked
+523	Felyne runs the event next to Blue NPC	npc	CANT-VERIFY	guide-terms Felyne Attendant medium; in game: Diva Defense counter in town	rewritten
+528	Int. quests listed on Diva Defense screen	quest	TRUE	qfind 58050 offered Diva Defense > G Rank Int. Quests; Int. Quests	linked
+528	Low Rank interception	quest	TRUE	qfind 58064 offered	linked
+528	HC Support quest	quest	TRUE	qfind 58011 offered	linked
+528	Branching path to treasure quests	quest	TRUE	qfind 58079/58080 offered Diva Defense > Split Route Quests	linked
+528	G Rank Int. quests	quest	TRUE	qfind 58056 offered	linked
+529	Hire Hunting Troop NPC with GCP once per day	rule	CANT-VERIFY	diva-defense.md counter rows; in game: Interception NPCs option	kept
+535	Keoaruboru: Akantor-like, fire, 35,000 points to trigger	quest	TRUE	qfind 58043 offered Diva Defense > G Rank Int. Quests; 58073 not offered	linked; trigger CANT-VERIFY
+537	Urgent Keoaruboru quest 58073	quest	TRUE	qfind 58073 not-offered	linked (not offered)
+538	Breaks: claws, head, back, tail	rule	TRUE	item drops list Part Break and Tail Carve for Keoaruboru	kept
+540	Rush skill up to 130 attack	name	CANT-VERIFY	skill name exists as Rush; value not queried	kept
+544	Charcoal Hide 18x, 32% body, 10-12% breaks	name	TRUE	items/14055: body 32%, break 12%	rewritten (name)
+545	Large Bone 32% carve, 8-10% breaks	name	TRUE	items/14056 32%, 8%	rewritten (name)
+546	Large Gem 16% body 8% tail	name	TRUE	items/14058 16%, 8%	rewritten (name)
+547	Super Tail 80% tail	name	TRUE	items/14059 80%	rewritten (name)
+548	Boiling Fluid 20%/12%	name	TRUE	items/14057 20%, 12%	rewritten (name)
+549	Burning Horn 80% horn break	name	TRUE	items/14060 80%	rewritten (name)
+550	Large Claw 80% claw break	name	TRUE	items/14061 80%	rewritten (name)
+551	Shaped Shell 80% back break	name	TRUE	items/14062 80%	rewritten (name)
+555	Notes (1-3 each, up to 5 earned) buy event items	source	DIFFERENT	our Diva coin exchange has 12 other items (data/sources/diva-coin-shop)	note added
+561	Interception multipliers 1.1/1.3/1.5/1.2	rule	CANT-VERIFY	client; not tested	kept
+571	Guild Hall facilities from hexes, boat cat, Note Exchange	npc	DIFFERENT	diva-defense.md D7: guild map simple; no hex facilities known	kept (note)
+580	Note trade items list (decorations, transmog tickets, Z armour materials)	shop	DIFFERENT	not in our shop data; Diva coin exchange is 12 other items	kept (note)
+605	Katante etc. Z armour material	name	TRUE	item 13974 Katante Mat, 14299 Ricante Mat are in GCP item shop at 200 GCP	note added
+612	Ticket trade list (Gunlance Coolant ...)	shop	CANT-VERIFY	not in our shop data	kept
+629	Interception note	rule	TRUE	diva-coin-shop rows 12	rewritten (dates removed)
+634	Caravan Area (Pallone) near town entrance, HR 17	menu	TRUE	qfind 62105 rankNeed HR 17; Pallone Caravan place in data	kept
+637	Talk to Kashira near bonfire for a Caravan Gem	npc	CANT-VERIFY	name not in data; in game: Caravan area, NPC at the bonfire	rewritten
+638	Caravan quests: star ratings, urgent, CP	menu	TRUE	quest-where tree: Caravan Quest Counter > ★ Rank Quests, G Rank Quests (screens)	note added
+641	Balloon NPC sells items for CP	shop	CANT-VERIFY	existing note: server side not built; in game: Caravan quest balloon	kept
+642	Caravan note	rule	TRUE	changelog events entry: scores at quest end; rankings	rewritten (dates removed)
+647	Caravan Gem at HR2; equip via Change Equipment > Equip Hunter Gem Skills, 3 skills 10 points	menu	CANT-VERIFY	client; in game: box > Change Equipment	kept
+650	Eight colours, daily 12:00 roll	rule	CANT-VERIFY	client; server clock Japan time	rewritten
+653	Hunter Gem information board next to blacksmith	npc	CANT-VERIFY	in game: town next to the blacksmith	kept
+657	Gem Smith: Change Gem Colour > Rainbow costs 40,000 CP, free on Premium	shop	CANT-VERIFY	existing note: gem smith not checked; in game: Caravan Hut Gem Smith	kept
+662	Colour Charm from Combination NPC for 40 Medals	source	CANT-VERIFY	no Colour Charm item in data (nfind); in game: Combination NPC	kept
+663	Elder 100,000 CP buff 1.5x	shop	CANT-VERIFY	not checked	kept
+664	Hunter Soul sigil +1 colour, Monoblos B/Yian Garuga	source	CANT-VERIFY	recipe not queried	kept
+668	Iron Ore delivery quest	quest	TRUE	qfind 21070 offered: General Quest Counter > Hunter Quests > ★1 (Desert Explore)	linked
+668	Iron Ore not sold for GCP/Festival Points here	shop	TRUE	gcp-item-shop rows contain no Iron Ore; festa exchange empty	kept
+669	Gem rank table 259 ... 8484 points, upgrade costs 100,000-3,000,000 CP, GR700/800	rule	CANT-VERIFY	client; in game: Gem Smith > Upgrade Gem	kept
+687	7-star Caravan unlocks Limited Routes; days from 12:00	rule	CANT-VERIFY	client; schedule not checked	rewritten
+692	Fatalis Trio 100,000-150,000 CP, Premium 3x	rule	CANT-VERIFY	Premium on every account (existing note); not played	kept
+700	Raviente gives 140,000-200,000 CP per kill	rule	CANT-VERIFY	not played	kept
+706	Caravan skills passive/active, 10 points	rule	CANT-VERIFY	client; existing note	kept
+716	Skill table (about 45 rows: costs, effects, unlock points)	name	CANT-VERIFY	skill names consistent with client Caravan skill list; values from guide, not re-derived	kept
+761	Skill pages 1-7	other	CANT-VERIFY	as above	kept
+778	Maintain Gem every 30 days free	menu	CANT-VERIFY	existing note: not checked	kept
+784	Lottery Coins +100 PP	shop	CANT-VERIFY	existing note: coins not sold; Trial Coin G weekly	kept
+791	Pioneering System customisable map, Lv5 flag = 50,000 Raviente points	rule	DIFFERENT	existing note: server sends no Pioneering gathering; quest-where: Pioneer Quests is a screen	kept (note)
+797	Pioneer quests menu	menu	TRUE	quest-where tree: Caravan Quests > Pioneer Quests, Pioneers List (screens)	rewritten
+798	Migration 150,000 CP option	shop	CANT-VERIFY	not checked	kept
+807	Pioneering materials table	name	CANT-VERIFY	names mostly in data; Day Herb checked item 181	rewritten (Day Herb)
+836	Raviente per server, groups of 4, 8 at HR2/HR5, 32 G	rule	TRUE	existing note: limits 8/32 here	kept
+837	Pointer to Foxxy's guide	other	DIFFERENT	outside guide	removed
+840	Start Ravientes at Kieru; menu Join/Start/Quit, Claim Rewards...	npc	CANT-VERIFY	raviente.md counter game mode 0x88, NPC not named; in game: Caravan area Raviente NPC	kept
+851	HR2 Raviente quest 62105	quest	TRUE	qfind 62105 offered Caravan Quest Counter > Great Slaying Quests; rankNeed HR 17	linked
+851	HR5 (Violent) Raviente quest 62101	quest	TRUE	qfind 62101 offered; raviente-berserk-text.md: White -> Violent	linked
+851	Berserk Raviente 54753	quest	TRUE	qfind 54753 offered Great Slaying Quests	linked
+851	Small Berserk 55796	quest	TRUE	qfind 55796 offered	linked
+851	Extreme Raviente 55596; 54751 named Extreme!Solitude	quest	TRUE	live DB event_quests: 55596 type 50 (Extreme), 54751 type 40 (Berserk) despite its name; both offered Caravan Quest Counter > Great Slaying Quests	linked (lead fixed: 54751 was linked as Extreme)
+851	Support quest 54756	quest	TRUE	qfind 54756 offered	linked
+851	Extreme support quest 55602	quest	TRUE	qfind 55602 offered	linked
+851	Small Berserk support quest 55802	quest	TRUE	qfind 55802 offered	linked
+852	Sign up: clock 12 to 9, icons	rule	CANT-VERIFY	existing note: start with !ravi start; in game: post a Raviente	kept
+858	Players needed HR2 4-8, HR5 4-8, G 24-32	rule	TRUE	existing note: games starts at 4 for regular/violent, 24 for Berserk/Extreme	kept
+865	Recruitment; Chinese terms table; pasting tips	other	DIFFERENT	original-server chat; our players write English	rewritten (Chinese removed)
+867	Contribution points table: phase 50,000, break 20,000, support break 30,000/40,000	rule	CANT-VERIFY	client; not played	kept
+883	Tiers 1,000,000+ ... under 10,000	rule	CANT-VERIFY	raviente reward claim rows 2158/12306 x2-450 by points (data/sources/raviente.json)	kept
+884	Bond Points from Hunter Festival	rule	DIFFERENT	quest-where: Winner Quest Counter > Use Bond Points > Great Slaying; festival prizes here do not give Bond Points	note added
+888	Hunting phase up to three hours	rule	CANT-VERIFY	not played	kept
+891	9 phases, 3 islands; join quest posted at Caravan Quest Counter	menu	TRUE	quest-where Great Slaying Quests	rewritten
+900	Balloon items Corrosive Knife, Cat Balloon Flute, Power Ball, Power Needle...	name	TRUE	items 4696, 4393; aliases in nfind	rewritten (names)
+911	Support abilities: Resurrection, Destruction, Sedation, Poison, Recovery	rule	CANT-VERIFY	raviente.md; not played	kept
+923	@dice chat command	other	CANT-VERIFY	not checked; in game: type @dice	kept
+932	Premium doubles gems	rule	CANT-VERIFY	existing note not tested	kept
+934	Raviente note: !ravi start, damage multiplier	rule	TRUE	Erupe 4495146 handlers_cast_binary.go:335 case "start"; changelog Raviente entries	rewritten (dates removed)
+940	Hiden expected; Hammer/LBG/DS/HH meta	other	OPINION	guide meta advice	kept
+949	Support teams recruit first; 24-32 players	rule	DIFFERENT	existing note: start with !ravi start	kept
+953	Roles Supporters/Hunters	other	OPINION	guide advice	kept
+955	Rage lowers weakness 10	rule	CANT-VERIFY	raviente-fight.md not re-read	kept
+963	Host ads; +40000 message	other	DIFFERENT	Chinese shorthand removed	rewritten
+971	4 breaks: Shell, Tail, Head, Crystal, +20,000 each	rule	CANT-VERIFY	not played	kept
+988	Weapon conduct per weapon	other	OPINION	guide advice	kept
+1004	Phase notes 1-5	other	CANT-VERIFY	client fight; not played	kept
+1019	At least 500,000 points, 130,000 per run	rule	CANT-VERIFY	not played	kept
+1030	Carving phase 3 minutes, post within 24 hours	rule	CANT-VERIFY	not played	kept
+1037	Carving skills table	name	TRUE	skills: Hi-Speed Gathering exists	rewritten (name)
+1041	Great Luck on Yukumo set via Lottery Frontier Points	source	CANT-VERIFY	not checked	kept
+1045	Collect rewards at Raviente NPC	menu	CANT-VERIFY	in game: Raviente NPC menu Claim Rewards	kept
+1046	Carving-phase breaks +60,000 points	rule	CANT-VERIFY	not played	kept
+1048	Berserk note	rule	TRUE	existing note, !ravi start	kept
+1053	Raviente weapon tree HR2 -> HR5 -> G, locked	rule	CANT-VERIFY	raviente-weapons.md not re-read	kept
+1056	Gem points g and Gg; Blacksmith > Weapon Crafting > Evolution Upgrades	menu	CANT-VERIFY	in game: Blacksmith	kept (g/Gg in allow list)
+1074	Evolution grind totals table	rule	CANT-VERIFY	guide figures; not re-derived	kept
+1085	Three Raviente armours upgrade to GX, Determination	name	TRUE	skill Determination exists in data	kept
+1089	400 Berserk runs per set; 1 month	other	OPINION	guide estimate; 24-player wait removed by !ravi start	rewritten (hours)
+1094	Determination: Attack +100, Affinity +100% ...	name	CANT-VERIFY	skill data not compared in detail	kept
+1103	Extreme Raviente Z2.3, 450 Gg gems, Z100	rule	CANT-VERIFY	client; reward odds not checked (existing note)	kept
+1112	Extreme armour skill table	name	CANT-VERIFY	armour data not compared	kept
+1128	Extreme decoration skills	name	CANT-VERIFY	not compared	kept
+1145	Extreme: 32 players, G Rank, !ravi start; Test land GR 900	rule	TRUE	existing note; AGENTS.md	kept
