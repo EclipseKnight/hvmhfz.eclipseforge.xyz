@@ -1,0 +1,100 @@
+line	claim	kind	verdict	evidence	action
+7	14 weapon types listed	name	TRUE	data/weapons/*.json: 14 files with names SnS, DS, GS, LS, Hammer, HH, Lance, GL, Tonfa, SAF, MS, LBG, HBG, Bow	kept
+189	Tonfa and Switch Axe F only at G Rank	rule	TRUE	guide-frontier-g-rank-start.html:374 exotic text; client class table has both	kept
+189	Switch Axe F unlocks at G Rank	rule	CANT-VERIFY	no client/data source	kept
+189	Tonfa comes with Extreme Style since 10th Anniversary Update	rule	CANT-VERIFY	guide-frontier-g-rank.html:524 says so; not tested on Hunsterverse; pac tip "Clear Chapter 8 and get to know the Tonfas!"	rewritten (attributed to the guide)
+189	weapon database link /weapons.html	other	TRUE	weapons.html exists; check-links ok	linked (was: per-weapon guide pages that do not exist)
+194	Raw multipliers SnS 1.4, DS 1.4, GS/LS 4.8, Hammer/HH 5.2, Lance/GL 2.3, Tonfa 1.8, SAF/MS 5.4, bowguns/Bow 1.2	rule	TRUE	hvmhfz_re docs/weapons.md:184 class table x100: 140,140,480,480,520,520,230,230,180,540,540,120	kept
+216	Blacksmith asks Partner or yourself when making equipment	npc	TRUE	pac: 'Craft Player Armor, Weapons etc...' / 'Craft Partner Armor, Weapons etc...'	kept
+216	Partner takes your place on screen when crafting for them	other	CANT-VERIFY	no data	kept
+217	Smithy menu: Create/Upgrade Weapon, Create/Upgrade Armor, Create/Insert/Remove/Destroy Deco, Create Cuff, sigil entries	menu	TRUE	pac 0x1eed82 list: Create Weapon, Upgrade Weapon, Create Armor, Upgrade Armor, Create Deco, Insert Deco, Remove Deco, Destroy Deco, Create Cuff, Create Sigil, Insert Sigil, Brand Sigil, Remove Sigil	rewritten (was: four parts Weapons, Armour, Decorations, Pugi Cuffs)
+221	Weapons families menu entries	menu	TRUE	pac strings: Gou Weapons, G Suprem Weapons, G Rank Weapons, Level GR Weapons, Exotic Weapons, Zenith Weapons, Premium Weapons, Tower Weapons	rewritten (guide's Standard/Upgrade/Raviente rows are not client labels)
+222	Premium Weapons sub-menu entries	menu	TRUE	pac strings: Package Weapon, Kit Weapon, Gacha Weapon, NetCafe Weapon, Long Play Weapon, Promotional Weapon, Exotic Weapon	rewritten
+217	(tree nesting of the Smithy rows)	menu	CANT-VERIFY	pac gives labels, not the parent/child tree; hvmhfz_re armor-builder.md:236 only gates	note added (see report)
+225	Premium kit weapons came from the Item Mall, entries lead nowhere	source	TRUE	AGENTS.md what's live: no Item Mall; hv-note kept	kept
+233	Standard weapon family description	name	OPINION	Fist's classification	kept
+235	SP weapon: +10 true raw, +20% affinity on HR5+ quests	rule	OPINION	client mechanic, original guide; no data file	kept
+237	HC weapon family	rule	OPINION	Fist's judgement	kept
+239	Master's Mark weapons give Weapon Handling free	rule	TRUE	pac: \"Master's Weapon Required\"; skill 'Weapon Handling' in data/skills/index.json	kept
+241	Evolution weapons: 300 levels, three tiers, hundreds of hours	rule	OPINION	Fist's estimate; Test land cuts costs (below)	kept
+243	Melee evolution tool: Power Crystals 1.2x, carry 30	rule	CANT-VERIFY	item Power Crystal G id 8059 exists; effect/carry limit not in data	rewritten (name only)
+244	LBG Acid shots, +10 weakness 30 s, carry 5	name	TRUE	data/items: Acid S 5116, Fire/Water/Thunder/Ice/Dragon Acid S 5117-5121 (effect text not verified)	rewritten (item name)
+245	HBG Bomb Shots, carry 5	rule	CANT-VERIFY	no data for effect	kept
+246	Bow Impact Coatings: Impact hitbox, KO, carry 30	name	TRUE	data/items id 2212 Impact Coating; effect not in data	kept
+248	Test land cuts evolution level costs to about 1/50	rule	TRUE	hvmhfz_re docs/weapon-progression-client.md step 1a: cost / 50, at least 1 (v1.32-pre12, not live)	note added
+250	Gou weapon: attack grows with Gou armour pieces	rule	OPINION	client mechanic; see Gou boosts	kept
+252	Gou melee gain ESP at full HP and stamina	rule	CANT-VERIFY	no data; 'ESP' is not a client label	kept
+253	Gou LBG have Super Rapid Fire	name	TRUE	pac: 'Super Rapid Fire', 'Rapid Fire'; guide said Ultra Rapid Fire	rewritten
+254	Gou HBG Heat Cannon	name	TRUE	pac: 'Heat Cannon'; item 13608 Heat Cannon	kept
+255	Gou bows use Explosive Coatings	name	TRUE	data/items 1579 Explosive Coating; pac 'Blast Coatings can be used'	rewritten (was Bomb Coatings)
+258	Heavenly Storm weapon: sharpness +1 with 2 pieces	rule	OPINION	client mechanic; pac 'Melee Weapons get additonal Weapon Sharpness Level +1.'	kept
+259	Supremacy, G Supremacy weapon = same as Heavenly Storm, higher stats	rule	OPINION	Fist's classification; Smithy shows Gou Weapons and G Suprem Weapons	kept
+263	Burst and Origin give a skill when equipped (Vampirism, Weakness Exploit, Evade Distance)	name	TRUE	data/skills: Vampirism, Weakness Exploit, Evade Distance (guide said Vamprism/Exploit Weakness)	rewritten
+268	G Rank weapons: sigils, levels to Lv50	rule	TRUE	pac: 'Sigils are exclusive items for G Rank weapons'; 'G Lv50 Weapon Possessed'	kept
+270	G Finesse: faster sheathing + Movement Speed +1, upgrade from G8	name	TRUE	data/skills: Movement Speed UP+1; pac 'Guts + Eating / Movement Speed / Weapon Handling'	rewritten (skill name)
+272	Tower weapon: customisable, Sky Corridor materials, decorations give skills with no slot	rule	TRUE	tower-weapons.html: 'Tower Decoration slots'; pac 'Tower Weapons'	linked
+274	Exotic weapons: HR5 start (GR for SAF/Tonfa), 2 or 1 upgrades, G50 stats, free fast eating	rule	OPINION	guide-frontier-g-rank-start.html:374 same text	rewritten (Quick Eating name dropped: no such skill; data has Speed Eating)
+274	G Exotic quests at GR 100: G Rank Quest Counter > G Hunter Quests > G Exotic Quests	quest	TRUE	python3 /tmp/gsb/q.py --id 23493: offered, GR 100, that path; 17 offered G Exotic quests	linked
+274	Each G Exotic clear gives 1 to 4 Exotic Gem, Exotic Bone or Exotic Shl	source	TRUE	changelog.html 17 Nov 2026; items Exotic Gem/Bone/Shl exist	kept
+276	Prayer weapon: Diva Defense reward, boost list (+45 raw, x2 element ...)	rule	CANT-VERIFY	no data here; owned by events page; Diva Defense is live	kept
+288	Zenith weapons open GR200 originally; Hunsterverse tiers at GR 300/500/700/900, menu opens GR 200	rule	TRUE	brief (Zenith tiers); armor-builder.md:236 Zenith menu GR >= 200	kept
+288	Zenith skill Thunder Clad Up exists	name	TRUE	tower sigil 'Thunder Clad Up Sigil' (data/skills/index.json id 14620)	kept
+295	Gou boosts: +15 attack, +2% status/element per piece, max +80/+10%/+10%	rule	OPINION	Fist's numbers, client mechanic; not in data/	kept
+296	2+ pieces: Sharpness Level Up, Critical Distance Up +0.3x, Power Coating Up +0.1x	name	TRUE	pac: 'Critical Distance UP', 'Power Coating Up'	rewritten (Power Coatings -> Power Coating)
+302	effects only on Gou, Supremacy or G Rank quests	rule	OPINION	client mechanic	kept
+304	Origin armour +20 attack, +3% status/element, max +110/+15%/+15%	rule	OPINION	Fist's numbers	kept
+316	Elements Fire, Thunder, Dragon, Water, Ice	name	TRUE	data/weapons element column	kept
+317	Status: Sleep, Poison, Paralysis, Blast	name	TRUE	data/weapons status column has Blast, Poison, Paralysis, Sleep	rewritten (Blast added)
+318	Property Defense	name	TRUE	pac 'Defense'	rewritten (was Defense +)
+325	Combination elements and their make-up (Light, Blaze, Tensho, L. Rod, Okiko, B. Flame, C. Demon, Dark, Music, Sound, Win	name	TRUE	labels: data/weapons element column + pac: Blaze, Light, L. Rod, Tensho, Okiko, B. Flame, Music, Dark, C. Demon, Wind, Sound, B. Zero, E. Roar; percentages OPINION (Fist)	rewritten (Tenshou, Lightning Rod, Black Flame, Crimson Demon, Burning Zero, Emperor's Roar -> client labels)
+340	combination elements deal both elements	rule	OPINION	Fist's description	kept
+348	8 sharpness levels red to cyan; blue+ adds 10% affinity	rule	TRUE	docs/weapons.md:185 sharpness bars 8 u16 (red..sky); +10% affinity OPINION	kept
+354	Weapon length labels	name	TRUE	pac: Medium, Short, Very Short, Long, Very Long	rewritten (Normal -> Medium)
+355	Gunlance shot types Normal, Spread, Long	name	TRUE	pac: '[Normal] Shells', '[Spread] Shells', '[Long] Shells'	kept
+356	Sword crystal types	name	TRUE	items 1887-1896 Bomb/Power/Poison/Para/Sleep/Fire/Water/Thunder/Ice/Dragon S.Crystal	rewritten (Explosive -> Bomb, duplicate Ice -> Water)
+357	GR200 crystals Inferno, Tsunami, Storm, Glacial, Elder D.	name	TRUE	items 8063-8067	rewritten (item names)
+362	crystals need a skill; 3 tiers; apply with R2+R3 / Shift+Minus / Vita touchpad	rule	OPINION	controls from the original guide	kept
+363	GR200 crystals: buy for GCP at GR200 (original)	shop	DIFFERENT	data/sources/road-shop-0.json: items 8063-8067 at 5 RdP (gate 8); GCP shop = Diva rows only	rewritten (Pink store removed)
+363	Hunting Road shop Basic tab sells them at 5 RdP	shop	TRUE	data/sources/road-shop-0.json items 8063-8067 price 5	kept
+372	Reload speed labels	name	CANT-VERIFY	pac has 'Reload Speed' only; Very Slow..Very Fast from the guide	kept
+374	Ammo types list	name	TRUE	pac: Norm S., Pierce S., Pellet S., Crag S., Cluster S., Rec S., Super Rapid Fire	rewritten (Ultra -> Super Rapid Fire)
+378	Critical Distance mechanics and bowgun/bow distance tables	rule	OPINION	Fist's measured values	kept
+409	Arc shot types	name	TRUE	pac: Arc [Wide], [Narrow], [Bomb], [Slicing] (guide: Wide/Narrow Pellet Rain, Explosive Shell, Cutting Rain)	kept
+411	Bow coatings Power, Crit, Poison, Para, Sleep	name	TRUE	items 137-140 Power/Poison/Para/Sleep Coating; 'Crit' not found	rewritten (Paralysis -> Para)
+417	Coating modifiers Power 1.5, Sleep/Para/Poison/Impact 1.4, Explosive 1.0	rule	OPINION	Fist's numbers; guide's own quick-reference disagrees on Explosive (1.4)	kept
+422	Explosive Coating item name	name	TRUE	data/items 1579	rewritten (Bomb Coating)
+427	bow sweet-spot table (Pierce, Rapid, Scatter, Rising Shot)	rule	OPINION	Fist's measurements	kept
+453	Active Feature is a daily buff from noon to noon	name	TRUE	hvmhfz_re data/translations/mhfpac.tsv: 'Featured Weapon' (client label)	rewritten (client name added)
+457	Active Feature effects per weapon type	rule	OPINION	client buff values; hv-note says they are the client's	kept
+472	Hunsterverse: all 14 weapon types featured every day	rule	CANT-VERIFY	no data in repo; check in game: Featured Weapon bar in town	kept
+477	HR5 unlocks Heaven Style, Storm Style Urgent; Tonfa/SAF rules	rule	OPINION	pac: Earth/Heaven/Storm/Extreme Style labels; unlock rules from guide, see hunter-rank page	kept
+489	Extreme Style at GR1	rule	TRUE	weapon-progression-client.md 1d: client byte 1 live (900 only on Test land)	kept
+495	Hunting Horn song effect names (client list)	name	TRUE	pac song labels: Movement Speed Increased, Attack Boost, Further Attack Boost, Defense Boost, Health Boost, Wind Pressure Reduction/Negated/Immunity, Stamina Use Negated, Health Recovery, Earplug, Sharpness Recovery ...	rewritten (guide wording -> client labels)
+523	Song effects with no client label found: Cold/Heat Invalid, Stun/Paralysis Immunity, Quake Res, Clairvoyance, No Flinchi	name	CANT-VERIFY	not in pac text we have	note added in page; in-game check: play each song in the Hunting Horn song list
+528	Song durations and multipliers	rule	OPINION	Fist's table; its column headings are missing (page note says so)	kept
+576	Sigils only for G Rank weapons, crafted at the Blacksmith Cat	npc	TRUE	pac: 'Sigil Production will be available to the options of the Blacksmith Cat'	rewritten (Cat Smith -> Blacksmith Cat)
+577	Sigil slots, up to three sigils, stacking	rule	OPINION	guide; image	kept
+578	Sigil names are the client's list labels	name	TRUE	pac sigil label list (Attack, Elemental, Flying Wyvern ... Aid, Spoilt, Exp Expert, Raw Bow Boost, Length Up ...)	note added
+589	Health sigil Sleeping	name	TRUE	pac 'Sleeping'	kept
+600	Offensive sigils: Attack, Elemental, Affinity, species (Flying Wyvern .. Minion), Hot, Cold, Morning, Night, seasons, Mo	name	TRUE	pac list: Attack, Elemental, Status Attack, Affinity, Stun Value, Flying Wyvern, ..., Minion, Hot, Cold, Morning, Night, Breeding Season, Warm Season, Cold Season, Monday..Sunday, Unity	rewritten (X Slayer, Attack Adjustment, Attribute Value -> client labels)
+612	Morning/Night/day sigils follow Taiwan time	rule	CANT-VERIFY	which clock our server uses unknown (hv-note says not checked); in-game check: equip Morning sigil, see raw change at server hour	kept
+619	Raw Bow Boost / Raw SnS Boost formulas	name	TRUE	pac labels Raw Bow Boost, Raw SnS Boost; formulas OPINION (Fist)	rewritten (Strengthen ... Raw)
+629	Weapon Up sigils +1/+15, one roll active	rule	OPINION	Fist	kept (Unlimited Mode nickname removed)
+638	Helper sigil = Aid: non-G hunters +50 defense	name	TRUE	pac 'Aid'; effect OPINION	rewritten
+642	Blademaster sigils (Tech Boost / Tech Change per weapon, motion values)	name	TRUE	pac T.Boost (SnS)..., (SnS) Slide, (GS) Upswing ... labels exist; motion values data/weapons moves	kept (explained as T.Boost/T.Change in intro)
+661	Long Sword / Lance Draw Strength sigil	name	TRUE	pac Unsheath (LS), Unsheath (Lance)	kept
+686	Length Up sigils lose fixed 25 true raw (35/35/120/120/58/130 shown)	name	TRUE	pac 'Length UP Sigil ... slightly reduce attack'; (SnS) Length, (Lance) Length; numbers OPINION	rewritten (Radiant Blue nickname removed)
+699	Note Change 1-3 sigils and colours	name	TRUE	pac Note Change 1, 2, 3; Note 1 [White]..	kept
+702	Shelling Change sigil (Normal, Spread, Long)	name	TRUE	pac 'Shelling Change'	rewritten
+711	Rapid Fire Add / Super Rapid Fire Add / Disable Rapid sigils per ammo	name	TRUE	pac Rapid Fire Add, Ult.R Fire Add, Disable Rapid, Rapid Norm LV1 ...	rewritten (Immunity -> Disable Rapid); Super Rapid Fire Add -> Ult.R Fire Add (pac sigil label)
+714	Heat Cannon Add sigil	name	TRUE	pac 'Heat Cannon Add'	kept
+718	Arc Shot Change sigil	name	TRUE	pac 'Arc Shot Change'	kept
+728	Status Attack and Stun Value sigils (1.1x, max 1.815x)	name	TRUE	pac Status Attack, Stun Value; numbers OPINION	kept
+737	Items/map sigils: Omnivore, Ballista Saver, Balloon, Decoy, Dowsing, Carving Division	name	TRUE	pac: Omnivore, Ballista Saver, Balloon, Decoy, Dowsing, Carving Division	rewritten (Balloon's Friend -> Balloon)
+750	Rewards sigils Hunter Soul, Soul Collection, Money Expert, Exp Expert	name	TRUE	pac Hunter Soul, Soul Collection, Money Expert, Exp Expert	rewritten (Experience Expert)
+761	Misc sigils Manager, Gu-ku's Friend, Halk's Friend, Cat Breeder, Spoilt, Sonic Bomb Range, Rarity Change	name	TRUE	pac Manager, Guuku's Friend (owner: Gu-ku), Halk's Friend, Cat Breeder, Spoilt, Sonic Bomb Range, Rarity Change	rewritten (Daddy's Influence -> Spoilt)
+767	Unsheathed Movement Speed sigil	name	CANT-VERIFY	pac has 'Unsheathd Walk' (probably the same); not confirmed	kept
+773	Zenith sigils: durations 15 s + value, cooldown 120 s - value, element/attack formulas	rule	OPINION	Fist's formulas	kept
+787	Zenith sigil names	name	TRUE	pac Zenith list: Fire Res..Dragon Res, Healing, Heroics, Attack, Element, Move Speed	rewritten
+797	Area of Effect sigil formulas and dome colours	rule	OPINION	Fist's formulas	kept
+813	(credit) page derived from Fist's guide	other	TRUE	credit kept	kept

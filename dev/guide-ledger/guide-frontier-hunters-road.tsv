@@ -1,0 +1,130 @@
+line	claim	kind	verdict	evidence	action
+188	Road replaced the Tower/Sky Corridor (original servers); both open here	other	DIFFERENT	changelog 3 Nov 2026 Sky Corridor open; docs/tower-npc.md: counter type 16 has Tower and Hunting Road	rewritten
+189	Start at H.Road/Sky Corridor counter: Hunting Road > Hunting Road Quests	menu	TRUE	dev/quest-where.md H.Road/Sky Corridor; guide-terms.tsv rows 60,120	kept
+189	Road is always available	rule	TRUE	pac help: 'Not a periodic event: open all the time'	kept
+189	Need GR 1 or higher, no items allowed	rule	TRUE	pac help 'Accepting/Joining: GR 1 or higher, No items allowed'	rewritten (GR 1 added)
+189	Start at Fort Ruins; Hunter's Road Felyne swaps Gm for items, picks destination	npc	TRUE	pac help 'Hunter's Road Felyne ... Fort Ruins ... pick a destination and swap items using Gm'	rewritten (was: area like Guanzorumu)
+189	Area is very like Guanzorumu's arena	other	CANT-VERIFY	data/map-ids.json has Guanzorumu's arena; look not checked	kept
+191	Monsters tuned to about normal G Rank	rule	CANT-VERIFY	not in our files; Road monsters are our own per-Road design (hv note)	note added (original servers' figures)
+195	Attack/health multipliers by floor (1.00 to 2.50x, 1.00 to 1.33x)	rule	CANT-VERIFY	original servers' table; not in our data; our Roads are player-designed	note added
+201	Choices include normal G, GHC, Exotic, Zenith, Burst, Origin; mostly random	rule	CANT-VERIFY	depends on each Road (road-data.html); not checked	kept
+201	Monsters give Gm and Road Points (RdP)	name	TRUE	pac help 'Road Points (RdP)'; 'Gm (Gems)'	rewritten (was Hunt Points)
+202	Bonus quests (Shakalaka slaying) fewer points, give Tower Medals, easier	rule	CANT-VERIFY	pac help 'Bonus Stage: easier monsters, earns a Guild Pin Medal'; Shakalaka not in help	kept
+204	A Target pops up with next monster's name after choosing a branch	other	CANT-VERIFY	pac help: scene introduces the target monster	kept
+205	Hunsterverse Road: player-designed, vote every two weeks, !road, prizes	rule	TRUE	road.html, road-vote.html, guide-roads.html; changelog	kept
+210	Gm store: spend Gm on utility items; start Gm plus stage bonus; no limit	shop	TRUE	pac help 'About Gm (Gems)': Potions, ammo, Bottles; no limit; leftover Gm to RdP	rewritten
+210	Gm store works like the Tower's	shop	OPINION	author comparison	kept
+213	No carves on the Road; run gives Road Points (RdP) by hunt and progress	rule	TRUE	pac help 'No Items on the Results Screen ... convert to Road Points'	rewritten (was Hunt P)
+213	Spend RdP at the Point Exchange (Road shop) on items from most monsters	shop	TRUE	pac help 'Exchange Points'; guide-terms.tsv row 122; data/sources/road-shop-*.json (2000+ rows)	rewritten
+214	Some rows need floors in one Road quest or monsters slain; solo progress does not count	rule	TRUE	pac help 'Exchange Points: kills of certain monsters in a period, or best progress'; shop gate field	rewritten
+214	Original: 40 steps unlocked all monster items; here floors up to 100	rule	DIFFERENT	road-shop tab 6/7/8 gates (11,20,30,40,80 / 10,20,50 / 20..100) via rt_road.py	kept
+215	Store sells most items incl. G Rank items and Zenith materials	shop	TRUE	road-shop-6 (GR1+ tab, GR 300 Zenith rows)	rewritten
+216	Weekly limits (White Fatalis mats, Tower Zenith Sigil mats) on original servers	rule	DIFFERENT	hv-road-stores note: server does not count past purchases; tab name Weekly Limited	rewritten
+217	HC/GHC carves are cheap here; cook in Gu-ku for Souls and Ribbons	rule	CANT-VERIFY	see Hiden table; cooking yields not in our files	kept
+218	Shop has nine tabs: Basic Items, Gatherables, HR1-4 Mats, HR5-7 Mats, Decorations, Other Items, GR1+ Items, Weekly Limited, Super Special	menu	TRUE	mhfpac.bin offset 1991131 (0x1e6ddb): 'Basic Items|Gatherables|HR1-4 Mats|HR5-7 Misc|Decorations|Other Items|GR1+ Items|HR5-7 Mats|Weekly Limited|Super Special'; data/sources/road-shop-0..8 titles	rewritten
+218	Sources page calls the tabs Basic/Limited/Special	other	TRUE	data/sources/road-shop-*.json names	kept
+219	Tower weapon gems: Courage gem 30, Divine Gem 40, Glittering Gem 50 each	shop	TRUE	rt_road.py: tab 2 builtin rows 11159=30, 11161=40, 11160=50 (bundles of 10 at 300/400/500)	rewritten (gem names)
+219	Tower Equipment Mats 300 to 500 P	shop	TRUE	rt_road.py: Singed/Argent/Blood Stained/Blackened Book 300; Sealed/Binding/Cleansing Book, Twr SAF Books 500	kept
+219	HR1-2 HC carves 500; HR3-4 1,000; HR5-7 1,500	shop	TRUE	rt_road.py: Daora Desolate Shl 500, Akantor Death Scl 1000, Akan. Corrupt Claw 1500, Dyura Ice Shell 1500	kept
+219	GHC carves 2,000; G3% 1,000; G1% 4,000; Origin Low% 1,500	shop	TRUE	rt_road.py tab 6: Malleable Hide 2000, Akantor Ripclaw 4000, Akantor Myeloid 1000; Origin 1500 not individually checked	kept
+219	GR1 Gem to GR7 Gem 50 P	shop	TRUE	rt_road.py tab 6: GR1..GR7 Gem 50	rewritten (was Common G Break items)
+235	Hv note: Road shop nine tabs, 2000+ rows, GR gates, round 3 prices, floor gates	shop	TRUE	rt_road.py; brief rule 4 round 3 (Raviente GX 20/30/40k, Extreme 60k GR 900; cuffs GR 50/150/350; Hiden decos GR 500 25k/50k)	kept
+235	Armor Spheres 10 to 90 RdP	shop	TRUE	rt_road.py tab 1: Armor Sphere 10 .. Absolute Armor Sphere 90	kept
+235	PA Cuff Tkt G 500; Upper Shiten Key/Lock GR 800; Hiden Stamps GR 999	shop	TRUE	rt_road.py tab 8: PA Cuff Tkt G 500 GR1; Upper Shiten Key/Lock 1000 GR800; Hiden Stamp 2500 GR999	kept
+235	Road Respec, SP Book, Cost Book 10 RdP each, Super Special tab	shop	TRUE	rt_road.py tab 8: ids 14445, 14443, 14444 at 10	kept
+240	Road is one long session; consumables limited to what you buy	rule	TRUE	pac help: no items allowed; Gm swaps	kept
+241	Attack multipliers rise with depth, health about the same	rule	CANT-VERIFY	original servers' table; not tested on our Roads	kept
+243	Fixed stages: White Fatalis every 10 steps; Zenith Star 1-4 at 12/14/16/18	quest	CANT-VERIFY	original Road; our Roads change with each vote (hv-road-basics); not checked	note added
+248	Zenith tier names Zenith ★1..★4	name	TRUE	data/quests.json category 'Zenith ★N' (names checker)	rewritten (was ★1 Zenith)
+255	50 stages unlocked everything (original); here top rows need 100	rule	DIFFERENT	rt_road.py gates up to 100	kept
+259	Transcend: +800 Defense, +100 res, Super Armor, speed, 113% raw, 200% element, blight immune	rule	TRUE	values match transcend page level 10 tables; blight immunity not in our data (CANT-VERIFY)	kept
+259	Transcend usable on the Road	rule	CANT-VERIFY	pac help lists 'Hunting Road Quests (Special Slay)' among quests where Transcend cannot be used	note added
+261	Guild Cooking food lasts until you leave the Road	rule	CANT-VERIFY	needs play	kept
+263	Diva Buff gives Divine Protection	rule	CANT-VERIFY	skill tree Protection has Divine Protection (data/skills); Diva Song link not checked	kept
+265	Fluffy sheep pugi halves stamina use; watermelon status-attack pugi	other	CANT-VERIFY	Guild Pugi (pugi) types not in our files	kept
+267	Caravan skills: Bonus Art, Recovery Items Up, KO Technique, Unstable Defender, Perfect Defense, Weapon Art	name	CANT-VERIFY	data/skills has Recovery Items Up; the others are caravan skills, checked on the Events page	kept
+269	Skills at quest start last the whole run; food and Diva Song last all run	rule	CANT-VERIFY	needs play	kept
+272	Vampirism, Vigorous, All Res Up, Hunger Negated, Divine Protection, Wide-Area +3, Encourage names	name	TRUE	data/skills/index.json trees: Vampirism, Vigorous, All Res Up, Hunger Negated, Protection (Divine Protection), Wide-Area+3, Encourage	kept
+275	Vigorous 1.15x attack above 100 Health; Vigorous Up +100/+50 True Raw	rule	CANT-VERIFY	skill text in client; not tested	kept
+275	Vigorous Up on Zenith Midogaron's Waist, Tower Weapon Zenith Sigils, Vigorous Up Cuff	source	CANT-VERIFY	data has Vigorous Up Sigil (14637), Vigorous Up SZ/PZ1-8 (armour); Midogaron piece and Cuff not matched	kept
+277	All Res: +20 guild food, 5 per element base, SR +19, Road +15 = 49 extra	rule	TRUE	Road All Res Lv3 +15 (hvmhfz_re data/road_skills.tsv 0x22); other terms not checked	kept
+283	Encourage Up gives Stamina Recovery (Large) and Peerless	name	CANT-VERIFY	Peerless in data/skills (tree Stamina); Stamina Recovery (Large) not in data	kept
+288	Lance has best survivability; Guard Up, Reflect Up, Guard+2, Reflect+3	name	TRUE	data/skills: Guard+2, Reflect+3 trees; Guard Up Sigil 14632, Reflect Up Sigil 14635	kept
+288	Lance is the best weapon for a deep run	rule	OPINION	author's judgement	kept
+295	Tower Medals come only from Bonus Stages (original); client calls them Guild Pin Medals	name	DIFFERENT	pac help 'Bonus Stage ... earns a Guild Pin Medal'; data/currencies.json tower-medal (Sky Corridor sources here)	rewritten
+295	A Bonus Stage gives 5 medals; about 5% of stages at most	rule	CANT-VERIFY	original servers; not in our files	kept
+295	Rewards Up skill adds Guild Medals (1 level, SP 5, rank 1)	rule	TRUE	road_skills.tsv 0x23	note added
+296	Bonus Stage shown in pink text; easy monsters; few points	rule	TRUE	pac help 'destination appears in a different text colour ... easier target monsters'	rewritten
+298	Spend Tower Medals at H.Road/Sky Corridor counter > Tower > Guild Medal Exchange (54 rows)	shop	TRUE	docs/tower-npc.md 4.1 (0x9f, mhfdat +0x910, 54 rows); data/currencies.json tower-medal	note added
+302	Medal store rows (Festival Gem 8/16/30, Diva Defense, Interception, tickets, gestures 150, Halk food 100 etc)	shop	CANT-VERIFY	exchange rows are in mhfdat +0x910, not decoded in our files; gestures 150, Tower Catalyst 500, Soul Gems 8-30 match docs/bounties.md:190	note added
+320	Sigil Removal Solution 1 medal	shop	FALSE	item 7282 Sigil Catalyst is not in the 54-row exchange (docs/bounties.md:183, mhfdat +0x948); no road shop row	removed
+321	Tower Catalyst 500 medals (removes Tower Decoration)	shop	TRUE	item 11165 Tower Catalyst; docs/bounties.md:190 'Tower Catalyst 500'	rewritten (was Tower Decoration Removal Solution)
+323	HRP Tkt (4k) 1 medal; White/Purple Conquest Ticket; Halk Potion	name	TRUE	data/item-ids.json: 5392 HRP Tkt (4k), 7279 Wht Conquest Tkt, 7280 Purp.Conquest Tkt, 4952 Halk Potion	rewritten (names)
+330	Hv note: medals also from Sky Corridor daily rewards, present box, campaigns, gachas	source	TRUE	data/currencies.json tower-medal ways; data/sources item 11167	kept
+335	White Fatalis can be a Road target, appears every 10 floors	quest	CANT-VERIFY	not in quest data (Road quests are server-built); docs/road-rebalance.md:227 says the White Fatalis quest is a stub	note added
+335	Original: kill 3 White Fatalis a week, spend 19,800 P for all materials	rule	DIFFERENT	rt_road.py tab 6: ten White Fatalis mats at 500 each, no weekly limit here	rewritten
+336	White Fatalis fight: Ultra Roar, Ultra Quake, Ultra Wind Pressure; one-shots	rule	CANT-VERIFY	game mechanics, needs play	kept
+337	Stand by Fatalis' legs to avoid the roar one-shot	rule	CANT-VERIFY	needs play	kept
+338	Weekly limit on White Fatalis materials (original)	rule	DIFFERENT	hv-white-fatalis note; shop qty fields	rewritten
+339	White Fatalis weapons Emperor's Roar element Thunder 150%, Dragon 50%	rule	CANT-VERIFY	data/weapons not checked for this element	kept
+340	Hv note: ten White Fatalis mats 500 RdP (GR1+ tab), GX decorations 30,000 (Super Special)	shop	TRUE	rt_road.py: tab 6 ten rows 500 GR1; tab 8 Wht Fatalis BM/GN GX1-5 30000 GR1	kept
+345	Road skills are one system with the old Tower skills; menu Hunting Road Skills; equip to get effect	menu	TRUE	hvmhfz_re docs/tower.md part 43, 12; pac help 'be sure to equip it'	rewritten
+347	Road Rank (RR) from Road Rank Points; Road SP (RSP) from rank; Cost cap	name	TRUE	pac help 'Road Rank / Road Rank Pts', 'Road Skill cost cap'	rewritten (was Hunt SP, Hunt Rank)
+351	Lv5 Attack costs 15 Cost, 12 SP, Road Rank 100	rule	DIFFERENT	hvmhfz_re data/road_skills_update.tsv Attack cost 5/10/10/15/15 (was 15/25/25/35/35); road_skills.tsv SP 1,1,2,3,5 rank 1,1,1,50,100	rewritten (35 to 15)
+352	Old Tower points convert to Road points	rule	CANT-VERIFY	tower.md 12: one pool, no conversion documented; original servers	rewritten (removed claim; added SP/Cost/Respec books and 13 old Tower skills)
+352	SP Book, Cost Book, Road Respec at 10 RdP; 13 old Tower skills restored	shop	TRUE	rt_road.py ids 14443-14445; changelog 3 Nov 18:38 '13 old tower skills back'	note added
+357	Attack Lv1-5: +10/+20/+30/+50/+70; SP 1,1,2,3,5; rank 1,1,1,50,100	rule	TRUE	data/road_skills.tsv 0x1 ints 10..70	kept
+357	Attack Cost 15/25/25/35/35	rule	DIFFERENT	data/road_skills_update.tsv (5/10/10/15/15)	rewritten
+362	Defense +30/50/80/110/150, Cost 5,5,5,10,10	rule	TRUE	road_skills.tsv 0x2; road_skills_update.tsv 'unchanged'	rewritten (Defence to Defense)
+367	Recovery (Health Recovery) 3 [3] rank 1, 7 [10] rank 25	rule	TRUE	road_skills.tsv 0x5 prices 3,7 ranks 1,25	rewritten (name Recovery)
+369	Fire/Water/Ice/Thunder/Dragon Res +10/+15/+25, SP 1,3,5 ranks 1,20,50	rule	TRUE	road_skills.tsv 0x17-0x1b	kept
+372	All Res +5/+10/+15, SP 3,5,7, rank 20,50,100	rule	TRUE	road_skills.tsv 0x22	kept
+381	Starting Gm Up: +1000, +3000 Gm	rule	FALSE	road_skills.tsv 0x1c ints 1000,2000	rewritten (+2000 here)
+383	Rd P Up: +10/+20/+40% RdP, SP 1,2,4, rank 1,50,100	rule	TRUE	road_skills.tsv 0x1d ints 110,120,140	rewritten (name Rd P Up)
+386	Bonus Encounter: more Bonus Stages, stacks with other players	rule	TRUE	road_skills.tsv 0x21 'Stacks if multiple Hunters have it'; SP 3,5 rank 20,50	rewritten (name)
+388	Revival Sage: +1 revival, SP 10, rank 200; not with Last Stand	rule	TRUE	road_skills.tsv 0x1e	rewritten (name; note added)
+389	Advancement Guru: +20 at floor 6, +10 every 5th floor, max 60/80/100	rule	CANT-VERIFY	road_skills.tsv 0x1f only says 'by Road floor'; SP 2,4,8 rank 20,50,100 TRUE	rewritten (name)
+392	Last Stand: Affinity +30/+50%, Attack +80/+120, one faint; SP 5,7 rank 50,100	rule	TRUE	road_skills.tsv 0x20 ints 80,120 floats 0.3,0.5	kept
+397	Duremudira-only skills have Cost 0	rule	FALSE	road_skills_update.tsv Care 10/20/30, Pharmacist 5/10/15, Virus Res. 5/10/20, Frost Res. 5/10/20, Guardian Offense/Defense 5/10/10/15/15	rewritten (Cost column added)
+401	Care, Pharmacist, Virus Res., Frost Res., Guardian Offense/Defense SP and ranks	rule	TRUE	road_skills.tsv 0xe,0xf,0x12,0x13,0x14,0x16 prices and ranks	rewritten (client names)
+404	Pharmacist: +1/+2/+4 revival items; Duremudira fights only	rule	TRUE	road_skills.tsv 0xf (tower mode)	kept
+413	Guardian Offense +50/75/100/150/200 true raw	rule	TRUE	road_skills.tsv 0x13 ints	kept
+425	Hv note Road skills: menu same, costs differ, 13 old skills; client names	rule	TRUE	road_skills.tsv/update.tsv; changelog 3 Nov	rewritten (was Unknown)
+432	Tower weapons: template with low stats, Light and Dark kinds	rule	CANT-VERIFY	client crafting; tower.md 7 (63 Tower weapons)	kept
+434	Light: 2 sigil + 1 deco slot; Dark: 1 sigil + 2 deco slots	rule	CANT-VERIFY	guide contradicts itself at line 437; check a weapon in game	kept
+438	Tower Sigils grant Affinity, Status, Elemental, Zenith skills; slots limit; no stacking	rule	CANT-VERIFY	hvmhfz_re data/tower_sigils.tsv not compared	kept
+439	Removing a decoration needs the 500-medal Tower Catalyst (1,000 RdP at the shop here)	shop	TRUE	exchange 500 (bounties.md:190); rt_road.py tab 8 Tower Catalyst 1000	rewritten
+440	Original: all Tower Weapons on sale; here the shop sells gems and books, not weapons	shop	DIFFERENT	rt_road.py (no Tower weapon rows)	rewritten
+440	Craft Tower Weapons at the Cat with a backpack in the blacksmith	npc	CANT-VERIFY	guide-terms.tsv 'Tower Gear Felyne' (tower-npc.md kind 0x27); backpack cat unconfirmed	kept
+444	Craft Weapon needs a Tower book (Road shop 300/500 RdP) or Entrusted Secret Text (1,000)	shop	TRUE	rt_road.py; sky-corridor-overview.md 7 (46 need a book, 17 need Entrusted Secret Text)	rewritten
+446	Upgrade Weapon: Gems + SR Weapon Souls; Hardcore SR / Gou souls	source	CANT-VERIFY	tower_upgrade_costs.tsv not compared; soul sources not checked	kept
+448	Change Type uses Pulsating Liquid (1,000 RdP here)	shop	TRUE	item 11162 Pulsating Liquid; rt_road.py tab 2 and 8: 1000	rewritten
+450	Tower Decorations: Duremudira carves, base decorations combine (Sword God +2 etc.)	source	CANT-VERIFY	not checked	kept
+452	Sigils crafted with Ancient Gold Shard	name	TRUE	data/item-ids.json 11163 Ancient Gold Shard; rt_road.py	rewritten (was Ancient Gold Debris)
+455	Weapon simulator: our Tower weapons page	menu	TRUE	tower-weapons.html exists	rewritten (removed Japanese simulator)
+456	Zenith Sigils do not make a Zenith weapon (no Zenith part breaker)	rule	CANT-VERIFY	needs play	kept
+457	Hv note: Tower weapons, Sky Corridor open since 3 Nov, present box, Return to Mezeporta	rule	TRUE	changelog 3 Nov Sky Corridor; sky-present-box.json	rewritten (Ancient Gold Shards)
+463	Tower armour: craft at low rank, upgrade to GX; counts as G Rank armour	rule	CANT-VERIFY	not checked in data/armor	kept
+464	Craft in Special Armour Production under Event Armour at the normal blacksmith	menu	CANT-VERIFY	smithy menu not traced	kept
+466	Tenrou armours: customisable Tower armours; seal table (Muscle Boost etc.)	rule	CANT-VERIFY	no Tenrou entries in our data; client mechanics	kept
+473	Ancient Hope Stone [Orange/Blue/Red/Yellow/Purple] materials	name	TRUE	data/item-ids.json 11465-11469 Anc.HopeStone [Org/Blu/Red/Yel/Pur]; Sky Corridor treasure source	kept
+483	Tenrou armour crafted at the same NPC as Tower Weapons; no Zenith Sigils	npc	CANT-VERIFY	needs play	kept
+490	Duremudira urgent quests may trigger on the Road; posted individually per hunter	quest	CANT-VERIFY	pac help describes 'Emergency Hunt Request' when total Road progress hits a set number (not chance); Duremudira Road quests are not in data/quests.json	kept
+491	Duremudira quest in a single-floor tower; Gm shop; can idle in the hall	quest	CANT-VERIFY	needs play	kept
+494	20 minutes, no carts, lose 60 s per defeat	rule	CANT-VERIFY	needs play	kept
+496	Revival Ball and Revival Drug	name	TRUE	data/item-ids.json Revival Ball, Revival Drug	kept
+499	Carry 2 of each revival item; Pharmacist raises it	rule	TRUE	road_skills.tsv 0xf 'Increases Revival Items by 1/2/4'	kept
+502	Deadly Poison Cure sold at the cat store	name	TRUE	data/item-ids.json Deadly Poison Cure	kept
+503	Freezing only from 2nd district Duremudira; Powerful Frost	rule	TRUE	road_skills.tsv 0x16 Frost Res. 'Powerful Frost'	kept
+505	1st district Duremudira: Tower item pool, title at 1st and 50th kill; two phases 33/66	rule	CANT-VERIFY	monster list has Duremudira (1st); phases/titles not checked	kept
+506	2nd district: Red and Black Fluids low% carves; three phases 20/40/40	rule	CANT-VERIFY	monster list has Duremudira (2nd); drops not checked	kept
+510	Duremudira hitzone table and three images	rule	CANT-VERIFY	original servers' figures; monster data not compared	kept
+526	Hv note: Duremudira game content; Road urgent not checked	rule	CANT-VERIFY	stated in note	kept
+531	Road is an alternative to Hiden grind; 50 floors about 100,000 points	rule	DIFFERENT	hv-hiden-alternative note: our Roads differ; shop sells finished Hiden decos	kept
+534	Points needed table for Souls/Ribbons decorations (8,500 .. 443,500)	rule	CANT-VERIFY	original prices: 8,500 = 17 x 500 etc. consistent with current carve prices (Daora Desolate Shl 500, Akantor Death Scl 1000, Akan. Corrupt Claw 1500, Dyura Ice Shell 1500, Malleable Hide 2000)	kept
+551	Carves that cook to Souls x5 / Ribbons x3	source	CANT-VERIFY	names: items 4320, 4930, 4931, 3724, 9601, 9607, 12820 are HC carves of those monsters (data/items/*.json drops); cooking yields not in our files	rewritten (names: Daora Desolate Shl, Akantor Death Scl, Akan. Corrupt Claw, Monoblos Scute)
+562	Hv note: Road shop sells Hiden decorations 25,000 and True 50,000 from GR 500	shop	TRUE	rt_road.py tab 4 SnS Hiden 25000 GR500	kept
+567	Original: Berserk Raviente materials via Fourth Content Update, weekly limits	other	DIFFERENT	original servers; hv-road-raviente note	rewritten
+572	Raviente decoration tables (547,500 points a week, 20 weeks for Determination)	rule	DIFFERENT	original servers' images; not applicable here	note added
+573	Hv note: Raviente GX decos 20/30/40k RdP, Extreme 60k GR 900; materials 200	shop	TRUE	brief rule 4 round 3; rt_road.py tab 6 Raviente Ruby/Sapphire 1000	kept
+580	Fist credit kept	other	TRUE	unchanged	kept

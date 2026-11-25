@@ -1,0 +1,41 @@
+line	claim	kind	verdict	evidence	action
+187	MHSX2G finds armour sets by skills, piece counts, slots (outside program)	other	OPINION	outside program; name kept (allowlist)	kept
+187	MHSX2G armour names are Japanese, window mostly English	other	CANT-VERIFY	outside program, not run	kept
+187	Published version includes unreleased monsters/event armours: set filters carefully	other	CANT-VERIFY	outside program, not run	kept
+188	Taiwan-only armours have English names in every MHSX2G version	other	FALSE	other-server content, not checkable here	removed (old line)
+188	MHSX2G Z2.3 uses Aug 2018 Japanese data; author hosted a download	other	CANT-VERIFY	no link kept; historical	kept
+189	Hunsterverse has /set-builder.html armour set builder with our names	other	TRUE	set-builder.html exists; check-links ok	kept
+195	Sigil Hunter prints sigil skills as text; not updated; F1 notes	other	CANT-VERIFY	outside program, not run; hv-note says not checked	kept
+195	Sigil Hunter shows Super Rapid Fire but not ammo type	name	TRUE	pac 'Super Rapid Fire' (guide said Ultra Rapid Fire)	rewritten
+196	Sigil Hunter needs Chinese locale, matching font, AutoHotkey, version 20160106	other	CANT-VERIFY	outside program; ahkscript.org is the AutoHotkey site	kept
+202	Ferias/Loxxol userscript features (translate hitbox page, Lv2-49 upgrades, skills, flags)	other	CANT-VERIFY	outside script, not run; names kept (allowlist)	kept
+212	Firefox/Chrome need Tampermonkey; version 1.201700101; ferias.user.js	other	CANT-VERIFY	outside script; Chrome link was a truncated store URL	rewritten (Chrome link -> tampermonkey.net)
+214	Script is for official servers; we do not link the sites	other	TRUE	no link in section	kept
+214	Our monsters.html has hitzones; items.html items	other	TRUE	monsters.html, items.html exist	kept
+221	ABBYY FineReader is a paid OCR program	other	OPINION	outside program; name kept (allowlist)	kept
+222	Capture2Text is free, slightly worse	other	OPINION	outside program; sourceforge link; not fetched	kept
+223	Phone/tablet OCR apps such as Hanping	other	OPINION	outside app; Play Store link looks valid	kept
+225	Our client shows English names	rule	TRUE	dev/guide-terms.tsv labels are English pac strings	kept
+230	Author's Damage Calculator, Hiden Materials Calculator, Item/Decoration/Monster Name Databases	other	CANT-VERIFY	no link kept; none exist on this site	kept
+245	Area maps Jungle, Desert, Great Forest, Swamp, Snowy Mountains, Volcano	name	TRUE	data/map-ids.json base names exist for all six	kept
+257	Tower Base Camp, Tower A, Tower B maps	name	CANT-VERIFY	data/map-ids.json has Ancient Tower 1-3 and Sky Corridor districts, no Tower A/B; in game: open the Sky Corridor and compare area numbers	kept
+263	Forest and Hills, Highlands, Gorge, Tidal Island, Flower Field, Polar Sea, White Lake, Painted Falls maps	name	TRUE	data/map-ids.json bases: all eight exist	kept
+244	Map images show area numbers and gathering points	other	CANT-VERIFY	images from the original guide; not compared with our client	kept
+287	Armour buffs chart per armour family (Origin, G Rank, Exotic, Zenith, ZP)	rule	OPINION	client mechanic, Fist's chart; armour page has the full text	kept
+297	Skill Rank Boost affects some pre-G skills	rule	OPINION	Fist	kept
+301	Damage reduction 10/17/24/27/30% by part count	rule	OPINION	Fist's numbers	kept
+308	Standard armour upgrade path Base, F, FX/FY, HC, HS, G, GF, GX	name	OPINION	client armour suffixes; data/armor names carry them (e.g. SA1, PB1)	kept (Chinese-name remark removed)
+309	U line and S line paths	name	OPINION	Fist	kept
+312	Gou line path Gou, Heavenly Storm, Supremacy, G Supremacy, Burst, Origin	name	OPINION	same tier names as the Weapons page; the client has no label for Heavenly Storm in our text	rewritten (Storm -> Heavenly Storm)
+314	Premium path Base, F, FZ, HC, HS, GS, GP, ZP; GP needs GR1, ZP GR200 materials	rule	CANT-VERIFY	premium kit armour came from the Item Mall (not here); Zenith steps are GR300+ here; in game: Smithy > Premium Armor list	kept
+316	Zenith steps GR200/400/600/800 original, GR300/500/700/900 here	rule	TRUE	brief round: Zenith tiers open GR 300/500/700/900	kept
+320	G Exotic quests open at GR 100	quest	TRUE	python3 /tmp/gsb/q.py --id 23493: offered need GR 100	kept
+326	Raw multipliers per weapon type (SnS 1.4 ... Switch Axe F 5.4, MS 5.4)	rule	TRUE	hvmhfz_re docs/weapons.md:184 class table x100	rewritten (Switch Axe -> Switch Axe F)
+343	Bowguns and Bow 1.2; Weapons page lists Magnet Spike 5.4	rule	TRUE	weapons.md:184: LBG/HBG/Bow 120, MS 540; weapons page now 5.4x	rewritten (stale 1.2x claim)
+346	Explosive Coating modifier 1.4 here vs 1.0 on the Weapons page	name	CANT-VERIFY	item 1579 Explosive Coating exists; the modifier is not in data/; the page keeps both figures as the guide gave them	rewritten (Bomb Coating -> Explosive Coating)
+347	HBG crit distance 2.3x with Origin or Zenith piece (this page) vs Origin only (Weapons page)	rule	CANT-VERIFY	no data; both versions from the guide	kept
+356	10 active skills (11 or 12 at G Rank), hidden skill priority	rule	OPINION	covered on armour page; not in data/	kept
+357	Hybrid skills Sword God+2, Gentle Shot+3, Blazing Majesty+2	name	TRUE	data/skills/index.json: Sword God+2, Gentle Shot+3, Blazing Majesty+2	rewritten (space before +)
+359	Skill Fruits: 30 fruits for 3 Lottery G Coins (original); not sold here	shop	DIFFERENT	hv-note: our gachas (5 Nov) do not sell them; no 'Skill Fruit' in data/skills or items names list	rewritten (price removed)
+360	Muscle Boost and Gou armour types table links	other	TRUE	guide-frontier-armour.html anchors; check-links ok	kept
+369	(credit) Fist's guide as saved Jan 2022	other	TRUE	credit kept	kept

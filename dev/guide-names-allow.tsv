@@ -19,3 +19,15 @@ guide-frontier-basics.html	N Armor materials	an N Points shop row label, not an 
 guide-frontier-basics.html	Triple Strike 1	Magnet Spike move name (data/weapons/magnet-spike.json 'Triple Strike, hit 1')
 guide-frontier-basics.html	Triple Strike 2	Magnet Spike move name (data/weapons/magnet-spike.json)
 guide-frontier-basics.html	Triple Strike 3	Magnet Spike move name (data/weapons/magnet-spike.json)
+guide-frontier-g-rank.html	Vitality +2	skill points on the Vitality tree in a decoration table, not the skill Vitality+2
+guide-frontier-g-rank.html	Issen +2	skill points on the Issen tree in decoration tables, not the skill Issen+2
+guide-frontier-g-rank.html	Strong Attack +2	skill points on the Strong Attack tree in a decoration table
+guide-frontier-g-rank.html	Strong Attack +3	skill points on the Strong Attack tree in a decoration table
+guide-frontier-g-rank.html	Strong Attack +5	skill points on the Strong Attack tree in the Shiusu armour table
+guide-frontier-g-rank.html	Fencing +2	skill points on the Fencing tree in a decoration table, not the skill Fencing+2
+guide-frontier-hunters-road.html	Defense +30	the Defense Road skill's effect (+30 defence) in the skill table, not the armour skill Defense+30
+guide-frontier-hunters-road.html	Virus Res.	the client's Road skill name with its dot; the checker reads the dot as punctuation
+guide-frontier-hunters-road.html	Frost Res.	the client's Road skill name with its dot; the checker reads the dot as punctuation
+guide-frontier-tools.html	Premium	the Premium armour family (HR5) in the armour path table, not the Premium Quests tab
+guide-frontier-transcend.html	Power Ritual	the family name of the three Power Ritual books (Red, Blue, Dark), all listed below it
+guide-frontier-transcend.html	Purity Ritual	the family name of the three Purity Ritual books (Red, Blue, Dark), all listed below it

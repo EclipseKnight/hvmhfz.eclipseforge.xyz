@@ -1,0 +1,204 @@
+line	claim	kind	verdict	evidence	action
+193	Upgrade weapons early; biggest boost	other	OPINION	Fist's advice	kept
+194	G Supremacy ~Lv11, Burst ~Lv30, Origin ~Lv50, G Exotic upgrades ~Lv45/50	rule	OPINION	Fist's comparison; no data	kept
+196	Up to 12 skills early, 16 late; mixed sets	rule	OPINION	Fist	kept
+198	Pugi, Outfit, Departure Facility, G Rank Cuff License cost 30/30/20/60P; 60P from Hunter Guide	shop	CANT-VERIFY	Pugi farm prices not in site data; pac has "Departure Facility"	kept
+199	Premium Outfits not sold here; Premium G cuff tickets are	shop	TRUE	road-shop-8 rows 8330-8332 PA/PB/PC Cuff Tkt G 500 RdP GR1	kept
+200	G Rank gives 60+ Pugi points via Talk; regained over 40 days	rule	CANT-VERIFY	not in data; in game: talk to the Pugi Farm Manager after reaching GR	kept
+200	G Guide item pack (300 points) on official servers	shop	DIFFERENT	official paid pack (rule 3)	removed
+202	Hunter Guide gives sigil tickets	source	CANT-VERIFY	Hunter Guide rewards not in site data	kept
+202	Hypnoc -> Hypnocatrice; A recipe rolls up to +30 attack	name	TRUE	data/monsters/index.json name Hypnocatrice; +30 is Fist (attributed)	rewritten
+202	Three sigils per weapon; ~40 attack ~10% power	rule	OPINION	pac "[3rd Sigil]"; number Fist	kept
+203	G Supremacy/Burst/Origin weapons: deco slots and a skill (Varusaburosu Vampirism)	rule	OPINION	Fist; client weapon data	kept
+206	Note: Premium cuffs/outfits came from Item Mall; gachas do not give them; tickets in Road shop Super Special tab	shop	TRUE	road-shop-8 = Super Special (client label, dev/guide-terms + hunters-road page); gacha-101..107	rewritten (Special -> Super Special tab)
+211	Quest list tabs Favourites/Quest History/Search -> Favorites, Quest History, Quest Search	menu	TRUE	dev/guide-terms.tsv Favorites/Quest History/Quest Search; dev/quest-where.md G Rank Quest Counter	rewritten
+214	Normal Quests -> G Hunter Quests > G★1..G★7 Quests	menu	TRUE	dev/quest-where.md: G Hunter Quests G★7 .. G★1 Quests	rewritten
+214	Defence -150 per star from ★2, -900 at ★7	rule	OPINION	image from guide; not in data	kept
+215	Lower star rating with F/L1/C for fewer rewards	rule	CANT-VERIFY	in game: quest confirm screen, press F	kept
+215	GHC star sets Ribbon type; GR500+ sets Merit type	rule	CANT-VERIFY	not in data; in game: clear a GHC quest at lowered star	kept
+216	Scheduled Quests section	menu	FALSE	not a row in dev/quest-where.md menu tree	rewritten (heading and intro; id kept)
+219	Active Events -> G Rank Quest Counter > Event Quests, always listed	menu	TRUE	dev/quest-where.md (type 28); active_days 0 = always	rewritten
+220	Burst & Origin quests at G Hunter Quests > ※ Burst & Origin Quests; 5 Burst + 4 Origin	quest	TRUE	data/quest-where.json: 23484-23492 offered on that path	linked (5 quests)
+220	Burst/Origin give materials for Gou armour GF/GX	rule	OPINION	Fist; client crafting	kept
+221	G Exotic quests need GR500	rule	DIFFERENT	data/quest-where.json: all 15 offered G★8 Exotic/G Exotic quests need GR 100	rewritten (GR 100)
+221	G Exotic menu path; example Swift Thunder in Great Forest	quest	TRUE	data/quest-where.json 23499 offered, G Hunter Quests > ※ G Exotic Quests	linked
+221	G Finesse from G Exotics only at GR800	rule	DIFFERENT	hv-exotic-and-finesse note: no GR 800 gate in this client	rewritten
+221	Highest Defence reduction; one-shot through Halk Shield	rule	OPINION	Fist	kept
+222	Frontier Quests list with G Break Jewel quests	menu	FALSE	no Frontier Quests row in dev/quest-where.md; 1,763 Frontier-category quests, 12 offered (VS Quest Orders, Winners, Event)	rewritten
+223	Daily Quests at G Rank Quest Counter > Daily Quests	menu	TRUE	dev/quest-where.md (type 30 + list); 32 quests on that path	rewritten
+223	Only one daily whatever the rank	rule	CANT-VERIFY	in game: take an HR daily then try a G daily the same day	kept
+223	Net Cafe check-in sets daily count to 10	rule	CANT-VERIFY	earlier batch; links systems#courses; limit effect not checked (page says so)	kept
+225	Superior Quests at G Rank Quest Counter > Special Quests > Superior Quests	menu	TRUE	data/quest-where.json: 39 quests on that path	rewritten (path added)
+225	Superior Quests give GRP or one GX piece of materials	rule	OPINION	Fist	kept
+227	Urgent Mi Ru cycles in after G quests	quest	CANT-VERIFY	data/quest-where.json: only Mi Ru quest 54586 not-offered; in game: clear G quests, watch for a Mi Ru urgent	rewritten + linked
+229	Burst/Origin needed past G Supremacy	rule	OPINION	Fist	kept
+229	Origin Gem / Origin Blood -> Abyssal Origin Gem (Gureadomosu, Toa Tesukatora) / Abyssal True Blood (Yama Kurai, Voljang)	name	TRUE	data/items/11315.json, 11714.json where: carve from those monsters	rewritten (CJK removed, linked)
+229	5% drop rate	source	CANT-VERIFY	rates not in item data	kept
+231	G Exotics need GR500 (leftover: body vs note)	rule	DIFFERENT	data/quest-where.json rankNeed GR 100 on every offered G Exotic; settled to GR 100	rewritten
+231	Fixed ★8, Defence -1,050; G Finesse sets in Fist doc	rule	OPINION	Fist	kept
+232	Note: 9,152 quest files; offered counts; G Exotic GR 100; GRP quests GR 900	quest	TRUE	dev/quest-where.md counts (1,939 offered); changelog GRP 24 Nov	rewritten (where-to-take now known)
+237	Push one weapon to Lv11 and Lv50 to unlock content	rule	OPINION	Fist	kept
+239	Craft from G Rank option at Blacksmith, Lv1 to Lv50	rule	TRUE	pac: "G Lv50 Weapon Possessed"; weapons page ledger	kept
+240	Lv1-10 at main Blacksmith; bowguns level up	rule	OPINION	Fist	kept
+242	From Lv11 two recipes: 100% and 60%	rule	TRUE	pac: "From Lv11 onwards, the upgrade recipes will become 2"	kept
+243	Weapons start with 2 sigil slots, third at Lv30 with a Conquest gem	rule	CANT-VERIFY	pac has [3rd Sigil]; level not in data	kept
+244	Note: Conquests off, upgrades past Lv30 unchecked	rule	DIFFERENT	data/quest-where.json: 16 Extreme Conquest quests offered (Conquest・Shiten Quests > Lv1..Lv9999); changelog 4 Nov: event off	rewritten
+249	Cat Smith for Gou/Partnyaa gear -> Blacksmith Cat, Sigil Production from G Rank	npc	TRUE	pac: "Sigil Production will be available to the options of the Blacksmith Cat", "When you reach GR, [Sigil Production]"	rewritten
+249	Menu Craft Sigil/Craft Premium Sigil/Insert Sigils/Remove Sigil -> Sigil Production, Brand Sigil, take back	menu	TRUE	pac strings "Sigil Production", "Brand Sigil", "You can also take back a sigil that has been branded."	rewritten
+252	Recipe A 300 Gz common mats, B 500 Gz rarer, ★ 700 Gz G1%	shop	CANT-VERIFY	image shows 300-700 Gz; in game: Blacksmith Cat > Sigil Production	kept
+259	Filler materials do not affect the result	rule	OPINION	Fist; pac "bar on the screen is full, you can make one sigil"	kept
+261	Insert Sigils -> Brand Sigil	menu	TRUE	pac "Brand Sigil"	rewritten
+263	Sigil Catalyst from Gu-ku cooking, 12 NP, Tower Medals at Tower NPC	source	DIFFERENT	item 7282 Sigil Catalyst: no source in data/sources (src.py); N Point store empty (note); Guild Medal Exchange in Tower menu (data/currencies.json tower-medal)	rewritten (CJK removed)
+269	Recipe table: Hypnoc A -> Hypnocatrice A; Attack Power -> Attack; Elemental Power -> Elemental	name	TRUE	pac sigil labels Attack, Elemental (weapons ledger row 600); monster name	rewritten
+271	Status Attack and Affinity sigils; recipes Zerureusu/Gypceros/Red Khezu A	name	TRUE	pac Status Attack, Affinity; recipe odds Fist	kept
+273	Elder Dragon Attack -> Elder Dragon sigil	name	TRUE	weapons page sigil table row "Elder Dragon" (pac)	rewritten
+274	Heat Cannon Add sigil from Dyuragaua A	name	TRUE	pac "Heat Cannon Add"	kept
+275	Rapid Fire; Ultra Cluster Shot -> Rapid Fire Add; Cluster Shot: Explosion	name	TRUE	weapons page rows 711, 719 (pac labels)	rewritten
+278	Note: N Point store empty; Tower Medals 5/day; Premium Sigil Tkt in gachas	source	TRUE	data/currencies.json tower-medal ways; gacha sources	rewritten (Guild Medal Exchange unchecked)
+285	G armour crafting; only way to get G/GF/GX gems	rule	TRUE	data/sources/armour-refinement.json: G-class Lv7 pieces refine into decorations	kept
+287	G pieces 7 upgrades then GF; GF 7 levels; GX final, needs Conquest materials	rule	OPINION	Fist; Conquest materials: see conquests rows	kept
+291	Hyujikiki Helmet G/GF/GX skills	name	TRUE	data/armor/head.json 3821 Hyuji G Helm, 3822 GF, 4119 GX Helm: points match the table	rewritten (our piece names)
+300	Charge Attack Up -> Charge Atk Up (tree name)	name	TRUE	data/skills/index.json tree "Charge Atk Up"	rewritten
+305	Gou Armour/Burst Species Armour/Origin Armour; Muscle Boost from one Burst piece	name	OPINION	CJK removed; no armour family label in our data; effect Fist	rewritten (CJK removed)
+308	3 G pieces = 11 skills, 5 = 12; Gou G pieces do not count	rule	OPINION	Fist	kept
+309	3 G pieces give +30 true attack in G quests	rule	OPINION	Fist	kept
+311	GR Suitability buff (rating diff x20 defence), table by GR	rule	CANT-VERIFY	not in data; CJK removed; in game: Guild Card shows the rating	rewritten (CJK removed)
+324	Note: GX needs Conquest materials; Conquests off	rule	DIFFERENT	data/quest-where.json Extreme Conquest offered; item 7267 road-shop-8 20 RdP GR1	rewritten
+329	G Rank Pugi Cuff License from GR50, 60P; Departure Trampoline -> Departure Facility	name	CANT-VERIFY	pac "Departure Facility"; license price not in data	rewritten
+330	Three kinds of G cuffs	rule	OPINION	Fist	kept
+332	G Issen SA3 -> Issen SA3 (+3 Issen); SA1-2, SA4-8	name	TRUE	data/armor/index.json 7342 Issen SA3: Issen +3	rewritten (CJK removed)
+333	G Absolute Defense SA1 -> Abs Def SA1 (+3 Absolute Def., +3 Evasion), Diorekkusu carves	name	TRUE	data/armor/index.json 9397 Abs Def SA1: Absolute Def. +3, Evasion +3	rewritten (CJK removed)
+334	Premium G cuffs from paid tickets; Road shop sells tickets	shop	TRUE	road-shop-8 8330-8332	kept
+336	Note: treasure hunts free; tickets 500 RdP; Conquest items	shop	TRUE	road-shop-8; Extreme Conquest quests offered	rewritten (Super Special tab, Conquest quests)
+336	Guild treasure hunts work and are free to send	rule	CANT-VERIFY	earlier batch; in game: Guild > Treasure Hunt	kept
+342	Jewels: Anorupatisu needs GR6 Gem and GR5 Gem	name	TRUE	dev/item-names-ja.json 仙玉=GR6 Gem 7161, 至玉=GR5 Gem 6723	rewritten (CJK removed)
+346	Jewel table 優玉..絕玉 -> GR1 Gem..GR7 Gem from ★1..★7 breaks	name	TRUE	dev/item-names-ja.json 6655,6668,6684,6704,6723,7161,6748; item where: break/tail carve	rewritten + linked
+355	All but Conquest monsters drop jewels on breaks	source	OPINION	Fist	kept
+355	Scheduled Quests give more jewels; ★7 jewels cannot be bought	shop	DIFFERENT	road-shop-6 rows GR1..GR7 Gem 50 RdP; gcp-item-shop GR1 gems	rewritten
+357	Most G decos crafted from a few materials; official stores sold them	rule	TRUE	data/sources/smithy-decorations.json 2,597 rows	kept
+358	Deco crafting menu sections Direct Crafting, Show All, Monsters, Hunter Festival, Regular Event, Event, Other	menu	CANT-VERIFY	pac has "Show All"; others not found; in game: Smithy > Create Deco, read the tabs	rewritten (attributed, CJK removed)
+360	Lv7 G/GF/GX armour refines into one gem; GX1-5 by piece	rule	TRUE	data/sources/armour-refinement.json (e.g. Monodevil GX Helm -> GX1)	kept
+362	G decoration / GF decoration wording	name	TRUE	data/armor/index.json Sol BM G 9226, Sol BM GF 9227	rewritten
+368	Inagami GX helmet skills; GX1 gem skills	name	TRUE	head.json 7637 Inagami GX【Charm】; decoration 9925 Elegance BM GX1 Stylish 3 Issen 2 Expert 3 Adaptation 2	rewritten (our names)
+369	Silver Rathalos gems G..GX5	name	TRUE	data/armor/index.json 9226-9232 Sol BM G..GX5	rewritten (Sol names)
+374	GF gem: Edgemaster+2, Exploit Weakness+2, Expert+3, Vitality+2	name	FALSE	deco 9227 Sol BM GF: Edgemaster 2, Tenderizer 2, Expert 3 (no Vitality); G is Edgemaster +1 (guide +2)	rewritten
+375	Exploit Weakness -> Tenderizer (tree) in all rows	name	TRUE	data/skills/index.json tree Tenderizer (skill Weakness Exploit)	rewritten
+382	G Black Fatalis and Gougarf gem exceptions	rule	OPINION	Fist	kept
+384	G class decos need ★7 Elders or ★8 GR500 Exotics	rule	DIFFERENT	data/quest-where.json G Exotics GR 100	rewritten
+384	Two Hypnoc ★1 quests give materials	quest	TRUE	data/quest-where.json: 23411 and 23412 (Hypnocatrice, G★1) offered at G Rank Quest Counter > Gear Acquisition Quests; items 6835 Dark Green Jewel, 6836 Azure Jewel	linked (2)
+384	These are the decorations from the Bulldrome/Velocidrome Hunter Guide quest	quest	CANT-VERIFY	link to g-rank-start page (other batch); not re-checked here	kept
+388	G class deco table: names, skills, materials	name	TRUE	data/sources/smithy-decorations.json 6641, 6640, 13316, 13368; data/armor/index.json skills	rewritten (deco names added; Hypnoc Quest Jewel -> Azure/Dark Green Jewel; Three Worlds Protection -> Three Worlds; Exploit Weakness -> Tenderizer; Teostra Heavy Shell -> Teostra Cortex; S.Zinogre Cortex/Hardclaw -> S.Zin Cortex/Riptalon)
+389	Strong Attack row used Hypnoc Quest Jewel + Everlasting Ice Cubes	name	TRUE	smithy 6640: Dark Green Jewel x15, GR1 Gem, Eternal Ice Cubes	rewritten
+394	Newer releases give better versions	rule	OPINION	Fist (e.g. G Issen・Realms 14793 exists)	kept
+395	Note: GCP shop 135 Diva rows; Conquest off; Exotics GR 100	shop	TRUE	data/sources/gcp-item-shop.json; brief rule 4	kept + recipe source added
+401	Exotic gear upgraded from HR5 versions, 4 tiers	rule	OPINION	Fist	kept
+403	Quick Eating -> Speed Eating (table already said Speed Eating)	name	TRUE	data/skills/index.json tree Eating: Speed Eating	rewritten
+403	Hybrid slots take sigils and decorations	rule	TRUE	pac "You can also attach both decorations and sigils on it."	kept
+404	Thunder Attack [Large] -> Thunder Attack (Large); up to 17 skills	name	TRUE	skills tree Thunder Attack: Thunder Attack (Large); 17 skills OPINION	rewritten
+411	Exotic set skills table names	name	TRUE	skills: Starving Wolf+2, Bomber, Ice Attack (Large), Guard+2, Evasion+2, Dragon Attack (Large), Focus+2, S. Immunity (Myriad); Ammo Combiner is a tree name	rewritten (spacing, Status Immunity (Myriad) -> S. Immunity (Myriad))
+411	Which set skill each Exotic armour gives	rule	CANT-VERIFY	set skills not in site data; in game: equip one Exotic piece, read the skill list	kept
+425	Weapon Handling and Movement Speed +1 -> Movement Speed UP+1; +20% Caravan CP	name	TRUE	skills: Weapon Handling, Movement Speed UP+1; CP OPINION	rewritten (CJK removed)
+425	Two ways: events/Caravan at GR1, Exotics at GR800	rule	DIFFERENT	hv-exotic-and-finesse: no GR 800 gate	rewritten
+427	Weekly events unlock weapons; Master's Mark/HC then Caravan Box	rule	CANT-VERIFY	note says boxes/unlocks not checked	kept
+429	Named Caravan Box / Secret Caravan Box names	name	TRUE	items 8936 Caravan Moon Box, 9951 Caravan Bloom Box, 11439 Caravan Secret Box (ja キャラバン月箱/花箱/秘箱)	rewritten (CJK removed)
+433	Pallone's Wisdom: 3 per upgrade first 10, then 3 at 100% or 1 at 60%	name	TRUE	item 8935 Pallone's Wisdom; costs Fist	rewritten (CJK removed)
+434	Pallone's Wisdom only from Caravan Festival points goals	source	CANT-VERIFY	item 8935 where null in data; in game: Caravan points rewards	kept
+436	G Lv50 weapons upgrade to G Finesse with 50 Exotic Gem/Bone/Shl	name	TRUE	items 11980 Exotic Gem, 11981 Exotic Bone, 12401 Exotic Shl	rewritten (CJK removed, GR800 attributed)
+438	Note: no GR 800 gate; Exotic Gem/Bone/Shl from G Exotic quests since 17 Nov	source	TRUE	earlier batch; items 11980/11981/12401 offered lists	kept
+445	G9 non-G equipment uses Armour Spheres	rule	OPINION	Fist	kept
+447	Surging Volganos Helmet -> Vol Yamato GX, skills	name	TRUE	head.json 9924 Vol Yamato GX: Steady Hand 5, Combo Expert 5, Critical Shot 3, Gentle Shot 5, Bullet Saver 4	rewritten
+447	Black Shell/Red Shell from breaking the head	source	CANT-VERIFY	guide item names not matched in data	kept
+448	Boiling Red Volganos Helmet -> Vol Apocalypse GX, skills	name	TRUE	head.json 9927 Vol Apocalypse GX: Sword God 7, Compensation 3, Combat Supremacy 4, Stylish 10, Issen 3	rewritten
+449	Mystery Crown armours from the Lost Cat, 25 crowns per set	name	CANT-VERIFY	no "Mystery Crown" item; items Lost Crown 1229 / Lost Luxury Crown 9125 exist; in game: Lost Cat rewards	rewritten (name dropped)
+450	Memory Fragments -> Memory Fragm, 30 for all sets	name	TRUE	item 1228 Memory Fragm; count Fist	rewritten
+451	Rath subspecies grind 80 -> 30 books	rule	OPINION	Fist (row unreadable)	kept
+456	Shiusu set from gathered materials; 20 of each coin, 50 x3 items each	rule	OPINION	Fist	kept
+458	Shiusu skill table	name	FALSE	armor data Shiusu GX: BM head Drawing Arts +5 (guide 4), GN chest Evasion +6 (5), BM arms Status Assault +4 (5), GN arms Auto-Reload +6 (5); Critical Conversion -> Crit Conversion, Combination Expert -> Combo Expert, Elemental Attack -> Element Attack	rewritten (our values and names)
+467	Shiusu coins 1,000 RdP Super Special tab	shop	TRUE	road-shop-8 12513-12516 GR1 1000	rewritten (tab name)
+473	Conquests at four levels; menu path	menu	TRUE	data/quest-where.json: 23585-23601 on Conquest・Shiten Quests > Lv1/Lv200/Lv1000/Lv9999	rewritten (path added)
+473	All materials from Lv200; do Lv1000 once	rule	OPINION	Fist	kept
+473	Extreme Conquests cycle as one of four events	rule	DIFFERENT	changelog 4 Nov 16:26 Conquest is off; quests always listed	rewritten
+474	Four Ultimate Conquest monsters; Lv9999 quests	quest	TRUE	data/quest-where.json 23588, 23592, 23596, 23601 (Lv9999); Black vs Crimson Fatalis not in data	linked (4)
+474	Lv9999 give fixed G1% carves and transmog on first clear	rule	CANT-VERIFY	rewards not in quest data here	kept
+478	Conquest item table names	name	TRUE	item-names-ja 7267 Ulti.Conquest Bond, 7479 Lumin.Armor Rock, 7480 Komono Armor Rock, 7268-7271 Valor Stones, 7277 Supressing Ball	rewritten (CJK removed, linked)
+478	Uses of each Conquest item (levels)	rule	OPINION	Fist	kept
+489	Heavenly Conquests (Shiten) cycle with Conquests -> Shiten Quests, both listed	quest	TRUE	data/quest-where.json: 23602, 23604 Shiten Quests offered	rewritten + linked (2)
+491	Need a Lv50 G weapon	rule	CANT-VERIFY	not in quest data; in game: try without a Lv50	kept
+492	Turn off Halk Pots (incl. Premium Course buff) and Legendary Rastas	rule	CANT-VERIFY	quest flags not checked; Premium Course remark removed (other-server course)	rewritten
+493	20 min limit, max Defence	rule	CANT-VERIFY	quest page shows time	kept
+495	Party/solo advice	other	OPINION	Fist	kept
+496	Unknown ~140,000 / Disufiroa ~230,000 effective health	rule	OPINION	Fist	rewritten (Heavenly Conquests -> Shiten Quests)
+500	Shiten Key from Disufiroa	name	TRUE	item 10180 Shiten Key offered [54480 Disufiroa]	rewritten (CJK removed)
+501	Shiten Latch -> Shiten Seal (Unknown)	name	TRUE	item-names-ja 至天の閂 = 10186 Shiten Seal; offered [54491 Unknown]	rewritten
+502	Shiten Lock for clears under 10 minutes	name	TRUE	item-names-ja 至天の鎖 = 10181 Shiten Lock; reward rule CANT-VERIFY	rewritten (CJK removed)
+507	Advanced Shiten quests, ~300% HP	quest	TRUE	data/quest-where.json: 23603, 23605 Adv Shiten Quests offered; HP Fist	linked (2)
+511	Shiten Black Key -> Upper Shiten Lock (Adv Unknown)	name	TRUE	item-names-ja 至天の黒鎖 = 14615 Upper Shiten Lock (guide wrote 鑰 key for 鎖 lock)	rewritten
+512	Shiten Opposition Key -> Upper Shiten Key (Adv Disufiroa)	name	TRUE	item-names-ja 至天の対鎖 = 14614 Upper Shiten Key; road-shop-8 GR800 1000	rewritten
+515	Lucky Charms add Shiten rewards	rule	CANT-VERIFY	not in data	kept
+516	Note: Conquest off; quests listed; shop rows	quest	TRUE	changelog 4 Nov; data/quest-where.json; road-shop-8 7267 20 RdP, 14614/14615 1000 RdP GR800	rewritten
+523	Diva in a side area on the steps to the square; quest line gives Diva gear materials	npc	CANT-VERIFY	note: Diva story at the Prayer Fountain; in game: walk from the square steps	kept
+524	Tonfa no longer needs the Diva since 10th Anniversary	rule	CANT-VERIFY	pac tip "Clear Chapter 8 and get to know the Tonfas!"; in game: new character at GR, check Tonfa crafting	rewritten (attributed, client tip added)
+527	Diva Song after Chapter 3	rule	TRUE	pac "Clear Chapter 3 to listen to the Diva Song."	kept
+527	Song costs a Diva Song Gem, about 1.5 h; buffs Souls/GRP/Divine Protection	rule	DIFFERENT	pac "use one [Diva Song Gem]"; note: reward songs last 1 hour here	kept (note explains)
+533	Fluffy Cakes at the GCP store; 87 cakes; 5 Warm Honey Tea from Hunter Guide	shop	DIFFERENT	item 8070 Fluffy Cake: no source; gcp-item-shop has none	rewritten
+534	Affection maths (999 max, 990 full, 75-87 cakes)	rule	OPINION	Fist	kept
+535	Gems with GCP or Tower Medals; VIP course free songs	shop	DIFFERENT	item 8069 where: road-shop-8 100 RdP GR1 only; VIP course removed (rule 3)	rewritten
+539	Diva item table prices (GCP/Tower)	shop	DIFFERENT	item 8069 road-shop-8; 8070, 8072 no item source file	rewritten (Here column, CJK removed)
+546	4 first series + 2 second; G Finesse; eclipse Raviente weapons	rule	OPINION	Fist	kept
+547	Note: Diva Defense, songs 1 hour, gem in Road shop	shop	TRUE	road-shop-8 8069; earlier batch	rewritten (RdP wording)
+552	Gunners want an Origin or Zenith piece	rule	OPINION	Fist	kept
+553	Sample sets (pastebins) not copied	other	OPINION	Fist	kept
+555	ZX pieces need GR800	rule	DIFFERENT	brief rule 4: Zenith ★4 opens at GR 900	rewritten
+557	GSR999 + GR899 earn Hunting Points; Guild Master > Hunting Menu > Hunting Point Exchange	menu	TRUE	dev/guide-terms.tsv Hunting Menu, Hunting Point Exchange (Guild Master); pac "Hunting Point Exchange"	rewritten (CJK removed)
+557	Options Lottery Draw and Cheque Exchange	menu	CANT-VERIFY	no pac label found; in game: Guild Master > Hunting Menu	rewritten (attributed)
+559	Lottery Draw pool and Cheque Exchange 5x 50k tickets	shop	CANT-VERIFY	note: server shops not checked	kept
+562	Note: Zenith ★4 GR 900; Hunting Points not checked	rule	TRUE	brief rule 4	kept
+568	Hiden decos give weapon Tech skill, +20% attack	rule	OPINION	decos e.g. 9254 SnS Tech +6; effect Fist	kept
+568	solo GR800 Zeniths	rule	DIFFERENT	Zenith tiers GR 300/500/700/900 here	rewritten
+569	White/Red armour upgrades into White/Black and Red/Blue	rule	OPINION	Fist	kept
+570	Four colours White, Black, Red, Blue	name	TRUE	decos 9254-9257 SnS Hiden・White/Red/Black/Blue	kept
+572	Souls/Ribbons/Merits totals per set	rule	OPINION	Fist (hunter-rank page)	kept
+573	Bounty Board by Blacksmith: 3 (8 premium) per targeted monster	npc	CANT-VERIFY	no board in site data; word "bounty" avoided (our bounties not live); in game: look by the Blacksmith entrance	rewritten
+574	Paid Hiden Stones	shop	DIFFERENT	items 8802/12995/12996 no source here	rewritten
+576	White Tiger/Military Black/Crimson Bird/Azure Dragon -> White/Black/Red/Blue	name	TRUE	data/armor/index.json SnS Hiden・White..Blue, SnS True・White..Blue	rewritten (CJK removed)
+577	True Hiden needs one of each colour	rule	CANT-VERIFY	recipe not in smithy data checked; image from guide	kept
+580	Determination decos take 5 extra slots	rule	OPINION	Fist	kept
+581	SnS table headings lost; colours read from skills	name	TRUE	decos 9254-9257, 13640-13643	rewritten
+587	Standard Hiden second skills by colour	name	TRUE	White Expert +2, Red Element Attack +2, Black Fencing +2, Blue Speed Setup +2 (decos 9254-9257); Flash Conversion -> Crit Conversion	rewritten
+595	True Hiden: Military Black Issen, Crimson Bird Stylish Assault	name	FALSE	decos 13641 SnS True・Red: Issen +2; 13642 SnS True・Black: Stylish Assault +3 (guide had them swapped)	rewritten
+602	General Hiden notes (avoid fixed skills, 6 not 5, 1 of each colour)	rule	OPINION	Fist	kept (skill names: Fencing+2, Elemental Attack Up)
+606	Issen/Sniping part of Determination	rule	OPINION	Fist	kept
+610	Hiden pieces needing Conquest G1% carves (Disufiroa, Black Fatalis, Shantien)	source	OPINION	Fist; Conquest quests listed here (see conquests rows)	kept
+612	20 hours per set	rule	OPINION	Fist	kept
+615	Impatience Charm saves 40 s per quest; our Impatience SP items	name	TRUE	items 1140, 6231, 6232 Impatience SP/α/β; "skip an extra day of premium" removed	rewritten
+616	Festival Point store GHCs/HCs; 25 G1%, 45 GHC, 25 HC	shop	DIFFERENT	fp-shop source; Road shop HC rows road-shop-3/6	rewritten
+617	Premium: 1,609 vs 775 quests; every account has Premium	rule	CANT-VERIFY	earlier batch note; in game: check course icons	kept
+618	Gu-ku cooks HC/GHC into 5 Souls / 3 Ribbons; Conquest gems into Merits	rule	CANT-VERIFY	cook table not in site data	kept
+618	Raw Soul Stones from lottery coins cook into 5	name	DIFFERENT	items 10114-10117 Raw Soul [Low]..[Top]; lottery coins not here	rewritten
+621	Weapon Soul dailies 5/10/15/10	quest	TRUE	data/quest-where.json: Ascension: <weapon> Soul (22126-22150, Dyuragaua, HR 100) at General Quest Counter > Daily Quests	linked
+621	Ribbon and Merit dailies	quest	TRUE	data/quest-where.json: Inherit! Weapon Ribbon (23630-23680) and Secret Art! Weapon Merit (23681-23694) at G Rank Quest Counter > Daily Quests	linked (2)
+621	Ribbon daily 6/10/10, Merit daily 5/10/5; 5 dailies on rare days	rule	CANT-VERIFY	reward counts not checked	kept
+625	Grind monster spawn tips (Pink Rathian, Black Gravios, Black Diablos, Garuga, Espinas, Hypnoc ...)	other	OPINION	Fist	kept
+628	Kirin and Akantor Battlefield quests	quest	TRUE	data/quest-where.json: 23434 (Kirin), 23373 (Akantor) offered in G★7 Quests	linked (2)
+629	Garuga arena quest; Kuarusepusu quest	quest	CANT-VERIFY	quest not identified by name	kept
+632	Silver Rathalos and Gold Rathian arena quests	quest	FALSE	data/quest-where.json: 54585 [G Rank] Silver Rathalos & Gold Rathian not-offered	linked + note added
+636	Guild Priority Targets raise rates	rule	CANT-VERIFY	not in data	rewritten
+639	Official Road store prices table	shop	DIFFERENT	original prices; here Hiden decos sold directly (road-shop-4, note)	kept (labelled)
+656	Low Ribbons 5x typo note	other	OPINION	arithmetic	kept
+661	Cookable carve names	name	TRUE	item-names-ja: 鋼龍の荒殻 4320, 覇竜の極鱗 4930 Akantor Death Scl, 覇竜の壊爪 4931, 3724 Dyura Ice Shell, 9607 Malleable Hide, 12820 Dora Perish Claw	rewritten
+661	Road shop prices for the seven carves	shop	TRUE	data/items where: road-shop-3 500/1000/1500/1500; road-shop-6 2000 x3	note added (column)
+665	Monoblos Brave Shell -> Monoblos Scute	name	TRUE	item 9601 Monoblos Scute (一角竜の豪殻, G Rank); guide name not in data; best match	rewritten
+670	50 floors ~100,000 points	rule	DIFFERENT	original Road; here RdP depends on the voted Road (note)	kept (labelled)
+672	Combiner NPC (Hiden Exchange) converts 10:5	npc	TRUE	data/sources/combiner.json: 10 x 2659 SnS Soul (Low) -> 1 Raw Soul [Low], fee 100	rewritten (CJK removed)
+674	Hiden Stones premium items; one per type	source	DIFFERENT	items 8802 SR Hiden Stone, 12995, 12996: no source (src.py)	rewritten
+678	Soul/Ribbon/Merit Stone names	name	TRUE	item-names-ja 8802 SR Hiden Stone, 12995 Hiden Stn (Ribbon), 12996 Hiden Stn (Merits)	rewritten (CJK removed)
+678	Stone contents 85/195/275/85 etc.	rule	OPINION	Fist	kept
+683	Map delivery cash-in quests	quest	TRUE	data/quest-where.json: Weapon Soul Quest [X] 21717-22168 (Deliver map) at Special Quests > Weapon Souls & Hiden; Weapon Ribbon/Merit Quests at G counter Special Quests > Ribbon, Merit & Armor	linked
+683	Lottery coins, Step Up lottery odds, 30/90/20 coins, real money	shop	DIFFERENT	paid lottery (rule 3)	removed
+684	Three characters; extra characters cost 100 points	shop	DIFFERENT	paid slots (rule 3); note: slots cost nothing here	rewritten (price removed)
+684	Dyuragaua daily per character every 19/10/7 days	rule	OPINION	Fist arithmetic	kept
+685	Note: Hiden decos 25k/50k GR 500, cuffs 10k/20k/35k GR 50/150/350	shop	TRUE	brief rule 4 road shop round 3	kept
+685	HL Hiden tickets from subscribing not handed out	shop	DIFFERENT	subscription content (rule 3)	removed
+690	250 hours; !ravi commands	rule	OPINION	Fist; !ravi in server commands (events page)	kept
+691	Note: Raviente GX decos 20k/30k/40k, Extreme 60k GR 900	shop	TRUE	brief rule 4 road shop round 3	kept
+698	Fist's credit	other	TRUE	credit kept	kept
