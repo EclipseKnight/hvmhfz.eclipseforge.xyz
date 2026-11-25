@@ -1,0 +1,168 @@
+line	claim	kind	verdict	evidence	action
+191	HR7 Urgent Quest is a Shantien repel on an airship (gong, ballista binders)	quest	DIFFERENT	qfind --monster Shantien: no HR quest offered (only Conquest Realm Beyond the Azure Sky 23585-23588 and not-offered events); progression page HR7 says the same	rewritten: attributed to the original guide; not in any list here, ask in Discord; links Progression #hr7
+194	Guild Master moves every weapon to GSR and unlocks all Extreme Styles	npc	CANT-VERIFY	Guild Master = guide-terms.tsv npc high; client mechanic, not tested here	kept
+195	Extreme Style is the best style for all weapons	other	OPINION	author's judgement; 'Extreme Style' is a client term (hvmhfz_re docs/quiz-questions.tsv)	kept
+199	Equipment Box > Change Equipment > weapon, Book of Secrets, Extreme Style	menu	CANT-VERIFY	Change Equipment = guide-terms.tsv menu high; 'Equip Book of Secrets' has no English in guide-terms (low)	kept (page already says the words after Change Equipment are unchecked)
+200	GSR/Extreme Style unlocks work the same; town-entrance NPC tip left out	other	CANT-VERIFY	client/save mechanic; no server code touches style unlocks (not tested)	kept
+205	Hunter Navi tasks are the best start to G Rank	other	OPINION	author's judgement	kept
+207	Hunter Navi opens with Shift+C or R1+R2; HR, GR, Other tasks	menu	TRUE	same shortcut in guide-frontier-progression.html first steps (checked batch); screenshot	kept
+208	Navi quests are at G Rank Quest Counter > Gear Acquisition Quests, maybe also My Missions > Hunter Navi	menu	TRUE	data/quest-where.json 23524/23526/23503: G Rank Quest Counter > Gear Acquisition Quests; My Missions ≪Hunter Navi≫ sure:false	kept (rewritten in first run)
+213	Task 1 rewards are 1k Gz Cheques; sell with Sell Items	name	TRUE	data/item-ids.json '1k Gz Cheque'; 'Sell Items' menu label not in guide-terms (CANT-VERIFY)	kept
+214	Task 2 quest: First G Rank Armor: Entora G, G Rank Quest Counter > Gear Acquisition Quests	quest	TRUE	data/quest-where.json 23524 offered, G Rank Quest Counter > Gear Acquisition Quests	linked
+214	Smith menu Create Armor / Upgrade Armor	menu	TRUE	guide-terms.tsv Create Armor, Upgrade Armor (menu, medium)	rewritten: dangling one-item list 'Create Armor' removed
+214	Each run gives materials for one piece to G Lv7; run five times	rule	CANT-VERIFY	quest rewards not decoded per piece here	kept
+216	Task 3 quest: First G Rank Armor: Entora GF	quest	TRUE	data/quest-where.json 23525 offered, Gear Acquisition Quests	linked
+216	Task 3 gives 5 Conquest Proofs used with the Entora GX quest	name	FALSE	no item 'Conquest Proof' in data/item-ids.json; quest 23526 has no entry item (data/quests/pieces 23526)	rewritten: Entora GX quest 23526 gives the materials to max the set
+218	Smith's Refine turns Lv7 armour into a decoration	rule	CANT-VERIFY	first run: client text says a G Rank armour can be refined; not tried	kept
+219	G★7 Gurenzeburu quests: Fierce Howl Rocking the Highlands, Raging Horn Piercing the Storm	quest	TRUE	data/quest-where.json 23249, 23248 offered, G Rank Quest Counter > G Hunter Quests > G★7 Quests	linked
+219	G Rank quests lower Defence by 150 per star above ★1 (★7 = -900)	rule	CANT-VERIFY	client rule; screenshot shows the list down to -1050	kept
+221	Lower the star rating with F / L1 on the confirm screen; lowers rewards	rule	CANT-VERIFY	screenshot lower-star-rating.webp; not tried here	kept
+223	Halk Potion cuts all damage by 70%	name	TRUE	data/item-ids.json 'Halk Potion'; 70% not checked	kept
+225	Create Armor > Chest Armor; make a Blademaster chest	menu	CANT-VERIFY	'Chest Armor' sub-menu not in guide-terms; Create Armor is	kept
+227	Do not upgrade the Guren chest to GX	other	OPINION	author's advice	kept
+228	Task 8: Refine at GF Lv7 into a decoration	rule	CANT-VERIFY	client text (first run)	kept
+229	10 Guren BM GF decorations	name	TRUE	deco.py 'Guren BM GF' = 7856, Strong Attack +2, Rage +2, Expert +3	kept
+230	Every standard monster has craftable GX decorations except White Fatalis, Keoaruboru, Raviente	rule	CANT-VERIFY	not checked against the full decoration recipe list	kept
+232	G Rank weapons have 50 levels; Create Weapon / Upgrade Weapon	menu	TRUE	guide-terms.tsv Create Weapon, Upgrade Weapon (menu, medium)	kept
+233	Sigils fit triangular slots in G Rank weapons	rule	CANT-VERIFY	client mechanic	kept
+235	Smith > Sigils > Sigil Production; Brand Sigil	menu	CANT-VERIFY	labels not in dev/guide-terms.tsv; check at the smith	kept
+235	Attack UP / element / Affinity sigils most useful	other	OPINION	author's judgement	kept
+236	Task 13 then GR 2 tasks	rule	CANT-VERIFY	Navi task flow, not traced	kept
+238	Entora set skills (Blademaster/Gunner)	name	TRUE	data/skills/index.json trees: Expert->Critical Eye +3, Sharpness->Razor Sharp +1, Rage 20->Buchigire, Hearing->Super Earplugs, Reload->Reload Speed+3, Steady Hand->Steady Hand+1; totals not recomputed	rewritten: skill names to ours
+242	Entora BM GF/GX skills list	name	CANT-VERIFY	set totals not recomputed (check with /set-builder.html)	rewritten (names)
+246	Replace with the Samurai set	other	OPINION	author's advice	kept
+251	Series 2 Task 1 gives three kinds of weapon orb	name	TRUE	data/quests/rewards 23462/23463/23464 first rewards: Black Orb, Blue Orb, Yellow Orb	rewritten: gems -> Black/Blue/Yellow Orb
+253	Black Orb: SnS, GL, Bow, Tonfa, SA	rule	CANT-VERIFY	weapon recipes not traced per orb	rewritten (name)
+254	Blue Orb: Hammer, Lance, LS, HBG, SA	rule	CANT-VERIFY	as above	rewritten (name)
+255	Yellow Orb: GS, HH, LBG, DS, SA	rule	CANT-VERIFY	as above	rewritten (name)
+257	Materials again from easy G★1 quests under Gear Acquisition Quests	quest	TRUE	data/quest-where.json 23462-23465, 23501, 23502 offered, Gear Acquisition Quests	kept
+258	Legendary Rasta Tkts; bar manager appears at the steps; Contract	npc	CANT-VERIFY	item 'Legendary Rasta Tkt' in data/item-ids.json; 'Bar Manager' has no client name in guide-terms	rewritten: 'the Bar Manager' -> 'the Rasta bar's manager'
+260	5 G Attack・Resist decorations (Issen+2, Three Worlds+2, Status Res+3)	name	TRUE	deco.py 13320 G Attack・Resist = Issen +2, Three Worlds +2, Status Res +3 (client name looks swapped; ours kept)	kept
+260	Quest Obtain It! G Rank Flash Decoration (Bulldrome, Velocidrome)	quest	TRUE	data/quest-where.json 23467 offered, G Rank Quest Counter > Gear Acquisition Quests; data/items/13320.json rewards 23467 17%	linked
+260	Psychoserum from the General Store	shop	CANT-VERIFY	item 'Psychoserum' exists; General Store stock not in our data	kept
+261	Make G Attack・Resist: 25 Guanzorumu Scale, 25 Guanzorumu Pelt, 5 GR1 Gem (for 5)	source	TRUE	data/items/13320.json smithy-decorations mats 13087 x5, 13088 x5, 6655 x1 per decoration	kept
+261	Create Deco menu; four decorations share the materials	menu	CANT-VERIFY	'Create Deco' not in guide-terms	kept
+263	Furogada G/GF/GX quests at Gear Acquisition Quests	quest	TRUE	data/quest-where.json 23503, 23504, 23505 offered, G Rank Quest Counter > Gear Acquisition Quests	linked
+268	Furogada BM/GN GX skills	name	CANT-VERIFY	names mapped via data/skills/index.json (Buchigire, Critical Eye +3, Recoil Reduction+2); totals not recomputed	rewritten (names)
+272	Unaffected+3 combines Quake Res, Hearing and Wind Pressure	rule	TRUE	data/skills/index.json tree Three Worlds -> Unaffected+1..+3	kept
+274	Tasks 8-13 pick quests by tracking	quest	CANT-VERIFY	which quests the Navi picks not traced	kept
+276	Samurai tasks give materials for 5 pieces only	rule	CANT-VERIFY	Navi rewards not decoded	kept
+279	Guide's G Deco Quests list under Other Quests	menu	FALSE	dev/quest-where.md: G Deco Quests is an Order Quests list no counter shows; all its quests not-offered	rewritten (first run): says it is not offered here, each row gives another source
+283	G Rage・Attack from Obtain It! G Rank Strike Decoration (Yian Kut-Ku, Iodrome)	quest	TRUE	deco.py 6640; data/quests/rewards 23466 main 16%; data/quest-where.json 23466 offered	linked
+284	G Issen・Herb from the Flash Decoration quest	quest	TRUE	deco.py 13314 Tenderizer +2, Issen +2, Herbal Science +2; rewards 23467 17%	rewritten: Weakness Exploit+2 -> Tenderizer+2 (tree points)
+285	G Rage・Issen from the Flash quest	quest	TRUE	deco.py 6641; rewards 23467 16%	kept
+287	Continuous G: Road shop 500 RdP or smith 15 Navy Jewel, 5 Harudomerugu Scale, 5 Gureadomosu Shl	shop	TRUE	data/items/11659.json road-shop-4 price 500; smithy mats 12084 x15, 11336 x5, 11316 x5	kept
+290	Recoil Expert G quest Gunner Jewel G & Lunastra [Low] not offered; Road shop 500 or smith	quest	TRUE	data/quest-where.json 21872 not-offered; data/items/10907.json road-shop-4 500, smithy mats	kept (linked in first run)
+297	Issen effect	rule	CANT-VERIFY	client numbers not decoded	kept
+298	Thunder Clad effect	rule	CANT-VERIFY	client numbers	kept
+299	Unaffected+3 = Super Earplugs, Violent Wind Breaker, Quake Res+2	name	TRUE	data/skills/index.json Hearing 25 Super Earplugs, Wind Pressure 30 Violent Wind Breaker, Quake Res 25 Quake Res+2	rewritten (names)
+300	Encourage+2 effects	rule	CANT-VERIFY	client numbers	kept
+301	Herbal Science skill	name	TRUE	data/skills/index.json tree Herbal Science 10 -> 'Medical Sage'	rewritten: Herbal Science -> Medical Sage
+302	Blazing Majesty+2 includes Adrenaline+2, Artillery God, Fire Attack (Large)	name	TRUE	data/skills/index.json skill names Blazing Majesty+2, Adrenaline+2, Artillery God, Fire Attack (Large); effect not decoded	rewritten: Fire Attack Up (Large) -> Fire Attack (Large)
+303	Stylish Assault +100 Attack on i-frames	rule	CANT-VERIFY	client numbers	kept
+304	Strong Attack+5 = +150	rule	CANT-VERIFY	client numbers	kept
+305	Status Immunity (Myriad)	name	TRUE	data/skills/index.json Status Res 30 -> 'S. Immunity (Myriad)'	rewritten (name)
+306	Rage skill gives True Guts and Adrenaline+2	name	TRUE	data/skills/index.json Rage 15 Wrath Awoken, 20 Buchigire; effect CANT-VERIFY	rewritten: Rage -> Buchigire
+307	Critical Shot+3	name	TRUE	data/skills/index.json Critical Shot 20	kept
+308	Mounting+2	name	TRUE	data/skills/index.json Mounting 15	kept
+309	Recoil +1	name	TRUE	data/skills/index.json Recoil 10 -> Recoil Reduction+1	rewritten (name)
+310	Stamina Recovery Up (Small)	name	TRUE	data/skills/index.json Stamina Recov 10 -> 'Stamina Rec (Small)' (checker cuts at ' (' and flags 'Stamina Rec': allowlisted)	rewritten (name)
+311	Auto-Reload	name	TRUE	data/skills/index.json Auto-Reload	kept
+315	Alternative decorations' quests are in G Deco Quests, not offered	menu	TRUE	dev/quest-where.md (G Deco Quests unreachable)	kept
+319	Fencing decoration (guide's Chinese name) giving Fencing+2, Peerless, Weapon Handling	name	TRUE	deco.py 13065 Elegant Blade G = Fencing +5, Stamina +5, Wpn Handling +5: x4 = Fencing 20 (Fencing+2), Stamina 20 (Peerless), Weapon Handling	rewritten: Chinese name -> Elegant Blade G
+319	Chameleos quest Blade Parry Jewel G & Chameleos [LR] not offered; Road shop 500 RdP or smith 15 Persimmon Jewel, 5 Toa Ice Scale, 5 Toa Shl	shop	TRUE	data/quest-where.json 22074 not-offered (G Deco Quest; rewards Persimmon Jewel); data/items/13065.json road-shop-4 500, smithy mats 13053 x15, 12826 x5, 12827 x5	linked + rewritten
+320	Caring Focus G: quest Toil Jewel G & Odibatorasu [Hardcore] not offered; Road shop 500 or smith 15 Tortoise Jewel, 5 Gasurabazura Hide, 5 Yama Kurai Hide	shop	TRUE	data/quest-where.json 21968 not-offered; data/items/12627.json road-shop-4 500, smithy mats 12501 x15	kept
+320	Focus+2, Defense+60, Caring+3 from 5 decorations	name	TRUE	deco.py 12627 Focus +4, Caring +5, Defense +5: x5 = Focus 20 (Focus+2), Caring 25 (Caring+3), Defense 25 (Defense+60)	kept
+326	Series 3 Tasks 1-2 give GRP tickets and Gou Toridcless legs materials	rule	CANT-VERIFY	Navi rewards not decoded; items 'GRP Tkt (4k)/(20k)' exist	kept
+328	Burst Zerureusu quest: Flashing Lancer of the Sky, fixed G★7	quest	TRUE	data/quest-where.json 23492 offered, G Rank Quest Counter > G Hunter Quests > ※ Burst & Origin Quests (category Fierce Species)	linked + path
+328	Halk Pots, Legendary Tickets, Great Guts Tickets	name	FALSE	data/item-ids.json has 'Halk Potion'; no 'Great Guts' ticket item	rewritten: 'the Halk Potions and the other help items'
+329	Zerureusu adapts its parts by damage type	rule	CANT-VERIFY	monster behaviour	kept
+331	G Supremacy weapons need Weapon Top Souls from HR5 Goushu monsters with HC; GHC carves 2%	source	TRUE	data/item-ids.json 'GS Soul (Top)' etc.; 2% GHC carve = hunter-rank page	kept
+332	Make G Supremacy at G Rank level; bowguns straight at Origin	rule	CANT-VERIFY	craft tree not traced	kept
+333	Supremacy repels at General Quest Counter > Hunter Quests > ★6; six repels	quest	TRUE	data/quest-where.json 21977-21982 offered, General Quest Counter > Hunter Quests > ★6 ([Repel] ...)	linked (6 quests)
+333	about 10 repels per weapon	rule	CANT-VERIFY	drop rates on the hunter-rank page	kept
+335	Recommended Origin weapons table	name	CANT-VERIFY	weapon cells are monster + weapon type descriptions, not client weapon names (data/weapons/*.json names differ); page warns to check	kept
+358	Ignore the Voljang LS/SA advice	other	OPINION	author's advice	kept
+361	Voljang fixed G★7 quest	quest	TRUE	data/quest-where.json 23484 Knower of Primeval Volcano offered, ※ Burst & Origin Quests (Origin Species); task's exact quest not traced	linked as an example
+362	Task 7 rewards Origin Bloods	name	CANT-VERIFY	no item named 'Origin Blood' in data/item-ids.json; Navi reward not decoded	kept
+363	Not every Gou weapon reaches Origin	rule	CANT-VERIFY	craft tree not traced	kept
+365	Task 9: reach GR100	rule	CANT-VERIFY	Navi task	kept
+367	G Rank Zinogre fixed G★8, needs GR100	quest	TRUE	data/quest-where.json 23499 Swift Thunder in Great Forest offered, ※ G Exotic Quests, rankNeed GR 100	linked + path
+368	Zinogre armour gives Thunder Attack (Large) from one piece	name	TRUE	data/skills/index.json Thunder Attack 20 -> 'Thunder Attack (Large)'; one-piece rule CANT-VERIFY	rewritten: Thunder Attack Up [Large] -> Thunder Attack (Large)
+369	Exotic weapons give Speed Eating; combined sigil/deco slots	name	TRUE	data/skills/index.json Eating 10 -> Speed Eating; mechanics CANT-VERIFY	kept
+370	Task 13 needs GR200 (Zenith opens GR 300 here)	rule	TRUE	changelog.html Zenith GR 300/500/700/900 (17 Nov); note on page	kept
+371	Navi on; GCP shop only Diva items	rule	TRUE	AGENTS.md task facts: GCP shop = 135 Diva rows; changelog Hunter Navi 2 Nov	rewritten: dropped N Points/Newbie world sentences (text they referred to is gone)
+376	Easy equipment intro	other	OPINION	author	kept
+379	G8 DS stats Attack 651, 3 sigil slots	other	CANT-VERIFY	weapon stats not checked against data/weapons	kept
+380	Only the Tonfa quest is offered here	quest	TRUE	data/quest-where.json 21970, 21969 not-offered; 23410 offered	kept
+384	G8 Survey Weapon: Dual Blades (Rathalos) not offered	quest	TRUE	data/quest-where.json 21970 not-offered (Special Material)	linked
+385	G8 Survey Weapon: Great Sword (Hypnocatrice) not offered	quest	TRUE	data/quest-where.json 21969 not-offered	linked
+386	G8 Survey Weapon: Tonfa (Akura Jebia, G★7) offered	quest	TRUE	data/quest-where.json 23410 offered, Gear Acquisition Quests	linked
+387	G8 Survey Weapons: 3 Types (Midogaron G★4) may not be offered	quest	TRUE	data/quest-where.json 28087 unconfirmed, General Quest Counter > Clan Quests > Quest Orders	linked
+390	No Special Material list here; Tonfa path; Guild quest path and Guild Ticket	menu	TRUE	dev/quest-where.md (Special Material only in the +0x48 list; Quest Orders need a Guild Ticket)	kept
+391	Upgrades need PawCoin・Lead and HC Pawprint Medal	name	TRUE	data/item-ids.json 'PawCoin・Lead', 'HC Pawprint Medal'	kept
+393	HC Pawprint Medals from the Series Quest exchange, not GCP	source	TRUE	data/items/5383.json where series-exchange mats 5384 x1 -> 25	kept
+394	5 Quest Complete Tkt -> 10 PawCoin・Lead; Paw Pad Coin quests at General Quest Counter > Special Quests > Paw Coins/Yearly Benefits	quest	TRUE	PawCoin・Lead item page: series-exchange mats 1610 x5 -> 10; rewards 21671, 21674 (100%); data/quest-where.json both offered at that path	kept
+396	G upgrade needs Pokaradon materials and GR1 Gem	source	CANT-VERIFY	weapon recipes not traced	kept
+397	Guild quest harder; luck based	other	OPINION	author	kept
+399	Prep quests: Obtain It! Anti-... quests (6), by large monster	quest	TRUE	data/quest-where.json 23462, 23463, 23464, 23465, 23501, 23502 offered, Gear Acquisition Quests; monsters from data/quests.json	linked (first run)
+399	Navi gives one weapon's worth of the Hermitaur, Pokaradon, Hypnocatrice orbs	name	TRUE	rewards 23462/23463/23464: Black/Blue/Yellow Orb	rewritten: quest stones -> orbs
+403	Orb table: Black, Blue, Yellow, White, Green Orb, Peach Orb	name	TRUE	rewards 23462 Black Orb, 23463 Blue Orb, 23464 Yellow Orb, 23465 White Orb, 23501 Green Orb, 23502 Peach Orb	rewritten: Gem -> Orb; Pink -> Peach
+406	White Orb quest has 2 Iodrome; makes a high-sharpness SA	rule	CANT-VERIFY	rewards 23465 list one Iodrome entry (7000 HP); count and weapon not checked	kept
+411	GCP shop Diva only; item->GCP list 2 entries; 1 Secret Proof・Low -> 25 HC Pawprint Medal	shop	TRUE	data/currencies.json 'Trade in Guild Point Tkt or Goushu Ticket' (shop_items type 7 items 13190, 1662); data/items/5383.json	rewritten: Guild Point Ticket -> Guild Point Tkt
+416	Two G Class decoration quests at G Rank Quest Counter > Gear Acquisition Quests	quest	TRUE	data/quest-where.json 23466, 23467 offered	linked
+418	Strike quest gives 6 decorations, Flash quest 6	name	TRUE	data/quests/rewards 23466: G Rage・Attack, G Attack・Draw, G Attack・Herb, G Attack・Dissolve, G Attack・Blaze, G Issen・Resist; 23467: G Rage・Issen, G Issen・Draw, G Issen・Herb, G Protect・Status, G Protect・Exploit, G Attack・Resist; points from deco.py	rewritten: decoration names added; Weakness Exploit -> Tenderizer points; Status +2 -> Status Attack +2
+435	G Class decorations work the same; quests offered	quest	TRUE	data/quest-where.json 23466, 23467	kept
+440	Starter gear quests on Hunsterverse (8 quests) + Burst and Zinogre quests	quest	TRUE	data/quest-where.json 23524-23526, 23503-23505, 23466, 23467 Gear Acquisition; 23492 Burst & Origin; 23499 G Exotic	kept (first run)
+441	Official newbie starter list not offered as such	rule	DIFFERENT	rule 3 (newbie server); quests above are ours	kept
+447	Attack Ceiling 800 true raw by default	rule	CANT-VERIFY	client numbers; hunter-rank page	kept
+448	Status > SR Status; My Missions Quests row on both counters	menu	TRUE	dev/quest-where.md: My Missions Quests on General and G Rank counters; guide-terms SR Status (menu, medium)	kept
+451	Affinity Up SR skill +20-24% = Critical Eye +2	name	TRUE	data/skills/index.json Expert 15 -> Critical Eye +2; numbers CANT-VERIFY	rewritten: Expert +2 -> Critical Eye +2
+459	Poogie costume + Skill Cuff; G Rank License from GR50	name	TRUE	decoded mhfpac.bin 'G Rank License', '[Skill Cuff]'; GR 50 from the guide (progression GR50 row)	rewritten (G Rank Skill Cuff License -> G Rank License)
+460	120P: 30 Poogie, 30 Departure Facility, 60 G licence	shop	CANT-VERIFY	60P matches progression GR50 row; 30P items not checked	rewritten: Poogie Farm -> My Tore
+461	7 cuff types SC/SB/SA, SZ, PC/PB/PA	name	DIFFERENT	deco.py: our data also has PZ cuffs (Obscurity Up PZ1, Ceaseless Up PZ1..7)	rewritten: attributed; PZ added
+467	A/B take 2 slots, C one	rule	TRUE	deco.py Obscurity SA1/PA1 slots 2, PC1 slots 1	kept
+471	Obscurity cuffs and skills (SA1, PA1, PA2, PC1-3)	name	TRUE	deco.py 13491 Obscurity +4 Guard +2; 13807 Obscurity +5 Fortification +3; 13808 Reflect +3; 13874-13876 Three Worlds/Vampirism/Vigorous +2	kept
+479	Newest skills (Ceaseless, Rush, Point Breakthrough) only a single SA cuff	name	TRUE	deco.py: Ceaseless SA1, Rush SA1, Point Breakthrough SA1 are the only S/P cuffs of those trees (others are Up SZ/PZ)	kept
+480	SZ cuffs always standard	rule	FALSE	PZ (premium Zenith) cuffs exist in data/armor/index.json	rewritten; 'Zenith skill' -> 'Zenith skills'
+484	SZ cuffs and their monsters	source	TRUE	data/items/13880/13881/13883/13887.json cuff-workshop mats: Espinas Huge Gem, Golden Pearl+Mega Scalp, Khezu Pearl, Hypnoc Dark Bezoar	rewritten: skill names -> our cuff names
+492	Hi-Speed Whetstone 75 sharpness; GR SR skill full sharpness	rule	CANT-VERIFY	item exists; numbers client	kept
+493	My Tore combination facility Lv2, manager gifts, Knife Mackerel 135z	shop	CANT-VERIFY	'My Tore' guide-terms high; 'Combination Booth', farm manager have no names in guide-terms; Knife Mackerel item exists	rewritten: Pugi Farm -> My Tore, Combination Booth/Hut -> combination facility, Farm's Manager -> My Tore manager
+494	G Whetstone 200, Normal 150, Hi-Speed 75	rule	CANT-VERIFY	client numbers	kept
+496	Caravan Gem from HR2 at the bonfire in the Caravan area	npc	TRUE	guide-terms Caravan Gem (currency high), Pallone Caravan (place); progression HR2 row	kept
+497	Cuffs, whetstones, Caravan Gem work the same	other	CANT-VERIFY	client content	kept
+504	HC switch on the final screen	rule	CANT-VERIFY	client	kept
+505	HC carves 5%, GHC 2%	rule	CANT-VERIFY	client numbers	kept
+506	Weapon Souls Low/Mid/High/Top	name	TRUE	data/item-ids.json '... Soul (Top)' etc.	kept
+507	Supremacy repel 2 stacks ~38-40%	rule	CANT-VERIFY	hunter-rank page tables	kept
+509	All quest reward multipliers 1.0	rule	TRUE	live DB server_settings 'rates': all 1.0 (material, zenny, g_material ...); config GameplayOptions multipliers 1.0	kept
+514	Gou stages Gou, Storm, Supremacy, G Supremacy, Burst, Origin	rule	CANT-VERIFY	client	kept
+516	Storm armour (guide: Heavenly Storm)	name	TRUE	data/quests.json names 'Storm Weapon Upgrade: Zerureusu' (50961), 'Storm Armor Upgrade: ...' (50970, 50979)	rewritten (heading: Heavenly Storm -> Storm; id kept)
+517	Burst = our client's Fierce Species; +15 Attack per piece up to +80	name	TRUE	data/quests.json category 'Fierce Species' (23492); numbers CANT-VERIFY	kept
+518	Two pieces: Sharpness Level Up etc.	rule	CANT-VERIFY	client	kept
+521	Origin +20 per piece up to +110	rule	CANT-VERIFY	client; 'Origin Species' = data/quests.json category	kept
+526	Worked example 1,220 vs 1,230	other	CANT-VERIFY	arithmetic from the guide	kept
+527	Gou effects work the same	other	CANT-VERIFY	client	kept
+532	Counterattack！Iodrome gives a 50k Gz Cheque, at G Rank Quest Counter > Event Quests	quest	TRUE	data/quest-where.json 54801 offered, G Rank Quest Counter > Event Quests; cheque amount CANT-VERIFY	linked
+533	Quest Search by GZeny; Log In Boost 5x	menu	TRUE	dev/quest-where.md Quest Search on the G counter; live server_settings boosts disable_login_boost=false	rewritten: link to Basics #log-in-boost
+535	Login boost on, multipliers 1.0; Counterattack！Iodrome in live event list	rule	TRUE	server_settings boosts/rates; data/quest-where.json 54801 offered	kept
+540	One Origin or Zenith piece for gunners	other	OPINION	author	kept
+541	+0.3x critical distance; 20%/15% DPS	rule	CANT-VERIFY	client numbers	kept
+547	Guild Poogie one buff per login	rule	CANT-VERIFY	client	kept
+549	Poogie Crackers 10z from the Guild shop	shop	CANT-VERIFY	item 'Poogie Crackers' exists; guild shop stock not in our data	kept
+551	Luck Poogie 12.5%; max 24 reward slots	rule	CANT-VERIFY	client numbers	kept
+557	Partner, Rasta, Partnya	other	OPINION	author	kept
+559	Diva Defense earns GCP for Partner skills	rule	TRUE	data/currencies.json Diva Defense GCP rows; no dates given	kept
+557	Partnya name	name	TRUE	decoded mhfpac.bin: 'Partnya' x26, 'Partnyas' x3, no 'Partnyaa'	rewritten (Partnyaa -> Partnya in text; ids kept)
+561	Partnya doubles break rewards	rule	CANT-VERIFY	client	kept
+563	Rasta example set	name	CANT-VERIFY	piece names from the first run (Garuba FX Glare, Odiva FX Arms, Varusa F Faulds, Varusa FX Greaves); chest unconfirmed	kept
+572	Rasta decorations G Issen・Resist and G Issen・Herb	name	TRUE	deco.py 13321 Strong Attack +2, Three Worlds +2, Status Res +3; 13314	rewritten: Weakness Exploit+2 -> Tenderizer+2
+574	Rasta set skills	name	TRUE	data/skills/index.json names (Medical Sage, S. Immunity (Myriad), Razor Sharp +1, Critical Eye +4); totals not recomputed	rewritten (names)
+577	Set is silly-looking but practical	other	OPINION	author's judgement	rewritten: 'The guide calls' -> 'Fist calls' (attributed)
+578	Gu-ku Farm on the house page	name	TRUE	owner naming Gu-ku	kept
+579	Diva Defense takes turns with the Festival	rule	TRUE	AGENTS.md event calendar two lanes; no dates on page	rewritten: dropped 'reward lists open in the last week of a cycle' (unverified timing)
+584	Effective Health 40,000 to 375,000	other	CANT-VERIFY	author's numbers	kept
+585	Example sets were pastebins; use the Set builder	other	TRUE	set-builder.html exists	kept
+587	Hiden = Weapon Tech skills, 1.20x	rule	CANT-VERIFY	client numbers	kept
+588	Road shop Hiden decorations GR 500 25,000 RdP, True Hiden GR 500 50,000	shop	TRUE	task facts: road shop round 3 live 25 Nov	kept
+595	Fist credit	other	TRUE	kept per rule 6	kept

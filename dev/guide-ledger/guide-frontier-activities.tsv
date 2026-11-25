@@ -1,0 +1,7 @@
+line	claim	kind	verdict	evidence	action
+137	Moved-chapter page: Things to do	other	TRUE	page is a redirect stub: no game claims, quests, NPCs, menus, prices or names on it	kept
+140	Link: Quests, Food Buffs and Bentos	other	TRUE	target page exists, its <h1> matches the link text; python3 dev/check-links.py OK	kept
+141	Link: Regular Events	other	TRUE	target page exists, its <h1> matches the link text; python3 dev/check-links.py OK	kept
+142	Link: Hunter's Road	other	TRUE	target page exists, its <h1> matches the link text; python3 dev/check-links.py OK	kept
+144	Link: All Frontier guide sections (guide-frontier.html#activities)	other	TRUE	guide-frontier.html has id="activities"; dev/check-links.py OK	kept
+146	Credit: written from Fist's guide (January 2022), which describes Capcom's old official servers; differences on Hunsterverse vs the old servers	other	TRUE	credit kept per rule 6; guide-frontier-hunsterverse.html exists	kept

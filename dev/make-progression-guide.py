@@ -21,7 +21,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 PAGE = ROOT / "guide-frontier-progression.html"
 DATA = ROOT / "data" / "quest-gates.json"
 QUESTS = ROOT / "data" / "quests.json"
-URGENT_WHERE = "Quest Counter &gt; Hunter Quests &gt; Urgent Quests"
+URGENT_WHERE = "General Quest Counter &gt; Hunter Quests &gt; Urgent Quests"  # our client's counter name (dev/quest-where.md)
 
 
 def band_start(band):

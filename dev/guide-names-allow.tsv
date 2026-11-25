@@ -5,3 +5,17 @@
 # the game's own words on the page, not here.
 page	text	reason
 *	Fist	the original guide's author, credited by name
+*	H.Road/Sky Corridor counter	our client patch labels the counter so (hvmhfz_re docs/tower-npc.md); guide-terms' 'Hunting Road Counter' is the older name
+guide-frontier-g-rank-start.html	Stamina Rec	our skill name is 'Stamina Rec (Small)'; the checker cuts the name at ' ('
+guide-frontier-hunter-rank.html	Fire Res+N	the client's SR label 'Fire Res+%d' (decoded mhfpac.bin), N = the level
+guide-frontier-hunter-rank.html	Water Res+N	the client's SR label (decoded mhfpac.bin), N = the level
+guide-frontier-hunter-rank.html	Ice Res+N	the client's SR label (decoded mhfpac.bin), N = the level
+guide-frontier-hunter-rank.html	All Res+N	the client's SR label (decoded mhfpac.bin), N = the level
+guide-frontier-hunter-rank.html	Exotic weapons	plain words for the HR5 Exotic gear, not the smith's 'Exotic Weapon' menu
+guide-frontier-progression.html	Hunt the Boar Chief!	exactly our quest name (id 22011); the checker reports a capitals difference it cannot show
+guide-frontier-progression.html	guild	plain word in prose ('the game says Clan')
+guide-frontier-basics.html	Legendary Rasta	singular of our 'Legendary Rastas'
+guide-frontier-basics.html	N Armor materials	an N Points shop row label, not an item name
+guide-frontier-basics.html	Triple Strike 1	Magnet Spike move name (data/weapons/magnet-spike.json 'Triple Strike, hit 1')
+guide-frontier-basics.html	Triple Strike 2	Magnet Spike move name (data/weapons/magnet-spike.json)
+guide-frontier-basics.html	Triple Strike 3	Magnet Spike move name (data/weapons/magnet-spike.json)

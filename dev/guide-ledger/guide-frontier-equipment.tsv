@@ -1,0 +1,9 @@
+line	claim	kind	verdict	evidence	action
+137	Moved-chapter page: Gear and items	other	TRUE	page is a redirect stub: no game claims, quests, NPCs, menus, prices or names on it	kept
+140	Link: Items and Materials	other	TRUE	target page exists, its <h1> matches the link text; python3 dev/check-links.py OK	kept
+141	Link: Equipment and Item Boxes	other	TRUE	target page exists, its <h1> matches the link text; python3 dev/check-links.py OK	kept
+142	Link: Weapons and Sigils	other	TRUE	target page exists, its <h1> matches the link text; python3 dev/check-links.py OK	kept
+143	Link: Armour, Decorations and Skills	other	TRUE	target page exists, its <h1> matches the link text; python3 dev/check-links.py OK	kept
+144	Link: Transcend	other	TRUE	target page exists, its <h1> matches the link text; python3 dev/check-links.py OK	kept
+146	Link: All Frontier guide sections (guide-frontier.html#gear)	other	TRUE	guide-frontier.html has id="gear"; dev/check-links.py OK	kept
+148	Credit: written from Fist's guide (January 2022), which describes Capcom's old official servers; differences on Hunsterverse vs the old servers	other	TRUE	credit kept per rule 6; guide-frontier-hunsterverse.html exists	kept

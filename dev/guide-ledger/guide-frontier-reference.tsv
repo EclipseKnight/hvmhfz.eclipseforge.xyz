@@ -1,0 +1,6 @@
+line	claim	kind	verdict	evidence	action
+137	Moved-chapter page: Monsters and references	other	TRUE	page is a redirect stub: no game claims, quests, NPCs, menus, prices or names on it	kept
+140	Link: Monsters (guide-frontier-monsters.html)	other	TRUE	target page exists, its <h1> matches the link text; python3 dev/check-links.py OK	kept
+141	Link: Tools and References (guide-frontier-tools.html)	other	TRUE	target page exists, its <h1> matches the link text; python3 dev/check-links.py OK	kept
+143	Link: All Frontier guide sections (guide-frontier.html#reference)	other	TRUE	guide-frontier.html has id="reference"; dev/check-links.py OK	kept
+145	Credit: written from Fist's guide (January 2022), which describes Capcom's old official servers; differences on Hunsterverse vs the old servers	other	TRUE	credit kept per rule 6; guide-frontier-hunsterverse.html exists	kept

@@ -1,0 +1,269 @@
+line	claim	kind	verdict	evidence	action
+147	carve	rule	CANT-VERIFY	Poogie extra carve: guide; in game: check Poogie skill text at My Tore	kept
+191	Treat HR1 to HR4 as a long tutorial	rule	OPINION	author's judgement; HR1-4 hold 6/10/7/8 Key Quests (data/quest-gates.json)	kept
+191	hold about as many quests as a whole mainline	rule	CANT-VERIFY	count of HR1-4 quests vs a mainline game; check data/quests.json rank HR1-HR4 counts	kept
+191	Treat HR1 to HR4 as a long tutorial	rule	DIFFERENT	no trial course here; all accounts have all ranks (AGENTS.md what's live)	removed (official-server sentence)
+193	The original guide describes a time-limited fifth server tab	rule	DIFFERENT	worlds.html: Newbie, Normal, Cities, Tavern, MezFes; changelog.html:740 Return World removed 4 Nov	rewritten (official new/returning tab -> not here)
+193	time-limited fifth server tab	rule	DIFFERENT	GRP catch-up quests advice: GRP quests need GR 900 since 24 Nov (brief)	removed (GRP catch-up advice, GR100 lock-out claim)
+197	Weapon styles part of the	name	DIFFERENT	guide-frontier-weapons.html has no 'Frontier Base Movesets' heading; section #weapon-styles (line 475)	rewritten (Frontier Base Movesets -> Weapon styles link)
+198	see Menus and Town NPCs	other	TRUE	guide-frontier-menus.html exists	kept
+199	Two facilities are open from the start	npc	CANT-VERIFY	Gu-ku Farm / Helper Area: no client string; client has Guuku Menu, Halk Instructor (pac). In game: walk through your house door and look at the facility signs	kept (lead: guide-name parenthetical dropped; CANT-VERIFY row stands)
+201	The Gu-ku Farm has farm tools	other	CANT-VERIFY	pac 'About Guuku Scoop' only; in game: open the Gu-ku Farm and check the tools	kept
+201	gu-ku tools	other	CANT-VERIFY	double gather from Gu-ku tools: guide only; in game: use a Gu-ku Pick and count the items	kept
+202	The Helper Area holds your	npc	CANT-VERIFY	Halk: our name (pac Halk Instructor, 16572); Partnyaa = client 'Partnya' (pac 14935) but kept to match the house page; in game: Helper Area menu	rewritten (lead: Partnyaa -> Partnya, the client's name, pac 26x; anchors kept)
+202	You can hire two Partnyaas at first	rule	CANT-VERIFY	guide only; in game: Helper Area, count the Partnyaa slots	kept
+203	Treasure Hunts, which give many materials	other	TRUE	pac 'Treasure' 14839, 'Partnya Dispatch' 14931; see house page	kept
+203	Quick Mega Potions and Quick Max Potions	name	TRUE	data/item-ids.json 9711 Quick Potion, 9712 Quick Mega Potion, 9714 Quick Max Potion	rewritten (Mega/Max Potions -> Quick Mega/Max Potion)
+203	which have the Eating effect	rule	CANT-VERIFY	skill 71 Eating: Speed Eating shortens item use (data/skills/71.json); in game: check the Quick Potion item text	kept
+204	The receptionist who offers the story quests	npc	CANT-VERIFY	guide's 'Yellow Guildie' has no client name (guide-terms: not named); in game: find the Series Quest Counter NPC and compare to the picture	rewritten (Yellow Guildie -> Series Quest Counter, receptionist)
+205	Series Quest Counter and open the	menu	TRUE	dev/quest-where.md: Series Quest Counter, Beginners / Veteran tabs; hvmhfz_re data/series_quests.tsv series 17	rewritten (Story Quests > Yellow Guildie first option -> Series Quest Counter > Beginners)
+205	Rookie Hunter Charge Ahead!	quest	TRUE	series_quests.tsv id 17 'Rookie Hunter Charge Ahead!'; the guide's 'Rookie Hunter, advanced' Chinese name dropped	rewritten (Chinese name -> our series title)
+205	Food Shop's Request	quest	TRUE	qfind 26175 offered: Series Quest Counter > Beginners > Rookie Hunter Charge Ahead!	linked
+205	Land Battle Queen	quest	TRUE	qfind 26009 offered, same series	linked
+205	Lightning Strikes the Tower	quest	TRUE	qfind 26115 offered, same series	linked
+205	Avatar of Gluttony. The original	quest	TRUE	qfind 26428 offered (series step; also Pariapuria HR3 Key 22040 has the same name)	linked (series copy 26428)
+205	Gallery Atk Deco and Gallery Def Deco	name	CANT-VERIFY	items 910 Gallery Atk Deco, 911 Gallery Def Deco exist; that the series pays their materials is the guide's claim; in game: read the quest rewards in the series	rewritten (Gallery Gems -> item names)
+205	Gogomoa armour	name	CANT-VERIFY	armour set exists (Gogomoa Arms etc, data/armor/arms.json); series step 'capture three Gogomoa' (series.tsv:28); reward unconfirmed	rewritten (Gogomoa armour -> Gogomoa armour, attributed)
+206	works on one series at a time	rule	CANT-VERIFY	dev/quest-where.md 'one series at a time'; the progress-loss warning is the guide's; in game: start a Veteran series after the first and check Beginners progress	rewritten (strong warning -> attributed)
+207	Looking Back with Mizuki	other	TRUE	series_quests.tsv category 1 Veteran 'Year N: Looking Back with Mizuki'	note added
+207	Fist's Google Doc, which we do not link	other	OPINION	original guide reference	rewritten (no link to external doc)
+208	hv-starting-out	other	TRUE	changelog.html:736 New & Returning Hunter Pack on Event Campaigns; guide-frontier-systems.html:481	note extended (no catch-up tab, no GRP quests)
+213	The table below is from our quest data	other	TRUE	data/quest-gates.json bands	note added
+213	The quests you need are marked with a star icon	rule	CANT-VERIFY	star crest and first sorting: guide (progression ledger line 230); in game: open ★1 list	kept
+217	HR1	quest	TRUE	gates band 1 keys 22013,22011,22006,22010,22009,22032; all offered General Quest Counter > Hunter Quests > ★1 (qfind)	rewritten (guide's monster names -> our linked quests; guide listed Taikun Zamuza/Yian Kut Ku/Hypnoc only)
+218	HR2	quest	TRUE	gates band 2 keys (10) + urgent 21974, all offered ★2 / Urgent Quests	rewritten (guide listed 4 monsters, our data 10 quests)
+219	HR3	quest	TRUE	gates band 3 keys (7) + urgent 22045, all offered ★3	rewritten (guide: Pariapuria, Rathalos, Nono Orugaron, Rajang; data: Gogomoa, Taikun Zamuza, Pariapuria, Hypnocatrice, Nono Orugaron, Tigrex, Rajang)
+220	HR4	quest	TRUE	gates band 4 keys (8) + urgent 21976, all offered ★4	rewritten (guide's 'White Hypnoc, Orange Espinas, Kuarusepusu, Doragyurosu' -> data's 8 keys; Urgent monster is not Akura Vashimu in our name: 'Desert Crystal Scorpion')
+221	HR5	quest	TRUE	gates band 5: 22 keys, 21 Hardcore (quests.json rank HR100+/Hardcore); urgent 21995 [Urgent Repel] Unsinking Cannon (Odibatorasu, Supremacy Quest)	rewritten (guide's 5 monsters -> count + link to Progression; Urgent linked)
+222	HR6	quest	TRUE	gates band 6 keys 21984,21983,21985,21986,21987 all offered ★6; no urgent (progression.md:88)	rewritten (guide: Aruganosu/Goruganosu + Unknown -> 5 Supremacy keys)
+223	HR7	quest	CANT-VERIFY	no Shantien Urgent in any offered list (qfind --monster Shantien: Conquest 23585-23588 only); progression.md hr7 text	rewritten (None listed -> None; Shantien not in our lists)
+226	Key Quests are in General Quest Counter	menu	TRUE	quest-where.json 22013 'General Quest Counter > Hunter Quests > ★1'; Urgent path 'General Quest Counter > Hunter Quests > Urgent Quests' (22030)	rewritten (Quest Counter -> General Quest Counter)
+231	HR2: Rasta and Partner	rule	CANT-VERIFY	pac 16394 'Let's register a Rasta when HR2 or above', 16393-16394; house upgrades from guide	kept
+232	At the Rasta Bar you can also contract	npc	TRUE	pac 'Rasta Bar' (19272), 16550 'stipulate a contract at the Rasta Bar'	rewritten (bar -> Rasta Bar)
+233	You start earning Guild Contribution Points (GCP)	rule	CANT-VERIFY	GCP = our currency (guide-terms Contribution P); earning from a contracted Rasta: guide; in game: contract a Rasta and finish a quest	kept
+233	At end game a Partner is comparable to a Legendary Rasta	rule	OPINION	author's judgement	kept
+235	HR3 is the start of High Rank	rule	TRUE	pac / quest data: HR3 Key quests rank 'HR31-99' (quests.json need HR 31)	kept
+235	Transcend system	other	CANT-VERIFY	pac 'Transcend Menu', 'Transcendent Piercing' (16410); HR3 unlock: guide; in game: look for the Transcend entry at HR3	kept
+236	2.0x elemental damage, 1.13x raw damage	rule	CANT-VERIFY	Transcend buff numbers: guide; see transcend page; in game: check the buff text	rewritten (bold game-name-like phrases -> plain)
+236	Elemental Burst	rule	CANT-VERIFY	guide; in game: fill the Transcend gauge in a quest	kept
+237	HR4: My Tore	menu	TRUE	pac 16402-16403 'You can go to My Tore if HR4 or higher'; guide-terms place My Tore (high)	rewritten (Pugi Farm -> My Tore)
+239	My Tore (was: 'which the original guide calls the Pugi Farm')	name	TRUE	guide-terms My Tore; progression page uses the same pairing	rewritten (lead: Pugi Farm mention dropped, our name only)
+239	Manager who gives you Tore Points	npc	TRUE	pac 16495-16499 'Manager', 'Tore Points' (16484)	rewritten (Garden Manager -> Manager)
+240	Poogies are very valuable	other	OPINION	author's judgement	kept
+240	Skill Cuff	name	TRUE	pac 16489 'skill points with the [Skill Cuff]'; item names Skill Cuff Gxx (item-ids 7418)	rewritten (Outfit and a Pugi Cuff -> Poogie outfit and Skill Cuff)
+241	Departure Facility	name	TRUE	pac 16488/16494 '[Departure Facility]'	rewritten (Adventure booth -> Departure Facility; guide name dropped)
+241	Store, a Combination Booth	other	CANT-VERIFY	guide; in game: My Tore facility list	kept
+241	Mega Demondrugs	name	TRUE	item 16 Mega Demondrug	kept
+241	Quick Whetstones	name	CANT-VERIFY	no 'Quick Whetstone' item (item-ids.json grep: none); guide name; in game: My Tore Combination Booth list	kept (attributed by context)
+242	Transcend and My Tore are client systems	other	CANT-VERIFY	not tested in game	kept
+247	Gear made from HR5 on often upgrades	rule	OPINION	author's judgement	kept
+249	There is no HR5 gift here	rule	TRUE	existing hv-note; checked with brief (no HR5 gift); no gift row for HR5 in AGENTS.md what's live	kept
+249	a guild receptionist at the Town Entrance gave you	npc	CANT-VERIFY	guide's 'Purple Guildie' has no client name; in game: stand at the Town Entrance and look at the NPC	rewritten (Purple Guildie -> guild receptionist)
+249	Zerureusu weapons	name	TRUE	monster Zerureusu in data/monsters/index.json	kept
+250	use the Normal world	rule	DIFFERENT	worlds.html lists Newbie, Normal; what Newbie allows not checked	rewritten (beginners' server tab -> Newbie world)
+251	HR5 mixed set in <a href	other	CANT-VERIFY	armour page set; Brachydios, Zinogre, Diorekkusu are in data/monsters/index.json	kept
+253	negative elemental weakness	rule	CANT-VERIFY	guide; check monster hitzone tables for negative values (data/monsters/*.json hitzones) in game	kept
+256	Dyegrass	name	TRUE	item-ids 1452 Red Dyegrass, 1453 Blue Dyegrass, 1458 White Dyegrass	rewritten (Dyed Grass + Chinese -> Dyegrass)
+256	a trader at the Gorge trades the Dyegrass colours in a circle	npc	CANT-VERIFY	no client name found (pac grep 'Veggie' none); in game: the NPC in the Gorge area	rewritten (nickname 'Veggie Elder' removed: described by place and job)
+258	SP weapons	rule	CANT-VERIFY	SP Book item 14443 exists; SP rules from guide; in game: SP weapon and armour screens	kept
+258	used only in Hunting Competition quests	menu	TRUE	dev/quest-where.md: General Quest Counter > Hunting Competition (type 7)	rewritten (Hunting Contest -> Hunting Competition)
+258	free SP weapon of every type	rule	DIFFERENT	no HR5 gift here (existing note)	rewritten (author's G10 uncertainty removed)
+259	SP armour gives no natural skill points	rule	CANT-VERIFY	guide; in game: SP armour piece skill screen	kept
+260	SP gems give many skill points	rule	CANT-VERIFY	guide; in game: SP gem text	kept
+262	Our worlds are Newbie	rule	TRUE	worlds.html; changelog.html:734, 740	kept
+267	HR5 quests come in three tiers	rule	CANT-VERIFY	guide; Gou quests are named Hardcore in our data (quests.json rank HR100+/Hardcore)	kept
+269	Henshu and Kishu are the standard	rule	CANT-VERIFY	guide terms; no client string; in game: compare HR5 quest tiers	kept
+270	Goushu covers	rule	CANT-VERIFY	Expert +4 to +5 and 30% critical distance claims: guide; see g-rank-start #gou-interactions	kept
+271	plain imports from mainline games	rule	OPINION	guide	kept
+273	Their quest card shows the Hardcore Quest category	rule	DIFFERENT	dev/names: data/quests.json categoryJp 剛種任務 -> 'Hardcore Quest'; HR5 keys named 'Hardcore ...!' (qfind 21707)	rewritten (Gou Species Quest + Chinese -> Hardcore Quest)
+274	table of which monsters fall under which tier was broken	other	OPINION	original guide issue	kept
+276	Goushu	name	TRUE	monsters checked against data/monsters/index.json: all present; Gougarfs -> Lolo Gougarf, Ray Gougarf; Kushala -> Kushala Daora; Rusted Kushala -> Rusted Kushala Daora	rewritten (names fixed)
+278	Henshu and Kishu	name	TRUE	monsters present; 'Hypnoc' -> Hypnocatrice; plain 'Kut-Ku' not in data (only Yian Kut-Ku, Blue Yian Kut-Ku), removed	rewritten
+280	Exotic	name	TRUE	Zinogre, Deviljho, Brachydios, Barioth, Uragaan, Nargacuga, Stygian Zinogre, Gore Magala, Shagaru Magala in data/monsters/index.json	kept
+284	The Key Quests of HR5 and HR6	quest	TRUE	gates bands 5-6 offered at General Quest Counter > Hunter Quests	rewritten (was 'not checked')
+290	Chameleos Proofs x5	name	TRUE	image alt text; item-ids has Proof items (Kirin Proof 1215 etc)	kept
+291	Gou weapons have their own section in the Blacksmith	rule	CANT-VERIFY	guide; in game: Blacksmith crafting menu	kept
+291	ESP at 100% health	rule	CANT-VERIFY	guide; in game: Gou weapon skill screen	kept
+292	Most Gou weapons need 5 Proofs	rule	CANT-VERIFY	guide plus image; in game: Blacksmith	kept
+293	(our upgrade quests call them	name	TRUE	quests.json names 'Storm Weapon Upgrade: Zerureusu', 'Storm Armor Upgrade: Baruragaru' (names.py)	rewritten (Heavenly Storm + Chinese -> Storm; guide's name kept in brackets)
+293	each sharpness segment goes up one colour	rule	CANT-VERIFY	guide; in game: equip a Storm weapon+armour on a Gou quest and check sharpness bar	kept
+293	Storm gear (guide: Heavenly Storm)	name	TRUE	data/quests.json names 'Storm Weapon Upgrade: Zerureusu' (50961), 'Storm Armor Upgrade: ...' (50970, 50979)	rewritten (lead: Heavenly Storm -> Storm; guide name dropped)
+296	Gou armour is also made in its own part	rule	CANT-VERIFY	guide; in game: Blacksmith	kept
+297	1 Elder Dragon Gem	name	TRUE	item 3995 Elder Dragon Gem (dev/item-names-ja.json lookup via names.py)	rewritten (1 Gou Elder Dragon Gem + Chinese -> Elder Dragon Gem)
+297	A quest that cycles in has a 100% chance	rule	CANT-VERIFY	guide; in game: check the quest reward list	kept
+297	You also get 3 of these gems	rule	CANT-VERIFY	guide; in game: first Gou weapon craft	kept
+298	Burst armour	name	TRUE	quests.json 'Fierce Species Armor Upgrade [Diamolde]' (names.py); G Burst naming in g-rank-start	rewritten (Burst Armour + Chinese -> Burst armour)
+298	#gou-interactions	other	TRUE	guide-frontier-g-rank-start.html:512 section id	kept
+305	first mainline imports to Frontier since Tigrex and Akantor	rule	OPINION	original guide history	kept
+305	Zinogre, Deviljho and Brachydios are all available with G8	rule	CANT-VERIFY	guide; G8 not in our data	kept
+306	Hunsterverse the G Rank Exotic quests	rule	TRUE	brief: G Exotic quests open at GR 100 here; quest-where G Rank Quest Counter > G Hunter Quests > G Exotic Quests	kept
+306	GR500	rule	TRUE	brief: Hiden cuffs/decos GR 350/500 in Road shop; grind end per guide	kept
+308	Speed Eating skill	name	TRUE	data/skills/71.json Eating levels: Speed Eating; lead's rule Eating -> Speed Eating	rewritten (Quick Eating -> Speed Eating)
+308	Exotic weapons give	rule	CANT-VERIFY	skill 71 automatic list holds weapons but no HR5 Exotic one identified; in game: equip an Exotic weapon and read its skills	kept
+308	slot type	rule	CANT-VERIFY	guide; in game: Exotic weapon slot screen	kept
+309	Thunder Attack (Large)	name	TRUE	data/skills/113.json level 20 Thunder Attack (Large); Zinogre Cap etc. give it (automatic)	rewritten ([Large] -> (Large))
+312	Style Rank 300 requirement	rule	CANT-VERIFY	image alt only; in game: read a Supremacy quest card	kept
+313	Supremacy quests are fights against powerful variants	rule	TRUE	quests.json category Supremacy Quest, rank HR6 need HR 300; 21995 needs HR 299	kept
+313	The HR6 Key Quests are listed in the table	other	TRUE	gates band 6	note added
+313	Storm gear (guide: Heavenly Storm)	name	TRUE	data/quests.json names 'Storm Weapon Upgrade: Zerureusu' (50961), 'Storm Armor Upgrade: ...' (50970, 50979)	rewritten (lead: Heavenly Storm -> Storm; guide name dropped)
+314	Aruganosu and Goruganosu	rule	TRUE	21984 monsters Goruganosu, Aruganosu 'Radiance Upon Radiance'; Volganos link from guide (CANT-VERIFY: in game compare Volganos HR2 key 22036 forms)	kept
+314	1 HP before either can die	rule	CANT-VERIFY	guide; in game: fight 21984	kept
+315	cart even G Rank players	rule	OPINION	guide	kept
+315	They count as HC for HC armour regen	rule	CANT-VERIFY	guide; in game: HC armour with a Supremacy monster	kept
+315	Odibatorasu is the easiest	rule	OPINION	guide	kept
+316	You have to beat Supremacy monsters to reach G Rank	rule	DIFFERENT	HR6 has no Urgent Quest; G Rank entry from HR7 not traced (progression.md:88)	kept (attributed to guide by context; see HR7 row)
+317	carting and using a Halk Pot	rule	CANT-VERIFY	guide; item 4952 'Halk Potion' is our name for Halk Pot; in game: compare rewards with/without	rewritten (Halk Pot -> Halk Potion)
+318	Boiling Blood is the Supremacy blood	name	TRUE	item 6114 Boiling Blood appears in 21995/21984/21983/21985/21986/21987 reward tables (data/quests/rewards/21.json)	rewritten (guide's 'Supremacy Blood' -> Boiling Blood; heading and tip too)
+318	HR6 repel event quest	quest	DIFFERENT	scan of data/quests/rewards for item 6114: quests giving 4+ are not offered (50840, 50904, 50921...); 21977 [Repel] Unsinking Cannon is offered but gives 1	rewritten (fixed 4 stacks event quest -> none found offered)
+323	Odibatorasu10%	quest	TRUE	21995 Boiling Blood 10% (repel); 21863 hunt; kill % from guide match 21983/21984/21985/21986 rows (23/25, 21/23, 22/25, 20/24)	kept
+324	Unknown10%	rule	TRUE	21987 Boiling Blood 19% / 22%	kept
+325	Volganos10%	rule	TRUE	21984 Boiling Blood 21% / 23%	kept
+326	Pariapuria10%	rule	TRUE	21986 Boiling Blood 20% / 24%	kept
+327	Doragyurosu10%	rule	TRUE	21985 Boiling Blood 22% / 25%	kept
+328	Teostra10%	rule	TRUE	21983 Boiling Blood 23% / 25%	kept
+331	Successful Hunt quests also give a fixed 1x	rule	CANT-VERIFY	reward tables show 1x at a chance, not fixed; in game: clear one	kept
+336	Odi Supreme Scale	name	TRUE	item 6148 Odi Supreme Scale (21995 reward)	rewritten (Odi Supremacy Scale)
+337	Dora Sup. Scale	name	TRUE	item 5423 Dora Sup. Scale (21985 reward)	rewritten
+338	Teostra Sup. Wing	name	TRUE	item 5421 Teostra Sup. Wing (21983 reward)	rewritten
+339	Black Wyvern Claw	name	TRUE	21987 rewards: Black Wyvern Claw 19%	rewritten (Unknown Supremacy Claw -> Black Wyvern Claw; guide name dropped)
+340	Paria Sup. Stone	name	TRUE	item 5422 Paria Sup. Stone (21986 reward)	rewritten
+341	Arugoru Fuse Shell	name	TRUE	item 6437 Arugoru Fuse Shell (21984 reward)	rewritten (Gold and Silver Supremacy Shell -> Arugoru Fuse Shell; guide name dropped)
+344	A successful slay also gives a fixed 2x	rule	CANT-VERIFY	guide; reward tables show 1x chances; in game: clear a Supremacy quest	kept
+345	repeat the repel quests	rule	OPINION	guide farming tip; 21995 gives Odi scale x2 at 40% (rewards 21.json)	kept
+353	Guild rewards.	rule	CANT-VERIFY	existing note: not checked; in game: guild reward at 00:00	kept
+354	Daily Quest Right at the General Store	npc	TRUE	pac 15521-ish 'Daily Quest Right earned at the General Shop in the Town'; guide-terms General Store (pink General Store NPC)	rewritten (Pink Guildie -> General Store)
+354	Halk Potions and 5 N Points	rule	CANT-VERIFY	guide; item 4952 Halk Potion; in game: claim a Daily Quest Right	rewritten (Halk Pots -> Halk Potions, attributed)
+354	General Quest Counter > Daily Quests	menu	TRUE	dev/quest-where.md General Quest Counter > Daily Quests	linked/added
+355	Tore Points.	rule	CANT-VERIFY	pac 16484 'Tore Points'; daily claim from the Manager: progression ledger line 346; in game: My Tore at HR4	rewritten (Pugi points -> Tore Points)
+356	right-hand Bar NPC, last option	npc	CANT-VERIFY	no client name; in game: Rasta Bar, the NPC on the right	note added
+358	Rasta contracts work (fixed 2 Nov)	rule	TRUE	existing note; changelog	kept
+358	daily quest allowance is 10	rule	TRUE	live config GameplayOptions DailyQuestAllowance 10, BonusQuestAllowance 3	kept
+358	Japan time (UTC+9)	rule	CANT-VERIFY	changelog.html:734 resets Monday 00:00 JST; individual resets not checked	kept
+358	Gacha Felyne, and 5 Tower Medals	menu	TRUE	guide-terms Gacha Felyne; changelog.html:688 free draws, :496 Tower Medals	rewritten (Gacha Cat -> Gacha Felyne)
+358	Tower > Daily Rewards at the H.Road	menu	TRUE	guide-terms Daily Rewards (Tower > Daily Rewards, high)	kept
+358	claim 10 trial gacha coins at the Gacha Felyne	rule	TRUE	DB distribution 39 / item 11156 Trial Gacha Coin (progression ledger line 576)	rewritten (Gacha Cat -> Gacha Felyne)
+365	walk towards the Guild Master	npc	TRUE	pac 15521 'When you reach HR5, you can get the Book of Secrets from Guild Master'; guide-terms Guild Master	kept
+366	Style Rank gives you special SR Skills, two new movesets	rule	TRUE	pac 15445 Earth/Heaven/Storm styles; 24900s SR Skill 1/2	kept
+366	bed in your house	other	CANT-VERIFY	guide; in game: house bed menu	kept
+366	The Weapons page covers	other	TRUE	weapons page section id weapon-styles	rewritten (Detailed Weapon Information -> link)
+368	Change Equipment	menu	CANT-VERIFY	pac has Change Equipment (guide-terms Change Equipment, high); no 'Equip Book of Secrets' string; in game: open Equipment Box > Change Equipment, look at the last option	rewritten (invented path -> attributed path, our labels SR Menu / SR Settings / Style)
+370	Heaven Style and then	name	TRUE	pac 15446 'Earth Style, Heaven Style, Storm Style'; 16359 new style at SR100; 'Unlocked [Heaven] and [Storm] Styles!'	rewritten (Chinese names removed; Earth base style added)
+370	Storm Style is the best choice	rule	OPINION	guide	kept
+371	Extreme Style. It changes	name	CANT-VERIFY	pac 16359 'A new Book of Secrets Style will be unlocked at SR100!' (G). In game: talk to the Guild Master after G Rank	rewritten (Chinese name removed)
+373	open the SR Menu	menu	TRUE	pac 25442 'SR Menu', 25446 'GSR Menu'	rewritten (SR menu -> SR Menu)
+374	Style Rank, the Book of Secrets and weapon styles are client	rule	CANT-VERIFY	not tested in game	kept
+381	flame icon	rule	TRUE	pac 15500s 'indicated with a red flame'	kept
+381	HC mode on yourself	rule	TRUE	pac 'change the mode to [Hardcore]'	kept
+382	Super Earplugs, Quake Res+2 and Dragon Wind Breaker	name	TRUE	data/skills: Super Earplugs, Quake Res+2, Dragon Wind Breaker	rewritten (Quake Res +2 -> Quake Res+2)
+383	gives you Weapon Souls	name	TRUE	pac 'Weapon Souls'; items SnS Soul (Low) etc	rewritten (SR Weapon Souls -> Weapon Souls)
+383	HC Rarity Req	name	TRUE	pac 'HC Rarity Req' stat label	rewritten (Rarity Limit -> HC Rarity Req)
+383	HRP x3, SRP x4, Zeny x1.5 and GCP x1.5	rule	DIFFERENT	live config GameplayOptions: HRP/SRP/GRP/GSRP/Zenny/GCP multipliers all 1.0	kept (existing note says all 1.0)
+383	most of these multipliers no longer matter	rule	OPINION	guide	kept
+384	GRP, GSRP, Gzeny	name	CANT-VERIFY	config key names GRPMultiplier, GSRPMultiplier, GZennyMultiplier (live config)	kept
+386	one HC carve for each tier	rule	TRUE	data/monsters/volganos.json HC Carves: LR, HR, Elite, GR (4 tiers)	kept
+389	5% for an HC carve and 2%	rule	TRUE	volganos.json HC Carves LR/HR/Elite 5%, GR 2%	kept
+390	low-percentage carve	rule	CANT-VERIFY	guide; in game: gear lists	kept
+391	special jingle	rule	CANT-VERIFY	audio; in game: carve an HC drop	kept
+391	Legendary Poogie	name	TRUE	pac 'Legendary Rasta Tkt'; guide-terms Rasta; Poogie = client word (pac 16405)	rewritten (Pugi -> Poogie)
+392	N Points (about 100 at least)	shop	DIFFERENT	existing note: N points store has no entries (DB shop); Festival Points exchange none	kept (note says does not work)
+392	Diva Defense event now and then lets you buy carves	shop	DIFFERENT	brief: GCP shop = 135 Diva rows only; existing note	kept (note says not possible)
+398	Volganos Scale	name	TRUE	data/monsters/volganos.json LR body carves Scale 48 / Shell 38 / Fang 14	kept
+401	Volga Rare Fin	name	TRUE	volganos.json HC Carves LR: Volga Rare Fin 5%	rewritten (Lavasioth Rotary Fin -> Volga Rare Fin)
+404	Anything that rerolls a carve	rule	TRUE	38/(38+14)=73%, 14/52=27%	kept
+404	Caravan Gem skills	name	CANT-VERIFY	guide; in game: Caravan Gem skill list	kept
+406	Each weapon has 4 levels of Soul	rule	TRUE	items 2659-2662 SnS Soul (Low)..(Top)	kept
+410	SnS Soul (Low)	name	TRUE	item 2659	rewritten (Low Soul + Chinese -> item name)
+412	SnS Soul (High)	name	TRUE	item 2661	rewritten
+416	Tonfa Soul Top	name	TRUE	item 9021 Tonfa Soul Top (no brackets)	rewritten (Tonfa Soul (Top))
+416	Souls are used to make and upgrade	rule	TRUE	pac 15484 Hiden armour needs Weapon Souls	kept
+417	SnS Ribbon Low	name	TRUE	item 7234 SnS Ribbon Low; Merits e.g. 8979 SnS Merit Low	rewritten (examples added)
+417	at GR500 you can earn Merits	rule	CANT-VERIFY	guide; in game: GR500 G quest rewards	kept
+418	Buying HC carves does not work yet	shop	TRUE	existing note; brief: GCP shop Diva rows only	kept
+418	gcp-item-shop	other	TRUE	/source.html?id=gcp-item-shop exists (existing link)	kept
+418	Every account has the Premium course	rule	TRUE	AGENTS.md what's live (course rights granted)	kept
+423	permanently active buffs	rule	TRUE	pac 'SR Skill' stat; guide	kept
+423	You can equip 1 skill until you reach GSR100	rule	TRUE	pac 24974-24975 'SR Skill 1', 'SR Skill 2'; GSR100 from guide	kept
+429	Def+N	name	TRUE	pac 'Def+%d'	rewritten (Defense Up -> Def+N)
+429	Up to +170 Defence	rule	CANT-VERIFY	guide; in game: Book of Secrets SR Skill list	kept
+430	Fire Res+N	name	TRUE	pac 'Fire Res+%d'	rewritten
+431	Water Res+N	name	TRUE	pac 'Water Res+%d'; the guide's 'Ice twice' typo note dropped	rewritten
+432	Tndr Res+N	name	TRUE	pac 'Tndr Res+%d'	rewritten
+433	Ice Res+N	name	TRUE	pac 'Ice Res+%d'	rewritten
+434	Drag Res+N	name	TRUE	pac 'Drag Res+%d'	rewritten
+435	All Res+N	name	TRUE	pac 'All Res+%d'	rewritten
+436	Sharpening Up and Max Sharpen	name	TRUE	pac 'Sharpening Up', 'Max Sharpen'	rewritten (Sharpening Up -> both labels)
+437	Health+N	name	TRUE	pac 'Health+%d'	rewritten (Health Up)
+437	food buffs are so easy	rule	OPINION	guide	kept
+438	Affinity+N%	name	TRUE	pac 'Affinity+%d%'	rewritten (Affinity Up)
+445	Conq Def+N	name	TRUE	pac 'Conq Def+%d'	rewritten (Conquests Defense)
+446	Conq Atk+N	name	TRUE	pac 'Conq Atk+%d'	rewritten (Conquests Attack)
+447	Passive Master	name	TRUE	pac 'Passive Master'	kept
+448	Secret Tech (every	name	TRUE	pac 'Secret Tech'	rewritten (Secret Technique)
+448	Usable once a day after 12:00	rule	CANT-VERIFY	guide; in game: use Secret Tech	kept
+449	Soul Revival	name	TRUE	pac 'Soul Revival'; 'Unlocked 11 SRs!'	kept
+449	Disabled by Determination	rule	CANT-VERIFY	skill Determination exists (data/skills); effect from guide	kept
+454	the basic Def+N skill	rule	CANT-VERIFY	unlock ranks from guide; in game: check SR Skill list at HR5/6/7	rewritten (names)
+458	it is the same as Expert +2	rule	TRUE	skill tree Expert -> Critical Eye (lead rule); numbers from guide	kept
+465	Status > SR Status	menu	TRUE	pac 'You can check it in Menu / Status / SR Status.'; guide-terms SR Status	rewritten (Book of Secrets Status -> SR Status)
+465	Open it from the Equipment Box	menu	CANT-VERIFY	guide; in game: Equipment Box	kept
+469	Rare 11 at HR5 and Rare 12	rule	CANT-VERIFY	guide; in game: read HC Rarity Req at HR5/HR6	kept
+469	Rarity Sigils on G Rank weapons	rule	CANT-VERIFY	pac has 'Rarity 1 Sigil'; guide; in game	kept
+470	Lone Wolf	name	TRUE	data/skills Lone Wolf	kept
+470	Attack	name	TRUE	pac stat label 'Attack'	rewritten (Attack Up)
+472	Style	name	TRUE	pac stat label 'Style'	rewritten (Weapon Style)
+474	Twin Hiden (the guide	name	TRUE	pac 'Twin Hiden' stat label (line 24930s)	rewritten (Hiden Buff -> Twin Hiden)
+474	0.10x multiplier	rule	CANT-VERIFY	guide; in game: SR Status	kept
+481	Reduced Damage (the guide	name	TRUE	pac 'Reduced Damage'	rewritten (Damage Reduction)
+481	Reduces damage taken by (Level / 2)%	rule	CANT-VERIFY	guide; in game: check My Mission level vs status	kept
+482	800 true raw	rule	CANT-VERIFY	guide; in game: attack above cap on Guild Card	kept
+483	Partial HP (the guide	name	TRUE	pac 'Partial HP'	rewritten (Red Health Amount)
+484	Status Recovery	name	TRUE	pac 'Status Recovery'	kept
+487	The guide is not consistent here	other	OPINION	guide discrepancy note	kept
+488		name	TRUE	pac 'Attack Ceiling' (24898) and My Missions text (15470)	kept
+494	SnS / DS1.4	rule	CANT-VERIFY	weapon multipliers from guide (1.4/4.8/5.2/2.3/1.8/5.4/1.2); math 800 x m checked	kept
+498	Tonfas	name	TRUE	data/weapons/tonfa.json (also magnet-spike.json)	kept
+499	Switch Axe F5.4	name	TRUE	data/weapons/switch-axe-f.json exists; multipliers from guide	kept
+504	Example with a Sword and Shield	rule	TRUE	arithmetic: 800x1.4=1,120; 1,680x1.4=2,352; 2,200x1.4=3,080	kept
+508	Power Pill or Demon Horn	name	CANT-VERIFY	no 'Power Pill'/'Demon Horn' item found (item-ids grep); in game: use items with Demon Horn name	kept
+510	Doing 50 levels raises	rule	TRUE	800+50x40 = 2,800; 2,800x1.4=3,920	kept
+511	Damage calculator may help	other	TRUE	/weapons.html#calc exists (nav)	rewritten (Fist's Damage Calculator -> our calculator)
+515	Basic G Rank set25	rule	OPINION	guide recommendations (25/70/110/80/130)	kept
+530	Medal Series	name	CANT-VERIFY	guide; pac 'My Missions' 'R/S' missions; in game: Book of Secrets My Missions	kept
+530	30 My Mission Tkt	name	TRUE	item 5755 My Mission Tkt; 30-ticket amount from guide	rewritten (My Mission Tickets + Chinese -> My Mission Tkt)
+530	SR Display Room	other	CANT-VERIFY	no client string; in game: look for the bullseye icon in your house	kept
+531	Weapon Series are the ones	rule	CANT-VERIFY	pac 15465: '250 total stages'; shared by weapons since G10: guide	kept
+534	To see your current My Mission	rule	CANT-VERIFY	pac 'Progress %d/ %d', 'Mission %d'; in game: SR Status page	kept
+534	General Quest Counter and the G Rank Quest Counter have a My Missions Quests row	menu	TRUE	dev/quest-where.md: General Quest Counter > My Missions Quests; G Rank Quest Counter > My Missions Quests	rewritten (HR and G Rank quest NPCs -> counter names)
+535	My Mission Tkt, which are fairly rare	name	TRUE	item 5755; pac 'Use My Missions Tickets', 'Complete with Gacha Coins', 'Premium Gacha Coins' 15470	rewritten (lottery coins -> Premium Gacha Coins)
+535	skip option is on the Guild Master	npc	CANT-VERIFY	guide; pac 'Use My Missions Tickets' menu; in game: talk to the Guild Master	kept
+535	The original guide says a day of premium gives 40	rule	DIFFERENT	existing note: course bonus not handed out	rewritten (attributed)
+536	Treat them as compulsory	rule	OPINION	guide	kept
+537	The SR Self Challenge Room	name	CANT-VERIFY	pac has no 'Self Challenge'; 'R Mission Info', 'S Mission Info' exist; in game: find the room via the SR display in your house	kept
+542	It has two NPCs, R and S	npc	CANT-VERIFY	pac 'R Mission Info', 'S Mission Info'	note added
+544	R gives challenges	npc	CANT-VERIFY	guide; in game: talk to R	kept
+545	S gives challenges	npc	CANT-VERIFY	guide; pac 15488 'SR500 opens the doors to Book of Secrets training missions!'	kept
+549	Select Challenge:	menu	CANT-VERIFY	pac 'Confirm Challenges', 'Confirm/Change Mission'; Select Challenge not in pac; in game: talk to R	kept
+550	Change Challenge Set:	menu	CANT-VERIFY	not in pac; in game: R menu	kept
+551	SR Stat Mission:	menu	CANT-VERIFY	not in pac (pac: 'SR My Missions'); in game: S menu	kept
+552	Manual:	menu	CANT-VERIFY	not in pac; in game: R/S menu	kept
+555	Guild Master in the main town square offers the same menu	npc	CANT-VERIFY	guide; in game	kept
+556	gachas at the Gacha Felyne (since 5 Nov)	rule	TRUE	existing note; changelog 5 Nov gacha	rewritten (Gacha Cat -> Gacha Felyne)
+562	Tech skill	name	TRUE	data/skills: SnS Tech, DS Tech, GS Tech, LS Tech, Hammer Tech, HH Tech, Lance Tech, GL Tech, AS F Tech, Tonfa Tech, MS Tech, LBG Tech, HBG Tech, Bow Tech	rewritten (Weapon Tech Skill -> Tech skill; guide name dropped)
+562	Super Earplugs and an attack multiplier	name	TRUE	skills Super Earplugs (lead rule Hearing -> Super Earplugs); multiplier values from guide	rewritten (Super High-Grade Earplugs -> Super Earplugs)
+562	at least 5 decorations	rule	CANT-VERIFY	guide; in game: Hiden decorations count	kept
+563	775 hunts	rule	CANT-VERIFY	425+... sums from the table (425+975+1375 souls etc); in game	kept
+563	#hiden-grind-guide	other	TRUE	guide-frontier-g-rank.html:609	kept
+568	SnS Tech	name	TRUE	skill SnS Tech (data/skills)	rewritten (Sword Saint removed)
+568	Sword Stone skills	name	CANT-VERIFY	skill names 'Sword Stone' not found; guide wording; Bomb Sword exists	kept
+568	Fencing	name	TRUE	skill Fencing exists	kept
+575	Gentle Shot	name	TRUE	skill Gentle Shot exists; 'Load Up' not found as a skill	kept
+576	AS F Tech	name	TRUE	skill AS F Tech	rewritten (Switch Axe Tech -> AS F Tech)
+583	becomes available at HR6	rule	CANT-VERIFY	guide; the brief Hiden notes; in game	kept
+586	#choosing-decorations	other	TRUE	guide-frontier-g-rank.html:575	kept
+590	Guild Priority Request targets	name	TRUE	pac 'Guild Priority Request(s)', 'Priority Request Targets'	rewritten (Priority -> Guild Priority Request)
+590	always 2 extra, and 5 more if you are on premium	rule	CANT-VERIFY	guide; in game: priority HC quest rewards	kept
+596	Low425	rule	CANT-VERIFY	grind numbers from guide	rewritten (Chinese characters removed)
+602	labels the Soul quests SR1-30	rule	OPINION	guide discrepancy note	kept
+603	The five HL Hiden Tkt after GR500	name	TRUE	item 14538 HL Hiden Tkt	rewritten (HL Hiden -> HL Hiden Tkt)
+603	25,000 RdP each and the True ones for 50,000	shop	TRUE	brief road shop round 3: Hiden decos GR 500 25k, True 50k	kept
+603	hv-hiden-decorations	other	TRUE	guide-frontier-g-rank.html:685	kept

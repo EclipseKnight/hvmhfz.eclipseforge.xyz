@@ -288,7 +288,8 @@ async function run() {
         check(width + " px guide: #" + id, (await page.locator("section#" + id).count()) === 1);
       }
       for (const band of GATES.bands) {
-        const hrefs = await page.$$eval("section#hr" + band.band + " a[href^='/quest.html?id=']", (as) => as.map((a) => a.getAttribute("href")));
+        // the generated Key/Urgent lists only: the hand-written stage box (.hb-stage) may link other quests
+        const hrefs = await page.$$eval("section#hr" + band.band + " a[href^='/quest.html?id=']", (as) => as.filter((a) => !a.closest(".hb-stage")).map((a) => a.getAttribute("href")));
         const want = band.keys.concat(band.urgent ? [band.urgent] : []).map((id) => "/quest.html?id=" + id);
         check(width + " px guide: " + band.label + " quests", JSON.stringify(hrefs.slice().sort()) === JSON.stringify(want.slice().sort()), hrefs.join(","));
         const first = await page.$eval("section#hr" + band.band + " h2", (h) => h.textContent);

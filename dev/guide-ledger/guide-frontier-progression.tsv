@@ -1,0 +1,148 @@
+line	claim	kind	verdict	evidence	action
+192	Account page Characters tab and Discord /next show the next step	other	TRUE	dev/check-next-step.js + dev/next-step-fixtures.json (API NextStepPlanner)	kept
+193	Server runs the last JP Frontier Z client with an English patch	rule	TRUE	/root/mhfz/AGENTS.md (client patch v1.30, ZZ client)	kept
+200	Path table: first-stage gear "The starter weapon"	rule	OPINION	basics: new hunters start with basic weapons (commit d573b904c); table cell is a stage label	kept
+201	Stage ends: HR1-HR4 Urgent (HR 99), HR5 Urgent (HR 299), HR6/7 -> GR 1	rule	TRUE	data/quest-gates.json bands 1-5 unlocksHr; hvmhfz_re docs/progression.md section 1	kept
+202	Gear plan per stage (Zerureusu weapon, Gou, Heavenly Storm, Newbie/Furogada/Samurai, GX, Zenith Z to ZX)	other	OPINION	the guide's advice (Fist), not a rule	kept
+203	Storm gear (guide: Heavenly Storm)	name	TRUE	data/quests.json names 'Storm Weapon Upgrade: Zerureusu' (50961), 'Storm Armor Upgrade: ...' (50970, 50979)	rewritten (Heavenly Storm -> Storm)
+205	GR 50-99 stage: G cuffs, Burst/Origin, G decorations; start the Road	other	OPINION	advice; Road from GR 1 (shop_items type 10 min_gr 1 rows)	kept
+206	GR 100-299: G Exotic quests, Exotic materials, GX set	rule	TRUE	quest-where: 17 quests under G Rank Quest Counter > G Hunter Quests > ※ G Exotic Quests; changelog.html:359 Exotic Gem/Bone/Shl	kept
+206	G Exotic Quests (GR 100-299 row)	name	TRUE	dev/quest-where.md '※ G Exotic Quests'; checker: capitals differ	rewritten (G Exotic quests -> G Exotic Quests)
+207	Zenith ★1-★3 at GR 300-899, ★4 at GR 900	rule	TRUE	data/quests.json form Zenith: Zenith★1 GR 300, ★2 GR 500, ★3 GR 700, ★4 GR 900 (offered lists)	kept
+209	End game gear bought with Road points	shop	TRUE	shop_items shop_type 10 shop 4 (Hiden decos) and 8 (cuffs, Raviente GX)	kept
+220	HR bands: HR1 = HR 1, HR2 = 2-30, HR3 = 31-50, HR4 = 51-99, HR5 = 100-299, HR6 = 300-998, HR7 = 999	rule	TRUE	hvmhfz_re docs/progression.md:69,78 (caps 1,30,50,99,299,998,999)	kept
+220	Key Quest counts 6/10/7/8/22/5; HR6 no Urgent	rule	TRUE	data/quest-gates.json keys per band; progression.md:86-88 (band 6 five Supremacy keys, no Urgent)	kept
+226	HR7 Urgent Quest takes you to G Rank	quest	CANT-VERIFY	progression.md:88-89 'guide's HR7 Urgent (Shantien) is not in this table'; no G Urgent Shantien quest in quest-where (G Urgent Quests holds only 54244)	kept (HR7 section says it is not traced)
+230	Key Quests are at General Quest Counter > Hunter Quests > rank ★ list, sorted first with a star crest	menu	TRUE	quest-where.json 22013 'General Quest Counter > Hunter Quests > ★1'; NPC name make-quest-where.py:55 (kind 0x28); crest/sorting from the guide	rewritten (was Quest Counter)
+231	Urgent appears at General Quest Counter > Hunter Quests > Urgent Quests after the keys and HR	menu	TRUE	quest-where.json 22030 path + note 'after the band's Key Quests'; progression.md:84-85	rewritten
+234	HR stops at the rank top until the Urgent; any quest raises HR to the cap	rule	TRUE	progression.md:69 characters.hr holds only cap values; gate rule progression.md:84	kept
+234	Lists give the monster form from the quest file	other	TRUE	dev/make-progression-guide.py (forms from data/quests.json)	kept
+243	Any world is fine to start	other	TRUE	worlds.html; AGENTS.md (11 channels)	kept
+244	Tutorial Gogomoa quest: coin from blue box to red box, kill Gogomoa	quest	CANT-VERIFY	the guide's walkthrough; no Gogomoa tutorial quest id found (q.py Gogomoa: none in Rookie counter lists)	kept
+245	Hunter Navi opens with Shift+C / R1+R2; read-this tasks give potions, whetstones, cheques	other	CANT-VERIFY	Hunter Navi = our name (n.py: system); keys and rewards from the guide; Hunter Navi on here (basics hv note)	kept
+245	Cheques sell at any box for their value	other	CANT-VERIFY	the guide's claim (basics #zeny-and-box-space)	kept
+246	Event Campaigns: New & Returning Hunter Pack once per character (Mega Potions, Max Potions, Mega Demondrugs, Armorskins, tickets, Tower Medals)	other	TRUE	DB event_campaigns 1001 'once'; event_campaign_items 1001: Mega Potion, Max Potion, Mega Demondrug, Mega Armorskin, Goushu Ticket, Guild Point Tkt, Sigil Mat Ticket, Tower Medal	kept
+246	Weekly Supply Drop every Monday; Ticket Gifts once per character (production and event tickets); items go to the item box	other	TRUE	DB event_campaigns 1002 weekly 'Monday 00:00 JST', 1003 once 'Production and event tickets'; changelog.html:736	kept
+247	Gifts via Claim Items at the Gacha Felyne; Poogie Dressup! gives outfits 1-30	other	TRUE	DB distribution 2 '~C15Poogie Dressup!' items type 15 ids 1-30; Claim Items / Gacha Felyne = our names (n.py)	kept
+247	10 trial coins every Monday	other	TRUE	DB distribution 39 'Weekly Gacha Coins' item type 20 qty 10; /root/mhfz/docs/gacha-design.md:30,243	kept
+247	Daily Free Draw: 3 free draws a day	other	TRUE	changelog.html:688	kept
+248	Controls at Options > Input Options	menu	TRUE	dev/guide-terms.tsv 'Input Options' (guide's Control Options), high	rewritten (was Control Options)
+249	Halk joins every quest and heals/buffs/attacks; Gu-ku Farm gives materials once per quest	other	CANT-VERIFY	Halk = our name (n.py system); Helper Area and Gu-ku Farm from the guide (no client string for 'Gu-ku Farm')	kept
+251	Starting gear: basic weapons in the box	rule	TRUE	commit d573b904c (new characters start with the basic weapons, not a Gou weapon)	rewritten (was 'starter weapon is stronger than anything you can make')
+252	First Key Quests at the General Quest Counter, the receptionist in black at the middle counters	npc	TRUE	quest-where.json ★1 paths; NPC kind 0x28 'General Quest Counter' (make-quest-where.py:55); look and place from the guide	rewritten (was 'the Quest Counter (the guild girl in black')
+261	HR1 Key Quests at General Quest Counter > Hunter Quests > ★1	menu	TRUE	quest-where.json 22013, 22011 '... > ★1'	rewritten
+262	HR1: basic weapons are enough; craft at the Blacksmith to learn	other	OPINION	advice	rewritten (starter weapon -> basic weapons)
+268	HR1 Key Quests (6) and Urgent 22030, linked	quest	TRUE	generated by dev/make-progression-guide.py from data/quest-gates.json; quest-where all offered (★1 / Urgent Quests)	kept
+276	Generated Urgent lines say 'Quest Counter > Hunter Quests > Urgent Quests'	menu	TRUE	quest-where path 'General Quest Counter > Hunter Quests > Urgent Quests'; text is written by dev/make-progression-guide.py:24 URGENT_WHERE (not my file): lead to change it to 'General Quest Counter'	kept (generator)
+276	Urgent Quest appears in General Quest Counter > Hunter Quests > Urgent Quests after the Key Quests	menu	TRUE	dev/quest-where.md General Quest Counter > Hunter Quests > Urgent Quests; generated by dev/make-progression-guide.py URGENT_WHERE	rewritten (generator constant 'Quest Counter' -> 'General Quest Counter', lists regenerated)
+287	Powercharm (+6 attack), Armorcharm (+16 defence)	name	TRUE	data/item-ids.json 35 Powercharm, 37 Armorcharm; effects from the guide	kept
+287	Charms sold at the shop for 36,000z / 24,000z	shop	CANT-VERIFY	no shop_items row for items 35/37 (DB query shop_items where item_id in (35,37): 0 rows; town store list is client-side); General Store = guide-terms npc (high)	rewritten ('the shop (the pink guildie)' -> the original guide's General Store)
+288	House upgrade for the Partner costs 10,000z	shop	CANT-VERIFY	the guide; no data	kept
+288	Partner made at the Rasta bar from a Legendary Rasta; DS or SnS best	other	CANT-VERIFY	the guide (basics #partner); AI quality = OPINION	kept
+289	Contracted player Rasta fights with you and earns GCP	other	CANT-VERIFY	the guide (systems #rasta)	kept
+290	Caravan Gem from the Caravan leader by the bonfire; first skill Recovery Items Up	npc	CANT-VERIFY	Recovery Items Up = our skill (n.py); カシラ (Kashira) is "the Boss" in our client (hvmhfz_re data/translations/shipped/mhfpac.tsv 88d01, quiz "Name of Palone Caravan's leader?"); gem handout untested here	rewritten (Kashira -> the Caravan's leader (the Boss))
+291	Join a guild (the game says Clan); newbie guild fails here	rule	TRUE	basics.html #newbie-guild-and-bentos 'Joining the newbie guild always fails here'; Clan = client word (guide-terms 'Clan Rank')	rewritten (removed 'at the Guild Manager in town: leave the newbie guild first'; 'Guild Manager' has no client name)
+291	Guild meal lasts 7 days	rule	TRUE	changelog.html:781 'Guild meals now last 7 days'	kept
+291	Guild treasure hunts cost nothing	rule	TRUE	hvmhfz_re docs/guild-treasure.md:136-137 'Erupe always sends 0, so no cat costs anything'	kept
+291	guild (the game says Clan)	name	TRUE	dev/quest-where.md 'Clan Quests'; checker flags lower-case 'guild' vs quest category 'Guild' (ordinary word)	kept
+293	Low/High Rank armour upgrade = one Armor Sphere per level since v1.19	rule	TRUE	AGENTS.md 8-9 Nov: v1.19 'armour sphere upgrade costs'; hvmhfz_re docs/armor-sphere-patch.md	kept
+296	Some Key Quests need a higher HR (from HR N)	rule	TRUE	data/quests.json reqHr (generator notes)	kept
+300	HR2 Key Quests (10) and Urgent 21974	quest	TRUE	generated; quest-where offered (★2 / Urgent Quests)	kept
+312	Urgent Quest appears in General Quest Counter > Hunter Quests > Urgent Quests after the Key Quests	menu	TRUE	dev/quest-where.md General Quest Counter > Hunter Quests > Urgent Quests; generated by dev/make-progression-guide.py URGENT_WHERE	rewritten (generator constant 'Quest Counter' -> 'General Quest Counter', lists regenerated)
+321	Transcend opens at HR3; books from Hunter Festival prizes and the Road shop	rule	TRUE	commit da7bed267 (Road shop Special tab Power/Purity Ritual books); data/sources/road-shop-8.json	kept
+321	A town event at HR 31 introduces the Sky Corridor	other	CANT-VERIFY	no source found in data; the guide	kept
+322	Box grows with rank; no need to buy space	rule	CANT-VERIFY	item-box page claims; no server data	kept
+328	HR3 Key Quests (7) and Urgent 22045	quest	TRUE	generated; quest-where offered	kept
+337	Urgent Quest appears in General Quest Counter > Hunter Quests > Urgent Quests after the Key Quests	menu	TRUE	dev/quest-where.md General Quest Counter > Hunter Quests > Urgent Quests; generated by dev/make-progression-guide.py URGENT_WHERE	rewritten (generator constant 'Quest Counter' -> 'General Quest Counter', lists regenerated)
+346	My Tore opens at HR4 via the house door with the pig icon; daily Tore Points from its manager	other	TRUE	decoded mhfpac.bin 'You can go to My Tore if HR4 or higher'; 'Tore Points' (pac); door icon CANT-VERIFY	rewritten (HR3 or HR4 -> HR4; guide's Pugi Farm/Pugi names dropped; My Tore Points -> Tore Points)
+346	Poogie outfit + cuff add skill points; Poogie Dressup! outfits enough	other	CANT-VERIFY	DB distribution 2 (outfits 1-30); cuff effect from the guide	rewritten (Pugi Cuff -> Skill Cuff, pac '[Skill Cuff]')
+353	HR4 Key Quests (8) and Urgent 21976	quest	TRUE	generated; quest-where offered	kept
+363	Urgent Quest appears in General Quest Counter > Hunter Quests > Urgent Quests after the Key Quests	menu	TRUE	dev/quest-where.md General Quest Counter > Hunter Quests > Urgent Quests; generated by dev/make-progression-guide.py URGENT_WHERE	rewritten (generator constant 'Quest Counter' -> 'General Quest Counter', lists regenerated)
+371	HR5: 22 Key Quests, 21 Hardcore; Urgent = Supremacy Odibatorasu repel	quest	TRUE	data/quest-gates.json band 5; forms in data/quests.json; 21995 monsters Odibatorasu, Supremacy Quest	kept
+374	Guild Master starts Style Rank (Heaven/Storm, SR skills, Hardcore)	npc	CANT-VERIFY	Guild Master = our npc (guide-terms high); the trigger is the guide's	kept
+374	Styles set in Change Equipment > Equip Book of Secrets	menu	CANT-VERIFY	guide-terms: 'Change Equipment' high; 'Equip Book of Secrets' no exact string (low)	kept
+375	Hardcore switch on the last screen before a quest	menu	CANT-VERIFY	the guide	kept
+376	HR Exotic Quests at General Quest Counter > Hunter Quests > ※ Exotic Quests from HR 100 (Zinogre, Nargacuga, Brachydios)	quest	TRUE	quest-where: 15 quests '※ Exotic Quests', all rankNeed HR 100 (22083 Zinogre, 22078 Nargacuga, 22081 Brachydios)	linked + rewritten path
+377	GCP shop = Diva items, no Lao-Shan Claws or wyvern materials	shop	TRUE	DB shop_items shop_type 5 shop_id 5: 135 rows (task brief: Diva rows only); Lao-Shan Claw = our name (n.py)	kept
+377	GCP buys Partner skills	other	CANT-VERIFY	the guide (Partner skills); Diva shop TRUE above	kept
+379	HR5 mixed set lasts until G Rank	other	OPINION	the guide's advice	kept
+385	HR5 Key Quests (22) and Urgent 21995	quest	TRUE	generated; quest-where offered ★5 / Urgent Quests	kept
+409	Urgent Quest appears in General Quest Counter > Hunter Quests > Urgent Quests after the Key Quests	menu	TRUE	dev/quest-where.md General Quest Counter > Hunter Quests > Urgent Quests; generated by dev/make-progression-guide.py URGENT_WHERE	rewritten (generator constant 'Quest Counter' -> 'General Quest Counter', lists regenerated)
+418	Supremacy materials upgrade Gou gear past Heavenly Storm; HS sharpness +1 on Gou/Supremacy quests	rule	CANT-VERIFY	the guide (hunter-rank #exotic-and-supremacy)	kept
+418	Storm gear (guide: Heavenly Storm)	name	TRUE	data/quests.json names 'Storm Weapon Upgrade: Zerureusu' (50961), 'Storm Armor Upgrade: ...' (50970, 50979)	rewritten (Heavenly Storm -> Storm)
+419	Storm gear (guide: Heavenly Storm)	name	TRUE	data/quests.json names 'Storm Weapon Upgrade: Zerureusu' (50961), 'Storm Armor Upgrade: ...' (50970, 50979)	rewritten (Heavenly Storm -> Storm)
+425	HR6 Key Quests (5 Supremacy)	quest	TRUE	generated; quest-where ★6 offered	kept
+434	HR6 -> HR7 (HR 999) after the 5 keys: not traced	rule	CANT-VERIFY	progression.md:88-89, 410	kept
+441	HR7 Shantien airship repel posted by the 'G Rank guildie'	quest	DIFFERENT	no Shantien urgent in any offered list (q.py --monster Shantien: only Conquest 23585-23588 offered); progression.md:88 not in the gate table; 'G Rank guildie' is a nickname	rewritten (attributed to the original guide; not in our lists; ask in Discord)
+441	Switch SR skill to Affinity Up	other	OPINION	the guide's advice; SR skill names not in our data (n.py Affinity Up: no match)	kept
+442	Guild Master starts G Rank after the repel	npc	CANT-VERIFY	the guide	rewritten (attributed)
+449	G Rank has no Key Quests; all G★1-7 open from GR1	rule	TRUE	progression.md:17	kept
+449	GR 999 = 13,716,950 GRP	rule	TRUE	/root/mhfz/docs/research/2026-11-17-gr-points.md:23	kept
+453	GR1: G★1-7 lists and G Rank Event Quests	menu	TRUE	quest-where paths 'G Rank Quest Counter > G Hunter Quests > G★N Quests', 'G Rank Quest Counter > Event Quests' (92)	rewritten (was 'G Rank counter > G Hunter Quests')
+454	GR 50: G Rank License, 60 Tore Points from the My Tore manager	name	CANT-VERIFY	decoded mhfpac.bin 'G Rank License'; 60P and GR 50 from the guide	rewritten (G Rank Pugi Cuff Licence -> G Rank License)
+454	Basic Hiden cuffs from GR 50 (Road shop)	shop	TRUE	DB shop_items type 10 shop 8 min_gr 50: 14 rows 10000 (16160 SnS・Basic .. 16290)	kept
+454	Where (GR table): My Tore; Road Points Exchange	menu	TRUE	decoded mhfpac.bin 'Road Points Exchange' (guide-terms menu); 'My Tore' guide-terms high	rewritten (My Tore (Pugi Farm); Road shop -> My Tore; Road Points Exchange (the Hunting Road shop))
+455	GR 100: G Exotic Quests (★8), Musou Zinogre/Nargacuga/Deviljho ask GR 100	quest	TRUE	quest-where ※ G Exotic Quests 17; q.py Musou: 55535 Zinogre, 55534 Nargacuga, 55530 Deviljho G★8 GR 100 at 'G Rank Quest Counter > Event Quests'	rewritten path; capitals fixed
+456	GR 150: Hiden G cuffs, same tab as Raviente GX decorations	shop	TRUE	DB shop 8 min_gr 150 14 rows 20000 (16161 SnS・G); Raviente GX in shop 8 (data/sources/road-shop-8.json 'Special')	kept
+456	Where (GR150, GR350, GR500, GR900 rows): Road Points Exchange	menu	TRUE	decoded mhfpac.bin 'Road Points Exchange'	rewritten (Road shop -> Road Points Exchange)
+457	GR 300: Zenith ★1, Zenith materials in the Road shop	shop	TRUE	quests.json Zenith★1 GR 300; DB shop 6 (G materials) min_gr 300: 84 rows	rewritten path (G Rank Quest Counter > Zenith Quests > Zenith Monster Quests)
+458	GR 350: top Hiden (style) cuffs	shop	TRUE	DB shop 4 min_gr 350: 112 rows 35000 (16162 SnS・S. Atk)	kept
+459	GR 500: Zenith ★2; Hiden and True Hiden decorations	shop	TRUE	quests.json Zenith★2 GR 500; DB shop 4 min_gr 500: 112 rows 25000-50000 (9254 SnS Hiden· White .. 15549 MS True· Blue)	kept
+460	GR 700: Zenith ★3	rule	TRUE	quests.json Zenith★3 GR 700 (29 offered)	kept
+461	GR 800: Upper Shiten Key/Lock (Special tab); Musou Bogabadorumu GR 800	shop	TRUE	DB shop 8 min_gr 800: 14614 Upper Shiten Key, 14615 Lock; q.py 55948/55949/56128/56152 Bogabadorumu GR 800 at G Rank Quest Counter > Event Quests	rewritten (path added)
+461	H.Road/Sky Corridor counter, Special tab	menu	CANT-VERIFY	counter label 'H.Road/Sky Corridor' = owner's patch label (hvmhfz_re docs/tower-npc.md:4, sky-corridor-overview.md:55); 'Special tab' of the shop not in client strings checked	kept (allowlisted against guide-terms' older 'Hunting Road Counter')
+462	GR 900: Zenith ★4, GRP quests, Extreme Raviente GX decorations	shop	TRUE	quests.json Zenith★4 GR 900; GRP quests GR 900 (hvmhfz_re docs/grp-quests-gr900.md); DB shop 8 min_gr 900: 10 rows 60000	rewritten ('the 30 GRP quests' -> 'the GRP quests'; path)
+463	GR 999: UL mode, SR food, GR999 armour store; Hiden Stamps in the Road shop	shop	CANT-VERIFY	Hiden Stamps TRUE: DB shop 8 min_gr 999 14 rows 2500 (15267 Hiden Stamp・SnS); UL/SR food/armour store from the guide (page says so)	rewritten ('Warehouse Manager' has no client name -> 'the armour store')
+467	Zenith tiers moved to GR 300/500/700/900 on 17 Nov; Road Zenith materials GR 300	rule	TRUE	changelog.html:360; quests.json rankNeed	kept
+469	92 older Zenith quests show the old GR; smithy Zenith menu from GR 200	rule	TRUE	changelog.html:360	kept
+470	G Exotic at GR 100 here, HR Exotic needs HR 100	menu	TRUE	changelog.html:359; quest-where paths	rewritten (menu words)
+471	No GR 800 Finesse gate; Exotic Gem/Bone/Shl from G Exotic clears 1-4 by monster	source	TRUE	changelog.html:359 (lists the same monsters); hvmhfz_re docs/zenith-gr-exotic.md	kept
+472	GRP quests need GR 900 since 24 Nov; the four built-in ones show at any GR until the next patch	quest	TRUE	hvmhfz_re docs/grp-quests-gr900.md (30 quests, 180 files; mhfinf step only in pre13-16, stable v1.30); quest-where: 11 offered (54593, 40241, ...), 23352/23374/23375 unconfirmed (My Missions menu), 23328 Superior Quests	rewritten (count fixed; 6 quests linked; Superior Tkt = item name)
+483	GSR and Extreme Style start at the Guild Master in G Rank	rule	CANT-VERIFY	the guide (systems #gsr)	kept
+484	Hunter Navi G Rank tasks Series 1-3: Newbie set, Gurenzeburu decorations, Furogada/Samurai	other	CANT-VERIFY	g-rank-start #hunter-navigation (checked in that page's ledger); 'Samurai' set name not in our armour data (n.py)	kept
+485	Each G star above ★1 lowers defence by 150	rule	CANT-VERIFY	the guide	kept
+486	My Missions give ~20 Attack Ceiling levels	other	OPINION	the guide	kept
+488	G8 event weapon or prep weapon	other	CANT-VERIFY	g-rank-start #easy-equipment	kept
+489	GR 1-49 where: G Rank Quest Counter > G Hunter Quests > G★1-7 Quests	menu	TRUE	quest-where labels 'G★1 Quests'..'G★7 Quests'	rewritten
+492	hv note: all G★1-7 open from GR 1 here	rule	TRUE	progression.md:17	kept
+501	G Rank License 60 Tore Points from the My Tore manager	shop	CANT-VERIFY	decoded mhfpac.bin 'G Rank License'; price from the guide	rewritten (name; Pugi cuffs -> Skill Cuffs)
+502	Series 3: Burst gear, Origin weapons, Voljang	other	CANT-VERIFY	g-rank-start #series-3	kept
+504	Road at the H.Road/Sky Corridor counter; RdP buy decorations, Raviente materials, Tower gems, Hiden cuffs/decos GR 50-500 (25,000 / 50,000)	shop	TRUE	dev/quest-where.md 'H.Road/Sky Corridor (our patch, counter type 16)'; DB shop 4/8 rows above; changelog.html:191	kept
+507	GR 50-99 where	menu	TRUE	quest-where labels	rewritten
+518	G Exotic open at GR 100, 1-4 Exotic materials per clear	rule	TRUE	changelog.html:359	kept
+519	G Lv50 costs 50 of one material	rule	CANT-VERIFY	g-rank #exotic-and-finesse	kept
+520	G Class decorations	other	CANT-VERIFY	g-rank-start #g-class-decorations	kept
+521	Musou Zinogre/Nargacuga/Deviljho at GR 100 in G Rank Event Quests	quest	TRUE	q.py --cat musou: 55535/55534/55530 G★8 GR 100 offered at 'G Rank Quest Counter > Event Quests'	linked + rewritten (was 'in the G Event Quests')
+522	Attack Ceiling ~25 levels	other	OPINION	the guide	kept
+525	GR 100-299 where	menu	TRUE	quest-where labels	rewritten
+536	Zenith quests at G Rank Quest Counter > Zenith Quests > Zenith Monster Quests; tiers GR 300/500/700; every quest there is Zenith	quest	TRUE	quest-where: 128 quests in that list, all form Zenith (data/quests.json)	rewritten (menu path)
+537	Breaking the special part gives the tier key material; other materials drop on every tier	source	CANT-VERIFY	the guide (zenith page)	kept
+538	55 resistance before a new blight	rule	CANT-VERIFY	the guide (zenith #blights-and-status)	kept
+539	Road shop Zenith materials from GR 300, G materials tab	shop	TRUE	DB shop_items type 10 shop 6 min_gr 300: 84 rows; data/sources/road-shop-6.json 'G materials'	kept
+541	Gear: Zenith armour Z to ZX, ZX Lv1 enough	other	OPINION	the guide	kept
+553	Zenith ★4 at GR 900; 3-5 kills with the part broken	rule	TRUE	quests.json Zenith★4 GR 900; kill count = OPINION	kept
+554	GRP quests at G Rank Quest Counter > Event Quests from GR 900	quest	TRUE	quest-where: 10 of the 11 offered GRP quests at 'G Rank Quest Counter > Event Quests' (40236 under Zenith Monster Quests)	rewritten ('The 30' dropped, path added)
+555	GSR to 999 per weapon; Passive Master, Secret Technique; 11 weapons -> Soul Revival	name	CANT-VERIFY	SR skill names not in our data (n.py: no match); the guide	kept
+558	GR 900 -> 999 = 2,371,050 GRP	rule	TRUE	gr-points.md: 13,716,950 - 11,345,900	kept
+560	v1.30 checks weapon GSR on GRP quests; fix on the Test land	rule	TRUE	hvmhfz_re docs/grp-quests-gr900.md parts 276, 278	kept
+567	Road: player votes; party/solo Road chosen apart (!road, !road solo, Account Game options)	rule	TRUE	AGENTS.md 16 Nov (solo and party Road chosen apart); guide-roads.html	kept
+567	Road shop sells Road gems, decorations, cuff tickets, Zenith materials, Tower books/gems, Divine Power Gems, Skill Slots Up, Hiden Stamps	shop	TRUE	data/sources/road-shop-*.json; changelog.html:503 (Skill Slots Up repriced); Divine Power Gem = item name (n.py)	kept
+568	Sky Corridor gives Tower Medals, gems, decorations; no guild needed; 3rd/4th Districts are ours (Zenith ★2-3 / ★4 +25%)	rule	TRUE	sky-corridor.html; AGENTS.md (guildless tower clears, ExtraDistricts); hvmhfz_re docs/sky-corridor-districts.md	kept
+568	Tower > Daily Rewards 5 Tower Medals a day	menu	TRUE	changelog.html:496; guide-terms 'Daily Rewards' (Tower > Daily Rewards) high	kept
+568	Tower quests in the Hunting Road list on v1.30	menu	TRUE	dev/quest-where.md 'on v1.30 also the Sky Corridor quests'	kept
+569	63 Tower weapons from a Tower book, levelled with gems; 17 Zenith ones need a Zenith part	npc	TRUE	changelog.html:259 (63 Tower weapons); Tower Gear Felyne = guide-terms npc (n.py matched); 17 Zenith from tower-weapons.html	rewritten ('the Tower smithy' -> Tower Gear Felyne)
+569	Tower gems in Road shop bundles and Diva GCP shop 30 for 180-300 GCP	shop	TRUE	hvmhfz_re docs/tower-upgrades.md:139,230; DB shop 10/2 items 11159-11161	kept
+570	Raviente for up to 32 hunters, joined at Kieru; !ravi start	npc	TRUE	'Kieru' is a client name (mhfpac.tsv 5de24 'Kieru Talk'); changelog.html:204 (!ravi start)	kept
+570	Road shop Raviente prices: 200 RdP materials; GX 20k/30k/40k; Extreme 60k from GR 900	shop	TRUE	changelog.html:190,192; DB shop 8 min_gr 900 10 rows 60000	kept
+570	Raviente weapons to level 100, Zenith ★4 line	rule	CANT-VERIFY	hvmhfz_re docs/raviente-weapons.md (not re-read)	kept
+571	Hiden decorations 25,000 / True 50,000 from GR 500; cuffs Basic 10k GR 50, G 20k GR 150, top 35k GR 350, 8 per type	shop	TRUE	DB shop 4 min_gr 500 (112 rows), shop 8 min_gr 50/150, shop 4 min_gr 350 (112 = 14 x 8); names n.py matched; changelog.html:191	kept
+572	UL at GR 999 (blue flame), Zenith ★3-4 strength, Up sigils, double Hiden materials; UL clears give Hiden Stamps	rule	CANT-VERIFY	UL rules from the guide; Hiden Stamps TRUE changelog.html:503	kept
+573	Musou and Upper Shiten clears 2% Prayer Stone	source	TRUE	changelog.html:503	kept
+574	Attack Ceiling 80-130 levels end game	other	OPINION	the guide	kept
+575	Event lanes: Festival and Diva Defense; Speedrun Cup and VS Bracket; MezFes every day; gifts GW Lottery Tickets + Trial Coin G; no dates	rule	TRUE	AGENTS.md release 1105 (two lanes), 4 Nov (MezFes every day); changelog.html:392; known leftover 'running since 4 Nov' is gone (no dates on the page)	kept
+576	Daily: 3 free draws, 5 Tower Medals, My Tore Points; Monday: 10 trial coins, Weekly Supply Drop	other	TRUE	changelog.html:688, 496; DB distribution 39, event_campaigns 1002	rewritten (Gacha Cat -> Gacha Felyne, our NPC name)
+577	Quest builder	other	TRUE	quest-editor.html	kept
+586	Test land: endless Sky Corridor, Districts at Tower Rank 51/100/200, District Progress	rule	TRUE	changelog.html:251; AGENTS.md 24 Nov (District Progress, pre9+)	kept
+587	Test land: cheaper Raviente levels, solo sieges (Extreme Berserk GR 900), tower gems only from the Sky Corridor	rule	TRUE	changelog.html:220	kept
+588	Test land: GRP quests on GR 900 only	rule	TRUE	grp-quests-gr900.md part 278	kept
+592	Credit line	other	TRUE	page is ours (no Fist credit needed)	kept
