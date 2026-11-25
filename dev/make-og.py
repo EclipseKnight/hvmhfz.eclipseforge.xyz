@@ -95,12 +95,12 @@ PAGES = {
     "guide-frontier-menus": ("Menus and town NPCs", "In-game menus, chat, Guild Card and every NPC"),
     "guide-frontier-systems": ("Game systems", "Navi, Partner, Halk, Poogie, guild, Diva, Road, Tower"),
     "guide-frontier-monsters": ("Monsters", "The monster list, status effects and special rules"),
-    "guide-frontier-progression": ("Progression", "Key and Urgent Quests by HR, then GR milestones"),
+    "guide-frontier-progression": ("Progression", "From HR1 to the end game, step by step"),
     "guide-frontier-quests-food": ("Quests and food", "Finding quests, quest cards, food buffs and bentos"),
     "guide-frontier-tools": ("Tools and references", "Set builders, sigils, area maps and tables"),
     "guide-frontier-transcend": ("Transcend", "The timed buff you charge during quests"),
     "guide-frontier-weapons": ("Weapons and sigils", "The 14 weapon types, families and sigils"),
-    "guide-frontier-zenith": ("Zenith", "GR200 and up: Zenith monsters, armour and weapons"),
+    "guide-frontier-zenith": ("Zenith", "GR300 and up here: Zenith monsters, armour and weapons"),
 }
 
 ELEMENTS = ("fire", "water", "thunder", "ice", "dragon")
