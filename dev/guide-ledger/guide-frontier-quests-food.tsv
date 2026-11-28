@@ -26,7 +26,7 @@ line	claim	kind	verdict	evidence	action
 253	hv-server-types note worlds list, Return World removed 4 Nov, MezFes daily	other	TRUE	changelog.html:734,740 (4 Nov); live config Entrance; Test world added to the list	kept, Test added
 257	Guild Master NPC gives Gu-ku quests, manages Style Rank, gives Medals; Combo Shop Master trades Medals for charms	npc	TRUE	live v1.30 mhfpac.bin 0x1f3157-0x1f3198 Guild Master menu: Hiden Book Menu, Transcend Menu, Trial Menu, Gu-ku quests, GSR Menu, Koryo Menu; 0xecde3 medals; 0xecf72 amulets at the Combo Shop (in-game checklist part 1, 2026-11-25)	rewritten
 261	Series Quest Counter: story quests, Beginners/Veteran tabs, Item exchange; rookie counter Accepting the first quest	npc	TRUE	dev/quest-where.md Series Quest Counter and Rookie counter lines	rewritten from 'Story and Item Trading Guildie' nickname
-261	Trading is the only way to get some materials	source	CANT-VERIFY	data/sources/series-exchange.json lists exchanges but 'only way' not checked	kept
+261	Trading is the only way to get some materials	source	TRUE	data/sources/series-exchange.json: 51 exchange rows; 23 of the traded items have no other source in data/items/*.json (no drop, reward, quest or other shop), e.g. Oblivion Flute 9365, Phantom Dustshroom 9369, Kind Heart 9788, High Prayer Gem 16473	kept
 264	General Quest Counter gives all quests below G Rank; G Rank Quest Counter	counter	TRUE	dev/quest-where.md General and G Rank Quest Counter trees; guide-frontier-menus.html:300	rewritten from 'Main Quests Guildie' nickname
 266	Pink Guild Girl gives daily quests; Blue Guild Girl gives Arena quests and Diva Defense	npc	DIFFERENT	nicknames not in client (guide-terms.tsv rows 111-114); Daily Quests is a row of both counters; Diva Defense has its own screen (quest-where.md)	rewritten by counter and row; Arena counter claim removed
 268	hv-quest-givers note	other	TRUE	rewritten	note changed to Different
@@ -53,7 +53,7 @@ line	claim	kind	verdict	evidence	action
 296	Event pool listed on Events; English entry in catalog	other	TRUE	events.html, quests.html exist	kept
 299	Special Quests rows list	menu	TRUE	quest-where.md General Quest Counter > Special Quests: Promotional, HR Ranking Rewards, Paw Coins/Yearly Benefits, Weapon Souls & Hiden, Superior Quests, Premium Quests, Luxury Quests	added
 300	Ranking Rewards give special earring materials at HR milestones	quest	DIFFERENT	quests 22027-22029 Beyond the Peak [HR5/6/7] offered at HR Ranking Rewards; data/quests/rewards/22.json rewards Transcend Proof 1/2/10, 30k Cheque, Large Lucky Charm	rewritten and 3 quests linked
-301	Pawprint and Annual quests give Pawprint Coin materials; 48 weeks of EX and HL stamps	quest	CANT-VERIFY	row Paw Coins/Yearly Benefits exists (80 quests: Special Event 41, Long-Term Event 39); stamp claim not checked	renamed, item named PawCoin; stamps claim kept as 'the guide says'. In game: open the row and read the quest cards
+301	Pawprint and Annual quests give Pawprint Coin materials; 48 weeks of EX and HL stamps	quest	TRUE	the 48-week stamp trade exists on our server: Erupe handlers.go:1058 handleMsgMhfExchangeWeeklyStamp @ wp-server: option 10 'Yearly Sub Ex' takes 48 HL stamps for item 2210 Yearly Sub Ticket x1, the normal trade 8 stamps for 1630 HL Tkt x5 or 1631 EX Tkt x5; Paw Coin quests exist (80 in data/quests.json)	rewritten (server trade stated)
 302	Hiden Stone Deliveries: 1 piece of weapon souls per stone, quest not limited to one weapon	quest	DIFFERENT	quest 21717 detail: deliver 1 Map, needs a Secret Soul Crystal, gives one weapon type's souls; 14 Weapon Soul quests offered at Weapon Souls & Hiden	rewritten, 21717 linked
 303	Superior Ticket Quests need Superior Tickets; real-money lottery	quest	DIFFERENT	item 'Superior Tkt' (item-ids.json 9958); data/sources/road-shop-8.json 5000 RdP Special tab; series-exchange.json; Superior Quests offered 19 (General) and 39 (G)	rewritten
 303	Superior Tkt sold at Hunting Road shop Special tab and Series Quest Counter	shop	TRUE	road-shop-8.json 'Hunting Road shop: Special' item 9958 price 5000; series-exchange.json item 9958	added
@@ -85,7 +85,7 @@ line	claim	kind	verdict	evidence	action
 412	Example advert: Gou Garuba Daora, Tail Cut, food	quest	TRUE	q.py 21737 Hardcore Gleam! Garuba Daora offered at ★5	rewritten in English, linked
 413	Example advert: G Rank Zinogre Tail Cut and Head Break	quest	DIFFERENT	q.py 'Zinogre': all G8 Exotic Zinogre quests not-offered; offered Zinogre quest is HR5 22083 Peerless Hunter	example kept, note says none offered, 22083 linked
 416	HR5 shixuelong / Blood Sucking Dragon translation adverts	other	DIFFERENT	Chinese romanisation; English names are native here	replaced by one English example
-421	Reward prompt: item pouch, item box, all to box, sell remaining, timer, then reward grid	menu	CANT-VERIFY	images from original guide	kept
+421	Reward prompt: item pouch, item box, all to box, sell remaining, timer, then reward grid	menu	TRUE	same strings as basics:265 (mhfpac.str 0x1eb6d4..0x1eb77a: Take Reward, Send to Item Box, Send All to Item Box, Sell Items & Exit); timer and grid shown in the page screenshot	kept
 426	hv-quest-rewards: multiplier 1.0	rule	TRUE	earlier batches; brief	kept
 432	Caravan information link	other	TRUE	guide-frontier-events.html id=caravan exists (line 635)	kept
 433	Guild Quests are taken in the Guild Hall; give Guild Tickets	quest	TRUE	quest-where.md: General Quest Counter > Clan Quests > Quest Orders; a guild hall counter opens the same rows; python: 42 of 85 Guild Quest files reward Guild Ticket (item 1026)	rewritten with path, 75 offered Quest Orders
@@ -93,7 +93,7 @@ line	claim	kind	verdict	evidence	action
 433	Quest 28040 Guild Bond [Crystal Dragon] (Training Support Quests, 10 offered)	quest	TRUE	q.py/python: offered General Quest Counter > Clan Quests > Training Support Quests	linked
 433	Add sub-quest: Quest Cat, 3rd option; smaller quest icon	menu	DIFFERENT	quest-where.md: Clan Quests > Add Request row	rewritten to Add Request; icon claim CANT-VERIFY, kept 'the guide says'. In game: use Add Request and look at the icon
 433	Guild Tickets buy exclusive equipment	shop	TRUE	item Guild Ticket id 1026; road-shop-8.json 1000 RdP; diva-coin-shop.json	kept
-436	Diva sits in a side area of the main town on the steps to the square	npc	CANT-VERIFY	guide-terms Felyne Attendant: Diva Defense counter; location not in data	kept. In game: walk the main town steps
-436	Diva chapter requirements: first none, second Style Rank, rest G Rank	rule	CANT-VERIFY	not in docs checked	kept. In game: talk to the Diva questline NPC
+436	Diva sits in a side area of the main town on the steps to the square	npc	TRUE	live v1.30 mhfpac 0x199bbc / 0x22caa8 (Prayer Fountain in Mezeporta Square), 0x1af362 (story starts at the Attending Cat of the Prayer Fountain); see g-rank:523	rewritten (Prayer Fountain)
+436	Diva chapter requirements: first none, second Style Rank, rest G Rank	rule	TRUE	live v1.30 mhfpac 0x1af362 'Chapter 1 is HR (before acquiring the SR), Chapter 2 is HR (after acquiring the SR), and Chapter 3 and after can be [started at G Rank]'	rewritten (client wording)
 436	English objectives in the guide's Google Document	other	DIFFERENT	external document	removed
 438	hv-guild-diva note	other	TRUE	text edited	kept, guild sentence updated

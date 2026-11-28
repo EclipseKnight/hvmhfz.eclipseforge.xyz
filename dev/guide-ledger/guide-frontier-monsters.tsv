@@ -13,39 +13,39 @@ line	claim	kind	verdict	evidence	action
 303	Hitzones, HP, carves on our monster field guide, one page each	other	TRUE	data/monsters/*.json exist for every linked slug; check-links OK	kept
 310	Small monsters list	name	TRUE	index.json: all linked slugs match names; Hermitaur hermitaur, Ceanataur ceanataur, Poison Light Bug poison-light-bug	kept; Hermitaur and Ceanataur linked
 336	Baby Gogomoa	name	CANT-VERIFY	no monster of that name in index.json (gs.py mon baby: none)	rewritten as Gogomoa's baby (carried by the adult); in game: Monster Hunter field guide or a Gogomoa fight, see the baby's name
-349	Crystallisation: stamina to minimum, crystals explode; caused by Akura Vashimu, Akura Jebia, Garuba Daora, Mi Ru	other	CANT-VERIFY	monster names TRUE (index.json); effect is client behaviour, not in site data	kept
+349	Crystallisation: stamina to minimum, crystals explode; caused by Akura Vashimu, Akura Jebia, Garuba Daora, Mi Ru	other	CANT-VERIFY	Akura Vashimu drains stamina and the crystal must be peeled before it blasts, hint lines mhfpac.str 0x62524-0x625a6; Akura Jebia hint "Mind crystal fluid" 0x625c2; skill Crystal Res "Immune to Crystal" id 388. Garuba Daora and Mi Ru are not in the hints. needs play: get crystallised by Garuba Daora and Mi Ru	kept
 349	Mega Juice or Power Juice counters the stamina loss	name	DIFFERENT	items 13 'Dash Juice' (aka Power Juice), 14 'Mega Dash Juice' (aka Mega Juice)	rewritten
-350	Frostbite: faster stamina loss; Dyuragaua, Duremudira	other	CANT-VERIFY	monsters Dyuragaua (index.json), Duremudira (1st)/(2nd)/(Musou); effect not in data. Skill 'Frostbite SP' is a different thing	kept
-351	Magnetism; Rukodiora, Rebidiora, Gougarfs	other	CANT-VERIFY	monsters rukodiora, rebidiora, lolo/ray-gougarf exist; effect client-side	kept; Gougarfs -> Lolo Gougarf, Ray Gougarf
-352	Vocal Chords; Chameleos	other	CANT-VERIFY	chameleos in index.json; effect client-side	kept
-353	Blind; Forokururu	other	CANT-VERIFY	forokururu in index.json; effect client-side	kept
-354	Confusion; Poborubarumu	other	CANT-VERIFY	poborubarumu in index.json; effect client-side	kept
-355	Deadly Poison, Duremudira second phase, own cure	other	CANT-VERIFY	duremudira-2nd in index.json; cure item not named, effect client-side	kept
+350	Frostbite: faster stamina loss; Dyuragaua, Duremudira	other	CANT-VERIFY	client hint for Dyuragaua: "It affects Stamina, so mind ice moves. If you are frostbit, just heal up! Got Hot Drinks?" (mhfpac.str 0x62160-0x621d8); Duremudira not in hints. needs play: get frostbitten and watch the stamina bar when rolling	kept
+351	Magnetism; Rukodiora, Rebidiora, Gougarfs	other	CANT-VERIFY	skills Magnetic Res and Magnet Vulnerability (390/391, tree 151) exist, so the status is named Magnetism in the client; which monsters cause it is not in text. needs play: fight each of the four and watch for pull and push	kept
+352	Vocal Chords; Chameleos	other	CANT-VERIFY	skills Vocal Chord Halved and Vocal Chord Immunity (198/199, mhfpac 0x1cb5fa, 0x1cb60d) exist, so the status exists; Chameleos as the cause is not in text. needs play: fight Chameleos and try to chat	kept
+353	Blind; Forokururu	other	CANT-VERIFY	no Blind status text. needs play: fight Forokururu and watch the screen	kept
+354	Confusion; Poborubarumu	other	CANT-VERIFY	client has "Flower Drum Confusion" (mhfdat 0x1b998e8) but no monster text. needs play: fight Poborubarumu and watch for the dance	kept
+355	Deadly Poison, Duremudira second phase, own cure	other	CANT-VERIFY	client has Deadly Poison resistance skill text for Guardian only (mhfpac 0x1a0dfc); Duremudira second phase is not in text. needs play: reach phase 2 and read the status and cure	kept
 357	Zenith monsters add more status effects (link to Zenith page)	other	TRUE	guide-frontier-zenith.html id blights-and-status exists (line 321); check-links OK	kept
 359	Status effects are client mechanics	rule	OPINION	author/our note, unchanged client	kept
-365	Akura Vashimu and Jebia tail rules	other	CANT-VERIFY	client mechanics; monsters akura-vashimu, akura-jebia exist	kept
+365	Akura Vashimu and Jebia tail rules	other	CANT-VERIFY	client hint for Akura Jebia: "Cut its tail off. off is the aim!" (mhfpac.str 0x625f0); the tail rules are not stated. needs play: sever each tail and note the effect	kept
 366	Jebia 'Tail Crystal Stub'	name	DIFFERENT	no item or part of that name; items 1220 'Jebia Tail Crystal' (drops: Tail Carves (Crystal) 100%)	rewritten to tail crystal / Jebia Tail Crystal
-368	Impact damage / Cutting damage (damage types, bold)	name	CANT-VERIFY	damage-type words, not item names (findings rows were false guesses: Impact Coating, Cutting Blade)	kept
+368	Impact damage / Cutting damage (damage types, bold)	name	CANT-VERIFY	damage-type words; hitzone data in client. needs play: hit a claw with a Hammer and a blade and watch the crystal break	kept
 374	Bounce bombs under the monster	name	TRUE	item 95 'Bounce Bomb'	kept
 379	Unknown invasion after a normal non-gathering quest; UNKNOWN banner	other	DIFFERENT	git grep in Erupe 4495146 server/ for invasion/Unknown-monster: nothing starts an invasion; the earlier wording "no offered quest names Unknown" was wrong (see rows below)	rewritten: may not happen here, not tested; points to the set quests
 379	Unknown materials (Black Rathian)	name	TRUE	items 4485-4491 'Unknown Scale', 'Unknown Webbing', 'Unknown Fang', 'Unknown Jaw', 'Unknown Claw', 'Unknown Wing', 'Unknown Marrow' (aka Blk Rathian)	rewritten (nickname dropped)
 379	UNKNOWN banner text	name	TRUE	index.json unknown 'Unknown'; findings row 379 is a quote	kept
-382	HR3-4 repel only, HR5 slay, tail	other	CANT-VERIFY	invasion only; the offered Unknown quests are set quests (rows 383, 385)	kept; in game: only if an Unknown invasion ever shows up
+382	HR3-4 repel only, HR5 slay, tail	other	CANT-VERIFY	invasion only; needs play: only if an Unknown invasion shows up	kept
 383	Invasion weaker than Supremacy version at SR300	quest	DIFFERENT	data/quests/rewards/21.json monsters [100, Unknown]: 21978 [Repel] Calamitous Hour and 21987 Hour of Utmost Calamity (Supremacy Quest), offered at General Quest Counter > Hunter Quests > ★6; 51127 Dark Invasion (rewards/51.json, Unknown) offered at Series Quest Counter > Veteran > Year 4: Looking Back with Mizuki	rewritten: Supremacy versions offered, 3 quests linked (earlier run said none offered: wrong)
 385	G Rank Heavenly Conquest Unknown, Lv9999, Lv50 weapon	quest	TRUE	data/quests/rewards/23.json: 23604 Eternal Calamity Carved in Time and 23605 End of Eternity both have monster [100, Unknown] (objective ？？？の討伐); offered at G Rank Quest Counter > Conquest・Shiten Quests > Shiten Quests / Adv Shiten Quests (quest-where.json); the Lv1-Lv9999 rows hold Shantien, Disufiroa and Fatalis	rewritten: offered, 2 quests linked (earlier run said not offered: wrong)
-388	Taikun Zamuza layers	other	CANT-VERIFY	taikun-zamuza in index.json; client mechanics	kept
-392	Gogomoa baby and rage mode	other	CANT-VERIFY	gogomoa in index.json; client mechanics	kept
-396	Espinas rage, horn and tail	other	CANT-VERIFY	espinas in index.json; client mechanics	kept
+388	Taikun Zamuza layers	other	CANT-VERIFY	no text; needs play: fight Taikun Zamuza and watch each layer	kept
+392	Gogomoa baby and rage mode	other	CANT-VERIFY	client hint "Gogomoa, Kokomoa... Find the attack chance!" (mhfpac.str 0x62423, 0x62438); rage mode not stated. needs play: fight Gogomoa and see the baby and rage	kept
+396	Espinas rage, horn and tail	other	CANT-VERIFY	client hints for Espinas: "Don't relax if it sleeps. Once awake, it's at full danger", "When it charges up... pull back at once" (mhfpac.str 0x61df0-0x61e18, 0x61ed8). Horn and tail not stated. needs play: fight Espinas	kept
 401	Pariapuria meat colours (Raw, Drugged, Paralysis, Poison)	name	DIFFERENT	items 40 Raw Meat, 46 Drugged Meat, 45 Tinged Meat (aka Tainted Meat), 44 Poisoned Meat; no 'Paralysis Meat' item	rewritten (Tinged Meat for paralysis is from the aka; effect in game not checked)
-402	Paria vomit items and extra rewards	other	CANT-VERIFY	client behaviour; Paria nickname	rewritten to Pariapuria
+402	Paria vomit items and extra rewards	other	CANT-VERIFY	client hint for Pariapuria: "A monster eating all... Meat works when hungry but can you tell its taste?" (mhfpac.str 0x620d6, 0x62122). Vomit items not stated. needs play: make it vomit and read the items	kept
 405	Zerureusu, or White Los	name	DIFFERENT	index.json zerureusu 'Zerureusu' only	rewritten (nickname dropped)
-407	Zerureusu adaptation by damage type	other	CANT-VERIFY	client mechanics	kept
-411	Counter move in Impact mode (Zeru)	other	CANT-VERIFY	client mechanics	rewritten to Zerureusu
-412	Gou (HR5) Zerureusu adapts at about 33% HP; G Rank starts at once	rule	CANT-VERIFY	client mechanics	kept; Zeru -> Zerureusu
-414	Garuba Daora airship, shield and area attack	other	CANT-VERIFY	garuba-daora in index.json; client mechanics	kept
+407	Zerureusu adaptation by damage type	other	CANT-VERIFY	no text; needs play: hit one Zerureusu part with one damage type and note the change	kept
+411	Counter move in Impact mode (Zeru)	other	CANT-VERIFY	no text; needs play: fight Zerureusu in Impact mode and look for the counter	kept
+412	Gou (HR5) Zerureusu adapts at about 33% HP; G Rank starts at once	rule	CANT-VERIFY	no text; needs play: Gou Zerureusu adaptation at about 33% HP and G Rank start	kept
+414	Garuba Daora airship, shield and area attack	other	CANT-VERIFY	no text; needs play: fight Garuba Daora and note the airship and shield	kept
 425	Red Rajang / Phantom Dora replace Hardcore HR5 or G Rajang (Volcano) / Hardcore HR5 Doragyurosu (Snowy Mountains)	quest	DIFFERENT	quests: 62379 The Red Rajang (Event) not-offered; 63005 Red Rajang of the Snowfields (Event) not-offered; 62974 Phantom Doragyurosu (Hardcore Quest) not-offered; 21150 Hardcore Tenacity! Doragyurosu offered at General Quest Counter > Hunter Quests > ★5	rewritten; quests linked; swap CANT-VERIFY
-425	The swap itself and the vanity item for hunting one	other	CANT-VERIFY	no Erupe code or item found; in game: post Hardcore Doragyurosu (id 21150) repeatedly and watch for Phantom Doragyurosu	kept as 'not checked'
-426	Red Rajang spirit-bomb ball; Phantom Doragyurosu revives	other	CANT-VERIFY	client mechanics	kept; Dora -> Doragyurosu
+425	The swap itself and the vanity item for hunting one	other	CANT-VERIFY	no Erupe code found; needs play: post Hardcore Doragyurosu (id 21150) repeatedly and watch for the Phantom	kept
+426	Red Rajang spirit-bomb ball; Phantom Doragyurosu revives	other	CANT-VERIFY	no text; needs play: fight Red Rajang and Phantom Doragyurosu	kept
 432	Aruganosu and Goruganosu (Supremacy, called Gold and Silver Lavasioth in the guide)	name	DIFFERENT	index.json aruganosu id 120, goruganosu id 119; quest 60593 'All Slay Gold & Silver Goruganosu!' is the client's own wording	rewritten (Lavasioth nickname dropped)
 433	Fought together in the Tower arena; both at 1 HP	quest	TRUE	data/quests/rewards/21.json: 21984 Radiance Upon Radiance and 21981 [Repel] Radiant Glory list [119 Goruganosu, 120 Aruganosu]; offered at General Quest Counter > Hunter Quests > ★6; the Tower arena and the 1 HP rule need play	linked; wording "with the pair"
 436	Mi Ru (Unknown) heading	name	FALSE	index.json lists mi-ru (id 113) and unknown (id 100) as two monsters	rewritten: Mi Ru only (id kept)

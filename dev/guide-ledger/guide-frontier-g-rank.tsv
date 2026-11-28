@@ -2,9 +2,9 @@ line	claim	kind	verdict	evidence	action
 193	Upgrade weapons early; biggest boost	other	OPINION	Fist's advice	kept
 194	G Supremacy ~Lv11, Burst ~Lv30, Origin ~Lv50, G Exotic upgrades ~Lv45/50	rule	OPINION	Fist's comparison; no data	kept
 196	Up to 12 skills early, 16 late; mixed sets	rule	OPINION	Fist	kept
-198	Pugi, Outfit, Departure Facility, G Rank Cuff License cost 30/30/20/60P; 60P from Hunter Guide	shop	CANT-VERIFY	Pugi farm prices not in site data; pac has "Departure Facility"	kept
+198	Pugi, Outfit, Departure Facility, G Rank Cuff License cost 30/30/20/60P; 60P from Hunter Guide	shop	DIFFERENT	costs TRUE: hvmhfz_re docs/my-tore.md Costs table: Poogie 30 (0x106331d0 kind 0), outfit 20 (kind 1), G Rank Poogie 60 (kind 2, 0x3c at 0x106331d0:94-100), Poogie Ranch facilities 30 each (5, includes Departure Facility); "60P outright from the Hunter Guide" has no source: live DB distribution_items has no item_type 14 (Tore Points) row	rewritten
 199	Premium Outfits not sold here; Premium G cuff tickets are	shop	TRUE	road-shop-8 rows 8330-8332 PA/PB/PC Cuff Tkt G 500 RdP GR1	kept
-200	G Rank gives 60+ Pugi points via Talk; regained over 40 days	rule	CANT-VERIFY	not in data; in game: talk to the Pugi Farm Manager after reaching GR	kept
+200	G Rank gives 60+ Pugi points via Talk; regained over 40 days	rule	DIFFERENT	no source: points come from the daily claim (+2/+1, 0x106360b0 state 0x40), the missed-day talk topic (max 14), tickets (3P/5P Pugi Tkt, 10P/30P Poogie Tkt) and reward type 14 (docs/my-tore.md); the GR50 message (tsv line 10247) only unlocks the G Rank Poogie; live DB has no type-14 gift. The Hunting Road shop Special tab sells 30P Poogie Tkt for 30,000 RdP and 5P Pugi Tkt for 5,000 RdP (DB shop_items type 10 shop 8: 8783, 11243)	rewritten
 200	G Guide item pack (300 points) on official servers	shop	DIFFERENT	official paid pack (rule 3)	removed
 202	Hunter Guide gives sigil tickets	source	CANT-VERIFY	Hunter Guide rewards not in site data	kept
 202	Hypnoc -> Hypnocatrice; A recipe rolls up to +30 attack	name	TRUE	data/monsters/index.json name Hypnocatrice; +30 is Fist (attributed)	rewritten
@@ -64,13 +64,13 @@ line	claim	kind	verdict	evidence	action
 309	3 G pieces give +30 true attack in G quests	rule	OPINION	Fist	kept
 311	GR Suitability buff (rating diff x20 defence), table by GR	rule	CANT-VERIFY	rule TRUE: live mhfpac 0x44605 (G Rank hunters' defence is raised when an armour level falls behind their suitable armour level; non-G gear counts as GR 1), label 0x1bd447 GR Suitability Lvl; the x20 formula and the table are code, not traced	kept; formula needs play
 324	Note: GX needs Conquest materials; Conquests off	rule	DIFFERENT	data/quest-where.json Extreme Conquest offered; item 7267 road-shop-8 20 RdP GR1	rewritten
-329	G Rank Pugi Cuff License from GR50, 60P; Departure Trampoline -> Departure Facility	name	CANT-VERIFY	pac "Departure Facility"; license price not in data	rewritten
+329	G Rank Pugi Cuff License from GR50, 60P; Departure Trampoline -> Departure Facility	name	TRUE	0x1062b100:21 offers it only when hint_get_gr_rank() > 0x31 (GR 50+) and 0x106331d0:94-100 sets the cost 0x3c = 60; hvmhfz_re data/translations/shipped/mhfpac.tsv line 10247 "G Rank Poogie can now be used. Talk to the My Tore Caretaker"; pac "G Rank License" in the Poogie Extension list; Departure Facility is a pac label (facility list)	rewritten
 330	Three kinds of G cuffs	rule	OPINION	Fist	kept
 332	G Issen SA3 -> Issen SA3 (+3 Issen); SA1-2, SA4-8	name	TRUE	data/armor/index.json 7342 Issen SA3: Issen +3	rewritten (CJK removed)
 333	G Absolute Defense SA1 -> Abs Def SA1 (+3 Absolute Def., +3 Evasion), Diorekkusu carves	name	TRUE	data/armor/index.json 9397 Abs Def SA1: Absolute Def. +3, Evasion +3	rewritten (CJK removed)
 334	Premium G cuffs from paid tickets; Road shop sells tickets	shop	TRUE	road-shop-8 8330-8332	kept
 336	Note: treasure hunts free; tickets 500 RdP; Conquest items	shop	TRUE	road-shop-8; Extreme Conquest quests offered	rewritten (Super Special tab, Conquest quests)
-336	Guild treasure hunts work and are free to send	rule	CANT-VERIFY	earlier batch; in game: Guild > Treasure Hunt	kept
+336	Guild treasure hunts work and are free to send	rule	TRUE	guild-treasure.md s2.2 + GT3: the client charges RP only for a cat whose last-send time falls in the current day; Erupe always sends 0, so no cat costs anything. Menu: hunt counter (Treasure Felyne 0x24) in the Hall, NPC table area 204 idx 24	kept
 342	Jewels: Anorupatisu needs GR6 Gem and GR5 Gem	name	TRUE	dev/item-names-ja.json 仙玉=GR6 Gem 7161, 至玉=GR5 Gem 6723	rewritten (CJK removed)
 346	Jewel table 優玉..絕玉 -> GR1 Gem..GR7 Gem from ★1..★7 breaks	name	TRUE	dev/item-names-ja.json 6655,6668,6684,6704,6723,7161,6748; item where: break/tail carve	rewritten + linked
 355	All but Conquest monsters drop jewels on breaks	source	OPINION	Fist	kept
@@ -96,20 +96,20 @@ line	claim	kind	verdict	evidence	action
 403	Hybrid slots take sigils and decorations	rule	TRUE	pac "You can also attach both decorations and sigils on it."	kept
 404	Thunder Attack [Large] -> Thunder Attack (Large); up to 17 skills	name	TRUE	skills tree Thunder Attack: Thunder Attack (Large); 17 skills OPINION	rewritten
 411	Exotic set skills table names	name	TRUE	skills: Starving Wolf+2, Bomber, Ice Attack (Large), Guard+2, Evasion+2, Dragon Attack (Large), Focus+2, S. Immunity (Myriad); Ammo Combiner is a tree name	rewritten (spacing, Status Immunity (Myriad) -> S. Immunity (Myriad))
-411	Which set skill each Exotic armour gives	rule	CANT-VERIFY	set skills not in site data; in game: equip one Exotic piece, read the skill list	kept
+411	Which set skill each Exotic armour gives	rule	TRUE	skills_db automatic table matches every row: Zinogre Thunder Attack (Large), Brachy Bomber, Barioth Ice Attack (Large), Uragaan Guard+2 (blademaster) and Maximum Bullets (gunner; the page names the tree Ammo Combiner), Nargacuga Evasion+2, Stygian Dragon Attack (Large), Gore Focus+2, Shagaru S. Immunity (Myriad); Deviljho armour is named "Vangis" in the client and gives Starving Wolf+2 (40 pieces)	kept
 425	Weapon Handling and Movement Speed +1 -> Movement Speed UP+1; +20% Caravan CP	name	TRUE	skills: Weapon Handling, Movement Speed UP+1; CP OPINION	rewritten (CJK removed)
 425	Two ways: events/Caravan at GR1, Exotics at GR800	rule	DIFFERENT	hv-exotic-and-finesse: no GR 800 gate	rewritten
-427	Weekly events unlock weapons; Master's Mark/HC then Caravan Box	rule	CANT-VERIFY	note says boxes/unlocks not checked	kept
+427	Weekly events unlock weapons; Master's Mark/HC then Caravan Box	rule	CANT-VERIFY	unchanged: boxes/unlocks not checked	kept
 429	Named Caravan Box / Secret Caravan Box names	name	TRUE	items 8936 Caravan Moon Box, 9951 Caravan Bloom Box, 11439 Caravan Secret Box (ja キャラバン月箱/花箱/秘箱)	rewritten (CJK removed)
 433	Pallone's Wisdom: 3 per upgrade first 10, then 3 at 100% or 1 at 60%	name	TRUE	item 8935 Pallone's Wisdom; costs Fist	rewritten (CJK removed)
-434	Pallone's Wisdom only from Caravan Festival points goals	source	CANT-VERIFY	item 8935 where null in data; in game: Caravan points rewards	kept
+434	Pallone's Wisdom only from Caravan Festival points goals	source	CANT-VERIFY	item 8935 Pallone's Wisdom exists in item-ids.json; its source: item_sources.tsv has none; needs play: Caravan point goals reward list	kept
 436	G Lv50 weapons upgrade to G Finesse with 50 Exotic Gem/Bone/Shl	name	TRUE	items 11980 Exotic Gem, 11981 Exotic Bone, 12401 Exotic Shl	rewritten (CJK removed, GR800 attributed)
 438	Note: no GR 800 gate; Exotic Gem/Bone/Shl from G Exotic quests since 17 Nov	source	TRUE	earlier batch; items 11980/11981/12401 offered lists	kept
 445	G9 non-G equipment uses Armour Spheres	rule	OPINION	Fist	kept
 447	Surging Volganos Helmet -> Vol Yamato GX, skills	name	TRUE	head.json 9924 Vol Yamato GX: Steady Hand 5, Combo Expert 5, Critical Shot 3, Gentle Shot 5, Bullet Saver 4	rewritten
-447	Black Shell/Red Shell from breaking the head	source	CANT-VERIFY	guide item names not matched in data	kept
+447	Black Shell/Red Shell from breaking the head	source	CANT-VERIFY	Black Shell and Red Shell are not item names in the client (mhfdat has "Small Red Shell" 0x1d3ba62 and fine black shell, 0x27bb7d). needs play: break Gougarf or Rebidiora head parts and see which materials show	kept
 448	Boiling Red Volganos Helmet -> Vol Apocalypse GX, skills	name	TRUE	head.json 9927 Vol Apocalypse GX: Sword God 7, Compensation 3, Combat Supremacy 4, Stylish 10, Issen 3	rewritten
-449	Mystery Crown armours from the Lost Cat, 25 crowns per set	name	CANT-VERIFY	no "Mystery Crown" item; items Lost Crown 1229 / Lost Luxury Crown 9125 exist; in game: Lost Cat rewards	rewritten (name dropped)
+449	Mystery Crown armours from the Lost Cat, 25 crowns per set	name	CANT-VERIFY	needs play: client calls the NPC Lost & Found Felyne (npc_all area 265 idx 6, type 0xa3) and Lost Crown reads 'found by a Lost Item Felyne' (mhfdat.tsv:31727); the crown-for-armour trade table was not found in any text table; talk to the Lost & Found Felyne, open the exchange, read the cost per set	note added
 450	Memory Fragments -> Memory Fragm, 30 for all sets	name	TRUE	item 1228 Memory Fragm; count Fist	rewritten
 451	Rath subspecies grind 80 -> 30 books	rule	OPINION	Fist (row unreadable)	kept
 456	Shiusu set from gathered materials; 20 of each coin, 50 x3 items each	rule	OPINION	Fist	kept
@@ -137,8 +137,8 @@ line	claim	kind	verdict	evidence	action
 512	Shiten Opposition Key -> Upper Shiten Key (Adv Disufiroa)	name	TRUE	item-names-ja 至天の対鎖 = 14614 Upper Shiten Key; road-shop-8 GR800 1000	rewritten
 515	Lucky Charms add Shiten rewards	rule	CANT-VERIFY	not in data	kept
 516	Note: Conquest off; quests listed; shop rows	quest	TRUE	changelog 4 Nov; data/quest-where.json; road-shop-8 7267 20 RdP, 14614/14615 1000 RdP GR800	rewritten
-523	Diva in a side area on the steps to the square; quest line gives Diva gear materials	npc	CANT-VERIFY	note: Diva story at the Prayer Fountain; in game: walk from the square steps	kept
-524	Tonfa no longer needs the Diva since 10th Anniversary	rule	CANT-VERIFY	pac tip "Clear Chapter 8 and get to know the Tonfas!"; in game: new character at GR, check Tonfa crafting	rewritten (attributed, client tip added)
+523	Diva in a side area on the steps to the square; quest line gives Diva gear materials	npc	TRUE	live v1.30 mhfpac 0x199bbc and 0x22caa8 'A woman at the "Prayer Fountain" in Mezeporta Square'; 0x1af362 'The story begins when you talk to the [Attending Cat] of the Prayer Fountain ... you will be able to produce a [Diva Armor]' (quest line gives Diva gear); the gate on the steps is the guide's picture	rewritten (Prayer Fountain, Attending Cat)
+524	Tonfa no longer needs the Diva since 10th Anniversary	rule	TRUE	live v1.30 mhfpac 0x1aee61 'By getting to G Rank, you will be able to use the [Tonfas]. Clear Chapter 8 and get to know the Tonfas! ... Trag series [Tonfas] can be produced by clearing Chapter 10' (0x1aed1e); Ophion Tonfa is created in the G Rank Weapons menu, GR 1 needed (hvmhfz_re docs/weapon-progression-checks-1-2-4.md:200-204, client craft table)	rewritten (client tips quoted, Ophion Tonfa at GR 1)
 527	Diva Song after Chapter 3	rule	TRUE	pac "Clear Chapter 3 to listen to the Diva Song."	kept
 527	Song costs a Diva Song Gem, about 1.5 h; buffs Souls/GRP/Divine Protection	rule	DIFFERENT	pac "use one [Diva Song Gem]"; note: reward songs last 1 hour here	kept (note explains)
 533	Fluffy Cakes at the GCP store; 87 cakes; 5 Warm Honey Tea from Hunter Guide	shop	DIFFERENT	item 8070 Fluffy Cake: no source; gcp-item-shop has none	rewritten
@@ -173,8 +173,8 @@ line	claim	kind	verdict	evidence	action
 612	20 hours per set	rule	OPINION	Fist	kept
 615	Impatience Charm saves 40 s per quest; our Impatience SP items	name	TRUE	items 1140, 6231, 6232 Impatience SP/α/β; "skip an extra day of premium" removed	rewritten
 616	Festival Point store GHCs/HCs; 25 G1%, 45 GHC, 25 HC	shop	DIFFERENT	fp-shop source; Road shop HC rows road-shop-3/6	rewritten
-617	Premium: 1,609 vs 775 quests; every account has Premium	rule	CANT-VERIFY	earlier batch note; in game: check course icons	kept
-618	Gu-ku cooks HC/GHC into 5 Souls / 3 Ribbons; Conquest gems into Merits	rule	CANT-VERIFY	cook table not in site data	kept
+617	Premium: 1,609 vs 775 quests; every account has Premium	rule	TRUE	every account has Premium: live DB select rights,count(*) from users group by rights -> one row 469766734|17371, bits = courses 1,2,3,6 (Premium),9,12,26,27,28 (names: Erupe common/mhfcourse/mhfcourse.go @ wp-server); the 1,609 vs 775 quest figures stay the guide's own estimate (attributed)	rewritten ('not tested in game' dropped)
+618	Gu-ku cooks HC/GHC into 5 Souls / 3 Ribbons; Conquest gems into Merits	rule	CANT-VERIFY	needs play: Gu-ku Pot screen picks items by Rank then Race (pac 0x1bbc5a/0x1bbc78) with outcomes Half-Baked/Good Job/Charcoal (0x1bbd60-0x1bbd78); the result table (5 Souls / 3 Ribbons) is not in any text; cook one HC carve and read [Cooked Items]	kept
 618	Raw Soul Stones from lottery coins cook into 5	name	DIFFERENT	items 10114-10117 Raw Soul [Low]..[Top]; lottery coins not here	rewritten
 621	Weapon Soul dailies 5/10/15/10	quest	TRUE	data/quest-where.json: Ascension: <weapon> Soul (22126-22150, Dyuragaua, HR 100) at General Quest Counter > Daily Quests	linked
 621	Ribbon and Merit dailies	quest	TRUE	data/quest-where.json: Inherit! Weapon Ribbon (23630-23680) and Secret Art! Weapon Merit (23681-23694) at G Rank Quest Counter > Daily Quests	linked (2)

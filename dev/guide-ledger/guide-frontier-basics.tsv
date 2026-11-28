@@ -30,7 +30,7 @@ line	claim	kind	verdict	evidence	action
 254	Options entries named Display (Town), Display (Gen, Quests), Display (High Grade), Input Options, NPC Settings	menu	TRUE	dev/guide-terms.tsv rows 103-106 (decoded mhfpac)	rewritten: caption names our labels
 256	Options > Input Options holds key/controller settings (guide: Control Options > Key Settings)	menu	TRUE	dev/guide-terms.tsv Input Options	rewritten: Control Options > Key Settings -> Options > Input Options
 258	Chat Options: switch NPC chat/sounds off	menu	DIFFERENT	companion chat options live mhfpac 0x1e4fce Rasta Chat, 0x1e4c5a Partner Chat, 0x1e4c6f Partnya Chat, 0x1e4b8e Fosta Chat, 0x1e4d0f Mercenary Chat; no page called Chat Options (live mhfpac 0x1e542a-0x1e5571 (Options Menu: Display (Town), Display (Gen, Quests), Input Options, NPC Settings, Chat, Sound, Post Screenshot, Display (High Grade), Other))	rewritten: names the switches
-265	Quest end menu items	menu	CANT-VERIFY	finish a quest and read the end menu	kept
+265	Quest end menu items	menu	TRUE	client reward screen strings next to each other: "Take Reward", "Send to Item Box", "Send All to Item Box", "Sell Items & Exit" (mhfpac.str 0x1eb6d4, 0x1eb6e0, 0x1eb765, 0x1eb77a). Timer and reward grid are on the page screenshot only	kept
 266	Tutorial Gogomoa quest; answer No to questions	quest	CANT-VERIFY	not a listed quest (qfind: no instructor tutorial quest offered); play a new character	kept
 268	Take coin from blue box, deliver to red box, leave north, kill Gogomoa	other	CANT-VERIFY	tutorial quest in game; same text as progression.html:244	kept
 283	General Quest Counter: receptionist in black at middle counters of town square	npc	TRUE	progression.html:252 wording; dev/guide-terms.tsv	rewritten: "guild girl in black" -> General Quest Counter
@@ -54,18 +54,18 @@ line	claim	kind	verdict	evidence	action
 311	Caravan leader is the woman by the bonfire	npc	TRUE	progression.html Caravan Gem bullet (the Boss)	rewritten: Kashira -> the Caravan's leader (the Boss)
 312	Equip menu has Caravan Skills; Recovery Items Up first	menu	TRUE	live v1.30 mhfpac.bin 0x21e1ac-0x21e1fd box equipment list: Change Equipment ... Caravan Skills, SR Settings (in-game checklist part 1, 2026-11-25)	kept
 312	Recovery Items Up = potions heal 1.10x	rule	CANT-VERIFY	use a Potion with and without the skill	kept
-315	Rasta bar up the town stairs; waiter in blue at the counter	npc	CANT-VERIFY	walk up the town stairs	rewritten: bar -> Rasta bar (progression.html:288)
-317	Talk to the Legendary Rasta with the weapon you want; Tonfa/Switch Axe unlocked at G Rank	npc	CANT-VERIFY	Rasta bar in game	kept
-317	Legendary Rasta menu: Talk, Check Gear, Contract, Take Partner	npc	CANT-VERIFY	talk to one	kept
-318	Menu option Partner (Take Partner / Unlock Weapon)	menu	CANT-VERIFY	talk to a Legendary Rasta	kept
+315	Rasta bar up the town stairs; waiter in blue at the counter	npc	CANT-VERIFY	area 211 NPC list: Legend Rasta Counter (0xc8), Rasta Counter (0xe8), Partner Guide Felyne (0xfa), 11 Legend Rastas, Leila, Chloe, Graham (npc_all.tsv); pac says 'Talk to the Rasta receptionist at the Rasta Bar' (0x1cfdf8); which is the waiter in blue is appearance; needs play: look at the counters	rewritten: bar -> Rasta bar (progression.html:288)
+317	Talk to the Legendary Rasta with the weapon you want; Tonfa/Switch Axe unlocked at G Rank	npc	TRUE	pac mhfpac.tsv:11422 'every 10 PR they can use a new weapon type ... talk to the Legend Rasta of that weapon type; to unlock Tonfa and Switch Axe F you must be G Rank' (0xec3d2); mhfpac.tsv:10260 adds Magnet Spike	kept
+317	Legendary Rasta menu: Talk, Check Gear, Contract, Take Partner	npc	CANT-VERIFY	strings View Status, Change Weapon, Use Items, Cancel Contract, Story, Contract (pac 0x1d8c11-0x1d8c4b), Talk, Cancel the contract, Introduce to your Partner, Contract Order Change (0x1d9e9d-0x1d9f2c); the client has no 'Take Partner' or 'Check Gear' string as such; row order not fixed by strings; needs play: open the menu and write the rows in order	rewritten
+318	Menu option Partner (Take Partner / Unlock Weapon)	menu	TRUE	pac 0x1d9ee1 'Introduce it to your Partner and teach him/her the secrets of that Weapon' is a Legendary Rasta menu row; unlock text mhfpac.tsv:11422. Row label in game is not 'Take Partner / Unlock Weapon' in the strings	note added
 322	Best Partner weapons: Dual Swords, Sword and Shield; Great Sword ok	other	OPINION	author judgement; progression.html:288 agrees	kept
-327	Partner personality list	other	CANT-VERIFY	Partner creation screen	kept
-336	Gender change needs restyle points or new Partner	rule	CANT-VERIFY	talk to the cat next to the bar	rewritten: removed "paying real money"
+327	Partner personality list	other	DIFFERENT	client adjectives: Delicate, Refreshing, Passionate, Great, Fine, Natural, Feminine, Single Minded, Shy plus Male/Female (pac 0x1d8cb7-0x1d8d09); creation confirm box shows Gender, Personality, Start Weapon (mhfpac.tsv:1430); the male/female lists in the guide cannot be matched row by row from the strings; needs play: Partner creation screen	note added
+336	Gender change needs restyle points or new Partner	rule	CANT-VERIFY	needs play: pac Name/Hair/Hair Color/Clothing/Face/Voice (0x1b23e9-0x1b240c) edits exist and 'The name can't be changed once decided. Others can be changed at the Salon.' (mhfpac.tsv:1432); gender is not in that list; so far agrees with the page; needs play to confirm no gender option	rewritten: removed "paying real money"
 336	Face/voice need restyle points; nothing sold here	rule	DIFFERENT	hv-hr2 note; no restyle shop in data/sources	rewritten: Item Shop premium points removed
-336	Cat next to the bar deletes the Partner	npc	CANT-VERIFY	talk to it in game	kept
-339	Human NPC in the Halk area starts Partnya creation (guide: My Support Manager)	npc	CANT-VERIFY	house > heart icon > Halk area: read his name	rewritten: nickname -> place and job
-340	Partnya look has five tabs	menu	CANT-VERIFY	Partnya creation	kept
-340	1-2 Partnyas, more at Rank 300	rule	CANT-VERIFY	house.html; in game	rewritten: Partnyaa -> Partnya
+336	Cat next to the bar deletes the Partner	npc	TRUE	pac mhfpac.tsv:11423: 'Choose Part with Partner from the Partner Guide Felyne at the Rasta Tavern; stats and Partner Box gear are deleted'; area 211 NPC idx 19 Partner Guide Felyne (0xfa)	note added
+339	Human NPC in the Halk area starts Partnya creation (guide: My Support Manager)	npc	TRUE	live mhfpac.str 0x1a30b2 'Talk to Halk Instructor and hire a Partnya' and 0x1f2cbb 'Hire Partnya' (Halk Instructor menu); 0x1fcbaa 'My Support... Manage/Train Halk and Partnyas'	rewritten (Halk Instructor, Hire Partnya)
+340	Partnya look has five tabs	menu	TRUE	Partnya creation help strings: Choose a ... Ears / Eyes / Fur Pattern / Tail type / Fur Color (pac 0x1d1500-0x1d1558, labels 0x1d14e7-0x1d14fa): five tabs	kept
+340	1-2 Partnyas, more at Rank 300	rule	CANT-VERIFY	needs play: slot count rule not in text; try creating with and without a guild	rewritten: Partnyaa -> Partnya
 341	Options > NPC Settings: lowest priority stops Partnya joining	menu	TRUE	dev/guide-terms.tsv NPC Settings	rewritten: NPC Options -> NPC Settings
 343	HR2 Rathian key quest	quest	TRUE	qfind 22033: offered, General Quest Counter > Hunter Quests > ★2, Rathian, jungle	linked 22033
 343	Rathian hunt: wait in Area 6; Area 10 closed at night	rule	CANT-VERIFY	play 22033 at night	kept
@@ -89,12 +89,12 @@ line	claim	kind	verdict	evidence	action
 387	HR3 Urgent against Rukodiora (Magnetism, Magnetised status)	quest	TRUE	qfind 22045: offered, Urgent Quests, Rukodiora	linked 22045
 387	HR3 High Rank: no supplies, random spawns	rule	CANT-VERIFY	HR3 quest in game	kept
 390	My Tore opens at HR4 (was HR3); start your Poogie then	menu	TRUE	decoded mhfpac.bin 'You can go to My Tore if HR4 or higher' (house.html:295 says HR3: wrong)	rewritten: Pugi Farm -> My Tore; Pugi -> Poogie; lead: HR3 -> HR4
-394	Farm manager answer table (NYY/YYN/YYY/YNY)	other	CANT-VERIFY	answer the questions in game	kept
+394	Farm manager answer table (NYY/YYN/YYY/YNY)	other	CANT-VERIFY	the client keeps the chosen sister in save block +4 bits 2/4/8 (0x10622170, 0x106412d0: none = Eldest, bit 2 Eldest, bit 4 Middle, bit 8 Youngest); the code that sets those bits from the three answers is not in our decompiles (0x10622110 only clears the block). needs play: on a fresh HR4 character answer Y/N three times and note which sister appears	kept
 400	Wait until midnight; Taiwan time official	rule	DIFFERENT	hv-hr3-hr4 note: server counts from midnight Japan time	kept with note
-402	Item Presets > Register Preset; slots 1-4 shortcuts L1 L2 R1 R2 / F Ctrl C Shift	menu	CANT-VERIFY	open any box in game	kept
-403	20 extra preset slots (5-24) for subscribers under Item Presets > Equip Preset	rule	CANT-VERIFY	every account has the courses (Erupe mhfcourse.go:102 expiry 2030); check slots in game	kept
+402	Item Presets > Register Preset; slots 1-4 shortcuts L1 L2 R1 R2 / F Ctrl C Shift	menu	DIFFERENT	live v1.30 mhfpac labels: box menu Item Sets (0x21e127), Use Item Set (0x21e0c1), Save Item Set (0x21e0ce), slots Item Set 1..Item Set 24 (0x21dfd6-0x21e0b5); no Register Preset label. Keys: needs play	rewritten (Item Sets > Save Item Set)
+403	20 extra preset slots (5-24) for subscribers under Item Presets > Equip Preset	rule	DIFFERENT	live v1.30 mhfpac Item Set 1-24 (0x21dfd6-0x21e0b5) and the swap prompt Deleting Item Sets 5-24 lets you add 4 pages to the Extra Item Box (0xfcd7b-0xfcf6b); every account has the courses (Erupe mhfcourse.go:102); slots are Item Set 5 etc., not Equip Preset	rewritten
 405	HR4 Urgent against Akura Vashimu; Crystallisation	quest	TRUE	qfind 21976 offered, HR4 Urgent; progression.html:363	linked 21976
-407	Crystallisation: stamina to 25, explodes, mash to break	rule	CANT-VERIFY	fight Akura Vashimu	kept
+407	Crystallisation: stamina to 25, explodes, mash to break	rule	CANT-VERIFY	client hint lines for Akura Vashimu: "If crystal hits, Stamina drains. If you are crystallized, calmly peel the crystal. If it is too late... Blast!" (mhfpac.str 0x62524-0x625a6); skill Crystal Res "Immune to Crystal" (388). Drain, peel and blast are confirmed; "to 25" and mash are not. needs play: get crystallised and read the stamina bar and break-out input	kept
 412	Transcend, bentos, My Tore game content; no storage books seller; 20 slots should exist; timers from midnight Japan time	rule	TRUE	food-recipes.json; mhfcourse.go:102	kept
 417	HR5 step up in difficulty	other	OPINION	author judgement	kept
 421	Guild Master starts Style Rank at HR5	npc	TRUE	guide-frontier-hunter-rank.html:368; dev/guide-terms.tsv Guild Master	kept
@@ -114,9 +114,9 @@ line	claim	kind	verdict	evidence	action
 468	General Store last option Claim Daily; gives Halk Potions	menu	DIFFERENT	General Store menu (0x106f31a0 case 0x7c, labels mhfpac 0x4d4 table): Buy, Sell, GCP Exchange, NetCafe Benefits, Daily Special, Buy to Box, Gacha Coin Store, Farm & Furniture; live v1.30 mhfpac.bin 0x2062fa Daily Special gives the Daily Quest Right; the claim (Erupe handlers_cafe.go:54-97 CHECK_DAILY_CAFEPOINT mode 0, hvmhfz_re cafe-rewards.md 3) adds 5 N Points and the daily (10) and bonus (3) quest counts, and sends no items, so no Halk Potions	rewritten (5 NP added, no Halk Potions)
 469	Daily quest with True and Heaven Armor Spheres (guide: HR5 Daimyo Hermitaur)	quest	TRUE	qfind 22141 offered General Quest Counter > Daily Quests; items 13061/13062 rewards 30 each	linked 22141; menu path replaced "Limited-Time Quests > Daily Quests"
 469	Sister daily quest	quest	TRUE	qfind 22142 offered, Daily Quests	linked 22142
-469	Spheres push all 5 pieces to FY Lv7	rule	CANT-VERIFY	upgrade a Coordination FY set	kept
+469	Spheres push all 5 pieces to FY Lv7	rule	CANT-VERIFY	sphere upgrade list not in strings checked; armor_sphere_lists.tsv exists. needs play: upgrade a Coordination FY set with Spheres and read the skill list	kept
 472	Secret Proof Low/Mid/High 5x each; guide buys with GCP	shop	DIFFERENT	items 5384-5386 have no shop, only quest rewards (24/44/41 quests); GCP shop has none	rewritten: GCP store -> quest rewards, items linked
-476	Secret Proofs upgrade pieces to HS; four pieces to Lv7 HS	rule	CANT-VERIFY	armour upgrade screen	kept
+476	Secret Proofs upgrade pieces to HS; four pieces to Lv7 HS	rule	CANT-VERIFY	client text mentions an "Upgrade a Hiden armor to GX Lv7" goal (mhfpac 0x1ada40); Secret Proof to HS and Lv7 HS are not checked. needs play: open the armour upgrade screen with a Secret Proof	kept
 477	HR3 Gypceros decoration quest (guide: High Rank Decoration [Attack Up])	quest	TRUE	qfind 22120 offered, General Quest Counter > Other Quests > Gear Acquisition Quests, Gypceros	linked 22120; name and menu path corrected
 481	Decoration Survivability G: Guts+5 Evasion+5 Status Res+5	name	TRUE	deco.py: 11660	rewritten: guide gave only raw gems; our name added
 482	"G Deco Quests" tab not reachable; quests not offered	menu	DIFFERENT	dev/quest-where.md "Lists no counter shows"; qfind 21931 not-offered	rewritten: Other Quests > G Deco Quests removed
@@ -126,34 +126,34 @@ line	claim	kind	verdict	evidence	action
 485	Scale from HR5 Rathian/Rathalos/Tigrex; 50 GCP	source	DIFFERENT	item 1325 rewards (Rathian/Rathalos Variant); GCP shop has none	rewritten: 50 GCP removed
 486	Skin from Khezu/Espinas/Gurenzeburu; 50 GCP	source	DIFFERENT	item 1310 rewards (Espinas Variant, Khezu); GCP shop has none	rewritten
 488	2 decos: Guts, Status Halved, Evasion+1; 4: Status Immunity, Evasion+2, Great Guts	rule	TRUE	data/skills/index.json trees Guts 10/20, Status Res 10/20, Evasion 10/20	rewritten: names to skill names
-488	Guts survive above 90 health; Great Guts 70	rule	CANT-VERIFY	test in quest	kept
-490	Fencing+2 = 1.20x damage for Blademasters	rule	CANT-VERIFY	compare damage with/without Fencing+2	kept
+488	Guts survive above 90 health; Great Guts 70	rule	CANT-VERIFY	skills Guts/Great Guts/True Guts (tree 102 at 10/20/30 points) exist; client text only says "under certain conditions" a hit leaves 1 HP (skill 230-232). The 90 and 70 health values are not in text. needs play: test with 1-hit damage at 91 and 69 health with each skill	kept
+490	Fencing+2 = 1.20x damage for Blademasters	rule	CANT-VERIFY	client text for Fencing+2 is "No bounce-off motion. Also, an attack hits twice." (skill 368, mhfpac 0x32078 beside it); it states no 1.20x. needs play: compare damage with and without Fencing+2 on a fixed hitzone	kept
 492	Basic Fencing deco: Fencing+5 Stamina+5 Weapon Handling+5; recipe 15 Persimmon Jewel, 5 Toa Ice Scale, 5 Toa Shl	name	TRUE	deco.py 13065; items/13065.json mats [[13053,15],[12826,5],[12827,5]]	rewritten: Chinese name removed, our name
 492	Persimmon Jewel quest (guide: Fencing Deco G and Chameleos, 13/90)	quest	DIFFERENT	qfind 22074 not-offered; item 13053 rewards	linked 22074
 492	Toa Tesukatora materials (guide buys 50 GCP each)	source	DIFFERENT	items 12826/12827 drops from Toa Tesukatora; GCP shop has none	rewritten
 493	Stronger Fencing deco: Evasion+5 Fencing+5 Sharpening+5; recipe 15 Mosaic Jewel, 5 Toa Ice Scale, 5 Toa Shl	name	TRUE	deco.py 13067; items/13067.json mats [[13055,15],[12826,5],[12827,5]]	rewritten
 493	Mosaic Jewel quest (guide: Evasion Deco G and Kushala [Gou], 90/90)	quest	DIFFERENT	qfind 22076 not-offered; item 13055 rewards	linked 22076
-493	Kushala quest monster has unique moveset	rule	CANT-VERIFY	fight it if reachable	kept
+493	Kushala quest monster has unique moveset	rule	CANT-VERIFY	quest not offered here, no moveset text. needs play: only if quest 22076 is made available	kept
 495	Elegant Blade G and Evasive Blade G sold in the Hunting Road shop, 500 RdP each	shop	TRUE	data/items/13065.json, 13067.json road-shop-4 price 500	rewritten (lead: Road shop is the sure way)
 496	Two each: Evasion+2, Fencing+2, Speed Sharpening, Weapon Handling, Guts, Status Halved	rule	TRUE	skill trees: Evasion 20, Fencing 20, Sharpening 10, Weapon Handling 10, Guts 10, Status Res 10	kept
 497	Focus+2 option: Caring Focus G Focus+4 Caring+5 Defense+5; 15 Tortoise Jewel, 5 Gasurabazura Hide, 5 Yama Kurai Hide	name	TRUE	deco.py 12627; items/12627.json mats [[12501,15],[11788,5],[11715,5]]	rewritten: guide said Stronger Fencing variant from Kushala quest; ours is Caring Focus G
 497	Tortoise Jewel source	quest	FALSE	guide: same Kushala quest; item 12501 rewards 21968 Odibatorasu; qfind 21968 not-offered	rewritten; linked 21968
-497	Any Gore Magala piece gives Focus+2	rule	CANT-VERIFY	check Gore Magala armour in armour page/set builder	kept; skill name Focus+2 (data)
+497	Any Gore Magala piece gives Focus+2	rule	TRUE	skills_db.json automatic table: all 40 Gore pieces (Gore, Gore G/GF/GX, Helm/Cap, Mail/Vest, Arms/Guard, Faulds/Coat, Greaves/Leggings) have automatic skill 302 = Focus+2	kept
 497	Caring Focus G sold in the Hunting Road shop, 500 RdP	shop	TRUE	data/items/12627.json road-shop-4 price 500	rewritten (lead)
-500	Zerureusu upgrades need Hardcore Carve and Weapon Souls	rule	CANT-VERIFY	check a Zerureusu weapon upgrade list	kept
+500	Zerureusu upgrades need Hardcore Carve and Weapon Souls	rule	CANT-VERIFY	client text: HC-only materials come only from Hardcore quests (mhfpac.str 0x1a65d8) and the Weapon Soul is gained from the equipped weapon on HC clear (0x21242); the Zerureusu upgrade list is not checked. needs play: open a Zerureusu weapon upgrade list and read the materials	kept
 502	Fixed Zerureusu quest giving all HC carves (guide: Other Quests > Special Material Quests, 44/67)	quest	DIFFERENT	qfind 22116 not-offered; no Special Material tab (quest-where.md)	linked 22116; tab removed
 503	HC toggle when posting a quest	menu	CANT-VERIFY	post an HC-capable quest in game	kept
 505	Weapon Souls per weapon type	rule	TRUE	item-ids 2659-2682 SnS Soul/DS Soul/GS Soul...	kept
 507	Taikun Zamuza and Rusted Kushala Daora unique to HR5	name	TRUE	monsters/index.json both; quest data HR5	rewritten: HC Rusted -> Rusted (Hardcore)
-508	Halk Potion: 70% damage cut, 5 a day	rule	CANT-VERIFY	use one in a quest	kept; item 4952 name
+508	Halk Potion: 70% damage cut, 5 a day	rule	CANT-VERIFY	needs play for 70%: Halk Potion has no text (item_effects.json lists it as description only, docs/item-effects.md:195); 'x5' handed over by the Halk object at 0x10486390 (docs/item-sources.md:805) is real; use one and read the damage	kept; item 4952 name
 514	Voljang Long Sword recipe: 5 Voljang Proof, 5 Elder Dragon tail, 3 Voljang Shell, 3 Voljang Fang	source	FALSE	recipes.py (create list 0x38): Volja Ignik (14741) = Voljang Proof x5, E.Dragon Hardtail x1, Voljang Shell x3, Voljang Fang x3	rewritten (tail x1)
 520	First armour craft needs 1 Elder Dragon Gem; from Rukodiora breaks/tails, dailies	source	TRUE	item 3995 Elder Dragon Gem; offered quests 21153 etc.	kept
 520	Daily with Elder Dragon Gem (Rukodiora)	quest	TRUE	qfind 22143 offered General Quest Counter > Daily Quests, Rukodiora	linked 22143; "page 4 of Event Quests in Limited-Time Quests" replaced
 520	Gou armour quests in Special Material tab	quest	DIFFERENT	quest-where.md: tab not reachable	rewritten: said not offered
-522	Three HR5 monster types: Goushu, Henshu, Kishu	other	CANT-VERIFY	read quest-name brackets in HR5 list	kept
+522	Three HR5 monster types: Goushu, Henshu, Kishu	other	CANT-VERIFY	monster class names Goushu/Henshu/Kishu appear in quest names; not checked in strings. needs play: read the bracket tags in the HR5 quest list	kept
 523	Exotic quests at HR 100 under Hunter Quests > ※ Exotic Quests	menu	TRUE	progression.html:376; qfind 22078 offered ※ Exotic Quests	rewritten: Exotic Monsters -> Exotic Quests path
-523	Exotic weapons give Speed Eating; one Exotic armour piece grants a skill	rule	CANT-VERIFY	equip an Exotic weapon/piece	kept; skill name Speed Eating (data) and Evasion+2
-525	HC adds a 5% carve and a Weapon Soul	rule	CANT-VERIFY	carve an HC monster	kept
+523	Exotic weapons give Speed Eating; one Exotic armour piece grants a skill	rule	TRUE	skills_db automatic: Speed Eating is the automatic skill of 314 melee and 75 ranged Exotic weapons; Nargacuga pieces (all 5 slots, all tiers) have automatic Evasion+2, Zinogre Thunder Attack (Large), Barioth Ice Attack (Large), Brachy Bomber, Uragaan Guard+2/Maximum Bullets, Stygian Dragon Attack (Large), Gore Focus+2, Shagaru S. Immunity (Myriad); automatic skill does not need points. "Cannot stack" not checked	kept
+525	HC adds a 5% carve and a Weapon Soul	rule	CANT-VERIFY	client text: Weapon Soul from the equipped weapon on HC clear (mhfpac.str 0x21242), HC drop carvable (0x1a9059); the 5% is not in text. needs play: carve an HC monster 20 times and read the carve rate in quest info	kept
 529	Weapon Soul bands HR1-2 Low, HR3-4 Mid, HR5 High	name	TRUE	item-ids 2659-2661 SnS Soul (Low)/(Mid)/(High); (Top) also exists	rewritten: Low Soul -> Soul (Low) etc.
 532	Top Soul row: Soul (Top) for HR5 Gou	name	TRUE	data/item-ids.json 'SnS Soul (Top)'	rewritten (lead: 'Soul (High), Gou version' -> 'Soul (Top)')
 534	Gou quests are told apart by their name	name	TRUE	qfind: no '[Gou]' quest names; Gou quests are named 'Hardcore ...' (21707 Hardcore Bloom! Forokururu, HR5 Key Quest)	rewritten (lead: bracketed 'Gou' -> names start with 'Hardcore'; 21707 linked)
@@ -168,7 +168,7 @@ line	claim	kind	verdict	evidence	action
 548	Guild Master starts G Rank, GSR, Extreme Style	npc	TRUE	live v1.30 mhfpac.bin 0xca586 G Rank letter (Guild Request done: certification at the Guild Master) and 0xd5485 (Extreme Style from the Guild Master); the GSR move is not traced (page says so) (in-game checklist part 1, 2026-11-25)	rewritten
 548	Free conquest bundle at entrance NPC (guide: purple)	npc	DIFFERENT	live distribution (select id,type,min_hr,min_gr,event_name from distribution where character_id is null): 12 shared rows, all type 1: Artisan 2 G (HR5), Poogie Dressup!, More Storage!, ReStyle your Chara!, ReStyle Your Hunter! (expired), Restyle Points For Contributions, Weekly Gacha Coins W45-W48, Miyashita P's Quiz 1-2; no GR gate, no conquest bundle; Erupe handlers_distitem.go:51 lists only these (character rows aside)	rewritten (no bundle here)
 549	G Rank free-form; Exotics (GR 100) and Zeniths gated	rule	TRUE	brief rule 4: G Exotic opens at GR 100	kept
-555	Star rating defence table 1-star full to 8-star/Zenith -1050	rule	CANT-VERIFY	sibling g-rank pages show the same table; confirm on a G quest screen	kept
+555	Star rating defence table 1-star full to 8-star/Zenith -1050	rule	CANT-VERIFY	no table of per-star defence in the client data we have (armor_rules growth is armour growth, not the star defence). needs play: open a G quest from each star level and read the quest defence on the Status screen	kept
 564	GSR gives +100 attack per weapon type	rule	CANT-VERIFY	check a GSR weapon	kept
 564	Extreme Style for each weapon at GSR1	rule	CANT-VERIFY	make a weapon	kept
 567	Quests from the General Quest Counter; Key Quests top with star icon; red ! over NPC	npc	TRUE	progression.html:252; red exclamation CANT-VERIFY	rewritten: Black Guildie -> General Quest Counter
@@ -191,24 +191,24 @@ line	claim	kind	verdict	evidence	action
 623	Stamp tickets claimed from guild girl in Blacksmith, last option	npc	DIFFERENT	client stamp card table live v1.30 mhfdat +0xb74 (hvmhfz_re tools/items/client_sources.py stamp_card): HR 1-49 1/2 HRP Tkt (800), 50-99 2/3, 100-299 3 (800)/1 HRP Tkt (4k), 300-599 1/2 (4k), 600-999 1/3 HRP Tkt (4k); Erupe handlers.go:1303 StampcardStamp: reward 1 every 15 stamps, reward 2 every 30, addWarehouseItem puts it in warehouse box 10 (gift box, handlers_house.go:536)	rewritten (gift box of the warehouse)
 626	Daily quests allowed per day 10	rule	TRUE	live config GameplayOptions DailyQuestAllowance 10	rewritten: pink store guildie -> General Store; Daily Quests path added
 629	Gu-ku Farm after quests	other	TRUE	progression.html:250 Gu-ku Farm	kept
-630	Poogie Farm daily points	other	CANT-VERIFY	My Tore in game	rewritten: Pugi Farm -> My Tore
+630	Poogie Farm daily points	other	TRUE	docs/my-tore.md daily claim (0x106360b0 state 0x40)	rewritten: Pugi Farm -> My Tore
 632	Sign near Blacksmith shows boosted SR tickets	other	CANT-VERIFY	read the sign at HR5	kept
 633	Entrance NPC has event rewards (guide: purple guildie)	npc	TRUE	live v1.30 mhfpac.bin 0xc9f6a/0xca205 letters: rank rewards at the Guide in Mezeporta Square (receive items > event rewards); 0x42a4f Guide at the plaza entrance (in-game checklist part 1, 2026-11-25)	rewritten (Guide)
 636	Four AI companion types	other	TRUE	guide-frontier-house.html	rewritten: Partnyaa -> Partnya
 639	Daily Bonus items go to warehouse NPC	npc	CANT-VERIFY	stamp card rewards: Erupe handlers.go:1303 addWarehouseItem -> warehouse box 10 (gift box); the Daily Bonus target was not traced	rewritten (stamp rewards to the gift box)
 642	Log In Boost: five boosts, independent timers	rule	TRUE	Erupe handlers_event.go handleMsgMhfGetKeepLoginBoostStatus (login_boost rows week_req 1-5)	kept
 646	Boost durations 2,4,2,3,4 hours	rule	TRUE	handlers_event.go UseKeepLoginBoost: weeks 1,3=120 min, 4=180, 2,5=240	kept
-646	Boost effects 5x GRP etc, Carving+1, Lucky Bag effect	rule	CANT-VERIFY	activate a boost, read its description	kept
+646	Boost effects 5x GRP etc, Carving+1, Lucky Bag effect	rule	TRUE	live v1.30 mhfpac 0x1ee3d9 Boost Effects: week 1 120 min, week 2 240, week 3 120 + Carves+1, week 4 180 + Carves+1, week 5 240 + Carves+1 + Great Luck Skill, every week GRP/GSRP/Z/GZ x5 + Halk Pot Effect; login boost rows served by Erupe handlers_event.go:132 @ wp-server	rewritten (week 5: Great Luck skill, client name)
 655	Login boost on; daily allowance 10; bonus 3; midnight Japan time	rule	TRUE	live config DisableLoginBoost False, DailyQuestAllowance 10, BonusQuestAllowance 3	kept; boost hours added
 661	Official course structure Hunter Life / EX / Premium	rule	DIFFERENT	official servers only; hv-paid-things	rewritten: prices (9.90 USD), NetCafe-same-cost removed
 668	Premium Course benefits list (x2 points, GCP x4, carve +1, 1.25x damage ...)	rule	CANT-VERIFY	accounts have Premium; test one quest and compare	kept, attributed in new paragraph
 680	Reroll of common carve; Monoblos example numbers	rule	CANT-VERIFY	carve with the Caravan skill	kept
 686	NetCafe Course: x5 points, 1,200 N Points, booster set	rule	CANT-VERIFY	official; hv note says NetCafe rank multipliers normal here	kept; TWD/event figures removed
-693	N Point price table	shop	CANT-VERIFY	NetCafe store in game	kept
-703	N Weapon/Armour costs (835 items, 6,000 NP, 52,000 NP)	shop	CANT-VERIFY	NetCafe store	kept
-704	Poogie outfits/cuffs; Poogie after HR50; G Cuffs GR50 + license	rule	CANT-VERIFY	g-rank-start.html#pugi-outfits-and-cuffs; My Tore in game	rewritten: names; license price (60P) and G Aid Package removed
+693	N Point price table	shop	DIFFERENT	the N Point store is shop type 4 (Erupe handlers_shop_gacha.go:282 @ wp-server, served from shop_items); live DB select count(*) from shop_items where shop_type=4 -> 0, so it sells nothing here	note added (no stock here)
+703	N Weapon/Armour costs (835 items, 6,000 NP, 52,000 NP)	shop	DIFFERENT	same as basics:693: no shop_type 4 rows in live shop_items, so N Point costs do not apply here; the material counts stay the guide's	note added (no stock here)
+704	Poogie outfits/cuffs; Poogie after HR50; G Cuffs GR50 + license	rule	TRUE	pac help "Poogie can give skill points with the [Skill Cuff] by putting them on the clothes obtained with Tore Points" (0x1aef1c); GR350 "Hold Items" text (tsv line 10251); outfit 1-30 gift = live DB distribution 2; G Rank License 60P (docs/my-tore.md)	rewritten: names; license price (60P) and G Aid Package removed
 705	G Cuffs need GR50 and the G Rank License	name	TRUE	decoded mhfpac.bin 'G Rank License'; 60 Tore Points: progression GR50 row (guide's price)	rewritten (lead: G Cuff License -> G Rank License)
-707	PA/PB/PC cuff package	rule	CANT-VERIFY	My Tore cuff menu	rewritten: Pugi Cuff -> Skill Cuff
+707	PA/PB/PC cuff package	rule	CANT-VERIFY	items PA Cuff Tkt / PB Cuff Tkt / PC Cuff Tkt exist (2533-2535) and pac has "Craft ... Skill Cuffs / Needs ... Cuff Tickets" (0x1ee2f5); the package counts 1/2/5 are not in text; needs play: open the Blacksmith cuff menu and read the ticket counts	rewritten: Pugi Cuff -> Skill Cuff
 711	Premium kits chapter and ranking	rule	DIFFERENT	paid kits not sold here (hv-paid-things; brief rule 3)	removed (heading and id kept; no external links)
 715	Restyle points redeemed at Cat Hairdresser	rule	DIFFERENT	not sold (hv-hr2 note)	rewritten: price/NPC text removed
 716	Up to three characters; Post Felyne moves box items	rule	CANT-VERIFY	character select screen	kept
@@ -224,33 +224,33 @@ line	claim	kind	verdict	evidence	action
 739	ZZ: Magnet Spike, Zenith Sigils, GR999	rule	TRUE	data/weapons/magnet-spike.json; changelog	kept
 742	Magnet Spike modes cutting/impact	rule	TRUE	data/weapons/magnet-spike.json moves "Cutting:"/"Impact:"	kept
 744	Magnet Spike unlock quests (Gougarf, Rebidiora, Rukodiora)	quest	DIFFERENT	qfind 23663/23664/23665: category New Weapon Quest, not-offered; quest-where.md New Weapon Type Quests empty	linked 23663, 23664, 23665; note added
-748	Graham at the bar; unlock story steps	npc	CANT-VERIFY	Rasta bar in game (Graham quest names exist: 55792-55795, not offered)	rewritten: legendary bar -> Rasta bar; Rebidora -> Rebidiora; Gougarfs -> Lolo/Ray Gougarf
-758	Magnet Spike attack multiplier 5.4	rule	CANT-VERIFY	compare displayed and raw attack	kept
+748	Graham at the bar; unlock story steps	npc	CANT-VERIFY	Graham (0x2e) appears when save byte +0x24998 bit 1 is set (docs/rasta-npcs.md:97); pac has Graham in the Legendary list with 'Story' and 'Cancel Story' (0x1d8b14, 0x1d8b1b); story steps not in text; Graham quests 55792-55795 not offered; needs play: with a Graham unlock	rewritten: legendary bar -> Rasta bar; Rebidora -> Rebidiora; Gougarfs -> Lolo/Ray Gougarf
+758	Magnet Spike attack multiplier 5.4	rule	CANT-VERIFY	not in text; weapon multipliers are code. needs play: compare displayed attack and the hit number on a fixed dummy for Magnet Spike	kept
 780	Cutting-mode motion values	rule	TRUE	data/weapons/magnet-spike.json moves: 43,35,46,56,46,64,120,44/54,80,200,20,55,600 match	kept
 810	Impact-mode motion values	rule	TRUE	magnet-spike.json: 44,53,100,46,51,58,130,338,96/121,73/90,42/52,75,125,40/50,25/80/120,600 match	kept
-826	Zenith Sigil: 15-25 s use, Standard and AoE, drops from Zenith	rule	CANT-VERIFY	get one from a Zenith quest	kept
-828	Standard Zenith Sigil value mapping	rule	CANT-VERIFY	read a sigil's detail window	kept
+826	Zenith Sigil: 15-25 s use, Standard and AoE, drops from Zenith	rule	CANT-VERIFY	client has Zenith Sigil creation text (mhfpac 0x1bd6a1 "Craft Zenith Sigils with Zenith materials", 0x49af6, 0x49b1b, lock 0x1e4dec) but not use time or value mapping. needs play: craft a Zenith Sigil and read its detail window	kept
+828	Standard Zenith Sigil value mapping	rule	CANT-VERIFY	same as basics:826; value mapping not in text. needs play: read a standard Zenith Sigil detail window	kept
 834	GR999 = 13,716,950 GRP; from GR899 2,392,200	rule	TRUE	docs/research/2026-11-17-gr-points.md: GR999 13,716,950; GR900 11,345,900 - 21,150 = 11,324,750 for GR899	kept
 834	GRP quest vs Gogomoa 8,000 GRP	quest	TRUE	qfind 55002 offered G Rank Quest Counter > Event Quests, need GR 900	linked 55002
 834	GR999 box pages, SR food, old Event Armours at warehouse manager	rule	DIFFERENT	live mhfpac 0x1a5524 (GR999 Hunter Navi reward Storage Guide・Illusion, item 15266, expands item/equipment boxes on taking it), 0x1a5611 (usual shops add SR ingredients and past event armour for GR999 hunters); no NPC named; live shop_items has no GR999 rows outside the Road shop (select shop_type,shop_id,count(*) from shop_items where min_gr>=900 -> 10|8|24)	rewritten: box pages via Storage Guide・Illusion; counters from the guide, said so
 836	Unlimited Mode toggle at GR999, Blue Flame icon	rule	TRUE	live mhfpac 0xcb287 (GR999-2 letter: some G Rank quests can be switched to Unlimited Mode, talk to the G Rank Receptionist first), 0x1a50e2 (UL quests at GR999, a special blue mark on quests that can switch, switch the mode to Unlimited, SR gear needed, HC versions appear), 0x1a5266 (more Hiden materials and hunting points, Hiden Stamps), 0x1e4ddd Always Post UL, 0x1d5277	rewritten (blue mark, how to switch)
 840	UL monster list by star	name	TRUE	monsters/index.json (Pokaradon, Yian Kut-Ku, Bulldrome, Breeding Season Hypnocatrice, Blue Yian Kut-Ku, Purple Gypceros, Shogun Ceanataur, Green Plesioth, Black Diablos, Red Khezu, Pink Rathian, Lolo/Ray Gougarf, Kuarusepusu, Black Gravios, Rebidiora, Dyuragaua...)	rewritten: Hypnoc -> Hypnocatrice; Ceantaur -> Ceanataur; Yian-Kut Ku -> Yian Kut-Ku; Gougarfs -> Lolo Gougarf and Ray Gougarf
-850	Dual Swords Up +10 gives 10 raw, 10% affinity, 100 elemental; up to 75 points	rule	CANT-VERIFY	read a UL sigil	kept
+850	Dual Swords Up +10 gives 10 raw, 10% affinity, 100 elemental; up to 75 points	rule	CANT-VERIFY	client has weapon Up skill names (GS Up .. Magspike Up, mhfpac 0x1c7ee0 list); the 10 raw/10%/100 element split is code. needs play: read a UL sigil detail window or compare Status screen with and without it	kept
 853	Old event sets store at GR999 (list)	shop	CANT-VERIFY	reach GR 999	kept
 854	GR999 armour store set names describe the look	name	CANT-VERIFY	not matched to data/armor names; in game: GR999 armour store list	rewritten (lead: 'original shows Japanese and Chinese names only' dropped)
 868	Bogabadorumu: Furious and Rush	name	TRUE	skills/index.json trees Furious, Rush	rewritten: Rush Up -> Rush
-869	Zenith Gravios skill Trained; weapons Fire/Blast	rule	CANT-VERIFY	fight it	kept; Trained+1/+2 skill names (data)
+869	Zenith Gravios skill Trained; weapons Fire/Blast	rule	CANT-VERIFY	Trained+1 at 10 and Trained+2 at 15 points (tree 222); Gravios Z/ZF/ZY/ZX Mail/Vest carry Trained points (skills_db armour 12971..). Zenith part and Fire/Blast weapons need play: fight it and break the chest; read the Zenith weapon element in the smith	kept
 878	Trained 10/15 points	rule	TRUE	skills/index.json Trained [10, 15]	rewritten: name
 879	Furious 10 points	rule	TRUE	skills/index.json Furious 10	kept
-880	Magnet Spike Tech skill 30 points	rule	CANT-VERIFY	search skill data: no such skill name found	kept
+880	Magnet Spike Tech skill 30 points	rule	TRUE	tree 224 "MS Tech": Magspike Tech (Novice) at -10, (Expert) 10, (Kaiden) 20, (M. Star) 30 points (skills_db trees; skills 530-533). The 30 points is right; page name fixed to the client name	rewritten (name)
 881	Strong Attack+6 50 points	rule	TRUE	skills/index.json Strong Attack 50	rewritten: name
 882	Sword God+3 25	rule	TRUE	skills/index.json 25	rewritten: name
 883	Steady Hand+2 20	rule	TRUE	skills/index.json 20	rewritten: name
 884	Gentle Shot+3 20 (was 30)	rule	TRUE	skills/index.json 20; "was 30" CANT-VERIFY	rewritten: name
 885	Mounting+3 20 (was 30); Mounting+2 15 (was 20)	rule	TRUE	skills/index.json 20/15	rewritten: name
 887	Recoil+3 20 total	rule	TRUE	skills/index.json Recoil 20	rewritten: Recoil +3 -> Recoil Reduction+3
-888	Exploit Weakness 30 (was 35)	rule	CANT-VERIFY	data: Tenderizer tree has Weakness Exploit at 15 points, differs from 30	rewritten: Exploit Weakness -> Weakness Exploit; number kept unverified
-889	Auto-Guard no longer activates Reflect, Obscurity or Rush	rule	CANT-VERIFY	equip it	kept
+888	Exploit Weakness 30 (was 35)	rule	CANT-VERIFY	tree 173 Tenderizer: Weakness Exploit at 15 points (skill 439, text "When hitting parts above a set hitzone value, damage rises"); the 30 (was 35) cannot be skill points, so it is the hitzone threshold, not in tables. needs play: Weakness Exploit vs a part with hitzone 30-34 and compare damage	rewritten (points column)
+889	Auto-Guard no longer activates Reflect, Obscurity or Rush	rule	CANT-VERIFY	skill Auto-Guard (44) text "Guards automatically"; no mention of Reflect, Obscurity or Rush. needs play: Auto-Guard with Reflect+3 and block, watch for reflected damage	kept
 892	PZ cuffs in a 30-coin Lucky Box gacha, 150 coins (90 USD)	rule	DIFFERENT	hv-zz-update: PZ cuff lottery not here	kept as official; hv note covers
 896	Tower weapons upgraded with tower gems from the Hunting Road shop; one weapon a week	shop	CANT-VERIFY	data/tower-weapons.json; road shop in game	rewritten: Road Store -> Hunting Road shop
 900	Ceaseless Up skill	name	TRUE	skills/index.json Ceaseless 10	rewritten: Ceaseless Up -> Ceaseless

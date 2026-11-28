@@ -199,7 +199,7 @@
 <li>A box opens. Type the guild's name to find it.</li>
 <li>Confirm the correct guild. On the next page choose the <strong>middle option</strong> to apply. The guild's leader (or a member the leader lets handle applications) must accept you before you are a member.</li>
 </ol>
-<figure class="hb-fig"><img src="/assets/guide/guild/guild-join-menus.webp" alt="Three guild menus side by side: the main guild menu, the search menu, and the list of ways to search (by guild name, leader ID, leader name, guild rank and slogan)." width="739" height="262" loading="lazy" decoding="async" /><figcaption>The join menus. The original picture warns that a wrong choice can put you on a 7 day cooldown for applying (not checked here).</figcaption></figure>
+<figure class="hb-fig"><img src="/assets/guide/guild/guild-join-menus.webp" alt="Three guild menus side by side: the main guild menu, the search menu, and the list of ways to search (by guild name, leader ID, leader name, guild rank and slogan)." width="739" height="262" loading="lazy" decoding="async" /><figcaption>The join menus. The original picture warns that a wrong choice can put you on a 7 day cooldown for applying. We found no such cooldown here: our server accepts an application with no time check, and our client greys the apply button only when you already have a guild or the guild is full or not recruiting.</figcaption></figure>
 <figure class="hb-fig side"><img src="/assets/guide/guild/guild-apply-menu.webp" alt="A guild page menu with a highlighted application button next to Back." width="487" height="84" loading="lazy" decoding="async" /><figcaption>The application menu</figcaption></figure>
 <p>Guild chat should appear automatically. To talk in it, press <kbd>Shift</kbd>+<kbd>Up</kbd>/<kbd>Down</kbd> until the chat icon becomes a flag and the text turns green. If you were logged in when the guild accepted you, you may need to log out and in again before you see guild chat.</p>
 <aside class="box hv-note hv-same" id="hv-joining-the-guild"><p><strong class="hv-verdict">Works the same.</strong> Guilds work (over 500 exist; see <a href="/guilds.html">Guilds</a>). Member limits depend on guild rank: 30 members up to rank 2, 40 up to rank 6, 50 up to rank 9 and 60 from rank 10. Rookie guilds are not built here: joining one always fails. Leaders and sub-leaders can also accept applications on the <a href="/account.html">Account page</a>.</p></aside>
@@ -249,7 +249,7 @@
 <figure class="hb-fig side"><img src="/assets/guide/guild/guild-legendary-rasta.webp" alt="A Legendary Rasta in armour holding a shield, standing in the Guild Hall." width="340" height="340" loading="lazy" decoding="async" /><figcaption>The day's Legendary Rasta</figcaption></figure>
 <p>The Guild Hall has a single Legendary Rasta. Which one it is changes every day.</p>
 <p>Talk to the Legendary and choose <strong>Contract</strong>. This lets you take them on any <strong>one</strong> quest you can sign in the Guild Hall, once a day. You can set all the usual options (weapons, items they use). Unlike a Premium Legendary, they <strong>do not have an infinite health pool</strong>. They do <strong>completely ignore all quest requirements</strong>, which makes them useful for quests that need specific gear that makes the quest more tedious than it should be.</p>
-<aside class="box hv-note hv-unknown" id="hv-guild-legendary"><p><strong class="hv-verdict">Unknown, not checked.</strong> We did not check the daily Guild Legendary Rasta in game. Our server answers the game&#x27;s daily Legendary Rasta request with placeholder data, so it probably does not work. Rasta borrowing and contract problems were fixed on 2 Nov, and no account has the Assist course (the Legend Rasta course).</p></aside>
+<aside class="box hv-note hv-unknown" id="hv-guild-legendary"><p><strong class="hv-verdict">Unknown, not checked.</strong> We did not check the daily Guild Legendary Rasta in game. Our server answers the game&#x27;s daily Legendary Rasta request with placeholder entries (choice 0 for every day). In that case the client picks the day's Legendary Rasta itself from its own list by day number, so the daily change should work. Whether Contract works was not checked. Rasta borrowing and contract problems were fixed on 2 Nov, and no account has the Assist course (the Legend Rasta course).</p></aside>
 </section>
 
 <section id="special-cooking">
@@ -265,11 +265,11 @@
 <li>When finished, the food goes to the <strong>Felyne Chef</strong>. You are told what buff it gives, or asked to replace an existing meal if all six meal slots are in use.</li>
 </ol>
 <p>Cooked food is <strong>available to all guild members</strong> at the Felyne Chef. On the official servers it stayed there for <strong>one hour</strong>; here it stays for 7 days. The buff itself lasts <strong>one hour and thirty minutes</strong> from when you eat.</p>
-<p>If a food has random results, keep eating it at the Felyne Chef until the skill you want triggers. The skills in the pool depend on the success level, and +20 resistance is in the normal success pool.</p>
+<p>If a food has random results, keep eating it at the Felyne Chef until the skill you want triggers: our client says such a meal activates a different skill each time you eat. The guide adds that the skills in the pool depend on the success level, and that +20 resistance is in the normal success pool.</p>
 <h3 id="cooking-results">Results</h3>
 <p>There are four results: Great Failure, Failure, Success and Great Success. The stamps you collect in the minigame decide it: no stamps is a fixed Great Failure, red stamps give Failure, green Success and blue Great Success.</p>
 <h3 id="cooking-modes">Cooking modes</h3>
-<p>You can cook normally, which costs no Guild Tickets, or use one of six Guild Ticket modes that change the minigame or the result.</p>
+<p>You can cook without help, or first borrow one of six kinds of <strong>Chef's Wisdom</strong> from the Felyne Chef, which change the minigame or the result. The guide says normal cooking is free and the Chef's Wisdom costs Guild Tickets.</p>
 <div class="hb-table"><table>
 <thead><tr><th>Mode</th><th>Cost</th><th>Effect</th></tr></thead>
 <tbody>
@@ -278,10 +278,10 @@
 <tr><td>Ultimate Success</td><td>10 Tickets</td><td>Doubles the size of the blue great success area.</td></tr>
 <tr><td>Cooking Technique</td><td>10 Tickets</td><td>The cursor moves backwards more slowly.</td></tr>
 <tr><td>Secret Seasoning</td><td>20 Tickets</td><td>Raises the level of success by one level. This should guarantee maximum returns for anyone decent at mashing.</td></tr>
-<tr><td>A sixth mode (random results)</td><td>5 Tickets</td><td>Randomises the results within the recipe band. For example, for Fire Res you could roll any amount of res or Hunger Up, but the results are not purely random.</td></tr>
+<tr><td>Mysterious Seasoning</td><td>5 Tickets</td><td>Randomises the results within the recipe band. For example, for Fire Res you could roll any amount of res or Hunger Up, but the results are not purely random.</td></tr>
 </tbody>
 </table></div>
-<p>The mode names and costs are the original guide's; the menu names in our client were not checked and may differ.</p>
+<p>The names are our client's Chef's Wisdom list; the costs are the original guide's (the client text gives no price).</p>
 <h3 id="cooking-ingredients">Ingredients</h3>
 <p>On the official servers the ingredients came from the guild store, for Zeny or Guild Tickets, or from the Adventure Boat (see below), whose rarest items needed the Diva Defense routes. The "Here" column says where our server's data lists each one; each name opens the item's page with all its sources.</p>
 <div class="hb-table"><table>
@@ -319,6 +319,7 @@
 <h3 id="cooking-recipes">Recipes</h3>
 <p>As with normal food, there is a recipe for each effect you might want. The recipes below are the cheapest combinations in materials; the original guide kept more in its document, which we do not link. Examples of strong results are Unaffected+3 (the Three Worlds skill), Adrenaline+2, Great Luck and Wide-Area+3.</p>
 <p>For Zenith monsters, use the resistance recipes too. The guide says you need <strong>55</strong> of a resistance to avoid the extreme version of a blight, and that you can reach <strong>+83</strong> resistance from SR Skills combined with Guild Cooking (see <a href="/guide-frontier-zenith.html">Zenith</a>).</p>
+<p>In our client you first pick one of <strong>23 dishes</strong> (Food Choice), then its ingredients: Clan Yaminabe, Spicy Bakudandon, Pioneer Exciting Meal, Lucky Pancakes, Ultimate Sashimi, Brothers Grill, Fiery Tongs Feast Pot, Medicinal Porridge, Heaven &amp; Earth Rice, Goddess Gem Sweets, Shellfish Iso-Yaki, Holy Seafood Banquet, Motivated Noodles, Hunter's Freaky Pot, Skewer Dumplings, Crimson BBQ Meat, Sweet Wrappings, Dawn Sky Toast, Five Colored Soup, Bloody Sala-Salad, Mori Mori Meat Pie, Fried Buns and Latchberry Cutlet. For every dish but Clan Yaminabe the screen colours the ingredients: yellow is the basic ingredient and pink the three extras. The guide's rows below list ingredients only, so which dish each row is was not matched.</p>
 <div class="box tip"><p>The guide's advice: unless you are very sure you can hit Great Success every time, use only recipes made of <strong>red ingredients</strong>, and cook with the option that forces a Success to rise to a Great Success (the 20-Ticket mode above).</p></div>
 <p>Every recipe below can also give the failure result <strong>Hunger Up (Large)</strong>. Each row is listed by its ingredients, and its results in the order the guide gives them, from the smallest to the strongest. The skill names are our skill list's; which skill the guide meant by each name was matched by its tree and level, and the meals themselves were not checked in game.</p>
 <div class="hb-table"><table>
@@ -355,7 +356,7 @@
 <tr><td>Gutsy Meat, Onion Sticks, Rainbow Mint, Snow Powder</td><td>Health+30, Encourage+1, Encourage+2</td></tr>
 <tr><td>Taiko Olive, Rainbow Mint, Bicolour Skimmer, Mimic Vines</td><td>Health+30, Bond, Assistance</td></tr>
 <tr><td>Gutsy Meat, Magma Mango, Snow Kiwi, Star Pineapple</td><td>Blue Soul, Incitement, Red Soul (the original's layout is unclear about the levels)</td></tr>
-<tr><td>Any four ingredients (the Guild's "mystery pot")</td><td>Random results</td></tr>
+<tr><td>Any four ingredients: the dish Clan Yaminabe (the guide's "mystery pot")</td><td>Random results</td></tr>
 </tbody>
 </table></div>
 <aside class="box hv-note hv-diff" id="hv-special-cooking"><p><strong class="hv-verdict">Different.</strong> Cooking works as the guide says, but a meal can be eaten for 7 days after it is cooked here (since 3 Nov), not one hour. With client patch v1.21 or later, the meal&#x27;s buff lasts its 90 minutes through a crash or relog. Diva Defense comes round in turn with the Hunter Festival (dates on <a href="/events.html">Events</a>); its guild progress rewards include several of the ingredients above. The Hunting Road shop sells some others. The guild store&#x27;s cooking stock and ticket prices were not checked in game.</p></aside>
@@ -369,7 +370,7 @@
 <h3 id="starting-a-treasure-hunt">Starting a hunt</h3>
 <figure class="hb-fig"><img src="/assets/guide/guild/treasure-hunt-departure.webp" alt="The departure map: a list of six areas (Jungle, Desert, Swamp, Volcano, G. Forest, Tidal Isle) and a list of Felyne slots with colour matches and levels." width="634" height="471" loading="lazy" decoding="async" /></figure>
 <p>Choose the <strong>first option</strong> at the treasure hunt counter (the <strong>Treasure Felyne</strong>) in the Guild Hall to send a hunt to one of the locations (six in the picture) with up to <strong>5</strong> of the guild's Partnyas. After picking the area, assign cats to the slots. Match the colours to the two shown on each slot, put the highest-level cats in the right slots and confirm.</p>
-<p>The guide says each hunt takes <strong>30 minutes</strong>. On the official servers a cat sent once was tired until the next daily reset, and sending it again the same day cost <strong>1 RP per tired cat</strong>. Here every send is free: see the note below.</p>
+<p>The guide says each hunt takes <strong>30 minutes</strong>. In our client's data it is 30 minutes for four of its eight destinations and 45 minutes for the other four (the picture shows six areas; which is which was not matched). On the official servers a cat sent once was tired until the next daily reset, and sending it again the same day cost <strong>1 RP per tired cat</strong>. Here every send is free: see the note below.</p>
 <h3 id="treasure-types">Treasure types</h3>
 <p>The guide lists three kinds of loot: Rewards, Treasures and Souvenirs. The type is mostly luck. The reward pools depend on the location you sent the hunters to.</p>
 <ul>
@@ -397,7 +398,7 @@
 <figure class="hb-fig side"><img src="/assets/guide/guild/adventure-boat-effects.webp" alt="The boat's current destination screen showing the effects Rewards +1, Rewards +1, Success and Large Success." width="500" height="333" loading="lazy" decoding="async" /><figcaption>The boat's support effects</figcaption></figure>
 <p>When the boat returns, claim the rewards directly in front of it. The success level of the trip decides what you see, from a pile of plain boxes and debris to shining treasures.</p>
 <p>The boat is out for <strong>6 hours</strong>. <strong>All members of the guild can contribute and claim rewards</strong> (each member once), so if you plan to use guild cooking, it is worth pooling resources here for the best results.</p>
-<aside class="box hv-note hv-diff" id="hv-adventure-boat"><p><strong class="hv-verdict">Different.</strong> The boat works as in the game: it is out for 6 hours, the game itself rolls the rewards and takes the RP cost, and each member collects once. RP here is 1 for every 15 minutes logged in (it was 1 per 30 minutes without the Net Cafe course), added when you log out, up to 65,535 (see <a href="/currencies.html#clan-points">Clan Points</a>). Its rewards, odds and RP cost, and the Diva Defense destinations, were not checked in game.</p></aside>
+<aside class="box hv-note hv-diff" id="hv-adventure-boat"><p><strong class="hv-verdict">Different.</strong> The boat works as in the game: it is out for 6 hours, the game itself rolls the rewards and takes the RP cost, and each member collects once. RP here is 1 for every 15 minutes logged in (it was 1 per 30 minutes without the Net Cafe course), added when you log out, up to 65,535 (see <a href="/currencies.html#clan-points">Clan Points</a>). In our client's data a trip costs 2 RP on the six standard routes and 3 RP on the six routes that need a key item (the guide's Diva Defense routes), and the ingredient lists agree with the table above. The odds were not checked in game.</p></aside>
 </section>
 
 <nav class="hb-pager" aria-label="Previous and next section">

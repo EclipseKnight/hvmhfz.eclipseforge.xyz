@@ -23,7 +23,7 @@ line	claim	kind	verdict	evidence	action
 246	Bow Impact Coatings: Impact hitbox, KO, carry 30	name	TRUE	data/items id 2212 Impact Coating; effect not in data	kept
 248	Test land cuts evolution level costs to about 1/50	rule	TRUE	hvmhfz_re docs/weapon-progression-client.md step 1a: cost / 50, at least 1 (v1.32-pre12, not live)	note added
 250	Gou weapon: attack grows with Gou armour pieces	rule	OPINION	client mechanic; see Gou boosts	kept
-252	Gou melee gain ESP at full HP and stamina	rule	CANT-VERIFY	no data; 'ESP' is not a client label	kept
+252	Gou melee gain ESP at full HP and stamina	rule	CANT-VERIFY	ESP is not a client label; needs play: full HP and stamina with a Gou melee weapon and a roaring monster nearby, see if you flinch	kept
 253	Gou LBG have Super Rapid Fire	name	TRUE	pac: 'Super Rapid Fire', 'Rapid Fire'; guide said Ultra Rapid Fire	rewritten
 254	Gou HBG Heat Cannon	name	TRUE	pac: 'Heat Cannon'; item 13608 Heat Cannon	kept
 255	Gou bows use Explosive Coatings	name	TRUE	data/items 1579 Explosive Coating; pac 'Blast Coatings can be used'	rewritten (was Bomb Coatings)
@@ -36,7 +36,7 @@ line	claim	kind	verdict	evidence	action
 274	Exotic weapons: HR5 start (GR for SAF/Tonfa), 2 or 1 upgrades, G50 stats, free fast eating	rule	OPINION	guide-frontier-g-rank-start.html:374 same text	rewritten (Quick Eating name dropped: no such skill; data has Speed Eating)
 274	G Exotic quests at GR 100: G Rank Quest Counter > G Hunter Quests > G Exotic Quests	quest	TRUE	python3 /tmp/gsb/q.py --id 23493: offered, GR 100, that path; 17 offered G Exotic quests	linked
 274	Each G Exotic clear gives 1 to 4 Exotic Gem, Exotic Bone or Exotic Shl	source	TRUE	changelog.html 17 Nov 2026; items Exotic Gem/Bone/Shl exist	kept
-276	Prayer weapon: Diva Defense reward, boost list (+45 raw, x2 element ...)	rule	CANT-VERIFY	no data here; owned by events page; Diva Defense is live	kept
+276	Prayer weapon: Diva Defense reward, boost list (+45 raw, x2 element ...)	rule	DIFFERENT	our Diva Defense gives Prayer Pebbles etc. through coin shop/GCP; weapon buffs untested; see events page	kept
 288	Zenith weapons open GR200 originally; Hunsterverse tiers at GR 300/500/700/900, menu opens GR 200	rule	TRUE	brief (Zenith tiers); armor-builder.md:236 Zenith menu GR >= 200	kept
 288	Zenith skill Thunder Clad Up exists	name	TRUE	tower sigil 'Thunder Clad Up Sigil' (data/skills/index.json id 14620)	kept
 295	Gou boosts: +15 attack, +2% status/element per piece, max +80/+10%/+10%	rule	OPINION	Fist's numbers, client mechanic; not in data/	kept
@@ -66,18 +66,18 @@ line	claim	kind	verdict	evidence	action
 427	bow sweet-spot table (Pierce, Rapid, Scatter, Rising Shot)	rule	OPINION	Fist's measurements	kept
 453	Active Feature is a daily buff from noon to noon	name	TRUE	hvmhfz_re data/translations/mhfpac.tsv: 'Featured Weapon' (client label)	rewritten (client name added)
 457	Active Feature effects per weapon type	rule	OPINION	client buff values; hv-note says they are the client's	kept
-472	Hunsterverse: all 14 weapon types featured every day	rule	CANT-VERIFY	no data in repo; check in game: Featured Weapon bar in town	kept
+472	Hunsterverse: all 14 weapon types featured every day	rule	TRUE	live DB select start_time,featured from feature_weapon order by start_time desc limit 5 -> 16383 (0x3fff, all 14 weapon bits) for 24-28 Nov; live config GameplayOptions Min/MaxFeatureWeapons 14/14; Erupe handlers_event.go:70 and generateFeatureWeapons (_max 14 for ZZ) @ wp-server	kept
 477	HR5 unlocks Heaven Style, Storm Style Urgent; Tonfa/SAF rules	rule	OPINION	pac: Earth/Heaven/Storm/Extreme Style labels; unlock rules from guide, see hunter-rank page	kept
 489	Extreme Style at GR1	rule	TRUE	weapon-progression-client.md 1d: client byte 1 live (900 only on Test land)	kept
 495	Hunting Horn song effect names (client list)	name	TRUE	pac song labels: Movement Speed Increased, Attack Boost, Further Attack Boost, Defense Boost, Health Boost, Wind Pressure Reduction/Negated/Immunity, Stamina Use Negated, Health Recovery, Earplug, Sharpness Recovery ...	rewritten (guide wording -> client labels)
-523	Song effects with no client label found: Cold/Heat Invalid, Stun/Paralysis Immunity, Quake Res, Clairvoyance, No Flinchi	name	CANT-VERIFY	not in pac text we have	note added in page; in-game check: play each song in the Hunting Horn song list
+523	Song effects with no client label found: Cold/Heat Invalid, Stun/Paralysis Immunity, Quake Res, Clairvoyance, No Flinchi	name	FALSE	client has labels for most: Cold Cancel, Heat Cancel, Negate Stun, Negate Para, Quake Res (mhfpac.str 0x1dd457..0x1dd491 list at 0x1dcfd8-0x1dd51a), and likely Razor Sharp/Slugger/Status Attack Up (0x1dd50e-0x1dd522) for Sharp Sword/Stun Up/Status Up; Psychic (0x1dd3ff) and Divine Protection probably Clairvoyance and No Flinching. Order-based match only	note rewritten; in game: play Psychic and Divine Protection songs and read their effects
 528	Song durations and multipliers	rule	OPINION	Fist's table; its column headings are missing (page note says so)	kept
 576	Sigils only for G Rank weapons, crafted at the Blacksmith Cat	npc	TRUE	pac: 'Sigil Production will be available to the options of the Blacksmith Cat'	rewritten (Cat Smith -> Blacksmith Cat)
 577	Sigil slots, up to three sigils, stacking	rule	OPINION	guide; image	kept
 578	Sigil names are the client's list labels	name	TRUE	pac sigil label list (Attack, Elemental, Flying Wyvern ... Aid, Spoilt, Exp Expert, Raw Bow Boost, Length Up ...)	note added
 589	Health sigil Sleeping	name	TRUE	pac 'Sleeping'	kept
 600	Offensive sigils: Attack, Elemental, Affinity, species (Flying Wyvern .. Minion), Hot, Cold, Morning, Night, seasons, Mo	name	TRUE	pac list: Attack, Elemental, Status Attack, Affinity, Stun Value, Flying Wyvern, ..., Minion, Hot, Cold, Morning, Night, Breeding Season, Warm Season, Cold Season, Monday..Sunday, Unity	rewritten (X Slayer, Attack Adjustment, Attribute Value -> client labels)
-612	Morning/Night/day sigils follow Taiwan time	rule	CANT-VERIFY	which clock our server uses unknown (hv-note says not checked); in-game check: equip Morning sigil, see raw change at server hour	kept
+612	Morning/Night/day sigils follow Taiwan time	rule	FALSE	client sigil text: "[JST] mornings, attack goes up/down", "[JST] late nights..." and the weekday sigils "[JST] Mondays only ..." (mhfpac.str 0x4a0a7, 0x4a0d1, 0x4a191..0x4a299): the client says JST (Japan time), not Taiwan time	rewritten
 619	Raw Bow Boost / Raw SnS Boost formulas	name	TRUE	pac labels Raw Bow Boost, Raw SnS Boost; formulas OPINION (Fist)	rewritten (Strengthen ... Raw)
 629	Weapon Up sigils +1/+15, one roll active	rule	OPINION	Fist	kept (Unlimited Mode nickname removed)
 638	Helper sigil = Aid: non-G hunters +50 defense	name	TRUE	pac 'Aid'; effect OPINION	rewritten
@@ -93,7 +93,7 @@ line	claim	kind	verdict	evidence	action
 737	Items/map sigils: Omnivore, Ballista Saver, Balloon, Decoy, Dowsing, Carving Division	name	TRUE	pac: Omnivore, Ballista Saver, Balloon, Decoy, Dowsing, Carving Division	rewritten (Balloon's Friend -> Balloon)
 750	Rewards sigils Hunter Soul, Soul Collection, Money Expert, Exp Expert	name	TRUE	pac Hunter Soul, Soul Collection, Money Expert, Exp Expert	rewritten (Experience Expert)
 761	Misc sigils Manager, Gu-ku's Friend, Halk's Friend, Cat Breeder, Spoilt, Sonic Bomb Range, Rarity Change	name	TRUE	pac Manager, Guuku's Friend (owner: Gu-ku), Halk's Friend, Cat Breeder, Spoilt, Sonic Bomb Range, Rarity Change	rewritten (Daddy's Influence -> Spoilt)
-767	Unsheathed Movement Speed sigil	name	CANT-VERIFY	pac has 'Unsheathd Walk' (probably the same); not confirmed	kept
+767	Unsheathed Movement Speed sigil	name	CANT-VERIFY	sigil name in the client is "Unsheathd Walk" (mhfpac.str 0x1c7ece and 0x1c85df, in the sigil list between Fanged Wyvern and T.Boost (SAF)); the 1.13-1.20x is code. needs play: equip it and compare run speed	note added
 773	Zenith sigils: durations 15 s + value, cooldown 120 s - value, element/attack formulas	rule	OPINION	Fist's formulas	kept
 787	Zenith sigil names	name	TRUE	pac Zenith list: Fire Res..Dragon Res, Healing, Heroics, Attack, Element, Move Speed	rewritten
 797	Area of Effect sigil formulas and dome colours	rule	OPINION	Fist's formulas	kept

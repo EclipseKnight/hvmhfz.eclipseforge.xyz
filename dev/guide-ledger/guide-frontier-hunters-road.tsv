@@ -4,9 +4,9 @@ line	claim	kind	verdict	evidence	action
 189	Road is always available	rule	TRUE	pac help: 'Not a periodic event: open all the time'	kept
 189	Need GR 1 or higher, no items allowed	rule	TRUE	pac help 'Accepting/Joining: GR 1 or higher, No items allowed'	rewritten (GR 1 added)
 189	Start at Fort Ruins; Hunter's Road Felyne swaps Gm for items, picks destination	npc	TRUE	pac help 'Hunter's Road Felyne ... Fort Ruins ... pick a destination and swap items using Gm'	rewritten (was: area like Guanzorumu)
-189	Area is very like Guanzorumu's arena	other	CANT-VERIFY	data/map-ids.json has Guanzorumu's arena; look not checked	kept
-191	Monsters tuned to about normal G Rank	rule	CANT-VERIFY	not in our files; Road monsters are our own per-Road design (hv note)	note added (original servers' figures)
-195	Attack/health multipliers by floor (1.00 to 2.50x, 1.00 to 1.33x)	rule	CANT-VERIFY	original servers' table; not in our data; our Roads are player-designed	note added
+189	Area is very like Guanzorumu's arena	other	CANT-VERIFY	data/map-ids.json has Guanzorumu's arena; map of the Road floor not compared. needs play: reach the Gu-ku floor on the Road and compare the arena layout with Guanzorumu's quest map	kept (evidence sharpened)
+191	Monsters tuned to about normal G Rank	rule	CANT-VERIFY	Road monsters are server-built per Road; the level row (hp, attack, defence by quest monster level) lives in mhfemd (docs/monsters-data.md:82) and the Road quest's level is in its file, not compared. needs play: fight a Road floor-1 monster and read its health bar against the same monster in a G Rank quest	note added (original servers' figures)
+195	Attack/health multipliers by floor (1.00 to 2.50x, 1.00 to 1.33x)	rule	CANT-VERIFY	original servers' table; the multiplier is the monster level row of each Road quest file (mhfemd level rows, monsters-data.md:82), not read here. needs play: read the Road quest's monster HP/attack on floor 1 and floor 50 (damage meter or health bar)	note added
 201	Choices include normal G, GHC, Exotic, Zenith, Burst, Origin; mostly random	rule	CANT-VERIFY	depends on each Road (road-data.html); not checked	kept
 201	Monsters give Gm and Road Points (RdP)	name	TRUE	pac help 'Road Points (RdP)'; 'Gm (Gems)'	rewritten (was Hunt Points)
 202	Bonus quests (Shakalaka slaying) fewer points, give Tower Medals, easier	rule	CANT-VERIFY	pac help 'Bonus Stage: easier monsters, earns a Guild Pin Medal'; Shakalaka not in help	kept
@@ -20,7 +20,7 @@ line	claim	kind	verdict	evidence	action
 214	Original: 40 steps unlocked all monster items; here floors up to 100	rule	DIFFERENT	road-shop tab 6/7/8 gates (11,20,30,40,80 / 10,20,50 / 20..100) via rt_road.py	kept
 215	Store sells most items incl. G Rank items and Zenith materials	shop	TRUE	road-shop-6 (GR1+ tab, GR 300 Zenith rows)	rewritten
 216	Weekly limits (White Fatalis mats, Tower Zenith Sigil mats) on original servers	rule	DIFFERENT	hv-road-stores note: server does not count past purchases; tab name Weekly Limited	rewritten
-217	HC/GHC carves are cheap here; cook in Gu-ku for Souls and Ribbons	rule	CANT-VERIFY	see Hiden table; cooking yields not in our files	kept
+217	HC/GHC carves are cheap here; cook in Gu-ku for Souls and Ribbons	rule	CANT-VERIFY	see Hiden table; cooking yields not in our files; mhfdat has no Gu-ku cooking table. needs play: cook one HC carve in Gu-ku and read the result	kept (evidence sharpened)
 218	Shop has nine tabs: Basic Items, Gatherables, HR1-4 Mats, HR5-7 Mats, Decorations, Other Items, GR1+ Items, Weekly Limited, Super Special	menu	TRUE	mhfpac.bin offset 1991131 (0x1e6ddb): 'Basic Items|Gatherables|HR1-4 Mats|HR5-7 Misc|Decorations|Other Items|GR1+ Items|HR5-7 Mats|Weekly Limited|Super Special'; data/sources/road-shop-0..8 titles	rewritten
 218	Sources page calls the tabs Basic/Limited/Special	other	TRUE	data/sources/road-shop-*.json names	kept
 219	Tower weapon gems: Courage gem 30, Divine Gem 40, Glittering Gem 50 each	shop	TRUE	rt_road.py: tab 2 builtin rows 11159=30, 11161=40, 11160=50 (bundles of 10 at 300/400/500)	rewritten (gem names)
@@ -33,22 +33,22 @@ line	claim	kind	verdict	evidence	action
 235	PA Cuff Tkt G 500; Upper Shiten Key/Lock GR 800; Hiden Stamps GR 999	shop	TRUE	rt_road.py tab 8: PA Cuff Tkt G 500 GR1; Upper Shiten Key/Lock 1000 GR800; Hiden Stamp 2500 GR999	kept
 235	Road Respec, SP Book, Cost Book 10 RdP each, Super Special tab	shop	TRUE	rt_road.py tab 8: ids 14445, 14443, 14444 at 10	kept
 240	Road is one long session; consumables limited to what you buy	rule	TRUE	pac help: no items allowed; Gm swaps	kept
-241	Attack multipliers rise with depth, health about the same	rule	CANT-VERIFY	original servers' table; not tested on our Roads	kept
-243	Fixed stages: White Fatalis every 10 steps; Zenith Star 1-4 at 12/14/16/18	quest	CANT-VERIFY	original Road; our Roads change with each vote (hv-road-basics); not checked	note added
+241	Attack multipliers rise with depth, health about the same	rule	CANT-VERIFY	original servers' table; same level-row reasoning as line 195 (mhfemd level rows). needs play: compare damage taken on floor 1 and a deep floor in the same gear	kept (evidence sharpened)
+243	Fixed stages: White Fatalis every 10 steps; Zenith Star 1-4 at 12/14/16/18	quest	CANT-VERIFY	our Roads change with each vote (hv-road-basics); docs/road-rebalance.md:227 says the White Fatalis quest (64551) is a stub. needs play: walk a Road to floor 10 and 12 and read the target names	note added
 248	Zenith tier names Zenith ★1..★4	name	TRUE	data/quests.json category 'Zenith ★N' (names checker)	rewritten (was ★1 Zenith)
 255	50 stages unlocked everything (original); here top rows need 100	rule	DIFFERENT	rt_road.py gates up to 100	kept
 259	Transcend: +800 Defense, +100 res, Super Armor, speed, 113% raw, 200% element, blight immune	rule	TRUE	values match transcend page level 10 tables; blight immunity not in our data (CANT-VERIFY)	kept
 259	Transcend usable on the Road	rule	CANT-VERIFY	pac help lists 'Hunting Road Quests (Special Slay)' among quests where Transcend cannot be used	note added
-261	Guild Cooking food lasts until you leave the Road	rule	CANT-VERIFY	needs play	kept
-263	Diva Buff gives Divine Protection	rule	CANT-VERIFY	skill tree Protection has Divine Protection (data/skills); Diva Song link not checked	kept
-265	Fluffy sheep pugi halves stamina use; watermelon status-attack pugi	other	CANT-VERIFY	Guild Pugi (pugi) types not in our files	kept
-267	Caravan skills: Bonus Art, Recovery Items Up, KO Technique, Unstable Defender, Perfect Defense, Weapon Art	name	CANT-VERIFY	data/skills has Recovery Items Up; the others are caravan skills, checked on the Events page	kept
-269	Skills at quest start last the whole run; food and Diva Song last all run	rule	CANT-VERIFY	needs play	kept
+261	Guild Cooking food lasts until you leave the Road	rule	CANT-VERIFY	no table (Guild Cooking food is a quest-start buff). needs play: eat Guild Cooking, finish floor 1, check the buff icon on floor 2	kept (evidence sharpened)
+263	Diva Buff gives Divine Protection	rule	CANT-VERIFY	Divine Protection exists as a Protection skill (data/skills) and as a status name in mhfpac 0x1cb02f / 0x1dd445 (a list next to Poogie skill names), but nothing there ties it to the Diva Song or Diva Buff. needs play: start a Road with the Diva Buff active and read the skill list	kept (evidence sharpened)
+265	Fluffy sheep pugi halves stamina use; watermelon status-attack pugi	other	CANT-VERIFY	Guild Pugi types (fluffy sheep, watermelon) are not in mhfdat/mhfpac strings (grep 'Fluffy', 'watermelon': no pugi hit). needs play: dress the pugi as fluffy sheep and watch the stamina bar in a Road run	kept (evidence sharpened)
+267	Caravan skills: Bonus Art, Recovery Items Up, KO Technique, Unstable Defender, Perfect Defense, Weapon Art	name	CANT-VERIFY	data/skills has Recovery Items Up; Weapon Art (Sm/Med/Lg) and Bonus Art are client skill names (mhfpac 0x1c8755, 0x1c9ce8); KO Technique, Unstable Defender, Perfect Defense not found by name. needs play: open the Caravan skill list in the Road guild hall	kept (evidence sharpened)
+269	Skills at quest start last the whole run; food and Diva Song last all run	rule	CANT-VERIFY	no table. needs play: start a Road quest with a food and a Diva Song and check the buff icons on floor 5	kept (evidence sharpened)
 272	Vampirism, Vigorous, All Res Up, Hunger Negated, Divine Protection, Wide-Area +3, Encourage names	name	TRUE	data/skills/index.json trees: Vampirism, Vigorous, All Res Up, Hunger Negated, Protection (Divine Protection), Wide-Area+3, Encourage	kept
-275	Vigorous 1.15x attack above 100 Health; Vigorous Up +100/+50 True Raw	rule	CANT-VERIFY	skill text in client; not tested	kept
-275	Vigorous Up on Zenith Midogaron's Waist, Tower Weapon Zenith Sigils, Vigorous Up Cuff	source	CANT-VERIFY	data has Vigorous Up Sigil (14637), Vigorous Up SZ/PZ1-8 (armour); Midogaron piece and Cuff not matched	kept
+275	Vigorous 1.15x attack above 100 Health; Vigorous Up +100/+50 True Raw	rule	CANT-VERIFY	skill text not in client dump (Vigorous/Vigorous Up have names only, mhfpac 0x19de69); 1.15x and +100/+50 are not in our data. needs play: read the Vigorous and Vigorous Up descriptions in the skill list	kept (evidence sharpened)
+275	Vigorous Up on Zenith Midogaron's Waist, Tower Weapon Zenith Sigils, Vigorous Up Cuff	source	CANT-VERIFY	data/armor/waist.json: Midogaron Z/ZF/ZY/ZX Coil and Coat have zenith skill 48 and rules.json id 48 is Vigorous Up (TRUE); Vigorous Up Sigil 14637 exists; no Vigorous Up Cuff item name found in item-ids.json. needs play: Zenith Skill Cuff list at the smithy	kept (evidence sharpened)
 277	All Res: +20 guild food, 5 per element base, SR +19, Road +15 = 49 extra	rule	TRUE	Road All Res Lv3 +15 (hvmhfz_re data/road_skills.tsv 0x22); other terms not checked	kept
-283	Encourage Up gives Stamina Recovery (Large) and Peerless	name	CANT-VERIFY	Peerless in data/skills (tree Stamina); Stamina Recovery (Large) not in data	kept
+283	Encourage Up gives Stamina Recovery (Large) and Peerless	name	CANT-VERIFY	Peerless in data/skills (tree Stamina); the client has 'Stamina Recovery Speed' effects (mhfpac 0x1ba8e8) but not the name Stamina Recovery (Large). needs play: read the Encourage Up skill text	kept (evidence sharpened)
 288	Lance has best survivability; Guard Up, Reflect Up, Guard+2, Reflect+3	name	TRUE	data/skills: Guard+2, Reflect+3 trees; Guard Up Sigil 14632, Reflect Up Sigil 14635	kept
 288	Lance is the best weapon for a deep run	rule	OPINION	author's judgement	kept
 295	Tower Medals come only from Bonus Stages (original); client calls them Guild Pin Medals	name	DIFFERENT	pac help 'Bonus Stage ... earns a Guild Pin Medal'; data/currencies.json tower-medal (Sky Corridor sources here)	rewritten
@@ -61,12 +61,12 @@ line	claim	kind	verdict	evidence	action
 321	Tower Catalyst 500 medals (removes Tower Decoration)	shop	TRUE	item 11165 Tower Catalyst; docs/bounties.md:190 'Tower Catalyst 500'	rewritten (was Tower Decoration Removal Solution)
 323	HRP Tkt (4k) 1 medal; White/Purple Conquest Ticket; Halk Potion	name	TRUE	data/item-ids.json: 5392 HRP Tkt (4k), 7279 Wht Conquest Tkt, 7280 Purp.Conquest Tkt, 4952 Halk Potion	rewritten (names)
 330	Hv note: medals also from Sky Corridor daily rewards, present box, campaigns, gachas	source	TRUE	data/currencies.json tower-medal ways; data/sources item 11167	kept
-335	White Fatalis can be a Road target, appears every 10 floors	quest	CANT-VERIFY	not in quest data (Road quests are server-built); docs/road-rebalance.md:227 says the White Fatalis quest is a stub	note added
+335	White Fatalis can be a Road target, appears every 10 floors	quest	CANT-VERIFY	not in quest data (Road quests are server-built); docs/road-rebalance.md:227 White Fatalis quest 64551 is a stub, so none loads on our Roads. needs play: walk a Road to floor 10	note added
 335	Original: kill 3 White Fatalis a week, spend 19,800 P for all materials	rule	DIFFERENT	rt_road.py tab 6: ten White Fatalis mats at 500 each, no weekly limit here	rewritten
-336	White Fatalis fight: Ultra Roar, Ultra Quake, Ultra Wind Pressure; one-shots	rule	CANT-VERIFY	game mechanics, needs play	kept
-337	Stand by Fatalis' legs to avoid the roar one-shot	rule	CANT-VERIFY	needs play	kept
+336	White Fatalis fight: Ultra Roar, Ultra Quake, Ultra Wind Pressure; one-shots	rule	CANT-VERIFY	game mechanics, no table (move names are not in monster_attack_links.tsv for Fatalis in a Road form). needs play: fight White Fatalis (no Road loads it today) and note the roar	kept (evidence sharpened)
+337	Stand by Fatalis' legs to avoid the roar one-shot	rule	CANT-VERIFY	game mechanics. needs play: stand under Fatalis' legs during the roar and see whether you are one-shot	kept (evidence sharpened)
 338	Weekly limit on White Fatalis materials (original)	rule	DIFFERENT	hv-white-fatalis note; shop qty fields	rewritten
-339	White Fatalis weapons Emperor's Roar element Thunder 150%, Dragon 50%	rule	CANT-VERIFY	data/weapons not checked for this element	kept
+339	White Fatalis weapons Emperor's Roar element Thunder 150%, Dragon 50%	rule	CANT-VERIFY	data/weapons has 57 weapons with element E. Roar (Eternal Origin/Genesis lines, Renka); the 150% Thunder / 50% Dragon split is not in our data (data/weapons/hammer.json lists the White Fatalis Buster/Crusher as Dragon). needs play: read the element of an E. Roar weapon in the smithy	kept (evidence sharpened)
 340	Hv note: ten White Fatalis mats 500 RdP (GR1+ tab), GX decorations 30,000 (Super Special)	shop	TRUE	rt_road.py: tab 6 ten rows 500 GR1; tab 8 Wht Fatalis BM/GN GX1-5 30000 GR1	kept
 345	Road skills are one system with the old Tower skills; menu Hunting Road Skills; equip to get effect	menu	TRUE	hvmhfz_re docs/tower.md part 43, 12; pac help 'be sure to equip it'	rewritten
 347	Road Rank (RR) from Road Rank Points; Road SP (RSP) from rank; Cost cap	name	TRUE	pac help 'Road Rank / Road Rank Pts', 'Road Skill cost cap'	rewritten (was Hunt SP, Hunt Rank)
@@ -110,16 +110,16 @@ line	claim	kind	verdict	evidence	action
 473	Ancient Hope Stone [Orange/Blue/Red/Yellow/Purple] materials	name	TRUE	data/item-ids.json 11465-11469 Anc.HopeStone [Org/Blu/Red/Yel/Pur]; Sky Corridor treasure source	kept
 483	Tenrou armour crafted at the same NPC as Tower Weapons; no Zenith Sigils	npc	TRUE	live mhfpac 0x1339ae (JP 天廊防具の生産と試着 ... 強化は武具工房の親方で): Create Armor at the Tower Gear Felyne crafts and tries on Sky Corridor (Tenrou) armour, upgrade at the master smith; 0x133a23 Sky Marks for Guard Armor etc.; Zenith Sigils: not in client text	rewritten (NPC menu; Zenith Sigil remark attributed)
 490	Duremudira urgent quests may trigger on the Road; posted individually per hunter	quest	CANT-VERIFY	pac help describes 'Emergency Hunt Request' when total Road progress hits a set number (not chance); Duremudira Road quests are not in data/quests.json	kept
-491	Duremudira quest in a single-floor tower; Gm shop; can idle in the hall	quest	CANT-VERIFY	needs play	kept
-494	20 minutes, no carts, lose 60 s per defeat	rule	CANT-VERIFY	needs play	kept
+491	Duremudira quest in a single-floor tower; Gm shop; can idle in the hall	quest	CANT-VERIFY	Sky Corridor quests are server-built; the shop is Gm (sky-corridor-districts.md section 11). needs play: enter an urgent quest and try to idle in the hall	kept (evidence sharpened)
+494	20 minutes, no carts, lose 60 s per defeat	rule	CANT-VERIFY	docs/g10-sky-corridor.md:238-243: our four Hunter's Road ids show 20 minutes, the quest file of the three-floor runs says 50 (medium); carts and the 60 s loss not in our data. needs play: time an urgent quest and faint once	kept (evidence sharpened)
 496	Revival Ball and Revival Drug	name	TRUE	data/item-ids.json Revival Ball, Revival Drug	kept
 499	Carry 2 of each revival item; Pharmacist raises it	rule	TRUE	road_skills.tsv 0xf 'Increases Revival Items by 1/2/4'	kept
 502	Deadly Poison Cure sold at the cat store	name	TRUE	data/item-ids.json Deadly Poison Cure	kept
 503	Freezing only from 2nd district Duremudira; Powerful Frost	rule	TRUE	road_skills.tsv 0x16 Frost Res. 'Powerful Frost'	kept
-505	1st district Duremudira: Tower item pool, title at 1st and 50th kill; two phases 33/66	rule	CANT-VERIFY	monster list has Duremudira (1st); phases/titles not checked	kept
-506	2nd district: Red and Black Fluids low% carves; three phases 20/40/40	rule	CANT-VERIFY	monster list has Duremudira (2nd); drops not checked	kept
-510	Duremudira hitzone table and three images	rule	CANT-VERIFY	original servers' figures; monster data not compared	kept
-526	Hv note: Duremudira game content; Road urgent not checked	rule	CANT-VERIFY	stated in note	kept
+505	1st district Duremudira: Tower item pool, title at 1st and 50th kill; two phases 33/66	rule	CANT-VERIFY	monster list has Duremudira (1st); tower item pool and title counts not in our files (docs/duremudira-kills.md counts kills per district, ids 132/145/167). needs play: kill it and read the drops and titles	kept (evidence sharpened)
+506	2nd district: Red and Black Fluids low% carves; three phases 20/40/40	rule	CANT-VERIFY	monster list has Duremudira (2nd); fluids drops not checked. needs play: carve it and read the carve list	kept (evidence sharpened)
+510	Duremudira hitzone table and three images	rule	CANT-VERIFY	data/monsters has hitzone tables for Duremudira (original servers' figures, images not compared). needs play: hit-test one zone	kept (evidence sharpened)
+526	Hv note: Duremudira game content; Road urgent not checked	rule	CANT-VERIFY	stated in the note itself; docs/duremudira-kills.md says the server credits every Duremudira kill (ids 132/145/167) in a Sky Corridor quest. needs play: fight one in a Road urgent	kept (evidence sharpened)
 531	Road is an alternative to Hiden grind; 50 floors about 100,000 points	rule	DIFFERENT	hv-hiden-alternative note: our Roads differ; shop sells finished Hiden decos	kept
 534	Points needed table for Souls/Ribbons decorations (8,500 .. 443,500)	rule	CANT-VERIFY	original prices: 8,500 = 17 x 500 etc. consistent with current carve prices (Daora Desolate Shl 500, Akantor Death Scl 1000, Akan. Corrupt Claw 1500, Dyura Ice Shell 1500, Malleable Hide 2000)	kept
 551	Carves that cook to Souls x5 / Ribbons x3	source	CANT-VERIFY	names: items 4320, 4930, 4931, 3724, 9601, 9607, 12820 are HC carves of those monsters (data/items/*.json drops); cooking yields not in our files	rewritten (names: Daora Desolate Shl, Akantor Death Scl, Akan. Corrupt Claw, Monoblos Scute)
