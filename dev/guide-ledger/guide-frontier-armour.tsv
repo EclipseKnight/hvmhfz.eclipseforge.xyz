@@ -1,9 +1,9 @@
 line	claim	kind	verdict	evidence	action
-186	Blacksmith asks whether you craft for your Partner or yourself	npc	CANT-VERIFY	no data; Partner dialogue is client script	kept; check: talk to the Blacksmith with a Partner
-187	Blacksmith > Armour section; main menu Weapons, Armour, Decorations, Pugi Cuffs	menu	CANT-VERIFY	dev/guide-terms.tsv:135-139 (client smithy list: Create/Upgrade Weapon, Create/Upgrade Armor, Create Deco, Insert Deco, Create Cuff); no 'Armour' parent string found	kept with the page's own 'menu names may differ' line; check: open the Blacksmith menu
-191	Armour Crafting entries (Standard, Upgrade, Transmog, Gou, G Rank, Convert G Armour to Deco, Exotic, Zenith, Special, Premium and GCP)	menu	CANT-VERIFY	guide-terms.tsv:138-140: 'Convert G Armour' not found in client strings; others unmatched	kept; check: open Blacksmith > Armour and read the list
-192	Special Armours submenu (Guild and Festival, Event, SP, SR and Hiden)	menu	CANT-VERIFY	no client string match (names.py: nearest 'Special Armor Tkt')	kept; check in game
-193	Premium Armours submenu (Prem Kit 1/2, Lottery, NetCafe, HL/EX, GCP, Event/Promo, Exotic)	menu	CANT-VERIFY	no client string match (no Item Mall or lottery here, see line 353 note)	kept; check in game
+186	Blacksmith asks whether you craft for your Partner or yourself	npc	TRUE	live mhfpac 0x1b824f Player, 0x1b8256 Partner with help 0x1b81a5 "Craft Player Armor, Weapons etc...\n\nCrafting・Upgrading" and 0x1b81dd "Craft Partner Armor, Weapons etc..." (pointer table 0x14075c-0x140770); the on-screen swap is the guide (play)	rewritten (client labels)
+187	Blacksmith > Armour section; main menu Weapons, Armour, Decorations, Pugi Cuffs	menu	DIFFERENT	live v1.30 mhfpac.bin 0x222b3a-0x222f7d smithy labels (in-game checklist part 1, 2026-11-25)	rewritten (attributed, our labels)
+191	Armour Crafting entries (Standard, Upgrade, Transmog, Gou, G Rank, Convert G Armour to Deco, Exotic, Zenith, Special, Premium and GCP)	menu	DIFFERENT	live v1.30 mhfpac.bin 0x222f02-0x222f7d: Create Armor, Upgrade Armor, Gou Armor, G Rank Armor, Refine G Armor, Exotic Armor, Special Armor, Premium Armor, Transmog, Zenith Armor (in-game checklist part 1, 2026-11-25)	rewritten
+192	Special Armours submenu (Guild and Festival, Event, SP, SR and Hiden)	menu	DIFFERENT	live v1.30 mhfpac.bin 0x222753-0x222773: Clan, Event, SP, Hiden Armor (in-game checklist part 1, 2026-11-25)	rewritten
+193	Premium Armours submenu (Prem Kit 1/2, Lottery, NetCafe, HL/EX, GCP, Event/Promo, Exotic)	menu	DIFFERENT	live v1.30 mhfpac.bin 0x22277f-0x2227e9: Package, Kit, Gacha, NetCafe, Longplay, GCP, Promotional, Exotic Armor (in-game checklist part 1, 2026-11-25)	rewritten
 194	Armour pieces: Helmet, Chest, Arms, Waist, Legs	menu	TRUE	data/armor/{head,chest,arms,waist,legs}.json	kept
 199	Armour made before G Rank: craft base then upgrade with Armor Spheres; level 7 second tier; levels 2-6 use spheres	rule	TRUE	changelog.html v1.19 (9 Nov): Low and High Rank upgrade levels cost one Armor Sphere; hvmhfz_re docs/armor-sphere-patch.md:12-17	rewrote spelling to Armor Sphere; added shop source
 201	Sphere table: GCP / NP / Festival Point prices	shop	DIFFERENT	no GCP, N Point or Festival sphere shop here (brief; hv note line 221); data/sources/road-shop-1.json rows 13057-13064: 10,20,30,40,50,60,70,80 RdP	column replaced by Hunting Road shop (RdP): 10 to 80
@@ -17,9 +17,9 @@ line	claim	kind	verdict	evidence	action
 221	Making the next piece needs 'about a fifth fewer' materials	rule	FALSE	armor-sphere-patch.md:16 'about a third less (6,362 -> 4,040)'; armor-sphere-patch.md:94 column 0 6,362 -> 4,040 (36% fewer) for the shipped lists	rewritten to 'about a third fewer'. changelog.html:584 v1.19 still says 'a fifth' (not touched, report)
 221	Spheres come from mining, quests and Road shop 10 to 90 RdP, not GCP/N Point/Festival	shop	TRUE	data/sources/road-shop-1.json: 13057-13064 at 10-80, row 14858 (Absolute Armor Sphere) at 90 with gate 6	kept
 221	Road Limited tab sells about 270 tickets (Lien, Rage, Gauss, Cielo, 2011 Kit 1-3) at 3,000 or 10,000 RdP from GR 1	shop	TRUE	data/sources/road-shop-7.json: 156 rows at 3000 and 133 at 10000, all gate GR1; Lien Head Tkt 3000, Rage Tkt 10000, Gauss 10000, Cielo Ticket 3000, 2011 Kit 1-3 10000	kept
-221	Item 'Secret Proof' (HC and some sets at a few levels)	name	CANT-VERIFY	armor-sphere-patch.md:14 uses 'Secret Proof (Low/Mid/High)'; no item of that exact name in data/item-ids.json	kept; check: open an HC armour upgrade list at the Blacksmith
+221	Item 'Secret Proof' (HC and some sets at a few levels)	name	TRUE	items 5384-5386 Secret Proof・Low/Mid/High (data/item-ids.json); 657 armour upgrade steps (mhfdat 0x4c, hvmhfz_re tools/items/recipes.py dump of live v1.30) use Secret Proof・Low (597 x1, 60 x9); Mid and High in none	rewritten (Secret Proof・Low)
 227	Standard armour crafted and upgraded with materials instead of Armour Stones	rule	TRUE	v1.19 patch changes Low/High Rank upgrade costs (armor-sphere-patch.md)	kept
-231	SP armour: HR5 craft, single decoration slot, needs SP gems, materials only from HR5 quests	rule	CANT-VERIFY	no data row checked	kept; check: SP armour piece info screen
+231	SP armour: HR5 craft, single decoration slot, needs SP gems, materials only from HR5 quests	rule	TRUE	data/armor/chest.json: 174 SP chest pieces, craft ['hr',100,5,'r'], 1 slot, no skills; live mhfpac 0x1b3ea3 (SP armour has no skill points, SP decorations activate skills); "materials only from HR5 quests" not in data	kept
 232	SP gems such as +10 Hearing and +15 Psychic switch on Autotracker and Earplugs	name	DIFFERENT	data/skills/index.json trees Hearing (10 Earplugs) and Psychic (15 Autotracker)	rewrote 'Hearing Protection' to 'Hearing'
 234	Colours cosmetic, coloured grasses, trade to the Veggie Elder in the Gorge	npc	CANT-VERIFY	dev/guide-terms.tsv has no Veggie Elder row	kept; check: find the Veggie Elder in the Gorge
 237	HC armour: regenerates health above 50% on any HC quest; stamina and regen table	rule	CANT-VERIFY	client rule; Hardcore quests exist ([Hardcore] names in data/quests.json) but the numbers are not in our data	kept; check: wear HC pieces on a Hardcore quest and watch health
@@ -43,47 +43,47 @@ line	claim	kind	verdict	evidence	action
 344	Exotic upgrade to G needs GR500	rule	DIFFERENT	data/armor/head.json 'Zinogre G Helm' craft ['hr',100,5]; hv note: G Exotic quests open at GR 100	rewritten: guide says GR500, here smithy offers it from HR 100
 344	Exotic pieces have a built-in always-active skill, count as G Rank when upgraded	rule	TRUE	data/armor/head.json 'auto' field; limitKind in index	kept
 349	Standard Zenith: four tiers Z/ZF/ZY/ZX, 7 upgrades; GR200/400/600/800	rule	DIFFERENT	hv note line 353: our tiers GR300/500/700/900; data/armor/head.json Baruragaru Z..ZX craft ['gr',200,7]	kept with the existing note
-350	Premium Zenith (ZP) from Premium pieces past GP, Zenith Hypnoc parts, 2 extra lottery tickets	rule	CANT-VERIFY	data/armor/chest.json has ZP pieces (Masaha Dress ZP); materials not in our data	kept
+350	Premium Zenith (ZP) from Premium pieces past GP, Zenith Hypnoc parts, 2 extra lottery tickets	rule	DIFFERENT	recipes.py dump of live v1.30 mhfdat: the 50 Lien/Cielo ZP upgrades take 1 Absolute Armor Sphere (item 14858), 10 Cielo rows also 2 Cielo Ticket; no ZP row uses Hypnocatrice parts	rewritten (Absolute Armor Sphere)
 353	Note: Diva GCP item shop sells Katante..Utaei Mat, 200 GCP	shop	TRUE	earlier batch note; source gcp-item-shop	kept
-358	Transmog: give the exterior's items at the Blacksmith	menu	CANT-VERIFY	no data	kept
+358	Transmog: give the exterior's items at the Blacksmith	menu	TRUE	hvmhfz_re tools/items/cosmetics.py on live mhfdat slot 0xab8: 5,245 transmog entries, each 1-4 (item, qty) pairs (e.g. Rathalos D Helm needs Fire Wyvern Marrw x8)	kept
 359	Billing exterior list, Nier 2B exterior limited	rule	TRUE	no Item Mall here (changelog and AGENTS)	kept with note
-363	Transmog menu entries	menu	CANT-VERIFY	no client string found	kept
-367	Green medal symbol on transmogged armour	other	CANT-VERIFY	client UI	kept
+363	Transmog menu entries	menu	TRUE	live v1.30 mhfpac.bin 0x222f8a-0x222fd8: Apply/Unlock/Remove Transmog; Standard, Event, Premium, Unlocked (in-game checklist part 1, 2026-11-25)	sub-menu row rewritten
+367	Green medal symbol on transmogged armour	other	CANT-VERIFY	only client text: mhfpac 0x9a7ae "~C04Transmogged gear." (a coloured label); the medal icon needs play	rewritten (attributed)
 374	Colours other than Green, Red, White need HR3	rule	CANT-VERIFY	client rule	kept
-375	Hunter T Shirt sold by the NPC with glasses in the Blacksmith	npc	CANT-VERIFY	data/armor/chest.json id 234 'Hunter T Shirt' (craft hr 22); NPC position not in data	rewritten name; check: look for the NPC with glasses inside the Blacksmith
+375	Hunter T Shirt sold by the NPC with glasses in the Blacksmith	npc	DIFFERENT	data/armor/chest.json 234 Hunter T Shirt craft ['hr',22,2,'r']; hvmhfz_re data/armor_craft_rank.json list 52 (Create Armor 0x34) row 940; recipe Rathalos Scale, Kirin Mane, Monster Fluid, Honey Dragonfly x1 each; no glasses NPC in the smithy text	rewritten (Create Armor row)
 379	Green/Red/White: Delivery, Slaying, capture counts (100 points)	rule	CANT-VERIFY	client rule	kept
-382	Blue: 50 friends	rule	CANT-VERIFY	client rule	kept
+382	Blue: 50 friends	rule	TRUE	live mhfpac 0x98e70 Symbol Color proof "a hunter who once had 50 Friends on their list"	kept
 383	Dark Blue: 20 Rare-7 weapons of each type	rule	CANT-VERIFY	client rule	kept
 384	Light Green: 35 armour pieces for the Well Dressed title	rule	CANT-VERIFY	title not in our data	kept
-385	Purple: win a PVP match with pets	rule	CANT-VERIFY	client rule; hv note says untested	kept
-386	Orange: Hunter Guide challenges; Yellow: 15 Large Gold Crowns; Grey/Black: eat 100 times	rule	CANT-VERIFY	client rule	kept
+385	Purple: win a PVP match with pets	rule	CANT-VERIFY	live mhfpac 0x98f16 proof text: a hunter who won the Great Arena (大闘技会); the guide's PVP rule kept attributed	note added
+386	Orange: Hunter Guide challenges; Yellow: 15 Large Gold Crowns; Grey/Black: eat 100 times	rule	CANT-VERIFY	live mhfpac Symbol Color proofs: 0x98f42 many Hunter Navi achieved (Orange fits), 0x98f6e 15+ monsters at King Size (Yellow 15 TRUE), 0x98faa served 10+ dishes in My House (Grey: guide says eat 100 times); thresholds are client code	note added (client numbers)
 389	Pink: 5000 Souls during the festival	rule	TRUE	Hunter Festival runs here (changelog.html 17 Nov 2026); 5000 amount is the client's	kept; removed the NPC nickname Cappuccino
 394	2x Capture G from the Road store give Capture Guru	shop	TRUE	road-shop-4.json item 1133 Capture G 500 RdP; data/armor/index.json Capture G = Capture Pro. +10 (two = 20 = Capture Guru)	rewritten with our names and price
 394	3x Psychic 2 G give Autotracker	shop	TRUE	road-shop-4.json item 6250 500 RdP; Psychic 2 G = Psychic +5 (three = 15 = Autotracker)	rewritten, Chinese removed
 394	Green by delivering 3 iron ore in the Caravan; White hard (monsters can't be captured)	other	OPINION	the guide's author's advice	kept
 395	Blue: add 50 players and delete them	other	OPINION	the guide's author's tip	kept
-397	Light Green: Chef chest piece, 35 times, from raw meat and Pugi Farm store items	rule	CANT-VERIFY	no 'Chef' armour piece found in data/armor/chest.json; JA names map the guide's items to Well-done Steak 48, Hot Pepper 192, Raw Meat 40, Spiced Meat 42	rewritten item names; added 'check the recipe first'; check: find the chef piece at the Blacksmith
+397	Light Green: Chef chest piece, 35 times, from raw meat and Pugi Farm store items	rule	TRUE	no Chef/Cook chest in data/armor/chest.json or live mhfdat strings; the page already says it is not in our data	kept
 401	Pugi Farm store sells the meat and pepper (level 3)	shop	CANT-VERIFY	no data	kept
 407	Purple: Hunter Dojo > Select Training > Arena Training, first 3 Arena Exercise quests	menu	DIFFERENT	q.py 10101 Face the Azure Hunter!, 10102 Face the Gypceros!, 10103 Face the Land Queen! all not-offered; guide-terms.tsv:159 menu not found in client	rewritten: not offered, route may not work; Chinese removed
 407	Quest 10101, 10102, 10103 Arena Exercise	quest	DIFFERENT	q.py: all not-offered (201, 202, 203 are unconfirmed older copies)	linked, said not offered
 408	Pet capture slots and rates	rule	CANT-VERIFY	client rule; figure image	kept
 410	Arena Tournament at the same NPC	menu	CANT-VERIFY	no client string found	kept with 'could not check'; Chinese removed
-420	Blacksmith decoration menu: Create, Insert, Remove Decorations	menu	CANT-VERIFY	guide-terms.tsv:135 smithy list has Create Deco, Insert Deco	kept
+420	Blacksmith decoration menu: Create, Insert, Remove Decorations	menu	DIFFERENT	live mhfpac 0x222b72-0x222b93 Create Deco, Set Deco, Remove Deco, Destroy Deco (table 0x18fbd0)	rewritten (client labels)
 423	Artisan Deco gives Artisan +2, Auto-Reload +2, Adrenaline -1	name	TRUE	data/armor/index.json 827 Artisan Deco [[32,2],[62,2],[65,-1]] = Artisan, Auto-Reload, Adrenaline	kept, Chinese removed
 424	Artisan Deco recipes	source	DIFFERENT	data/items/827.json smithy-decorations: Bloodrun Jewel 1, Gold Rajang Pelt 1, Blood Red Horn 3; or Bloodrun Jewel 1, Lunastra Horn 2, W.Monoblos Horn 3 (item names from data/item-ids.json 796,526,470,579,474)	rewritten with our materials
 431	G deco Expert Deco (Expert +4, Attack +1)	name	DIFFERENT	data/armor/index.json 'Expert 2 Deco' [[Expert,4],[Attack,1]]; data/items mats Bloodrun Jewel, Sharpened Beak, Twisted Horn x2	rewritten name and materials
 432	G deco Expert G Deco	name	DIFFERENT	data 'Hermit G' (item 1118): mats Expert 2 Deco 3, Piscine Blood+ 15, Carapaceon Cpc 15, F.Wyvern Carapace 15; Road shop Decorations tab 500 RdP	rewritten name and materials
 433	G deco Dodging Sword G Deco	name	DIFFERENT	data 'Evasive Blade G' (13067): Mosaic Jewel 15, Toa Ice Scale 5, Toa Shl 5; Road shop 500 RdP	rewritten
 436	Special jewel comes from an HR5 Kushala Daora quest, 2 to 8 each	quest	DIFFERENT	q.py 22076 Evade Jewel G & Kushala Daora [Hardcore] not-offered; data/items/13055.json reward 2-4	rewritten with link, not offered, 2 to 4
-436	Jewel appears in crafting list at 15 and has no other use	rule	CANT-VERIFY	no data	kept as 'the guide says (we did not check)'
+436	Jewel appears in crafting list at 15 and has no other use	rule	TRUE	recipes.py (mhfdat 0x44): item 13067 Evasive Blade G = 15 Mosaic Jewel, 5 Toa Ice Scale, 5 Toa Shl; no other recipe uses Mosaic Jewel (13055); "appears at 15" stays the guide's	rewritten (recipe)
 439	G Rank decorations available from Road, Festival or GCP stores	shop	DIFFERENT	hv note line 483: festival exchange empty, GCP shop = Diva only	rewritten to Hunting Road shop
-440	G decoration crafting menu sections (Direct Crafting, Show All, Monsters, Hunter Festival ...)	menu	CANT-VERIFY	no client string found	kept
+440	G decoration crafting menu sections (Direct Crafting, Show All, Monsters, Hunter Festival ...)	menu	DIFFERENT	live mhfpac table 0x18fdf4-0x18fe0c: Swap Mat, Show All, Monster, Festival, Content, Event, Other; Create Deco sub-menu 0x223106-0x223131	rewritten (client tabs)
 444	Refining level 7 G armour gives one gem; G/GF/GX1-5 by slot	rule	TRUE	data/armor/index.json decoration names GX1..GX5 (e.g. Garuga BM GX1); docs/armor-builder.md	kept
 452	Silver Rathalos gem table (skills per gem)	name	TRUE	skills use tree names; Exploit Weakness is tree Tenderizer in data/skills/index.json	rewrote to Tenderizer; other tree names verified (Edgemaster, Expert, Vitality, Evade Distance, Rage, Movement Speed, Issen)
 468	G Class decorations from Elder Dragon / Exotic materials	rule	TRUE	data/armor/index.json 'G Rage・Issen' etc; data/items/<id>.json smithy-decorations	kept
 473	G Class table: four decorations	name	DIFFERENT	data: G Rage・Issen (Azure Jewel 15, GR1 Gem, Grease Stone), G Rage・Attack (Dark Green Jewel 15, GR1 Gem, Eternal Ice Cubes), G Protect・Exploit (Teostra Dragon Scl 5, Teostra Cortex 5, GR1 Gem), G Issen・Vigor (S.Zin Cortex 5, S.Zin Riptalon 5, GR1 Gem)	rewritten: names, skills (trees) and materials from our data; Chinese removed
 468	Jewels from two Hypnoc quests under 1 star	quest	DIFFERENT	q.py 23411 Recommended: G Rank Rage Hard Jewel and 23412 Recommended: G Rank Guard Flash Jewel, both offered at G Rank Quest Counter > Gear Acquisition Quests (54854/54855 are not-offered copies)	rewritten with links and path
-482	Gallery gems from layout, Furniture NPC at the Combiner	npc	CANT-VERIFY	no data	kept; check: Combiner / furniture NPC
+482	Gallery gems from layout, Furniture NPC at the Combiner	npc	DIFFERENT	recipes.py (mhfdat 0x44): 910 Gallery Atk Deco and 911 Gallery Def Deco each from 1 F Ticket CT 4 (item 758); ticket source stays the guide's	rewritten (crafted from F Ticket CT 4)
 483	Note: Hunter Festival exchange empty, GCP shop Diva only (135)	shop	TRUE	earlier batch; brief	kept
 490	Old guide sets; Horn set with Encourage+2 and Horn Maestro	name	DIFFERENT	data/skills/index.json tree Flute Expert (10 pts, Flute Expert)	rewrote to Flute Expert
 498	Default 10 active skills, 11 or 12 in G Rank	rule	TRUE	docs/armor-builder.md:159 (10, +1/+2 for 3/5 G-rank pieces)	kept

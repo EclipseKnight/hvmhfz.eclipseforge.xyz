@@ -3,10 +3,10 @@ line	claim	kind	verdict	evidence	action
 218	Hunter Navi and Halk open at first login	rule	CANT-VERIFY	client content; in game: new character, open the Hunter Navi and My Support	kept
 220	My House at first login; bigger house with HR	rule	CANT-VERIFY	client content	kept
 222	Guild opens after the first tutorial quests	rule	FALSE	hvmhfz_re docs/guilds.md:56 apply conditions: not in a guild, recruiting, not full (no quest gate)	rewritten -> Any time
-223	Partner, Rastas, Partnya at HR2	rule	CANT-VERIFY	guide pages (basics #partner); in game: at HR1 try the Rasta bar	kept
-224	Gu-ku at HR2	rule	CANT-VERIFY	house page; in game: HR2 house, My Garden door	kept
+223	Partner, Rastas, Partnya at HR2	rule	CANT-VERIFY	Rasta contracts from HR2: live mhfpac 0x52db6 (TRUE); Partner after a Legendary Rasta introduces one, once My House has been renovated (0xeb4f1); the Partnya unlock rank is not in client text	kept (Rasta part settled)
+224	Gu-ku at HR2	rule	TRUE	live mhfpac 0x53e34 (My Garden help: from HR2 you can tend to Goocoo)	kept
 225	Caravan HR2; Raviente HR 17	rule	TRUE	data/quests.json 62105 Shaking!Solitude rankNeed HR 17; hvmhfz_re docs/raviente.md:394 HR 17 regular	kept
-226	Transcend HR3 (HR 31)	rule	CANT-VERIFY	transcend page; in game: HR 31	kept
+226	Transcend HR3 (HR 31)	rule	TRUE	live mhfpac 0x19f73e (About Transcend (Rite): a hunting skill learned at HR3; HR3 = the HR 31-50 band)	kept
 227	My Tore opens at HR3 or HR4	rule	FALSE	decoded mhfpac.bin 'You can go to My Tore if HR4 or higher' (batch A ledger guide-frontier-basics.tsv row 390)	rewritten -> HR4
 228	Sky Corridor about HR 31	rule	CANT-VERIFY	page claim; in game: HR 31, watch for the town event	kept
 229	Style Rank/Hiden and HR Exotic at HR5 (HR 100)	rule	TRUE	changelog.html:368 (HR Exotic quests need HR 100)	kept
@@ -15,7 +15,7 @@ line	claim	kind	verdict	evidence	action
 233	Zenith ★1-★4 at GR 300/500/700/900	rule	TRUE	changelog.html:360 (17 Nov); brief rule 4	kept
 234	Festival, Cup/VS, MezFes, campaigns always running	rule	TRUE	changelog.html:728 two lanes; 734 MezFes every day; 736 campaigns	kept
 237	Ranks changed: Zenith, G Exotic GR 100, 30 GRP quests GR 900; stable patch v1.30	rule	TRUE	changelog.html:243,360,368; AGENTS.md 'Stable patch still v1.30'	kept
-244	Hunter Navi: Shift+C or R1+R2; HR, GR, Other panels; Navi Recommended Quests row	menu	CANT-VERIFY	Navi Recommended Quests row TRUE (dev/quest-where.md General Quest Counter); keys/panels: in game press Shift+C	kept
+244	Hunter Navi: Shift+C or R1+R2; HR, GR, Other panels; Navi Recommended Quests row	menu	DIFFERENT	live v1.30 mhfpac.bin topics 0x19ea10-0x19ec6c (no HR/GR/Other panels), Mark this task 0x19e824, Start menu entry 0x1e9d02; Shift+C/R1+R2 are the guide's keys (default binding not in the DLL) (in-game checklist part 1, 2026-11-25)	rewritten
 245	Navi pays cheques, GZeny cheques, tickets, materials, a first G set, Gurenzeburu decorations	other	CANT-VERIFY	guide-frontier-g-rank-start.html:217 'Gurenzeburu decorations'; 'G Newbie set' not in our armour names	rewritten ('the G Newbie set' -> 'a first G Rank set')
 249	Navi saves fixed 2 Nov; backups include it; Zenith goals written for GR 200	rule	TRUE	changelog.html:864 (2 Nov Hunter Navi saves), 792 (backup holds Hunter Navi), 360	kept
 242	Japanese text (ハンターナビ, ハルク, パートナー, パートニャー, マイトレ, グーク, マイハウス, 猟団, 歌姫, 狩煉道, 天廊, シジル, 秘伝, 辿異)	name	DIFFERENT	brief rule 2: our English only	removed (14 places)
@@ -69,10 +69,10 @@ line	claim	kind	verdict	evidence	action
 376	Gift sources: weekly coins, after-event gift (5 GW Lottery Tickets + 5 Trial Coin G, 28 days), cup/VS prizes, Road board prizes, campaigns	source	TRUE	changelog.html:392; data/currencies.json trial-coin	kept
 377	Weekly Conquest gifts not given (Conquest off)	rule	TRUE	changelog.html (Conquest off after 4 Nov); page Conquests note	kept
 382	Gacha Felyne runs the lotteries; five kinds since 5 Nov	shop	TRUE	hvmhfz_re docs/gacha-cat.md 1.1 (record 'Gacha Felyne', screen 'Gacha Cat'); AGENTS.md 5 Nov real gachas 101-107	kept
-385	Materials Gacha: 10 Iron Ore or 5,000z; 3 draws	shop	CANT-VERIFY	Iron Ore item 216 TRUE; costs from data/sources/gacha-10x.json not re-read; in game: Gacha Felyne	kept
+385	Materials Gacha: 10 Iron Ore or 5,000z; 3 draws	shop	DIFFERENT	live gacha_entries: 102 = 10 Med Monster Bone + 10 Iron Ore + 10 Earth Crystal, 106 = 10 Machalite Ore + 10 Insect Husk + 5 Unknown Skull, 107 = 5 Mystery Bone + 5,000z, rolls 3; every cost slot is paid (hvmhfz_re docs/gacha-cat.md) (in-game checklist part 1, 2026-11-25)	rewritten
 387	Event Ticket Box: 1 GW Lottery Ticket a draw; 20 empty the box	shop	TRUE	changelog.html:392 (1 a draw); GW Lottery Ticket item 6833	kept
 389	Prizes include Guild Point Tkt, Goushu Ticket, Cost Book, Road Respec, Divine Power Gem; Trial/Golden Coin G	name	TRUE	data/item-ids.json 13190, 1662, 14444, 14445, 12306, 8964, 8963	kept
-390	No PZ cuffs, Lottery ZP armour, Skill Fruits, Hiden Stones in gachas; gachas off on the Test land	rule	CANT-VERIFY	page claim (gacha sources lists); not re-checked row by row	kept
+390	No PZ cuffs, Lottery ZP armour, Skill Fruits, Hiden Stones in gachas; gachas off on the Test land	rule	TRUE	live gacha prizes (gacha_items of entry_type 100, 19 items): no PZ cuff, ZP armour, Skill Fruit or Hiden Stone (in-game checklist part 1, 2026-11-25)	kept
 397	Restyle Points only from gifts	rule	CANT-VERIFY	page claim; no changelog entry	kept
 402	A guild is up to 60 hunters	rule	TRUE	live server_settings guild member_limits max 60	kept
 404	Guild Manager in town; leave the newbie guild first	npc	FALSE	no rookie guild here (guilds.md GM12); guild page calls it the guild counter	rewritten (guild counter; leader or manage-right member accepts; no rookie guild)
@@ -118,9 +118,9 @@ line	claim	kind	verdict	evidence	action
 509	Tower: Tower Info, Contribution Rewards, Daily Rewards, medal exchange	menu	TRUE	dev/quest-where.md Tower rows (Contribution Rewards, Daily Rewards, Guild Medal Exchange)	kept
 510	Tower medals from daily rewards, tasks, present box	source	TRUE	changelog.html:829 (present box)	kept
 514	Open since 3 Nov, districts 5/13/15 Nov; Test land endless climb, Tower Rank 51/100/200	rule	TRUE	changelog.html:829; dev/quest-where.md (pre18: 2nd-4th District need Tower Rank 51/100/200)	kept
-521	Sigils at the Cat Smith; up to three	npc	CANT-VERIFY	page claim	kept
-525	Premium Sigil tickets are gacha prizes	source	CANT-VERIFY	gacha sources not re-read row by row	kept
-530	Hiden needs Weapon Souls, Ribbons, Merits	rule	CANT-VERIFY	page claim	kept
+521	Sigils at the Cat Smith; up to three	npc	TRUE	live v1.30 mhfpac.bin 0x1b1753 (Blacksmith Cat) (in-game checklist part 1, 2026-11-25)	rewritten
+525	Premium Sigil tickets are gacha prizes	source	TRUE	live gacha prizes include Premium Sigil Tkt 8889 (in-game checklist part 1, 2026-11-25)	kept
+530	Hiden needs Weapon Souls, Ribbons, Merits	rule	TRUE	hvmhfz_re data/hiden_materials.tsv: Souls, Ribbons and Merits per weapon type; GR500 letter mhfpac 0xcad4f	kept
 536	Road shop Hiden decos 25,000 / True 50,000 RdP at GR 500; cuffs Basic 10,000 GR 50, G 20,000 GR 150, top 35,000 GR 350	shop	TRUE	data/sources/road-shop-4.json (25000/50000 GR500, 35000 GR350), road-shop-8.json (Basic 10000 GR50, G 20000 GR150); brief rule 4	kept
 541	GSR to 999; Extreme Style; Ribbons	rule	CANT-VERIFY	page claim	kept
 543	Guild Master moves your weapons to GSR	npc	CANT-VERIFY	Guild Master in guide-terms (high); the move itself not traced	kept
@@ -129,7 +129,7 @@ line	claim	kind	verdict	evidence	action
 552	Zenith skills incl. Skill Slots Up; Zenith weapons and cuffs	name	TRUE	data/item-ids.json Skill Slots Up PZ1-PZ26 decorations	kept
 554	Zenith ★1 GR 300 ... ★4 GR 900	rule	TRUE	changelog.html:360	kept
 558	Old Zenith quests show the old GR until the next patch	rule	TRUE	changelog.html:360 (92 older Zenith quests)	kept
-563	Transcend opens at HR3	rule	CANT-VERIFY	transcend page	kept
+563	Transcend opens at HR3	rule	TRUE	live mhfpac 0x19f73e (Transcend (Rite) can be learned at HR3)	kept
 570	Musou: G★7/G★8, Musou Zinogre, materials, Armor Boost series, GR 1/100/800	quest	TRUE	data/quests.json form Musou: 27 offered (G★7 GR 1, G★8 GR 100, G★8 GR 800 Bogabadorumu, 2 G★1 Road quests); 56131 Deafening Thunderstorm (Zinogre, G★8 GR 100) at G Rank Quest Counter > Event Quests	linked (1), count and menu path added
 572	Musou and Upper Shiten clears: 2% Prayer Stone	rule	TRUE	hvmhfz_re docs/prayer-stones-fix.md:3,6,95 (deployed 2026-11-17 16:17 UTC; 2 % on Musou and Upper Shiten clears; 55918 gives none)	kept
 577	HR Exotic HR 100; G Exotic G★8 source of G Finesse	rule	TRUE	changelog.html:368	kept

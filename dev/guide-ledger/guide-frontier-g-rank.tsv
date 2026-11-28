@@ -30,7 +30,7 @@ line	claim	kind	verdict	evidence	action
 223	Net Cafe check-in sets daily count to 10	rule	CANT-VERIFY	earlier batch; links systems#courses; limit effect not checked (page says so)	kept
 225	Superior Quests at G Rank Quest Counter > Special Quests > Superior Quests	menu	TRUE	data/quest-where.json: 39 quests on that path	rewritten (path added)
 225	Superior Quests give GRP or one GX piece of materials	rule	OPINION	Fist	kept
-227	Urgent Mi Ru cycles in after G quests	quest	CANT-VERIFY	data/quest-where.json: only Mi Ru quest 54586 not-offered; in game: clear G quests, watch for a Mi Ru urgent	rewritten + linked
+227	Urgent Mi Ru cycles in after G quests	quest	DIFFERENT	live event_quests: quest_type 31 has one row, 54244 (select quest_type,quest_id from event_quests where quest_type=31 -> 31|54244); data/quest-where.json 54244: G Rank Quest Counter > G Urgent Quests (row 0x47 lists type 31; Erupe sends every row, no rotation); hvmhfz_re progression.md 3: tune 1029 GUrgentRate is never read by the list code, so the row is always listed; 54586 not-offered	rewritten + linked (54244)
 229	Burst/Origin needed past G Supremacy	rule	OPINION	Fist	kept
 229	Origin Gem / Origin Blood -> Abyssal Origin Gem (Gureadomosu, Toa Tesukatora) / Abyssal True Blood (Yama Kurai, Voljang)	name	TRUE	data/items/11315.json, 11714.json where: carve from those monsters	rewritten (CJK removed, linked)
 229	5% drop rate	source	CANT-VERIFY	rates not in item data	kept
@@ -62,7 +62,7 @@ line	claim	kind	verdict	evidence	action
 305	Gou Armour/Burst Species Armour/Origin Armour; Muscle Boost from one Burst piece	name	OPINION	CJK removed; no armour family label in our data; effect Fist	rewritten (CJK removed)
 308	3 G pieces = 11 skills, 5 = 12; Gou G pieces do not count	rule	OPINION	Fist	kept
 309	3 G pieces give +30 true attack in G quests	rule	OPINION	Fist	kept
-311	GR Suitability buff (rating diff x20 defence), table by GR	rule	CANT-VERIFY	not in data; CJK removed; in game: Guild Card shows the rating	rewritten (CJK removed)
+311	GR Suitability buff (rating diff x20 defence), table by GR	rule	CANT-VERIFY	rule TRUE: live mhfpac 0x44605 (G Rank hunters' defence is raised when an armour level falls behind their suitable armour level; non-G gear counts as GR 1), label 0x1bd447 GR Suitability Lvl; the x20 formula and the table are code, not traced	kept; formula needs play
 324	Note: GX needs Conquest materials; Conquests off	rule	DIFFERENT	data/quest-where.json Extreme Conquest offered; item 7267 road-shop-8 20 RdP GR1	rewritten
 329	G Rank Pugi Cuff License from GR50, 60P; Departure Trampoline -> Departure Facility	name	CANT-VERIFY	pac "Departure Facility"; license price not in data	rewritten
 330	Three kinds of G cuffs	rule	OPINION	Fist	kept
@@ -76,7 +76,7 @@ line	claim	kind	verdict	evidence	action
 355	All but Conquest monsters drop jewels on breaks	source	OPINION	Fist	kept
 355	Scheduled Quests give more jewels; ★7 jewels cannot be bought	shop	DIFFERENT	road-shop-6 rows GR1..GR7 Gem 50 RdP; gcp-item-shop GR1 gems	rewritten
 357	Most G decos crafted from a few materials; official stores sold them	rule	TRUE	data/sources/smithy-decorations.json 2,597 rows	kept
-358	Deco crafting menu sections Direct Crafting, Show All, Monsters, Hunter Festival, Regular Event, Event, Other	menu	CANT-VERIFY	pac has "Show All"; others not found; in game: Smithy > Create Deco, read the tabs	rewritten (attributed, CJK removed)
+358	Deco crafting menu sections Direct Crafting, Show All, Monsters, Hunter Festival, Regular Event, Event, Other	menu	DIFFERENT	live mhfpac table 0x18fdf4-0x18fe0c: Swap Mat, Show All, Monster, Festival, Content, Event, Other	rewritten (client tabs)
 360	Lv7 G/GF/GX armour refines into one gem; GX1-5 by piece	rule	TRUE	data/sources/armour-refinement.json (e.g. Monodevil GX Helm -> GX1)	kept
 362	G decoration / GF decoration wording	name	TRUE	data/armor/index.json Sol BM G 9226, Sol BM GF 9227	rewritten
 368	Inagami GX helmet skills; GX1 gem skills	name	TRUE	head.json 7637 Inagami GX【Charm】; decoration 9925 Elegance BM GX1 Stylish 3 Issen 2 Expert 3 Adaptation 2	rewritten (our names)
@@ -119,13 +119,14 @@ line	claim	kind	verdict	evidence	action
 473	All materials from Lv200; do Lv1000 once	rule	OPINION	Fist	kept
 473	Extreme Conquests cycle as one of four events	rule	DIFFERENT	changelog 4 Nov 16:26 Conquest is off; quests always listed	rewritten
 474	Four Ultimate Conquest monsters; Lv9999 quests	quest	TRUE	data/quest-where.json 23588, 23592, 23596, 23601 (Lv9999); Black vs Crimson Fatalis not in data	linked (4)
-474	Lv9999 give fixed G1% carves and transmog on first clear	rule	CANT-VERIFY	rewards not in quest data here	kept
+474	Lv9999 give fixed G1% carves and transmog on first clear	rule	DIFFERENT	transmog: live mhfpac 0x1af985-0x1afcaf (Hunter Navi tasks: "Clear the Lv9999 Shantien Conquest Quest and get the materials to unlock a transmog!", "You will get awarded some transmog materials"): materials, not the transmog itself; fixed carves: carve tables are not in our data (data/quests/rewards 23588 has one main-target group only)	rewritten (transmog materials; carves attributed to the guide)
 478	Conquest item table names	name	TRUE	item-names-ja 7267 Ulti.Conquest Bond, 7479 Lumin.Armor Rock, 7480 Komono Armor Rock, 7268-7271 Valor Stones, 7277 Supressing Ball	rewritten (CJK removed, linked)
 478	Uses of each Conquest item (levels)	rule	OPINION	Fist	kept
-489	Heavenly Conquests (Shiten) cycle with Conquests -> Shiten Quests, both listed	quest	TRUE	data/quest-where.json: 23602, 23604 Shiten Quests offered	rewritten + linked (2)
-491	Need a Lv50 G weapon	rule	CANT-VERIFY	not in quest data; in game: try without a Lv50	kept
-492	Turn off Halk Pots (incl. Premium Course buff) and Legendary Rastas	rule	CANT-VERIFY	quest flags not checked; Premium Course remark removed (other-server course)	rewritten
-493	20 min limit, max Defence	rule	CANT-VERIFY	quest page shows time	kept
+489	Heavenly Conquests (Shiten) cycle with Conquests -> Shiten Quests, both listed	quest	TRUE	data/quest-where.json: 23602, 23604 Shiten Quests offered; 23604 objective target monster 100 = Unknown (data/quest-objectives.json [513,100,1]; live 23604d0.bin body+0x34), card text ???	rewritten + linked (2); target named
+491	Need a Lv50 G weapon	rule	TRUE	live mhfpac 0x2083c4 About Shiten Quests: Condition "Need atleast a Lv50 G rank weapon"	rewritten (source named)
+492	Turn off Halk Pots (incl. Premium Course buff) and Legendary Rastas	rule	DIFFERENT	live mhfpac 0x2083c4 Restrictions: Twin Hiden, Hunter Support Course, Halk Pots disabled (no Rasta line)	rewritten (client list; Rastas attributed to the guide)
+493	20 min limit, max Defence	rule	TRUE	data/quest-details.json minutes: 23602/23604 20, Adv 23603/23605 10; max Defence not in data (play)	rewritten (Adv 10 min added)
+494	Shiten quests list 4 Shiten Tkt as entry item; not demanded; not obtainable here	rule	TRUE	data/quest-details.json requirementItemId 10179 x4 (body+0x94); accept gate 0x1047d680 skips item 10179 (hvmhfz_re docs/quest-files.md +0x94, part 242); live shop_items, gacha_items, distribution_items: 0 rows for 10179; only reward quest 54616 not-offered (data/items/10179.json)	note added
 495	Party/solo advice	other	OPINION	Fist	kept
 496	Unknown ~140,000 / Disufiroa ~230,000 effective health	rule	OPINION	Fist	rewritten (Heavenly Conquests -> Shiten Quests)
 500	Shiten Key from Disufiroa	name	TRUE	item 10180 Shiten Key offered [54480 Disufiroa]	rewritten (CJK removed)
@@ -150,18 +151,18 @@ line	claim	kind	verdict	evidence	action
 553	Sample sets (pastebins) not copied	other	OPINION	Fist	kept
 555	ZX pieces need GR800	rule	DIFFERENT	brief rule 4: Zenith ★4 opens at GR 900	rewritten
 557	GSR999 + GR899 earn Hunting Points; Guild Master > Hunting Menu > Hunting Point Exchange	menu	TRUE	dev/guide-terms.tsv Hunting Menu, Hunting Point Exchange (Guild Master); pac "Hunting Point Exchange"	rewritten (CJK removed)
-557	Options Lottery Draw and Cheque Exchange	menu	CANT-VERIFY	no pac label found; in game: Guild Master > Hunting Menu	rewritten (attributed)
-559	Lottery Draw pool and Cheque Exchange 5x 50k tickets	shop	CANT-VERIFY	note: server shops not checked	kept
+557	Options Lottery Draw and Cheque Exchange	menu	DIFFERENT	live v1.30 mhfpac.bin 0xcb1a5, 0xed205 (Koryo Points at max GR and GSR 999), 0x1eed6a-0x1ef183 Koryo Menu: Claim Koryo Rewards, Redeem Koryo Points > Koryo Point Exchange: White/Red/Byakko/Suzaku/Genbu/Seiryu Lot, Porta Card Exchange (50k Gz Cheque) (in-game checklist part 1, 2026-11-25)	rewritten
+559	Lottery Draw pool and Cheque Exchange 5x 50k tickets	shop	TRUE	Koryo lots: client table live v1.30 mhfdat +0xb38 (hvmhfz_re tools/items/client_sources.py merit_lottery): 6 tiers, 35/44/33/36/41/35 = 224 rows, all x5 (a few x1/x4) SP armour tickets, tiers 2-5 also the White Tiger/Suzaku/Genbu/Seiryu weapon tickets; draw 0x105cd570 puts the prize in the box (item-sources.md exchange row); Porta Card Exchange = 50k Gz Cheque (mhfpac 0x1ef183); the 5x count of the cheque trade needs play	rewritten (prize list from the client)
 562	Note: Zenith ★4 GR 900; Hunting Points not checked	rule	TRUE	brief rule 4	kept
 568	Hiden decos give weapon Tech skill, +20% attack	rule	OPINION	decos e.g. 9254 SnS Tech +6; effect Fist	kept
 568	solo GR800 Zeniths	rule	DIFFERENT	Zenith tiers GR 300/500/700/900 here	rewritten
 569	White/Red armour upgrades into White/Black and Red/Blue	rule	OPINION	Fist	kept
 570	Four colours White, Black, Red, Blue	name	TRUE	decos 9254-9257 SnS Hiden・White/Red/Black/Blue	kept
 572	Souls/Ribbons/Merits totals per set	rule	OPINION	Fist (hunter-rank page)	kept
-573	Bounty Board by Blacksmith: 3 (8 premium) per targeted monster	npc	CANT-VERIFY	no board in site data; word "bounty" avoided (our bounties not live); in game: look by the Blacksmith entrance	rewritten
+573	Bounty Board by Blacksmith: 3 (8 premium) per targeted monster	npc	CANT-VERIFY	client keeps the system: live mhfpac 0x2a23a (Guild Priority Requests: targets on the town info board; HC quests give many (3 or more) Weapon Souls), 0x1a8a27 (Hunter Navi: the targets are on the board), 0x227783-0x2278ab (Guild Priority Request (UL): Hiden Mats Low ★1-2 / Mid ★3-4 / High・Top ★5-7, more Hiden Stamps); no Erupe handler found by name; the posted monsters and the board position need play	rewritten (client help added)
 574	Paid Hiden Stones	shop	DIFFERENT	items 8802/12995/12996 no source here	rewritten
 576	White Tiger/Military Black/Crimson Bird/Azure Dragon -> White/Black/Red/Blue	name	TRUE	data/armor/index.json SnS Hiden・White..Blue, SnS True・White..Blue	rewritten (CJK removed)
-577	True Hiden needs one of each colour	rule	CANT-VERIFY	recipe not in smithy data checked; image from guide	kept
+577	True Hiden needs one of each colour	rule	TRUE	recipes.py (mhfdat 0x44): 13640 SnS True・White = 1 each SnS Hiden White, Red, Black, Blue; 13641-13647 the same pattern	kept
 580	Determination decos take 5 extra slots	rule	OPINION	Fist	kept
 581	SnS table headings lost; colours read from skills	name	TRUE	decos 9254-9257, 13640-13643	rewritten
 587	Standard Hiden second skills by colour	name	TRUE	White Expert +2, Red Element Attack +2, Black Fencing +2, Blue Speed Setup +2 (decos 9254-9257); Flash Conversion -> Crit Conversion	rewritten
@@ -180,7 +181,7 @@ line	claim	kind	verdict	evidence	action
 621	Ribbon daily 6/10/10, Merit daily 5/10/5; 5 dailies on rare days	rule	CANT-VERIFY	reward counts not checked	kept
 625	Grind monster spawn tips (Pink Rathian, Black Gravios, Black Diablos, Garuga, Espinas, Hypnoc ...)	other	OPINION	Fist	kept
 628	Kirin and Akantor Battlefield quests	quest	TRUE	data/quest-where.json: 23434 (Kirin), 23373 (Akantor) offered in G★7 Quests	linked (2)
-629	Garuga arena quest; Kuarusepusu quest	quest	CANT-VERIFY	quest not identified by name	kept
+629	Garuga arena quest; Kuarusepusu quest	quest	DIFFERENT	data/quest-where.json + data/quest-details.json: offered G Yian Garuga quests 23245 (map 32 Gorge night), 23244 (map 20 Jungle night), 23579 (SR Guide, map 32): no arena; offered G Kuarusepusu 23345 (map 51 Highlands night, G★6), 60684 (map 54 arena, Event Quests); White Espinas 23322 / 23407 on map 44 Top of Great Forest	rewritten and linked (page lines 630-631)
 632	Silver Rathalos and Gold Rathian arena quests	quest	FALSE	data/quest-where.json: 54585 [G Rank] Silver Rathalos & Gold Rathian not-offered	linked + note added
 636	Guild Priority Targets raise rates	rule	CANT-VERIFY	not in data	rewritten
 639	Official Road store prices table	shop	DIFFERENT	original prices; here Hiden decos sold directly (road-shop-4, note)	kept (labelled)

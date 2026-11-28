@@ -1,8 +1,8 @@
 line	claim	kind	verdict	evidence	action
 7	14 weapon types listed	name	TRUE	data/weapons/*.json: 14 files with names SnS, DS, GS, LS, Hammer, HH, Lance, GL, Tonfa, SAF, MS, LBG, HBG, Bow	kept
 189	Tonfa and Switch Axe F only at G Rank	rule	TRUE	guide-frontier-g-rank-start.html:374 exotic text; client class table has both	kept
-189	Switch Axe F unlocks at G Rank	rule	CANT-VERIFY	no client/data source	kept
-189	Tonfa comes with Extreme Style since 10th Anniversary Update	rule	CANT-VERIFY	guide-frontier-g-rank.html:524 says so; not tested on Hunsterverse; pac tip "Clear Chapter 8 and get to know the Tonfas!"	rewritten (attributed to the guide)
+189	Switch Axe F unlocks at G Rank	rule	TRUE	live v1.30 mhfpac.bin 0xca586 G Rank letter: Switch Axe F and Tonfa production allowed (in-game checklist part 1, 2026-11-25)	kept
+189	Tonfa comes with Extreme Style since 10th Anniversary Update	rule	TRUE	live v1.30 mhfpac.bin 0xca586 letter: Tonfa allowed at G Rank; Navi 0x26638: Trag series Tonfas need Chapter 10 (in-game checklist part 1, 2026-11-25)	rewritten
 189	weapon database link /weapons.html	other	TRUE	weapons.html exists; check-links ok	linked (was: per-weapon guide pages that do not exist)
 194	Raw multipliers SnS 1.4, DS 1.4, GS/LS 4.8, Hammer/HH 5.2, Lance/GL 2.3, Tonfa 1.8, SAF/MS 5.4, bowguns/Bow 1.2	rule	TRUE	hvmhfz_re docs/weapons.md:184 class table x100: 140,140,480,480,520,520,230,230,180,540,540,120	kept
 216	Blacksmith asks Partner or yourself when making equipment	npc	TRUE	pac: 'Craft Player Armor, Weapons etc...' / 'Craft Partner Armor, Weapons etc...'	kept
@@ -56,7 +56,7 @@ line	claim	kind	verdict	evidence	action
 362	crystals need a skill; 3 tiers; apply with R2+R3 / Shift+Minus / Vita touchpad	rule	OPINION	controls from the original guide	kept
 363	GR200 crystals: buy for GCP at GR200 (original)	shop	DIFFERENT	data/sources/road-shop-0.json: items 8063-8067 at 5 RdP (gate 8); GCP shop = Diva rows only	rewritten (Pink store removed)
 363	Hunting Road shop Basic tab sells them at 5 RdP	shop	TRUE	data/sources/road-shop-0.json items 8063-8067 price 5	kept
-372	Reload speed labels	name	CANT-VERIFY	pac has 'Reload Speed' only; Very Slow..Very Fast from the guide	kept
+372	Reload speed labels	name	TRUE	live v1.30 mhfpac.bin 0x222df8-0x222e1d Very Slow, Slow, Normal, Fast, Very Fast (in-game checklist part 1, 2026-11-25)	kept
 374	Ammo types list	name	TRUE	pac: Norm S., Pierce S., Pellet S., Crag S., Cluster S., Rec S., Super Rapid Fire	rewritten (Ultra -> Super Rapid Fire)
 378	Critical Distance mechanics and bowgun/bow distance tables	rule	OPINION	Fist's measured values	kept
 409	Arc shot types	name	TRUE	pac: Arc [Wide], [Narrow], [Bomb], [Slicing] (guide: Wide/Narrow Pellet Rain, Explosive Shell, Cutting Rain)	kept

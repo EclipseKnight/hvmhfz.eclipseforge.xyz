@@ -2,7 +2,7 @@ line	claim	kind	verdict	evidence	action
 183	Transcend is a customisable timed buff	rule	TRUE	mhfpac.bin help text (hvmhfz_re data/translations/shipped/mhfpac.tsv) 'Info on Transcend Rites'; item descs 'Teaches about Transcend'	kept
 183	Unlocks at HR3	rule	CANT-VERIFY	no unlock rule in our files or Erupe grep	kept
 183	Like the Wystone in MH4U; appears as an item; starts with little charge	other	OPINION	author's comparison; charge from the guide	kept
-184	Settings: Status > Rite Status	menu	CANT-VERIFY	mhfpac.bin help text (hvmhfz_re data/translations/shipped/mhfpac.tsv) names '<Rite Status>' (秘儀ステータス); exact menu path not traced; Status page tabs 'Basic Info','Road Skills' (tower.md)	rewritten (was Secret Ceremony Status)
+184	Settings: Status > Rite Status	menu	TRUE	live mhfpac 0x19f8f3 (Transcend Status is added to Menu -> Status; check and upgrade Transcend there), 0x233f1c (the same screen called Rite Status), 0x19ff39 (Enable/Disable there)	rewritten (Transcend Status)
 184	Settings window switches the mode and upgrades buffs; stop upgrades (key icon)	rule	TRUE	mhfpac.bin help text (hvmhfz_re data/translations/shipped/mhfpac.tsv) da0+50: stop upgrades in Rite Status, key icon	note added
 184	Fortress, Fleet Legs, Swift Heal can be locked out of the Transcend effects	rule	TRUE	mhfpac.bin help text (hvmhfz_re data/translations/shipped/mhfpac.tsv) da0+50 'Fortress, Fleet Legs and Swift Heal can be locked'	note added
 185	Transcend not usable in Hunting Competition, Pinnacle Conquest, Great Slaying, Hunting Road (Special Slay), HS Promo, Hunter Dojo, Great Arena, VS., Pioneer	rule	TRUE	mhfpac.bin help text (hvmhfz_re data/translations/shipped/mhfpac.tsv) da0+60 'Quest Restrictions'	note added
@@ -18,7 +18,7 @@ line	claim	kind	verdict	evidence	action
 253	Concentration: gauge starts at 0% to 25%	rule	CANT-VERIFY	client table not decoded	kept
 270	Courage: lasts 60 to 120 seconds	rule	CANT-VERIFY	client table not decoded; level 10 agrees with Road page (two minutes). Quiz R3-Q48 says the time buff is 'Mind' in the client	kept
 300	Swift Heal: five levels heal nearby players and NPCs; points 2000-8000	rule	CANT-VERIFY	effect name from help text; points not in files	rewritten (name)
-312	Upgrade by Transcend books and by taking weapons of the matching element on quests	rule	CANT-VERIFY	not in our files	kept
+312	Upgrade by Transcend books and by taking weapons of the matching element on quests	rule	DIFFERENT	live mhfpac 0x19fa80 (About Upgrade: exclusive items from regular events such as Diva Defense, or a random upgrade chance when a quest is cleared); no element rule in the client text	note added (client rule)
 312	Books: Power Ritual (offensive), Purity Ritual (defensive)	name	TRUE	data/item-ids.json 11381-11386 Power Ritual・Red/Blue/Dark, Purity Ritual・Red/Blue/Dark	rewritten (guide's Ancient Hunting Book names removed)
 317	Original: books from Conquests, Tower, Festival, Caravan milestones	source	DIFFERENT	src.py: Hunter Festival prizes and Road shop only	rewritten
 317	Here books come only from Hunter Festival prizes and the Hunting Road shop	source	TRUE	src.py 11381-11386: festa-personal, festa-guild, road-shop-8; no Sky Corridor or Caravan rows	kept
@@ -31,9 +31,9 @@ line	claim	kind	verdict	evidence	action
 326	Purity Ritual・Dark: Road shop 10 RdP only	source	TRUE	src.py 11386: road-shop-8 10 GR1	rewritten (tab name)
 326	Road shop tab 'Super Special'	menu	TRUE	mhfpac.bin offset 1991131 tab list; data/sources/road-shop-8.json 'Special'	rewritten (was Special tab)
 329	Hv note: books from Festival prize lists and Road shop; Sky Corridor, Caravan give none; Conquest War off	source	TRUE	src.py rows; AGENTS.md Conquest War off	kept
-334	In quest an icon shows a hunter, light grey, drains, ready as yellow hunter on white	other	CANT-VERIFY	needs play	kept
+334	In quest an icon shows a hunter, light grey, drains, ready as yellow hunter on white	other	CANT-VERIFY	live mhfpac 0x19f73e: the Transcend icon in the item bar is a gauge that fills over time and flickers when ready (use it then); colours and picture need play	kept
 335	Transcend state: animation, aura, effects on, new hit animations by element	rule	CANT-VERIFY	needs play	kept
-336	After enough hits the icon becomes a carving knife: Elemental Burst, forced Raw if immune	rule	CANT-VERIFY	pac: item desc 'Unlocked by chaining hits in Transcend Rite' (quiz R3-Q49: client calls it a six-petal move); needs play	kept
+336	After enough hits the icon becomes a carving knife: Elemental Burst, forced Raw if immune	rule	TRUE	live mhfpac 0x19fbf2 (Hexaflash Dance opens after dealing a certain amount of damage to large monsters during Transcendence; the Transcend icon changes to Hexaflash Dance; six types Fire, Water, Ice, Lightning, Dragon, Raw), 0x19fd81 (highest accumulated element; no element or failed hitzone = Raw); the knife look needs play	rewritten (Hexaflash Dance; client rule)
 342	Burst by weapon element table (Fire stagger, Water softens, Ice freezes, Thunder paralyses, Dragon KO, Raw flash)	rule	CANT-VERIFY	needs play	kept
 354	Hybrid elements pick by order; Shantien 30% Fire, 100% Water, 70% Thunder picks Fire	rule	CANT-VERIFY	weapon data not compared	kept
 355	Burst status only works if the monster can be afflicted and in stagger frames	rule	CANT-VERIFY	needs play	kept

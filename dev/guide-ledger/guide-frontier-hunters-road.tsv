@@ -56,7 +56,7 @@ line	claim	kind	verdict	evidence	action
 295	Rewards Up skill adds Guild Medals (1 level, SP 5, rank 1)	rule	TRUE	road_skills.tsv 0x23	note added
 296	Bonus Stage shown in pink text; easy monsters; few points	rule	TRUE	pac help 'destination appears in a different text colour ... easier target monsters'	rewritten
 298	Spend Tower Medals at H.Road/Sky Corridor counter > Tower > Guild Medal Exchange (54 rows)	shop	TRUE	docs/tower-npc.md 4.1 (0x9f, mhfdat +0x910, 54 rows); data/currencies.json tower-medal	note added
-302	Medal store rows (Festival Gem 8/16/30, Diva Defense, Interception, tickets, gestures 150, Halk food 100 etc)	shop	CANT-VERIFY	exchange rows are in mhfdat +0x910, not decoded in our files; gestures 150, Tower Catalyst 500, Soul Gems 8-30 match docs/bounties.md:190	note added
+302	Medal store rows (Festival Gem 8/16/30, Diva Defense, Interception, tickets, gestures 150, Halk food 100 etc)	shop	DIFFERENT	Guild Medal Exchange 54 rows, mhfdat +0x948 (12-byte rows: item, type, qty, medals; count [+0x910]+0xe = 54), decoded from live v1.30 (in-game checklist part 1, 2026-11-25)	table rewritten from the client rows
 320	Sigil Removal Solution 1 medal	shop	FALSE	item 7282 Sigil Catalyst is not in the 54-row exchange (docs/bounties.md:183, mhfdat +0x948); no road shop row	removed
 321	Tower Catalyst 500 medals (removes Tower Decoration)	shop	TRUE	item 11165 Tower Catalyst; docs/bounties.md:190 'Tower Catalyst 500'	rewritten (was Tower Decoration Removal Solution)
 323	HRP Tkt (4k) 1 medal; White/Purple Conquest Ticket; Halk Potion	name	TRUE	data/item-ids.json: 5392 HRP Tkt (4k), 7279 Wht Conquest Tkt, 7280 Purp.Conquest Tkt, 4952 Halk Potion	rewritten (names)
@@ -91,15 +91,15 @@ line	claim	kind	verdict	evidence	action
 413	Guardian Offense +50/75/100/150/200 true raw	rule	TRUE	road_skills.tsv 0x13 ints	kept
 425	Hv note Road skills: menu same, costs differ, 13 old skills; client names	rule	TRUE	road_skills.tsv/update.tsv; changelog 3 Nov	rewritten (was Unknown)
 432	Tower weapons: template with low stats, Light and Dark kinds	rule	CANT-VERIFY	client crafting; tower.md 7 (63 Tower weapons)	kept
-434	Light: 2 sigil + 1 deco slot; Dark: 1 sigil + 2 deco slots	rule	CANT-VERIFY	guide contradicts itself at line 437; check a weapon in game	kept
-438	Tower Sigils grant Affinity, Status, Elemental, Zenith skills; slots limit; no stacking	rule	CANT-VERIFY	hvmhfz_re data/tower_sigils.tsv not compared	kept
+434	Light: 2 sigil + 1 deco slot; Dark: 1 sigil + 2 deco slots	rule	DIFFERENT	data/tower-weapons.json (v1.30 mhfdat, tower_upgrades.py): of 63 Tower weapons 27 have 2 sigil + 1 deco slots, 22 have 1 + 2, 14 have 3 + 0; Light/Dark names not in our data	rewritten (three layouts from the data)
+438	Tower Sigils grant Affinity, Status, Elemental, Zenith skills; slots limit; no stacking	rule	CANT-VERIFY	menu Tower Sigil = Sky Seals (live mhfpac 0x13393b: element/status abilities, overwrite only); data/tower-weapons.json sigils; the no-stacking rule needs play	note added (client names)
 439	Removing a decoration needs the 500-medal Tower Catalyst (1,000 RdP at the shop here)	shop	TRUE	exchange 500 (bounties.md:190); rt_road.py tab 8 Tower Catalyst 1000	rewritten
 440	Original: all Tower Weapons on sale; here the shop sells gems and books, not weapons	shop	DIFFERENT	rt_road.py (no Tower weapon rows)	rewritten
-440	Craft Tower Weapons at the Cat with a backpack in the blacksmith	npc	CANT-VERIFY	guide-terms.tsv 'Tower Gear Felyne' (tower-npc.md kind 0x27); backpack cat unconfirmed	kept
+440	Craft Tower Weapons at the Cat with a backpack in the blacksmith	npc	TRUE	Tower Gear Felyne (kind 0x27, model 0xe9) in the workshop, area 133 (hvmhfz_re docs/tower-npc.md 1); its menu (live mhfpac table 0x18fec0): Create Weapon, Upgrade Weapon, Change Type, Tower Decos, Tower Sigil, Create Armor, Tower Sigil; the backpack look needs play	rewritten (our NPC name, menu labels)
 444	Craft Weapon needs a Tower book (Road shop 300/500 RdP) or Entrusted Secret Text (1,000)	shop	TRUE	rt_road.py; sky-corridor-overview.md 7 (46 need a book, 17 need Entrusted Secret Text)	rewritten
 446	Upgrade Weapon: Gems + SR Weapon Souls; Hardcore SR / Gou souls	source	CANT-VERIFY	tower_upgrade_costs.tsv not compared; soul sources not checked	kept
 448	Change Type uses Pulsating Liquid (1,000 RdP here)	shop	TRUE	item 11162 Pulsating Liquid; rt_road.py tab 2 and 8: 1000	rewritten
-450	Tower Decorations: Duremudira carves, base decorations combine (Sword God +2 etc.)	source	CANT-VERIFY	not checked	kept
+450	Tower Decorations: Duremudira carves, base decorations combine (Sword God +2 etc.)	source	CANT-VERIFY	menu Tower Decos = Sky Stones (live mhfpac 0x1338da: add skills, removal needs a special item); which carves make each decoration: recipe table not compared	note added (client names)
 452	Sigils crafted with Ancient Gold Shard	name	TRUE	data/item-ids.json 11163 Ancient Gold Shard; rt_road.py	rewritten (was Ancient Gold Debris)
 455	Weapon simulator: our Tower weapons page	menu	TRUE	tower-weapons.html exists	rewritten (removed Japanese simulator)
 456	Zenith Sigils do not make a Zenith weapon (no Zenith part breaker)	rule	CANT-VERIFY	needs play	kept
@@ -108,7 +108,7 @@ line	claim	kind	verdict	evidence	action
 464	Craft in Special Armour Production under Event Armour at the normal blacksmith	menu	CANT-VERIFY	smithy menu not traced	kept
 466	Tenrou armours: customisable Tower armours; seal table (Muscle Boost etc.)	rule	CANT-VERIFY	no Tenrou entries in our data; client mechanics	kept
 473	Ancient Hope Stone [Orange/Blue/Red/Yellow/Purple] materials	name	TRUE	data/item-ids.json 11465-11469 Anc.HopeStone [Org/Blu/Red/Yel/Pur]; Sky Corridor treasure source	kept
-483	Tenrou armour crafted at the same NPC as Tower Weapons; no Zenith Sigils	npc	CANT-VERIFY	needs play	kept
+483	Tenrou armour crafted at the same NPC as Tower Weapons; no Zenith Sigils	npc	TRUE	live mhfpac 0x1339ae (JP 天廊防具の生産と試着 ... 強化は武具工房の親方で): Create Armor at the Tower Gear Felyne crafts and tries on Sky Corridor (Tenrou) armour, upgrade at the master smith; 0x133a23 Sky Marks for Guard Armor etc.; Zenith Sigils: not in client text	rewritten (NPC menu; Zenith Sigil remark attributed)
 490	Duremudira urgent quests may trigger on the Road; posted individually per hunter	quest	CANT-VERIFY	pac help describes 'Emergency Hunt Request' when total Road progress hits a set number (not chance); Duremudira Road quests are not in data/quests.json	kept
 491	Duremudira quest in a single-floor tower; Gm shop; can idle in the hall	quest	CANT-VERIFY	needs play	kept
 494	20 minutes, no carts, lose 60 s per defeat	rule	CANT-VERIFY	needs play	kept

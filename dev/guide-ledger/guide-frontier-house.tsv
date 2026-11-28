@@ -10,7 +10,7 @@ line	claim	kind	verdict	evidence	action
 191	Partnya lives on its own island (over the bridge)	npc	CANT-VERIFY	guide text; in game: create a Partnya and see where it appears	kept
 191	HRP Tickets to Partner/Partnya at the tables	item	CANT-VERIFY	items HRP Tkt (4k) 5392 etc. exist; in game: talk to the Partner and try Items	rewritten (attributed to guide)
 194	Display Gallery customisable room	other	TRUE	pac strings Gallery Board, Gallery Warehouse	kept
-194	Gallery Gems from Furniture NPC evaluating house	item	CANT-VERIFY	our items Gallery Atk Deco 910, Gallery Def Deco 911 only; in game: ask the furniture NPC to evaluate	rewritten (our names)
+194	Gallery Gems from Furniture NPC evaluating house	item	CANT-VERIFY	recipes.py (mhfdat 0x44): Gallery Atk/Def Deco are made from 1 F Ticket CT 4; where the tickets come from needs play	note in armour page
 194	Gallery prize rating outdated	other	OPINION	author's judgement	kept
 200	Gu-ku Farm cats and gu-ku home	other	TRUE	hvmhfz docs/house-pets.md (Goocoos live in the garden, 5 max)	kept
 200	Gu-ku give free items after quests	rule	TRUE	pac 'Got a Gu-ku Egg!' / 'Housekeeping cat'; guku-wander.md section 5	kept

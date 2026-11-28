@@ -72,7 +72,7 @@ line	claim	kind	verdict	evidence	action
 576	G versions of the gems	name	CANT-VERIFY	no G gem in item-ids	kept
 579	Mysterious Stones from Pariapuria vomit or Gu-ku Cooking	name	CANT-VERIFY	no item named Mysterious Stone in data/item-ids.json	note added; link house#guku-cooking exists
 580	Aside: course and Guild Cat gifts do not apply	rule	TRUE	no subscriptions/course mail (Erupe mhfcourse.go:102 courses for all; no gift delivery)	kept
-585	Guild Master gives Hunt Medals; Combination Store exchange	npc	CANT-VERIFY	Hunting Medal (8032) exists, no source; menus not in dev/guide-terms.tsv	kept as guide's words
+585	Guild Master gives Hunt Medals; Combination Store exchange	npc	TRUE	live v1.30 mhfpac.bin 0xecde3/0xecf72: Koryo Medals (item 8032 Hunting Medal) from the Guild Master per monster hunt count; amulets at the Combo Shop, returnable (in-game checklist part 1, 2026-11-25)	rewritten
 586	Medal requirement maybe 10 kills	rule	OPINION	attributed to the guide's author	kept
 587	Charms not consumed; waiting charms solo only	rule	CANT-VERIFY	needs play	kept
 591	Impatience Charm	name	DIFFERENT	our names Haste C. (-5s) .. (-40s) (8033-8037)	renamed
