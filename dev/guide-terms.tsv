@@ -129,7 +129,7 @@ Quest Counters	counter		decoded mhfpac.bin 0x1df9d2; 'Versus Quest Counter' 0x1f
 G Rank Quest Counter	counter		hvmhfz_re data/translations/stage/road-counter.tsv header	G Rank counter|G counter	medium	
 Felyne Attendant	npc		hvmhfz_re docs/gacha-cat.md 1.2 (0xf6)	Felyne from the Diva questline	medium	Diva Defense counter; guide says it stands next to the Blue NPC.
 Gacha Felyne	npc		hvmhfz_re data/gacha_cat_npcs.tsv		high	
-Guide (0x7e)	npc		hvmhfz_re docs/gacha-cat.md 1.2		medium	
+Guide	npc		hvmhfz_re docs/gacha-cat.md 1.2		medium	Town NPC id 0x7e; the guide places it at the entrance of Mezeporta Square.
 Caravan Quests	counter		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1dd7f4 (NPC name list next to Hunter Dojo)	Caravan Quest|Caravan Sweetheart	medium	Menu action 05 label is 'Caravan Quest' (menu_lists.py).
 Pallone Caravan	place		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1b925a		medium	
 Caravan Gem	currency		decoded mhfpac.bin (/root/work/re-mhfz/gachacat-tools/dec/mhfpac.bin) 0x1cb352		high	
