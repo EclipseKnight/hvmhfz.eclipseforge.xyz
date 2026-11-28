@@ -1,6 +1,6 @@
 {
  "_about": "Inputs of dev/make-quest-where.py (its --collect): the counter menus and built-in quest lists of each client patch, and the live server's quest lists. Regenerate, do not edit.",
- "collected": "2026-11-25T16:16Z",
+ "collected": "2026-11-28T10:24Z",
  "patches": {
   "stable": {
    "sha256": "68084e7e8d62cab12babc9ca7f3f7bcf50896e840d5943ac53f365cd315c8009",
@@ -4594,6 +4594,145 @@
      "note": null
     }
    ],
+   "talk": [
+    {
+     "counter": "Guild Master (Mezeporta)",
+     "path": [
+      "Goocoo Quests"
+     ],
+     "row": 64,
+     "ids": [
+      26590,
+      26591,
+      26592,
+      26597,
+      26598
+     ],
+     "maybe": [],
+     "types": [],
+     "note": null,
+     "need": "HR 2+, and say yes to the Felyne Caretaker in your own My Garden (the list shows again after a yes to two of his later requests)",
+     "garden_progress": [
+      3,
+      23,
+      29
+     ]
+    },
+    {
+     "counter": "Guild Master (Mezeporta)",
+     "path": [
+      "Goocoo Quests"
+     ],
+     "row": 64,
+     "ids": [
+      26593
+     ],
+     "maybe": [],
+     "types": [],
+     "note": null,
+     "need": "after a Gu-ku runs away from your garden",
+     "garden_progress": "garden record +0x2d = 2 (a Gu-ku ran away)"
+    },
+    {
+     "counter": "Guild Master (Mezeporta)",
+     "path": [
+      "Goocoo Quests"
+     ],
+     "row": 64,
+     "ids": [
+      26594
+     ],
+     "maybe": [],
+     "types": [],
+     "note": null,
+     "need": "after you say yes to the Felyne Caretaker's blueprint request",
+     "garden_progress": [
+      6
+     ]
+    },
+    {
+     "counter": "Guild Master (Mezeporta)",
+     "path": [
+      "Goocoo Quests"
+     ],
+     "row": 64,
+     "ids": [
+      26595
+     ],
+     "maybe": [],
+     "types": [],
+     "note": null,
+     "need": "after you say yes to the Felyne Caretaker's second blueprint request",
+     "garden_progress": [
+      16
+     ]
+    },
+    {
+     "counter": "Guild Master (Mezeporta)",
+     "path": [
+      "Goocoo Quests"
+     ],
+     "row": 64,
+     "ids": [
+      26626,
+      26627,
+      26628,
+      26629,
+      26630
+     ],
+     "maybe": [],
+     "types": [],
+     "note": null,
+     "need": "once your first Gu-ku has hatched (shown at most of the later Gu-ku steps, not all)",
+     "garden_progress": [
+      19,
+      20,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34
+     ]
+    },
+    {
+     "counter": "G Rank Quest Counter",
+     "path": [
+      "Clan Requests"
+     ],
+     "row": 73,
+     "ids": [],
+     "maybe": [
+      23001
+     ],
+     "types": [],
+     "note": "the counter's only list until then",
+     "need": "HR 999, before G Rank"
+    },
+    {
+     "counter": "New character's opening (Mezeporta)",
+     "path": [
+      "Hunter Quests"
+     ],
+     "row": 2,
+     "ids": [],
+     "maybe": [
+      26687,
+      26688
+     ],
+     "types": [],
+     "note": "the opening offers one of the two (which one depends on an event setting)",
+     "need": null
+    }
+   ],
+   "labels": {
+    "diva_story": [
+     "Diva Story",
+     "Diva Story"
+    ]
+   },
    "version": "1.30"
   },
   "pre": {
@@ -6660,7 +6799,7 @@
      ],
      "maybe": [],
      "types": [],
-     "note": "2nd-4th District need Tower Rank 51, 100, 200 (SkyCorridor.Endless.TowerRankGates)"
+     "note": "2nd-4th District need Tower Rank 51, 100, 200"
     },
     {
      "counter": "Caravan Quest Counter",
@@ -9233,6 +9372,145 @@
      "note": null
     }
    ],
+   "talk": [
+    {
+     "counter": "Guild Master (Mezeporta)",
+     "path": [
+      "Goocoo Quests"
+     ],
+     "row": 64,
+     "ids": [
+      26590,
+      26591,
+      26592,
+      26597,
+      26598
+     ],
+     "maybe": [],
+     "types": [],
+     "note": null,
+     "need": "HR 2+, and say yes to the Felyne Caretaker in your own My Garden (the list shows again after a yes to two of his later requests)",
+     "garden_progress": [
+      3,
+      23,
+      29
+     ]
+    },
+    {
+     "counter": "Guild Master (Mezeporta)",
+     "path": [
+      "Goocoo Quests"
+     ],
+     "row": 64,
+     "ids": [
+      26593
+     ],
+     "maybe": [],
+     "types": [],
+     "note": null,
+     "need": "after a Gu-ku runs away from your garden",
+     "garden_progress": "garden record +0x2d = 2 (a Gu-ku ran away)"
+    },
+    {
+     "counter": "Guild Master (Mezeporta)",
+     "path": [
+      "Goocoo Quests"
+     ],
+     "row": 64,
+     "ids": [
+      26594
+     ],
+     "maybe": [],
+     "types": [],
+     "note": null,
+     "need": "after you say yes to the Felyne Caretaker's blueprint request",
+     "garden_progress": [
+      6
+     ]
+    },
+    {
+     "counter": "Guild Master (Mezeporta)",
+     "path": [
+      "Goocoo Quests"
+     ],
+     "row": 64,
+     "ids": [
+      26595
+     ],
+     "maybe": [],
+     "types": [],
+     "note": null,
+     "need": "after you say yes to the Felyne Caretaker's second blueprint request",
+     "garden_progress": [
+      16
+     ]
+    },
+    {
+     "counter": "Guild Master (Mezeporta)",
+     "path": [
+      "Goocoo Quests"
+     ],
+     "row": 64,
+     "ids": [
+      26626,
+      26627,
+      26628,
+      26629,
+      26630
+     ],
+     "maybe": [],
+     "types": [],
+     "note": null,
+     "need": "once your first Gu-ku has hatched (shown at most of the later Gu-ku steps, not all)",
+     "garden_progress": [
+      19,
+      20,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34
+     ]
+    },
+    {
+     "counter": "G Rank Quest Counter",
+     "path": [
+      "Clan Requests"
+     ],
+     "row": 73,
+     "ids": [],
+     "maybe": [
+      23001
+     ],
+     "types": [],
+     "note": "the counter's only list until then",
+     "need": "HR 999, before G Rank"
+    },
+    {
+     "counter": "New character's opening (Mezeporta)",
+     "path": [
+      "Hunter Quests"
+     ],
+     "row": 2,
+     "ids": [],
+     "maybe": [
+      26687,
+      26688
+     ],
+     "types": [],
+     "note": "the opening offers one of the two (which one depends on an event setting)",
+     "need": null
+    }
+   ],
+   "labels": {
+    "diva_story": [
+     "Diva Story",
+     "Diva Story"
+    ]
+   },
    "version": "1.32-pre18"
   }
  },
@@ -12999,6 +13277,15 @@
      53305,
      53306
     ]
+   ]
+  ],
+  "scenario_gates": [
+   [
+    "Veteran",
+    "【Adept Hunter: Inagami】",
+    3,
+    21122,
+    0
    ]
   ]
  },

@@ -36,7 +36,7 @@ line	claim	kind	verdict	evidence	action
 229	5% drop rate	source	CANT-VERIFY	rates not in item data	kept
 231	G Exotics need GR500 (leftover: body vs note)	rule	DIFFERENT	data/quest-where.json rankNeed GR 100 on every offered G Exotic; settled to GR 100	rewritten
 231	Fixed ★8, Defence -1,050; G Finesse sets in Fist doc	rule	OPINION	Fist	kept
-232	Note: 9,152 quest files; offered counts; G Exotic GR 100; GRP quests GR 900	quest	TRUE	dev/quest-where.md counts (1,939 offered); changelog GRP 24 Nov	rewritten (where-to-take now known)
+232	Note: 9,152 quest files; offered counts; G Exotic GR 100; GRP quests GR 900	quest	TRUE	dev/quest-where.md counts (1,952 offered, 2026-11-28, incl. 13 Gu-ku quests at the Guild Master); changelog GRP 24 Nov	count 1,939 -> 1,952
 237	Push one weapon to Lv11 and Lv50 to unlock content	rule	OPINION	Fist	kept
 239	Craft from G Rank option at Blacksmith, Lv1 to Lv50	rule	TRUE	pac: "G Lv50 Weapon Possessed"; weapons page ledger	kept
 240	Lv1-10 at main Blacksmith; bowguns level up	rule	OPINION	Fist	kept

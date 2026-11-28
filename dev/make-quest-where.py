@@ -20,9 +20,14 @@ Two steps, so a lead can rerun the second anywhere:
                                              # write (run by dev/check-quest-where.js)
 Run make-quest-pieces.py after it (the pieces carry each quest's line).
 
+Besides the counter menus it knows the lists the counter frame opens for one NPC or game state (TALK_LISTS below:
+the Guild Master's Goocoo Quests, the G counter's Clan Requests at GR 0, the new character's opening) and the story
+chapters' quest gates (SCENARIO_GATES).
+
 data/quest-where.json: {"_about", "inputs": {patch versions, live snapshot time}, "counts": {...},
 "quests": {"<id>": {"status": "offered" | "unconfirmed" | "not-offered", "places": [{"path": "General Quest Counter >
-Hunter Quests > ★3", "patch": "both" | "stable" | "pre", "need": "G Rank" (optional), "note": "..." (optional),
+Hunter Quests > ★3", "patch": "both" | "stable" | "pre", "need": "G Rank" (optional; the condition the place asks,
+shown as "needs ..."), "note": "..." (optional),
 "sure": false (only when unconfirmed)}], "hidden": ["Order Quests > G Deco Quests", ...] (client lists no counter
 shows, optional), "rankNeed": "HR 31" (optional, the quest file's own requirement, from data/quests.json)}}.
 """
@@ -32,6 +37,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import struct
 import subprocess
 import sys
@@ -82,11 +88,56 @@ RAVIENTE_TYPES = (22, 40, 50, 51)
 # (v1.32-pre9) or later while Endless is on (live config 2026-11-25: on), i.e. the pre-release (Erupe sky_endless.go).
 TUNE_1158 = {"stable": 1, "pre": 0}
 
+# TALK_LISTS (talk_lists()): quest lists the counter frame 0x10370030 (state 7) shows instead of a root menu, for
+# one NPC kind or one game state (dev/quest-where.md "Lists opened by NPC talk and game states"; hvmhfz_re
+# docs/guku-egg-quests.md):
+# - the Guild Master (NPC kind 0x40, Mezeporta areas 200, 210, 282): his talk menu row (mhfpac [0xbbc] +0xc, built
+#   by 0x1047f5f0) opens counter type 9, which lists mhfdat [+0x474] list k for each garden bit k set (0x1083e010,
+#   bits from 0x1083df20) under action 0x40; the bits: 0 = garden progress 3, 0x17 or 0x1d; 1 = a Gu-ku ran away
+#   (garden record +0x2d = 2); 2 = progress 6; 3 = progress 0x10; 4 = progress p with byte 0x118e19ac[p] bit 3
+#   (0x1078fa10(3), no bound: p runs to 0x22, the step dispatch 0x10776a10 takes p < 0x23; read from the DLL below).
+#   Progress steps (writes of save +0x22c32): 1 at the garden setup 0x10792950 when HR band >= 2; 3, 6, 0x10, 0x17,
+#   0x1d each written twice by the Felyne Caretaker's yes steps (0x10776b78/c4e ... 0x10777ba8/c7e); 0x1f when a
+#   Gu-ku hatches (0x10792dc0 -> 0x10792ea9); the setup also moves 0x1b-0x22 to 0x14 when 5 grown Gu-ku (slot state
+#   6-11, 0x10792700) are kept. The page shows GUKU_NEED (plain words); the states stay in the inputs file.
+# - the G Rank Quest Counter (kind 0xf3) at GR 0: talk opens it only at HR 999 (0x1071ea70, which also asks
+#   0x10b39140() = 999, not read) and the frame lists the one quest at dword table 0x118e5d2c[GR] under action
+#   0x49 (Clan Requests). Unconfirmed: 0x10b39140 and the frame's earlier exits were read, not run.
+# - the new-character opening (game mode 0x8e, 0x10400180 case 5; started by 0x103ff830 on the first arrival in
+#   Mezeporta and by NPC kind 0xf1's talk): one quest of mhfdat [+0x1b8] (word 0, or word 1 when an event flag is
+#   set) under action 2 (Hunter Quests). Unconfirmed: which save flags start it on our server is not traced.
+GUKU_TALK_SLOT, GUKU_TALK_ROW, GUKU_ACTION, GUKU_LISTS = 0xBBC, 0xC, 0x40, 0x474
+GUKU_PROGRESS_TABLE, GUKU_STEPS = 0x118E19AC, 0x23
+# Garden progress states per list kind (kinds 0-3 from the code of 0x1083df20; kind 4 is read from the table and
+# must match, so a patch that changes it stops the collect instead of keeping a wrong sentence).
+GUKU_STATES = {0: [0x03, 0x17, 0x1D], 1: [], 2: [0x06], 3: [0x10], 4: [0x13, 0x14] + list(range(0x1B, 0x23))}
+GUKU_NEED = {
+    0: "HR 2+, and say yes to the Felyne Caretaker in your own My Garden (the list shows again after a yes to two "
+       "of his later requests)",
+    1: "after a Gu-ku runs away from your garden",
+    2: "after you say yes to the Felyne Caretaker's blueprint request",
+    3: "after you say yes to the Felyne Caretaker's second blueprint request",
+    4: "once your first Gu-ku has hatched (shown at most of the later Gu-ku steps, not all)",
+}
+GR0_TABLE, GR0_ACTION = 0x118E5D2C, 0x49
+OPENING_IDS, OPENING_ACTION = 0x1B8, 0x02
+
+# Chapter-script quest gates of the Series Quest Counter's stories: opcode 0x04 with sub-type 4 names a quest (+0x16c)
+# and a counter (+0x170: 0 the General Quest Counter, 2 the G Rank Quest Counter); while the chapter waits at that
+# gate the counter frame lists that one quest under action 0x76 / 0x77 (Diva Story; 0x10370030 state 7, the
+# records at 0x1e8955d4/d8). Found by a scan of every chapter script of the live scenario_counter series (hvmhfz_re
+# src/files/chapter.c, 2026-11-28: 109,652 files): only this one. collect_live keeps it while its series is listed.
+# (category, series id, chapter, quest, counter)
+SCENARIO_GATES = [(1, 73, 3, 21122, 0)]
+
+# A "need" or "note" shows on the quest page, so it must be plain words: no hex, no "+0x" offsets, no config keys.
+PLAYER_TEXT_BAD = re.compile(r"0x[0-9a-fA-F]|\+0x|\b[A-Z][A-Za-z]+\.[A-Z][A-Za-z]+")
+
 # Rows whose list the builder cannot give exactly from the files alone (sure=False), and why.
 ROW_NOTES = {
     0x0F: "festival winning team only",
     0x2F: "Raviente (Great Slaying)",
-    0x99: "2nd-4th District need Tower Rank 51, 100, 200 (SkyCorridor.Endless.TowerRankGates)",
+    0x99: "2nd-4th District need Tower Rank 51, 100, 200"   # live SkyCorridor.Endless.TowerRankGates,
 }
 
 
@@ -268,6 +319,40 @@ def label(s):
     return s.translate({c: c - 0xFEE0 for c in range(0xFF01, 0xFF5F)}).replace("\\n", " ").strip()
 
 
+def pac_text(pac, slot, at):
+    """The cp932 string at [[pac+slot] + at] of a decoded mhfpac.bin."""
+    o = _u32(pac, _u32(pac, slot) + at)
+    return pac[o:pac.find(b"\0", o)].decode("cp932")
+
+
+def talk_lists(pe, dat, pac, rows):
+    """The lists the counter frame shows instead of a root menu (TALK_LISTS above): rows like collect_patch's,
+    with a "need" of their own."""
+    def row(counter, path, action, ids=(), maybe=(), need=None, note=None):
+        return {"counter": counter, "path": path, "row": action, "ids": list(ids), "maybe": list(maybe), "types": [],
+                "note": note, "need": need}
+    out = []
+    guku_row = label(pac_text(pac, GUKU_TALK_SLOT, GUKU_TALK_ROW))
+    lists = _u32(dat, GUKU_LISTS)
+    progress = pe.rd(GUKU_PROGRESS_TABLE, GUKU_STEPS)
+    kind4 = [p for p in range(GUKU_STEPS) if progress[p] & 8]
+    if kind4 != GUKU_STATES[4]:
+        sys.exit("garden progress table changed: kind 4 at %s; update GUKU_STATES and GUKU_NEED" % kind4)
+    for kind in range(5):
+        r = row("Guild Master (Mezeporta)", [guku_row], GUKU_ACTION, _ids_at(dat, _u32(dat, lists + 4 * kind)),
+                need=GUKU_NEED[kind])
+        r["garden_progress"] = GUKU_STATES[kind] if kind != 1 else "garden record +0x2d = 2 (a Gu-ku ran away)"
+        out.append(r)
+    gr0 = _u16(pe.rd(GR0_TABLE, 4), 0)
+    out.append(row("G Rank Quest Counter", [label(rows[GR0_ACTION]["label"])], GR0_ACTION, maybe=[gr0],
+                   need="HR 999, before G Rank", note="the counter's only list until then"))
+    first = _u32(dat, OPENING_IDS)
+    out.append(row("New character's opening (Mezeporta)", [label(rows[OPENING_ACTION]["label"])], OPENING_ACTION,
+                   maybe=[q for q in (_u16(dat, first), _u16(dat, first + 2)) if q],
+                   note="the opening offers one of the two (which one depends on an event setting)"))
+    return out
+
+
 def collect_patch(zip_path, re_dir, work, tune1158):
     sys.path.insert(0, str(re_dir / "tools" / "quest"))
     sys.path.insert(0, str(re_dir / "tools" / "translate"))
@@ -363,7 +448,8 @@ def collect_patch(zip_path, re_dir, work, tune1158):
                                    "server's settings switch off)"], "row": e["row"], "ids": alt, "maybe": [],
                                    "types": [], "note": None})
     return {"sha256": hashlib.sha256(zip_path.read_bytes()).hexdigest(), "split_tower": split,
-            "rows": out, "hidden": hidden}
+            "rows": out, "hidden": hidden, "talk": talk_lists(pe, dec["dat"], dec["pac"], rows),
+            "labels": {"diva_story": [label(rows[0x76]["label"]), label(rows[0x77]["label"])]}}
 
 
 def psql(sql):
@@ -381,18 +467,29 @@ def collect_live(re_dir):
         "SELECT solo_quest_id, guild_quest_id, quest_type, enabled, title FROM tournament_quests ORDER BY id")]
     vs = [[int(a), int(b), c == "t", d] for a, b, c, d in psql(
         "SELECT quest_id, quest_type, enabled, title FROM vs_bracket_quests ORDER BY id")]
+    series, gates = live_series(re_dir)
+    return {"event_quests": ev, "tournament_quests": cup, "vs_bracket_quests": vs, "series": series,
+            "scenario_gates": gates}
+
+
+def live_series(re_dir):
+    """The live scenario_counter's series ([tab, title, quest ids]) and the SCENARIO_GATES of those series ([tab,
+    title, chapter, quest, counter])."""
     sc = {(int(a), int(b)) for a, b in psql("SELECT category_id, scenario_id FROM scenario_counter")}
-    series = []
+    series, titles = [], {}
     lines = [x for x in (re_dir / "data" / "series_quests.tsv").read_text(encoding="utf-8").splitlines()
              if x and not x.startswith("#")]
     head = lines[0].split("\t")
     for line in lines[1:]:
         g = dict(zip(head, line.split("\t")))
+        titles[(int(g["category"]), int(g["id"]))] = (g["tab"], g["title_en"])
         if (int(g["category"]), int(g["id"])) in sc:
             ids = [int(q) for q in g["quests"].split(",") if q.isdigit()]
             if ids:
                 series.append([g["tab"], g["title_en"], ids])
-    return {"event_quests": ev, "tournament_quests": cup, "vs_bracket_quests": vs, "series": series}
+    gates = [list(titles.get((cat, sid), ("?", "series %d" % sid))) + [chapter, q, counter]
+             for cat, sid, chapter, q, counter in SCENARIO_GATES if (cat, sid) in sc]
+    return series, gates
 
 
 def collect(args):
@@ -409,6 +506,8 @@ def collect(args):
     if args.no_live:
         old = json.loads(INPUTS.read_text(encoding="utf-8")) if INPUTS.exists() else {}
         data["live"], data["live_at"] = old.get("live"), old.get("live_at")
+        if data["live"] is not None and "scenario_gates" not in data["live"]:   # a snapshot older than the gates
+            data["live"]["scenario_gates"] = live_series(re_dir)[1]
     else:
         data["live"], data["live_at"] = collect_live(re_dir), data["collected"]
     INPUTS.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
@@ -443,6 +542,12 @@ def build(inputs, quests):
         for row in patch["hidden"]:
             for q in row["ids"]:
                 hidden.setdefault(q, set()).add(" > ".join(row["path"]))
+        for row in patch.get("talk", []):    # lists opened by NPC talk or a game state, each with its own need
+            path = " > ".join([row["counter"]] + row["path"])
+            for q in row["ids"]:
+                add(q, path, key, row["need"], row["note"])
+            for q in row["maybe"]:
+                add(q, path, key, row["need"], row["note"], False)
 
     live = inputs["live"]
     keys = list(inputs["patches"])
@@ -473,6 +578,13 @@ def build(inputs, quests):
         for q in ids:
             for key in keys:
                 add(q, "Series Quest Counter > %s > %s" % (tab, title), key)
+    # A story chapter's quest gate: unconfirmed (which record list holds the waiting gate was not traced).
+    for tab, title, chapter, q, counter in live.get("scenario_gates", []):
+        for key in keys:
+            name = "General Quest Counter" if counter == 0 else "G Rank Quest Counter"
+            add(q, "%s > %s" % (name, inputs["patches"][key]["labels"]["diva_story"][counter == 2]), key,
+                COUNTER_NEED.get(name), "while chapter %d of the Series Quest Counter's %s series %s waits for it"
+                % (chapter, tab, title), False)
 
     out, counts = {}, {"offered": 0, "unconfirmed": 0, "not-offered": 0, "pre-only": 0}
     for quest in sorted(quests, key=lambda x: x["id"]):
@@ -481,10 +593,11 @@ def build(inputs, quests):
         for (path, need, note, sure), ks in sorted(places.get(q, {}).items(), key=lambda kv: (not kv[0][3], kv[0][0])):
             patch = "both" if set(ks) >= set(keys) else ("stable" if "stable" in ks else "pre")
             p = {"path": path, "patch": patch}
-            if need:
-                p["need"] = need
-            if note:
-                p["note"] = note
+            for k, v in (("need", need), ("note", note)):
+                if v:
+                    if PLAYER_TEXT_BAD.search(v):     # quest pages show these: no addresses or config keys
+                        sys.exit("quest %d: %s %r is not plain words" % (q, k, v))
+                    p[k] = v
             if not sure:
                 p["sure"] = False
             rows.append(p)
